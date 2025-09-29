@@ -21,11 +21,11 @@ post-processing, quality control, and reporting of targeted quantitative
 small-molecule mass spectrometry experiments using Multiple Reaction 
 Monitoring (MRM). The platform includes two complementary tools:
 
-- **INTEGRATOR**: A Python application for efficient and automated raw data processing, i.e., peak 
+- **INTEGRATOR**: Python application for efficient and automated raw data processing, i.e., peak 
   detection, pickung, and integration. 
 
-- **QUANT**: An R package providing a function library for data post-
-  processing, i.e., quantitation, data corrections, comprehensive quality control, and 
+- **QUANT**: R package providing a function library for data post-
+  processing, including quantitation, data corrections, comprehensive quality control, and 
   reporting.
 
 The modular functionalities and defined data structures support diverse 
@@ -54,7 +54,7 @@ Load the package in your R session via `library(mrmhub)`. For detailed usage ins
 
 ## Documentation
 
-See the online dDocumentation on [https://slinghub.github.io/mrmhub](https://slinghub.github.io/mrmhub/) for detailed information on installation, usage, and examples of MRMhub.
+See the online Documentation on [https://slinghub.github.io/mrmhub](https://slinghub.github.io/mrmhub/) for detailed information on installation, usage, and examples of MRMhub.
 
 ## Contributing
 
