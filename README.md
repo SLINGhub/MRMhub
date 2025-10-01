@@ -22,7 +22,7 @@ small-molecule mass spectrometry experiments using Multiple Reaction
 Monitoring (MRM). The platform includes two complementary tools:
 
 - **INTEGRATOR**: Python application for efficient and automated raw data processing, i.e., peak 
-  detection, pickung, and integration. 
+  detection, picking, and integration. 
 
 - **QUANT**: R package providing a function library for data post-
   processing, including quantitation, data corrections, comprehensive quality control, and 
