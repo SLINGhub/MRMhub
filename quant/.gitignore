@@ -1,0 +1,12 @@
+.Rproj.user
+.Rhistory
+.Rdata
+.httr-oauth
+.DS_Store
+inst/doc
+/Meta/
+.quarto
+vignettes/articles/output/
+docs
+..Rcheck
+/doc/

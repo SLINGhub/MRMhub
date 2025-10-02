@@ -1,0 +1,228 @@
+url: https://slinghub.github.io/mrmhub/
+template:
+  bootstrap: 5
+  bootswatch: sandstone
+navbar:
+  structure:
+    left:
+    - intro
+    - tutorials
+    - articles
+    - reference
+    - news
+    right:
+    - search
+    - github
+    - lightswitch
+  components:
+    home: ~
+    intro:
+      text: Getting started
+      href: articles/00_get_started.html
+    tutorials:
+      text: Tutorials & Recipes
+      menu:
+      - text: Tutorials
+      - text: Lipidomics data processing (full workflow)
+        href: articles/T01_targetlipidomics_workflow.html
+      - text: Preparing and importing data
+        href: articles/T01_prepdata.html
+      - text: Basic MRMhub workflow
+        href: articles/T02_settingup_workflow.html
+      - text: Drift correction
+        href: articles/T_DriftCorrect.html
+      - text: Batch correction
+        href: articles/T_BatchCorrect.html
+      - text: Calibration by a reference sample
+        href: articles/T_CalibRef.html
+      - text: External calibration and QC
+        href: articles/R01_quantms.html
+      - text: '-------'
+      - text: Recipes
+    articles:
+      text: Manual
+      menu:
+      - text: Key concepts
+      - text: Data structures
+        href: articles/01_datastructure.html
+      - text: Data indentifier
+        href: articles/02_keydataids.html
+      - text: Feature variables
+        href: articles/02b_keyfeaturevar.html
+      - text: '-------'
+      - text: Data and metadata
+      - text: MRMhubExperiment Object
+        href: articles/03_MRMhubExperiment.html
+      - text: Data import
+        href: articles/04_dataimport.html
+      - text: Metadata import
+        href: articles/05_metadataimport.html
+      - text: '-------'
+      - text: Batch/drift correction
+        href: articles/07_driftbatchcorr.html
+    news:
+      text: News
+      href: news/index.html
+    links:
+    - text: License (BSD-3-Clause)
+      href: LICENSE
+reference:
+- title: MRMhubExperiment
+  description: |
+    Functions to create, access and query MRMhubExperiment objects, which are the central data object in the MRMhub workflow.
+  contents:
+  - MRMhubExperiment
+  - MRMhubExperiment-class
+  - $,MRMhubExperiment-method
+  - set_analysis_order
+  - get_batch_boundaries
+  - data_sum_features
+  - exclude_analyses
+  - exclude_features
+  - get_analyticaldata
+  - set_intensity_var
+  - get_analysis_count
+  - get_analyis_start
+  - get_analyis_end
+  - get_analysis_breaks
+  - get_analysis_duration
+  - get_runtime_median
+  - get_feature_count
+  - get_featurelist
+- title: Analysis data import
+  description: |
+    Functions to import analytical data from different sources into MRMhubExperiment objects.
+    Additionally, the file parser function used internally by these import functions are available
+    for direct use, i.e. to import different analytical data into data frames.
+  contents:
+  - import_data_mrmhub
+  - import_data_masshunter
+  - import_data_skyline
+  - import_data_csv_wide
+  - import_data_csv_long
+  - parse_mrmhub_result
+  - parse_masshunter_csv
+  - parse_skyline_result
+  - parse_plain_wide_csv
+  - parse_plain_long_csv
+  - import_data_csv
+- title: Metadata import
+  description: |
+    Functions to import metadata describing the analyses (samples), features (analytes), internal standards
+    and other relevant information from the MRMhub Excel template or CSV files.
+  contents:
+  - import_metadata_analyses
+  - import_metadata_features
+  - import_metadata_istds
+  - import_metadata_responsecurves
+  - import_metadata_qcconcentrations
+  - import_metadata_msorganiser
+  - import_metadata_from_data
+  - save_metadata_templates
+  - save_metadata_msorganiser_template
+  - add_metadata
+  - assert_metadata
+- title: Isotope correction
+  description: |
+    Functions to perform type II isotopic correction
+  contents:
+  - correct_interferences
+  - correct_interference_manual
+- title: External Calibration
+  description: |
+    Function to plot and analyze external calibration curves
+  contents:
+  - quantify_by_calibration
+  - plot_calibrationcurves
+  - calc_calibration_results
+  - get_calibration_metrics
+  - get_qc_bias_variability
+- title: Normalization, Quantification
+  description: |
+    Functions for normalization by internal standards and sample amounts, to calculate analyte concentrations based
+    on internal standards amounts or external calibration curves. Function to for absolute or relative
+    calibration using a reference sample.
+  contents:
+  - normalize_by_istd
+  - quantify_by_istd
+  - quantify_by_calibration
+  - calibrate_by_reference
+  example:
+    run: no
+- title: Drift/Batch Correction
+  description: |
+    Function for drift and batch correction correction
+  contents:
+  - correct_drift_gaussiankernel
+  - correct_drift_cubicspline
+  - correct_drift_loess
+  - correct_drift_gam
+  - correct_batch_centering
+- title: Quality Control and Filtering
+  description: |
+    Functions to calculate feature QC metrics and apply QC filtering, and vizualize the filtering results.
+  contents:
+  - calc_qc_metrics
+  - filter_features_qc
+  - detect_outlier_pca
+  - plot_qc_summary_byclass
+  - plot_qc_summary_overall
+  - plot_abundanceprofile
+- title: Quality Control Plots
+  description: |
+    Functions to plots diverse QC visualizatios.
+  contents:
+  - plot_runsequence
+  - plot_runscatter
+  - plot_rla_boxplot
+  - plot_pca
+  - plot_pca_loading
+  - plot_feature_correlations
+  - plot_rt_vs_chain
+  - plot_qc_matrixeffects
+  - plot_normalization_qc
+  - plot_qcmetrics_comparison
+  - plot_qc_interferences
+- title: Response Curves
+  description: |
+    Functions to calculate and visualize response curves
+  contents:
+  - plot_responsecurves
+  - get_response_curve_stats
+- title: Data Reporting and Sharing
+  description: |
+    Functions to export processed and raw datasets and the processing steps in different formats.
+  contents:
+  - save_report_xlsx
+  - save_dataset_csv
+  - save_feature_qc_metrics
+- title: Lipidomics
+  description: |
+    Functions specific to lipidomics data processing and analysis.
+  contents: parse_lipid_feature_names
+- title: Datasets
+  description: |
+    Example datasets for testing and demonstration.
+  contents:
+  - lipidomics_dataset
+  - quant_lcms_dataset
+  - data_load_example
+- title: Helper functions
+  description: |
+    A collection of functions that may be useful in the context of mass spectrometry is also available.
+  contents:
+  - cv
+  - cv_log
+  - calc_average_molweight
+  - save_dataset_csv
+  - fun_correct_drift
+  - fun_gauss.kernel.smooth
+  - fun_loess
+  - fun_cspline
+  - fun_gam_smooth
+  - get_mad_tails
+  - get_iqr_tails
+  - get_outlier_bounds
+  - order_chained_columns_tbl
+
+

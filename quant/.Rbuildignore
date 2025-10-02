@@ -1,0 +1,17 @@
+^doc$
+^Meta$
+.covrignore
+^\.travis\.yml$
+.travis.yml
+_pkgdown.yml
+^CODE_OF_CONDUCT\.md$
+^_pkgdown\.yml$
+^codecov\.yml$
+^data-raw$
+^pkgdown$
+^\.covrignore$
+^\.travis\.yml$
+^mydata\.csv$
+^mydata\.csv$
+^mrmhub.Rproj$
+^LICENSE\.md$
