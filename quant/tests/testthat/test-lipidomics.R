@@ -1,6 +1,6 @@
 mexp <- mrmhub::MRMhubExperiment(title = "")
 
-data_path <- test_path("testdata/FullPanelFewSamples_MRMhub.csv")
+data_path <- test_path("testdata/FullPanelFewSamples_MRMkit_interror.csv")
 mexp <- import_data_mrmhub(
   data = mexp,
   path = data_path,
@@ -27,23 +27,23 @@ test_that("parse_lipid_feature_names works", {
       colnames(mexp_temp@dataset)
   ))
 
-  lipids <- mexp_temp@dataset |> filter(analysis_id == "Longit_batch5_TQC38")
+  lipids <- mexp_temp@dataset |> filter(analysis_id == "Longit_batch1_22")
 
   expect_equal(lipids$analyte_name[44], "Cer 18:1;O2/22:0")
-  expect_equal(lipids$analyte_name[70], "DG 16:0_18:1")
-  expect_equal(lipids$analyte_name[155], "LPC 18:1/0:0")
-  expect_equal(lipids$analyte_name[323], "PE P-16:0/20:4")
-  expect_equal(lipids$analyte_name[440], "TG 18:0_32:2")
-  expect_equal(lipids$analyte_name[436], "TG 50:0")
+  expect_equal(lipids$analyte_name[70], "DG 16:0_18:0")
+  expect_equal(lipids$analyte_name[155], "LPC 17:1/0:0")
+  expect_equal(lipids$analyte_name[329], "PE P-16:0/20:4")
+  expect_equal(lipids$analyte_name[440], "TG 15:0_34:1")
+  expect_equal(lipids$analyte_name[436], "TG 48:2")
   expect_equal(lipids$lipid_class[44], "Cer")
   expect_equal(lipids$lipid_class_lcb[44], "Cer;O2")
   expect_equal(lipids$feature_class[44], "Cer;O2")
   expect_equal(lipids$lipid_class_base[44], "SP")
-  expect_equal(lipids$transition_name[323], "-FA-HG")
+  expect_equal(lipids$transition_name[327], "-FA-HG")
   expect_equal(lipids$transition_group_id[323], 1)
-  expect_equal(lipids$analyte_name[322], "PE P-16:0/18:2")
-  expect_equal(lipids$transition_name[322], "-FA")
-  expect_equal(lipids$transition_group_id[322], 2)
+  expect_equal(lipids$analyte_name[330], "PE P-16:0/20:4")
+  expect_equal(lipids$transition_name[330], "-FA")
+  expect_equal(lipids$transition_group_id[330], 2)
 
   mexp_temp@dataset <- parse_lipid_feature_names(
     mexp_temp@dataset,
