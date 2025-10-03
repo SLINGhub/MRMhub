@@ -1,47 +1,31 @@
-# MRMhub <a href="https://slinghub.github.io/mrmhub/"><img src="man/figures/logo.svg" align="right" height="139" alt="mrmhub website" /></a>
+# MRMhub <a href="https://slinghub.github.io/mrmhub/"><img src="man/figures/logo.svg" alt="mrmhub website" align="right" height="139"/></a>
 
 <!-- badges: start -->
 
-[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html)
-[![R-CMD-check](https://github.com/SLINGhub/mrmhub/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/SLINGhub/mrmhub/actions/workflows/R-CMD-check.yaml)
-[![Codecov test coverage](https://codecov.io/gh/slinghub/mrmhub/branch/main/graph/badge.svg)](https://app.codecov.io/gh/slinghub/mrmhub?branch=main)
+[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html) [![R-CMD-check](https://github.com/SLINGhub/mrmhub/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/SLINGhub/mrmhub/actions/workflows/R-CMD-check.yaml) [![Codecov test coverage](https://codecov.io/gh/slinghub/mrmhub/branch/main/graph/badge.svg)](https://app.codecov.io/gh/slinghub/mrmhub?branch=main)
 
 <!-- badges: end -->
 
+`MRMhub` is an R package designed for the reproducible post-processing, quality control, and reporting of quantitative small-molecule mass spectrometry (MS) data. Its modular functionalities and defined data structure, support diverse analytical designs, data formats, and processing tasks, including metabolomics and lipidomics. `MRMhub` is intended for both analytical and bioinformatics scientists and to facilitate collaboration between them. It enables the creation of customizable, supervisable, and documented data processing workflows through intuitive high-level R functions and data objects.
 
-`MRMhub` is an R package designed for the reproducible post-processing,
-quality control, and reporting of quantitative small-molecule mass
-spectrometry (MS) data. Its modular functionalities and defined data
-structure, support diverse analytical designs, data formats, and
-processing tasks, including metabolomics and lipidomics. `MRMhub` is
-intended for both analytical and bioinformatics scientists and to
-facilitate collaboration between them. It enables the creation of
-customizable, supervisable, and documented data processing workflows
-through intuitive high-level R functions and data objects.
+`MRMhub`'s core tools, accessible also to those with limited R experience, allow analysts to annotate, inspect, and process data. This includes importing data and metadata from various file formats, managing and organizing data with integrity checks, performing processing tasks such as quantification, drift/batch correction, and applying QC-based feature filtering. Users can assess data quality using QC metrics and diagnostic plots, and share both raw and processed data along with the entire processing workflow for further analyses and documentation.
 
-`MRMhub`'s core tools, accessible also to those with limited R
-experience, allow analysts to annotate, inspect, and process data. This
-includes importing data and metadata from various file formats, managing
-and organizing data with integrity checks, performing processing tasks
-such as quantification, drift/batch correction, and applying QC-based
-feature filtering. Users can assess data quality using QC metrics and
-diagnostic plots, and share both raw and processed data along with the
-entire processing workflow for further analyses and documentation.
-
-`MRMhub` also serves as a validated software framework for building robust and 
-scalable data processing pipelines.
+`MRMhub` also serves as a validated software framework for building robust and scalable data processing pipelines.
 
 # Getting Started
+
 Please visit the [Getting Started](https://slinghub.github.io/mrmhub/articles/00_get_started.html) page for tutorials and documentation on `MRMhub`.
 
-#  Installation
+# Installation
+
 To install, or to update, MRMhub, run the following code in the R console:
+
 ``` r
 if (!require("remotes")) install.packages("remotes")
 remotes::install_github("SLINGhub/mrmhub")
 ```
 
-#  Example Workflow
+# Example Workflow
 
 ``` r
 # Path of example files included with this package
@@ -93,7 +77,4 @@ plot_runscatter(mexp,
 
 # Contributor Code of Conduct
 
-Please note that the mrmhub project is released with a [Contributor Code
-of
-Conduct](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html).
-By contributing to this project, you agree to abide by its terms.
+Please note that the mrmhub project is released with a [Contributor Code of Conduct](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html). By contributing to this project, you agree to abide by its terms.
