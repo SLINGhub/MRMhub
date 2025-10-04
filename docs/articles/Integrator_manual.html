@@ -293,7 +293,7 @@ Note: This overwrites the globally defined peak width (param.txt). See below.</t
 <li>
 <strong><code>missing_compounds.txt</code></strong> reports transitions defined in the Transition List but not found in all mzML files. <em>Note: T</em>ransitions present only in a subset of the mzML files are currently not processed.</li>
 <li>
-<code>missing_details.txt</code> reports transitions present in all mzML files, but not defined in the the Transition Lis</li>
+<strong><code>missing_details.txt</code></strong> reports transitions present in all mzML files, but not defined in the the Transition Lis</li>
 </ul></section><section class="level3"><h4 id="step-2-peak-finding">Step 2 (Peak Finding)<a class="anchor" aria-label="anchor" href="#step-2-peak-finding"></a>
 </h4>
 <p>The second step runs the peak finding and picking algorithm. The result of this step is a table with identified peaks (features) with their left and right peak borders in each sample. This table is saved as a CSV file <code>RT_matrix.csv</code> into the same folder as the application and is required for step 3.</p>
