@@ -19,6 +19,13 @@ navbar:
     intro:
       text: Getting started
       href: articles/00_get_started.html
+    custom:
+      text: INTEGRATOR
+      menu:
+      - text: INTEGRATOR Manual
+        href: articles/Integrator_manual.html
+      - text: MSconvert Instructions
+        href: articles/msconvert_manual.html
     tutorials:
       text: Tutorials & Recipes
       menu:
