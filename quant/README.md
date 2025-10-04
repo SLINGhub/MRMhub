@@ -1,4 +1,4 @@
-# pkdowMRMhub <a href="https://slinghub.github.io/mrmhub/"><img src="man/figures/logo.png" alt="mrmhub website" align="right" height="139"/></a>
+# MRMhub <a href="https://slinghub.github.io/mrmhub/"><img src="man/figures/logo.png" alt="mrmhub website" align="right" height="139"/></a>
 
 <!-- badges: start -->
 

@@ -6,6 +6,7 @@ navbar:
   structure:
     left:
     - intro
+    - custom
     - tutorials
     - articles
     - reference
