@@ -20,25 +20,25 @@ bibliography: references.bib
 
 INTEGRATOR uses mzML files as input. Users can use the MSconvert tool,
 available as part of the Proteowizard software to convert proprietary
-raw data files (.wiff for SCIEX/Waters, .raw files for Thermo Fisher,
+raw data files (.wiff for SCIEX, .raw files for Thermo Fisher,
 .d folders for Agilent, etc) into mzML format. See the [MSconvert
 Instructions](msconvert_manual.qmd) for details.
 
 # Installation MRMhub app
 
 The INTEGRATOR module comes with pre-compiled binaries for Windows OS
-and macOS, which can be download from
+and macOS X, which can be download from
 <https://github.com/SLINGhub/MRMhub/releases>. Uncompress the downloaded
 file and move the folder to the desired location. The folder comprises
-following files and subfolders: **MRMhub** is the main application, the
-**MRMhub-viz** is an application to review the peak integration results.
+following files and subfolders: **MRMhub** is the main application, 
+**MRMhub-viz** is an application to review peak integration results.
 The input files required by the **MRMhub** application are
 `feature_list.csv`, `run_order.csv`, and `param.txt`. The mzML folder is
-used to store the MS raw data files. All of these explained below.
+used to store MS raw data files. All of these are explained below.
 Futhermore, this distribution contains a test dataset, with a complete
-set of input and raw data files. The `MRMhub_plot.r` is an R script used
-to generate the PDFs. It can be modified to tailor for specific layouts
-and design features of the plots.
+set of input and raw data files, which can be used as templates for future analysis. 
+The `MRMhub_plot.r` is an R script used to generate the PDFs. 
+It can be modified to tailor for specific layouts and design features of the plots.
 
 ![](images/paste-3.png){fig-align="center" width="526"}
 
@@ -47,8 +47,7 @@ and design features of the plots.
 ## Global parameters (param.txt)
 
 The software requires global parameter file (param.txt by default),
-which points the software to the required information for a given
-experiment.
+which points the software to the required information.
 
 +--------------+----------------+--------------+
 | P arameter   | Description    | Default      |
@@ -123,9 +122,9 @@ experiment.
 
 ## Sample list (batch_info.csv)
 
-This file defines the data files and their processing order. mzML files
-present in the data folder (mzML by default) but listed here will be
-ignored. Columns containing required information for each data file are
+This file defines data files. The file names must be presented in their processing order
+from top to bottom. mzML files present in the data folder but not listed here will be
+ignored. Columns containing required information for individual data files are
 marked in **bold**.
 
 +---------------+-----------------------------------+
