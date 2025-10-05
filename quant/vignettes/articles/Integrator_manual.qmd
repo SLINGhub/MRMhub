@@ -20,14 +20,14 @@ bibliography: references.bib
 
 INTEGRATOR uses mzML files as input. Users can use the MSconvert tool,
 available as part of the Proteowizard software to convert proprietary
-raw data files (.wiff for SCIEX/Watersm, .raw files for Thermo Fisher,
+raw data files (.wiff for SCIEX/Waters, .raw files for Thermo Fisher,
 .d folders for Agilent, etc) into mzML format. See the [MSconvert
 Instructions](msconvert_manual.qmd) for details.
 
 # Installation MRMhub app
 
 The INTEGRATOR module comes with pre-compiled binaries for Windows OS
-and Mac OS X, which can be download from
+and macOS, which can be download from
 <https://github.com/SLINGhub/MRMhub/releases>. Uncompress the downloaded
 file and move the folder to the desired location. The folder comprises
 following files and subfolders: **MRMhub** is the main application, the
@@ -364,7 +364,7 @@ param.txt and Transition List) and re-attempt peak integration via steps
 2 and 3.
 
 Once automated integration is deemed optimized, final manual adjustments
-to individual peaks can be made in the `RT_matrix.txt` (see Step 2).
+to individual peaks can be made in the `RT_matrix.csv` (see Step 2).
 After these optional manual adjustment, the final peak integration is
 performed by re-running step 3.
 
