@@ -318,7 +318,7 @@ files are are only generated when issues were identified.
     present only in a subset of the mzML files are currently not
     processed.
 -   `missing_details.txt` reports transitions present in all mzML files,
-    but not defined in the the Transition Lis
+    but not defined in the the Transition List
 
 ### Step 2 (Peak Finding)
 
