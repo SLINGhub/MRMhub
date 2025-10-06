@@ -230,13 +230,13 @@ information for each feature are marked in **bold**.
 +---------------+---------------------------------+
 | left          | Sets fixed left peak border for |
 | integration   | all samples, in minutes (with   |
-| bound         | reference to the reference      |
+| bound         | respect to the reference        |
 |               | sample)                         |
 +---------------+---------------------------------+
 | right         | Sets fixed right peak border    |
 | integration   | for all samples, in minutes     |
-| bound         | (with reference to the          |
-|               | reference sample)               |
+| bound         | (with respect to the reference  |
+|               | sample)                         |
 +---------------+---------------------------------+
 | peak width    | \[w, x, y, z\] define allowed   |
 |               | integration bounds: left = w–x  |
