@@ -162,7 +162,10 @@ marked in **bold**.
 | reference     | Indicates that this sample will   |
 |               | be used as reference for RT shift |
 |               | estimation (see below). Label     |
-|               | with `x`.                         |
+|               | with `x`. If selecting multiple   |
+|               | samples, ensure they exhibit      |
+|               | negligible RT shifts relative to  |
+|               | one another.                      |
 +---------------+-----------------------------------+
 
 ## Transition/Feature list (transition_list.csv)
