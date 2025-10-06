@@ -207,14 +207,14 @@ information for each feature are marked in **bold**.
 | **Precursor   | The m/z value of the precursor  |
 | Ion**         | ion. Must match the             |
 |               | corresponding value in the mzML |
-|               | file within the toleance given  |
+|               | file within the tolerance given |
 |               | via `mz_tol` in the param.txt   |
 |               | file.                           |
 +---------------+---------------------------------+
 | **Product     | The m/z value of the product    |
 | Ion**         | ion. Must match the             |
 |               | corresponding value in the mzML |
-|               | file within the toleance given  |
+|               | file within the tolerance given |
 |               | via `mz_tol` in the param.txt   |
 |               | file.                           |
 +---------------+---------------------------------+
