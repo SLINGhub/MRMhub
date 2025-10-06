@@ -222,7 +222,7 @@ information for each feature are marked in **bold**.
 |               | the corresponding feature,      |
 |               | given in minutes.               |
 +---------------+---------------------------------+
-| uniform_width | Either `yes` or `no` (default). |
+| uniform_width | Either `y` or `n` (default).    |
 |               | If yes, the peak boundaries are |
 |               | set to the median of the        |
 |               | results from the automatic      |
