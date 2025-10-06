@@ -28,7 +28,7 @@ Instructions](msconvert_manual.qmd) for details.
 
 The INTEGRATOR module comes with pre-compiled binaries for Windows OS
 and macOS X, which can be download from
-<https://github.com/SLINGhub/MRMhub/releases>. Uncompress the downloaded
+<https://github.com/SLINGhub/MRMhub/releases>. Unzip the downloaded
 file and move the folder to the desired location. The folder comprises
 following files and subfolders: **MRMhub** is the main application, 
 **MRMhub-viz** is an application to review peak integration results.
