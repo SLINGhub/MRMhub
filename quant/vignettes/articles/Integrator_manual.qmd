@@ -265,7 +265,7 @@ smaller peak adjacent to the peak to be integrated. We suggest to use a
 setting that fits the majority of the peaks in the dataset globally via
 the `param.txt` file and then use per-feature settings for convoluted,
 asymmetric or otherwise broadened peaks. Narrower per-feature values may
-be used when nearby interferences are not recognized as separtaed peaks
+be used when nearby interferences are not recognized as separated peaks
 and are therefore are co-integrated.
 
 Too narrow ranges may lead to incomplete peak integration, especially in
