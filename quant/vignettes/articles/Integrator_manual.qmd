@@ -172,7 +172,7 @@ marked in **bold**.
 
 This file defines the transitions to be processed and which features to
 be integrated. Transitions defined in the mzML files, but not in this
-file will be ignore. Columns with required information for each feature
+file will be ignored. Columns with required information for each feature
 are marked in bold.
 
 This file specifies the transitions to be processed and the features to
