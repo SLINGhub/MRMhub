@@ -314,7 +314,7 @@ files are are only generated when issues were identified.
     data folder but not listed in the Sample List, as well as files
     listed in the Sample List but absent from the data folder.
 -   **`missing_compounds.txt`** reports transitions defined in the
-    Transition List but not found in all mzML files. *Note: T*ransitions
+    Transition List but not found in all mzML files. *Note:* Transitions
     present only in a subset of the mzML files are currently not
     processed.
 -   `missing_details.txt` This report details the missing transitions and identifies exactly which samples lack them. This is useful when a transition appears in some samples but not others.
