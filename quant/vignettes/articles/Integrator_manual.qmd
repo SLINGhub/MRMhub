@@ -288,7 +288,7 @@ inaccurate in a minority of samples.
 
 Use *fixed left/right left integration bound times* for cases automated
 integration and fine-tuning of weak width settings did not correctly and
-conistently integrated convoluted peaks or peaks with nearby
+consistently integrated convoluted peaks or peaks with nearby
 interferences. The use of these hard border settings is recommended only
 as a last resort, as hard border may require re-adjustment when used in
 processing of other datasets of the same analytical method. ***Note**:*
