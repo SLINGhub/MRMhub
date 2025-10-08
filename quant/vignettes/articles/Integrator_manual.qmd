@@ -35,7 +35,7 @@ following files and subfolders: **MRMhub** is the main application,
 The input files required by the **MRMhub** application are
 `feature_list.csv`, `run_order.csv`, and `param.txt`. The mzML folder is
 used to store MS raw data files. All of these are explained below.
-Futhermore, this distribution contains a test dataset, with a complete
+Furthermore, this distribution contains a test dataset, with a complete
 set of input and raw data files, which can be used as templates for future analysis. 
 The `MRMhub_plot.r` is an R script used to generate the PDFs. 
 It can be modified to tailor for specific layouts and design features of the plots.
