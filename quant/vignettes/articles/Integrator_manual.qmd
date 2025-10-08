@@ -381,7 +381,7 @@ results:
     included here (see `by_transition_low`).
 -   `by_transition_low`: Contains PDFs of transitions where none of the
     integrated features (peaks) had an area exceeding the *minimum
-    intensity* threshold defined by the constant `low_i` in the provided
+    intensity* threshold defined by the constant `low_intensity_threshold` in the provided
     `MRMhub_plot.r` R script.
 -   `by_sample`: Provides a PDF for each reference sample; all of the sample’s transitions are plotted within the same file.
 
