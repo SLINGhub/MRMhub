@@ -385,7 +385,7 @@ results:
     `MRMhub_plot.r` R script.
 -   `by_sample`: Provides a PDF for each reference sample; all of the sample’s transitions are plotted within the same file.
 
-For efficiently review PDFs on macOS, open the PDF folder, press *Space*
+For efficient viewing of PDFs on macOS, open the PDF folder, press *Space*
 to start Quick Look, then use the *up/down* arrow keys to move to
 between transitions (files). Use the scroll wheel or trackpad to scroll
 through each PDF.
