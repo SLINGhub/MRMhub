@@ -335,6 +335,17 @@ steps 3 (and 4) and only then to manually adjust specific integration
 borders. However, we generally discourage users from doing so, unless
 certain integration can only be achieved through manual intervention.
 
+At this point, the user can launch the integration visualizer
+application **MRMhub-viz** (see also below) to inspect the integration
+results, and revise global and per-feature integration parameters (via
+param.txt and Transition List) and re-attempt peak integration reruning step
+2.
+
+Once automated integration is deemed optimized, final manual adjustments
+to individual peaks can be made in the `RT_matrix.csv` (see Step 2).
+After these optional manual adjustment, the final peak integration is
+performed by (re-)running step 3.
+
 **Warning**: Each time step 2 is executed, `RT_matrix.csv` is
 **overwritten**, and any manual modifications made by the user will be
 lost.
@@ -357,17 +368,6 @@ files:
 -   **`misc`** A folder containing the peak integration results in a
     binary format, which is used by the visualizer application
     MRMhub-viz and in step 4.
-
-At this point, the user can launch the integration visualizer
-application **MRMhub-viz** (see also below) to inspect the integration
-results, and revise global and per-feature integration parameters (via
-param.txt and Transition List) and re-attempt peak integration via steps
-2 and 3.
-
-Once automated integration is deemed optimized, final manual adjustments
-to individual peaks can be made in the `RT_matrix.csv` (see Step 2).
-After these optional manual adjustment, the final peak integration is
-performed by re-running step 3.
 
 ## Step 4 (Generate PDF results)
 
