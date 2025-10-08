@@ -317,8 +317,7 @@ files are are only generated when issues were identified.
     Transition List but not found in all mzML files. *Note: T*ransitions
     present only in a subset of the mzML files are currently not
     processed.
--   `missing_details.txt` reports transitions present in all mzML files,
-    but not defined in the the Transition List
+-   `missing_details.txt` This report details the missing transitions and identifies exactly which samples lack them. This is useful when a transition appears in some samples but not others.
 
 ### Step 2 (Peak Finding)
 
