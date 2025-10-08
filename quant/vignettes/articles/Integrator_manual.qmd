@@ -338,8 +338,8 @@ certain integration can only be achieved through manual intervention.
 At this point, the user can launch the integration visualizer
 application **MRMhub-viz** (see also below) to inspect the integration
 results, and revise global and per-feature integration parameters (via
-param.txt and Transition List) and re-attempt peak integration reruning step
-2.
+param.txt and Transition List) and re-attempt peak integration via steps
+1 and 2.
 
 Once automated integration is deemed optimized, final manual adjustments
 to individual peaks can be made in the `RT_matrix.csv` (see Step 2).
