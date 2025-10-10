@@ -44,6 +44,6 @@ done on Windows PC.
 5.  Run conversion by clicking "Start", and copy the mzML files to the
     MRMhub subfolder mzML
 
-![](images/paste-7.png){fig-align="center" width="465"}
+# 
 
-# I
+![](images/paste-13.png)

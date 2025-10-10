@@ -35,7 +35,7 @@ following files and subfolders: **MRMhub** is the main application,
 input files required by the **MRMhub** application are
 `feature_list.csv`, `run_order.csv`, and `param.txt`. The mzML folder is
 used to store MS raw data files. All of these are explained below.
-Futhermore, this distribution contains a test dataset, with a complete
+Furthermore, this distribution contains a test dataset, with a complete
 set of input and raw data files, which can be used as templates for
 future analysis. The `MRMhub_plot.r` is an R script used to generate the
 PDFs. It can be modified to tailor for specific layouts and design
@@ -50,128 +50,91 @@ features of the plots.
 The software requires global parameter file (param.txt by default),
 which points the software to the required information.
 
-+----------+----------+----------+
-| P        | D e      | Default  |
-| arameter | s        |          |
-|          | cription |          |
-+==========+==========+==========+
-| mz       | Location | mzML     |
-| ML_files | of mzML  |          |
-|          | files to |          |
-|          | be used  |          |
-|          | for peak |          |
-|          | i n      |          |
-|          | t        |          |
-|          | egration |          |
-+----------+----------+----------+
-| ba       | Input    | batch\_  |
-| tch_info | file     | info.csv |
-|          | with     |          |
-|          | mzML     |          |
-|          | file     |          |
-|          | names    |          |
-|          | and meta |          |
-|          | i n      |          |
-|          | f        |          |
-|          | ormation |          |
-|          | (see     |          |
-|          | below)   |          |
-+----------+----------+----------+
-| transit  | Input    | f        |
-| ion_list | file     | eature\_ |
-|          | with MRM | info.csv |
-|          | t        |          |
-|          | r        |          |
-|          | ansition |          |
-|          | i n      |          |
-|          | f        |          |
-|          | ormation |          |
-|          | (see     |          |
-|          | below)   |          |
-+----------+----------+----------+
-| pe       | \[w, x,  | \[0.17,  |
-| ak_width | y, z\]   | 0.05,    |
-|          | define   | 0.1,     |
-|          | allowed  | 0.35\]   |
-|          | i n      |          |
-|          | t        |          |
-|          | egration |          |
-|          | bounds:\ |          |
-|          | left =   |          |
-|          | w–x min, |          |
-|          | right =  |          |
-|          | y–z min  |          |
-|          | from     |          |
-|          | apex     |          |
-|          | (see     |          |
-|          | below).  |          |
-+----------+----------+----------+
-| num      | Number   | 2        |
-| \        | of CPU   |          |
-| _threads | threads  |          |
-|          | to be    |          |
-|          | used for |          |
-|          | i n      |          |
-|          | t        |          |
-|          | egration |          |
-|          | task.    |          |
-+----------+----------+----------+
-| mz_tol   | T        | 0.06     |
-|          | olerance |          |
-|          | between  |          |
-|          | i        |          |
-|          | ndicated |          |
-|          | m/z and  |          |
-|          | detected |          |
-|          | m/z      |          |
-|          | values   |          |
-+----------+----------+----------+
-| RT_tol   | T        | 0.1      |
-|          | olerance |          |
-|          | between  |          |
-|          | i        |          |
-|          | ndicated |          |
-|          | RT and   |          |
-|          | detected |          |
-|          | RT.      |          |
-|          | *        |          |
-|          | *Note**: |          |
-|          | This is  |          |
-|          | a key    |          |
-|          | setting  |          |
-|          | in p     |          |
-|          | r        |          |
-|          | ocessing |          |
-|          | or       |          |
-|          | complex  |          |
-|          | ch r o m |          |
-|          | a        |          |
-|          | tograms. |          |
-+----------+----------+----------+
-| RT_shift | \[x, y\] | \[-0.2,  |
-|          | indicate | 0.2\]    |
-|          | that RT  |          |
-|          | drift is |          |
-|          | at most  |          |
-|          | x        |          |
-|          | minutes  |          |
-|          | left and |          |
-|          | y        |          |
-|          | minutes  |          |
-|          | right of |          |
-|          | the peak |          |
-|          | in the   |          |
-|          | r        |          |
-|          | eference |          |
-|          | samples  |          |
-+----------+----------+----------+
-| RT\_ s h | Maximum  | 0.1      |
-| i        | allowed  |          |
-| ft_bound | RT drift |          |
-|          | between  |          |
-|          | adjacent |          |
-|          | samples  |          |
-+----------+----------+----------+
++-------------+-------------+-------------+
+| Parameter   | Description | Default     |
++=============+=============+=============+
+| mzML_files  | Location of | mzML        |
+|             | mzML files  |             |
+|             | to be used  |             |
+|             | for peak    |             |
+|             | integration |             |
++-------------+-------------+-------------+
+| batch_info  | Input file  | ba          |
+|             | with mzML   | t           |
+|             | file names  | ch_info.csv |
+|             | and meta    |             |
+|             | information |             |
+|             | (see below) |             |
++-------------+-------------+-------------+
+| tra         | Input file  | feat        |
+| n           | with MRM    | u           |
+| sition_list | transition  | re_info.csv |
+|             | information |             |
+|             | (see below) |             |
++-------------+-------------+-------------+
+| peak_width  | \[w, x, y,  | \[0.17,     |
+|             | z\] define  | 0.05, 0.1,  |
+|             | allowed     | 0.35\]      |
+|             | integration |             |
+|             | bounds:\    |             |
+|             | left = w–x  |             |
+|             | min, right  |             |
+|             | = y–z min   |             |
+|             | from apex   |             |
+|             | (see        |             |
+|             | below).     |             |
++-------------+-------------+-------------+
+| num_threads | Number of   | 2           |
+|             | CPU threads |             |
+|             | to be used  |             |
+|             | for         |             |
+|             | integration |             |
+|             | task.       |             |
++-------------+-------------+-------------+
+| mz_tol      | Tolerance   | 0.06        |
+|             | between     |             |
+|             | indicated   |             |
+|             | m/z and     |             |
+|             | detected    |             |
+|             | m/z values  |             |
++-------------+-------------+-------------+
+| RT_tol      | Tolerance   | 0.1         |
+|             | between     |             |
+|             | indicated   |             |
+|             | RT and      |             |
+|             | detected    |             |
+|             | RT.         |             |
+|             | **Note**:   |             |
+|             | This is a   |             |
+|             | key setting |             |
+|             | in          |             |
+|             | processing  |             |
+|             | or complex  |             |
+|             | ch          |             |
+|             | r           |             |
+|             | omatograms. |             |
++-------------+-------------+-------------+
+| RT_shift    | \[x, y\]    | \[-0.2,     |
+|             | indicate    | 0.2\]       |
+|             | that RT     |             |
+|             | drift is at |             |
+|             | most x      |             |
+|             | minutes     |             |
+|             | left and y  |             |
+|             | minutes     |             |
+|             | right of    |             |
+|             | the peak in |             |
+|             | the         |             |
+|             | reference   |             |
+|             | samples     |             |
++-------------+-------------+-------------+
+| RT          | Maximum     | 0.1         |
+| \_          | allowed RT  |             |
+| shift_bound | drift       |             |
+|             | between     |             |
+|             | adjacent    |             |
+|             | samples     |             |
++-------------+-------------+-------------+
 
 ## Sample list (batch_info.csv)
 
@@ -180,53 +143,49 @@ processing order from top to bottom. mzML files present in the data
 folder but not listed here will be ignored. Columns containing required
 information for individual data files are marked in **bold**.
 
-+---------------+-------------------------+
-| Column        | Description             |
-+===============+=========================+
-| **file name** | The mzML file names to  |
-|               | be processed, which are |
-|               | in the folder defined   |
-|               | under \`mzML_files\` in |
-|               | the param.txt file.     |
-|               | Must include the .mzML  |
-|               | file extension.         |
-+---------------+-------------------------+
-| batch         | The analysis batch      |
-|               | identifier to which the |
-|               | file belong to. This    |
-|               | value has no function   |
-|               | in the INTEGRATOR, but  |
-|               | the value is included   |
-|               | in the result.          |
-+---------------+-------------------------+
-| sample \_type | The sample (QC) type of |
-|               | the corresponding       |
-|               | sample. Blanks must be  |
-|               | labeled with text       |
-|               | containing *`BLK`*, as  |
-|               | these are processed     |
-|               | differently (see        |
-|               | below). For all other   |
-|               | cases, any sample type  |
-|               | may be defined, and the |
-|               | information will be     |
-|               | forwarded to the        |
-|               | integration results.    |
-|               | The field may also be   |
-|               | left empty. Use of the  |
-|               | default MRMhub QC types |
-|               | (see [MRMhub Data       |
-|               | Identifiers](#0)) is    |
-|               | recommended to ensure   |
-|               | seamless integration    |
-|               | with the QUANT module.  |
-+---------------+-------------------------+
-| reference     | Indicates that this     |
-|               | sample will be used as  |
-|               | reference for RT shift  |
-|               | estimation (see below). |
-|               | Label with `x`.         |
-+---------------+-------------------------+
++---------------+-------------------------------+
+| Column        | Description                   |
++===============+===============================+
+| **file name** | The mzML file names to be     |
+|               | processed, which are in the   |
+|               | folder defined under          |
+|               | \`mzML_files\` in the         |
+|               | param.txt file. Must include  |
+|               | the .mzML file extension.     |
++---------------+-------------------------------+
+| batch         | The analysis batch identifier |
+|               | to which the file belong to.  |
+|               | This value has no function in |
+|               | the INTEGRATOR, but the value |
+|               | is included in the result.    |
++---------------+-------------------------------+
+| sample_type   | The sample (QC) type of the   |
+|               | corresponding sample. Blanks  |
+|               | must be labeled with text     |
+|               | containing *`BLK`*, as these  |
+|               | are processed differently     |
+|               | (see below). For all other    |
+|               | cases, any sample type may be |
+|               | defined, and the information  |
+|               | will be forwarded to the      |
+|               | integration results. The      |
+|               | field may also be left empty. |
+|               | Use of the default MRMhub QC  |
+|               | types (see [MRMhub Data       |
+|               | Identifiers](#0)) is          |
+|               | recommended to ensure         |
+|               | seamless integration with the |
+|               | QUANT module.                 |
++---------------+-------------------------------+
+| reference     | Indicates that this sample    |
+|               | will be used as reference for |
+|               | RT shift estimation (see      |
+|               | below). Label with `x`. If    |
+|               | selecting multiple samples,   |
+|               | ensure they exhibit           |
+|               | negligible RT shifts relative |
+|               | to one another.               |
++---------------+-------------------------------+
 
 ## Transition/Feature list (transition_list.csv)
 
@@ -240,123 +199,81 @@ be integrated for each transition. Transitions present in the mzML files
 but not listed here will be ignored. Columns containing required
 information for each feature are marked in **bold**.
 
-+---------------+-----------------------+
-| Column        | Description           |
-+===============+=======================+
-| **Compound    | Feature (analyte)     |
-| Name**        | identifier name. Must |
-|               | be a unique value,    |
-|               | identifying typically |
-|               | a single peak.        |
-|               | Multiple distinct     |
-|               | features can be       |
-|               | defined for a         |
-|               | transition.           |
-+---------------+-----------------------+
-| **Transition  | Transition            |
-| Name**        | identifier. Can be    |
-|               | repeated values.      |
-+---------------+-----------------------+
-| ISTD          | The internal standard |
-|               | feature assigned to   |
-|               | the corresponding     |
-|               | compound. This value  |
-|               | has currently no      |
-|               | function in the       |
-|               | INTEGRATOR modules,   |
-|               | but will be included  |
-|               | in the results and    |
-|               | will be read in by    |
-|               | the QUANT module. Can |
-|               | be left empty, but if |
-|               | defined must          |
-|               | correspond to a       |
-|               | defined Compound      |
-|               | Name.                 |
-+---------------+-----------------------+
-| **Precursor   | The m/z value of the  |
-| Ion**         | precursor ion. Must   |
-|               | match the             |
-|               | corresponding value   |
-|               | in the mzML file      |
-|               | within the toleance   |
-|               | given via `mz_tol` in |
-|               | the param.txt file.   |
-+---------------+-----------------------+
-| **Product     | The m/z value of the  |
-| Ion**         | product ion. Must     |
-|               | match the             |
-|               | corresponding value   |
-|               | in the mzML file      |
-|               | within the toleance   |
-|               | given via `mz_tol` in |
-|               | the param.txt file.   |
-+---------------+-----------------------+
-| **RT**        | The expected          |
-|               | retention time of the |
-|               | corresponding         |
-|               | feature, given in     |
-|               | minutes.              |
-+---------------+-----------------------+
-| uniform_width | Either `yes` or `no`  |
-|               | (default). If yes,    |
-|               | the peak boundaries   |
-|               | are set to the median |
-|               | of the results from   |
-|               | the automatic border  |
-|               | determination.        |
-+---------------+-----------------------+
-| left          | Sets fixed left peak  |
-| integration   | border for all        |
-| bound         | samples, in minutes   |
-|               | (with reference to    |
-|               | the reference sample) |
-+---------------+-----------------------+
-| right         | Sets fixed right peak |
-| integration   | border for all        |
-| bound         | samples, in minutes   |
-|               | (with reference to    |
-|               | the reference sample) |
-+---------------+-----------------------+
-| peak width    | \[w, x, y, z\] define |
-|               | allowed integration   |
-|               | bounds: left = w–x    |
-|               | min, right = y–z min  |
-|               | from apex (see        |
-|               | below).\              |
-|               | Note: This overwrites |
-|               | the globally defined  |
-|               | peak width            |
-|               | (param.txt). See      |
-|               | below.                |
-+---------------+-----------------------+
-| Remarks       | Used to document      |
-|               | integration settings  |
-+---------------+-----------------------+
-
-## Retention time (RT) alignment
-
-The RT alignment automatically corrects RT shifts across all MRM
-chromatograms by comparing each non-reference anchor sample against
-designated reference samples to determine RT shifts. The RT reference
-anchor sample(s) are defined using the column `reference` in the
-**run_order.csv** table. The calculated RT shift value (maximum of the
-cross-correlation function) is shown in the top-right corner of
-MRMhub-viz plots and below sample names in PDF reports.
-
--   Blank samples (`sample_type` containing "BLK") are excluded from the
-    RT correction algorithm, as blanks typically lack target peaks
-    required for reliable cross-correlation analysis. Their RT shifts
-    are extrapolated from the adjacent samples {**CORRECT**?}.
--   RT alignment may be not work well when chromatograms have
-    substantial noise, low abundant analyte sigmals, or heterogeneity
-    between samples. In such cases, consider limiting the allowable
-    shift range or disabling RT alignment to prevent erroneous
-    corrections.
--   The maximum alllowed left and right RT shifts between samples is set
-    via the RT_shift parameter in **param.txt.**
--   To disable RT alignment, set `RT_shift = [0.0, 0.0]` in
-    **param.txt.**
++---------------+-----------------------------+
+| Column        | Description                 |
++===============+=============================+
+| **Compound    | Feature (analyte)           |
+| Name**        | identifier name. Must be a  |
+|               | unique value, identifying   |
+|               | typically a single peak.    |
+|               | Multiple distinct features  |
+|               | can be defined for a        |
+|               | transition.                 |
++---------------+-----------------------------+
+| **Transition  | Transition identifier. Can  |
+| Name**        | be repeated values.         |
++---------------+-----------------------------+
+| ISTD          | The internal standard       |
+|               | feature assigned to the     |
+|               | corresponding compound.     |
+|               | This value has currently no |
+|               | function in the INTEGRATOR  |
+|               | modules, but will be        |
+|               | included in the results and |
+|               | will be read in by the      |
+|               | QUANT module. Can be left   |
+|               | empty, but if defined must  |
+|               | correspond to a defined     |
+|               | Compound Name.              |
++---------------+-----------------------------+
+| **Precursor   | The m/z value of the        |
+| Ion**         | precursor ion. Must match   |
+|               | the corresponding value in  |
+|               | the mzML file within the    |
+|               | tolerance given via         |
+|               | `mz_tol` in the param.txt   |
+|               | file.                       |
++---------------+-----------------------------+
+| **Product     | The m/z value of the        |
+| Ion**         | product ion. Must match the |
+|               | corresponding value in the  |
+|               | mzML file within the        |
+|               | tolerance given via         |
+|               | `mz_tol` in the param.txt   |
+|               | file.                       |
++---------------+-----------------------------+
+| **RT**        | The expected retention time |
+|               | of the corresponding        |
+|               | feature, given in minutes.  |
++---------------+-----------------------------+
+| uniform_width | Either `y` or `n`           |
+|               | (default). If yes, the peak |
+|               | boundaries are set to the   |
+|               | median of the results from  |
+|               | the automatic border        |
+|               | determination.              |
++---------------+-----------------------------+
+| left          | Sets fixed left peak border |
+| integration   | for all samples, in minutes |
+| bound         | (with respect to the        |
+|               | reference sample)           |
++---------------+-----------------------------+
+| right         | Sets fixed right peak       |
+| integration   | border for all samples, in  |
+| bound         | minutes (with respect to    |
+|               | the reference sample)       |
++---------------+-----------------------------+
+| peak width    | \[w, x, y, z\] define       |
+|               | allowed integration bounds: |
+|               | left = w–x min, right = y–z |
+|               | min from apex (see below).\ |
+|               | Note: This overwrites the   |
+|               | globally defined peak width |
+|               | (param.txt). See below.     |
++---------------+-----------------------------+
+| Remarks       | Used to document            |
+|               | integration settings        |
++---------------+-----------------------------+
 
 ## Recommendations for setting peak integration parameters
 
@@ -534,48 +451,3 @@ For documentation, individual integration results can be provided as PDF
 files. Alternatively, they can be explored interactively using the
 standalone **MRMhub-viz** application (\~10 MB), which can also be
 included in the shared dataset.
-
-# MRMhub Functionality
-
-## Retention time (RT) alignment
-
-The RT alignment automatically corrects RT shifts across all MRM
-chromatograms using temporal cross-correlation. This process compares
-each non-reference anchor sample against designated reference samples to
-determine RT shifts. The RT reference anchor sample(s) are designated in
-the **run_order.csv** table. The calculated RT shift value (maximum of
-the cross-correlation function) is shown in the top-right corner of
-MRMhub-viz plots and below sample names in PDF reports. See above RT
-alignment settings. The figure below shows raw chromatograms with
-substantial RT variations between samples before (a) and after (b) RT
-correction.
-
-![](images/paste-15.png){fig-align="center" width="444"}
-
-## **Feature detection**
-
-Feature detection is applied on all samples independently. The number of
-features detected for each sample is recorded to determine the median
-number of features for each transition. This median value will be the
-upper limit of the number of features that can be determined to be
-stable and consistent for this transition. Subsequently, the algorithm
-will compare the detected features across samples. Only features with
-stable (i.e. can be detected as a feature) and consistent
-shift-corrected RT across samples are marked for further analysis.
-
-## **Determination of peak boundaries**
-
-The algorithm searches for valleys between features to cut the
-integration in the shift-corrected RT space, subsequently RT values are
-converted back to its original location, and all RT values are printed
-out to a csv file for user inspection and manual adjustment for
-calculation of peak areas.
-
-![](images/paste-16.png){fig-align="center" width="752"}
-
-\(a\) Chromatogram with five consistent features in the . (b) A
-transition with three consistent features. The green feature is not
-obvious to the human eye, but it gets picked up by the algorithm due to
-its consistency in the RT space across samples (c) Same as (b) after
-zooming in the y-axis, where the consistency of the green feature can be
-observed.
