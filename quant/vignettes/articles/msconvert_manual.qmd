@@ -20,9 +20,9 @@ bibliography: references.bib
 
 INTEGRATOR uses mzML files as input. Users can use the MSconvert tool,
 available as part of the Proteowizard software to convert proprietary
-raw data files (.wiff for SCIEX/Watersm, .raw files for Thermo Fisher,
-.d folders for Agilent, etc) into mzML format. This step can only be
-done on Windows PC.
+raw data files (.wiff for SCIEX/Waters, .raw files for Thermo Fisher, .d
+folders for Agilent, etc) into mzML format. This step can only be done
+on Windows PC.
 
 1.  Download or upgrade a recent version ProteoWizard
     (<https://proteowizard.sourceforge.io>) on a Windows computer.
