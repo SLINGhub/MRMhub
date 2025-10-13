@@ -46,4 +46,4 @@ done on Windows PC.
 
 # 
 
-![](images/paste-13.png)
+![](images/paste-13.png){fig-align="center"}
