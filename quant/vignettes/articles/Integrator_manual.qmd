@@ -36,8 +36,8 @@ macOS will prompt the following error:
 
 ![](images/macOS_warning.png){fig-align="center"}
 
-To resolve this, go to "Systems Settings", "Privacy & Security" tab, and
-click "Open Anyway" button to enable the software.
+To resolve this, go to "**Systems Settings**", "**Privacy & Security**"
+tab, and click "**Open Anyway**" button to enable the software.
 
 ![](images/security_setting.png){fig-align="center"}
 
