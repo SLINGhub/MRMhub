@@ -516,16 +516,11 @@ for step 3.
 
 The user may further refine these integration bounds per transition and
 sample basis, before proceeding with the actual peak integration in step
-3. For a new dataset, we recommend proceeding directly wit
-
-![flow chart for MRMhub
-INTEGRATOR](images/workflow.png){fig-align="center"}
-
-h peak integration directly, followed by visualization of the results
-using steps 3 (and 4) and only then to manually adjust specific
-integration borders. However, we generally discourage users from doing
-so, unless certain integration can only be achieved through manual
-intervention.
+3. For a new dataset, we recommend proceeding directly with peak
+integration directly, followed by visualization of the results using
+steps 3 (and 4) and only then to manually adjust specific integration
+borders. However, we generally discourage users from doing so, unless
+certain integration can only be achieved through manual intervention.
 
 At this point, the user can launch the integration visualizer
 application **MRMhub-viz** (see also below) to inspect the integration
