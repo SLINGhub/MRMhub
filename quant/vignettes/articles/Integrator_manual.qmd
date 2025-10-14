@@ -478,13 +478,13 @@ These defined borders will still be adjusted for retention time shifts.
 
 # Running MRMhub INTEGRATOR
 
+![flow chart for MRMhub
+INTEGRATOR](images/workflow.png){fig-align="center"}
+
 Upon execution, the software launches a terminal user interface with
 four different menu options. For new datasets, the steps 1 - 3 are
 applied sequentially. The final step 4 is optional and only used when
 integration results as PDFs files are needed.
-
-![flow chart for MRMhub
-INTEGRATOR](images/workflow.png){fig-align="center"}
 
 ![](images/MRMhub-Main.png){fig-align="center" width="622"}
 
