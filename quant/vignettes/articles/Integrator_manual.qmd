@@ -41,7 +41,7 @@ click "Open Anyway" button to enable the software.
 
 ![](images/security_setting.png){fig-align="center"}
 
-For Windows computers, right-click the executables, select Properties,
+For Windows computers, right-click the executable, select Properties,
 and on the General tab, check the "Unblock" box near the bottom if
 available, then click OK or Apply.
 
