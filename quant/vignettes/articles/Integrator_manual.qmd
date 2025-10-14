@@ -458,7 +458,7 @@ global setting in`param.txt` that suits the majority of peaks in the
 dataset, and applying per-feature settings for convoluted, asymmetric,
 or broadened peaks. Narrower per-feature ranges can also be used when
 nearby interferences are not recognized as separate peaks and are
-therefore co-integrated
+therefore co-integrated.
 
 ![](images/paste-11.png){fig-align="center" width="570"}
 
