@@ -63,70 +63,66 @@ features of the plots.
 The software requires global parameter file (param.txt by default),
 which points the software to the required information.
 
-+--------+--------------------+--------+
-| Pa     | D e s c ription    | D      |
-| r      |                    | efault |
-| ameter |                    |        |
-+========+====================+========+
-| m zM   | L ocation of mzML  | mzML   |
-| L      | files to be used   |        |
-| _files | for peak i n t e   |        |
-|        | gration            |        |
-+--------+--------------------+--------+
-| b at   | Input file with    | ba t c |
-| c      | mzML file names    | h \_ i |
-| h_info | and meta i n f o   | n      |
-|        | rmation (see       | fo.csv |
-|        | below)             |        |
-+--------+--------------------+--------+
-| tra n  | Input file with    | feat u |
-| s i ti | MRM t r a nsition  | r e \_ |
-| o      | i n f o rmation    | i      |
-| n_list | (see below)        | n      |
-|        |                    | fo.csv |
-+--------+--------------------+--------+
-| p ea   | \[w, x, y, z\]     | \      |
-| k      | define allowed i n | [0.17, |
-| _width | t e gration b      | 0.05,  |
-|        | ounds:\            | 0.1,   |
-|        | left = w–x min,    | 0.35\] |
-|        | right = y–z min    |        |
-|        | from apex (see     |        |
-|        | below).            |        |
-+--------+--------------------+--------+
-| n u    | Number of CPU      | 2      |
-| m\_    | threads to be used |        |
-| t      | for i n t e        |        |
-| hreads | gration task.      |        |
-+--------+--------------------+--------+
-| mz_tol | T o lerance        | 0.06   |
-|        | between i n        |        |
-|        | dicated m/z and d  |        |
-|        | etected m/z values |        |
-+--------+--------------------+--------+
-| RT_tol | T o lerance        | 0.1    |
-|        | between i n        |        |
-|        | dicated RT and d   |        |
-|        | etected RT. No     |        |
-|        | te\*\*: This is a  |        |
-|        | key setting in p r |        |
-|        | o cessing or       |        |
-|        | complex ch r o m a |        |
-|        | t ograms.          |        |
-+--------+--------------------+--------+
-| R      | \[x, y\] i ndicate | \      |
-| T      | that RT drift is   | [-0.2, |
-| _shift | at most x minutes  | 0.2\]  |
-|        | left and y minutes |        |
-|        | right of the peak  |        |
-|        | in the r e ference |        |
-|        | samples            |        |
-+--------+--------------------+--------+
-| RT \_  | Maximum allowed RT | 0.1    |
-| s h if | drift between a    |        |
-| t      | djacent samples    |        |
-| _bound |                    |        |
-+--------+--------------------+--------+
++--------+--------------------+-----------+
+| Par    | Description        | Default   |
+| ameter |                    |           |
++========+====================+===========+
+| mzML   | Location of mzML   | mzML      |
+| _files | files to be used   |           |
+|        | for peak           |           |
+|        | integration        |           |
++--------+--------------------+-----------+
+| batc   | Input file with    | batch     |
+| h_info | mzML file names    | _info.csv |
+|        | and meta           |           |
+|        | information (see   |           |
+|        | below)             |           |
++--------+--------------------+-----------+
+| tra    | Input file with    | feature   |
+| nsitio | MRM transition     | \         |
+| n_list | information (see   | _info.csv |
+|        | below)             |           |
++--------+--------------------+-----------+
+| peak   | \[w, x, y, z\]     | \[0.17,   |
+| _width | define allowed     | 0.05,     |
+|        | integration        | 0.1,      |
+|        | bounds:\           | 0.35\]    |
+|        | left = w–x min,    |           |
+|        | right = y–z min    |           |
+|        | from apex (see     |           |
+|        | below).            |           |
++--------+--------------------+-----------+
+| num\_  | Number of CPU      | 2         |
+| t      | threads to be used |           |
+| hreads | for integration    |           |
+|        | task.              |           |
++--------+--------------------+-----------+
+| mz_tol | Tolerance between  | 0.06      |
+|        | indicated m/z and  |           |
+|        | detected m/z       |           |
+|        | values             |           |
++--------+--------------------+-----------+
+| RT_tol | Tolerance between  | 0.1       |
+|        | indicated RT and   |           |
+|        | detected RT.       |           |
+|        | Note\*\*: This is  |           |
+|        | a key setting in   |           |
+|        | processing or      |           |
+|        | complex            |           |
+|        | chromatograms.     |           |
++--------+--------------------+-----------+
+| RT     | \[x, y\] indicate  | \[-0.2,   |
+| _shift | that RT drift is   | 0.2\]     |
+|        | at most x minutes  |           |
+|        | left and y minutes |           |
+|        | right of the peak  |           |
+|        | in the reference   |           |
+|        | samples            |           |
++--------+--------------------+-----------+
+| RT     | Maximum allowed RT | 0.1       |
+| _shift | drift between      |           |
+| _bound | adjacent samples   |           |
++--------+--------------------+-----------+
 
 ## Sample list (batch_info.csv)
 
