@@ -225,7 +225,8 @@ if (.Platform$OS.type == "windows") {
   parallel::clusterExport(cl, varlist = c(
     "plot_ionc", "miscdir", "cqq_l", "cpd_l", "q1_l", "q3_l", "u_rt_l",
     "mzML_files", "blk_files", "ref_files", "cp_", "cp2", "plot_line",
-    "plot_rows", "plot_columns", "low_intensity_threshold"
+    "plot_rows", "plot_columns", "low_intensity_threshold",
+    "v0_l", "v1_l"
   ), envir = environment())
 
   results <- tryCatch({
