@@ -47,56 +47,57 @@ Many data processing and plotting functions in MRMhub use of these variables as
 input variable. All of these variable are stored in the `dataset` table present
 in the `MRMhubExperiment` object.
 
-+--------------+----------------+---------------------------+--------------+
-| Variable     | Internal Name  | Description               |              |
-| Short Name   |                |                           |              |
-+==============+================+===========================+==============+
-| intensity    | fea            | Raw signal intensity. A   |              |
-|              | ture_intensity | copy of either `area`,    |              |
-|              |                | `height`, `response`, or  |              |
-|              |                | `intensity` from the      |              |
-|              |                | imported raw data. See    |              |
-|              |                | below.                    |              |
-+--------------+----------------+---------------------------+--------------+
-| n            | fe             | Internal                  |              |
-| om_intensity | ature_         | Standard-normalized raw   |              |
-|              | norm_intensity | signal intensity          |              |
-+--------------+----------------+---------------------------+--------------+
-| pmol_total   | feat           | Total feature (analyte)   |              |
-|              | ure_pmol_total | amount in the measured    |              |
-|              |                | sample (pmoles/sample)    |              |
-+--------------+----------------+---------------------------+--------------+
-| conc         | feature_conc   | Feature (analyte)         |              |
-|              |                | concentration             |              |
-+--------------+----------------+---------------------------+--------------+
-| con          | fea            | Normalized feature        |              |
-| c_normalized | ture_c         | (analyte) concentration   |              |
-|              | onc_normalized | normalized by e.g.        |              |
-|              |                | reference sample or other |              |
-|              |                | normalization methods     |              |
-+--------------+----------------+---------------------------+--------------+
-| conc_bias    | feat           |                           |              |
-|              | ure_conc_ratio |                           |              |
-|              | \| The ratio   |                           |              |
-|              | of measured    |                           |              |
-|              | and \|         |                           |              |
-|              | expected/known |                           |              |
-|              | feature \| \|  |                           |              |
-|              | concentration  |                           |              |
-|              | defined a \|   |                           |              |
-|              | \| reference   |                           |              |
-|              | sample. The    |                           |              |
-|              | variable \| \| |                           |              |
-|              | is generated   |                           |              |
-|              | by the         |                           |              |
-|              | function \| \| |                           |              |
-|              | `calibrate_b   |                           |              |
-|              | y_reference()` |                           |              |
-|              | in \| \| case  |                           |              |
-|              | of absolute    |                           |              |
-|              | calibration.   |                           |              |
-|              | \|             |                           |              |
-+--------------+----------------+---------------------------+--------------+
++----------------+----------------+-------------------------+----------------+
+| Variable Short | Internal Name  | Description             |                |
+| Name           |                |                         |                |
++================+================+=========================+================+
+| intensity      | fea            | Raw signal intensity. A |                |
+|                | ture_intensity | copy of either `area`,  |                |
+|                |                | `height`, `response`,   |                |
+|                |                | or `intensity` from the |                |
+|                |                | imported raw data. See  |                |
+|                |                | below.                  |                |
++----------------+----------------+-------------------------+----------------+
+| n om_intensity | fe ature\_     | Internal                |                |
+|                | norm_intensity | Standard-normalized raw |                |
+|                |                | signal intensity        |                |
++----------------+----------------+-------------------------+----------------+
+| pmol_total     | feat           | Total feature (analyte) |                |
+|                | ure_pmol_total | amount in the measured  |                |
+|                |                | sample (pmoles/sample)  |                |
++----------------+----------------+-------------------------+----------------+
+| conc           | feature_conc   | Feature (analyte)       |                |
+|                |                | concentration           |                |
++----------------+----------------+-------------------------+----------------+
+| con            | fea ture_c     | Normalized feature      |                |
+| c_normalized   | onc_normalized | (analyte) concentration |                |
+|                |                | normalized by e.g.      |                |
+|                |                | reference sample or     |                |
+|                |                | other normalization     |                |
+|                |                | methods                 |                |
++----------------+----------------+-------------------------+----------------+
+| conc_bias      | feat           |                         |                |
+|                | ure_conc_ratio |                         |                |
+|                | \| The ratio   |                         |                |
+|                | of measured    |                         |                |
+|                | and \|         |                         |                |
+|                | expected/known |                         |                |
+|                | feature \| \|  |                         |                |
+|                | concentration  |                         |                |
+|                | defined a \|   |                         |                |
+|                | \| reference   |                         |                |
+|                | sample. The    |                         |                |
+|                | variable \| \| |                         |                |
+|                | is generated   |                         |                |
+|                | by the         |                         |                |
+|                | function \| \| |                         |                |
+|                | `calibrate_b   |                         |                |
+|                | y_reference()` |                         |                |
+|                | in \| \| case  |                         |                |
+|                | of absolute    |                         |                |
+|                | calibration.   |                         |                |
+|                | \|             |                         |                |
++----------------+----------------+-------------------------+----------------+
 
 ## Backup Feature Variables
 
@@ -111,47 +112,50 @@ correction the values of the curve (model fit) data points.
 Also these variables are stored in the `dataset` table. The feature variable
 name is based on the initial name with following postfixes:
 
-+-------------+-------------+----------------------------------+-------------+
-| Postfix of  | Examples    | Description                      |             |
-| Variable    |             |                                  |             |
-| Name        |             |                                  |             |
-+=============+=============+==================================+=============+
-| \_orig      | feature     | Currently, only used for the     |             |
-|             | \_int       | backup \| before any             |             |
-|             | ensity_orig | interference correction was \|   |             |
-|             |             | applied. Corresponds always to   |             |
-|             |             | the raw \| intensity values that |             |
-|             |             | were imported \| into the        |             |
-|             |             | `MRMhubExperiment` object.       |             |
-+-------------+-------------+----------------------------------+-------------+
-| \_raw       | f           | Corresponds to the raw (=        |             |
-|             | eatu        | uncorrected) calculated features |             |
-|             | re_conc_raw | values, i.e., before a new       |             |
-|             |             | correction step was applied,     |             |
-|             | featur      | such as drift/batch correction.  |             |
-|             | e_in        |                                  |             |
-|             | tensity_raw |                                  |             |
-+-------------+-------------+----------------------------------+-------------+
-| \_before    | feat        | Corresponds to the last          |             |
-|             | ure_        | calculated value before a new    |             |
-|             | conc_before | correction step was applied,     |             |
-|             |             | i.e., drift/batch correction.    |             |
-|             | feature_i   | For example, adjusted            |             |
-|             | nten        | concentration after a drift      |             |
-|             | sity_before | correction, before batch         |             |
-|             |             | correction was applied.          |             |
-+-------------+-------------+----------------------------------+-------------+
-| \_beforecal | feature     | The non-calibrated raw or        |             |
-|             | \_con       | adjusted concentration before    |             |
-|             | c_beforecal | \`calibrate_by_reference()\` was |             |
-|             |             | applied. Only applies to the     |             |
-|             |             | concentration variable           |             |
-+-------------+-------------+----------------------------------+-------------+
-| \_fit       | conc        | Model fit data points calculated |             |
-|             | _before_fit | by drift and batch correction    |             |
-|             |             | functions. Use by `runscatter()` |             |
-|             |             | to plot the trends.              |             |
-+-------------+-------------+----------------------------------+-------------+
++--------------+--------------+------------------------------+--------------+
+| Postfix of   | Examples     | Description                  |              |
+| Variable     |              |                              |              |
+| Name         |              |                              |              |
++==============+==============+==============================+==============+
+| \_orig       | feature      | Currently, only used for the |              |
+|              | \_int        | backup \| before any         |              |
+|              | ensity_orig  | interference correction was  |              |
+|              |              | \| applied. Corresponds      |              |
+|              |              | always to the raw \|         |              |
+|              |              | intensity values that were   |              |
+|              |              | imported \| into the         |              |
+|              |              | `MRMhubExperiment` object.   |              |
++--------------+--------------+------------------------------+--------------+
+| \_raw        | f eatu       | Corresponds to the raw (=    |              |
+|              | re_conc_raw  | uncorrected) calculated      |              |
+|              |              | features values, i.e.,       |              |
+|              | featur e_in  | before a new correction step |              |
+|              | tensity_raw  | was applied, such as         |              |
+|              |              | drift/batch correction.      |              |
++--------------+--------------+------------------------------+--------------+
+| \_before     | feat ure\_   | Corresponds to the last      |              |
+|              | conc_before  | calculated value before a    |              |
+|              |              | new correction step was      |              |
+|              | feature_i    | applied, i.e., drift/batch   |              |
+|              | nten         | correction. For example,     |              |
+|              | sity_before  | adjusted concentration after |              |
+|              |              | a drift correction, before   |              |
+|              |              | batch correction was         |              |
+|              |              | applied.                     |              |
++--------------+--------------+------------------------------+--------------+
+| \_beforecal  | feature      | The non-calibrated raw or    |              |
+|              | \_con        | adjusted concentration       |              |
+|              | c_beforecal  | before                       |              |
+|              |              | \`calibrate_by_reference()\` |              |
+|              |              | was applied. Only applies to |              |
+|              |              | the concentration variable   |              |
++--------------+--------------+------------------------------+--------------+
+| \_fit        | conc         | Model fit data points        |              |
+|              | \_before_fit | calculated by drift and      |              |
+|              |              | batch correction functions.  |              |
+|              |              | Use by `runscatter()` to     |              |
+|              |              | plot the trends.             |              |
++--------------+--------------+------------------------------+--------------+
 
 ## Raw Feature Variables
 
@@ -167,52 +171,56 @@ modified by any MRMhub function. They are typically not available in MRMhub's
 data processing functions, but plotting functions support some of these. The
 support will be extended in upcoming versions.
 
-+--------------+-----------------+--------------------------+--------------+
-| Variable     | Internal Name   | Description              |              |
-| Short Name   |                 |                          |              |
-| =======      | ========        | ========                 |              |
-| ============ | =============== | ======================== |              |
-| area         | feature_area    | Peak area                |              |
-+--------------+-----------------+--------------------------+--------------+
-|              |                 |                          |              |
-+--------------+-----------------+--------------------------+--------------+
-| height       | height_height   | Peak height              |              |
-+--------------+-----------------+--------------------------+--------------+
-| response     | height_response | Feature response (vendor |              |
-|              |                 | specific)                |              |
-+--------------+-----------------+--------------------------+--------------+
-| intensity    | fe              | Feature intensity        |              |
-|              | ature_intensity | (vendor specific)        |              |
-+--------------+-----------------+--------------------------+--------------+
-| rt           | feature_rt      | Retention time           |              |
-+--------------+-----------------+--------------------------+--------------+
-| fwhm         | feature_fwhm    | Full Width at Half       |              |
-|              |                 | Maximum Peak Height      |              |
-+--------------+-----------------+--------------------------+--------------+
-| width        | feature_width   | Peak Width               |              |
-+--------------+-----------------+--------------------------+--------------+
-| int_start    | fe              | Peak integration Start   |              |
-|              | ature_int_start | Time                     |              |
-+--------------+-----------------+--------------------------+--------------+
-| int_end      | feature_int_end | Peak Integration End     |              |
-|              |                 | Time                     |              |
-+--------------+-----------------+--------------------------+--------------+
-| symmetry \|  |                 |                          |              |
-| feat         |                 |                          |              |
-| ure_symmetry |                 |                          |              |
-| \| Peak      |                 |                          |              |
-| symmetry     |                 |                          |              |
-+--------------+-----------------+--------------------------+--------------+
-| sn_ratio     | f               | Signal-to-Noise ratio    |              |
-|              | eature_sn_ratio |                          |              |
-+--------------+-----------------+--------------------------+--------------+
-| accuracy     | f               | Accuracy (often in       |              |
-|              | eature_accuracy | reference to target      |              |
-|              |                 | value)                   |              |
-+--------------+-----------------+--------------------------+--------------+
-| ionratio     | f               | Ion ratio                |              |
-|              | eature_ionratio |                          |              |
-+--------------+-----------------+--------------------------+--------------+
++----------------+----------------+------------------------+----------------+
+| Variable Short | Internal Name  | Description            |                |
+| Name =======   |                |                        |                |
+| ============   | # ========     | # ========             |                |
+| area           |                |                        |                |
+|                | feature_area   | Peak area              |                |
++----------------+----------------+------------------------+----------------+
+|                |                |                        |                |
++----------------+----------------+------------------------+----------------+
+| height         | height_height  | Peak height            |                |
++----------------+----------------+------------------------+----------------+
+| response       | h              | Feature response       |                |
+|                | eight_response | (vendor specific)      |                |
++----------------+----------------+------------------------+----------------+
+| intensity      | fe             | Feature intensity      |                |
+|                | a              | (vendor specific)      |                |
+|                | ture_intensity |                        |                |
++----------------+----------------+------------------------+----------------+
+| rt             | feature_rt     | Retention time         |                |
++----------------+----------------+------------------------+----------------+
+| fwhm           | feature_fwhm   | Full Width at Half     |                |
+|                |                | Maximum Peak Height    |                |
++----------------+----------------+------------------------+----------------+
+| width          | feature_width  | Peak Width             |                |
++----------------+----------------+------------------------+----------------+
+| int_start      | fe             | Peak integration Start |                |
+|                | a              | Time                   |                |
+|                | ture_int_start |                        |                |
++----------------+----------------+------------------------+----------------+
+| int_end        | f              | Peak Integration End   |                |
+|                | eature_int_end | Time                   |                |
++----------------+----------------+------------------------+----------------+
+| symmetry \|    |                |                        |                |
+| feat           |                |                        |                |
+| ure_symmetry   |                |                        |                |
+| \| Peak        |                |                        |                |
+| symmetry       |                |                        |                |
++----------------+----------------+------------------------+----------------+
+| sn_ratio       | f              | Signal-to-Noise ratio  |                |
+|                | e              |                        |                |
+|                | ature_sn_ratio |                        |                |
++----------------+----------------+------------------------+----------------+
+| accuracy       | f              | Accuracy (often in     |                |
+|                | e              | reference to target    |                |
+|                | ature_accuracy | value)                 |                |
++----------------+----------------+------------------------+----------------+
+| ionratio       | f              | Ion ratio              |                |
+|                | e              |                        |                |
+|                | ature_ionratio |                        |                |
++----------------+----------------+------------------------+----------------+
 
 QC type is represented with a consistent color scheme (both fill and line
 colors) and specific point shapes in all plots generated by the MRMhub package.
