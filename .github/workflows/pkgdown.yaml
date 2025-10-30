@@ -38,7 +38,14 @@ jobs:
           install-suggests: false
 
       - name: Install Quarto
-        uses: r-lib/actions/setup-quarto@v2
+        uses: quarto-dev/quarto-actions/setup@v
+
+      - name: Render and publish via Quarto (if relevant)
+        uses: quarto-dev/quarto-actions/publish@v2
+        with:
+          target: gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build site
         working-directory: quant
