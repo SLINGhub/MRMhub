@@ -38,7 +38,7 @@ jobs:
           install-suggests: false
 
       - name: Install Quarto
-        uses: quarto-dev/quarto-actions/setup@v
+        uses: quarto-dev/quarto-actions/setup@v2
 
       - name: Render and publish via Quarto (if relevant)
         uses: quarto-dev/quarto-actions/publish@v2
