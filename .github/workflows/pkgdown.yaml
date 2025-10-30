@@ -42,7 +42,7 @@ jobs:
           # Install pkgdown and your local package
           extra-packages: any::pkgdown, local::.
           # Only install Imports + LinkingTo (skip Suggests like lancer)
-          dependencies: Imports
+          dependencies: "Imports"
 
       # 5️⃣ Install Quarto (needed to render .qmd articles)
       - name: Install Quarto
