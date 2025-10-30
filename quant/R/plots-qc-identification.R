@@ -160,10 +160,10 @@ plot_rt_vs_chain <- function(
               n <- nrow(.x)
               weights <- rep(1, n)
               if (n >= 1) {
-                weights[1] <- 0.8
+                weights[1] <- 0.3
               } # Set first value
               if (n >= 2) {
-                weights[n] <- 0.6
+                weights[n] <- 0.1
               } # Set last value (if n >= 2)
               # Robust regression with weights
               tryCatch(
@@ -221,7 +221,7 @@ plot_rt_vs_chain <- function(
     group_by(.data$lipid_class_lcb, !!sym(group_var)) |> # Regroup to access the current group
     mutate(
       #prev_avg_rt = dplyr::lag(avg_rt, default = 0),
-      next_avg_rt = dplyr::lead(.data$avg_rt, default = Inf)
+      next_avg_rt = if (x_var == "total_db") dplyr::lead(.data$avg_rt, default = 0) else dplyr::lead(.data$avg_rt, default = Inf)
     ) |> # Access average from the next group
     ungroup() # Remove grouping
 
@@ -231,7 +231,11 @@ plot_rt_vs_chain <- function(
     arrange(desc(!!sym(x_var)), .by_group = TRUE, ) |>
     mutate(
       # Flag if current rt_median is less than or equal to the average rt_median of the previous x_var
-      is_outlier_order = .data$rt_median >= .data$next_avg_rt,
+      is_outlier_order = if (x_var == "total_db") {
+        .data$rt_median <= .data$next_avg_rt
+      } else {
+        .data$rt_median >= .data$next_avg_rt
+      },
     ) |>
     ungroup()
 
