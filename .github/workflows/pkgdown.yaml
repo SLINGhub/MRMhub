@@ -37,6 +37,9 @@ jobs:
           extra-packages: any::pkgdown, local::.
           install-suggests: false
 
+      - name: Install Quarto
+        uses: r-lib/actions/setup-quarto@v2
+
       - name: Build site
         working-directory: quant
         run: pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
