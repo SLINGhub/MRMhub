@@ -35,17 +35,11 @@ jobs:
         with:
           working-directory: quant
           extra-packages: any::pkgdown, local::.
-          install-suggests: false
+          dependencies: Imports
 
       - name: Install Quarto
         uses: quarto-dev/quarto-actions/setup@v2
 
-      - name: Render and publish via Quarto (if relevant)
-        uses: quarto-dev/quarto-actions/publish@v2
-        with:
-          target: gh-pages
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build site
         working-directory: quant
