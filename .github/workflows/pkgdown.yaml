@@ -38,7 +38,7 @@ jobs:
       - name: Install dependencies with pak
         working-directory: quant
         run: |
-          Rscript -e 'install.packages("pak"); pak::pkg_install(c("pkgdown", "local::."), dependencies = c("Imports", "LinkingTo"))'
+          Rscript -e 'install.packages("pak"); pak::pkg_install(c("pkgdown","quarto",  "local::."), dependencies = c("Imports", "LinkingTo"))'
 
       # 5️⃣ Install Quarto (needed to render .qmd articles)
       - name: Install Quarto
