@@ -1,4 +1,4 @@
-url: https://slinghub.github.io/mrmhub/
+url: https://slinghub.github.io/MRMhub/
 template:
   bootstrap: 5
   bootswatch: sandstone
@@ -232,5 +232,4 @@ reference:
   - get_iqr_tails
   - get_outlier_bounds
   - order_chained_columns_tbl
-
 

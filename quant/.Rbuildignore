@@ -15,3 +15,5 @@ _pkgdown.yml
 ^mydata\.csv$
 ^mrmhub.Rproj$
 ^LICENSE\.md$
+^docs$
+^\.github$

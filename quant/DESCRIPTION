@@ -9,7 +9,7 @@ Author: Bo Burla [aut, cre] (<https://orcid.org/0000-0002-5918-3249>)
 Maintainer: Bo Burla <bo.burla@nus.edu.sg>
 Description: The 'mrmhub' package offers R functions for processing, quality control, and visualization of lipidomics mass spectrometry data.
 License: GPL-3
-URL: https://github.com/SLINGhub/mrmhub, https://slinghub.github.io/mrmhub/
+URL: https://github.com/SLINGhub/mrmhub, https://slinghub.github.io/mrmhub/, https://slinghub.github.io/MRMhub/
 BugReports: https://github.com/SLINGhub/mrmhub/issues
 Depends:
     R (>= 4.2.0)
