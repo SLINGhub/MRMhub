@@ -119,7 +119,7 @@ plot_runsequence <- function(
         linewidth = 0.25
       ),
       panel.border = element_rect(linewidth = 1),
-      axis.title = element_text(face = "bold", size = base_font_size),
+      axis.title = element_text(face = "plain", size = base_font_size),
       axis.text.x = element_text(face = "plain", size = base_font_size),
       axis.text.y = element_text(face = "plain", size = base_font_size),
       axis.text.y.right = element_text(face = "plain", size = base_font_size),
