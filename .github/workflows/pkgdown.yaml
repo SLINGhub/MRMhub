@@ -8,7 +8,7 @@ on:
     types: [published]
   workflow_dispatch:
 
-name: pkgdown.yaml
+name: pkgdown
 
 permissions: read-all
 
@@ -34,8 +34,8 @@ jobs:
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           working-directory: quant
-          extra-packages: any::pkgdown, local::quant
-          needs: website
+          extra-packages: any::pkgdown, local::.
+          install-suggests: false
 
       - name: Build site
         working-directory: quant
@@ -48,4 +48,4 @@ jobs:
         with:
           clean: false
           branch: gh-pages
-          folder: docs
+          folder: quant/docs
