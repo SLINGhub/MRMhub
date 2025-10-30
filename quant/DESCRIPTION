@@ -60,6 +60,8 @@ Suggests:
     testthat (>= 3.0.0),
     vdiffr,
     mirai
+Remotes: 
+    SLINGhub/lancer
 VignetteBuilder: 
     knitr
 biocViews:
