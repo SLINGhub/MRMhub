@@ -12,12 +12,10 @@ on:
 jobs:
   pkgdown:
     runs-on: ubuntu-latest
-    # Only restrict concurrency for non-PR jobs
     concurrency:
       group: pkgdown-${{ github.event_name != 'pull_request' || github.run_id }}
 
     env:
-      # Needed for deploying to GitHub Pages
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
 
     permissions:
@@ -36,29 +34,25 @@ jobs:
         with:
           use-public-rspm: true
 
-      # 4️⃣ Install package dependencies with pak
+      # 4️⃣ Install R package dependencies with pak
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          # Run this inside your subfolder package
+          # Run inside your subfolder package
           working-directory: quant
           # Install pkgdown and your local package
           extra-packages: any::pkgdown, local::.
           # Only install Imports + LinkingTo (skip Suggests like lancer)
           dependencies: Imports
 
-      # 5️⃣ Install Quarto
-      # Needed to render any .qmd articles in your package
+      # 5️⃣ Install Quarto (needed to render .qmd articles)
       - name: Install Quarto
         uses: quarto-dev/quarto-actions/setup@v2
 
       # 6️⃣ Build the pkgdown site
+      # Use single-line Rscript command to avoid YAML syntax issues
       - name: Build site
         working-directory: quant
-        run: pkgdown::build_site_github_pages(
-          new_process = FALSE,   # run in current R process
-          install = FALSE        # do not reinstall package
-        )
-        shell: Rscript {0}
+        run: Rscript -e "pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)"
 
       # 7️⃣ Deploy the site to GitHub Pages
       - name: Deploy to GitHub pages 🚀
