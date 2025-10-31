@@ -41,6 +41,10 @@ jobs:
       - name: Install Quarto
         uses: quarto-dev/quarto-actions/setup@v2
 
+      - name: Install mrmhub
+        working-directory: quant
+        run: Rscript -e 'remotes::install_local(dependencies = TRUE)'
+
       - name: Build pkgdown site
         working-directory: quant
         run: Rscript -e "pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)"
