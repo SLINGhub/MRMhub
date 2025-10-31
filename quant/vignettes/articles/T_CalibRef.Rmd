@@ -36,6 +36,7 @@ that were measured as part of the same analysis..
 #| results: markup  
 #| message: false
 library(mrmhub)
+library(dplyr)
 
 # Get example data paths
 dat_file = system.file("extdata", "S1P_MHQuant.csv", package = "mrmhub")
