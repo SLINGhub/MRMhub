@@ -50,9 +50,7 @@ We welcome contributions. For questions, bug reports, feature requests, or sugge
 
 Please note that the MRMhub project is released with a [Contributor Code of Conduct](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html). By contributing to this project, you agree to abide by its terms.
 
-## License
-
-# Dual Licensing Options
+## Dual Licensing Options
 The source code and models within this repository are dual licenced. You may choose to use it under the terms of the [GNU AGPLv3](https://www.gnu.org/licenses/agpl-3.0.en.html) for non-commercial purposes, or you can obtain a commercial license for commercial use.
 
 For non-commercial uses and licensing of this / these code and models and its derivatives, an open-source licence is granted in accordance with the following terms and conditions -
