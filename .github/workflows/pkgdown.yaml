@@ -28,10 +28,15 @@ jobs:
 
       # Install dependencies directly with base R
       - name: Install dependencies
-        run: |
-          Rscript -e 'install.packages(c("remotes", "pkgdown", "quarto", "carrier", "mirai"))'
-          Rscript -e 'remotes::install_local("quant", dependencies = TRUE)'
-
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          working-directory: quant
+          extra-packages: |
+            any::remotes
+            any::pkgdown
+            any::quarto
+            any::carrier
+            any::mirai
 
       - name: Install Quarto
         uses: quarto-dev/quarto-actions/setup@v2
