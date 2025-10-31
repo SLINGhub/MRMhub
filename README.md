@@ -58,5 +58,5 @@ For non-commercial uses and licensing of this / these code and models and its de
 For commercial use and licensing of this / these code and models, please contact -
 #### Jonathan Tan ( jonathan_tan@nus.edu.sg )
 
-### Reporting unauthorized commercial use and/or further enquiries
+#### Reporting unauthorized commercial use and/or further enquiries
 If you become aware of any unauthorised commercial use of this source code and models or have any questions regarding licensing terms, please contact Jonathan Tan ( jonathan_tan@nus.edu.sg ).
