@@ -37,6 +37,7 @@ jobs:
             any::quarto
             any::carrier
             any::mirai
+            any::gt
 
       - name: Install Quarto
         uses: quarto-dev/quarto-actions/setup@v2
