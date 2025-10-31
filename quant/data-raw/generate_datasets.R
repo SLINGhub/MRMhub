@@ -1,4 +1,3 @@
-library(tidyverse)
 library(mrmhub)
 library(usethis)
 library(here)

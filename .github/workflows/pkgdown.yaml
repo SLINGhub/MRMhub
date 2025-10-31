@@ -29,7 +29,7 @@ jobs:
       # Install dependencies directly with base R
       - name: Install dependencies
         run: |
-          Rscript -e 'install.packages(c("remotes", "pkgdown", "quarto", "carrier", "mirai", "tidyverse"))'
+          Rscript -e 'install.packages(c("remotes", "pkgdown", "quarto", "carrier", "mirai"))'
           Rscript -e 'remotes::install_local("quant", dependencies = TRUE)'
 
 
