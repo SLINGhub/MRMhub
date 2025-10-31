@@ -124,13 +124,13 @@ report as concentrations.
 #| results: false 
 #| message: true
 # Export absolute calibration concentrations
-save_dataset_csv(mexp, "calibrated.csv", variable = "conc")
+save_dataset_csv(mexp, tempfile(fileext = ".csv"), variable = "conc")
   
 # Export non-calibrated concentrations
-save_dataset_csv(mexp_res, "noncalibrated.csv", variable = "conc_beforecal")
+save_dataset_csv(mexp_res, tempfile(fileext = ".csv")", variable = "conc_beforecal")
 
 # Create XLSX report with calibrated concentrations as filtered dataset
-save_report_xlsx(mexp_res, "report.xlsx", filtered_variable = "conc")
+save_report_xlsx(mexp_res, tempfile(fileext = ".xlsx"), filtered_variable = "conc")
 ```
 
 ## Normalization (relative calibration)
@@ -170,7 +170,7 @@ argument.
 save_dataset_csv(mexp_res, "norm.csv", variable = "conc_normalized")
 
 # Create XLSX report with normalized concentrations as filtered dataset
-save_report_xlsx(mexp_res, "report_norm.xlsx", filtered_variable = "conc_normalized")
+save_report_xlsx(mexp_res, path = tempfile(fileext = ".xlsx"), filtered_variable = "conc_normalized")
 ```
 
 ## Batch-wise calibration
@@ -196,7 +196,7 @@ mexp_res <- calibrate_by_reference(
     undefined_conc_action = "na"
   )
 
-save_dataset_csv(mexp_res, "bathwise_calibrated.csv", variable = "conc_beforecal")
+save_dataset_csv(mexp_res, tempfile(fileext = ".csv"), variable = "conc_beforecal")
 ```
 
 ## Concentration ratio and bias

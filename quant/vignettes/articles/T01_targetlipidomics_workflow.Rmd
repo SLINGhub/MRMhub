@@ -732,7 +732,7 @@ steps.
 </details>
 
 ```{r save-report}
-mrmhub::save_report_xlsx(myexp, path = "./output/myexp-mrmhub_report.xlsx")
+mrmhub::save_report_xlsx(myexp, path = tempfile(fileext = ".xlsx"))
 ```
 
 You can also save specific data subsets as a clean flat, wide CSV file.
@@ -751,7 +751,7 @@ presented in the next part of this workshop!
 ```{r save-csv}
 mrmhub::save_dataset_csv(
   data = myexp, 
-  path = "./output/sperfect_filt_uM.csv",
+  path = tempfile(fileext = ".csv"),
   variable = "conc", 
   qc_types = "SPL", 
   include_qualifier = FALSE,
@@ -777,7 +777,8 @@ using the `mrmhub` package.
 </details>
 
 ```{r save-rds}
-saveRDS(myexp, file = "./output/myexp-mrmhub.rds", compress = TRUE)
-my_saved_exp <- readRDS(file = "./output/myexp-mrmhub.rds")
+path = tempfile(fileext = ".rds")
+saveRDS(myexp, file = path, compress = TRUE)
+my_saved_exp <- readRDS(file = path)
 print(myexp)
 ```

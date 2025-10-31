@@ -151,13 +151,13 @@ who can run own data processing, plots and QC checks.
 
 ```{r save-report}
 # Saves a detailed report in Excel format with multiple sheets
-mrmhub::save_report_xlsx(myexp, path = "./output/myexp-mrmhub_report.xlsx")
+mrmhub::save_report_xlsx(myexp, path = tempfile(fileext = ".xlsx"))
 
 # Saves flat csv table with concentration values that passed the previously set
 # QC criteria, for each feature in each sample. 
 mrmhub::save_dataset_csv(
   data = myexp, 
-  path = "./output/sperfect_filt_uM.csv",
+  path = tempfile(fileext = ".csv"),
   variable = "conc", 
   qc_types = "SPL", 
   include_qualifier = FALSE,
@@ -165,6 +165,6 @@ mrmhub::save_dataset_csv(
 
 # Saves the entire MRMhubExperiment object as an RDS file, which can be
 # opened in R without MRMhub or used with MRMhub again.
-saveRDS(myexp, file = "./output/myexp-mrmhub.rds", compress = TRUE)
+saveRDS(myexp, file = tempfile(fileext = ".rds"), compress = TRUE)
 ```
 
