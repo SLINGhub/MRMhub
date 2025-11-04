@@ -1043,7 +1043,7 @@ test_that("fits resulting in invalid values are handeled", {
   )
 
   vdiffr::expect_doppelganger(
-    "correct_drift_cubicspline_withinvalid_smooths_1 ",
+    "cubicspline_withinvalid_smooths_1 ",
     p[[2]]
   )
 
