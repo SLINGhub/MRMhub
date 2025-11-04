@@ -160,7 +160,7 @@ pkg.env$qc_type_annotation <- list(
     "SBLK" = 23,
     "TBLK" = 23,
     "UBLK" = 23,
-    "BQC" = 16,
+    "BQC" = 21,
     "TQC" = 25,
     "PQC" = 23,
     "LQC" = 25,
