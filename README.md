@@ -23,11 +23,11 @@ The modular functionalities and defined data structures support diverse analytic
 
 ## Usage
 
-##### INTEGRATOR (Peak Integration)
+#### INTEGRATOR (Peak Integration)
 
 To download the latest release of INTEGRATOR, visit the [Releases page](https://github.com/SLINGhub/MRMhub/releases). Choose the appropriate version for your operating system (Windows, macOS, or Linux) and download the corresponding executable file. Unzip the downloaded file and double-click the executable to launch the application. Refer to the [Documentation](https://slinghub.github.io/mrmhub/) for detailed instructions on how to use INTEGRATOR.
 
-##### QUANT (Postprocessing and Quality Control)
+#### QUANT (Postprocessing and Quality Control)
 
 Install the `mrmhub` package from Github using the following command:
 
@@ -50,6 +50,15 @@ We welcome contributions. For questions, bug reports, feature requests, or sugge
 
 Please note that the MRMhub project is released with a [Contributor Code of Conduct](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html). By contributing to this project, you agree to abide by its terms.
 
-## License
+## Dual Licensing Options
+The source code and models within this repository are dual licenced. You may choose to use it under the terms of the [GNU AGPLv3](https://www.gnu.org/licenses/agpl-3.0.en.html) for non-commercial purposes, or you can obtain a commercial license for commercial use.
 
-This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE.md) file for details.
+For non-commercial uses and licensing of this / these code and models and its derivatives, an open-source licence is granted in accordance with the following terms and conditions -
+[GNU AGPLv3](https://www.gnu.org/licenses/agpl-3.0.en.html).
+### For commercial use and licensing of this / these code and models, please contact -
+ Jonathan Tan ( jonathan_tan@nus.edu.sg )
+
+
+Reporting unauthorized commercial use and/or further enquiries
+
+If you become aware of any unauthorised commercial use of this source code and models or have any questions regarding licensing terms, please contact Jonathan Tan ( jonathan_tan@nus.edu.sg ).
