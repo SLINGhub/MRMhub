@@ -14,7 +14,7 @@
 
 # Getting Started
 
-Please visit the [Getting Started](https://slinghub.github.io/mrmhub/articles/00_get_started.html) page for tutorials and documentation on `MRMhub`.
+Please visit the [Getting Started](https://slinghub.github.io/MRMhub/articles/00_get_started.html) page for tutorials and documentation on `MRMhub`.
 
 # Installation
 
