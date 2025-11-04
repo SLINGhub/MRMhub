@@ -206,7 +206,7 @@ plot_qc_matrixeffects <- function(
       values = pkg.env$qc_type_annotation$qc_type_fillcol,
       drop = TRUE
     ) +
-    ggplot2::coord_cartesian(ylim = y_lim, expand = FALSE) +
+    ggplot2::coord_cartesian(ylim = y_lim, expand = TRUE) +
     ggplot2::theme_bw(base_size = font_base_size) +
     ylab("Standardized Intensity (% of uncorrected)") +
     xlab("Internal Standard") +
