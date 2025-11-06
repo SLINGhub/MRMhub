@@ -6,6 +6,8 @@
 \alias{mrmhub-package}
 \title{mrmhub: Small Molecule Mass Spectrometry Data Post-Processing, Quality Control, Exploration and Reporting}
 \description{
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
+
 The 'mrmhub' package offers R functions for processing, quality control, and visualization of lipidomics mass spectrometry data.
 }
 \seealso{
@@ -13,6 +15,7 @@ Useful links:
 \itemize{
   \item \url{https://github.com/SLINGhub/mrmhub}
   \item \url{https://slinghub.github.io/mrmhub/}
+  \item \url{https://slinghub.github.io/MRMhub/}
   \item Report bugs at \url{https://github.com/SLINGhub/mrmhub/issues}
 }
 

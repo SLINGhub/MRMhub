@@ -676,9 +676,9 @@
 <text x='264.58' y='562.35' text-anchor='middle' style='font-size: 8.00px; fill: #4D4D4D; font-family: sans;' textLength='40.92px' lengthAdjust='spacingAndGlyphs'>2017-10-22</text>
 <text x='417.81' y='562.35' text-anchor='middle' style='font-size: 8.00px; fill: #4D4D4D; font-family: sans;' textLength='40.92px' lengthAdjust='spacingAndGlyphs'>2017-10-23</text>
 <text x='571.05' y='562.35' text-anchor='middle' style='font-size: 8.00px; fill: #4D4D4D; font-family: sans;' textLength='40.92px' lengthAdjust='spacingAndGlyphs'>2017-10-24</text>
-<text x='366.13' y='571.50' text-anchor='middle' style='font-size: 8.00px; font-weight: bold; font-family: sans;' textLength='58.69px' lengthAdjust='spacingAndGlyphs'>Acquisition Time</text>
-<text transform='translate(8.34,289.52) rotate(-90)' text-anchor='middle' style='font-size: 8.00px; font-weight: bold; font-family: sans;' textLength='47.14px' lengthAdjust='spacingAndGlyphs'>Sample Type</text>
-<text x='714.94' y='292.27' text-anchor='middle' style='font-size: 8.00px; font-weight: bold; font-family: sans;' textLength='4.45px' lengthAdjust='spacingAndGlyphs'>n</text>
+<text x='366.13' y='571.50' text-anchor='middle' style='font-size: 8.00px; font-family: sans;' textLength='58.69px' lengthAdjust='spacingAndGlyphs'>Acquisition Time</text>
+<text transform='translate(8.34,289.52) rotate(-90)' text-anchor='middle' style='font-size: 8.00px; font-family: sans;' textLength='47.14px' lengthAdjust='spacingAndGlyphs'>Sample Type</text>
+<text x='714.94' y='292.27' text-anchor='middle' style='font-size: 8.00px; font-family: sans;' textLength='4.45px' lengthAdjust='spacingAndGlyphs'>n</text>
 <text x='36.48' y='9.44' style='font-size: 9.60px; font-family: sans;' textLength='280.73px' lengthAdjust='spacingAndGlyphs'>Analysis time: 4d 3H 28M  (2017-10-20 14:15 - 2017-10-24 17:44)</text>
 <text x='36.48' y='19.81' style='font-size: 9.60px; font-family: sans;' textLength='229.20px' lengthAdjust='spacingAndGlyphs'>Median run time: 11: 20 min - interruptions &gt; 1 hour: 1</text>
 </g>

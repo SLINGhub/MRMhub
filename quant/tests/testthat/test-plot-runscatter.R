@@ -229,7 +229,7 @@ test_that("plot_runscatter with unknown qc_types", {
   )
 
   plot_data <- ggplot2::ggplot_build(p[[1]])$data[[2]]
-  expect_equal(length(unique(plot_data$shape)), 6)
+  expect_equal(length(unique(plot_data$shape)), 5)
   vdiffr::expect_doppelganger("runscatunknownqc", p)
 })
 

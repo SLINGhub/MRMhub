@@ -67,7 +67,7 @@ test_that("plot_rt_vs_chain no robust regress", {
 })
 
 
-test_that("plot_rt_vs_chain no outlier report", {
+test_that("plot_rt_vs_chain with outlier report", {
   expect_message(
     p <- plot_rt_vs_chain(
       mexp,
@@ -75,7 +75,7 @@ test_that("plot_rt_vs_chain no outlier report", {
       x_var = "total_c",
       outlier_print = TRUE
     ),
-    "potential annotation outliers: Hex2Cer d18:1/16:0 d3",
+    "were flagged as potential annotation outliers: DG 18:1_20:0",
     fixed = TRUE
   )
 

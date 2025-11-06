@@ -556,8 +556,8 @@
 <text x='274.50' y='562.35' text-anchor='middle' style='font-size: 8.00px; fill: #4D4D4D; font-family: sans;' textLength='13.35px' lengthAdjust='spacingAndGlyphs'>200</text>
 <text x='400.10' y='562.35' text-anchor='middle' style='font-size: 8.00px; fill: #4D4D4D; font-family: sans;' textLength='13.35px' lengthAdjust='spacingAndGlyphs'>300</text>
 <text x='525.71' y='562.35' text-anchor='middle' style='font-size: 8.00px; fill: #4D4D4D; font-family: sans;' textLength='13.35px' lengthAdjust='spacingAndGlyphs'>400</text>
-<text x='337.62' y='571.50' text-anchor='middle' style='font-size: 8.00px; font-weight: bold; font-family: sans;' textLength='52.47px' lengthAdjust='spacingAndGlyphs'>Analysis Order</text>
-<text transform='translate(8.34,289.52) rotate(-90)' text-anchor='middle' style='font-size: 8.00px; font-weight: bold; font-family: sans;' textLength='47.14px' lengthAdjust='spacingAndGlyphs'>Sample Type</text>
+<text x='337.62' y='571.50' text-anchor='middle' style='font-size: 8.00px; font-family: sans;' textLength='52.47px' lengthAdjust='spacingAndGlyphs'>Analysis Order</text>
+<text transform='translate(8.34,289.52) rotate(-90)' text-anchor='middle' style='font-size: 8.00px; font-family: sans;' textLength='47.14px' lengthAdjust='spacingAndGlyphs'>Sample Type</text>
 <rect x='671.21' y='210.84' width='45.96' height='157.36' style='stroke-width: 0.78; stroke: none; fill: #FFFFFF;' />
 <text x='675.19' y='221.16' style='font-size: 8.00px; font-family: sans;' textLength='29.35px' lengthAdjust='spacingAndGlyphs'>QC type</text>
 <rect x='675.19' y='225.98' width='17.28' height='17.28' style='stroke-width: 0.78; stroke: none; fill: #FFFFFF;' />

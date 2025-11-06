@@ -206,8 +206,8 @@ test_that("get_dataset_subset handles errors in data or filters", {
 
 
 test_that("get_analyticaldata returns correct table", {
-  expect_equal(dim(get_analyticaldata(mexp, annotated = FALSE)), c(14471, 20))
-  expect_equal(dim(get_analyticaldata(mexp, annotated = TRUE)), c(14471, 19))
+  expect_equal(dim(get_analyticaldata(mexp, annotated = FALSE)), c(14471, 21))
+  expect_equal(dim(get_analyticaldata(mexp, annotated = TRUE)), c(14471, 20))
 })
 
 test_that("get_analysis_count works", {
