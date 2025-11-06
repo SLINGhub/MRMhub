@@ -85,7 +85,8 @@ jobs:
           BiocManager::install("ComplexHeatmap", type = "source", ask = FALSE)
         shell: Rscript {0}
 
-      # Run R CMD check on the quant/ subdirectory (skip manual & vignettes)
+      # Run R CMD check on the quant/ subdirectory
+      # Skip PDF manual and vignettes to avoid LaTeX and carrier errors
       - name: R CMD check
         env:
           _R_CHECK_CRAN_INCOMING_: false
