@@ -655,11 +655,11 @@ plot_pca_loading <- function(
       names_prefix = "PC",
       values_from = "value"
     ) |>
-    dplyr::rename(feature_name = .data$column)
+    dplyr::rename(feature_name = "column")
 
   d_loadings_selected <- d_loading |>
     tidyr::pivot_longer(
-      cols = -.data$feature_name,
+      cols = -"feature_name",
       names_to = "PC",
       values_to = "Value"
     ) |>
@@ -686,7 +686,7 @@ plot_pca_loading <- function(
   d_loadings_selected <- d_loadings_selected |>
     dplyr::slice_max(order_by = .data$abs_value, n = top_n) |>
     ungroup() |>
-    tidyr::unite("Feature", .data$feature_name, .data$PC, remove = FALSE) |>
+    tidyr::unite("Feature", "feature_name", "PC", remove = FALSE) |>
     mutate(
       PC = as.factor(.data$PC),
       Feature = forcats::fct_reorder(.data$Feature, .data$abs_value)

@@ -142,7 +142,13 @@ plot_qc_matrixeffects <- function(
   }
 
   df <- d_filt |>
-    dplyr::select("feature_id", "qc_type", "batch_id", "is_istd", variable)
+    dplyr::select(any_of(c(
+      "feature_id",
+      "qc_type",
+      "batch_id",
+      "is_istd",
+      variable
+    )))
   if (only_istd) {
     df <- df |> filter(.data$is_istd)
   }
@@ -164,7 +170,7 @@ plot_qc_matrixeffects <- function(
         mean(!!variable_sym, na.rm = TRUE) *
         100
     ) |>
-    drop_na(.data$scaled_intensity)
+    drop_na("scaled_intensity")
 
   ggplot2::ggplot(
     df_std,

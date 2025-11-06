@@ -3,6 +3,8 @@ library(vdiffr)
 library(ggplot2)
 # library(testthat)
 
+set.seed(123)
+
 mexp_orig <- lipidomics_dataset
 
 mexp <- exclude_analyses(

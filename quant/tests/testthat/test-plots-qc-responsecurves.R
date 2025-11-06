@@ -3,6 +3,7 @@
 # library(ggplot2)
 # library(testthat)
 # library(scales)
+set.seed(123)
 
 mexp <- lipidomics_dataset
 
