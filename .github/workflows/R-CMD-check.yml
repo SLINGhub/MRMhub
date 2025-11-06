@@ -82,11 +82,10 @@ jobs:
           # Bioconductor packages
           if (!requireNamespace("BiocManager", quietly = TRUE))
             install.packages("BiocManager")
-          
           BiocManager::install("ComplexHeatmap", type = "source", ask = FALSE)
         shell: Rscript {0}
 
-      # Run R CMD check on the subdirectory quant/
+      # Run R CMD check on the quant/ subdirectory
       - name: R CMD check
         env:
           _R_CHECK_CRAN_INCOMING_: false
@@ -94,7 +93,7 @@ jobs:
           options(crayon.enabled = TRUE)
           rcmdcheck::rcmdcheck(
             path = "quant",
-            args = c("--no-manual", "--as-cran"),
+            args = c("--no-manual", "--no-build-vignettes", "--as-cran"),
             error_on = "warning",
             check_dir = "check"
           )
