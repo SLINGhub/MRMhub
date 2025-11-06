@@ -2,12 +2,17 @@
 
 <!-- badges: start -->
 
-[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html) 
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) 
+[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
 [![Build Executables](https://github.com/SLINGhub/MRMhub/actions/workflows/build-executables.yml/badge.svg)](https://github.com/SLINGhub/MRMhub/actions/workflows/build-executables.yml)
-[![R-CMD-check](https://github.com/SLINGhub/mrmhub/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/SLINGhub/mrmhub/actions/workflows/R-CMD-check.yaml)
-[![Codecov test coverage](https://codecov.io/gh/slinghub/mrmhub/branch/main/graph/badge.svg?flag=quant)](https://app.codecov.io/gh/slinghub/mrmhub?branch=main) 
+
+[![R-CMD-check](https://github.com/SLINGhub/MRMhub/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/SLINGhub/MRMhub/actions/workflows/R-CMD-check.yaml)
+
+[![Codecov test coverage](https://codecov.io/gh/SLINGhub/MRMhub/branch/main/graph/badge.svg)](https://app.codecov.io/gh/SLINGhub/MRMhub?branch=main)
+
 [![Platform](https://img.shields.io/badge/platform-linux%20%7C%20osx%20%7C%20win-lightgrey)](https://github.com/SLINGhub/MRMhub)
+
 
 <!-- badges: end -->
 
