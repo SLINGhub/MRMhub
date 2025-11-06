@@ -29,7 +29,7 @@ jobs:
       # Checkout code
       - uses: actions/checkout@v4
 
-      # Setup Pandoc (needed for R Markdown/manual)
+      # Setup Pandoc
       - uses: r-lib/actions/setup-pandoc@v2
 
       # Setup R
@@ -55,7 +55,7 @@ jobs:
                                   libfontconfig1-dev libharfbuzz-dev libfribidi-dev \
                                   libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev
 
-      # Install R package dependencies
+      # Install R package dependencies from quant/
       - name: Install package dependencies
         run: |
           install.packages('remotes')
@@ -68,18 +68,25 @@ jobs:
         run: remotes::install_github("SLINGhub/lancer")
         shell: Rscript {0}
 
-      # Install additional packages
+      # Install additional CRAN and Bioconductor packages
       - name: Install extra R packages
         run: |
+          # CRAN packages
           install.packages(c(
             "assertr", "dtplyr", "forcats", "lubridate", "readr",
             "openxlsx2", "ggh4x", "ggvenn", "ggbeeswarm", "ggsignif",
             "ggforce", "ggpmisc", "ggnewscale", "ggrepel",
-            "ComplexHeatmap", "bibtex", "here"
+            "bibtex", "here"
           ))
+          
+          # Bioconductor packages
+          if (!requireNamespace("BiocManager", quietly = TRUE))
+            install.packages("BiocManager")
+          
+          BiocManager::install("ComplexHeatmap", type = "source", ask = FALSE)
         shell: Rscript {0}
 
-      # Run R CMD check on the subdirectory
+      # Run R CMD check on the subdirectory quant/
       - name: R CMD check
         env:
           _R_CHECK_CRAN_INCOMING_: false
