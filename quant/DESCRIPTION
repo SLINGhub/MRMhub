@@ -59,7 +59,8 @@ Suggests:
     here,
     testthat (>= 3.0.0),
     vdiffr,
-    mirai
+    mirai,
+    carrier
 Remotes: 
     SLINGhub/lancer
 VignetteBuilder: 
