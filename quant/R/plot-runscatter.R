@@ -224,7 +224,7 @@ plot_runscatter <- function(
       "mirai",
       reason = "to use multithreading for plot generation."
     )
-    if (rlang::is_installed("mirai") && mirai::daemons()$connections == 0) {
+    if (rlang::is_installed("mirai") && mirai::status()$daemons == 0) {
       cli::cli_alert_warning(cli::col_yellow(
         "To use multithreading for plot generation, please set `mirai::daemon(number_of_cores)` where `number_of_cores` is the number of CPU cores to use."
       ))
