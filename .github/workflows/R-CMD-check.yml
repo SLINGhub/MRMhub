@@ -48,12 +48,13 @@ jobs:
           needs: check
 
       - name: Run R CMD check
-        uses: r-lib/actions/check-r-package@v2
-        with:
-          path: quant             # 👈 package is in subfolder "quant"
-          args: "--no-manual --as-cran"  # 👈 skip manual, check as CRAN
-          error-on: warning
-          upload-snapshots: false   # handled manually below
+        - uses: r-lib/actions/check-r-package@v2
+          with:
+            path: quant
+            args: "--no-manual --as-cran"
+            error-on: warning     
+            upload-snapshots: false
+
 
       - name: Upload check results
         if: failure()
