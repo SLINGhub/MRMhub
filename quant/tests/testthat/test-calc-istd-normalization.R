@@ -2,63 +2,6 @@
 # library(dplyr)
 mexp_orig <- lipidomics_dataset
 
-test_that("istd-based normalization is correct and overwites previous if present", {
-  mexp <- readRDS(file = testthat::test_path("testdata/MHQuant_demo.rds"))
-
-  testthat::expect_message(
-    mexp <- normalize_by_istd(mexp, ignore_missing_annotation = TRUE),
-    "14 features normalized with 2 ISTDs in 65 analyses"
-  )
-
-  # istd normalized by itself should be 1
-  testthat::expect_equal(mexp@dataset$feature_norm_intensity[5], 1)
-
-  testthat::expect_equal(mexp@dataset$feature_norm_intensity[100], 3.31972989)
-
-  # Repeated normalization should give a notification
-  testthat::expect_message(
-    mexp <- normalize_by_istd(mexp, ignore_missing_annotation = TRUE),
-    "Replacing previously normalized feature intensities"
-  )
-  testthat::expect_message(
-    mexp <- normalize_by_istd(mexp, ignore_missing_annotation = TRUE),
-    "14 features normalized with 2 ISTDs in 65 analyses"
-  )
-})
-
-test_that("istd-based normalization handles missing info correctly", {
-  mexp <- readRDS(file = testthat::test_path("testdata/MHQuant_demo.rds"))
-
-  mexp_mod <- mexp
-  mexp_mod@annot_features <- mexp_mod@annot_features[-13, ]
-  testthat::expect_error(
-    mexp_mod <- normalize_by_istd(mexp_mod, ignore_missing_annotation = TRUE),
-    "1 ISTD\\(s\\) were not defined as individual feature"
-  )
-
-  mexp_mod <- mexp
-  mexp_mod@annot_features$istd_feature_id <- NA
-  testthat::expect_error(
-    mexp_mod <- normalize_by_istd(mexp_mod, ignore_missing_annotation = TRUE),
-    "No ISTDs defined in feature metadata"
-  )
-
-  mexp_mod <- mexp
-  mexp_mod@annot_features$istd_feature_id[1] <- NA
-  testthat::expect_message(
-    mexp_mod <- normalize_by_istd(mexp_mod, ignore_missing_annotation = TRUE),
-    "For 1 feature\\(s\\) no ISTD was defined, normalized intensities will be \\`NA"
-  )
-  testthat::expect_message(
-    mexp_mod <- normalize_by_istd(mexp_mod, ignore_missing_annotation = TRUE),
-    "13 features normalized with 2 ISTDs in 65"
-  )
-
-  testthat::expect_error(
-    mexp_mod <- normalize_by_istd(mexp_mod, ignore_missing_annotation = FALSE),
-    "For 1 feature\\(s\\) no ISTD was defined. Please ammend feature"
-  )
-})
 
 
 test_that("Add metadata table by table, the normalize and quantify based on ISTD", {
@@ -92,6 +35,9 @@ test_that("Add metadata table by table, the normalize and quantify based on ISTD
     ),
     "Feature metadata associated with 15 features"
   )
+
+
+
   expect_message(
     mexp <- mrmhub:::import_metadata_istds(
       mexp,
@@ -120,6 +66,57 @@ test_that("Add metadata table by table, the normalize and quantify based on ISTD
     "QC concentration metadata associated with 2 annotated samples and 3 annotated analytes"
   )
 
+  testthat::expect_message(
+    mexp <- normalize_by_istd(mexp, ignore_missing_annotation = TRUE),
+    "13 features normalized with 2 ISTDs in 64 analyses"
+  )
+
+
+  # istd normalized by itself should be 1
+  testthat::expect_equal(mexp@dataset$feature_norm_intensity[5], 1)
+
+  testthat::expect_equal(mexp@dataset$feature_norm_intensity[100], 0.175428349)
+
+  # Repeated normalization should give a notification
+  testthat::expect_message(
+    mexp <- normalize_by_istd(mexp, ignore_missing_annotation = TRUE),
+    "Replacing previously normalized feature intensities"
+  )
+  testthat::expect_message(
+    mexp <- normalize_by_istd(mexp, ignore_missing_annotation = TRUE),
+    "13 features normalized with 2 ISTDs in 64 analyses"
+  )
+
+  mexp_mod <- mexp
+  mexp_mod@annot_features <- mexp_mod@annot_features[-13, ]
+  testthat::expect_error(
+    mexp_mod <- normalize_by_istd(mexp_mod, ignore_missing_annotation = TRUE),
+    "1 ISTD\\(s\\) were not defined as individual feature"
+  )
+
+  mexp_mod <- mexp
+  mexp_mod@annot_features$istd_feature_id <- NA
+  testthat::expect_error(
+    mexp_mod <- normalize_by_istd(mexp_mod, ignore_missing_annotation = TRUE),
+    "No ISTDs defined in feature metadata"
+  )
+
+  mexp_mod <- mexp
+  mexp_mod@annot_features$istd_feature_id[1] <- NA
+  testthat::expect_message(
+    mexp_mod <- normalize_by_istd(mexp_mod, ignore_missing_annotation = TRUE),
+    "For 1 feature\\(s\\) no ISTD was defined, normalized intensities will be \\`NA"
+  )
+  testthat::expect_message(
+    mexp_mod <- normalize_by_istd(mexp_mod, ignore_missing_annotation = TRUE),
+    "12 features normalized with 2 ISTDs in 64"
+  )
+
+  testthat::expect_error(
+    mexp_mod <- normalize_by_istd(mexp_mod, ignore_missing_annotation = FALSE),
+    "For 1 feature\\(s\\) no ISTD was defined. Please ammend feature"
+  )
+
   mexp <- mrmhub::normalize_by_istd(mexp)
   expect_equal(mexp@dataset[[5, "feature_intensity"]], 43545)
   expect_equal(mexp@dataset[[434, "feature_norm_intensity"]], 0.64371386)
@@ -134,6 +131,91 @@ test_that("Add metadata table by table, the normalize and quantify based on ISTD
 
   expect_equal(dim(mexp@annot_responsecurves), c(12, 5))
   expect_equal(dim(mexp@annot_qcconcentrations), c(6, 6))
+
+ mexp_mod <- mexp
+  mexp_mod@annot_analyses$sample_amount[11] <- NA
+  testthat::expect_message(
+    mexp_mod <- quantify_by_istd(mexp_mod, ignore_missing_annotation = TRUE),
+    "Sample and/or ISTD solution amount\\(s\\) for 1 analyses missing, concentrations of all features for these analyses will be \\`NA"
+  )
+  testthat::expect_message(
+    mexp_mod <- quantify_by_istd(mexp_mod, ignore_missing_annotation = TRUE),
+    "13 feature concentrations calculated based on 2 ISTDs and sample amounts of 63 analyses"
+  )
+
+  testthat::expect_error(
+    mexp_mod <- quantify_by_istd(mexp_mod, ignore_missing_annotation = FALSE),
+    "Sample and\\/or ISTD amount\\(s\\) for 1 analyses missing. Please ammend"
+  )
+
+  mexp_mod <- mexp
+  mexp_mod@annot_istds <- mexp_mod@annot_istds[-2, ]
+  testthat::expect_error(
+    mexp_mod <- quantify_by_istd(mexp_mod, ignore_missing_annotation = FALSE),
+    "Concentrations of 1 ISTD\\(s\\) missing. Please ammend ISTD"
+  )
+
+  testthat::expect_message(
+    mexp_mod <- quantify_by_istd(mexp_mod, ignore_missing_annotation = TRUE),
+    "Spiked-in concentrations of 1 ISTD\\(s\\) missing, calculated concentrations of affected features will be \\`NA"
+  )
+
+  mexp_mod <- mexp
+  mexp_mod@annot_features$istd_feature_id <- NA
+  testthat::expect_error(
+    mexp_mod <- normalize_by_istd(mexp_mod, ignore_missing_annotation = TRUE),
+    "No ISTDs defined in feature metadata"
+  )
+
+  mexp_mod <- mexp
+  mexp_mod@annot_features$istd_feature_id[1] <- NA
+  testthat::expect_message(
+    mexp_mod <- normalize_by_istd(mexp_mod, ignore_missing_annotation = TRUE),
+    "For 1 feature\\(s\\) no ISTD was defined, normalized intensities will be \\`NA"
+  )
+  testthat::expect_message(
+    mexp_mod <- normalize_by_istd(mexp_mod, ignore_missing_annotation = TRUE),
+    "12 features normalized with 2 ISTDs in 64"
+  )
+
+  testthat::expect_error(
+    mexp_mod <- normalize_by_istd(mexp_mod, ignore_missing_annotation = FALSE),
+    "For 1 feature\\(s\\) no ISTD was defined. Please ammend feature"
+  )
+
+
+
+
+  testthat::expect_message(
+    mexp <- quantify_by_istd(mexp, ignore_missing_annotation = TRUE),
+    "13 feature concentrations calculated based on 2 ISTDs and sample amounts of 64 analyses"
+  )
+
+  testthat::expect_message(
+    mexp <- quantify_by_istd(mexp, ignore_missing_annotation = TRUE),
+    "Concentrations are given in μmol/L"
+  )
+
+  # istd normalized by itself and quantified should be istd conc corrected for the dilution factor
+  testthat::expect_equal(mexp@dataset$feature_conc[5], 0.2)
+
+  testthat::expect_equal(
+    mexp@dataset$feature_conc[
+      mexp@dataset$analysis_id == "012_TQCd-40_TQC-40percent" &
+        mexp@dataset$feature_id == "S1P d18:1 [M>60]"
+    ],
+    0.663945978
+  )
+
+  # Repeated normalization should give a notification
+  testthat::expect_message(
+    mexp <- quantify_by_istd(mexp, ignore_missing_annotation = TRUE),
+    "Replacing previously calculated concentrations"
+  )
+  testthat::expect_message(
+    mexp <- quantify_by_istd(mexp, ignore_missing_annotation = TRUE),
+    "13 feature concentrations calculated based on 2 ISTDs and sample amounts of 64 analyses"
+  )
 })
 
 
@@ -321,100 +403,127 @@ test_that("quantify_by_istd with mass concentration", {
     "No ISTD concentrations defined. Please define ISTD concentrations in either nmol/L or ng/mL.",
     fixed = TRUE
   )
+
+
 })
 
-test_that("istd-based quantification is correct and overwites previous if present", {
-  mexp <- readRDS(file = testthat::test_path("testdata/MHQuant_demo.rds"))
-  mexp <- normalize_by_istd(mexp, ignore_missing_annotation = TRUE)
-
-  testthat::expect_message(
-    mexp <- quantify_by_istd(mexp, ignore_missing_annotation = TRUE),
-    "14 feature concentrations calculated based on 2 ISTDs and sample amounts of 65 analyses"
-  )
-
-  testthat::expect_message(
-    mexp <- quantify_by_istd(mexp, ignore_missing_annotation = TRUE),
-    "Concentrations are given in μmol/L"
-  )
-
-  # istd normalized by itself and quantified should be istd conc corrected for the dilution factor
-  testthat::expect_equal(mexp@dataset$feature_conc[5], 0.2)
-
-  testthat::expect_equal(
-    mexp@dataset$feature_conc[
-      mexp@dataset$analysis_id == "012_TQCd-40_TQC-40percent" &
-        mexp@dataset$feature_id == "S1P d18:1 [M>60]"
-    ],
-    0.663945978
-  )
-
-  # Repeated normalization should give a notification
-  testthat::expect_message(
-    mexp <- quantify_by_istd(mexp, ignore_missing_annotation = TRUE),
-    "Replacing previously calculated concentrations"
-  )
-  testthat::expect_message(
-    mexp <- quantify_by_istd(mexp, ignore_missing_annotation = TRUE),
-    "14 feature concentrations calculated based on 2 ISTDs and sample amounts of 65 analyses"
+test_that("quantify_by_istd/normalize_by_istd fail if 1 istd not defined", {
+  mexp <- mexp_orig
+  mexp@annot_istds <- mexp@annot_istds[-1, ]
+  mexp_res <- normalize_by_istd(mexp)
+  expect_error(
+    mexp_res <- quantify_by_istd(mexp_res),
+    "Concentrations of 1 ISTD"
   )
 })
 
-
-test_that("istd-based quantification handles missing info correctly", {
-  mexp <- readRDS(file = testthat::test_path("testdata/MHQuant_demo.rds"))
-  mexp <- normalize_by_istd(mexp, ignore_missing_annotation = TRUE)
-
-  mexp_mod <- mexp
-  mexp_mod@annot_analyses$sample_amount[11] <- NA
-  testthat::expect_message(
-    mexp_mod <- quantify_by_istd(mexp_mod, ignore_missing_annotation = TRUE),
-    "Sample and/or ISTD solution amount\\(s\\) for 1 analyses missing, concentrations of all features for these analyses will be \\`NA"
-  )
-  testthat::expect_message(
-    mexp_mod <- quantify_by_istd(mexp_mod, ignore_missing_annotation = TRUE),
-    "14 feature concentrations calculated based on 2 ISTDs and sample amounts of 64 analyses"
+test_that("quantify_by_istd/normalize_by_istd fail if no istd defined/normalized", {
+  mexp <- mexp_orig
+  mexp@annot_istds <- mexp@annot_istds[0, ]
+  expect_error(
+    mexp_res <- quantify_by_istd(mexp),
+    "ISTD concentrations are missing...please import ISTD metadata first."
   )
 
-  testthat::expect_error(
-    mexp_mod <- quantify_by_istd(mexp_mod, ignore_missing_annotation = FALSE),
-    "Sample and\\/or ISTD amount\\(s\\) for 1 analyses missing. Please ammend"
+  expect_error(
+    mexp_res <- quantify_by_istd(mexp_orig),
+    "Data needs to be ISTD normalized"
   )
 
-  mexp_mod <- mexp
-  mexp_mod@annot_istds <- mexp_mod@annot_istds[-2, ]
-  testthat::expect_error(
-    mexp_mod <- quantify_by_istd(mexp_mod, ignore_missing_annotation = FALSE),
-    "Concentrations of 1 ISTD\\(s\\) missing. Please ammend ISTD"
-  )
-
-  testthat::expect_message(
-    mexp_mod <- quantify_by_istd(mexp_mod, ignore_missing_annotation = TRUE),
-    "Spiked-in concentrations of 1 ISTD\\(s\\) missing, calculated concentrations of affected features will be \\`NA"
-  )
-
-  mexp_mod <- mexp
-  mexp_mod@annot_features$istd_feature_id <- NA
-  testthat::expect_error(
-    mexp_mod <- normalize_by_istd(mexp_mod, ignore_missing_annotation = TRUE),
-    "No ISTDs defined in feature metadata"
-  )
-
-  mexp_mod <- mexp
-  mexp_mod@annot_features$istd_feature_id[1] <- NA
-  testthat::expect_message(
-    mexp_mod <- normalize_by_istd(mexp_mod, ignore_missing_annotation = TRUE),
-    "For 1 feature\\(s\\) no ISTD was defined, normalized intensities will be \\`NA"
-  )
-  testthat::expect_message(
-    mexp_mod <- normalize_by_istd(mexp_mod, ignore_missing_annotation = TRUE),
-    "13 features normalized with 2 ISTDs in 65"
-  )
-
-  testthat::expect_error(
-    mexp_mod <- normalize_by_istd(mexp_mod, ignore_missing_annotation = FALSE),
-    "For 1 feature\\(s\\) no ISTD was defined. Please ammend feature"
-  )
 })
+
+# test_that("istd-based quantification is correct and overwites previous if present", {
+#   mexp <- readRDS(file = testthat::test_path("testdata/MHQuant_demo.rds"))
+#   mexp <- normalize_by_istd(mexp, ignore_missing_annotation = TRUE)
+
+#   testthat::expect_message(
+#     mexp <- quantify_by_istd(mexp, ignore_missing_annotation = TRUE),
+#     "14 feature concentrations calculated based on 2 ISTDs and sample amounts of 65 analyses"
+#   )
+
+#   testthat::expect_message(
+#     mexp <- quantify_by_istd(mexp, ignore_missing_annotation = TRUE),
+#     "Concentrations are given in μmol/L"
+#   )
+
+#   # istd normalized by itself and quantified should be istd conc corrected for the dilution factor
+#   testthat::expect_equal(mexp@dataset$feature_conc[5], 0.2)
+
+#   testthat::expect_equal(
+#     mexp@dataset$feature_conc[
+#       mexp@dataset$analysis_id == "012_TQCd-40_TQC-40percent" &
+#         mexp@dataset$feature_id == "S1P d18:1 [M>60]"
+#     ],
+#     0.663945978
+#   )
+
+#   # Repeated normalization should give a notification
+#   testthat::expect_message(
+#     mexp <- quantify_by_istd(mexp, ignore_missing_annotation = TRUE),
+#     "Replacing previously calculated concentrations"
+#   )
+#   testthat::expect_message(
+#     mexp <- quantify_by_istd(mexp, ignore_missing_annotation = TRUE),
+#     "14 feature concentrations calculated based on 2 ISTDs and sample amounts of 65 analyses"
+#   )
+# })
+
+
+# test_that("istd-based quantification handles missing info correctly", {
+#   mexp <- readRDS(file = testthat::test_path("testdata/MHQuant_demo.rds"))
+#   mexp <- normalize_by_istd(mexp, ignore_missing_annotation = TRUE)
+
+#   mexp_mod <- mexp
+#   mexp_mod@annot_analyses$sample_amount[11] <- NA
+#   testthat::expect_message(
+#     mexp_mod <- quantify_by_istd(mexp_mod, ignore_missing_annotation = TRUE),
+#     "Sample and/or ISTD solution amount\\(s\\) for 1 analyses missing, concentrations of all features for these analyses will be \\`NA"
+#   )
+#   testthat::expect_message(
+#     mexp_mod <- quantify_by_istd(mexp_mod, ignore_missing_annotation = TRUE),
+#     "14 feature concentrations calculated based on 2 ISTDs and sample amounts of 64 analyses"
+#   )
+
+#   testthat::expect_error(
+#     mexp_mod <- quantify_by_istd(mexp_mod, ignore_missing_annotation = FALSE),
+#     "Sample and\\/or ISTD amount\\(s\\) for 1 analyses missing. Please ammend"
+#   )
+
+#   mexp_mod <- mexp
+#   mexp_mod@annot_istds <- mexp_mod@annot_istds[-2, ]
+#   testthat::expect_error(
+#     mexp_mod <- quantify_by_istd(mexp_mod, ignore_missing_annotation = FALSE),
+#     "Concentrations of 1 ISTD\\(s\\) missing. Please ammend ISTD"
+#   )
+
+#   testthat::expect_message(
+#     mexp_mod <- quantify_by_istd(mexp_mod, ignore_missing_annotation = TRUE),
+#     "Spiked-in concentrations of 1 ISTD\\(s\\) missing, calculated concentrations of affected features will be \\`NA"
+#   )
+
+#   mexp_mod <- mexp
+#   mexp_mod@annot_features$istd_feature_id <- NA
+#   testthat::expect_error(
+#     mexp_mod <- normalize_by_istd(mexp_mod, ignore_missing_annotation = TRUE),
+#     "No ISTDs defined in feature metadata"
+#   )
+
+#   mexp_mod <- mexp
+#   mexp_mod@annot_features$istd_feature_id[1] <- NA
+#   testthat::expect_message(
+#     mexp_mod <- normalize_by_istd(mexp_mod, ignore_missing_annotation = TRUE),
+#     "For 1 feature\\(s\\) no ISTD was defined, normalized intensities will be \\`NA"
+#   )
+#   testthat::expect_message(
+#     mexp_mod <- normalize_by_istd(mexp_mod, ignore_missing_annotation = TRUE),
+#     "13 features normalized with 2 ISTDs in 65"
+#   )
+
+#   testthat::expect_error(
+#     mexp_mod <- normalize_by_istd(mexp_mod, ignore_missing_annotation = FALSE),
+#     "For 1 feature\\(s\\) no ISTD was defined. Please ammend feature"
+#   )
+# })
 
 test_that("quantify_by_istd/normalize_by_istd fail if 1 istd not defined", {
   mexp <- mexp_orig

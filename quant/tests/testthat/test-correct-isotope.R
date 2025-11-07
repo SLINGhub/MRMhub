@@ -1,5 +1,38 @@
-mexp_orig <- readRDS(file = testthat::test_path("testdata/MHQuant_demo.rds"))
-mexp <- mexp_orig
+#mexp_orig <- readRDS(file = testthat::test_path("testdata/MHQuant_demo.rds"))
+#mexp <- mexp_orig
+
+mexp <- mrmhub::MRMhubExperiment()
+mexp <- mrmhub::import_data_masshunter(
+  mexp,
+  path = testthat::test_path(
+    "testdata/MRMhub_TestData_MHQuant_S1P_DefaultSampleInfo_RT-Areas-FWHM.csv"
+  ),
+  import_metadata = FALSE
+)
+path <- testthat::test_path(
+  "testdata/MRMhub_TestData_MHQuant_S1P_metadata_tables.xlsx"
+)
+expect_message(
+  mexp <- mrmhub:::import_metadata_analyses(
+    mexp,
+    path = path,
+    sheet = "Analyses",
+    ignore_warnings = FALSE,
+    excl_unmatched_analyses = TRUE
+  ),
+  "Analysis metadata associated with 64 analyses"
+)
+expect_message(
+  mexp <- mrmhub:::import_metadata_features(
+    mexp,
+    path = path,
+    sheet = "Features",
+    ignore_warnings = TRUE
+  ),
+  "Feature metadata associated with 15 features"
+)
+
+mexp_orig <- mexp
 
 mexp2 <- lipidomics_dataset
 
@@ -8,7 +41,6 @@ mexp2@annot_features$interference_contribution[9] <- 0.5
 test_that("correct_interferences corrects overlapping interferences", {
   # d18:2 is interfering with d18:1, which in turn is interfering with d18:0
   # the code does not correct for M+4 isotope interference
-
 
   # Check initial uncorrected values
 
@@ -51,10 +83,8 @@ test_that("correct_interferences corrects overlapping interferences", {
         variable = "feature_intensity",
         sequential_correction = TRUE
       ),
-    "Interference-correction has been applied to 4 of the 16 features"
+    "Interference-correction has been applied to 4 of the 15 features"
   )
-
-
 
   expect_equal(
     mexp_res@dataset |>
@@ -95,7 +125,7 @@ test_that("correct_interferences corrects overlapping interferences", {
         variable = "feature_intensity",
         sequential_correction = TRUE
       ),
-    "Interference-correction has been applied to 4 of the 16 features"
+    "Interference-correction has been applied to 4 of the 15 features"
   )
 
   expect_equal(
@@ -128,7 +158,7 @@ test_that("correct_interferences corrects overlapping interferences", {
         variable = "feature_intensity",
         sequential_correction = FALSE
       ),
-    "Interference-correction has been applied to 4 of the 16 features"
+    "Interference-correction has been applied to 4 of the 15 features"
   )
 
   expect_equal(
@@ -161,20 +191,14 @@ test_that("correct_interferences corrects overlapping interferences", {
       pull(feature_intensity),
     7224.6434272
   )
-
 })
-
-
-
 
 
 test_that("correct_interferences corrects overlapping interferences", {
   # d18:2 is interfering with d18:1, which in turn is interfering with d18:0
   # the code does not correct for M+4 isotope interference
 
-
   mexp2 <- mexp_orig
-
 
   expect_equal(
     mexp2@dataset |>
@@ -186,7 +210,6 @@ test_that("correct_interferences corrects overlapping interferences", {
     85299
   )
 
-
   expect_message(
     mexp2 <- correct_interference_manual(
       mexp2,
@@ -197,8 +220,6 @@ test_that("correct_interferences corrects overlapping interferences", {
     ),
     "Interference-correction was manually applied to "
   )
-
-
 
   expect_equal(
     mexp2@dataset |>
@@ -229,7 +250,6 @@ test_that("correct_interferences corrects overlapping interferences", {
       pull(feature_intensity),
     7256.0500353124
   )
-
 
   expect_error(
     mexp2 <- correct_interference_manual(
@@ -276,7 +296,7 @@ test_that("correct_interferences corrects overlapping interferences", {
       interference_contribution = NA,
       updated_feature_id = "S1P d18:0 [M>60] corrected"
     ),
-    "must be a number larger than 0"
+    "must be a number larger than 0", fixed = TRUE
   )
 
   expect_error(
@@ -292,7 +312,7 @@ test_that("correct_interferences corrects overlapping interferences", {
   )
 })
 
-test_that("Handles corrections that lead to negative values",{
+test_that("Handles corrections that lead to negative values", {
   expect_message(
     mexp3 <- correct_interference_manual(
       mexp2,
@@ -330,7 +350,7 @@ test_that("Handles corrections that lead to negative values",{
     group_by(feature_id) |>
     summarise(nas = sum(is.na(feature_intensity)))
 
-    expect_equal(max(a$nas), 479)
+  expect_equal(max(a$nas), 479)
 
   expect_message(
     mexp_res <-
@@ -354,6 +374,4 @@ test_that("Handles corrections that lead to negative values",{
     "Interference correction led to negative or zero values in 1 feature(s) in samples/QCs. All negative/zero values ",
     fixed = TRUE
   )
-
-
 })

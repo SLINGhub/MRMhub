@@ -76,7 +76,7 @@ jobs:
             "assertr", "dtplyr", "forcats", "lubridate", "readr",
             "openxlsx2", "ggh4x", "ggvenn", "ggbeeswarm", "ggsignif",
             "ggforce", "ggpmisc", "ggnewscale", "ggrepel",
-            "bibtex", "here", "purrr", "furrr"
+            "bibtex", "here", "purrr", "mirai"
           ))
           
           # Packages specifically used in vignettes

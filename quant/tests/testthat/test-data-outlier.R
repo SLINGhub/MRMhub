@@ -1,5 +1,46 @@
 mexp_empty <- MRMhubExperiment()
-mexp <- readRDS(file = testthat::test_path("testdata/MHQuant_demo.rds"))
+
+mexp <- mrmhub::import_data_masshunter(
+  mexp_empty,
+  path = testthat::test_path(
+    "testdata/MRMhub_TestData_MHQuant_S1P_DefaultSampleInfo_RT-Areas-FWHM.csv"
+  ),
+  import_metadata = FALSE
+)
+path <- testthat::test_path(
+  "testdata/MRMhub_TestData_MHQuant_S1P_metadata_tables.xlsx"
+)
+expect_message(
+  mexp <- mrmhub:::import_metadata_analyses(
+    mexp,
+    path = path,
+    sheet = "Analyses",
+    ignore_warnings = FALSE,
+    excl_unmatched_analyses = TRUE
+  ),
+  "Analysis metadata associated with 64 analyses"
+)
+expect_message(
+  mexp <- mrmhub:::import_metadata_features(
+    mexp,
+    path = path,
+    sheet = "Features",
+    ignore_warnings = TRUE
+  ),
+  "Feature metadata associated with 15 features"
+)
+
+expect_message(
+  mexp <- mrmhub:::import_metadata_istds(
+    mexp,
+    path = path,
+    sheet = "ISTDs",
+    ignore_warnings = FALSE
+  ),
+  "Internal Standard metadata associated with 2 ISTDs"
+)
+
+
 mexp_proc <- mexp
 mexp_proc <- normalize_by_istd(mexp_proc)
 mexp_proc <- quantify_by_istd(mexp_proc)
@@ -50,7 +91,7 @@ test_that("detect_outlier_pca works", {
   )
   expect_equal(
     outliers,
-    c("018_BQC_PQC01", "194_BQC_PQC_B 06", "195_BQC_PQC_B 07")
+    c("194_BQC_PQC_B 06", "195_BQC_PQC_B 07")
   )
 
   outliers <- detect_outlier_pca(
@@ -65,7 +106,7 @@ test_that("detect_outlier_pca works", {
   )
   expect_equal(
     outliers,
-    c("018_BQC_PQC01", "194_BQC_PQC_B 06", "195_BQC_PQC_B 07")
+    c("194_BQC_PQC_B 06", "195_BQC_PQC_B 07")
   )
 
   outliers <- detect_outlier_pca(
@@ -90,7 +131,10 @@ test_that("detect_outlier_pca works", {
     log_transform = TRUE,
     fence_multiplicator = 1.3
   )
-  expect_equal(outliers, c("194_BQC_PQC_B 06", "195_BQC_PQC_B 07"))
+  expect_equal(
+    outliers,
+    c("113_BQC_PQC12", "194_BQC_PQC_B 06", "195_BQC_PQC_B 07")
+  )
 
   outliers <- detect_outlier_pca(
     mexp_proc,

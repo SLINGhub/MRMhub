@@ -1,8 +1,37 @@
 library(ggplot2)
 
-mexp_orig <- readRDS(file = testthat::test_path("testdata/MHQuant_demo.rds"))
-mexp <- mexp_orig
+  mexp <- mrmhub::MRMhubExperiment()
+  mexp <- mrmhub::import_data_masshunter(
+    mexp,
+    path = testthat::test_path(
+      "testdata/MRMhub_TestData_MHQuant_S1P_DefaultSampleInfo_RT-Areas-FWHM.csv"
+    ),
+    import_metadata = FALSE
+  )
+  path <- testthat::test_path(
+    "testdata/MRMhub_TestData_MHQuant_S1P_metadata_tables.xlsx"
+  )
+  expect_message(
+    mexp <- mrmhub:::import_metadata_analyses(
+      mexp,
+      path = path,
+      sheet = "Analyses",
+      ignore_warnings = FALSE,
+      excl_unmatched_analyses = TRUE
+    ),
+    "Analysis metadata associated with 64 analyses"
+  )
+  expect_message(
+    mexp <- mrmhub:::import_metadata_features(
+      mexp,
+      path = path,
+      sheet = "Features",
+      ignore_warnings = TRUE
+    ),
+    "Feature metadata associated with 15 features"
+  )
 
+mexp_original <- mexp
 mexp2 <- lipidomics_dataset
 
 mexp2@annot_features$interference_contribution[9] <- 0.5

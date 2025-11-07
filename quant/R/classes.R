@@ -287,7 +287,7 @@ check_data <- function(data = NULL) {
     ))
   }
 
-  if (is(data)[1] != 'MRMhubExperiment' && is(data)[1] != 'MidarExperiment') {
+  if (is(data)[1] != 'MRMhubExperiment' && is(data)[1] != 'MRMhubExperiment') {
     cli::cli_div(theme = list(span.emph = list(color = "#e81744")))
     cli::cli_abort(c("x" = "`data` must be a {.emph MRMhubExperiment}"))
   }
