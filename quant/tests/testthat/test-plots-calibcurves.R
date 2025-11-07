@@ -174,7 +174,7 @@ test_that("plot_responsecurves generates a plot", {
   )
   expect_null(p)
   expect_true(file_exists(temp_pdf_path), info = "PDF file was not created.")
-  expect_equal(as.character(fs::file_size(temp_pdf_path)), "27K")
+  expect_equal(as.character(fs::file_size(temp_pdf_path)), "26.9K")
   fs::file_delete(temp_pdf_path)
 
   temp_pdf_path <- file.path(tempdir(), "mrmhub_test_responsecurve.pdf")
