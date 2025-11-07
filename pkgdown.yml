@@ -11,8 +11,8 @@ articles:
   articles/04_dataimport: 04_dataimport.html
   articles/05_metadataimport: 05_metadataimport.html
   articles/07_driftbatchcorr: 07_driftbatchcorr.html
+  articles/Index: Index.html
   articles/Integrator_manual: Integrator_manual.html
-  mrmhub: mrmhub.html
   articles/msconvert_manual: msconvert_manual.html
   articles/R01_quantms: R01_quantms.html
   articles/T_BatchCorrect: T_BatchCorrect.html
@@ -21,7 +21,7 @@ articles:
   articles/T01_prepdata: T01_prepdata.html
   articles/T01_targetlipidomics_workflow: T01_targetlipidomics_workflow.html
   articles/T02_settingup_workflow: T02_settingup_workflow.html
-last_built: 2025-11-07T06:37Z
+last_built: 2025-11-07T16:03Z
 urls:
   reference: https://slinghub.github.io/MRMhub/reference
   article: https://slinghub.github.io/MRMhub/articles

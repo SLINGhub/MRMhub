@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,17 +34,16 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="../articles/00_get_started.html">Getting started</a></li>
 <li class="nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-integrator" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">INTEGRATOR</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-integrator">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-integrator-manual" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">INTEGRATOR Manual</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-integrator-manual">
 <li><a class="dropdown-item" href="../articles/Integrator_manual.html">INTEGRATOR Manual</a></li>
     <li><a class="dropdown-item" href="../articles/msconvert_manual.html">MSconvert Instructions</a></li>
   </ul>
 </li>
 <li class="active nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-tutorials-recipes" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Tutorials &amp; Recipes</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-tutorials-recipes">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-quant-tutorials" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">QUANT Tutorials</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-quant-tutorials">
 <li><h6 class="dropdown-header" data-toc-skip>Tutorials</h6></li>
     <li><a class="dropdown-item" href="../articles/T01_targetlipidomics_workflow.html">Lipidomics data processing (full workflow)</a></li>
     <li><a class="dropdown-item" href="../articles/T01_prepdata.html">Preparing and importing data</a></li>
@@ -58,8 +57,8 @@
   </ul>
 </li>
 <li class="nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-manual" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Manual</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-manual">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-quant-manual" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">QUANT Manual</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-quant-manual">
 <li><h6 class="dropdown-header" data-toc-skip>Key concepts</h6></li>
     <li><a class="dropdown-item" href="../articles/01_datastructure.html">Data structures</a></li>
     <li><a class="dropdown-item" href="../articles/02_keydataids.html">Data indentifier</a></li>
@@ -200,16 +199,16 @@ also appear in the MRMhub XLSX report as concentrations.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Export absolute calibration concentrations</span></span>
 <span><span class="fu"><a href="../reference/save_dataset_csv.html">save_dataset_csv</a></span><span class="op">(</span><span class="va">mexp</span>, <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span>, variable <span class="op">=</span> <span class="st">"conc"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Concentration values for 65 analyses and 7 features have been exported to '/tmp/RtmpmqhyXj/file37bb3105296c.csv'.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Concentration values for 65 analyses and 7 features have been exported to '/tmp/Rtmp2Kt1jA/file34ba3aeba7e8.csv'.</span></span></span>
 <span>  </span>
 <span><span class="co"># Export non-calibrated concentrations</span></span>
 <span><span class="fu"><a href="../reference/save_dataset_csv.html">save_dataset_csv</a></span><span class="op">(</span><span class="va">mexp_res</span>, <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span>, variable <span class="op">=</span> <span class="st">"conc_beforecal"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Conc_beforecal values for 65 analyses and 16 features have been exported to '/tmp/RtmpmqhyXj/file37bb44838574.csv'.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Conc_beforecal values for 65 analyses and 16 features have been exported to '/tmp/Rtmp2Kt1jA/file34ba669d0704.csv'.</span></span></span>
 <span></span>
 <span><span class="co"># Create XLSX report with calibrated concentrations as filtered dataset</span></span>
 <span><span class="fu"><a href="../reference/save_report_xlsx.html">save_report_xlsx</a></span><span class="op">(</span><span class="va">mexp_res</span>, <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".xlsx"</span><span class="op">)</span>, filtered_variable <span class="op">=</span> <span class="st">"conc"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Saving report to disk - please wait...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The data processing report has been saved to '/tmp/RtmpmqhyXj/file37bb6a5f0590.xlsx'.</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The data processing report has been saved to '/tmp/Rtmp2Kt1jA/file34ba41cd7dd6.xlsx'.</span></span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="normalization-relative-calibration">Normalization (relative calibration)<a class="anchor" aria-label="anchor" href="#normalization-relative-calibration"></a>
@@ -252,7 +251,7 @@ argument.</p>
 <span><span class="co"># Create XLSX report with normalized concentrations as filtered dataset</span></span>
 <span><span class="fu"><a href="../reference/save_report_xlsx.html">save_report_xlsx</a></span><span class="op">(</span><span class="va">mexp_res</span>, path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".xlsx"</span><span class="op">)</span>, filtered_variable <span class="op">=</span> <span class="st">"conc_normalized"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Saving report to disk - please wait...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The data processing report has been saved to '/tmp/RtmpmqhyXj/file37bb1e429fb7.xlsx'.</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The data processing report has been saved to '/tmp/Rtmp2Kt1jA/file34ba3ce5e452.xlsx'.</span></span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="batch-wise-calibration">Batch-wise calibration<a class="anchor" aria-label="anchor" href="#batch-wise-calibration"></a>
@@ -278,7 +277,7 @@ reference material shared across the batches.</p>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #00BB00;">Concentrations are given in umol/L.</span></span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/save_dataset_csv.html">save_dataset_csv</a></span><span class="op">(</span><span class="va">mexp_res</span>, <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span>, variable <span class="op">=</span> <span class="st">"conc_beforecal"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Conc_beforecal values for 65 analyses and 16 features have been exported to '/tmp/RtmpmqhyXj/file37bb69763561.csv'.</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Conc_beforecal values for 65 analyses and 16 features have been exported to '/tmp/Rtmp2Kt1jA/file34ba11d9d9b3.csv'.</span></span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="concentration-ratio-and-bias">Concentration ratio and bias<a class="anchor" aria-label="anchor" href="#concentration-ratio-and-bias"></a>
@@ -1360,7 +1359,7 @@ calibration applied</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Bo Burla.</p>
+  <p>Developed by Hyungwon Choi.</p>
 </div>
 
 <div class="pkgdown-footer-right">

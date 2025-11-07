@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,17 +37,16 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="../articles/00_get_started.html">Getting started</a></li>
 <li class="active nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-integrator" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">INTEGRATOR</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-integrator">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-integrator-manual" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">INTEGRATOR Manual</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-integrator-manual">
 <li><a class="dropdown-item" href="../articles/Integrator_manual.html">INTEGRATOR Manual</a></li>
     <li><a class="dropdown-item" href="../articles/msconvert_manual.html">MSconvert Instructions</a></li>
   </ul>
 </li>
 <li class="nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-tutorials-recipes" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Tutorials &amp; Recipes</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-tutorials-recipes">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-quant-tutorials" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">QUANT Tutorials</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-quant-tutorials">
 <li><h6 class="dropdown-header" data-toc-skip>Tutorials</h6></li>
     <li><a class="dropdown-item" href="../articles/T01_targetlipidomics_workflow.html">Lipidomics data processing (full workflow)</a></li>
     <li><a class="dropdown-item" href="../articles/T01_prepdata.html">Preparing and importing data</a></li>
@@ -61,8 +60,8 @@
   </ul>
 </li>
 <li class="nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-manual" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Manual</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-manual">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-quant-manual" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">QUANT Manual</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-quant-manual">
 <li><h6 class="dropdown-header" data-toc-skip>Key concepts</h6></li>
     <li><a class="dropdown-item" href="../articles/01_datastructure.html">Data structures</a></li>
     <li><a class="dropdown-item" href="../articles/02_keydataids.html">Data indentifier</a></li>
@@ -136,10 +135,10 @@
 <section class="level2"><h3 id="global-parameters-param-txt">Global parameters (param.txt)<a class="anchor" aria-label="anchor" href="#global-parameters-param-txt"></a>
 </h3>
 <p>The software requires global parameter file (param.txt by default), which points the software to the required information.</p>
-<table class="table caption-top" style="width:75%;">
+<table class="table caption-top" style="width:71%;">
 <colgroup>
 <col style="width: 20%">
-<col style="width: 33%">
+<col style="width: 29%">
 <col style="width: 20%">
 </colgroup>
 <thead><tr class="header">
@@ -225,10 +224,10 @@ left = w–x min, right = y–z min from apex (see below).</td>
 </h3>
 <p>This file defines the transitions to be processed and which features to be integrated. Transitions defined in the mzML files, but not in this file will be ignored. Columns with required information for each feature are marked in bold.</p>
 <p>This file specifies the transitions to be processed and the features to be integrated for each transition. Transitions present in the mzML files but not listed here will be ignored. Columns containing required information for each feature are marked in <strong>bold</strong>.</p>
-<table class="table caption-top" style="width:92%;">
+<table class="table caption-top" style="width:89%;">
 <colgroup>
 <col style="width: 22%">
-<col style="width: 69%">
+<col style="width: 66%">
 </colgroup>
 <thead><tr class="header">
 <th>Column</th>
@@ -441,7 +440,7 @@ Note: This overwrites the globally defined peak width (param.txt). See below.</t
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Bo Burla.</p>
+  <p>Developed by Hyungwon Choi.</p>
 </div>
 
 <div class="pkgdown-footer-right">
