@@ -27,17 +27,25 @@ jobs:
       R_KEEP_PKG_SOURCE: yes
 
     steps:
+      # ----------------------------------------------------------------
+      # Checkout the code
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # ----------------------------------------------------------------
+      # Setup Pandoc (required for R Markdown / Quarto)
       - name: Setup Pandoc
         uses: r-lib/actions/setup-pandoc@v2
 
+      # ----------------------------------------------------------------
+      # Setup R
       - name: Setup R
         uses: r-lib/actions/setup-r@v2
         with:
           r-version: ${{ matrix.config.r }}
 
+      # ----------------------------------------------------------------
+      # Install package dependencies
       - name: Install dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
@@ -45,19 +53,38 @@ jobs:
           extra-packages: |
             any::rcmdcheck
             any::carrier
-          needs: check
 
+      # ----------------------------------------------------------------
+      # Render Quarto vignettes (optional)
+      - name: Render Quarto vignettes
+        if: matrix.config.os == 'macos-latest'
+        run: |
+          R -e 'if (requireNamespace("quarto", quietly = TRUE)) quarto::quarto_render(input = "vignettes/articles", execute_params = list(), quiet = FALSE)'
+
+      # ----------------------------------------------------------------
+      # Run R CMD check
       - name: Run R CMD check
         uses: r-lib/actions/check-r-package@v2
         with:
-          working-directory: ./quant 
+          working-directory: ./quant
           args: "--no-manual --as-cran"
-          error-on: "warning"     
-          upload-snapshots: false
+          error-on: "warning"
+          upload-snapshots: ${{ env.RUN_VDIFFR }}
 
+      # ----------------------------------------------------------------
+      # Upload check results if failed
       - name: Upload check results
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: ${{ runner.os }}-r${{ matrix.config.r }}-results
-          path: check
+          path: quant/check
+
+      # ----------------------------------------------------------------
+      # Upload vdiffr snapshots (macOS only)
+      - name: Upload vdiffr snapshots
+        if: ${{ env.RUN_VDIFFR == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ runner.os }}-r${{ matrix.config.r }}-snapshots
+          path: quant/tests/figs
