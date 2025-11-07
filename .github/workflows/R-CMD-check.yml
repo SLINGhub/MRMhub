@@ -26,69 +26,25 @@ jobs:
       R_KEEP_PKG_SOURCE: yes
 
     steps:
-      # Checkout code
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      # Setup Pandoc
-      - uses: r-lib/actions/setup-pandoc@v2
+      - name: Setup Pandoc
+        uses: r-lib/actions/setup-pandoc@v2
 
-      # Setup R
-      - uses: r-lib/actions/setup-r@v2
+      - name: Setup R
+        uses: r-lib/actions/setup-r@v2
         with:
           r-version: ${{ matrix.config.r }}
-          use-public-rspm: true
 
-      # Cache R packages
-      - uses: actions/cache@v3
+      - name: Install dependencies
+        uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          path: ${{ env.R_LIBS_USER }}
-          key: ${{ runner.os }}-R-${{ matrix.config.r }}-${{ hashFiles('quant/DESCRIPTION') }}
-          restore-keys: |
-            ${{ runner.os }}-R-${{ matrix.config.r }}-
+          working-directory: ./quant
+          extra-packages: |
+            any::rcmdcheck
+          needs: check
 
-      # Install Linux system dependencies
-      - name: Install system dependencies
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev \
-                                  libfontconfig1-dev libharfbuzz-dev libfribidi-dev \
-                                  libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev
-
-      # Install R package dependencies from quant/
-      - name: Install package dependencies
-        run: |
-          install.packages('remotes')
-          remotes::install_deps(dependencies = TRUE, pkg = "quant")
-          remotes::install_cran(c('rcmdcheck', 'devtools'))
-        shell: Rscript {0}
-
-      # Install lancer
-      - name: Install lancer
-        run: remotes::install_github("SLINGhub/lancer")
-        shell: Rscript {0}
-
-      # Install extra CRAN and Bioconductor packages
-      - name: Install extra R packages
-        run: |
-          # CRAN packages
-          install.packages(c(
-            "assertr", "dtplyr", "forcats", "lubridate", "readr",
-            "openxlsx2", "ggh4x", "ggvenn", "ggbeeswarm", "ggsignif",
-            "ggforce", "ggpmisc", "ggnewscale", "ggrepel",
-            "bibtex", "here", "purrr", "mirai"
-          ))
-          
-          # Packages specifically used in vignettes
-          install.packages("carrier")
-          
-          # Bioconductor packages
-          if (!requireNamespace("BiocManager", quietly = TRUE))
-            install.packages("BiocManager")
-          BiocManager::install("ComplexHeatmap", type = "source", ask = FALSE)
-        shell: Rscript {0}
-
-      # Run R CMD check on the quant/ subdirectory with vignettes
       - name: R CMD check
         env:
           _R_CHECK_CRAN_INCOMING_: false
@@ -102,7 +58,6 @@ jobs:
           )
         shell: Rscript {0}
 
-      # Upload artifacts on failure
       - name: Upload check results
         if: failure()
         uses: actions/upload-artifact@v4
