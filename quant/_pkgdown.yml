@@ -5,7 +5,6 @@ template:
 navbar:
   structure:
     left:
-    - intro
     - custom
     - tutorials
     - articles
@@ -16,10 +15,7 @@ navbar:
     - github
     - lightswitch
   components:
-    home:
-      title: "MRMhub"
-      description: "One-stop  solution for targeted metabolomics data processing"
-
+    home: ~
     custom:
       text: INTEGRATOR Manual
       menu:

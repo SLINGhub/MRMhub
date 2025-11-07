@@ -25,6 +25,16 @@ editor_options:
 [![Platform](https://img.shields.io/badge/platform-linux%20%7C%20osx%20%7C%20win-lightgrey)](https://github.com/SLINGhub/MRMhub)
 <!-- badges: end -->
 
+```{r pkgs, include=FALSE}
+library(mrmhub)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  warning = FALSE,
+  comment = "#>",
+  root.dir = tempdir()
+)
+```
+
 ## Overview
 
 MRMhub is a set of tools for reproducible raw data processing, post-processing, quality control, and reporting of targeted quantitative small-molecule mass spectrometry experiments using Multiple Reaction Monitoring (MRM). The platform includes two complementary tools:
