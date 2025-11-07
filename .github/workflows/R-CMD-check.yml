@@ -55,7 +55,9 @@ jobs:
           error-on: warning
           upload-snapshots: false   # handled manually below
 
-      # Upload vdiffr snapshot diffs (only macOS)
-      - name: Upload vdiffr snapshots
-        if: matrix.config.os == 'macos-latest'
-        uses: r-lib/actions/upload-snapshots@v2
+      - name: Upload check results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ runner.os }}-r${{ matrix.config.r }}-results
+          path: check
