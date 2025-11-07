@@ -271,9 +271,9 @@ save the plots as PDF (see subfolder <code>output</code>).</p>
 <span>  cols_page <span class="op">=</span> <span class="fl">4</span>, rows_page <span class="op">=</span> <span class="fl">3</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">Generating plots (3 pages)...</span></span></span></code></pre></div>
-<p><img src="T01_targetlipidomics_workflow_files/figure-html/runscatter-1.png" alt="RunScatter plot" width="100%"></p>
-<pre><code><span><span class="co">#&gt;  <span style="color: #00BB00;">■■■■■■■■■■■                     </span>  33% |  ETA:  2s</span></span></code></pre>
-<p><img src="T01_targetlipidomics_workflow_files/figure-html/runscatter-2.png" alt="RunScatter plot" width="100%"><img src="T01_targetlipidomics_workflow_files/figure-html/runscatter-3.png" alt="RunScatter plot" width="100%"></p>
+<p><img src="T01_targetlipidomics_workflow_files/figure-html/runscatter-1.png" alt="RunScatter plot" width="100%"><img src="T01_targetlipidomics_workflow_files/figure-html/runscatter-2.png" alt="RunScatter plot" width="100%"></p>
+<pre><code><span><span class="co">#&gt;  <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■           </span>  67% |  ETA:  1s</span></span></code></pre>
+<p><img src="T01_targetlipidomics_workflow_files/figure-html/runscatter-3.png" alt="RunScatter plot" width="100%"></p>
 </div>
 <div class="section level2">
 <h2 id="adding-detailed-metadata">7. Adding detailed metadata<a class="anchor" aria-label="anchor" href="#adding-detailed-metadata"></a>
@@ -815,7 +815,7 @@ folder.</p>
 </details><div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">mrmhub</span><span class="fu">::</span><span class="fu"><a href="../reference/save_report_xlsx.html">save_report_xlsx</a></span><span class="op">(</span><span class="va">myexp</span>, path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".xlsx"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Saving report to disk - please wait...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The data processing report of experiment 'sPerfect' has been saved to '/tmp/RtmpTXBX0F/file3c632c525d45.xlsx'.</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The data processing report of experiment 'sPerfect' has been saved to '/tmp/RtmpdKK6g1/file3c245b04468e.xlsx'.</span></span></span></code></pre></div>
 <p>You can also save specific data subsets as a clean flat, wide CSV
 file. This is how we shared the data for the statistical analysis that
 will be presented in the next part of this workshop!</p>
@@ -833,7 +833,7 @@ generated CSV files.</p>
 <span>  qc_types <span class="op">=</span> <span class="st">"SPL"</span>, </span>
 <span>  include_qualifier <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  filter_data <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Concentration values for 377 analyses and 324 features have been exported to '/tmp/RtmpTXBX0F/file3c633b16b20d.csv'.</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Concentration values for 377 analyses and 324 features have been exported to '/tmp/RtmpdKK6g1/file3c246b67baaf.csv'.</span></span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="sharing-the-mrmhubexperiment-dataset">22. Sharing the <code>MRMhubExperiment</code> dataset<a class="anchor" aria-label="anchor" href="#sharing-the-mrmhubexperiment-dataset"></a>
