@@ -4,11 +4,11 @@
 \name{mrmhub-package}
 \alias{mrmhub}
 \alias{mrmhub-package}
-\title{mrmhub: Small Molecule Mass Spectrometry Data Post-Processing, Quality Control, Exploration and Reporting}
+\title{mrmhub: Small Molecule Mass Spectrometry Data Processing, Quality Control, and Reporting}
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-The 'mrmhub' package offers R functions for processing, quality control, and visualization of lipidomics mass spectrometry data.
+'MRMhub' is a tool for processing, quality control, and visualization of targeted metabolomics and lipidomics mass spectrometry data.
 }
 \seealso{
 Useful links:
@@ -22,6 +22,12 @@ Useful links:
 }
 \author{
 \strong{Maintainer}: Bo Burla \email{bo.burla@nus.edu.sg} (\href{https://orcid.org/0000-0002-5918-3249}{ORCID})
+
+Authors:
+\itemize{
+  \item Guo Shou Teo \email{guoshou@nus.edu.sg} (\href{https://orcid.org/0000-0003-3891-1494}{ORCID})
+  \item Hyungwon Choi \email{hyung_won_choi@nus.edu.sg} (\href{https://orcid.org/0000-0002-6687-3088}{ORCID})
+}
 
 }
 \keyword{internal}
