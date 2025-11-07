@@ -43,6 +43,7 @@ jobs:
           working-directory: ./quant
           extra-packages: |
             any::rcmdcheck
+            any::carrier
           needs: check
 
       - name: R CMD check
