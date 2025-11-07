@@ -1,13 +1,15 @@
 Package: mrmhub
-Title: Small Molecule Mass Spectrometry Data Post-Processing, Quality
-    Control, Exploration and Reporting
-Version: 0.2.5
+Title: Small Molecule Mass Spectrometry Data Processing, Quality
+    Control, and Reporting
+Version: 0.9.0
 Authors@R: 
     person("Bo", "Burla", , "bo.burla@nus.edu.sg", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-5918-3249"))
-Author: Bo Burla [aut, cre] (<https://orcid.org/0000-0002-5918-3249>)
-Maintainer: Bo Burla <bo.burla@nus.edu.sg>
-Description: The 'mrmhub' package offers R functions for processing, quality control, and visualization of lipidomics mass spectrometry data.
+    person("Guo Shou", "Teo", , "guoshou@nus.edu.sg", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0003-3891-1494"))
+    person("Hyungwon", "Choi", , "hyung_won_choi@nus.edu.sg", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-6687-3088"))
+Description: 'MRMhub' is a tool for processing, quality control, and visualization of targeted metabolomics and lipidomics mass spectrometry data.
 License: GPL-3
 URL: https://github.com/SLINGhub/mrmhub, https://slinghub.github.io/mrmhub/, https://slinghub.github.io/MRMhub/
 BugReports: https://github.com/SLINGhub/mrmhub/issues

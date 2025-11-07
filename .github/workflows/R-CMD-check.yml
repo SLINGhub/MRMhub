@@ -23,6 +23,7 @@ jobs:
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      RUN_VDIFFR: ${{ matrix.config.os == 'macos-latest' && 'true' || 'false' }}
       R_KEEP_PKG_SOURCE: yes
 
     steps:
@@ -46,22 +47,15 @@ jobs:
             any::carrier
           needs: check
 
-      - name: R CMD check
-        env:
-          _R_CHECK_CRAN_INCOMING_: false
-        run: |
-          options(crayon.enabled = TRUE)
-          rcmdcheck::rcmdcheck(
-            path = "quant",
-            args = c("--no-manual", "--as-cran"),
-            error_on = "warning",
-            check_dir = "check"
-          )
-        shell: Rscript {0}
-
-      - name: Upload check results
-        if: failure()
-        uses: actions/upload-artifact@v4
+      - name: Run R CMD check
+        uses: r-lib/actions/check-r-package@v2
         with:
-          name: ${{ runner.os }}-r${{ matrix.config.r }}-results
-          path: check
+          path: quant             # 👈 package is in subfolder "quant"
+          args: "--no-manual --as-cran"  # 👈 skip manual, check as CRAN
+          error-on: warning
+          upload-snapshots: false   # handled manually below
+
+      # Upload vdiffr snapshot diffs (only macOS)
+      - name: Upload vdiffr snapshots
+        if: matrix.config.os == 'macos-latest'
+        uses: r-lib/actions/upload-snapshots@v2
