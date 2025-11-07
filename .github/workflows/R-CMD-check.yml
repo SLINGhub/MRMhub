@@ -68,7 +68,6 @@ jobs:
         with:
           working-directory: ./quant
           args: "--no-manual --as-cran"
-          error-on: "warning"
           upload-snapshots: ${{ env.RUN_VDIFFR }}
 
       # ----------------------------------------------------------------
