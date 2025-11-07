@@ -48,13 +48,12 @@ jobs:
           needs: check
 
       - name: Run R CMD check
-        - uses: r-lib/actions/check-r-package@v2
-          with:
-            path: quant
-            args: "--no-manual --as-cran"
-            error-on: warning     
-            upload-snapshots: false
-
+        uses: r-lib/actions/check-r-package@v2
+        with:
+          path: quant
+          args: "--no-manual --as-cran"
+          error-on: warning     
+          upload-snapshots: false
 
       - name: Upload check results
         if: failure()
