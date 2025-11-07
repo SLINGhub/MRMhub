@@ -50,9 +50,9 @@ jobs:
       - name: Run R CMD check
         uses: r-lib/actions/check-r-package@v2
         with:
-          path: quant
+          working-directory: ./quant 
           args: "--no-manual --as-cran"
-          error-on: warning     
+          error-on: "warning"     
           upload-snapshots: false
 
       - name: Upload check results
