@@ -1,20 +1,20 @@
 Package: mrmhub
-Title: Small Molecule Mass Spectrometry Data Processing, Quality
-    Control, and Reporting
+Title: Small Molecule Mass Spectrometry Data Processing, Quality Control, and Reporting
 Version: 0.9.0
-Authors@R: 
-    c(person("Bo", "Burla", email = "bo.burla@nus.edu.sg", role = c("aut", "cre"),
-           comment = c(ORCID = "0000-0002-5918-3249")),
-    person("Guo Shou", "Teo", email = "guoshou@nus.edu.sg", role = c("aut"),
-           comment = c(ORCID = "0000-0003-3891-1494")),
-    person("Hyungwon", "Choi", email = "hyung_won_choi@nus.edu.sg", role = c("aut"),
-           comment = c(ORCID = "0000-0002-6687-3088")))
-Description: 'MRMhub' is a tool for processing, quality control, and visualization of targeted metabolomics and lipidomics mass spectrometry data.
+Authors@R: c(person(given = "Bo", family = "Burla", role = c("aut", "cre"),
+    email = "bo.burla@nus.edu.sg", comment = c(ORCID = "0000-0002-5918-3249")),
+    person(given = "Guo Shou", family = "Teo", role = "aut",
+    email = "guoshou@nus.edu.sg", comment = c(ORCID = "0000-0003-3891-1494")),
+    person(given = "Hyungwon", family = "Choi", role = "aut",
+    email = "hyung_won_choi@nus.edu.sg", comment = c(ORCID = "0000-0002-6687-3088"))
+    )
+Description: MRMhub is a tool for processing, quality control, and visualization
+    of targeted metabolomics and lipidomics mass spectrometry data.
 License: GPL-3
-URL: https://github.com/SLINGhub/mrmhub, https://slinghub.github.io/mrmhub/, https://slinghub.github.io/MRMhub/
-BugReports: https://github.com/SLINGhub/mrmhub/issues
-Depends:
-    R (>= 4.2.0)
+URL: https://github.com/SLINGhub/MRMhub,
+    https://slinghub.github.io/MRMhub/
+BugReports: https://github.com/SLINGhub/MRMhub/issues
+Depends: R (>= 4.2)
 Imports: 
     assertr,
     methods,

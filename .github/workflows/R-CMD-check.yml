@@ -67,7 +67,7 @@ jobs:
         uses: r-lib/actions/check-r-package@v2
         with:
           working-directory: ./quant
-          args: "--no-manual --as-cran"
+          build_args: 'c("--no-manual")'
           upload-snapshots: ${{ env.RUN_VDIFFR }}
 
       # ----------------------------------------------------------------
