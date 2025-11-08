@@ -23,7 +23,7 @@ jobs:
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-      RUN_VDIFFR: ${{ matrix.config.os == 'macos-latest' && 'true' || 'false' }}
+      RUN_VDIFFR: ${{ contains(matrix.config.os, 'macos-latest') }}
       R_KEEP_PKG_SOURCE: yes
 
     steps:
@@ -55,13 +55,6 @@ jobs:
             any::carrier
 
       # ----------------------------------------------------------------
-      # Render Quarto vignettes (optional)
-      - name: Render Quarto vignettes
-        if: matrix.config.os == 'macos-latest'
-        run: |
-          R -e 'if (requireNamespace("quarto", quietly = TRUE)) quarto::quarto_render(input = "vignettes/articles", execute_params = list(), quiet = FALSE)'
-
-      # ----------------------------------------------------------------
       # Run R CMD check
       - name: Run R CMD check
         uses: r-lib/actions/check-r-package@v2
@@ -82,8 +75,9 @@ jobs:
       # ----------------------------------------------------------------
       # Upload vdiffr snapshots (macOS only)
       - name: Upload vdiffr snapshots
-        if: ${{ env.RUN_VDIFFR == 'true' }}
+        if: ${{ env.RUN_VDIFFR }}
         uses: actions/upload-artifact@v4
         with:
           name: ${{ runner.os }}-r${{ matrix.config.r }}-snapshots
-          path: quant/tests/figs
+          path: tests/figs
+          if-no-files-found: ignore
