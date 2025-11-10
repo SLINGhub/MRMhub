@@ -22,5 +22,11 @@ Useful links:
 \author{
 \strong{Maintainer}: Bo Burla \email{bo.burla@nus.edu.sg} (\href{https://orcid.org/0000-0002-5918-3249}{ORCID})
 
+Authors:
+\itemize{
+  \item Guo Shou Teo \email{guoshou@nus.edu.sg} (\href{https://orcid.org/0000-0003-3891-1494}{ORCID})
+  \item Hyungwon Choi \email{hyung_won_choi@nus.edu.sg} (\href{https://orcid.org/0000-0002-6687-3088}{ORCID})
+}
+
 }
 \keyword{internal}

@@ -47,8 +47,6 @@ See the online Documentation on [https://slinghub.github.io/MRMhub](https://slin
 
 We welcome contributions. For questions, bug reports, feature requests, or suggestions, please contact us directly or submit an issue through the [GitHub issues](https://github.com/SLINGhub/MRMhub/issues) page.
 
-## Contributor Code of Conduct
-
 Please note that the MRMhub project is released with a [Contributor Code of Conduct](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html). By contributing to this project, you agree to abide by its terms.
 
 ## Dual Licensing Options
