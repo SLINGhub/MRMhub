@@ -24,7 +24,7 @@ processing workflows through intuitive functions and data objects.
 
 **INTEGRATOR** (Peak Integration)
 
-To download the latest release of INTEGRATOR, visit the [Rveleases
+To download the latest release of INTEGRATOR, visit the [Releases
 page](https://github.com/SLINGhub/MRMhub/releases). Choose the
 appropriate version for your operating system (Windows, macOS, or Linux)
 and download the corresponding executable file. Unzip the downloaded
@@ -57,8 +57,6 @@ for detailed information on installation, usage, and examples of MRMhub.
 We welcome contributions. For questions, bug reports, feature requests,
 or suggestions, please contact us directly or submit an issue through
 the [GitHub issues](https://github.com/SLINGhub/MRMhub/issues) page.
-
-## Contributor Code of Conduct
 
 Please note that the MRMhub project is released with a [Contributor Code
 of
@@ -422,6 +420,8 @@ spectrometry is also available.
 
   MRMhub: postprocessing and quality control of small molecule mass
   spectrometry data
+
+- [MRMhub](https://slinghub.github.io/MRMhub/articles/mrmhub.md):
 
 - [MSconvert
   Instructions](https://slinghub.github.io/MRMhub/articles/msconvert_manual.md):

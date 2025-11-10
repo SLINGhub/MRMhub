@@ -59,6 +59,8 @@
   MRMhub: postprocessing and quality control of small molecule mass
   spectrometry data
 
+- [MRMhub](https://slinghub.github.io/MRMhub/articles/mrmhub.md):
+
 - [MSconvert
   Instructions](https://slinghub.github.io/MRMhub/articles/msconvert_manual.md):
 

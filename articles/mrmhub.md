@@ -1,5 +1,16 @@
 # MRMhub
 
+[![Lifecycle:
+stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html)
+[![License: GPL
+v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![R-CMD-check](https://github.com/SLINGhub/MRMhub/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/SLINGhub/MRMhub/actions/workflows/R-CMD-check.yml)
+[![Codecov test
+coverage](https://codecov.io/gh/SLINGhub/MRMhub/branch/main/graph/badge.svg)](https://app.codecov.io/gh/SLINGhub/MRMhub?branch=main)
+[![Platform](https://img.shields.io/badge/platform-linux%20%7C%20osx%20%7C%20win-lightgrey)](https://github.com/SLINGhub/MRMhub)
+
+## Overview TEST
+
 MRMhub is a set of tools for reproducible raw data processing,
 post-processing, quality control, and reporting of targeted quantitative
 small-molecule mass spectrometry experiments using Multiple Reaction
@@ -22,17 +33,17 @@ processing workflows through intuitive functions and data objects.
 
 ## Usage
 
-**INTEGRATOR** (Peak Integration)
+#### INTEGRATOR (Peak Integration)
 
 To download the latest release of INTEGRATOR, visit the [Releases
 page](https://github.com/SLINGhub/MRMhub/releases). Choose the
 appropriate version for your operating system (Windows, macOS, or Linux)
 and download the corresponding executable file. Unzip the downloaded
 file and double-click the executable to launch the application. Refer to
-the [Documentation](https://slinghub.github.io/MRMhub/) for detailed
+the [Documentation](https://slinghub.github.io/mrmhub/) for detailed
 instructions on how to use INTEGRATOR.
 
-**QUANT** (Postprocessing and Quality Control)
+#### QUANT (Postprocessing and Quality Control)
 
 Install the `mrmhub` package from Github using the following command:
 
@@ -44,12 +55,12 @@ remotes::install_github("SLINGhub/MRMhub", subdir = "quant")
 Load the package in your R session via
 [`library(mrmhub)`](https://github.com/SLINGhub/mrmhub). For detailed
 usage instructions and examples, refer to the
-[Documentation](https://slinghub.github.io/MRMhub/).
+[Documentation](https://slinghub.github.io/mrmhub/).
 
 ## Documentation
 
 See the online Documentation on
-[https://slinghub.github.io/MRMhub](https://slinghub.github.io/MRMhub/)
+[https://slinghub.github.io/mrmhub](https://slinghub.github.io/mrmhub/)
 for detailed information on installation, usage, and examples of MRMhub.
 
 ## Contributing
@@ -57,6 +68,8 @@ for detailed information on installation, usage, and examples of MRMhub.
 We welcome contributions. For questions, bug reports, feature requests,
 or suggestions, please contact us directly or submit an issue through
 the [GitHub issues](https://github.com/SLINGhub/MRMhub/issues) page.
+
+## Contributor Code of Conduct
 
 Please note that the MRMhub project is released with a [Contributor Code
 of
@@ -74,11 +87,9 @@ commercial use.
 For non-commercial uses and licensing of this / these code and models
 and its derivatives, an open-source licence is granted in accordance
 with the following terms and conditions - [GNU
-AGPLv3](https://www.gnu.org/licenses/agpl-3.0.en.html).
-
-### For commercial use and licensing of this / these code and models, please contact -
-
-Jonathan Tan ( <jonathan_tan@nus.edu.sg> )
+AGPLv3](https://www.gnu.org/licenses/agpl-3.0.en.html). \### For
+commercial use and licensing of this / these code and models, please
+contact - Jonathan Tan ( <jonathan_tan@nus.edu.sg> )
 
 Reporting unauthorized commercial use and/or further enquiries
 

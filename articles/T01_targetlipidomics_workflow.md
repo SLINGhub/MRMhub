@@ -175,11 +175,7 @@ plot_runscatter(
 ```
 
 ![RunScatter
-plot](T01_targetlipidomics_workflow_files/figure-html/runscatter-1.png)
-
-    #>  ■■■■■■■■■■■                       33% |  ETA:  2s
-
-![RunScatter
+plot](T01_targetlipidomics_workflow_files/figure-html/runscatter-1.png)![RunScatter
 plot](T01_targetlipidomics_workflow_files/figure-html/runscatter-2.png)![RunScatter
 plot](T01_targetlipidomics_workflow_files/figure-html/runscatter-3.png)
 
@@ -752,7 +748,7 @@ Exercises
 ``` r
 mrmhub::save_report_xlsx(myexp, path = tempfile(fileext = ".xlsx"))
 #> Saving report to disk - please wait...
-#> ✔ The data processing report of experiment 'sPerfect' has been saved to '/tmp/RtmpV8LCAn/file38d319060ef9.xlsx'.
+#> ✔ The data processing report of experiment 'sPerfect' has been saved to '/tmp/Rtmpb6ZIId/file3940dcaf29.xlsx'.
 ```
 
 You can also save specific data subsets as a clean flat, wide CSV file.
@@ -772,7 +768,7 @@ mrmhub::save_dataset_csv(
   qc_types = "SPL", 
   include_qualifier = FALSE,
   filter_data = TRUE)
-#> ✔ Concentration values for 377 analyses and 324 features have been exported to '/tmp/RtmpV8LCAn/file38d37a9fffd.csv'.
+#> ✔ Concentration values for 377 analyses and 324 features have been exported to '/tmp/Rtmpb6ZIId/file394013f67795.csv'.
 ```
 
 ## 22. Sharing the `MRMhubExperiment` dataset
