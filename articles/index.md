@@ -1,101 +1,96 @@
-# Articles
+# MRMhub
 
-### All vignettes
+[![Lifecycle:
+stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html)
+[![License: GPL
+v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![R-CMD-check](https://github.com/SLINGhub/MRMhub/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/SLINGhub/MRMhub/actions/workflows/R-CMD-check.yml)
+[![Codecov test
+coverage](https://codecov.io/gh/SLINGhub/MRMhub/branch/main/graph/badge.svg)](https://app.codecov.io/gh/SLINGhub/MRMhub?branch=main)
+[![Platform](https://img.shields.io/badge/platform-linux%20%7C%20osx%20%7C%20win-lightgrey)](https://github.com/SLINGhub/MRMhub)
 
-- [Getting Started with
-  MRMhub](https://slinghub.github.io/MRMhub/articles/00_get_started.md):
+MRMhub is a set of tools for reproducible raw data processing,
+post-processing, quality control, and reporting of targeted quantitative
+small-molecule mass spectrometry experiments using Multiple Reaction
+Monitoring (MRM). The platform includes two complementary tools:
 
-  MRMhub: Postprocessing and Quality Control of Small-Molecule Mass
-  Spectrometry Data
+- **INTEGRATOR**: Python application for efficient and automated raw
+  data processing, i.e., peak detection, picking, and integration.
 
-- [Data and Metadata in
-  MRMhub](https://slinghub.github.io/MRMhub/articles/01_datastructure.md):
+- **QUANT**: R package providing a function library for data post-
+  processing, including quantitation, data corrections, comprehensive
+  quality control, and reporting.
 
-  MRMhub: Postprocessing and Quality Control of Small-Molecule Mass
-  Spectrometry Data
+The modular functionalities and defined data structures support diverse
+analytical designs, data formats, and processing tasks, as found in
+metabolomics, lipidomics and other quantitative small molecule analyses.
+`MRMhub` is intended for both analytical and bioinformatics scientists
+and facilitates collaboration between them. It enables the creation of
+efficient, customizable, supervisable, and documented end-to-end data
+processing workflows through intuitive functions and data objects.
 
-- [Data Identifiers in
-  MRMhub](https://slinghub.github.io/MRMhub/articles/02_keydataids.md):
+## Usage
 
-  MRMhub: Postprocessing and Quality Control of Small-Molecule Mass
-  Spectrometry Data
+#### INTEGRATOR (Peak Integration)
 
-- [Quality
-  Control](https://slinghub.github.io/MRMhub/articles/02_QualityControl.md):
+To download the latest release of INTEGRATOR, visit the [Releases
+page](https://github.com/SLINGhub/MRMhub/releases). Choose the
+appropriate version for your operating system (Windows, macOS, or Linux)
+and download the corresponding executable file. Unzip the downloaded
+file and double-click the executable to launch the application. Refer to
+the [Documentation](https://slinghub.github.io/mrmhub/) for detailed
+instructions on how to use INTEGRATOR.
 
-- [Feature Variables in
-  MRMhub](https://slinghub.github.io/MRMhub/articles/02b_keyfeaturevar.md):
+#### QUANT (Postprocessing and Quality Control)
 
-  MRMhub: Postprocessing and Quality Control of Small-Molecule Mass
-  Spectrometry Data
+Install the `mrmhub` package from Github using the following command:
 
-- [The \`MRMhubExperiment\` data
-  object](https://slinghub.github.io/MRMhub/articles/03_mrmhubexperiment.md):
+``` r
+if (!require("remotes")) install.packages("remotes")
+remotes::install_github("SLINGhub/MRMhub", subdir = "quant")
+```
 
-  MRMhub: Postprocessing and Quality Control of Small-Molecule Mass
-  Spectrometry Data
+Load the package in your R session via
+[`library(mrmhub)`](https://github.com/SLINGhub/mrmhub). For detailed
+usage instructions and examples, refer to the
+[Documentation](https://slinghub.github.io/mrmhub/).
 
-- [Importing analytical
-  data](https://slinghub.github.io/MRMhub/articles/04_dataimport.md):
+## Documentation
 
-  MRMhub: postprocessing and quality control of small molecule mass
-  spectrometry data
+See the online Documentation on
+[https://slinghub.github.io/mrmhub](https://slinghub.github.io/mrmhub/)
+for detailed information on installation, usage, and examples of MRMhub.
 
-- [Metadata
-  import](https://slinghub.github.io/MRMhub/articles/05_metadataimport.md):
+## Contributing
 
-  MRMhub: postprocessing and quality control of small molecule mass
-  spectrometry data
+We welcome contributions. For questions, bug reports, feature requests,
+or suggestions, please contact us directly or submit an issue through
+the [GitHub issues](https://github.com/SLINGhub/MRMhub/issues) page.
 
-- [Drift and Batch
-  Correction](https://slinghub.github.io/MRMhub/articles/07_driftbatchcorr.md):
+## Contributor Code of Conduct
 
-  MRMhub: postprocessing and quality control of small molecule mass
-  spectrometry data
+Please note that the MRMhub project is released with a [Contributor Code
+of
+Conduct](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html).
+By contributing to this project, you agree to abide by its terms.
 
-- [INTEGRATOR
-  Manual](https://slinghub.github.io/MRMhub/articles/Integrator_manual.md):
+## Dual Licensing Options
 
-  MRMhub: postprocessing and quality control of small molecule mass
-  spectrometry data
+The source code and models within this repository are dual licenced. You
+may choose to use it under the terms of the [GNU
+AGPLv3](https://www.gnu.org/licenses/agpl-3.0.en.html) for
+non-commercial purposes, or you can obtain a commercial license for
+commercial use.
 
-- [MRMhub](https://slinghub.github.io/MRMhub/articles/MRMhub.md):
+For non-commercial uses and licensing of this / these code and models
+and its derivatives, an open-source licence is granted in accordance
+with the following terms and conditions - [GNU
+AGPLv3](https://www.gnu.org/licenses/agpl-3.0.en.html). \### For
+commercial use and licensing of this / these code and models, please
+contact - Jonathan Tan ( jonathan_tan@nus.edu.sg )
 
-- [MSconvert
-  Instructions](https://slinghub.github.io/MRMhub/articles/msconvert_manual.md):
+Reporting unauthorized commercial use and/or further enquiries
 
-  MRMhub: postprocessing and quality control of small molecule mass
-  spectrometry data
-
-- [Quantitative assay with Ext. calibration and
-  QC](https://slinghub.github.io/MRMhub/articles/R01_quantms.md):
-
-  MRMhub: Postprocessing and Quality Control of Small-Molecule Mass
-  Spectrometry Data
-
-- [Batch-effect
-  correction](https://slinghub.github.io/MRMhub/articles/T_BatchCorrect.md):
-
-- [Calibration by a Reference
-  Sample](https://slinghub.github.io/MRMhub/articles/T_CalibRef.md):
-
-- [Drift Correction
-  (Smoothing)](https://slinghub.github.io/MRMhub/articles/T_DriftCorrect.md):
-
-- [Preparing and importing
-  data](https://slinghub.github.io/MRMhub/articles/T01_prepdata.md):
-
-  MRMhub: postprocessing and quality control of small molecule mass
-  spectrometry data
-
-- [Lipidomics Data
-  Processing](https://slinghub.github.io/MRMhub/articles/T01_targetlipidomics_workflow.md):
-
-  MRMhub: Postprocessing and Quality Control of Small-Molecule Mass
-  Spectrometry Data
-
-- [A basic MRMhub
-  workflow](https://slinghub.github.io/MRMhub/articles/T02_settingup_workflow.md):
-
-  MRMhub: Postprocessing and Quality Control of Small-Molecule Mass
-  Spectrometry Data
+If you become aware of any unauthorised commercial use of this source
+code and models or have any questions regarding licensing terms, please
+contact Jonathan Tan ( jonathan_tan@nus.edu.sg ).
