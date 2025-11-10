@@ -126,8 +126,8 @@ myexp <- correct_drift_gaussiankernel(
   ref_qc_types = c("SPL"))
 #> ℹ Applying `conc` drift correction...
 #> ℹ 2 feature(s) contain one or more zero or negative `conc` values. Verify your data or use `log_transform_internal = FALSE`.
-#>  ■■■■■■■■■■■                       34% |  ETA:  6s
-#>  ■■■■■■■■■■■■■■■■■■■■■■            71% |  ETA:  2s
+#>  ■■■■■■■■■■■■■                     42% |  ETA:  5s
+#>  ■■■■■■■■■■■■■■■■■■■■■■■■■         79% |  ETA:  2s
 #> ! 1 features showed no variation in the study sample's original values across analyses. 
 #> ! 1 features have invalid values after smoothing. NA will be be returned for all values of these faetures. Set `use_original_if_fail = FALSE to return orginal values..
 #> ✔ Drift correction was applied to 459 of 460 features (batch-wise).
@@ -191,7 +191,7 @@ plots and QC checks.
 # Saves a detailed report in Excel format with multiple sheets
 mrmhub::save_report_xlsx(myexp, path = tempfile(fileext = ".xlsx"))
 #> Saving report to disk - please wait...
-#> ✔ The data processing report has been saved to '/tmp/Rtmp6okz5W/file3b7221bf429f.xlsx'.
+#> ✔ The data processing report has been saved to '/tmp/Rtmp8etIjx/file3ba975951b63.xlsx'.
 
 # Saves flat csv table with concentration values that passed the previously set
 # QC criteria, for each feature in each sample. 
@@ -202,7 +202,7 @@ mrmhub::save_dataset_csv(
   qc_types = "SPL", 
   include_qualifier = FALSE,
   filter_data = TRUE)
-#> ✔ Concentration values for 378 analyses and 182 features have been exported to '/tmp/Rtmp6okz5W/file3b7256b77592.csv'.
+#> ✔ Concentration values for 378 analyses and 182 features have been exported to '/tmp/Rtmp8etIjx/file3ba936d46a3f.csv'.
 
 # Saves the entire MRMhubExperiment object as an RDS file, which can be
 # opened in R without MRMhub or used with MRMhub again.
