@@ -1,4 +1,4 @@
-# MRMhub <a href="https://slinghub.github.io/MRMhub/"><img src="man/figures/logo.png" align="right" height="139" alt="midar website" /></a>
+# MRMhub <a href="https://slinghub.github.io/MRMhub/"><img src="quant/man/figures/logo.png" align="right" height="139" alt="midar website" /></a>
 
 
 <!-- badges: start -->
