@@ -4,10 +4,9 @@
 <!-- badges: start -->
 
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html)
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![R-CMD-check](https://github.com/SLINGhub/MRMhub/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/SLINGhub/MRMhub/actions/workflows/R-CMD-check.yml)
-[![Codecov test coverage](https://codecov.io/gh/SLINGhub/MRMhub/branch/main/graph/badge.svg)](https://app.codecov.io/gh/SLINGhub/MRMhub?branch=main)
-[![Platform](https://img.shields.io/badge/platform-linux%20%7C%20osx%20%7C%20win-lightgrey)](https://github.com/SLINGhub/MRMhub)
+[![Codecov test coverage](https://codecov.io/gh/SLINGhub/MRMhub/graph/badge.svg)](https://app.codecov.io/gh/SLINGhub/MRMhub)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 
 <!-- badges: end -->
