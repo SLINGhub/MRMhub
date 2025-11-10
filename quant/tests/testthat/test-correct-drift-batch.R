@@ -939,26 +939,18 @@ test_that("correct_drift_loess fit error are handeled", {
     fixed = TRUE
   )
 
-  test_that("correct_drift_loess fit error are handled", {
-    # Capture any messages from the function
-    msgs <- capture.output(
-      mexp_drift1 <- correct_drift_loess(
-        mexp_err,
-        span = 0.3,
-        degree = 2,
-        batch_wise = TRUE,
-        replace_previous = TRUE,
-        variable = "conc",
-        ref_qc_types = "BQC",
-        recalc_trend_after = TRUE,
-        ignore_istd = TRUE
-      ),
-      type = "message"
-    )
-
-    # Print them so they appear in GitHub Actions logs
-    message("Captured messages:\n", paste(msgs, collapse = "\n"))
-  })
+  message("Warning message capture")
+  mexp_drift1 <- correct_drift_loess(
+    mexp_err,
+    span = 0.3,
+    degree = 2,
+    batch_wise = TRUE,
+    replace_previous = TRUE,
+    variable = "conc",
+    ref_qc_types = "BQC",
+    recalc_trend_after = TRUE,
+    ignore_istd = TRUE
+  )
 
   expect_message(
     mexp_drift1 <- correct_drift_loess(
