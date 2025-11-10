@@ -1,4 +1,5 @@
-  # MRMhub <a href="https://slinghub.github.io/mrmhub/"><img src="quant/man/figures/logo.png" align="right" height="138" alt="mrmhub website" /></a>
+# MRMhub <a href="https://slinghub.github.io/MRMhub/"><img src="man/figures/logo.svg" align="right" height="139" alt="midar website" /></a>
+
 
 <!-- badges: start -->
 
@@ -25,7 +26,7 @@ The modular functionalities and defined data structures support diverse analytic
 
 #### INTEGRATOR (Peak Integration)
 
-To download the latest release of INTEGRATOR, visit the [Releases page](https://github.com/SLINGhub/MRMhub/releases). Choose the appropriate version for your operating system (Windows, macOS, or Linux) and download the corresponding executable file. Unzip the downloaded file and double-click the executable to launch the application. Refer to the [Documentation](https://slinghub.github.io/MRMhub/) for detailed instructions on how to use INTEGRATOR.
+To download the latest release of INTEGRATOR, visit the [Rveleases page](https://github.com/SLINGhub/MRMhub/releases). Choose the appropriate version for your operating system (Windows, macOS, or Linux) and download the corresponding executable file. Unzip the downloaded file and double-click the executable to launch the application. Refer to the [Documentation](https://slinghub.github.io/MRMhub/) for detailed instructions on how to use INTEGRATOR.
 
 #### QUANT (Postprocessing and Quality Control)
 
