@@ -8,26 +8,19 @@
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-'MRMhub' is a tool for processing, quality control, and visualization of targeted metabolomics and lipidomics mass spectrometry data.
+MRMhub is a tool for processing, quality control, and visualization of targeted metabolomics and lipidomics mass spectrometry data.
 }
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/SLINGhub/mrmhub}
-  \item \url{https://slinghub.github.io/mrmhub/}
+  \item \url{https://github.com/SLINGhub/MRMhub}
   \item \url{https://slinghub.github.io/MRMhub/}
-  \item Report bugs at \url{https://github.com/SLINGhub/mrmhub/issues}
+  \item Report bugs at \url{https://github.com/SLINGhub/MRMhub/issues}
 }
 
 }
 \author{
 \strong{Maintainer}: Bo Burla \email{bo.burla@nus.edu.sg} (\href{https://orcid.org/0000-0002-5918-3249}{ORCID})
-
-Authors:
-\itemize{
-  \item Guo Shou Teo \email{guoshou@nus.edu.sg} (\href{https://orcid.org/0000-0003-3891-1494}{ORCID})
-  \item Hyungwon Choi \email{hyung_won_choi@nus.edu.sg} (\href{https://orcid.org/0000-0002-6687-3088}{ORCID})
-}
 
 }
 \keyword{internal}
