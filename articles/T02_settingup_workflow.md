@@ -191,7 +191,7 @@ plots and QC checks.
 # Saves a detailed report in Excel format with multiple sheets
 mrmhub::save_report_xlsx(myexp, path = tempfile(fileext = ".xlsx"))
 #> Saving report to disk - please wait...
-#> ✔ The data processing report has been saved to '/tmp/RtmpcxEzIw/file3b78522cd09c.xlsx'.
+#> ✔ The data processing report has been saved to '/tmp/RtmphEJ4Bc/file3b5a3a09eaa3.xlsx'.
 
 # Saves flat csv table with concentration values that passed the previously set
 # QC criteria, for each feature in each sample. 
@@ -202,7 +202,7 @@ mrmhub::save_dataset_csv(
   qc_types = "SPL", 
   include_qualifier = FALSE,
   filter_data = TRUE)
-#> ✔ Concentration values for 378 analyses and 182 features have been exported to '/tmp/RtmpcxEzIw/file3b7878e6d55c.csv'.
+#> ✔ Concentration values for 378 analyses and 182 features have been exported to '/tmp/RtmphEJ4Bc/file3b5a41b86ac6.csv'.
 
 # Saves the entire MRMhubExperiment object as an RDS file, which can be
 # opened in R without MRMhub or used with MRMhub again.
