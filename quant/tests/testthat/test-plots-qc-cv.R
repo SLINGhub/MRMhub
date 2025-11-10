@@ -105,7 +105,7 @@ test_that("plot_normalization_qc generates correct plot types", {
     plot_type = "scatter",
     qc_types = "BQC"
   )
-  vdiffr::expect_doppelganger("norm-qc-scatter", p_scatter)
+  vdiffr::expect_doppelganger_cond("norm-qc-scatter", p_scatter)
 
   p_diff <- plot_normalization_qc(
     data = mexp,
@@ -114,7 +114,7 @@ test_that("plot_normalization_qc generates correct plot types", {
     plot_type = "diff",
     qc_types = "BQC"
   )
-  vdiffr::expect_doppelganger("norm-qc-diff", p_diff)
+  vdiffr::expect_doppelganger_cond("norm-qc-diff", p_diff)
 
   p_ratio <- plot_normalization_qc(
     data = mexp,
@@ -123,7 +123,7 @@ test_that("plot_normalization_qc generates correct plot types", {
     plot_type = "ratio",
     qc_types = "BQC"
   )
-  vdiffr::expect_doppelganger("norm-qc-ratio", p_ratio)
+  vdiffr::expect_doppelganger_cond("norm-qc-ratio", p_ratio)
 })
 
 test_that("plot_normalization_qc faceting works", {
@@ -135,7 +135,7 @@ test_that("plot_normalization_qc faceting works", {
     qc_types = "SPL",
     facet_by_class = TRUE
   )
-  vdiffr::expect_doppelganger("norm-qc-faceted", p_faceted)
+  vdiffr::expect_doppelganger_cond("norm-qc-faceted", p_faceted)
 
   # Object check for faceting
   built_plot <- ggplot_build(p_faceted)
@@ -261,7 +261,7 @@ test_that("plot_qcmetrics_comparison plot looks as expected", {
     equality_line = FALSE,
     facet_by_class = TRUE
   )
-  vdiffr::expect_doppelganger("default plot_qcmetrics_comparison plot", p)
+  vdiffr::expect_doppelganger_cond("default plot_qcmetrics_comparison plot", p)
 })
 
 test_that("plot_qcmetrics_comparison plot no facets", {
@@ -274,7 +274,7 @@ test_that("plot_qcmetrics_comparison plot no facets", {
     equality_line = FALSE,
     facet_by_class = FALSE
   )
-  vdiffr::expect_doppelganger("nofacet plot_qcmetrics_comparison plot", p)
+  vdiffr::expect_doppelganger_cond("nofacet plot_qcmetrics_comparison plot", p)
 })
 
 # this comparison doesnt make sense, but it tests the plotting function
@@ -288,7 +288,7 @@ test_that("plot_qcmetrics_comparison plot looks as expected", {
     equality_line = FALSE,
     facet_by_class = TRUE
   )
-  vdiffr::expect_doppelganger("diff plot_qcmetrics_comparison plot", p)
+  vdiffr::expect_doppelganger_cond("diff plot_qcmetrics_comparison plot", p)
 })
 
 # this comparison doesnt make sense, but it tests the plotting function
@@ -302,7 +302,7 @@ test_that("plot_qcmetrics_comparison plot looks as expected", {
     equality_line = FALSE,
     facet_by_class = TRUE
   )
-  vdiffr::expect_doppelganger("plot_qcmetrics_comparison ratio ", p)
+  vdiffr::expect_doppelganger_cond("plot_qcmetrics_comparison ratio ", p)
 })
 
 test_that("plot_qcmetrics_comparison plot looks as expected", {
@@ -321,7 +321,7 @@ test_that("plot_qcmetrics_comparison plot looks as expected", {
   plot_data <- ggplot2::ggplot_build(p)$data[[1]]
   # Test if the number of points in the plot matches the expected value
   expect_equal(nrow(plot_data), 19)
-  vdiffr::expect_doppelganger("plot_qcmetrics_comparison 1panel", p)
+  vdiffr::expect_doppelganger_cond("plot_qcmetrics_comparison 1panel", p)
 })
 
 test_that("plot_qcmetrics_comparison plot looks as expected", {
@@ -357,7 +357,7 @@ test_that("plot_qcmetrics_comparison data filter works", {
   plot_data <- ggplot2::ggplot_build(p)$data[[1]]
   # Test if the number of points in the plot matches the expected value
   expect_equal(nrow(plot_data), 6)
-  vdiffr::expect_doppelganger("plot_qcmetrics_comparison filter", p)
+  vdiffr::expect_doppelganger_cond("plot_qcmetrics_comparison filter", p)
 })
 
 test_that("plot_qcmetrics_comparison plot threshold", {
@@ -370,7 +370,7 @@ test_that("plot_qcmetrics_comparison plot threshold", {
     threshold_value = 10,
     facet_by_class = TRUE
   )
-  vdiffr::expect_doppelganger("plot_qcmetrics_comparison threshold1", p)
+  vdiffr::expect_doppelganger_cond("plot_qcmetrics_comparison threshold1", p)
 })
 
 test_that("plot_qcmetrics_comparison plot log", {
@@ -383,7 +383,7 @@ test_that("plot_qcmetrics_comparison plot log", {
     threshold_value = c(NA, 10),
     facet_by_class = TRUE
   )
-  vdiffr::expect_doppelganger("plot_qcmetrics_comparison threshold2", p)
+  vdiffr::expect_doppelganger_cond("plot_qcmetrics_comparison threshold2", p)
 })
 
 
@@ -398,7 +398,7 @@ test_that("plot_qcmetrics_comparison plot looks as expected", {
     facet_by_class = TRUE,
     log_scale = TRUE
   )
-  vdiffr::expect_doppelganger("plot_qcmetrics_comparison thresholdlog", p)
+  vdiffr::expect_doppelganger_cond("plot_qcmetrics_comparison thresholdlog", p)
 })
 
 

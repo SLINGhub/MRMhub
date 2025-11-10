@@ -10,18 +10,18 @@ mexp <- import_data_mrmhub(
 
 test_that("plot_rt_vs_chain works", {
   p <- plot_rt_vs_chain(mexp, qc_types = "SPL", x_var = "total_c")
-  vdiffr::expect_doppelganger("default plot_rt_vs_chain", p)
+  vdiffr::expect_doppelganger_cond("default plot_rt_vs_chain", p)
 })
 
 # Regre
 test_that("plot_rt_vs_chain works with x axis db", {
   p <- plot_rt_vs_chain(mexp, qc_types = "SPL", x_var = "total_db")
-  vdiffr::expect_doppelganger("plot_rt_vs_chain xaxis db", p)
+  vdiffr::expect_doppelganger_cond("plot_rt_vs_chain xaxis db", p)
 })
 
 test_that("plot_rt_vs_chain works with x axis db", {
   p <- plot_rt_vs_chain(mexp, qc_types = "SPL", x_var = "ecn")
-  vdiffr::expect_doppelganger("plot_rt_vs_chain xaxis ecn", p)
+  vdiffr::expect_doppelganger_cond("plot_rt_vs_chain xaxis ecn", p)
 })
 
 test_that("plot_rt_vs_chain no robust regress", {
@@ -31,7 +31,7 @@ test_that("plot_rt_vs_chain no robust regress", {
     x_var = "total_c",
     robust_regression = FALSE
   )
-  vdiffr::expect_doppelganger(" plot_rtr_vs_chain norobustreg", p)
+  vdiffr::expect_doppelganger_cond(" plot_rtr_vs_chain norobustreg", p)
 })
 
 test_that("plot_rt_vs_chain include qualifier", {
@@ -45,7 +45,7 @@ test_that("plot_rt_vs_chain include qualifier", {
     x_var = "total_c",
     include_qualifier = TRUE
   )
-  vdiffr::expect_doppelganger("plot_rt_vs_chain with qual", p)
+  vdiffr::expect_doppelganger_cond("plot_rt_vs_chain with qual", p)
 
   p <- plot_rt_vs_chain(
     mexp_temp,
@@ -53,7 +53,7 @@ test_that("plot_rt_vs_chain include qualifier", {
     x_var = "total_c",
     include_qualifier = FALSE
   )
-  vdiffr::expect_doppelganger("plot_rt_vs_chain no qual", p)
+  vdiffr::expect_doppelganger_cond("plot_rt_vs_chain no qual", p)
 })
 
 test_that("plot_rt_vs_chain no robust regress", {
@@ -63,7 +63,7 @@ test_that("plot_rt_vs_chain no robust regress", {
     x_var = "total_c",
     outliers_highlight = FALSE
   )
-  vdiffr::expect_doppelganger(" plot_rtr_vs_chain hide outlierpoint", p)
+  vdiffr::expect_doppelganger_cond(" plot_rtr_vs_chain hide outlierpoint", p)
 })
 
 
@@ -112,5 +112,5 @@ test_that("plot_rt_vs_chain no outlier report", {
     fixed = TRUE
   )
 
-  vdiffr::expect_doppelganger(" plot_rtr_vs_chain tibble data", p)
+  vdiffr::expect_doppelganger_cond(" plot_rtr_vs_chain tibble data", p)
 })

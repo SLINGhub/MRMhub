@@ -34,7 +34,7 @@ test_that("Core functionality works correctly", {
   )
   expect_s3_class(p_default, "ggplot")
   expect_silent(ggplot_build(p_default))
-  vdiffr::expect_doppelganger("plot_abundanceprofile-default", p_default)
+  vdiffr::expect_doppelganger_cond("plot_abundanceprofile-default", p_default)
 
   p_qc <- plot_abundanceprofile(
     data = mexp,
@@ -338,7 +338,10 @@ test_that("plot_abundanceprofiledensity strip", {
     density_strip = TRUE
   )
   expect_s3_class(p_density, "patchwork")
-  vdiffr::expect_doppelganger("plot_abundanceprofile p_density", p_density$plot)
+  vdiffr::expect_doppelganger_cond(
+    "plot_abundanceprofile p_density",
+    p_density$plot
+  )
 })
 
 test_that("plot_abundanceprofiledensity strip log", {
@@ -350,7 +353,10 @@ test_that("plot_abundanceprofiledensity strip log", {
     density_strip = TRUE
   )
   expect_s3_class(p_density, "patchwork")
-  vdiffr::expect_doppelganger("plot_abundanceprofile p_density log", p_density$plot)
+  vdiffr::expect_doppelganger_cond(
+    "plot_abundanceprofile p_density log",
+    p_density$plot
+  )
 })
 
 test_that("plot_abundanceprofiledensity strip log range", {
@@ -363,7 +369,7 @@ test_that("plot_abundanceprofiledensity strip log range", {
     density_strip = TRUE
   )
   expect_s3_class(p_density, "patchwork")
-  vdiffr::expect_doppelganger(
+  vdiffr::expect_doppelganger_cond(
     "plot_abundanceprofile p_density rangelog",
     p_density$plot
   )
@@ -374,14 +380,17 @@ test_that("plot_abundanceprofile lipid automap", {
   mexp_temp <- mexp
   mexp_temp@dataset$feature_class <- NA
 
-    p <- plot_abundanceprofile(
-      data = mexp_temp,
-      variable = "conc",
-      qc_types = "SPL",
-      log_scale = TRUE,
-      use_qc_metrics = FALSE,
-      feature_map = "lipidomics"
-    )
+  p <- plot_abundanceprofile(
+    data = mexp_temp,
+    variable = "conc",
+    qc_types = "SPL",
+    log_scale = TRUE,
+    use_qc_metrics = FALSE,
+    feature_map = "lipidomics"
+  )
 
-    vdiffr::expect_doppelganger("plot_abundanceprofile lipid automap", p$plot)
-  })
+  vdiffr::expect_doppelganger_cond(
+    "plot_abundanceprofile lipid automap",
+    p$plot
+  )
+})

@@ -381,7 +381,7 @@ test_that("recalc_trend_after works", {
     return_plots = TRUE
   )
 
-  vdiffr::expect_doppelganger(
+  vdiffr::expect_doppelganger_cond(
     "gaussiankernel runscatter plot before 1 ",
     p[[1]]
   )
@@ -395,7 +395,10 @@ test_that("recalc_trend_after works", {
     return_plots = TRUE
   )
 
-  vdiffr::expect_doppelganger("gaussiankernel runscatter plot after 1 ", p[[1]])
+  vdiffr::expect_doppelganger_cond(
+    "gaussiankernel runscatter plot after 1 ",
+    p[[1]]
+  )
 })
 
 test_that("Scale smooth works", {
@@ -437,7 +440,10 @@ test_that("Scale smooth works", {
     return_plots = TRUE
   )
 
-  vdiffr::expect_doppelganger("gausskern_runscat_scalesmooth_aft_1 ", p[[1]])
+  vdiffr::expect_doppelganger_cond(
+    "gausskern_runscat_scalesmooth_aft_1 ",
+    p[[1]]
+  )
 })
 
 # conditional correction
@@ -652,7 +658,7 @@ test_that("correct_drift_loess works", {
     return_plots = TRUE
   )
 
-  vdiffr::expect_doppelganger("correct_drift_loess_before ", p[[2]])
+  vdiffr::expect_doppelganger_cond("correct_drift_loess_before ", p[[2]])
 
   p <- plot_runscatter(
     mexp_drift1,
@@ -663,7 +669,7 @@ test_that("correct_drift_loess works", {
     return_plots = TRUE
   )
 
-  vdiffr::expect_doppelganger("correct_drift_loess_after", p[[2]])
+  vdiffr::expect_doppelganger_cond("correct_drift_loess_after", p[[2]])
 
   expect_message(
     mexp_drift1 <- correct_drift_loess(
@@ -1042,7 +1048,7 @@ test_that("fits resulting in invalid values are handeled", {
     return_plots = TRUE
   )
 
-  vdiffr::expect_doppelganger(
+  vdiffr::expect_doppelganger_cond(
     "cubicspline_withinvalid_smooths_1 ",
     p[[2]]
   )
@@ -1148,7 +1154,7 @@ test_that("correct_drift_cubicspline works", {
     return_plots = TRUE
   )
 
-  vdiffr::expect_doppelganger("drift_cubicspline_after", p[[2]])
+  vdiffr::expect_doppelganger_cond("drift_cubicspline_after", p[[2]])
 
   expect_message(
     mexp_drift1 <- correct_drift_cubicspline(
@@ -1175,7 +1181,7 @@ test_that("correct_drift_cubicspline works", {
     return_plots = TRUE
   )
 
-  vdiffr::expect_doppelganger("cubicspline_cvfalse_after", p[[2]])
+  vdiffr::expect_doppelganger_cond("cubicspline_cvfalse_after", p[[2]])
 
   expect_message(
     mexp_drift1 <- correct_drift_cubicspline(
@@ -1219,7 +1225,7 @@ test_that("correct_drift_cubicspline works", {
     return_plots = TRUE
   )
 
-  vdiffr::expect_doppelganger("cubicspline_withlambda_bef", p[[2]])
+  vdiffr::expect_doppelganger_cond("cubicspline_withlambda_bef", p[[2]])
 
   expect_message(
     mexp_drift1 <- correct_drift_cubicspline(
@@ -1247,7 +1253,7 @@ test_that("correct_drift_cubicspline works", {
     return_plots = TRUE
   )
 
-  vdiffr::expect_doppelganger("cubicspline_withpanalty_bef", p[[2]])
+  vdiffr::expect_doppelganger_cond("cubicspline_withpanalty_bef", p[[2]])
 
   expect_message(
     mexp_drift1 <- correct_drift_cubicspline(
@@ -1275,7 +1281,7 @@ test_that("correct_drift_cubicspline works", {
     return_plots = TRUE
   )
 
-  vdiffr::expect_doppelganger("cubicspline_withspar_bef", p[[2]])
+  vdiffr::expect_doppelganger_cond("cubicspline_withspar_bef", p[[2]])
 
   expect_error(
     mexp_drift1 <- correct_drift_cubicspline(
@@ -1406,7 +1412,7 @@ test_that("correct_drift_gam works", {
     return_plots = TRUE
   )
 
-  vdiffr::expect_doppelganger("correct_drift_gam_ps_before1", p[[2]])
+  vdiffr::expect_doppelganger_cond("correct_drift_gam_ps_before1", p[[2]])
 
   expect_message(
     mexp_drift1 <- correct_drift_gam(
@@ -1433,7 +1439,7 @@ test_that("correct_drift_gam works", {
     return_plots = TRUE
   )
 
-  vdiffr::expect_doppelganger("correct_drift_gam_tp_before1", p[[2]])
+  vdiffr::expect_doppelganger_cond("correct_drift_gam_tp_before1", p[[2]])
 
   expect_message(
     mexp_drift1 <- correct_drift_gam(
@@ -1460,7 +1466,7 @@ test_that("correct_drift_gam works", {
     return_plots = TRUE
   )
 
-  vdiffr::expect_doppelganger("correct_drift_gam_sp001_before1", p[[2]])
+  vdiffr::expect_doppelganger_cond("correct_drift_gam_sp001_before1", p[[2]])
 
   expect_message(
     mexp_drift1 <- correct_drift_gam(
@@ -1487,7 +1493,7 @@ test_that("correct_drift_gam works", {
     return_plots = TRUE
   )
 
-  vdiffr::expect_doppelganger("correct_drift_gam_k10_before1", p[[2]])
+  vdiffr::expect_doppelganger_cond("correct_drift_gam_k10_before1", p[[2]])
 
   expect_message(
     mexp_drift1 <- correct_drift_gam(
@@ -1580,7 +1586,7 @@ test_that("correct_batch_centering works", {
     return_plots = TRUE
   )
 
-  vdiffr::expect_doppelganger("batch_centering_batchcenter1", p[[2]])
+  vdiffr::expect_doppelganger_cond("batch_centering_batchcenter1", p[[2]])
 
   #replacing the trend curves from gaussiankernel with the new batch centering trend lines
   expect_message(
@@ -1604,7 +1610,10 @@ test_that("correct_batch_centering works", {
     return_plots = TRUE
   )
 
-  vdiffr::expect_doppelganger("correct_batch_centering_replacetrends ", p[[2]])
+  vdiffr::expect_doppelganger_cond(
+    "correct_batch_centering_replacetrends ",
+    p[[2]]
+  )
 
   expect_message(
     mexp_batch1 <- correct_batch_centering(
@@ -1627,7 +1636,7 @@ test_that("correct_batch_centering works", {
     return_plots = TRUE
   )
 
-  vdiffr::expect_doppelganger("batch_centering_nodriftbefore ", p[[2]])
+  vdiffr::expect_doppelganger_cond("batch_centering_nodriftbefore ", p[[2]])
 
   expect_message(
     mexp_batch1 <- correct_batch_centering(
@@ -1650,7 +1659,10 @@ test_that("correct_batch_centering works", {
     return_plots = TRUE
   )
 
-  vdiffr::expect_doppelganger("batch_centering_correctscalelocation ", p[[2]])
+  vdiffr::expect_doppelganger_cond(
+    "batch_centering_correctscalelocation ",
+    p[[2]]
+  )
 
   #TODO: log transform has no impcat on the scale correction?
   expect_message(
@@ -1767,7 +1779,7 @@ test_that("correct_batch_centering works with replace_previous", {
     return_plots = TRUE
   )
 
-  vdiffr::expect_doppelganger("batch_centering_replaceprevious", p[[2]])
+  vdiffr::expect_doppelganger_cond("batch_centering_replaceprevious", p[[2]])
 
   expect_message(
     mexp_batch2 <- correct_batch_centering(

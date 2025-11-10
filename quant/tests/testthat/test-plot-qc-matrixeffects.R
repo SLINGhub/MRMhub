@@ -9,7 +9,7 @@ mexp <- calc_qc_metrics(mexp)
 # Baseline test
 test_that("Default plot_qc_matrixeffects looks as expected", {
   p <- plot_qc_matrixeffects(data = mexp)
-  vdiffr::expect_doppelganger("matrixeffects-default", p)
+  vdiffr::expect_doppelganger_cond("matrixeffects-default", p)
 })
 
 
@@ -19,20 +19,20 @@ test_that("batchwise_normalization = FALSE changes the standardization", {
   # This is a critical logic test. With global normalization, the spread of
   # points within each feature should change compared to the default batchwise plot.
   p <- plot_qc_matrixeffects(data = mexp, batchwise_normalization = FALSE)
-  vdiffr::expect_doppelganger("matrixeffects-no-batchnorm", p)
+  vdiffr::expect_doppelganger_cond("matrixeffects-no-batchnorm", p)
 })
 
 test_that("Using a different `variable` works haha", {
   # This tests that the function correctly selects and processes a different input column.
   # We use 'norm_intensity' which was created by normalize_by_istd().
   p <- plot_qc_matrixeffects(data = mexp, variable = "norm_intensity")
-  vdiffr::expect_doppelganger("matrixeffects-var-norm-intensity", p)
+  vdiffr::expect_doppelganger_cond("matrixeffects-var-norm-intensity", p)
 })
 
 test_that("only_istd = FALSE includes non-ISTD features", {
   # This should dramatically increase the number of features on the x-axis.
   p <- plot_qc_matrixeffects(data = mexp, only_istd = FALSE)
-  vdiffr::expect_doppelganger("matrixeffects-all-features", p)
+  vdiffr::expect_doppelganger_cond("matrixeffects-all-features", p)
 })
 
 
@@ -41,13 +41,13 @@ test_that("only_istd = FALSE includes non-ISTD features", {
 test_that("Filtering by qc_types works", {
   # Plotting only SPL and TQC should result in a plot with only two colors/groups.
   p <- plot_qc_matrixeffects(data = mexp, qc_types = c("SPL", "TQC"))
-  vdiffr::expect_doppelganger("matrixeffects-filter-qcs", p)
+  vdiffr::expect_doppelganger_cond("matrixeffects-filter-qcs", p)
 })
 
 test_that("min_median_value filter works visually", {
   # A value of 500,000 should filter out some of the lower-intensity ISTDs.
   p <- plot_qc_matrixeffects(data = mexp, min_median_value = 500000)
-  vdiffr::expect_doppelganger("matrixeffects-min-median", p)
+  vdiffr::expect_doppelganger_cond("matrixeffects-min-median", p)
 })
 
 test_that("min_median_value throws error when no features remain", {
@@ -70,7 +70,7 @@ test_that("Aesthetic parameters are applied correctly", {
     angle_x = 0,
     point_size = 1.5
   )
-  vdiffr::expect_doppelganger("matrixeffects-aesthetics", p)
+  vdiffr::expect_doppelganger_cond("matrixeffects-aesthetics", p)
 })
 
 
