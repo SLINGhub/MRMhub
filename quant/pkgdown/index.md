@@ -22,11 +22,11 @@ The modular functionalities and defined data structures support diverse analytic
 
 ## Usage
 
-#### INTEGRATOR (Peak Integration)
+**INTEGRATOR** (Peak Integration)
 
 To download the latest release of INTEGRATOR, visit the [Rveleases page](https://github.com/SLINGhub/MRMhub/releases). Choose the appropriate version for your operating system (Windows, macOS, or Linux) and download the corresponding executable file. Unzip the downloaded file and double-click the executable to launch the application. Refer to the [Documentation](https://slinghub.github.io/MRMhub/) for detailed instructions on how to use INTEGRATOR.
 
-#### QUANT (Postprocessing and Quality Control)
+**QUANT** (Postprocessing and Quality Control)
 
 Install the `mrmhub` package from Github using the following command:
 
@@ -54,6 +54,7 @@ The source code and models within this repository are dual licenced. You may cho
 
 For non-commercial uses and licensing of this / these code and models and its derivatives, an open-source licence is granted in accordance with the following terms and conditions -
 [GNU AGPLv3](https://www.gnu.org/licenses/agpl-3.0.en.html).
+
 ### For commercial use and licensing of this / these code and models, please contact -
  Jonathan Tan ( jonathan_tan@nus.edu.sg )
 
