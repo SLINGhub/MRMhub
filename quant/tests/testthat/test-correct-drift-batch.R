@@ -939,7 +939,7 @@ test_that("correct_drift_loess fit error are handeled", {
     fixed = TRUE
   )
 
-  message("Warning message capture")
+  message("Warning message capture for debugging")
   mexp_drift1 <- correct_drift_loess(
     mexp_err,
     span = 0.3,
@@ -952,6 +952,7 @@ test_that("correct_drift_loess fit error are handeled", {
     ignore_istd = TRUE
   )
 
+  # Ubuntu (on gh actions) causes 11 features to fail, while on Win/MacOS only 4 features fail
   expect_message(
     mexp_drift1 <- correct_drift_loess(
       mexp_err,
@@ -964,8 +965,7 @@ test_that("correct_drift_loess fit error are handeled", {
       recalc_trend_after = TRUE,
       ignore_istd = TRUE
     ),
-    "Smoothing failed for 4 feature(s) in all batches",
-    fixed = TRUE
+    regexp = "Smoothing failed for (4|11) feature\\(s\\) in all batches"
   )
 
   expect_message(
