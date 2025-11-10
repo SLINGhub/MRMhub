@@ -94,7 +94,7 @@ test_that("plot_feature_correlations respects QC types", {
   plot_data <- ggplot2::ggplot_build(p[[1]])$data[[3]]
   expect_equal(plot_data[1, "label"], "r = 0.969")
 
-  vdiffr::expect_doppelganger_cond("default plot_feature_correlations plot", p)
+  expect_doppelganger_cond("default plot_feature_correlations plot", p)
 
   # Sort by occurrence in data
   p <- plot_feature_correlations(
@@ -259,7 +259,7 @@ test_that("plot_feature_correlations  logscale", {
   plot_data <- ggplot2::ggplot_build(p[[1]])$data[[3]]
   expect_equal(plot_data[1, "label"], "r = 0.969")
 
-  vdiffr::expect_doppelganger_cond("plot_feature_correlations logscale", p)
+  expect_doppelganger_cond("plot_feature_correlations logscale", p)
 })
 
 

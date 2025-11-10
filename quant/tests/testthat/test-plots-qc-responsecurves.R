@@ -22,7 +22,7 @@ test_that("plot_responsecurves generates a plot", {
   expect_s3_class(p[[1]], "gg")
   # Check how many pages
   expect_equal(length(p), 3)
-  vdiffr::expect_doppelganger_cond("default plot_responsecurves plot", p[[1]])
+  expect_doppelganger_cond("default plot_responsecurves plot", p[[1]])
 
   # Test if the number of points in the plot matches the expected value
   plot_data <- ggplot2::ggplot_build(p[[1]])$data[[1]]

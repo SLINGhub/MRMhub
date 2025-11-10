@@ -30,7 +30,7 @@ test_that("plot_runscatter generates a plot", {
   expect_equal(max(p[[1]]$data$value_mod), 12390146.0)
   plot_data <- ggplot2::ggplot_build(p[[1]])$data[[2]]
   expect_equal(nrow(plot_data), 5988)
-  vdiffr::expect_doppelganger_cond("def_runscatter", p)
+  expect_doppelganger_cond("def_runscatter", p)
 
   # log y axis
   p <- plot_runscatter(
@@ -45,7 +45,7 @@ test_that("plot_runscatter generates a plot", {
   )
   plot_data <- ggplot2::ggplot_build(p[[1]])$data
   expect_equal(max(plot_data[[2]]$y), 7.09307642)
-  vdiffr::expect_doppelganger_cond("log_runscat", p)
+  expect_doppelganger_cond("log_runscat", p)
 
   mexp_withzero <- mexp
   mexp_withzero@dataset$feature_intensity[sample(1:499, 10)] <- 0
@@ -120,7 +120,7 @@ test_that("plot_runscatter filter work", {
   expect(length(p), 1)
   plot_data <- ggplot2::ggplot_build(p[[1]])$data
   expect_equal(nrow(plot_data[[2]]), 3456)
-  vdiffr::expect_doppelganger_cond("filteredrunscat", p)
+  expect_doppelganger_cond("filteredrunscat", p)
 
   # Test range filter and also regex for qc type
   p <- plot_runscatter(
@@ -139,7 +139,7 @@ test_that("plot_runscatter filter work", {
   plot_data <- ggplot2::ggplot_build(p[[1]])$data
   expect_equal(nrow(plot_data[[2]]), 3456)
   expect_equal(max(p[[1]]$data$value_mod), 12390146.0)
-  vdiffr::expect_doppelganger_cond("rangerunscat", p)
+  expect_doppelganger_cond("rangerunscat", p)
 
   # Test include e
   p <- plot_runscatter(
@@ -157,7 +157,7 @@ test_that("plot_runscatter filter work", {
   plot_data <- ggplot2::ggplot_build(p[[1]])$data
   expect_equal(nrow(plot_data[[2]]), 864)
   expect_equal(max(p[[1]]$data$value_mod), 9364398.0)
-  vdiffr::expect_doppelganger_cond("filtrunscat2", p)
+  expect_doppelganger_cond("filtrunscat2", p)
 
   expect_error(
     p <- plot_runscatter(
@@ -230,7 +230,7 @@ test_that("plot_runscatter with unknown qc_types", {
 
   plot_data <- ggplot2::ggplot_build(p[[1]])$data[[2]]
   expect_equal(length(unique(plot_data$shape)), 5)
-  vdiffr::expect_doppelganger_cond("runscatunknownqc", p)
+  expect_doppelganger_cond("runscatunknownqc", p)
 })
 
 
@@ -277,7 +277,7 @@ test_that("plot_runscatter outlier cap works", {
     cap_sample_k_mad = 2,
     cap_qc_k_mad = 2
   )
-  vdiffr::expect_doppelganger_cond("runscattercapoutlier", p)
+  expect_doppelganger_cond("runscattercapoutlier", p)
 
   expect_equal(max(p[[1]]$data$value_mod), 6481466.4)
   plot_data <- ggplot2::ggplot_build(p[[1]])$data[[3]] # not fully understand this test
@@ -425,7 +425,7 @@ test_that("plot_runscatter show reference lines works", {
   expect_equal(length(plot_data), 5)
   expect_equal(unique(plot_data[[2]]$alpha), 0.15)
   expect_equal(mean(plot_data[[2]]$ymax), 2408485.4)
-  vdiffr::expect_doppelganger_cond("extrunscatterref", p)
+  expect_doppelganger_cond("extrunscatterref", p)
 
   p <- plot_runscatter(
     data = mexp,
@@ -823,7 +823,7 @@ test_that("plot_runscatter handles filter and missing data", {
     return_plots = TRUE
   )
 
-  vdiffr::expect_doppelganger_cond("runscatterrange_filter", p)
+  expect_doppelganger_cond("runscatterrange_filter", p)
 })
 
 
@@ -956,7 +956,7 @@ test_that("plot_runscatter  error cap logscale", {
     log_scale = TRUE
   )
   expect_equal(length(p), 3)
-  vdiffr::expect_doppelganger_cond("plot_runscatter capoutlierlog", p)
+  expect_doppelganger_cond("plot_runscatter capoutlierlog", p)
 })
 
 test_that("plot_runscatter specific_page gried", {
@@ -974,7 +974,7 @@ test_that("plot_runscatter specific_page gried", {
     specific_page = 2
   )
   expect_equal(length(p), 1)
-  vdiffr::expect_doppelganger_cond("plot_runscatter page2grid", p[[1]])
+  expect_doppelganger_cond("plot_runscatter page2grid", p[[1]])
 })
 
 

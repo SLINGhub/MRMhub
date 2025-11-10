@@ -29,7 +29,7 @@ test_that("plot_pca works", {
     "The PCA was calculated based on \\`feature_intensity\\` values of 19 features"
   )
 
-  vdiffr::expect_doppelganger_cond("default plot_pca plot 1", p)
+  expect_doppelganger_cond("default plot_pca plot 1", p)
 
   p <- plot_pca(
     mexp,
@@ -50,7 +50,7 @@ test_that("plot_pca works", {
     filter_data = FALSE
   )
 
-  vdiffr::expect_doppelganger_cond("default plot_pca plot 2", p)
+  expect_doppelganger_cond("default plot_pca plot 2", p)
 
   p <- plot_pca(
     mexp,
@@ -61,7 +61,7 @@ test_that("plot_pca works", {
     filter_data = FALSE
   )
 
-  vdiffr::expect_doppelganger_cond("default plot_pca plot 3 no labels", p)
+  expect_doppelganger_cond("default plot_pca plot 3 no labels", p)
 
   p <- plot_pca(
     mexp,
@@ -74,7 +74,7 @@ test_that("plot_pca works", {
     filter_data = FALSE
   )
 
-  vdiffr::expect_doppelganger_cond("default plot_pca plot 4 label-shared-rm", p)
+  expect_doppelganger_cond("default plot_pca plot 4 label-shared-rm", p)
   plot_data <- ggplot2::ggplot_build(p)$data
   expect_equal(max(plot_data[[3]]$x, na.rm = T), 6.838079)
 
@@ -110,7 +110,7 @@ test_that("plot_pca works", {
     ellipse_fillcolor = c("cyan", "blue")
   )
 
-  vdiffr::expect_doppelganger_cond(
+  expect_doppelganger_cond(
     "default plot_pca plot 5 user fill colors",
     p
   )
@@ -129,7 +129,7 @@ test_that("plot_pca works", {
   #   ellipse_fillcolor = c("BQC" = "cyan", "TQC" = "blue")
   # )
 
-  # vdiffr::expect_doppelganger_cond(
+  # expect_doppelganger_cond(
   #   "default plot_pca plot 5 user mapped fill colors",
   #   p
   # )
@@ -262,7 +262,7 @@ test_that("Default plot_pca_loading looks as expected", {
     pca_dims = c(1, 2, 3, 4),
     top_n = 15 # smaller to keep snapshot readable and stable
   )
-  vdiffr::expect_doppelganger_cond("pca-loading-default", p)
+  expect_doppelganger_cond("pca-loading-default", p)
 })
 
 # --- Core logic and parameterization snapshots ---
@@ -275,7 +275,7 @@ test_that("abs_loading = FALSE shows signed loadings", {
     abs_loading = FALSE,
     top_n = 20
   )
-  vdiffr::expect_doppelganger_cond("pca-loading-signed", p)
+  expect_doppelganger_cond("pca-loading-signed", p)
 })
 
 test_that("vertical_bars = TRUE changes orientation and layout", {
@@ -286,7 +286,7 @@ test_that("vertical_bars = TRUE changes orientation and layout", {
     vertical_bars = TRUE,
     top_n = 10
   )
-  vdiffr::expect_doppelganger_cond("pca-loading-vertical-bars", p)
+  expect_doppelganger_cond("pca-loading-vertical-bars", p)
 })
 
 test_that("log_transform = FALSE produces a different loading plot", {
@@ -297,7 +297,7 @@ test_that("log_transform = FALSE produces a different loading plot", {
     log_transform = FALSE,
     top_n = 15
   )
-  vdiffr::expect_doppelganger_cond("pca-loading-no-log", p)
+  expect_doppelganger_cond("pca-loading-no-log", p)
 })
 
 test_that("Custom pca_dims subset plots only requested PCs", {
@@ -307,7 +307,7 @@ test_that("Custom pca_dims subset plots only requested PCs", {
     pca_dims = c(1, 3),
     top_n = 10
   )
-  vdiffr::expect_doppelganger_cond("pca-loading-pcs-1-and-3", p)
+  expect_doppelganger_cond("pca-loading-pcs-1-and-3", p)
 })
 
 test_that("Filtering qc_types changes the PCs input data", {
@@ -318,7 +318,7 @@ test_that("Filtering qc_types changes the PCs input data", {
     pca_dims = c(1, 2),
     top_n = 10
   )
-  vdiffr::expect_doppelganger_cond("pca-loading-qctypes-spl-tqc", p)
+  expect_doppelganger_cond("pca-loading-qctypes-spl-tqc", p)
 })
 
 test_that("Auto-detected qc_types works (qc_types = NA)", {
@@ -329,7 +329,7 @@ test_that("Auto-detected qc_types works (qc_types = NA)", {
     pca_dims = c(1, 2),
     top_n = 10
   )
-  vdiffr::expect_doppelganger_cond("pca-loading-qctypes-auto", p)
+  expect_doppelganger_cond("pca-loading-qctypes-auto", p)
 })
 
 # --- Data filtering with min_median_value ---
@@ -342,7 +342,7 @@ test_that("min_median_value filters features and still produces a plot", {
     min_median_value = 5e5, # moderate threshold: some features filtered out
     top_n = 10
   )
-  vdiffr::expect_doppelganger_cond("pca-loading-min-median", p)
+  expect_doppelganger_cond("pca-loading-min-median", p)
 })
 
 test_that("min_median_value throws error when no features pass", {

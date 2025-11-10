@@ -18,7 +18,7 @@ test_that("plot_runsequence works with basic parameters", {
   expect_equal(plot_data[[1]]$xintercept[1], 93.5) # check no date as x axis
   expect_equal(dim(plot_data[[2]]), c(499, 10))
 
-  vdiffr::expect_doppelganger_cond("plot_runsequence default", p)
+  expect_doppelganger_cond("plot_runsequence default", p)
 
   plot_obj <- ggplot_build(p)
   lbls <- plot_obj$layout$panel_params[[1]]$x$get_labels()
@@ -68,12 +68,12 @@ test_that("plot_runsequence works with basic parameters", {
 test_that("plot_runsequence single row works", {
   p <- plot_runsequence(data = mexp, single_row = TRUE)
   expect_true(any(grepl("y", p$mapping))) # Check if y axis is not present
-  vdiffr::expect_doppelganger_cond("plot_runsequence singlerow", p)
+  expect_doppelganger_cond("plot_runsequence singlerow", p)
 })
 
 test_that("plot_runsequence single batch zebra", {
   p <- plot_runsequence(data = mexp, batch_zebra_stripe = TRUE)
-  vdiffr::expect_doppelganger_cond("plot_runsequence zebra", p)
+  expect_doppelganger_cond("plot_runsequence zebra", p)
 })
 
 test_that("plot_runsequence single batch zebra timestamp", {
@@ -82,7 +82,7 @@ test_that("plot_runsequence single batch zebra timestamp", {
     batch_zebra_stripe = TRUE,
     show_timestamp = TRUE
   )
-  vdiffr::expect_doppelganger_cond("plot_runsequence zebratime", p)
+  expect_doppelganger_cond("plot_runsequence zebratime", p)
 })
 
 
@@ -181,7 +181,7 @@ test_that("plot_runsequence default works", {
     "Found 41 outliers in the 499 shown analyses",
     fixed = TRUE
   )
-  vdiffr::expect_doppelganger_cond("plot_rla_boxplot default", p$plot)
+  expect_doppelganger_cond("plot_rla_boxplot default", p$plot)
 })
 
 test_that("plot_runsequence outlier outlierfold", {
@@ -199,7 +199,7 @@ test_that("plot_runsequence outlier outlierfold", {
     "Found 4 outliers in the 499 shown analyses",
     fixed = TRUE
   )
-  vdiffr::expect_doppelganger_cond("plot_rla_boxplot outlierfold", p$plot)
+  expect_doppelganger_cond("plot_rla_boxplot outlierfold", p$plot)
 })
 
 test_that("plot_runsequence default outlierfold 2", {
@@ -217,7 +217,7 @@ test_that("plot_runsequence default outlierfold 2", {
     "Found 84 outliers in the 499 shown analyses",
     fixed = TRUE
   )
-  vdiffr::expect_doppelganger_cond("plot_rla_boxplot outlierfold2", p$plot)
+  expect_doppelganger_cond("plot_rla_boxplot outlierfold2", p$plot)
 })
 
 test_that("plot_runsequence outlier qctypes", {
@@ -268,7 +268,7 @@ test_that("plot_runsequence default no outlier", {
       outlier_detection = FALSE
     )
   )
-  vdiffr::expect_doppelganger_cond("plot_rla_boxplot nooutlier", p$plot)
+  expect_doppelganger_cond("plot_rla_boxplot nooutlier", p$plot)
 })
 
 test_that("plot_runsequence default works", {
@@ -280,7 +280,7 @@ test_that("plot_runsequence default works", {
     show_timestamp = FALSE,
     show_batches = TRUE
   )
-  vdiffr::expect_doppelganger_cond("plot_rla_boxplot default", p$plot)
+  expect_doppelganger_cond("plot_rla_boxplot default", p$plot)
 })
 
 
@@ -293,7 +293,7 @@ test_that("plot_runsequence timestamp works", {
     show_timestamp = TRUE,
     show_batches = FALSE
   )
-  vdiffr::expect_doppelganger_cond("plot_rla_boxplot with timestamp", p$plot)
+  expect_doppelganger_cond("plot_rla_boxplot with timestamp", p$plot)
 })
 
 test_that("plot_rla_boxplot within correct", {
@@ -338,7 +338,7 @@ test_that("plot_rla_boxplot zebra works", {
       remove_gaps = FALSE
     )
   )
-  vdiffr::expect_doppelganger_cond("plot_rla_boxplot zebrawithgaps", p$plot)
+  expect_doppelganger_cond("plot_rla_boxplot zebrawithgaps", p$plot)
   plot_data <- ggplot2::ggplot_build(p$plot)$data
   expect_equal(dim(plot_data[[1]]), c(3, 11)) # rows for each stripe
 })
@@ -356,7 +356,7 @@ test_that("plot_rla_boxplot zebra removegaps works", {
       remove_gaps = TRUE
     )
   )
-  vdiffr::expect_doppelganger_cond("plot_rla_boxplot zebranogaps", p$plot)
+  expect_doppelganger_cond("plot_rla_boxplot zebranogaps", p$plot)
   plot_data <- ggplot2::ggplot_build(p$plot)$data
   expect_equal(dim(plot_data[[1]]), c(3, 11)) # rows for each stripe
 })
@@ -373,7 +373,7 @@ test_that("plot_rla_boxplot zebra no batch ok", {
     )
   )
 
-  vdiffr::expect_doppelganger_cond("plot_rla_boxplot nobzebra", p$plot)
+  expect_doppelganger_cond("plot_rla_boxplot nobzebra", p$plot)
 })
 
 test_that("plot_rla_boxplot zebra gridlinesh ok", {
@@ -388,7 +388,7 @@ test_that("plot_rla_boxplot zebra gridlinesh ok", {
       x_gridlines = TRUE
     )
   )
-  vdiffr::expect_doppelganger_cond("plot_rla_boxplot gridlines", p$plot)
+  expect_doppelganger_cond("plot_rla_boxplot gridlines", p$plot)
 })
 
 
@@ -404,7 +404,7 @@ test_that("plot_rla_boxplot ylim", {
       y_lim = c(-1, 1)
     )
   )
-  vdiffr::expect_doppelganger_cond("plot_rla_boxplot ylim", p$plot)
+  expect_doppelganger_cond("plot_rla_boxplot ylim", p$plot)
 })
 
 test_that("plot_rla_boxplot ylim", {
@@ -419,7 +419,7 @@ test_that("plot_rla_boxplot ylim", {
       outlier_exclude = TRUE
     )
   )
-  vdiffr::expect_doppelganger_cond("plot_rla_boxplot outlier_exlude", p$plot)
+  expect_doppelganger_cond("plot_rla_boxplot outlier_exlude", p$plot)
 })
 
 
@@ -435,7 +435,7 @@ test_that("plot_rla_boxplot abslog", {
       relative_log_abundances = FALSE
     )
   )
-  vdiffr::expect_doppelganger_cond("default plot_rla_boxplot abslog", p$plot)
+  expect_doppelganger_cond("default plot_rla_boxplot abslog", p$plot)
 })
 
 
@@ -454,7 +454,7 @@ test_that("plot_rla_boxplot lot range not changes data", {
   expect_equal(mean(plot_data[[2]]$middle), -0.185713556)
   expect_equal(min(plot_data[[2]]$x), 1)
   expect_equal(max(plot_data[[2]]$x), 499)
-  vdiffr::expect_doppelganger_cond("plot_rla_boxplot rangefull", p$plot)
+  expect_doppelganger_cond("plot_rla_boxplot rangefull", p$plot)
 })
 
 
@@ -473,7 +473,7 @@ test_that("plot_rla_boxplot lot range rla_limit_to_range changes data", {
   expect_equal(mean(plot_data[[2]]$middle), -0.30282026)
   expect_equal(min(plot_data[[2]]$x), 1)
   expect_equal(max(plot_data[[2]]$x), 499)
-  vdiffr::expect_doppelganger_cond("plot_rla_boxplot rangerla", p$plot)
+  expect_doppelganger_cond("plot_rla_boxplot rangerla", p$plot)
 })
 
 
@@ -489,7 +489,7 @@ test_that("plot_rla_boxplot abslog", {
       relative_log_abundances = FALSE
     )
   )
-  vdiffr::expect_doppelganger_cond("plot_rla_boxplot abslog", p$plot)
+  expect_doppelganger_cond("plot_rla_boxplot abslog", p$plot)
 })
 
 
@@ -508,7 +508,7 @@ test_that("plot_rla_boxplot qc subset range remove_gaps ", {
       relative_log_abundances = FALSE
     )
   )
-  vdiffr::expect_doppelganger_cond("plot_rla_boxplot qctype removegaps", p$plot)
+  expect_doppelganger_cond("plot_rla_boxplot qctype removegaps", p$plot)
 })
 
 test_that("plot_rla_boxplot qc subset range remove_gaps ", {
@@ -527,7 +527,7 @@ test_that("plot_rla_boxplot qc subset range remove_gaps ", {
       relative_log_abundances = FALSE
     )
   )
-  vdiffr::expect_doppelganger_cond(
+  expect_doppelganger_cond(
     "plot_rla_boxplot qctype removegapszebra",
     p$plot
   )
@@ -548,7 +548,7 @@ test_that("plot_rla_boxplot qc subset range with gaps ", {
       relative_log_abundances = FALSE
     )
   )
-  vdiffr::expect_doppelganger_cond("plot_rla_boxplot qctype withgaps", p$plot)
+  expect_doppelganger_cond("plot_rla_boxplot qctype withgaps", p$plot)
 })
 
 test_that("plot_rla_boxplot qc subset range with gaps date ", {
@@ -566,7 +566,7 @@ test_that("plot_rla_boxplot qc subset range with gaps date ", {
       relative_log_abundances = FALSE
     )
   )
-  vdiffr::expect_doppelganger_cond(
+  expect_doppelganger_cond(
     "plot_rla_boxplot qctype withgaps date",
     p$plot
   )

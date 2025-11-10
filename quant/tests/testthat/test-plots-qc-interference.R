@@ -52,7 +52,7 @@ target_feature <- "S1P d18\\:0"
 test_that("Basic plot_qc_interferences looks as expected", {
   p <- plot_qc_interferences(mexp_corrected)
   # The name "qc-interferences-default" is more descriptive
-  vdiffr::expect_doppelganger_cond("qc-interferences-default", p)
+  expect_doppelganger_cond("qc-interferences-default", p)
 })
 
 
@@ -61,13 +61,13 @@ test_that("Basic plot_qc_interferences looks as expected", {
 test_that("Filtering by qc_types works", {
   # The default includes "SPL". Let's plot only two.
   p <- plot_qc_interferences(mexp_corrected, qc_types = c("SPL"))
-  vdiffr::expect_doppelganger_cond("qc-interferences-filter-qcs", p)
+  expect_doppelganger_cond("qc-interferences-filter-qcs", p)
 })
 
 test_that("Excluding ISTDs works", {
   # The default is include_istd = TRUE. This should remove the ISTD features.
   p <- plot_qc_interferences(mexp_corrected, include_istd = FALSE)
-  vdiffr::expect_doppelganger_cond("qc-interferences-no-istd", p)
+  expect_doppelganger_cond("qc-interferences-no-istd", p)
 })
 
 test_that("Including a specific feature works", {
@@ -77,7 +77,7 @@ test_that("Including a specific feature works", {
     mexp_corrected,
     include_feature_filter = target_feature
   )
-  vdiffr::expect_doppelganger_cond("qc-interferences-include-filter", p)
+  expect_doppelganger_cond("qc-interferences-include-filter", p)
 })
 
 test_that("Excluding a specific feature works", {
@@ -86,14 +86,14 @@ test_that("Excluding a specific feature works", {
     mexp_corrected,
     exclude_feature_filter = target_feature
   )
-  vdiffr::expect_doppelganger_cond("qc-interferences-exclude-filter", p)
+  expect_doppelganger_cond("qc-interferences-exclude-filter", p)
 })
 
 test_that("min_median_value filter works visually", {
   # From inspecting the data, a value of 9000 will filter out some but not all features.
   # This tests that the filtering logic is applied correctly.
   p <- plot_qc_interferences(mexp_corrected, min_median_value = 49000)
-  vdiffr::expect_doppelganger_cond("qc-interferences-min-median", p)
+  expect_doppelganger_cond("qc-interferences-min-median", p)
 })
 
 test_that("min_median_value throws error when no features remain", {
@@ -117,14 +117,14 @@ test_that("Aesthetic parameters are applied correctly", {
     angle_x = 0, # Horizontal x-axis labels
     font_base_size = 12 # Larger font
   )
-  vdiffr::expect_doppelganger_cond("qc-interferences-aesthetics", p)
+  expect_doppelganger_cond("qc-interferences-aesthetics", p)
 })
 
 test_that("Plot works with NA qc_types to auto-detect", {
   # This tests the initial `if (all(is.na(qc_types)))` block.
   # The result should be identical to the default plot in this case.
   p <- plot_qc_interferences(mexp_corrected, qc_types = NA)
-  vdiffr::expect_doppelganger_cond("qc-interferences-na-qcs", p)
+  expect_doppelganger_cond("qc-interferences-na-qcs", p)
 })
 
 

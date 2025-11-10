@@ -32,7 +32,7 @@ test_that("plot_responsecurves generates a plot", {
   expect_s3_class(p[[1]], "gg")
   # Check how many pages
   expect_equal(length(p), 2)
-  vdiffr::expect_doppelganger_cond("default plot_calibration plot 1", p[[1]])
+  expect_doppelganger_cond("default plot_calibration plot 1", p[[1]])
 
   p <- plot_calibrationcurves(
     data = mexp_temp,
@@ -59,7 +59,7 @@ test_that("plot_responsecurves generates a plot", {
   expect_s3_class(p[[1]], "gg")
   # Check how many pages
   expect_equal(length(p), 2)
-  vdiffr::expect_doppelganger_cond("default plot_calibration plot 2 ", p[[1]])
+  expect_doppelganger_cond("default plot_calibration plot 2 ", p[[1]])
 
   p <- plot_calibrationcurves(
     data = mexp,
@@ -74,7 +74,7 @@ test_that("plot_responsecurves generates a plot", {
   expect_s3_class(p[[1]], "gg")
   # Check how many pages
   expect_equal(length(p), 2)
-  vdiffr::expect_doppelganger_cond("no ci plot_calibration plot ", p[[1]])
+  expect_doppelganger_cond("no ci plot_calibration plot ", p[[1]])
 
   expect_no_error(
     p <- plot_calibrationcurves(
@@ -89,7 +89,7 @@ test_that("plot_responsecurves generates a plot", {
       return_plots = TRUE
     )
   )
-  vdiffr::expect_doppelganger_cond(
+  expect_doppelganger_cond(
     "log-log plot_calibration plot default ",
     p[[1]]
   )
@@ -108,7 +108,7 @@ test_that("plot_responsecurves generates a plot", {
     ),
     "Regions of the regression confidence intervals are partially"
   )
-  vdiffr::expect_doppelganger_cond(
+  expect_doppelganger_cond(
     "log-log plot_calibration plot with ci ",
     p[[1]]
   )
@@ -519,7 +519,7 @@ test_that("plot_responsecurves generates a plot with calib failes", {
   )
   expect_s3_class(p[[1]], "gg")
   expect_equal(length(p), 2)
-  vdiffr::expect_doppelganger_cond(
+  expect_doppelganger_cond(
     "default plot_calibration plot log_axes 1",
     p[[2]]
   )
@@ -536,7 +536,7 @@ test_that("plot_responsecurves generates a plot with calib failes", {
   )
   expect_s3_class(p[[1]], "gg")
   expect_equal(length(p), 2)
-  vdiffr::expect_doppelganger_cond(
+  expect_doppelganger_cond(
     "default plot_calibration plot log_axes 2",
     p[[1]]
   )
@@ -564,5 +564,5 @@ test_that("plot_responsecurves generates a plot with some calib concs is NA ", {
     cols_page = 2,
     return_plots = TRUE
   )
-  vdiffr::expect_doppelganger_cond("plot_calibration somecal na", p[[1]])
+  expect_doppelganger_cond("plot_calibration somecal na", p[[1]])
 })
