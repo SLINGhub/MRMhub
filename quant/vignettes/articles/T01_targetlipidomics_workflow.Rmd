@@ -56,7 +56,7 @@ setting `import_metadata = TRUE`.
 ```{r load-rawdata}
 myexp <- mrmhub::MRMhubExperiment(title = "sPerfect")
 
-data_path <- "datasets/sPerfect_MRMhub.tsv"
+data_path <- "./datasets/sPerfect_MRMhub.tsv"
 myexp <- import_data_mrmhub(data = myexp, path = data_path, import_metadata = TRUE)
 ```
 
