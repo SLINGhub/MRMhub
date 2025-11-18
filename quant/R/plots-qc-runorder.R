@@ -538,7 +538,10 @@ plot_rla_boxplot <- function(
   }
 
   unique_orders <- sort(unique(d_filt$analysis_order))
-  unique_timestamps <- sort(unique(d_filt$acquisition_time_stamp))
+  unique_timestamps <- sort(
+    unique(d_filt$acquisition_time_stamp),
+    na.last = TRUE
+  )
 
   order_map <- tibble(
     analysis_order = unique_orders,
