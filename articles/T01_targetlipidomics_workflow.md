@@ -31,7 +31,7 @@ Exercises
 ``` r
 myexp <- mrmhub::MRMhubExperiment(title = "sPerfect")
 
-data_path <- "datasets/sPerfect_MRMhub.tsv"
+data_path <- "./datasets/sPerfect_MRMhub.tsv"
 myexp <- import_data_mrmhub(data = myexp, path = data_path, import_metadata = TRUE)
 #> ✔ Imported 499 analyses with 503 features
 #> ℹ `feature_area` selected as default feature intensity. Modify with `set_intensity_var()`.
@@ -176,7 +176,11 @@ plot_runscatter(
 
 ![RunScatter
 plot](T01_targetlipidomics_workflow_files/figure-html/runscatter-1.png)![RunScatter
-plot](T01_targetlipidomics_workflow_files/figure-html/runscatter-2.png)![RunScatter
+plot](T01_targetlipidomics_workflow_files/figure-html/runscatter-2.png)
+
+    #>  ■■■■■■■■■■■■■■■■■■■■■             67% |  ETA:  1s
+
+![RunScatter
 plot](T01_targetlipidomics_workflow_files/figure-html/runscatter-3.png)
 
 ## 7. Adding detailed metadata
@@ -748,7 +752,7 @@ Exercises
 ``` r
 mrmhub::save_report_xlsx(myexp, path = tempfile(fileext = ".xlsx"))
 #> Saving report to disk - please wait...
-#> ✔ The data processing report of experiment 'sPerfect' has been saved to '/tmp/Rtmp9ATV83/file390f244a20e4.xlsx'.
+#> ✔ The data processing report of experiment 'sPerfect' has been saved to '/tmp/RtmplfUT1k/file39c33ae5ce16.xlsx'.
 ```
 
 You can also save specific data subsets as a clean flat, wide CSV file.
@@ -768,7 +772,7 @@ mrmhub::save_dataset_csv(
   qc_types = "SPL", 
   include_qualifier = FALSE,
   filter_data = TRUE)
-#> ✔ Concentration values for 377 analyses and 324 features have been exported to '/tmp/Rtmp9ATV83/file390f5611d106.csv'.
+#> ✔ Concentration values for 377 analyses and 324 features have been exported to '/tmp/RtmplfUT1k/file39c35cf0a8e7.csv'.
 ```
 
 ## 22. Sharing the `MRMhubExperiment` dataset

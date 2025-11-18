@@ -42,7 +42,7 @@ remotes::install_github("SLINGhub/MRMhub", subdir = "quant")
 ```
 
 Load the package in your R session via
-[`library(mrmhub)`](https://github.com/SLINGhub/mrmhub). For detailed
+[`library(mrmhub)`](https://github.com/SLINGhub/MRMhub). For detailed
 usage instructions and examples, refer to the
 [Documentation](https://slinghub.github.io/MRMhub/).
 
