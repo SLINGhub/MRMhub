@@ -117,7 +117,7 @@ test_that("plot_runscatter filter work", {
     cols_page = 4,
     return_plots = TRUE
   )
-  expect(length(p), 1)
+  expect_equal(length(p), 1)
   plot_data <- ggplot2::ggplot_build(p[[1]])$data
   expect_equal(nrow(plot_data[[2]]), 3456)
   expect_doppelganger_cond("filteredrunscat", p)
@@ -135,7 +135,7 @@ test_that("plot_runscatter filter work", {
     cols_page = 4,
     return_plots = TRUE
   )
-  expect(length(p), 1)
+  expect_equal(length(p), 1)
   plot_data <- ggplot2::ggplot_build(p[[1]])$data
   expect_equal(nrow(plot_data[[2]]), 3456)
   expect_equal(max(p[[1]]$data$value_mod), 12390146.0)
@@ -153,7 +153,7 @@ test_that("plot_runscatter filter work", {
     cols_page = 4,
     return_plots = TRUE
   )
-  expect(length(p), 1)
+  expect_equal(length(p), 1)
   plot_data <- ggplot2::ggplot_build(p[[1]])$data
   expect_equal(nrow(plot_data[[2]]), 864)
   expect_equal(max(p[[1]]$data$value_mod), 9364398.0)
@@ -844,7 +844,7 @@ test_that("plot_runscatter multicore 1 core", {
     "To use multithreading for plot generation",
     fixed = TRUE
   )
-  expect(length(p), 1)
+  expect_equal(length(p), 1)
   plot_data <- ggplot2::ggplot_build(p[[1]])$data
   expect_equal(nrow(plot_data[[2]]), 3456)
 })
@@ -863,7 +863,7 @@ test_that("plot_runscatter multicore", {
     multithreading = TRUE,
     return_plots = TRUE
   )
-  expect(length(p), 1)
+  expect_equal(length(p), 1)
   plot_data <- ggplot2::ggplot_build(p[[1]])$data
   expect_equal(nrow(plot_data[[2]]), 3456)
   mirai::daemons(0)
