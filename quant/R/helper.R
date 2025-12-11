@@ -1,10 +1,9 @@
-
 # check if one or more but not all values are NA
-some_na <- function(x){
+some_na <- function(x) {
   !all(is.na(x)) & any(is.na(x))
 }
 
-safe_min <- function(x, na.rm = FALSE){
+safe_min <- function(x, na.rm = FALSE) {
   if (all(is.na(x) | is.nan(x))) NA_real_ else min(x, na.rm = na.rm)
 }
 
@@ -15,20 +14,26 @@ safe_max <- function(x, na.rm = FALSE) {
 # checks if all values of a specific column are identical in a group
 # return NA if data frame has no data
 check_groupwise_identical_ids <- function(data, group_col, id_col) {
-  if(nrow(data) == 0) stop("data has no rows")
+  if (nrow(data) == 0) {
+    stop("data has no rows")
+  }
   data |>
-    summarise(all_identical = dplyr::n_distinct({{id_col}}) == 1, .by = {{group_col}}) |>
-    pull(.data$all_identical) |> all()
+    summarise(
+      all_identical = dplyr::n_distinct({{ id_col }}) == 1,
+      .by = {{ group_col }}
+    ) |>
+    pull(.data$all_identical) |>
+    all()
 }
 
 # Used for qc filtering ####
 # Function to used to compare qc values with criteria and deal with NA
 
-
 #The compare_values function compares a column in a data frame to a threshold using a
 #specified operator. It handles NA values by returning NA when both are NA, FALSE
 #when the column is NA and the threshold is numeric, and applies the operator
 #(e.g., >, <, ==) when both are numeric. If the column does not exist, it returns NA.
+# na_replace parameter controls how to handle NA values in the comparison result. NAs will be set as defined by na_replace
 
 # Behaviour:
 # value is NA , threshold NA -> NA
@@ -39,25 +44,59 @@ check_groupwise_identical_ids <- function(data, group_col, id_col) {
 # TODO: Add to function description,
 # TODO: make this function public for user to build own?
 
-compare_values <- function(tbl, val, threshold, operator) {
-  if(nrow(tbl) == 0) stop("tbl has no rows")
-  if (!val %in% names(tbl)  && !is.na(threshold)) {
+compare_values <- function(tbl, val, threshold, operator, na_replace = FALSE) {
+  if (nrow(tbl) == 0) {
+    stop("tbl has no rows")
+  }
+  if (!val %in% names(tbl) && !is.na(threshold)) {
     var_name <- deparse(substitute(threshold))
     error_message <- case_when(
-      str_detect(var_name, "conc") ~ "Cannot filter by `{var_name}` because concentration data is unavailable. Please quantify the data first using `quantify_by_*()` functions.",
-      str_detect(var_name, "normint") ~ "Cannot filter by `{var_name}` because normalized data is unavailable. Please normalize the data first using `normalize_by_*()` functions.",
-      str_detect(var_name, "response") ~ "Cannot filter by `{var_name}` because response curve data is unavailable. Please verify the corresponding data and metadata.",
+      str_detect(
+        var_name,
+        "conc"
+      ) ~ "Cannot filter by `{var_name}` because concentration data is unavailable. Please quantify the data first using `quantify_by_*()` functions.",
+      str_detect(
+        var_name,
+        "normint"
+      ) ~ "Cannot filter by `{var_name}` because normalized data is unavailable. Please normalize the data first using `normalize_by_*()` functions.",
+      str_detect(
+        var_name,
+        "response"
+      ) ~ "Cannot filter by `{var_name}` because response curve data is unavailable. Please verify the corresponding data and metadata.",
       TRUE ~ "QC parameter is not available. Please verify the argument `val`."
     )
     cli_abort(col_red(error_message))
-   }
+  }
+
   if (all(is.na(tbl[[val]])) && !is.na(threshold)) {
     var_name <- deparse(substitute(threshold))
-    cli_abort("Underlying QC parameter to filter for {var_name} is not available. Please verify data if selected QC type is present and contains results.")
+    cli_abort(
+      "The QC parameter {.var {var_name}} is not available. Please verify that the data were processed accordingly and that the selected QC type is present and contains results."
+    )
+  }
+
+  if (any(is.na(tbl[[val]])) && !is.na(threshold)) {
+    var_name <- deparse(substitute(threshold))
+    features_with_na <- tbl[is.na(tbl[[val]]), ]$feature_id
+
+    features_with_na <- glue::glue_collapse(
+      features_with_na,
+      sep = ", ",
+      width = 80,
+      last = ", and "
+    )
+
+    cli::cli_alert_warning(cli::col_yellow(
+      "The QC parameter {.var {var_name}} contains NAs for following features: {features_with_na}. 
+     These features failed QC."
+    ))
   }
   v_val <- tbl[[val]]
-  if(is.null(v_val) && is.na(threshold)) return(rep(NA, nrow(tbl)))
+  if (is.na(threshold)) {
+    return(rep(NA, nrow(tbl)))
+  }
   result <- get(operator)(v_val, threshold)
+  result <- replace_na(result, na_replace)
 }
 
 
@@ -68,23 +107,23 @@ compare_values <- function(tbl, val, threshold, operator) {
 # If any element is NA, the result for that position will also be NA.
 # If list is empty NULL is returned
 comp_lgl_vec <- function(lgl_list, .operator) {
-
   # Convert the list of vectors into a matrix
   matrix_data <- do.call(cbind, lgl_list)
 
   # Define the operation function based on the operator
-  op_func <- switch(.operator,
-                    "AND" = function(x) if (all(is.na(x))) NA else all(x, na.rm = TRUE),
-                    "OR"  = function(x) if (all(is.na(x))) NA else any(x, na.rm = TRUE),
-                    "XOR" = function(x) if (all(is.na(x))) NA else Reduce(xor, x[!is.na(x)]),
-                    stop("Unsupported operator"))
+  op_func <- switch(
+    .operator,
+    "AND" = function(x) if (all(is.na(x))) NA else all(x, na.rm = TRUE),
+    "OR" = function(x) if (all(is.na(x))) NA else any(x, na.rm = TRUE),
+    "XOR" = function(x) if (all(is.na(x))) NA else Reduce(xor, x[!is.na(x)]),
+    stop("Unsupported operator")
+  )
 
   # Apply the operation function across the columns
   result <- apply(matrix_data, 1, op_func)
 
   return(result)
 }
-
 
 
 # comp_lgl_vec <- function(lgl_list, .operator){
@@ -102,7 +141,7 @@ comp_lgl_vec <- function(lgl_list, .operator) {
 # }
 
 # Custom assertr function to test if at least one of provided columns exists
-has_any_name = function(...){
+has_any_name = function(...) {
   check_this <- list(...)
   parent <- parent.frame()
   given_names <- rlang::env_names(parent$.top_env)
@@ -116,12 +155,26 @@ has_any_name = function(...){
 # lowercase (if `make_lowercase = TRUE`) and replace all `NA` values with a
 # specified initial value (`init_value`) `all_na_replace = TRUE`
 
-add_missing_column <- function(data, col_name, init_value, make_lowercase, all_na_replace = FALSE) {
+add_missing_column <- function(
+  data,
+  col_name,
+  init_value,
+  make_lowercase,
+  all_na_replace = FALSE
+) {
   if (!tolower(col_name) %in% tolower(names(data))) {
     data |> tibble::add_column({{ col_name }} := init_value)
   } else {
-    if (make_lowercase) data <- data |> dplyr::rename_with(tolower, dplyr::matches(col_name, ignore.case = TRUE))
-    if (all_na_replace && all(is.na(data[[col_name]]))) data <- data |> mutate({{col_name}} := init_value)
+    if (make_lowercase) {
+      data <- data |>
+        dplyr::rename_with(
+          tolower,
+          dplyr::matches(col_name, ignore.case = TRUE)
+        )
+    }
+    if (all_na_replace && all(is.na(data[[col_name]]))) {
+      data <- data |> mutate({{ col_name }} := init_value)
+    }
     data
   }
 }
@@ -138,19 +191,29 @@ add_missing_column <- function(data, col_name, init_value, make_lowercase, all_n
 get_conc_unit <- function(sample_amount_unit, analyte_amount_unit) {
   units <- tolower(unique(sample_amount_unit))
   analyte_units <- tolower(unique(analyte_amount_unit))
-  if (length(units) == 0) return(NA_character_) 
+  if (length(units) == 0) {
+    return(NA_character_)
+  }
   if (length(units) > 1) {
-    conc_unit <- glue::glue("{analyte_amount_unit}/sample amount unit (multiple units)")
-  } else if (analyte_amount_unit == "pmol"  && (units == "ul" | units == "\U003BCl")) {
+    conc_unit <- glue::glue(
+      "{analyte_amount_unit}/sample amount unit (multiple units)"
+    )
+  } else if (
+    analyte_amount_unit == "pmol" && (units == "ul" | units == "\U003BCl")
+  ) {
     conc_unit <- "\U003BCmol/L"
-  } else if (analyte_amount_unit == "ng"  && (units == "ul" | units == "\U003BCl")) {
+  } else if (
+    analyte_amount_unit == "ng" && (units == "ul" | units == "\U003BCl")
+  ) {
     conc_unit <- "\U003BCg/L"
-  } else if (!str_detect(analyte_units, "\\/") && !str_detect(analyte_units, "\\-1")) {
+  } else if (
+    !str_detect(analyte_units, "\\/") && !str_detect(analyte_units, "\\-1")
+  ) {
     conc_unit <- glue::glue("{analyte_amount_unit}/{sample_amount_unit}")
   } else {
     conc_unit <- analyte_amount_unit
   }
-  
+
   unique(conc_unit)
 }
 
@@ -189,13 +252,22 @@ get_conc_unit <- function(sample_amount_unit, analyte_amount_unit) {
 #'
 #'
 #' @export
-order_chained_columns_tbl <- function(df, from_col, to_col, include_chain_id, disconnected_action = "keep") {
+order_chained_columns_tbl <- function(
+  df,
+  from_col,
+  to_col,
+  include_chain_id,
+  disconnected_action = "keep"
+) {
   # Match the argument for disconnected_action
   disconnected_action <- match.arg(disconnected_action, c("keep", "exclude"))
 
-
-  if(nrow(df) == 0) stop("Data frame has no rows")
-  if(!all(c(from_col, to_col) %in% colnames(df))) stop("One or more columns are not present in the data frame.")
+  if (nrow(df) == 0) {
+    stop("Data frame has no rows")
+  }
+  if (!all(c(from_col, to_col) %in% colnames(df))) {
+    stop("One or more columns are not present in the data frame.")
+  }
 
   # Step 1: Identify connected nodes (rows that are involved in a chain)
   df_initial <- df
@@ -203,11 +275,17 @@ order_chained_columns_tbl <- function(df, from_col, to_col, include_chain_id, di
   all_to <- unique(df[[to_col]])
 
   # Find rows where From or To is not in any other row's From or To
-  unconnected_rows <- df[!(df[[from_col]] %in% all_to) & !(df[[to_col]] %in% all_from), ]
+  unconnected_rows <- df[
+    !(df[[from_col]] %in% all_to) & !(df[[to_col]] %in% all_from),
+  ]
 
   # Step 2: Exclude unconnected rows if disconnected_action is "exclude"
   if (disconnected_action == "exclude") {
-    df <- df[!(df[[from_col]] %in% unconnected_rows[[from_col]] | df[[to_col]] %in% unconnected_rows[[to_col]]), ]
+    df <- df[
+      !(df[[from_col]] %in%
+        unconnected_rows[[from_col]] |
+        df[[to_col]] %in% unconnected_rows[[to_col]]),
+    ]
   }
 
   # Step 3: Identify connected rows (after filtering disconnected if needed)
@@ -227,7 +305,9 @@ order_chained_columns_tbl <- function(df, from_col, to_col, include_chain_id, di
   # Start the chain from any From node that is not a To node
   starts <- setdiff(connected_df[[from_col]], connected_df[[to_col]])
 
-  if(length(starts) == 0) stop("Circular dependency detected. Please verify the input data.")
+  if (length(starts) == 0) {
+    stop("Circular dependency detected. Please verify the input data.")
+  }
   # Traverse each chain from the starting node
   for (start in starts) {
     chain <- c(start)
@@ -243,7 +323,7 @@ order_chained_columns_tbl <- function(df, from_col, to_col, include_chain_id, di
       }
 
       chain <- c(chain, next_value)
-      visited <- union(visited, next_value)  # Mark the next node as visited
+      visited <- union(visited, next_value) # Mark the next node as visited
       current <- next_value
     }
 
@@ -252,38 +332,47 @@ order_chained_columns_tbl <- function(df, from_col, to_col, include_chain_id, di
   }
 
   # Step 6: Convert chains into a data frame
-  connected_chains_df <- do.call(rbind, lapply(seq_along(ordered_chains), function(i) {
-    chain <- ordered_chains[[i]]
-    data.frame(
-      chain_id = i,
-      From = chain[-length(chain)],  # All except last
-      To = chain[-1],  # All except first
-      stringsAsFactors = FALSE
-    )
-  }))
+  connected_chains_df <- do.call(
+    rbind,
+    lapply(seq_along(ordered_chains), function(i) {
+      chain <- ordered_chains[[i]]
+      data.frame(
+        chain_id = i,
+        From = chain[-length(chain)], # All except last
+        To = chain[-1], # All except first
+        stringsAsFactors = FALSE
+      )
+    })
+  )
 
   names(connected_chains_df) <- c("chain_id", from_col, to_col)
 
-  if(nrow(connected_chains_df) < nrow(df)) stop("Circular dependency detected. Please verify the input data.")
+  if (nrow(connected_chains_df) < nrow(df)) {
+    stop("Circular dependency detected. Please verify the input data.")
+  }
 
   # Cleanup and readd columns that were not part of the chain
   rownames(connected_chains_df) <- NULL
 
-
   cols_to_add <- setdiff(names(df_initial), c("chain_id", from_col, to_col))
   connected_chains_df$order <- seq_len(nrow(connected_chains_df))
-  merged_df <- merge(connected_chains_df, df_initial[, c(from_col, to_col, cols_to_add)], by = c(from_col, to_col), all.x = TRUE)
+  merged_df <- merge(
+    connected_chains_df,
+    df_initial[, c(from_col, to_col, cols_to_add)],
+    by = c(from_col, to_col),
+    all.x = TRUE
+  )
   merged_df <- merged_df[order(merged_df$order), ]
   merged_df$order <- NULL
 
   # Remove chain_id if not specified
-  if(!include_chain_id) merged_df$chain_id <- NULL
+  if (!include_chain_id) {
+    merged_df$chain_id <- NULL
+  }
 
   # Return final data frame
   merged_df
 }
-
-
 
 
 #' Custom axis formatting function
@@ -316,16 +405,24 @@ order_chained_columns_tbl <- function(df, from_col, to_col, include_chain_id, di
 #   formatted
 # }
 scientific_format_end <- function(x) {
-  if (length(x) == 0) return(character(0))
+  if (length(x) == 0) {
+    return(character(0))
+  }
 
   # Remove NAs for max value check
   x_clean <- x[!is.na(x)]
-  if (length(x_clean) == 0) return(as.character(x))
+  if (length(x_clean) == 0) {
+    return(as.character(x))
+  }
 
   # Function to format with one-digit mantissa in scientific notation
   format_one_digit <- function(value) {
-    if (is.na(value)) return("")
-    if (value == 0) return("0")
+    if (is.na(value)) {
+      return("")
+    }
+    if (value == 0) {
+      return("0")
+    }
     exp <- floor(log10(abs(value)))
     mantissa <- round(value / 10^exp, 1)
     paste0(mantissa, "e", ifelse(exp >= 0, "+", ""), exp)
@@ -345,18 +442,19 @@ scientific_format_end <- function(x) {
 desaturate_colors <- function(colors, amount = 0.5) {
   x <- sapply(colors, function(col) {
     rgb_vals <- grDevices::col2rgb(col)
-    hsv_vals <- grDevices::rgb2hsv(r = rgb_vals[1], 
-                        g = rgb_vals[2], 
-                        b = rgb_vals[3])
-    grDevices::hsv(h = hsv_vals["h",], 
-        s = hsv_vals["s",] * amount, 
-        v = hsv_vals["v",])
+    hsv_vals <- grDevices::rgb2hsv(
+      r = rgb_vals[1],
+      g = rgb_vals[2],
+      b = rgb_vals[3]
+    )
+    grDevices::hsv(
+      h = hsv_vals["h", ],
+      s = hsv_vals["s", ] * amount,
+      v = hsv_vals["v", ]
+    )
   })
-  if(all(is.null(names(colors)))) unname(x) else x
+  if (all(is.null(names(colors)))) unname(x) else x
 }
-
-
-
 
 #
 # # https://dewey.dunnington.ca/post/2018/modifying-facet-scales-in-ggplot2/
@@ -397,4 +495,3 @@ desaturate_colors <- function(colors, amount = 0.5) {
 #     params = facet_super$params
 #   )
 # }
-
