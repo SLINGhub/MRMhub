@@ -357,6 +357,8 @@ myexp <- mrmhub::filter_features_qc(myexp,
                                    include_istd = TRUE,
                                    min.intensity.median.spl = 200)
 #> Calculating feature QC metrics - please wait...
+#> ! The QC parameter `min.intensity.median.spl` contains NAs for following features: LPC O-22:1, PC 34:5, PC 35:1, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC P-32:1 M+1. 
+#> These features failed QC.
 #> ✔ New feature QC filters were defined: 437 of 448 quantifier features meet QC criteria (including the 25 quantifier ISTD features).
 plot_responsecurves(
   data = myexp,
@@ -455,6 +457,8 @@ myexp <- mrmhub::filter_features_qc(myexp,
                                    include_istd = TRUE,
                                    min.intensity.median.spl = 1000)
 #> Calculating feature QC metrics - please wait...
+#> ! The QC parameter `min.intensity.median.spl` contains NAs for following features: LPC O-22:1, PC 34:5, PC 35:1, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC P-32:1 M+1. 
+#> These features failed QC.
 #> ✔ New feature QC filters were defined: 413 of 448 quantifier features meet QC criteria (including the 25 quantifier ISTD features).
 mrmhub::plot_normalization_qc(
   data = myexp, 
@@ -665,6 +669,12 @@ myexp <- filter_features_qc(
   features.to.keep = c("CE 20:4", "CE 22:5", "CE 22:6", "CE 16:0", "CE 18:0")
 )
 #> Calculating feature QC metrics - please wait...
+#> ! The QC parameter `min.intensity.median.spl` contains NAs for following features: LPC O-22:1, PC 34:5, PC 35:1, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC P-32:1 M+1. 
+#> These features failed QC.
+#> ! The QC parameter `min.signalblank.median.spl.pblk` contains NAs for following features: LPC O-22:1, PC 34:5, PC 35:1, PG 36:2, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC .... 
+#> These features failed QC.
+#> ! The QC parameter `max.cv.conc.bqc` contains NAs for following features: CE 18:1 d7 (ISTD), Cer d18:1/12:0 (ISTD) [M-H20>264], Cer d18:1/25:0 (ISTD), .... 
+#> These features failed QC.
 #> ! The following features were forced to be retained despite not meeting filtering criteria: CE 16:0, CE 20:4, CE 22:5, and CE 22:6
 #> ✔ New feature QC filters were defined: 324 of 423 quantifier features meet QC criteria (not including the 25 quantifier ISTD features).
 ```
@@ -752,7 +762,7 @@ Exercises
 ``` r
 mrmhub::save_report_xlsx(myexp, path = tempfile(fileext = ".xlsx"))
 #> Saving report to disk - please wait...
-#> ✔ The data processing report of experiment 'sPerfect' has been saved to '/tmp/RtmpmEOqm9/file4384741753a0.xlsx'.
+#> ✔ The data processing report of experiment 'sPerfect' has been saved to '/tmp/RtmpqoVgfy/file4384685b720d.xlsx'.
 ```
 
 You can also save specific data subsets as a clean flat, wide CSV file.
@@ -772,7 +782,7 @@ mrmhub::save_dataset_csv(
   qc_types = "SPL", 
   include_qualifier = FALSE,
   filter_data = TRUE)
-#> ✔ Concentration values for 377 analyses and 324 features have been exported to '/tmp/RtmpmEOqm9/file4384704f347.csv'.
+#> ✔ Concentration values for 377 analyses and 324 features have been exported to '/tmp/RtmpqoVgfy/file438439c1c6c7.csv'.
 ```
 
 ## 22. Sharing the `MRMhubExperiment` dataset

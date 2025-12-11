@@ -220,8 +220,8 @@ workflow.</p>
 <span>  ref_qc_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SPL"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #00BB00;">Applying `conc` drift correction...</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #BBBB00;">2 feature(s) contain one or more zero or negative `conc` values. Verify your data or use `log_transform_internal = FALSE`.</span></span></span>
-<span><span class="co">#&gt;  <span style="color: #00BB00;">■■■■■■■■■■■■                    </span>  37% |  ETA:  5s</span></span>
-<span><span class="co">#&gt;  <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■         </span>  74% |  ETA:  2s</span></span>
+<span><span class="co">#&gt;  <span style="color: #00BB00;">■■■■■■■■■■■■■■■                 </span>  45% |  ETA:  4s</span></span>
+<span><span class="co">#&gt;  <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■      </span>  83% |  ETA:  1s</span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">1 features showed no variation in the study sample's original values across analyses. </span></span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">1 features have invalid values after smoothing. NA will be be returned for all values of these faetures. Set `use_original_if_fail = FALSE to return orginal values..</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Drift correction was applied to 459 of 460 features (batch-wise).</span></span></span>
@@ -242,7 +242,11 @@ workflow.</p>
 <span>  min.signalblank.median.spl.sblk <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  max.cv.conc.bqc <span class="op">=</span> <span class="fl">25</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Calculating feature QC metrics - please wait...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">New feature QC filters were defined: 182 of 423 quantifier features meet QC criteria (not including the 25 quantifier ISTD features).</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">The QC parameter `min.signalblank.median.spl.sblk` contains NAs for following features: LPC O-22:1, PC 34:5, PC 35:1, PG 36:2, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC .... </span></span></span>
+<span><span class="co"><span style="color: #BBBB00;">#&gt; These features failed QC.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">The QC parameter `max.cv.conc.bqc` contains NAs for following features: CE 18:1 d7 (ISTD), Cer d18:1/12:0 (ISTD) [M-H20&gt;264], Cer d18:1/25:0 (ISTD), .... </span></span></span>
+<span><span class="co"><span style="color: #BBBB00;">#&gt; These features failed QC.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">New feature QC filters were defined: 181 of 423 quantifier features meet QC criteria (not including the 25 quantifier ISTD features).</span></span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="plotting-data">Plotting data<a class="anchor" aria-label="anchor" href="#plotting-data"></a>
@@ -280,7 +284,7 @@ who can run own data processing, plots and QC checks.</p>
 <code class="sourceCode R"><span><span class="co"># Saves a detailed report in Excel format with multiple sheets</span></span>
 <span><span class="fu">mrmhub</span><span class="fu">::</span><span class="fu"><a href="../reference/save_report_xlsx.html">save_report_xlsx</a></span><span class="op">(</span><span class="va">myexp</span>, path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".xlsx"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Saving report to disk - please wait...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The data processing report has been saved to '/tmp/RtmpWBkI8A/file45bf1f6b8d45.xlsx'.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The data processing report has been saved to '/tmp/RtmpIIybez/file45f853ffded0.xlsx'.</span></span></span>
 <span></span>
 <span><span class="co"># Saves flat csv table with concentration values that passed the previously set</span></span>
 <span><span class="co"># QC criteria, for each feature in each sample. </span></span>
@@ -291,7 +295,7 @@ who can run own data processing, plots and QC checks.</p>
 <span>  qc_types <span class="op">=</span> <span class="st">"SPL"</span>, </span>
 <span>  include_qualifier <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  filter_data <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Concentration values for 378 analyses and 182 features have been exported to '/tmp/RtmpWBkI8A/file45bf413139a1.csv'.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Concentration values for 378 analyses and 181 features have been exported to '/tmp/RtmpIIybez/file45f87172fc3d.csv'.</span></span></span>
 <span></span>
 <span><span class="co"># Saves the entire MRMhubExperiment object as an RDS file, which can be</span></span>
 <span><span class="co"># opened in R without MRMhub or used with MRMhub again.</span></span>

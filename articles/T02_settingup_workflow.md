@@ -126,8 +126,8 @@ myexp <- correct_drift_gaussiankernel(
   ref_qc_types = c("SPL"))
 #> ℹ Applying `conc` drift correction...
 #> ℹ 2 feature(s) contain one or more zero or negative `conc` values. Verify your data or use `log_transform_internal = FALSE`.
-#>  ■■■■■■■■■■■■                      37% |  ETA:  5s
-#>  ■■■■■■■■■■■■■■■■■■■■■■■           74% |  ETA:  2s
+#>  ■■■■■■■■■■■■■■■                   45% |  ETA:  4s
+#>  ■■■■■■■■■■■■■■■■■■■■■■■■■■        83% |  ETA:  1s
 #> ! 1 features showed no variation in the study sample's original values across analyses. 
 #> ! 1 features have invalid values after smoothing. NA will be be returned for all values of these faetures. Set `use_original_if_fail = FALSE to return orginal values..
 #> ✔ Drift correction was applied to 459 of 460 features (batch-wise).
@@ -148,7 +148,11 @@ myexp <- filter_features_qc(
   min.signalblank.median.spl.sblk = 10,
   max.cv.conc.bqc = 25)
 #> Calculating feature QC metrics - please wait...
-#> ✔ New feature QC filters were defined: 182 of 423 quantifier features meet QC criteria (not including the 25 quantifier ISTD features).
+#> ! The QC parameter `min.signalblank.median.spl.sblk` contains NAs for following features: LPC O-22:1, PC 34:5, PC 35:1, PG 36:2, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC .... 
+#> These features failed QC.
+#> ! The QC parameter `max.cv.conc.bqc` contains NAs for following features: CE 18:1 d7 (ISTD), Cer d18:1/12:0 (ISTD) [M-H20>264], Cer d18:1/25:0 (ISTD), .... 
+#> These features failed QC.
+#> ✔ New feature QC filters were defined: 181 of 423 quantifier features meet QC criteria (not including the 25 quantifier ISTD features).
 ```
 
 ## Plotting data
@@ -191,7 +195,7 @@ plots and QC checks.
 # Saves a detailed report in Excel format with multiple sheets
 mrmhub::save_report_xlsx(myexp, path = tempfile(fileext = ".xlsx"))
 #> Saving report to disk - please wait...
-#> ✔ The data processing report has been saved to '/tmp/RtmpWBkI8A/file45bf1f6b8d45.xlsx'.
+#> ✔ The data processing report has been saved to '/tmp/RtmpIIybez/file45f853ffded0.xlsx'.
 
 # Saves flat csv table with concentration values that passed the previously set
 # QC criteria, for each feature in each sample. 
@@ -202,7 +206,7 @@ mrmhub::save_dataset_csv(
   qc_types = "SPL", 
   include_qualifier = FALSE,
   filter_data = TRUE)
-#> ✔ Concentration values for 378 analyses and 182 features have been exported to '/tmp/RtmpWBkI8A/file45bf413139a1.csv'.
+#> ✔ Concentration values for 378 analyses and 181 features have been exported to '/tmp/RtmpIIybez/file45f87172fc3d.csv'.
 
 # Saves the entire MRMhubExperiment object as an RDS file, which can be
 # opened in R without MRMhub or used with MRMhub again.
