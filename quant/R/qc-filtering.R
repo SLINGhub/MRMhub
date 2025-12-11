@@ -1562,7 +1562,7 @@ filter_features_qc <- function(
     } else {
       if (filter_cleared) {
         cli::cli_alert_success(cli::col_green(
-          "\r{.strong {.emph Cleared}} all feature QC filters! All {n_all_quant} quantifier and all {n_all_qual} qualifier features are now selected ({if_else(!include_istd, 'not including the', 'including the')} {n_istd_quant} quantifier and {n_istd_qual} qualifier ISTD features)"
+          "\r{.strong {.emph Cleared}}\u00A0all feature QC filters! All {n_all_quant} quantifier and all {n_all_qual} qualifier features are now selected ({if_else(!include_istd, 'not including the', 'including the')} {n_istd_quant} quantifier and {n_istd_qual} qualifier ISTD features)"
         ))
       } else {
         cli::cli_alert_success(cli::col_green(
@@ -1582,7 +1582,7 @@ filter_features_qc <- function(
         ))
       } else {
         cli::cli_alert_success(cli::col_green(
-          "\r{.strong {.emph Cleared}} all feature QC filters! All {n_all_quant} quantifier features are now selected ({if_else(!include_istd, 'not including the', 'including the')} {n_istd_quant} quantifier ISTD features)."
+          "{.strong {.emph Cleared all}} feature QC filters! All {n_all_quant} quantifier features are now selected ({if_else(!include_istd, 'not including the', 'including the')} {n_istd_quant} quantifier ISTD features)."
         ))
       }
     }
