@@ -980,6 +980,46 @@ test_that("using filters without underlying data", {
   )
 })
 
+test_that("using filters correctly features when values are NA", {
+  mexpt <- mexp
+  mexpt@dataset <- mexpt@dataset |>
+    mutate(
+      feature_intensity = if_else(
+        feature_id == "PC 32:1",
+        NA,
+        feature_intensity
+      )
+    )
+  mexpt <- normalize_by_istd(mexpt)
+  mexpt <- quantify_by_istd(mexpt)
+  mexpt_proc <- calc_qc_metrics(mexpt, use_batch_medians = FALSE)
+
+  expect_message(
+    mexp_res <- filter_features_qc(
+      mexpt_proc,
+      include_qualifier = TRUE,
+      include_istd = FALSE,
+      clear_existing = FALSE,
+      max.cv.conc.bqc = 33
+    ),
+    "New feature QC filters were defined: 18 of 19 quantifier",
+    fixed = TRUE
+  )
+
+  expect_message(
+    mexp_res <- filter_features_qc(
+      mexpt_proc,
+      include_qualifier = TRUE,
+      include_istd = FALSE,
+      clear_existing = FALSE,
+      max.cv.conc.bqc = 33
+    ),
+    "The QC parameter `max.cv.conc.bqc` contains NAs for following features: PC 32:1.",
+    fixed = TRUE
+  )
+})
+
+
 test_that("filter_features_qc requires handles inconistent reponse filter setttings", {
   expect_error(
     mexp_res <- filter_features_qc(
@@ -1243,4 +1283,16 @@ test_that("calc_qc_metrics works with only conc present", {
   mexp_temp@dataset$feature_intensity <- NULL
   mexp_temp@dataset$feature_norm_intensity <- NULL
   mexp_res <- calc_qc_metrics(mexp_temp, use_batch_medians = FALSE)
+
+  expect_message(
+    mexp_res4 <- filter_features_qc(
+      mexp_res,
+      include_qualifier = TRUE,
+      include_istd = FALSE,
+      clear_existing = FALSE,
+      max.cv.conc.bqc = 11
+    ),
+    "New feature QC filters were defined: 6 of 19 quantifier and 0 of 1 qualifier features meet QC criteria (not including the 9 quantifier and 0 qualifier ISTD features",
+    fixed = TRUE
+  )
 })

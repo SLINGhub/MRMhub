@@ -474,6 +474,7 @@ test_that("Check import of inconsitent metadata", {
     ),
     "`valid_feature` is inconsistently defined, i.e., not for one or more features. Please"
   )
+
   expect_error(
     mexp <- mrmhub:::import_metadata_features(
       mexp,
@@ -525,4 +526,22 @@ test_that("Replacing specific undefined metadata", {
     ignore_warnings = TRUE
   )
   expect_true(all(mexp@annot_features$is_quantifier))
+
+  expect_error(
+    mexp <- mrmhub:::import_metadata_features(
+      mexp,
+      path = path,
+      sheet = "Features_rfzero"
+    ),
+    "Please verify warnings in corresponding metadata"
+  )
+
+  expect_error(
+    mexp <- mrmhub:::import_metadata_features(
+      mexp,
+      path = path,
+      sheet = "Features_intefzero"
+    ),
+    "Please verify warnings in corresponding metadata"
+  )
 })

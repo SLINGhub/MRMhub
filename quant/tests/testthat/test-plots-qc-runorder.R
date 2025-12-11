@@ -271,7 +271,7 @@ test_that("plot_runsequence default no outlier", {
   expect_doppelganger_cond("plot_rla_boxplot nooutlier", p$plot)
 })
 
-test_that("plot_runsequence default works", {
+test_that("plot_runsequence default works2", {
   p <- plot_rla_boxplot(
     mexp,
     rla_type_batch = "within",
@@ -280,7 +280,7 @@ test_that("plot_runsequence default works", {
     show_timestamp = FALSE,
     show_batches = TRUE
   )
-  expect_doppelganger_cond("plot_rla_boxplot default", p$plot)
+  expect_doppelganger_cond("plot_rla_boxplot default2", p$plot)
 })
 
 
@@ -356,7 +356,7 @@ test_that("plot_rla_boxplot zebra removegaps works", {
       remove_gaps = TRUE
     )
   )
-  expect_doppelganger_cond("plot_rla_boxplot zebranogaps", p$plot)
+  expect_doppelganger_cond("plot_rla_boxplot zebranogaps2", p$plot)
   plot_data <- ggplot2::ggplot_build(p$plot)$data
   expect_equal(dim(plot_data[[1]]), c(3, 11)) # rows for each stripe
 })
