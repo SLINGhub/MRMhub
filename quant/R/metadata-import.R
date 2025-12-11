@@ -541,6 +541,7 @@ assert_metadata <- function(
   ignore_warnings,
   excl_unmatched_analyses
 ) {
+
   check_data(data)
   #TODO: NOTE to check for multiple missing columns defects, first each column will be check
   # for presence and error is raised for reporting, then a defect is raised to
@@ -694,6 +695,7 @@ assert_metadata <- function(
   }
 
   # FEATURES METADATA ====================
+
   if (!is.null(metadata$annot_features) && nrow(metadata$annot_features) > 0) {
     ## Check for data defects ----
     ## TODO: interference_feature_id
@@ -701,7 +703,7 @@ assert_metadata <- function(
       assertr::verify(
         assertr::has_all_names("feature_id"),
         obligatory = TRUE,
-        description = "D;Column missing;Features",
+        description = "D;Column missing;Features;feature_id",
         defect_fun = assertr::defect_append
       )
 
@@ -778,7 +780,16 @@ assert_metadata <- function(
         }) &
           dplyr::any_of(c("analyte_id")),
         description = "N;Not defined for all features;Features;analyte_id"
-      )
+      ) |> 
+      assertr::assert(
+        assertr::within_bounds(lower.bound = 0, upper.bound = Inf, include.lower = FALSE, include.upper = FALSE), 
+        all_of(c("interference_contribution")), 
+        description = "W;Invalid values (0 or negative);Features;interference_contribution") |> 
+      assertr::assert(
+        assertr::within_bounds(lower.bound = 0, upper.bound = Inf, include.lower = FALSE, include.upper = TRUE), 
+        all_of(c("response_factor")), 
+        description = "W;Invalid values (0 or negative);Features;response_factor") 
+
     #assertr::assert(\(x){any(xor(is.na(x), is.na(metadata$annot_features$interference_feature_id)))}, "interference_feature_id", obligatory=FALSE, description = "E;Missing interference proportion(s);Features;interference_contribution") |>
 
     if (!is.null(data)) {
@@ -792,7 +803,8 @@ assert_metadata <- function(
           description = "W;Feature(s) without metadata;Features;feature_id"
         )
     }
-    #assertr::assert(assertr::within_bounds(lower.bound = 0, upper.bound = Inf, include.lower = FALSE, include.upper = FALSE), any_of(c("response_factor", "interference_contribution")), description = "W;Values 0 or negative;Features") |>
+
+ 
     metadata$annot_features <- metadata$annot_features |>
       assertr::chain_end(error_fun = assertr::error_append)
 
