@@ -73,6 +73,7 @@ plot_qc_summary_byclass <- function(data = NULL, font_base_size = 8) {
   # TODO: can surely be better implemented
   d_qc_sum <- d_qc |>
     ungroup() |>
+    filter(.data$pass_istd, .data$pass_qualifier) |>
     group_by(.data$feature_class) |>
     summarise(
       has_only_na = sum(.data$na_in_all, na.rm = TRUE),
@@ -135,7 +136,6 @@ plot_qc_summary_byclass <- function(data = NULL, font_base_size = 8) {
         sum(.data$count_pass, na.rm = TRUE) *
         100
     )
-
   qc_colors <- c(
     all_filter_pass = "#02bf83",
     above_dratio = "#b5a2f5",
@@ -296,6 +296,7 @@ plot_qc_summary_overall <- function(
 
   d_qc_sum <- d_qc |>
     ungroup() |>
+    filter(.data$pass_istd, .data$pass_qualifier) |>
     summarise(
       has_only_na = sum(.data$na_in_all, na.rm = TRUE),
       above_missingness = sum(
