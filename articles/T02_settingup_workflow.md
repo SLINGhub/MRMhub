@@ -126,8 +126,8 @@ myexp <- correct_drift_gaussiankernel(
   ref_qc_types = c("SPL"))
 #> ℹ Applying `conc` drift correction...
 #> ℹ 2 feature(s) contain one or more zero or negative `conc` values. Verify your data or use `log_transform_internal = FALSE`.
-#>  ■■■■■■■■■■■■■■■                   45% |  ETA:  4s
-#>  ■■■■■■■■■■■■■■■■■■■■■■■■■■        83% |  ETA:  1s
+#>  ■■■■■■■■■■■■■                     41% |  ETA:  5s
+#>  ■■■■■■■■■■■■■■■■■■■■■■■■■         78% |  ETA:  2s
 #> ! 1 features showed no variation in the study sample's original values across analyses. 
 #> ! 1 features have invalid values after smoothing. NA will be be returned for all values of these faetures. Set `use_original_if_fail = FALSE to return orginal values..
 #> ✔ Drift correction was applied to 459 of 460 features (batch-wise).
@@ -138,8 +138,8 @@ myexp <- mrmhub::correct_batch_centering(
   variable = "conc",
   ref_qc_types = "SPL")
 #> ℹ Adding batch correction on top of `conc` drift-correction.
-#> ✔ Batch median-centering of 6 batches was applied to drift-corrected concentrations of all 460 features.
-#> ℹ The median CV change of all features in study samples was -0.50% (range: -27.90% to 10.30%).  The median absolute CV of all features decreased from 39.89% to 39.46%.
+#> ✔ Batch median-centering of 6 batches was applied to drift-corrected concentrations of all 502 features.
+#> ℹ The median CV change of all features in study samples was -0.44% (range: -27.90% to 10.30%).  The median absolute CV of all features decreased from 38.99% to 38.76%.
 
 myexp <- filter_features_qc(
   data = myexp,
@@ -150,7 +150,7 @@ myexp <- filter_features_qc(
 #> Calculating feature QC metrics - please wait...
 #> ! The QC parameter `min.signalblank.median.spl.sblk` contains NAs for following features: LPC O-22:1, PC 34:5, PC 35:1, PG 36:2, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC .... 
 #> These features failed QC.
-#> ! The QC parameter `max.cv.conc.bqc` contains NAs for following features: CE 18:1 d7 (ISTD), Cer d18:1/12:0 (ISTD) [M-H20>264], Cer d18:1/25:0 (ISTD), .... 
+#> ! The QC parameter `max.cv.conc.bqc` contains NAs for following features: Cer d18:1/12:0 (ISTD) [M-H20>264], Cer d18:1/25:0 (ISTD) [M-H20>264], Hex2Cer.... 
 #> These features failed QC.
 #> ✔ New feature QC filters were defined: 181 of 423 quantifier features meet QC criteria (not including the 25 quantifier ISTD features).
 ```
@@ -195,7 +195,7 @@ plots and QC checks.
 # Saves a detailed report in Excel format with multiple sheets
 mrmhub::save_report_xlsx(myexp, path = tempfile(fileext = ".xlsx"))
 #> Saving report to disk - please wait...
-#> ✔ The data processing report has been saved to '/tmp/RtmpIIybez/file45f853ffded0.xlsx'.
+#> ✔ The data processing report has been saved to '/tmp/RtmpmOSjpX/file43373bece13e.xlsx'.
 
 # Saves flat csv table with concentration values that passed the previously set
 # QC criteria, for each feature in each sample. 
@@ -206,7 +206,7 @@ mrmhub::save_dataset_csv(
   qc_types = "SPL", 
   include_qualifier = FALSE,
   filter_data = TRUE)
-#> ✔ Concentration values for 378 analyses and 181 features have been exported to '/tmp/RtmpIIybez/file45f87172fc3d.csv'.
+#> ✔ Concentration values for 378 analyses and 181 features have been exported to '/tmp/RtmpmOSjpX/file433743f712f9.csv'.
 
 # Saves the entire MRMhubExperiment object as an RDS file, which can be
 # opened in R without MRMhub or used with MRMhub again.

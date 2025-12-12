@@ -18,6 +18,7 @@ correct_batch_centering(
   correct_scale = FALSE,
   replace_previous = TRUE,
   log_transform_internal = TRUE,
+  feature_list = NULL,
   replace_exisiting_trendcurves = FALSE,
   ...
 )
@@ -55,6 +56,12 @@ correct_batch_centering(
 
   A logical value indicating whether to log-transform the data
   internally during correction. Defaults to `TRUE`.
+
+- feature_list:
+
+  Sets specific features for correction only. Can be character vector or
+  a single string which is then interpreted as regular expression.
+  Default is `NULL` which means all features are selected.
 
 - replace_exisiting_trendcurves:
 

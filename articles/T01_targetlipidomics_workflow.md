@@ -587,8 +587,8 @@ myexp <- mrmhub::correct_batch_centering(
   correct_scale = TRUE, 
   log_transform_internal = TRUE)
 #> ℹ Adding batch correction on top of `conc` drift-correction.
-#> ✔ Batch median-centering of 6 batches was applied to drift-corrected concentrations of all 460 features.
-#> ℹ The median CV change of all features in study samples was -0.29% (range: -31.80% to 69.10%).  The median absolute CV of all features increased from 39.12% to 39.44%.
+#> ✔ Batch median-centering of 6 batches was applied to drift-corrected concentrations of all 502 features.
+#> ℹ The median CV change of all features in study samples was -0.29% (range: -31.80% to 69.10%).  The median absolute CV of all features increased from 38.39% to 39.44%.
 
 my_trend_plot("conc", "PC 40:8")
 #> Generating plots (1 page)...
@@ -762,7 +762,7 @@ Exercises
 ``` r
 mrmhub::save_report_xlsx(myexp, path = tempfile(fileext = ".xlsx"))
 #> Saving report to disk - please wait...
-#> ✔ The data processing report of experiment 'sPerfect' has been saved to '/tmp/RtmpqoVgfy/file4384685b720d.xlsx'.
+#> ✔ The data processing report of experiment 'sPerfect' has been saved to '/tmp/RtmpumdsGD/file40f56e99465c.xlsx'.
 ```
 
 You can also save specific data subsets as a clean flat, wide CSV file.
@@ -782,7 +782,7 @@ mrmhub::save_dataset_csv(
   qc_types = "SPL", 
   include_qualifier = FALSE,
   filter_data = TRUE)
-#> ✔ Concentration values for 377 analyses and 324 features have been exported to '/tmp/RtmpqoVgfy/file438439c1c6c7.csv'.
+#> ✔ Concentration values for 377 analyses and 324 features have been exported to '/tmp/RtmpumdsGD/file40f511c6808d.csv'.
 ```
 
 ## 22. Sharing the `MRMhubExperiment` dataset

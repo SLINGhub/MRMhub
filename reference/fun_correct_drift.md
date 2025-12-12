@@ -92,8 +92,8 @@ fun_correct_drift(
 - feature_list:
 
   Sets specific features for correction only. Can be character vector or
-  regular expression. Default is `NULL` which means all features are
-  selected.
+  a single string which is then interpreted as regular expression.
+  Default is `NULL` which means all features are selected.
 
 - recalc_trend_after:
 

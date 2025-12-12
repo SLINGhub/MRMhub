@@ -95,6 +95,7 @@ on top of previous corrections or replace all prior batch corrections.</p>
 <span>  correct_scale <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  replace_previous <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  log_transform_internal <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  feature_list <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  replace_exisiting_trendcurves <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -133,6 +134,10 @@ previous batch corrections or apply the new correction on top. Defaults to
 <dt id="arg-log-transform-internal">log_transform_internal<a class="anchor" aria-label="anchor" href="#arg-log-transform-internal"></a></dt>
 <dd><p>A logical value indicating whether to log-transform
 the data internally during correction. Defaults to <code>TRUE</code>.</p></dd>
+
+
+<dt id="arg-feature-list">feature_list<a class="anchor" aria-label="anchor" href="#arg-feature-list"></a></dt>
+<dd><p>Sets specific features for correction only. Can be character vector or a single string which is then interpreted as regular expression. Default is <code>NULL</code> which means all features are selected.</p></dd>
 
 
 <dt id="arg-replace-exisiting-trendcurves">replace_exisiting_trendcurves<a class="anchor" aria-label="anchor" href="#arg-replace-exisiting-trendcurves"></a></dt>
