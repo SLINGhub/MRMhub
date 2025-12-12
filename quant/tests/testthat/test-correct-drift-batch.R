@@ -1575,7 +1575,7 @@ test_that("correct_batch_centering works", {
       ref_qc_types = "SPL",
       variable = "conc"
     ),
-    "Batch median-centering of 6 batches was applied to drift-corrected concentrations of all 20 features",
+    "Batch median-centering of 6 batches was applied to drift-corrected concentrations of all 29 features",
     fixed = TRUE
   )
 
@@ -2032,4 +2032,129 @@ test_that("fun_batch.correction handles non log setting when batch scaling", {
     "Currently data must be log-transformed for batch scaling",
     fixed = TRUE
   )
+})
+
+
+test_that("correct_drift for specific feature_list", {
+  expect_message(
+    mexp_drift1 <- correct_drift_cubicspline(
+      mexp,
+      batch_wise = FALSE,
+      replace_previous = TRUE,
+      variable = "conc",
+      ref_qc_types = "BQC",
+      recalc_trend_after = TRUE,
+      use_original_if_fail = FALSE,
+      ignore_istd = TRUE,
+      feature_list = c("CE 18:1", "PC 40:8")
+    ),
+    "2 of 20", 
+    fixed = TRUE)
+  
+  expect_message(
+    mexp_drift1 <- correct_drift_cubicspline(
+      mexp,
+      batch_wise = FALSE,
+      replace_previous = TRUE,
+      variable = "conc",
+      ref_qc_types = "BQC",
+      recalc_trend_after = TRUE,
+      use_original_if_fail = FALSE,
+      ignore_istd = TRUE,
+      feature_list = c("CE 18:1", "PC 40:8")
+    ),
+    "-3.29%", 
+    fixed = TRUE)
+
+  expect_message(
+    mexp_drift1 <- correct_drift_cubicspline(
+      mexp,
+      batch_wise = FALSE,
+      replace_previous = TRUE,
+      variable = "conc",
+      ref_qc_types = "BQC",
+      recalc_trend_after = TRUE,
+      use_original_if_fail = FALSE,
+      ignore_istd = TRUE,
+      feature_list = c("PC")
+    ),
+    "6 of 20", 
+    fixed = TRUE)
+    
+  expect_message(
+    mexp_drift1 <- correct_drift_cubicspline(
+      mexp,
+      batch_wise = FALSE,
+      replace_previous = TRUE,
+      variable = "conc",
+      ref_qc_types = "BQC",
+      recalc_trend_after = TRUE,
+      use_original_if_fail = FALSE,
+      ignore_istd = FALSE,
+      feature_list = c("PC")
+    ),
+    "8 of 29", 
+    fixed = TRUE)
+})
+
+
+
+test_that("correct_batch for specific feature_list", {
+  expect_message(
+  mexp_batch1 <- correct_batch_centering(
+        mexp,
+        correct_scale = FALSE,
+        ref_qc_types = "SPL",
+        variable = "conc",
+        feature_list = c("CE 18:1", "PC 40:8")
+      ),
+    "was applied to raw concentrations of the selected 2 features", 
+    fixed = TRUE)
+  
+  expect_message(
+    mexp_batch1 <- correct_batch_centering(
+        mexp,
+        correct_scale = FALSE,
+        ref_qc_types = "SPL",
+        variable = "conc",
+        feature_list = c("CE 18:1", "PC 40:8")
+      ),
+    "-9.40% to -0.20%", 
+    fixed = TRUE)
+
+  expect_message(
+    mexp_batch1 <- correct_batch_centering(
+        mexp,
+        correct_scale = FALSE,
+        ref_qc_types = "SPL",
+        variable = "conc",
+        feature_list = c("PC")
+    ),
+    "selected 8", 
+    fixed = TRUE)
+})
+
+
+test_that("correct_batch correct var name in outputs", {
+  expect_message(
+    mexp_batch1 <- correct_batch_centering(
+        mexp,
+        correct_scale = FALSE,
+        ref_qc_types = "SPL",
+        variable = "intensity",
+        feature_list = c("CE 18:1", "PC 40:8")
+      ),
+    "applied to raw intensities of the selected 2 features", 
+    fixed = TRUE)
+  
+  expect_message(
+    mexp_batch1 <- correct_batch_centering(
+        mexp,
+        correct_scale = FALSE,
+        ref_qc_types = "SPL",
+        variable = "norm_intensity",
+        feature_list = c("CE 18:1", "PC 40:8")
+      ),
+    "applied to raw normalized intensities of the selected 2 features", 
+    fixed = TRUE)
 })
