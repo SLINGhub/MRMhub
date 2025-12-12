@@ -399,7 +399,7 @@ fun_gam_smooth <- function(
 #' @param cv_diff_threshold This parameter defines the maximum allowable change (difference) in the coefficient of variation (CV) ratio of samples before and after smoothing for the correction to be applied.
 #' A value of 0 (the default) requires the CV to improve, while a value above 0 allows the CV to also become worse by a maximum of the defined difference.
 #' @param ignore_istd Do not apply corrections to ISTDs
-#' @param feature_list Sets specific features for correction only. Can be character vector or regular expression. Default is `NULL` which means all features are selected.
+#' @param feature_list Sets specific features for correction only. Can be character vector or a single string which is then interpreted as regular expression. Default is `NULL` which means all features are selected.
 #' @param use_original_if_fail Determines the action when smoothing fails or results in invalid values for a feature. If TRUE (default), the original data is used; if FALSE, the result for each analysis is NA.
 #' @param recalc_trend_after Recalculate trend post-drift correction for `plot_qc_runscatter()`. This will double calculation time.
 #' @param show_progress Show progress bar. Default = `TRUE.
@@ -713,8 +713,7 @@ fun_correct_drift <- function(
           is.na(.data$cv_adj_spl) |
           is.infinite(.data$cv_adj_spl) |
           .data$cv_adj_spl > 0),
-      drift_correct = (
-        (!conditional_correction) |
+      drift_correct = ((!conditional_correction) |
         (.data$cv_change < cv_diff_threshold))
     ) |>
     ungroup()
@@ -857,7 +856,7 @@ fun_correct_drift <- function(
       "drift_correct",
       "y_original",
       var_adj = "y_final"
-    ) 
+    )
 
   d_stats <- d_smooth_final |>
     group_by(!!!syms(adj_groups)) |>
@@ -888,16 +887,19 @@ fun_correct_drift <- function(
   variable_fit_error <- rlang::sym(paste0(variable, "_fit_error"))
   variable_fit_warning <- rlang::sym(paste0(variable, "_fit_warning"))
 
-
   data@dataset <- data@dataset |>
     select(-any_of(c("y_original", variable_before))) |>
     left_join(
       d_smooth_final,
       by = c("analysis_id", "qc_type", "feature_id", "batch_id")
     ) |>
-    replace_na(list(drift_correct = FALSE)) |> 
+    replace_na(list(drift_correct = FALSE)) |>
     mutate(
-      !!variable_sym := if_else(.data$drift_correct, .data$var_adj,!!variable_sym),
+      !!variable_sym := if_else(
+        .data$drift_correct,
+        .data$var_adj,
+        !!variable_sym
+      ),
       !!variable_before_sym := .data$y_original,
       !!variable_raw_fit_sym := if (is_first_correction) {
         .data$y_fit
@@ -1028,11 +1030,14 @@ fun_correct_drift <- function(
   # Invalidate downstream processed data
   if (variable == "feature_intensity") {
     data <- update_after_normalization(data, FALSE)
+    data@status_processing <- "Drift-corrected intensities"
   } else if (variable == "feature_norm_intensity") {
     data <- update_after_quantitation(data, FALSE)
+    data@status_processing <- "Drift-corrected normalized intensities"
+  } else if (variable == "feature_conc") {
+    data@status_processing <- "Drift-corrected concentrations"
   }
 
-  data@status_processing <- "Drift-corrected concentrations"
   data@var_drift_corrected[[variable]] <- TRUE
   data@is_filtered <- FALSE
   data@metrics_qc <- data@metrics_qc[FALSE, ]
@@ -1589,6 +1594,7 @@ correct_drift_gam <- function(
 #'   `TRUE` (replace).
 #' @param log_transform_internal A logical value indicating whether to log-transform
 #'   the data internally during correction. Defaults to `TRUE`.
+#' @param feature_list Sets specific features for correction only. Can be character vector or a single string which is then interpreted as regular expression. Default is `NULL` which means all features are selected.
 #' @param replace_exisiting_trendcurves A logical value indicating whether to replace
 #' trend curves from previous corrections. This is only use for plotting using `plot_runscatter()`. Default is `FALSE`.
 #' @param ... Additional arguments that can be passed to the batch correction
@@ -1605,6 +1611,7 @@ correct_batch_centering <- function(
   correct_scale = FALSE,
   replace_previous = TRUE,
   log_transform_internal = TRUE,
+  feature_list = NULL,
   replace_exisiting_trendcurves = FALSE,
   ...
 ) {
@@ -1743,6 +1750,27 @@ correct_batch_centering <- function(
       y_fit_after = variable_fit_after,
       y = variable
     )))
+
+  if (!is.null(feature_list)) {
+    if (length(feature_list) == 1) {
+      ds <- ds |>
+        dplyr::filter(stringr::str_detect(.data$feature_id, feature_list))
+      if (nrow(ds) == 0) {
+        cli::cli_abort(col_red(
+          "The feature filter set via `feature_list` does not match any feature in the dataset."
+        ))
+      }
+    } else {
+      if (!all(feature_list %in% unique(ds$feature_id))) {
+        cli::cli_abort(col_red(
+          "One or more feature(s) specified with `feature_list` are not present in the dataset."
+        ))
+      }
+
+      ds <- ds |> dplyr::filter(.data$feature_id %in% feature_list)
+    }
+  }
+
   nbatches <- length(unique(ds$batch_id))
   if (nbatches < 2) {
     cli_abort(col_red(glue::glue(
@@ -1762,7 +1790,8 @@ correct_batch_centering <- function(
       }),
     ) |>
     unnest(cols = c("res")) |>
-    select(-"data")
+    select(-"data") |>
+    mutate(was_corrected = TRUE)
 
   d_res_sum <- d_res |>
     group_by(.data$feature_id) |>
@@ -1788,19 +1817,25 @@ correct_batch_centering <- function(
     ) |>
     ungroup()
 
-  nfeat <- get_feature_count(data, is_istd = FALSE)
+  nfeat <- length(unique(d_res$feature_id)) # get_feature_count(data, is_istd = FALSE)
 
   # Print summary
+  var_names <- case_when(
+    variable_strip == "conc" ~ "concentrations",
+    variable_strip == "norm_intensity" ~ "normalized intensities",
+    variable_strip == "intensity" ~ "intensities"
+  )
+
   if (data@var_drift_corrected[[variable]]) {
     cli_alert_success(col_green(glue::glue(
-      "Batch median-centering of {nbatches} batches was applied to drift-corrected concentrations of all {nfeat} features."
+      "Batch median-centering of {nbatches} batches was applied to drift-corrected {var_names} of {if_else(all(is.na(feature_list)), 'all', 'the selected')} {nfeat} features."
     )))
-    data@status_processing <- "Batch- and drift-corrected concentrations"
+    data@status_processing <- "Batch- and drift-corrected {var_names}"
   } else {
     cli_alert_success(col_green(glue::glue(
-      "Batch median-centering of {nbatches} batches was applied to raw concentrations of all {nfeat} features."
+      "Batch median-centering of {nbatches} batches was applied to raw {var_names} of {if_else(all(is.na(feature_list)), 'all', 'the selected')} {nfeat} features."
     )))
-    data@status_processing <- "Batch-corrected concentrations"
+    data@status_processing <- "Batch-corrected {var_names}"
   }
   # Print stats
 
@@ -1828,8 +1863,13 @@ correct_batch_centering <- function(
       d_res |> select(-"y_fit_after"),
       by = c("analysis_id", "feature_id", "qc_type", "batch_id")
     ) |>
+    replace_na(list(was_corrected = FALSE)) |>
     mutate(
-      !!variable_sym := .data$y_adj,
+      !!variable_sym := if_else(
+        .data$was_corrected,
+        .data$y_adj,
+        !!variable_sym
+      ),
       !!variable_before_sym := .data$y,
       !!variable_fit_sym := .data[[variable_fit]],
       !!variable_raw_fit_sym := if (is_first_correction) {
@@ -1839,7 +1879,7 @@ correct_batch_centering <- function(
       },
       !!variable_fit_after_sym := .data$y_fit_after_adj
     ) |>
-    select(-"y_adj", -"y_fit_after_adj", -"y")
+    select(-"y_adj", -"y_fit_after_adj", -"y", -"was_corrected")
 
   # Invalidate downstream processed data
   if (variable == "feature_intensity") {
@@ -1849,10 +1889,11 @@ correct_batch_centering <- function(
   }
 
   data@status_processing <- if (any(data@var_drift_corrected)) {
-    "Drift-Batch-corrected concentrations"
+    glue::glue("Drift-Batch-corrected {var_names}")
   } else {
-    "Batch-corrected concentrations"
+    glue::glue("Batch-corrected {var_names}")
   }
+
   data@var_batch_corrected[[variable]] <- TRUE
   data@is_filtered <- FALSE
   data@metrics_qc <- data@metrics_qc[FALSE, ]
