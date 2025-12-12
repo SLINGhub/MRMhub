@@ -48,7 +48,7 @@ A value of 0 (the default) requires the CV to improve, while a value above 0 all
 
 \item{ignore_istd}{Do not apply corrections to ISTDs}
 
-\item{feature_list}{Sets specific features for correction only. Can be character vector or regular expression. Default is \code{NULL} which means all features are selected.}
+\item{feature_list}{Sets specific features for correction only. Can be character vector or a single string which is then interpreted as regular expression. Default is \code{NULL} which means all features are selected.}
 
 \item{recalc_trend_after}{Recalculate trend post-drift correction for \code{plot_qc_runscatter()}. This will double calculation time.}
 
