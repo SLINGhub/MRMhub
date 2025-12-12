@@ -83,6 +83,7 @@ test_that("check_groupwise_identical_ids works", {
 
 test_that("compare_values works", {
   tbl <- dplyr::tibble(
+    feature_id = c("feat1", "feat2", "feat3", "feat4"),
     value1 = c(1, 2, NA, 4),
     value2 = c(5, NA, 7, 8)
   )
