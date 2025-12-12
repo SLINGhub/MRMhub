@@ -713,8 +713,9 @@ fun_correct_drift <- function(
           is.na(.data$cv_adj_spl) |
           is.infinite(.data$cv_adj_spl) |
           .data$cv_adj_spl > 0),
-      drift_correct = (!conditional_correction) |
-        (.data$cv_change < cv_diff_threshold)
+      drift_correct = (
+        (!conditional_correction) |
+        (.data$cv_change < cv_diff_threshold))
     ) |>
     ungroup()
 
@@ -856,7 +857,7 @@ fun_correct_drift <- function(
       "drift_correct",
       "y_original",
       var_adj = "y_final"
-    )
+    ) 
 
   d_stats <- d_smooth_final |>
     group_by(!!!syms(adj_groups)) |>
@@ -887,14 +888,16 @@ fun_correct_drift <- function(
   variable_fit_error <- rlang::sym(paste0(variable, "_fit_error"))
   variable_fit_warning <- rlang::sym(paste0(variable, "_fit_warning"))
 
+
   data@dataset <- data@dataset |>
     select(-any_of(c("y_original", variable_before))) |>
     left_join(
       d_smooth_final,
       by = c("analysis_id", "qc_type", "feature_id", "batch_id")
     ) |>
+    replace_na(list(drift_correct = FALSE)) |> 
     mutate(
-      !!variable_sym := .data$var_adj,
+      !!variable_sym := if_else(.data$drift_correct, .data$var_adj,!!variable_sym),
       !!variable_before_sym := .data$y_original,
       !!variable_raw_fit_sym := if (is_first_correction) {
         .data$y_fit
@@ -1019,7 +1022,7 @@ fun_correct_drift <- function(
   )
 
   cli_alert_info(cli::col_grey(
-    "The median CV change of all features in study samples was {.strong {formatC(cv_difference_median, format = 'f', digits = 2)}%} (range: {formatC(cv_difference_low, format = 'f', digits = 2)}% to {formatC(cv_difference_high, format = 'f', digits = 2)}%). The median absolute CV of all features{text_batchwise}{.strong {text_change}} {.strong {formatC(cv_median_raw, format = 'f', digits = 2)}% {ifelse(str_detect(text_change, 'remained'), '',  paste0('to ', formatC(cv_median_adj, format = 'f', digits = 2),'%'))}}."
+    "The median CV change of {ifelse(all(is.na(feature_list)), 'all', 'these')} features in study samples was {.strong {formatC(cv_difference_median, format = 'f', digits = 2)}%} (range: {formatC(cv_difference_low, format = 'f', digits = 2)}% to {formatC(cv_difference_high, format = 'f', digits = 2)}%). The median absolute CV of all features{text_batchwise}{.strong {text_change}} {.strong {formatC(cv_median_raw, format = 'f', digits = 2)}% {ifelse(str_detect(text_change, 'remained'), '', paste0('to ', formatC(cv_median_adj, format = 'f', digits = 2),'%'))}}."
   ))
 
   # Invalidate downstream processed data
