@@ -122,8 +122,8 @@ fun_gauss.kernel.smooth = function(
     x = tbl$x,
     y_fit = res$y_fit,
     y_adj = res$y_predicted,
-    fit_error = res$has_error,
-    fit_warning = res$fit_warning
+    fit_error = as.logical(res$has_error),
+    fit_warning = as.logical(res$fit_warning)
   )
 }
 
@@ -200,8 +200,8 @@ fun_loess <- function(tbl, ref_qc_types, log_transform_internal, ...) {
     x = tbl$x,
     y_fit = res$y_fit,
     y_adj = res$y_predicted,
-    fit_error = res$has_error,
-    fit_warning = res$fit_warning
+    fit_error = as.logical(res$has_error),
+    fit_warning = as.logical(res$fit_warning)
   )
 }
 
@@ -251,7 +251,7 @@ fun_cspline <- function(tbl, ref_qc_types, log_transform_internal, ...) {
           }
 
           # Predict smoothed values across the full range of x values
-          y_fit <- predict(res_fit, x = seq(min(tbl$x), max(tbl$x), 1))$y
+          y_fit <- as.vector(predict(res_fit, x = seq(min(tbl$x), max(tbl$x), 1))$y)
 
           # Adjust predictions based on log transformation if applied
           if (log_transform_internal) {
@@ -289,8 +289,8 @@ fun_cspline <- function(tbl, ref_qc_types, log_transform_internal, ...) {
     x = tbl$x,
     y_fit = res$y_fit,
     y_adj = res$y_predicted,
-    fit_error = res$has_error,
-    fit_warning = res$fit_warning
+    fit_error = as.logical(res$has_error),
+    fit_warning = as.logical(res$fit_warning)
   )
 }
 
@@ -333,11 +333,11 @@ fun_gam_smooth <- function(
           )
 
           # Predict smoothed values across the full range of x values
-          y_fit <- predict(
+          y_fit <- as.vector(predict(
             res_fit,
             newdata = data.frame(x = tbl$x),
             type = "response"
-          )
+          ))
 
           # Adjust predictions based on log transformation if applied
           if (log_transform_internal) {
@@ -375,8 +375,8 @@ fun_gam_smooth <- function(
     x = tbl$x,
     y_fit = res$y_fit,
     y_adj = res$y_predicted,
-    fit_error = res$has_error,
-    fit_warning = res$fit_warning
+    fit_error = as.logical(res$has_error),
+    fit_warning = as.logical(res$fit_warning)
   )
 }
 
@@ -699,8 +699,8 @@ fun_correct_drift <- function(
     group_by(!!!syms(adj_groups)) |>
     summarise(
       #.by = !!!syms(adj_groups),
-      any_fit_error = any(.data$fit_error, na.rm = TRUE),
-      any_fit_warning = any(.data$fit_warning, na.rm = TRUE),
+      any_fit_error = as.logical(any(.data$fit_error, na.rm = TRUE)),
+      any_fit_warning = as.logical(any(.data$fit_warning, na.rm = TRUE)),
       cv_raw_spl = cv(.data$y_original[.data$qc_type == "SPL"], na.rm = TRUE),
       cv_adj_spl = cv(.data$y_adj[.data$qc_type == "SPL"], na.rm = TRUE),
       cv_change = if_else(
@@ -708,23 +708,39 @@ fun_correct_drift <- function(
         .data$cv_adj_spl - .data$cv_raw_spl,
         NA_real_
       ),
-      cv_change_valid = !is.na(.data$cv_change) &
-        (is.nan(.data$cv_adj_spl) |
-          is.na(.data$cv_adj_spl) |
-          is.infinite(.data$cv_adj_spl) |
-          .data$cv_adj_spl > 0),
-      drift_correct = ((!conditional_correction) |
-        (.data$cv_change < cv_diff_threshold))
+      cv_change_valid = as.logical(
+        !is.na(.data$cv_change) &
+          (is.nan(.data$cv_adj_spl) |
+            is.na(.data$cv_adj_spl) |
+            is.infinite(.data$cv_adj_spl) |
+            .data$cv_adj_spl > 0)
+      ),
+      drift_correct = as.logical(
+        (!conditional_correction) |
+          (.data$cv_change < cv_diff_threshold)
+      )
     ) |>
     ungroup()
 
   d_smooth_summary <- d_smooth_summary_bybatch |>
     group_by(.data$feature_id) |>
     summarise(
-      any_fit_error_summary = any(.data$any_fit_error, na.rm = TRUE),
-      all_fit_error_summary = all(.data$any_fit_error, na.rm = TRUE),
-      any_fit_warning_summary = any(.data$any_fit_warning, na.rm = TRUE),
-      drift_correct_summary = any(.data$drift_correct, na.rm = TRUE),
+      any_fit_error_summary = as.logical(any(
+        .data$any_fit_error,
+        na.rm = TRUE
+      )),
+      all_fit_error_summary = as.logical(all(
+        .data$any_fit_error,
+        na.rm = TRUE
+      )),
+      any_fit_warning_summary = as.logical(any(
+        .data$any_fit_warning,
+        na.rm = TRUE
+      )),
+      drift_correct_summary = as.logical(any(
+        .data$drift_correct,
+        na.rm = TRUE
+      )),
       cv_raw_spl_mean = mean(
         .data$cv_raw_spl[.data$cv_raw_spl > 0],
         na.rm = TRUE
@@ -738,7 +754,7 @@ fun_correct_drift <- function(
         mean(.data$cv_change[.data$drift_correct], na.rm = TRUE),
         NA_real_
       ),
-      cv_change_valid = any(.data$cv_change_valid),
+      cv_change_valid = as.logical(any(.data$cv_change_valid)),
     ) |>
     ungroup()
 
