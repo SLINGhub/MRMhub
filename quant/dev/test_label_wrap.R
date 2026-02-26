@@ -18,12 +18,12 @@ orig_ids <- unique(mexp_long@dataset$feature_id)[1:3]
 names(long_ids) <- orig_ids
 mexp_long@dataset <- mexp_long@dataset |>
   mutate(
-    feature_id = dplyr::case_match(
+    feature_id = dplyr::recode_values(
       .data$feature_id,
       names(long_ids)[1] ~ long_ids[1],
       names(long_ids)[2] ~ long_ids[2],
       names(long_ids)[3] ~ long_ids[3],
-      .default = .data$feature_id
+      default = .data$feature_id
     )
   )
 

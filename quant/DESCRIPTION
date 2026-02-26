@@ -20,7 +20,7 @@ Imports:
     methods,
     broom,
     cli,
-    dplyr,
+    dplyr (>= 1.2.0),
     tibble,
     dtplyr,
     forcats,
