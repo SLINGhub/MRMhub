@@ -541,7 +541,6 @@ assert_metadata <- function(
   ignore_warnings,
   excl_unmatched_analyses
 ) {
-
   check_data(data)
   #TODO: NOTE to check for multiple missing columns defects, first each column will be check
   # for presence and error is raised for reporting, then a defect is raised to
@@ -780,15 +779,27 @@ assert_metadata <- function(
         }) &
           dplyr::any_of(c("analyte_id")),
         description = "N;Not defined for all features;Features;analyte_id"
-      ) |> 
+      ) |>
       assertr::assert(
-        assertr::within_bounds(lower.bound = 0, upper.bound = Inf, include.lower = FALSE, include.upper = FALSE), 
-        all_of(c("interference_contribution")), 
-        description = "W;Invalid values (0 or negative);Features;interference_contribution") |> 
+        assertr::within_bounds(
+          lower.bound = 0,
+          upper.bound = Inf,
+          include.lower = FALSE,
+          include.upper = FALSE
+        ),
+        all_of(c("interference_contribution")),
+        description = "W;Invalid values (0 or negative);Features;interference_contribution"
+      ) |>
       assertr::assert(
-        assertr::within_bounds(lower.bound = 0, upper.bound = Inf, include.lower = FALSE, include.upper = TRUE), 
-        all_of(c("response_factor")), 
-        description = "W;Invalid values (0 or negative);Features;response_factor") 
+        assertr::within_bounds(
+          lower.bound = 0,
+          upper.bound = Inf,
+          include.lower = FALSE,
+          include.upper = TRUE
+        ),
+        all_of(c("response_factor")),
+        description = "W;Invalid values (0 or negative);Features;response_factor"
+      )
 
     #assertr::assert(\(x){any(xor(is.na(x), is.na(metadata$annot_features$interference_feature_id)))}, "interference_feature_id", obligatory=FALSE, description = "E;Missing interference proportion(s);Features;interference_contribution") |>
 
@@ -804,7 +815,6 @@ assert_metadata <- function(
         )
     }
 
- 
     metadata$annot_features <- metadata$annot_features |>
       assertr::chain_end(error_fun = assertr::error_append)
 
@@ -1663,6 +1673,7 @@ clean_analysis_metadata <- function(d_analyses) {
         "false" ~ FALSE,
         .default = NA
       )),
+      # ...existing code...
       qc_type = if_else(
         .data$qc_type == "Sample" | is.na(.data$qc_type),
         "SPL",
@@ -1827,6 +1838,15 @@ clean_feature_metadata <- function(d_features) {
         "false" ~ FALSE,
         .default = NA
       )),
+      valid_feature = as.logical(case_match(
+        tolower(.data$valid_feature),
+        "yes" ~ TRUE,
+        "no" ~ FALSE,
+        "true" ~ TRUE,
+        "false" ~ FALSE,
+        .default = NA
+      )),
+      # ...existing code...
       interference_feature_id = stringr::str_squish(
         .data$interference_feature_id
       ),
@@ -2015,6 +2035,7 @@ clean_qcconc_metadata <- function(d_cal) {
         NA ~ TRUE,
         .default = NA
       )),
+      # ...existing code...
     ) |>
     dplyr::select(
       "sample_id",
