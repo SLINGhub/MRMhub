@@ -25,6 +25,11 @@ plot_responsecurves(
   font_base_size = 7,
   rows_page = 4,
   cols_page = 5,
+  curve_layout = "overlay",
+  fixed_scale_curves = FALSE,
+  label_wrap = FALSE,
+  label_wrap_width = 25,
+  r2_vstep = 0.06,
   specific_page = NA,
   page_orientation = "LANDSCAPE",
   show_progress = TRUE
@@ -111,11 +116,59 @@ plot_responsecurves(
 
 - rows_page:
 
-  Number of rows of plots per page.
+  Number of rows of plots per page. Used for pagination in
+  `curve_layout = "overlay"` and `"cols"`. Ignored in
+  `curve_layout = "rows"`.
 
 - cols_page:
 
-  Number of columns of plots per page.
+  Number of columns of plots per page. Used for pagination in
+  `curve_layout = "overlay"` and `"rows"`. Ignored in
+  `curve_layout = "cols"`.
+
+- curve_layout:
+
+  Controls how multiple curves are displayed. One of:
+
+  `"overlay"`
+
+  :   (default) All curves overlaid in each feature panel using
+      `facet_wrap2`. Pagination uses `rows_page * cols_page`.
+
+  `"cols"`
+
+  :   Grid layout with features as rows and curves as columns using
+      `facet_grid2`. Pagination uses `rows_page` only.
+
+  `"rows"`
+
+  :   Grid layout with curves as rows and features as columns using
+      `facet_grid2`. Pagination uses `cols_page` only.
+
+- fixed_scale_curves:
+
+  Logical. If `TRUE`, fixes the y-axis scale per feature row
+  (`curve_layout = "cols"`) or per curve row (`curve_layout = "rows"`).
+  If `FALSE` (default), each panel auto-scales. Silently ignored when
+  `curve_layout = "overlay"`.
+
+- label_wrap:
+
+  Logical. If `TRUE`, long `feature_id` labels are wrapped to multiple
+  lines using `label_wrap_width`. Default is `FALSE`.
+
+- label_wrap_width:
+
+  Integer. Maximum width in characters for wrapped labels when
+  `label_wrap = TRUE`. Default is `25`. Ignored when
+  `label_wrap = FALSE`.
+
+- r2_vstep:
+
+  Numeric. Vertical step between stacked R-squared labels when multiple
+  curves are plotted in the same panel (`curve_layout = "overlay"`).
+  Default is `0.06`. Ignored when `curve_layout` is `"cols"` or
+  `"rows"`, where each panel has one curve.
 
 - specific_page:
 
