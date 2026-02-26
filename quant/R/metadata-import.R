@@ -1665,15 +1665,10 @@ clean_analysis_metadata <- function(d_analyses) {
         .data$replicate_no
       ))),
       specimen = stringr::str_squish(as.character(.data$specimen)),
-      valid_analysis = as.logical(case_match(
-        tolower(.data$valid_analysis),
-        "yes" ~ TRUE,
-        "no" ~ FALSE,
-        "true" ~ TRUE,
-        "false" ~ FALSE,
-        .default = NA
-      )),
-      # ...existing code...
+            valid_analysis = {
+        lkp <- c("yes" = TRUE, "true" = TRUE, "no" = FALSE, "false" = FALSE)
+        unname(lkp[tolower(.data$valid_analysis)])
+      },
       qc_type = if_else(
         .data$qc_type == "Sample" | is.na(.data$qc_type),
         "SPL",
@@ -1822,31 +1817,18 @@ clean_feature_metadata <- function(d_features) {
       analyte_id = stringr::str_squish(.data$analyte_id),
       istd_feature_id = stringr::str_squish(.data$istd_feature_id),
       quant_istd_feature_id = stringr::str_squish(.data$istd_feature_id),
-      is_quantifier = as.logical(case_match(
-        tolower(.data$is_quantifier),
-        "yes" ~ TRUE,
-        "no" ~ FALSE,
-        "true" ~ TRUE,
-        "false" ~ FALSE,
-        .default = NA
-      )),
-      valid_feature = as.logical(case_match(
-        tolower(.data$valid_feature),
-        "yes" ~ TRUE,
-        "no" ~ FALSE,
-        "true" ~ TRUE,
-        "false" ~ FALSE,
-        .default = NA
-      )),
-      valid_feature = as.logical(case_match(
-        tolower(.data$valid_feature),
-        "yes" ~ TRUE,
-        "no" ~ FALSE,
-        "true" ~ TRUE,
-        "false" ~ FALSE,
-        .default = NA
-      )),
-      # ...existing code...
+            is_quantifier = {
+        lkp <- c("yes" = TRUE, "true" = TRUE, "no" = FALSE, "false" = FALSE)
+        unname(lkp[tolower(.data$is_quantifier)])
+      },
+            valid_feature = {
+        lkp <- c("yes" = TRUE, "true" = TRUE, "no" = FALSE, "false" = FALSE)
+        unname(lkp[tolower(.data$valid_feature)])
+      },
+            valid_feature = {
+        lkp <- c("yes" = TRUE, "true" = TRUE, "no" = FALSE, "false" = FALSE)
+        unname(lkp[tolower(.data$valid_feature)])
+      },
       interference_feature_id = stringr::str_squish(
         .data$interference_feature_id
       ),
@@ -2026,16 +2008,11 @@ clean_qcconc_metadata <- function(d_cal) {
       sample_id = stringr::str_squish(as.character(.data$sample_id)),
       analyte_id = stringr::str_squish(as.character(.data$analyte_id)),
       concentration_unit = stringr::str_squish(.data$concentration_unit),
-      include_in_analysis = as.logical(case_match(
-        tolower(.data$include_in_analysis),
-        "yes" ~ TRUE,
-        "no" ~ FALSE,
-        "true" ~ TRUE,
-        "false" ~ FALSE,
-        NA ~ TRUE,
-        .default = NA
-      )),
-      # ...existing code...
+            include_in_analysis = {
+        lkp <- c("yes" = TRUE, "true" = TRUE, "no" = FALSE, "false" = FALSE)
+        v <- unname(lkp[tolower(.data$include_in_analysis)])
+        dplyr::if_else(is.na(v), TRUE, v)
+      },
     ) |>
     dplyr::select(
       "sample_id",
