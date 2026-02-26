@@ -118,7 +118,7 @@ quantify_by_calibration <- function(
       feature_conc = case_when(
         fit_model != "quadratic" ~
           (.data$feature_norm_intensity - .data$coef_b_cal_1) /
-            .data$coef_a_cal_1,
+          .data$coef_a_cal_1,
         TRUE ~
           purrr::pmap_dbl(
             list(
@@ -310,12 +310,13 @@ calc_calibration_results <- function(
       {
         dt <- dt |>
           mutate(
-            weight = case_when(
-              fit_weighting[1] == "none" ~ 1,
-              fit_weighting[1] == "1/x" ~ 1 / .data$concentration,
-              fit_weighting[1] == "1/x^2" ~ 1 / .data$concentration^2,
-              fit_weighting[1] == "1/sqrt(x)" ~ 1 / sqrt(.data$concentration),
-              TRUE ~ NA_real_ # Default case to handle any unexpected values
+            weight = switch(
+              fit_weighting[1],
+              "none" = 1,
+              "1/x" = 1 / .data$concentration,
+              "1/x^2" = 1 / .data$concentration^2,
+              "1/sqrt(x)" = 1 / sqrt(.data$concentration),
+              NA_real_
             )
           )
 

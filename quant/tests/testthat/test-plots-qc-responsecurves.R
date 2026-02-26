@@ -647,7 +647,15 @@ test_that("split_by_curve option works correctly", {
 
     mexp_long <- mexp
     mexp_long@dataset <- mexp_long@dataset |>
-      dplyr::mutate(feature_id = dplyr::recode(.data$feature_id, !!!long_ids))
+      dplyr::mutate(
+        feature_id = dplyr::case_match(
+          .data$feature_id,
+          names(long_ids)[1] ~ long_ids[1],
+          names(long_ids)[2] ~ long_ids[2],
+          names(long_ids)[3] ~ long_ids[3],
+          .default = .data$feature_id
+        )
+      )
 
     # Helper: extract all strip text labels from a ggplot gtable
     get_strip_labels <- function(p) {

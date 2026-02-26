@@ -17,62 +17,70 @@ long_ids <- c(
 orig_ids <- unique(mexp_long@dataset$feature_id)[1:3]
 names(long_ids) <- orig_ids
 mexp_long@dataset <- mexp_long@dataset |>
-  mutate(feature_id = recode(.data$feature_id, !!!long_ids))
+  mutate(
+    feature_id = dplyr::case_match(
+      .data$feature_id,
+      names(long_ids)[1] ~ long_ids[1],
+      names(long_ids)[2] ~ long_ids[2],
+      names(long_ids)[3] ~ long_ids[3],
+      .default = .data$feature_id
+    )
+  )
 
 # --- Test 1: split_by_curve = TRUE, label_wrap = TRUE, fixed_scale_curves = FALSE ---
 p1 <- plot_responsecurves(
-  data               = mexp_long,
-  variable           = "intensity",
-  rows_page          = 3,
-  split_by_curve     = TRUE,
+  data = mexp_long,
+  variable = "intensity",
+  rows_page = 3,
+  split_by_curve = TRUE,
   fixed_scale_curves = FALSE,
-  specific_page      = 1,
-  return_plots       = TRUE,
-  show_progress      = FALSE,
-  label_wrap         = TRUE,
-  label_wrap_width   = 25
+  specific_page = 1,
+  return_plots = TRUE,
+  show_progress = FALSE,
+  label_wrap = TRUE,
+  label_wrap_width = 25
 )
 print(p1[[1]])
 
 # --- Test 2: split_by_curve = TRUE, label_wrap = TRUE, fixed_scale_curves = TRUE ---
 p2 <- plot_responsecurves(
-  data               = mexp_long,
-  variable           = "intensity",
-  rows_page          = 3,
-  split_by_curve     = TRUE,
+  data = mexp_long,
+  variable = "intensity",
+  rows_page = 3,
+  split_by_curve = TRUE,
   fixed_scale_curves = TRUE,
-  specific_page      = 1,
-  return_plots       = TRUE,
-  show_progress      = FALSE,
-  label_wrap         = TRUE,
-  label_wrap_width   = 25
+  specific_page = 1,
+  return_plots = TRUE,
+  show_progress = FALSE,
+  label_wrap = TRUE,
+  label_wrap_width = 25
 )
 print(p2[[1]])
 
 # --- Test 3: split_by_curve = FALSE, label_wrap = TRUE (facet_wrap2 mode) ---
 p3 <- plot_responsecurves(
-  data             = mexp_long,
-  variable         = "intensity",
-  rows_page        = 3,
-  cols_page        = 2,
-  split_by_curve   = FALSE,
-  specific_page    = 1,
-  return_plots     = TRUE,
-  show_progress    = FALSE,
-  label_wrap       = TRUE,
+  data = mexp_long,
+  variable = "intensity",
+  rows_page = 3,
+  cols_page = 2,
+  split_by_curve = FALSE,
+  specific_page = 1,
+  return_plots = TRUE,
+  show_progress = FALSE,
+  label_wrap = TRUE,
   label_wrap_width = 25
 )
 print(p3[[1]])
 
 # --- Test 4: label_wrap = FALSE (no wrapping) ---
 p4 <- plot_responsecurves(
-  data           = mexp_long,
-  variable       = "intensity",
-  rows_page      = 3,
+  data = mexp_long,
+  variable = "intensity",
+  rows_page = 3,
   split_by_curve = TRUE,
-  specific_page  = 1,
-  return_plots   = TRUE,
-  show_progress  = FALSE,
-  label_wrap     = FALSE
+  specific_page = 1,
+  return_plots = TRUE,
+  show_progress = FALSE,
+  label_wrap = FALSE
 )
 print(p4[[1]])

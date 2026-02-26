@@ -1224,32 +1224,32 @@ filter_features_qc <- function(
     # Summarize metrics across curves (columns) based on specified criteria
 
     # Determine the function to apply based on response.curves.summary
-    fun_r2 <- case_match(
+    fun_r2 <- switch(
       response.curves.summary,
-      "worst" ~ "safe_min",
-      "best" ~ "safe_max",
-      .default = response.curves.summary
+      "worst" = "safe_min",
+      "best" = "safe_max",
+      response.curves.summary
     )
 
-    fun_slope_min <- case_match(
+    fun_slope_min <- switch(
       response.curves.summary,
-      c("worst") ~ "safe_min",
-      c("best") ~ "safe_max",
-      .default = response.curves.summary
+      "worst" = "safe_min",
+      "best" = "safe_max",
+      response.curves.summary
     )
 
-    fun_slope_max <- case_match(
+    fun_slope_max <- switch(
       response.curves.summary,
-      c("worst") ~ "safe_max",
-      c("best") ~ "safe_min",
-      .default = response.curves.summary
+      "worst" = "safe_max",
+      "best" = "safe_min",
+      response.curves.summary
     )
 
-    fun_y0 <- case_match(
+    fun_y0 <- switch(
       response.curves.summary,
-      c("worst") ~ "safe_max",
-      c("best") ~ "safe_min",
-      .default = response.curves.summary
+      "worst" = "safe_max",
+      "best" = "safe_min",
+      response.curves.summary
     )
 
     # Calculate summary metrics using purrr::pmap_dbl
