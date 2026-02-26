@@ -46,5 +46,6 @@ Trees. *Analytical Chemistry*, 87(11), 5738–5744.
 
 ``` r
 calc_average_molweight(c("C6H12O6", "[13]C6H12O6", "C8H10N4O2", "D2O"))
+#> NOTE: You are sure that is the mass of an electrone?
 #> [1] 180.15613 186.11184 194.19090  20.02761
 ```

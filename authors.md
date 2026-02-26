@@ -14,14 +14,14 @@
 Source:
 [`DESCRIPTION`](https://github.com/SLINGhub/MRMhub/blob/main/DESCRIPTION)
 
-Burla B, Teo G, Choi H (2025). *mrmhub: Small Molecule Mass Spectrometry
+Burla B, Teo G, Choi H (2026). *mrmhub: Small Molecule Mass Spectrometry
 Data Processing, Quality Control, and Reporting*. R package version
 0.9.1, <https://github.com/SLINGhub/MRMhub>.
 
     @Manual{,
       title = {mrmhub: Small Molecule Mass Spectrometry Data Processing, Quality Control, and Reporting},
       author = {Bo Burla and Guo Shou Teo and Hyungwon Choi},
-      year = {2025},
+      year = {2026},
       note = {R package version 0.9.1},
       url = {https://github.com/SLINGhub/MRMhub},
     }
