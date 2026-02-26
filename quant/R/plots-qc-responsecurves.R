@@ -43,7 +43,16 @@
 #' @param line_width Width of regression lines.
 #' @param font_base_size Base font size for text. Default is 7.
 #' @param rows_page Number of rows of plots per page.
-#' @param cols_page Number of columns of plots per page.
+#' @param cols_page Number of columns of plots per page. Ignored when `split_by_curve = TRUE`.
+#' @param split_by_curve Logical. If `TRUE`, creates a grid layout with features as rows and
+#'   curves as columns using `facet_grid()`. Default is `FALSE`.
+#' @param fixed_scale_curves Logical. If `TRUE`, uses fixed scales for all curves of a feature
+#'   when `split_by_curve = TRUE`. If `FALSE` (default), each panel auto-scales. Silently
+#'   ignored when `split_by_curve = FALSE`.
+#' @param label_wrap Logical. If `TRUE`, long `feature_id` labels are wrapped to multiple
+#'   lines using `label_wrap_width`. Default is `FALSE`.
+#' @param label_wrap_width Integer. Maximum width in characters for wrapped labels when
+#'   `label_wrap = TRUE`. Default is `25`. Ignored when `label_wrap = FALSE`.
 #' @param specific_page An integer specifying a specific page to plot. If
 #'   `NA` (default), all pages are plotted.
 #' @param page_orientation Orientation of the PDF paper: `"LANDSCAPE"` or
@@ -83,6 +92,10 @@ plot_responsecurves <- function(
   # Layout settings (for multi-page PDF)
   rows_page = 4,
   cols_page = 5,
+  split_by_curve = FALSE,
+  fixed_scale_curves = FALSE,
+  label_wrap = FALSE,
+  label_wrap_width = 25,
   specific_page = NA,
   page_orientation = "LANDSCAPE",
 
@@ -240,10 +253,13 @@ plot_responsecurves <- function(
 
   # Determine the range of pages to generate
   if (!is.na(specific_page)) {
-    total_pages <- ceiling(
-      n_distinct(d_rqc$feature_id) /
-        (cols_page * rows_page)
-    )
+    if (split_by_curve) {
+      total_pages <- ceiling(n_distinct(d_rqc$feature_id) / rows_page)
+    } else {
+      total_pages <- ceiling(
+        n_distinct(d_rqc$feature_id) / (cols_page * rows_page)
+      )
+    }
     if (specific_page > total_pages) {
       cli::cli_abort(col_red(
         "Selected page exceeds the total number of pages. Please select a page number between {.strong 1} and {.strong {total_pages}}."
@@ -251,10 +267,13 @@ plot_responsecurves <- function(
     }
     page_range <- specific_page
   } else {
-    page_range <- 1:ceiling(
-      n_distinct(d_rqc$feature_id) /
-        (cols_page * rows_page)
-    )
+    if (split_by_curve) {
+      page_range <- 1:ceiling(n_distinct(d_rqc$feature_id) / rows_page)
+    } else {
+      page_range <- 1:ceiling(
+        n_distinct(d_rqc$feature_id) / (cols_page * rows_page)
+      )
+    }
   }
 
   # Action text for progress output
@@ -293,7 +312,11 @@ plot_responsecurves <- function(
       font_base_size = font_base_size,
       x_axis_title = x_axis_unit,
       color_curves = color_curves,
-      fill_curves = fill_curves
+      fill_curves = fill_curves,
+      split_by_curve = split_by_curve,
+      fixed_scale_curves = fixed_scale_curves,
+      label_wrap = label_wrap,
+      label_wrap_width = label_wrap_width
     )
     if (!return_plots) {
       plot(p)
@@ -337,77 +360,191 @@ plot_responsecurves_page <- function(
   font_base_size,
   x_axis_title,
   color_curves,
-  fill_curves
+  fill_curves,
+  split_by_curve,
+  fixed_scale_curves,
+  label_wrap = FALSE,
+  label_wrap_width = 25
 ) {
   plot_var <- rlang::sym(response_variable)
   dataset$curve_id <- as.character(dataset$curve_id)
 
   # Subset dataset for current page
   n_samples <- length(unique(dataset$analysis_id))
-  row_start <- n_samples * cols_page * rows_page * (specific_page - 1) + 1
-  row_end <- n_samples * cols_page * rows_page * specific_page
 
-  dat_subset <- dataset |>
-    arrange(.data$feature_id, .data$curve_id) |>
-    slice(row_start:row_end) |>
-    group_by(.data$feature_id) |>
-    mutate(not_zero = sum(!!plot_var != 0) > 2)
+  if (split_by_curve) {
+    # When splitting by curve, paginate by features only
+    features <- unique(dataset$feature_id)
+    feature_start <- rows_page * (specific_page - 1) + 1
+    feature_end <- min(rows_page * specific_page, length(features))
+    selected_features <- features[feature_start:feature_end]
+
+    dat_subset <- dataset |>
+      filter(.data$feature_id %in% selected_features) |>
+      arrange(.data$feature_id, .data$curve_id) |>
+      group_by(.data$feature_id) |>
+      mutate(not_zero = sum(!!plot_var != 0) > 2)
+  } else {
+    # Original pagination logic
+    row_start <- n_samples * cols_page * rows_page * (specific_page - 1) + 1
+    row_end <- n_samples * cols_page * rows_page * specific_page
+
+    dat_subset <- dataset |>
+      arrange(.data$feature_id, .data$curve_id) |>
+      slice(row_start:row_end) |>
+      group_by(.data$feature_id) |>
+      mutate(not_zero = sum(!!plot_var != 0) > 2)
+  }
 
   dat_subset$curve_id <- factor(dat_subset$curve_id)
+  if (split_by_curve) {
+    dat_subset$curve_id <- factor(paste0("Curve ", dat_subset$curve_id))
+  }
 
-  p <-
-    ggplot(
-      data = dat_subset,
-      aes(
-        x = .data$analyzed_amount,
-        y = !!plot_var,
-        color = .data$curve_id,
-        fill = .data$curve_id
+  # Build labeller for feature_id based on label_wrap parameter
+  feature_labeller <- if (label_wrap) {
+    ggplot2::label_wrap_gen(width = label_wrap_width, multi_line = TRUE)
+  } else {
+    ggplot2::label_value
+  }
+
+  # When split_by_curve = TRUE, each panel contains exactly one curve so use a
+  # single fixed color rather than mapping color/fill aesthetics to curve_id
+  single_color <- color_curves[[1]]
+  single_fill <- fill_curves[[1]]
+
+  if (split_by_curve) {
+    p <-
+      ggplot(
+        data = dat_subset,
+        aes(x = .data$analyzed_amount, y = !!plot_var)
+      ) +
+      geom_smooth(
+        data = subset(
+          dat_subset,
+          dat_subset$analyzed_amount <= max_regression_value
+        ),
+        aes(x = .data$analyzed_amount, y = !!plot_var),
+        method = "lm",
+        formula = y ~ x,
+        se = FALSE,
+        na.rm = TRUE,
+        linewidth = line_width,
+        color = single_color,
+        inherit.aes = FALSE
+      ) +
+      ggpmisc::stat_poly_eq(
+        data = dat_subset |> filter(.data$not_zero),
+        aes(label = ggplot2::after_stat(.data$rr.label)),
+        size = font_base_size * 0.4,
+        rr.digits = 4,
+        vstep = 0,
+        na.rm = TRUE,
+        rsquared.conf.level = NA,
+        n.min = 3
+      ) +
+      scale_y_continuous(limits = c(0, NA)) +
+      scale_x_continuous(
+        limits = c(0, NA),
+        breaks = scales::breaks_extended(6)
+      ) +
+      geom_point(
+        size = point_size,
+        shape = 21,
+        na.rm = TRUE,
+        color = single_color,
+        fill = single_fill
+      ) +
+      labs(
+        x = x_axis_title,
+        y = stringr::str_remove(response_variable, "feature_")
+      ) +
+      theme_light(base_size = font_base_size) +
+      theme(
+        strip.text = element_text(size = font_base_size, face = "bold"),
+        strip.background = element_rect(linewidth = 0.0001, fill = "#496875"),
+        axis.text.y = element_text(size = font_base_size, colour = "black"),
+        axis.ticks.y = element_line(colour = "black")
+      ) +
+      ggh4x::facet_grid2(
+        rows = vars(.data$feature_id),
+        cols = vars(.data$curve_id),
+        scales = "free",
+        independent = if (fixed_scale_curves) "x" else "y",
+        drop = TRUE,
+        axes = "all",
+        remove_labels = "none",
+        labeller = ggplot2::labeller(
+          feature_id = feature_labeller
+        )
       )
-    ) +
-    geom_smooth(
-      data = subset(
-        dat_subset,
-        dat_subset$analyzed_amount <= max_regression_value
-      ),
-      aes(x = .data$analyzed_amount, y = !!plot_var, color = .data$curve_id),
-      method = "lm",
-      formula = y ~ x,
-      se = FALSE,
-      na.rm = TRUE,
-      linewidth = line_width,
-      inherit.aes = FALSE
-    ) +
-    ggpmisc::stat_poly_eq(
-      data = dat_subset |> filter(.data$not_zero),
-      aes(group = .data$curve_id, label = ggplot2::after_stat(.data$rr.label)),
-      size = font_base_size * 0.4,
-      rr.digits = 4,
-      vstep = 0.02,
-      na.rm = TRUE,
-      rsquared.conf.level = NA,
-      n.min = 3
-    ) +
-    scale_color_manual(values = color_curves) +
-    scale_fill_manual(values = fill_curves) +
-    scale_y_continuous(limits = c(0, NA)) +
-    scale_x_continuous(limits = c(0, NA), breaks = scales::breaks_extended(6)) +
-    ggh4x::facet_wrap2(
-      vars(.data$feature_id),
-      scales = "free",
-      nrow = rows_page,
-      ncol = cols_page,
-      trim_blank = FALSE
-    ) +
-    geom_point(size = point_size, shape = 21, na.rm = TRUE) +
-    labs(
-      x = x_axis_title,
-      y = stringr::str_remove(response_variable, "feature_")
-    ) +
-    theme_light(base_size = font_base_size) +
-    theme(
-      strip.text = element_text(size = font_base_size, face = "bold"),
-      strip.background = element_rect(linewidth = 0.0001, fill = "#496875")
-    )
+  } else {
+    p <-
+      ggplot(
+        data = dat_subset,
+        aes(
+          x = .data$analyzed_amount,
+          y = !!plot_var,
+          color = .data$curve_id,
+          fill = .data$curve_id
+        )
+      ) +
+      geom_smooth(
+        data = subset(
+          dat_subset,
+          dat_subset$analyzed_amount <= max_regression_value
+        ),
+        aes(x = .data$analyzed_amount, y = !!plot_var, color = .data$curve_id),
+        method = "lm",
+        formula = y ~ x,
+        se = FALSE,
+        na.rm = TRUE,
+        linewidth = line_width,
+        inherit.aes = FALSE
+      ) +
+      ggpmisc::stat_poly_eq(
+        data = dat_subset |> filter(.data$not_zero),
+        aes(
+          group = .data$curve_id,
+          label = ggplot2::after_stat(.data$rr.label)
+        ),
+        size = font_base_size * 0.4,
+        rr.digits = 4,
+        vstep = 0.02,
+        na.rm = TRUE,
+        rsquared.conf.level = NA,
+        n.min = 3
+      ) +
+      scale_color_manual(values = color_curves) +
+      scale_fill_manual(values = fill_curves) +
+      scale_y_continuous(limits = c(0, NA)) +
+      scale_x_continuous(
+        limits = c(0, NA),
+        breaks = scales::breaks_extended(6)
+      ) +
+      geom_point(size = point_size, shape = 21, na.rm = TRUE) +
+      labs(
+        x = x_axis_title,
+        y = stringr::str_remove(response_variable, "feature_")
+      ) +
+      theme_light(base_size = font_base_size) +
+      theme(
+        strip.text = element_text(size = font_base_size, face = "bold"),
+        strip.background = element_rect(linewidth = 0.0001, fill = "#496875"),
+        axis.text.y = element_text(size = font_base_size),
+        axis.ticks.y = element_line()
+      ) +
+      ggh4x::facet_wrap2(
+        vars(.data$feature_id),
+        scales = "free",
+        nrow = rows_page,
+        ncol = cols_page,
+        trim_blank = FALSE,
+        labeller = ggplot2::labeller(
+          feature_id = feature_labeller
+        )
+      )
+  }
+
   p
 }
