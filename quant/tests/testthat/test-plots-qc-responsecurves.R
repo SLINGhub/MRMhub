@@ -527,7 +527,9 @@ test_that("split_by_curve option works correctly", {
     expect_false(facet_params_free$independent$x)
     expect_true(facet_params_free$independent$y)
 
-    # rows: fixed_scale_curves = TRUE -> independent = "x" (y shared per curve row)
+    # rows: fixed_scale_curves = TRUE -> y fixed per feature COLUMN via
+    # facetted_pos_scales(). facet uses independent="y" internally but limits
+    # are overridden per column so all panels in same column share y range.
     p_fixed_rows <- plot_responsecurves(
       data = mexp,
       variable = "intensity",
@@ -538,9 +540,22 @@ test_that("split_by_curve option works correctly", {
       return_plots = TRUE
     )
     expect_s3_class(p_fixed_rows[[1]], "gg")
-    facet_params_rows <- p_fixed_rows[[1]]$facet$params
-    expect_true(facet_params_rows$independent$x)
-    expect_false(facet_params_rows$independent$y)
+    # Verify y ranges are equal across rows for the same feature column
+    gb_rows <- ggplot2::ggplot_build(p_fixed_rows[[1]])
+    layout_rows <- gb_rows$layout$layout
+    for (col_idx in unique(layout_rows$COL)) {
+      panels_in_col <- which(layout_rows$COL == col_idx)
+      y_ranges <- sapply(panels_in_col, function(pi) {
+        diff(gb_rows$layout$panel_params[[pi]]$y.range)
+      })
+      expect_true(
+        length(unique(round(y_ranges, 0))) == 1,
+        info = paste(
+          "Y range should be identical across rows for column",
+          col_idx
+        )
+      )
+    }
 
     # fixed_scale_curves silently ignored for overlay
     p_ignored <- plot_responsecurves(

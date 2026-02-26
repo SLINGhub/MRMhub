@@ -497,6 +497,45 @@ plot_responsecurves_page <- function(
       )
   } else if (curve_layout == "rows") {
     # curves as rows, features as columns
+    # When fixed_scale_curves = TRUE: y is fixed per feature COLUMN using
+    # facetted_pos_scales(); each panel is fully independent then overridden
+    # per column. When FALSE: each panel auto-scales (independent = "y").
+    facet_rows_independent <- if (fixed_scale_curves) "y" else "y"
+
+    # Pre-compute per-feature y max for fixed scale per column
+    if (fixed_scale_curves) {
+      feat_ymax <- dat_subset |>
+        dplyr::group_by(.data$feature_id) |>
+        dplyr::summarise(
+          ymax = max(!!plot_var, na.rm = TRUE) * 1.05,
+          .groups = "drop"
+        )
+      # Build positional scale list in panel order (row-major: all cols of row1, then row2...)
+      n_curves <- nlevels(dat_subset$curve_id)
+      feat_levels <- levels(factor(dat_subset$feature_id))
+      # Panel order in facet_grid: row1col1, row1col2, ..., row2col1, ...
+      y_scale_list <- rep(
+        lapply(feat_levels, function(feat) {
+          ymax <- feat_ymax$ymax[feat_ymax$feature_id == feat]
+          ggplot2::scale_y_continuous(limits = c(0, ymax))
+        }),
+        times = n_curves
+      )
+      # Reorder to row-major: for n_curves rows and n_feats cols
+      # panel index = (row-1)*n_feats + col
+      n_feats <- length(feat_levels)
+      y_scale_list <- unlist(
+        lapply(seq_len(n_curves), function(r) {
+          lapply(seq_len(n_feats), function(c) {
+            ggplot2::scale_y_continuous(
+              limits = c(0, feat_ymax$ymax[c])
+            )
+          })
+        }),
+        recursive = FALSE
+      )
+    }
+
     p <-
       ggplot(
         data = dat_subset,
@@ -553,12 +592,17 @@ plot_responsecurves_page <- function(
         rows = vars(.data$curve_id),
         cols = vars(.data$feature_id),
         scales = "free",
-        independent = if (fixed_scale_curves) "x" else "y",
+        independent = "y",
         drop = TRUE,
         axes = "all",
         remove_labels = "none",
         labeller = ggplot2::labeller(feature_id = feature_labeller)
       )
+
+    # Apply per-column fixed y scales when requested
+    if (fixed_scale_curves) {
+      p <- p + ggh4x::facetted_pos_scales(y = y_scale_list)
+    }
   } else {
     # overlay: all curves in each feature panel
     p <-
