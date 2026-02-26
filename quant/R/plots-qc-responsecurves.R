@@ -104,7 +104,7 @@ plot_responsecurves <- function(
   # Layout settings (for multi-page PDF)
   rows_page = 4,
   cols_page = 5,
-  curve_layout = c("overlay", "cols", "rows"),
+  curve_layout = "overlay",
   fixed_scale_curves = FALSE,
   label_wrap = FALSE,
   label_wrap_width = 25,
@@ -117,7 +117,7 @@ plot_responsecurves <- function(
 ) {
   # {ggpmisc} neeeded for plots
   check_installed("ggpmisc")
-  curve_layout <- match.arg(curve_layout)
+  curve_layout <- rlang::arg_match(curve_layout, c("overlay", "cols", "rows"))
 
   # Validate arguments and corresponding data
   # -------------------------------------------
