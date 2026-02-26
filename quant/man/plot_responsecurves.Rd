@@ -22,6 +22,11 @@ plot_responsecurves(
   font_base_size = 7,
   rows_page = 4,
   cols_page = 5,
+  curve_layout = "overlay",
+  fixed_scale_curves = FALSE,
+  label_wrap = FALSE,
+  label_wrap_width = 25,
+  r2_vstep = 0.06,
   specific_page = NA,
   page_orientation = "LANDSCAPE",
   show_progress = TRUE
@@ -69,9 +74,35 @@ the number of colors must match the number of curves.}
 
 \item{font_base_size}{Base font size for text. Default is 7.}
 
-\item{rows_page}{Number of rows of plots per page.}
+\item{rows_page}{Number of rows of plots per page. Used for pagination in
+\code{curve_layout = "overlay"} and \code{"cols"}. Ignored in \code{curve_layout = "rows"}.}
 
-\item{cols_page}{Number of columns of plots per page.}
+\item{cols_page}{Number of columns of plots per page. Used for pagination in
+\code{curve_layout = "overlay"} and \code{"rows"}. Ignored in \code{curve_layout = "cols"}.}
+
+\item{curve_layout}{Controls how multiple curves are displayed. One of:
+\describe{
+\item{\code{"overlay"}}{(default) All curves overlaid in each feature panel using
+\code{facet_wrap2}. Pagination uses \code{rows_page * cols_page}.}
+\item{\code{"cols"}}{Grid layout with features as rows and curves as columns
+using \code{facet_grid2}. Pagination uses \code{rows_page} only.}
+\item{\code{"rows"}}{Grid layout with curves as rows and features as columns
+using \code{facet_grid2}. Pagination uses \code{cols_page} only.}
+}}
+
+\item{fixed_scale_curves}{Logical. If \code{TRUE}, fixes the y-axis scale per feature row
+(\code{curve_layout = "cols"}) or per curve row (\code{curve_layout = "rows"}). If \code{FALSE}
+(default), each panel auto-scales. Silently ignored when \code{curve_layout = "overlay"}.}
+
+\item{label_wrap}{Logical. If \code{TRUE}, long \code{feature_id} labels are wrapped to multiple
+lines using \code{label_wrap_width}. Default is \code{FALSE}.}
+
+\item{label_wrap_width}{Integer. Maximum width in characters for wrapped labels when
+\code{label_wrap = TRUE}. Default is \code{25}. Ignored when \code{label_wrap = FALSE}.}
+
+\item{r2_vstep}{Numeric. Vertical step between stacked R-squared labels when multiple
+curves are plotted in the same panel (\code{curve_layout = "overlay"}). Default is \code{0.06}.
+Ignored when \code{curve_layout} is \code{"cols"} or \code{"rows"}, where each panel has one curve.}
 
 \item{specific_page}{An integer specifying a specific page to plot. If
 \code{NA} (default), all pages are plotted.}
