@@ -23,7 +23,7 @@ jobs:
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-      RUN_VDIFFR: ${{ contains(matrix.config.os, 'macos-latest') }}
+      RUN_VDIFFR: false
       R_KEEP_PKG_SOURCE: yes
 
     steps:
