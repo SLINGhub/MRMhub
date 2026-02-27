@@ -14,6 +14,7 @@ jobs:
     runs-on: macos-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      RUN_VDIFFR: false
 
     steps:
       - uses: actions/checkout@v4
