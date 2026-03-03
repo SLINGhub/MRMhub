@@ -1112,7 +1112,65 @@ test_that("plot_runscatter remove_gaps gap markers present", {
   expect_doppelganger_cond("runscatter_remove_gaps_styled", p[[1]])
 })
 
-# ...existing code...
+test_that("long feature_id labels are wrapped when label_wrap = TRUE", {
+  long_ids <- c(
+    "Ceramide d18:1/16:0 long name feature label",
+    "Phosphatidylcholine PC 34:1 with extra long annotation",
+    "Lysophosphatidylethanolamine LPE 18:2 very long descriptor label"
+  )
+  orig_ids <- unique(mexp@dataset$feature_id)[1:3]
+  names(long_ids) <- orig_ids
+
+  mexp_long <- mexp
+  mexp_long@dataset <- mexp_long@dataset |>
+    dplyr::mutate(
+      feature_id = dplyr::recode_values(
+        .data$feature_id,
+        names(long_ids)[1] ~ long_ids[1],
+        names(long_ids)[2] ~ long_ids[2],
+        names(long_ids)[3] ~ long_ids[3],
+        default = .data$feature_id
+      )
+    )
+
+  # Helper: extract all strip text labels from a ggplot gtable
+  get_strip_labels <- function(p) {
+    gt <- ggplot2::ggplot_gtable(ggplot2::ggplot_build(p))
+    strip_grobs <- gt$grobs[grepl("strip", gt$layout$name)]
+    sapply(strip_grobs, function(sg) {
+      sg$grobs[[1]]$children[[2]]$children[[1]]$label
+    })
+  }
+
+  # label_wrap = TRUE: at least one strip label should contain a newline
+  p_wrap <- plot_runscatter(
+    data = mexp_long,
+    variable = "intensity",
+    rows_page = 3,
+    cols_page = 4,
+    label_wrap = TRUE,
+    label_wrap_width = 20,
+    specific_page = 1,
+    return_plots = TRUE
+  )
+  expect_s3_class(p_wrap[[1]], "gg")
+  expect_true(any(stringr::str_detect(get_strip_labels(p_wrap[[1]]), "\n")))
+
+  # label_wrap = FALSE (default): no strip label should contain a newline
+  p_nowrap <- plot_runscatter(
+    data = mexp_long,
+    variable = "intensity",
+    rows_page = 3,
+    cols_page = 4,
+    label_wrap = FALSE,
+    specific_page = 1,
+    return_plots = TRUE
+  )
+  expect_s3_class(p_nowrap[[1]], "gg")
+  expect_false(any(stringr::str_detect(get_strip_labels(p_nowrap[[1]]), "\n")))
+
+  expect_doppelganger_cond("runscatter_label_wrap", p_wrap[[1]])
+})
 
 test_that("plot_runscatter collapse_excluded works", {
   p <- plot_runscatter(

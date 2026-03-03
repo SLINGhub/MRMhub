@@ -127,6 +127,10 @@
 #' @param gap_label_size Font size of the gap-boundary labels. Default is `2.5`.
 #' @param gap_scale Numeric multiplication factor for the gap band width.
 #'   Default is `1`. Increase (e.g. `2`) for wider gaps, decrease for narrower.
+#' @param label_wrap Logical. If `TRUE`, long `feature_id` labels are wrapped to multiple
+#'   lines using `label_wrap_width`. Default is `FALSE`.
+#' @param label_wrap_width Integer. Maximum width in characters for wrapped labels when
+#'   `label_wrap = TRUE`. Default is `25`. Ignored when `label_wrap = FALSE`.
 #'
 #' @return A list of ggplot2 plots, or `NULL` if `return
 #' @export
@@ -221,7 +225,11 @@ plot_runscatter <- function(
   gap_line_color = "#e34a33",
   gap_line_width = 0.3,
   gap_label_size = 2.5,
-  gap_scale = 1
+  gap_scale = 1,
+
+  # Label wrapping
+  label_wrap = FALSE,
+  label_wrap_width = 25
 ) {
   # Check the validity of input data
   check_data(data)
@@ -610,7 +618,9 @@ plot_runscatter <- function(
     gap_label_size = gap_label_size,
     gap_scale = gap_scale,
     order_map = if (use_index_axis) order_map else NULL,
-    d_gaps = if (remove_gaps && use_index_axis) d_gaps else NULL
+    d_gaps = if (remove_gaps && use_index_axis) d_gaps else NULL,
+    label_wrap = label_wrap,
+    label_wrap_width = label_wrap_width
   )
   # subset the dataset with only the rows used for plotting the facets of the selected page
   n_samples <- length(unique(d_filt$analysis_id))
@@ -774,7 +784,9 @@ runscatter_plot_pages <- function(
   gap_label_size,
   gap_scale,
   order_map,
-  d_gaps
+  d_gaps,
+  label_wrap,
+  label_wrap_width
 ) {
   runscatter_one_page <- function(d_subset) {
     # For debugging
@@ -1164,13 +1176,20 @@ runscatter_plot_pages <- function(
       }
     }
 
+    feature_labeller <- if (label_wrap) {
+      ggplot2::label_wrap_gen(width = label_wrap_width, multi_line = TRUE)
+    } else {
+      ggplot2::label_value
+    }
+
     p <- p +
       ggh4x::facet_wrap2(
         ggplot2::vars(.data$feature_id),
         scales = "free_y",
         ncol = cols_page,
         nrow = rows_page,
-        trim_blank = FALSE
+        trim_blank = FALSE,
+        labeller = feature_labeller
       ) +
       ggplot2::scale_color_manual(
         name = NULL,

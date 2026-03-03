@@ -1,39 +1,41 @@
-devtools::load_all("/Users/lsibjb/Documents/Code/MRMhub/quant", quiet = TRUE)
+devtools::load_all(quiet = TRUE)
 
 library(dplyr)
 
-# Build mexp the same way as in tests
+# Build mexp
 mexp <- lipidomics_dataset
 mexp <- normalize_by_istd(mexp)
 mexp <- calc_qc_metrics(mexp)
 
 # Inject very long feature_id names into a copy
-mexp_long <- mexp
 long_ids <- c(
   "Ceramide d18:1/16:0 long name feature label",
   "Phosphatidylcholine PC 34:1 with extra long annotation text",
   "Lysophosphatidylethanolamine LPE 18:2 very long descriptor label"
 )
-orig_ids <- unique(mexp_long@dataset$feature_id)[1:3]
+orig_ids <- unique(mexp@dataset$feature_id)[1:3]
 names(long_ids) <- orig_ids
+
+mexp_long <- mexp
 mexp_long@dataset <- mexp_long@dataset |>
   mutate(
-    feature_id = dplyr::recode_values(
-      .data$feature_id,
-      names(long_ids)[1] ~ long_ids[1],
-      names(long_ids)[2] ~ long_ids[2],
-      names(long_ids)[3] ~ long_ids[3],
-      default = .data$feature_id
+    feature_id = case_when(
+      .data$feature_id == orig_ids[1] ~ long_ids[1],
+      .data$feature_id == orig_ids[2] ~ long_ids[2],
+      .data$feature_id == orig_ids[3] ~ long_ids[3],
+      .default = .data$feature_id
     )
   )
 
-# --- Test 1: split_by_curve = TRUE, label_wrap = TRUE, fixed_scale_curves = FALSE ---
+# ── plot_responsecurves examples ───────────────────────────────────────────────
+
+# Test 1: curve_layout = "overlay", label_wrap = TRUE
 p1 <- plot_responsecurves(
   data = mexp_long,
   variable = "intensity",
   rows_page = 3,
-  split_by_curve = TRUE,
-  fixed_scale_curves = FALSE,
+  cols_page = 3,
+  curve_layout = "overlay",
   specific_page = 1,
   return_plots = TRUE,
   show_progress = FALSE,
@@ -42,13 +44,13 @@ p1 <- plot_responsecurves(
 )
 print(p1[[1]])
 
-# --- Test 2: split_by_curve = TRUE, label_wrap = TRUE, fixed_scale_curves = TRUE ---
+# Test 2: curve_layout = "cols", label_wrap = TRUE
 p2 <- plot_responsecurves(
   data = mexp_long,
   variable = "intensity",
   rows_page = 3,
-  split_by_curve = TRUE,
-  fixed_scale_curves = TRUE,
+  cols_page = 3,
+  curve_layout = "cols",
   specific_page = 1,
   return_plots = TRUE,
   show_progress = FALSE,
@@ -57,30 +59,56 @@ p2 <- plot_responsecurves(
 )
 print(p2[[1]])
 
-# --- Test 3: split_by_curve = FALSE, label_wrap = TRUE (facet_wrap2 mode) ---
+# Test 3: label_wrap = FALSE (default, no wrapping)
 p3 <- plot_responsecurves(
   data = mexp_long,
   variable = "intensity",
   rows_page = 3,
-  cols_page = 2,
-  split_by_curve = FALSE,
-  specific_page = 1,
-  return_plots = TRUE,
-  show_progress = FALSE,
-  label_wrap = TRUE,
-  label_wrap_width = 25
-)
-print(p3[[1]])
-
-# --- Test 4: label_wrap = FALSE (no wrapping) ---
-p4 <- plot_responsecurves(
-  data = mexp_long,
-  variable = "intensity",
-  rows_page = 3,
-  split_by_curve = TRUE,
+  cols_page = 3,
+  curve_layout = "overlay",
   specific_page = 1,
   return_plots = TRUE,
   show_progress = FALSE,
   label_wrap = FALSE
 )
+print(p3[[1]])
+
+# ── plot_runscatter examples ───────────────────────────────────────────────────
+
+# Test 4: label_wrap = TRUE, width = 20 (tight — forces 2-3 lines)
+p4 <- plot_runscatter(
+  data = mexp_long,
+  variable = "intensity",
+  rows_page = 3,
+  cols_page = 4,
+  specific_page = 1,
+  return_plots = TRUE,
+  label_wrap = TRUE,
+  label_wrap_width = 20
+)
 print(p4[[1]])
+
+# Test 5: label_wrap = TRUE, width = 30 (looser — fewer line breaks)
+p5 <- plot_runscatter(
+  data = mexp_long,
+  variable = "intensity",
+  rows_page = 3,
+  cols_page = 4,
+  specific_page = 1,
+  return_plots = TRUE,
+  label_wrap = TRUE,
+  label_wrap_width = 30
+)
+print(p5[[1]])
+
+# Test 6: label_wrap = FALSE (default — labels overflow strips)
+p6 <- plot_runscatter(
+  data = mexp_long,
+  variable = "intensity",
+  rows_page = 3,
+  cols_page = 4,
+  specific_page = 1,
+  return_plots = TRUE,
+  label_wrap = FALSE
+)
+print(p6[[1]])
