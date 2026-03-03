@@ -107,7 +107,12 @@ their median RLA values.</p>
 <span>  qc_types <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  plot_range <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  rla_limit_to_range <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  collapse_excluded <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  remove_gaps <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  gap_line_color <span class="op">=</span> <span class="st">"#e34a33"</span>,</span>
+<span>  gap_line_width <span class="op">=</span> <span class="fl">0.3</span>,</span>
+<span>  gap_label_size <span class="op">=</span> <span class="fl">2.5</span>,</span>
+<span>  gap_scale <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  filter_data <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  include_qualifier <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  include_istd <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -162,9 +167,32 @@ their median RLA values.</p>
 <dd><p>Logical, whether to limit the RLA values to the specified <code>plot_range</code>. Default is <code>FALSE</code>, which means RLA values are calculated for all samples.</p></dd>
 
 
+<dt id="arg-collapse-excluded">collapse_excluded<a class="anchor" aria-label="anchor" href="#arg-collapse-excluded"></a></dt>
+<dd><p>Logical, whether to collapse gaps in the x-axis caused by QC types that were not selected, re-indexing x to a contiguous sequence. Default is <code>FALSE</code>.</p></dd>
+
+
 <dt id="arg-remove-gaps">remove_gaps<a class="anchor" aria-label="anchor" href="#arg-remove-gaps"></a></dt>
-<dd><p>Logical, whether to remove gaps in the x-axis, occuring from QC types that were not selected. Default is <code>TRUE</code>.
-is supplied, only features with exactly these names are excluded (applied individually as OR conditions).</p></dd>
+<dd><p>Logical. If <code>TRUE</code>, contiguous indices replace the original
+<code>analysis_order</code> on the x-axis so that missing/filtered samples no longer
+leave large gaps. Each gap is highlighted with a thick vertical line and
+annotated with the flanking analysis-order IDs. Default is <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-gap-line-color">gap_line_color<a class="anchor" aria-label="anchor" href="#arg-gap-line-color"></a></dt>
+<dd><p>Color of the vertical gap-indicator lines. Default is <code>"#e34a33"</code>.</p></dd>
+
+
+<dt id="arg-gap-line-width">gap_line_width<a class="anchor" aria-label="anchor" href="#arg-gap-line-width"></a></dt>
+<dd><p>Line width of the vertical gap-indicator lines. Default is <code>0.3</code>.</p></dd>
+
+
+<dt id="arg-gap-label-size">gap_label_size<a class="anchor" aria-label="anchor" href="#arg-gap-label-size"></a></dt>
+<dd><p>Font size of the gap-boundary labels. Default is <code>2.5</code>.</p></dd>
+
+
+<dt id="arg-gap-scale">gap_scale<a class="anchor" aria-label="anchor" href="#arg-gap-scale"></a></dt>
+<dd><p>Numeric multiplication factor for the gap band width.
+Default is <code>1</code>. Increase (e.g. <code>2</code>) for wider gaps, decrease for narrower.</p></dd>
 
 
 <dt id="arg-filter-data">filter_data<a class="anchor" aria-label="anchor" href="#arg-filter-data"></a></dt>

@@ -25,7 +25,12 @@ plot_rla_boxplot(
   qc_types = NA,
   plot_range = NA,
   rla_limit_to_range = FALSE,
+  collapse_excluded = FALSE,
   remove_gaps = FALSE,
+  gap_line_color = "#e34a33",
+  gap_line_width = 0.3,
+  gap_label_size = 2.5,
+  gap_scale = 1,
   filter_data = FALSE,
   include_qualifier = TRUE,
   include_istd = TRUE,
@@ -86,12 +91,36 @@ plot_rla_boxplot(
   `plot_range`. Default is `FALSE`, which means RLA values are
   calculated for all samples.
 
+- collapse_excluded:
+
+  Logical, whether to collapse gaps in the x-axis caused by QC types
+  that were not selected, re-indexing x to a contiguous sequence.
+  Default is `FALSE`.
+
 - remove_gaps:
 
-  Logical, whether to remove gaps in the x-axis, occuring from QC types
-  that were not selected. Default is `TRUE`. is supplied, only features
-  with exactly these names are excluded (applied individually as OR
-  conditions).
+  Logical. If `TRUE`, contiguous indices replace the original
+  `analysis_order` on the x-axis so that missing/filtered samples no
+  longer leave large gaps. Each gap is highlighted with a thick vertical
+  line and annotated with the flanking analysis-order IDs. Default is
+  `FALSE`.
+
+- gap_line_color:
+
+  Color of the vertical gap-indicator lines. Default is `"#e34a33"`.
+
+- gap_line_width:
+
+  Line width of the vertical gap-indicator lines. Default is `0.3`.
+
+- gap_label_size:
+
+  Font size of the gap-boundary labels. Default is `2.5`.
+
+- gap_scale:
+
+  Numeric multiplication factor for the gap band width. Default is `1`.
+  Increase (e.g. `2`) for wider gaps, decrease for narrower.
 
 - filter_data:
 

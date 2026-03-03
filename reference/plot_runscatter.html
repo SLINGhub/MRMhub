@@ -187,7 +187,13 @@ providing critical insights into data quality.</p>
 <span>  y_label_text <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  pages_per_core <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  use_dingbats <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  show_progress <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  show_progress <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  remove_gaps <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  collapse_excluded <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  gap_line_color <span class="op">=</span> <span class="st">"#e34a33"</span>,</span>
+<span>  gap_line_width <span class="op">=</span> <span class="fl">0.3</span>,</span>
+<span>  gap_label_size <span class="op">=</span> <span class="fl">2.5</span>,</span>
+<span>  gap_scale <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -387,6 +393,36 @@ If <code>NA</code> (default), the color assigned to the qc_type is used.</p></dd
 
 <dt id="arg-show-progress">show_progress<a class="anchor" aria-label="anchor" href="#arg-show-progress"></a></dt>
 <dd><p>Logical, whether to show a progress bar. Default is <code>TRUE</code>.</p></dd>
+
+
+<dt id="arg-remove-gaps">remove_gaps<a class="anchor" aria-label="anchor" href="#arg-remove-gaps"></a></dt>
+<dd><p>Logical. If <code>TRUE</code>, contiguous indices replace the original
+<code>analysis_order</code> on the x-axis so that missing/filtered samples no longer
+leave large gaps. Each gap is highlighted with a thick vertical line and
+annotated with the flanking analysis-order IDs. Default is <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-collapse-excluded">collapse_excluded<a class="anchor" aria-label="anchor" href="#arg-collapse-excluded"></a></dt>
+<dd><p>Logical. If <code>TRUE</code>, gaps in the x-axis caused by
+QC types that were not selected (via <code>qc_types</code>) are collapsed,
+re-indexing x to a contiguous sequence. Default is <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-gap-line-color">gap_line_color<a class="anchor" aria-label="anchor" href="#arg-gap-line-color"></a></dt>
+<dd><p>Color of the vertical gap-indicator lines. Default is <code>"#e34a33"</code>.</p></dd>
+
+
+<dt id="arg-gap-line-width">gap_line_width<a class="anchor" aria-label="anchor" href="#arg-gap-line-width"></a></dt>
+<dd><p>Line width of the vertical gap-indicator lines. Default is <code>0.3</code>.</p></dd>
+
+
+<dt id="arg-gap-label-size">gap_label_size<a class="anchor" aria-label="anchor" href="#arg-gap-label-size"></a></dt>
+<dd><p>Font size of the gap-boundary labels. Default is <code>2.5</code>.</p></dd>
+
+
+<dt id="arg-gap-scale">gap_scale<a class="anchor" aria-label="anchor" href="#arg-gap-scale"></a></dt>
+<dd><p>Numeric multiplication factor for the gap band width.
+Default is <code>1</code>. Increase (e.g. <code>2</code>) for wider gaps, decrease for narrower.</p></dd>
 
 </dl></div>
     <div class="section level2">

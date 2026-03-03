@@ -22,13 +22,13 @@ plot_responsecurves(
   color_curves = NULL,
   point_size = 1.5,
   line_width = 0.7,
+  label_wrap = FALSE,
+  label_wrap_width = 25,
   font_base_size = 7,
   rows_page = 4,
   cols_page = 5,
   curve_layout = "overlay",
   fixed_scale_curves = FALSE,
-  label_wrap = FALSE,
-  label_wrap_width = 25,
   r2_vstep = 0.06,
   specific_page = NA,
   page_orientation = "LANDSCAPE",
@@ -110,6 +110,17 @@ plot_responsecurves(
 
   Width of regression lines.
 
+- label_wrap:
+
+  Logical. If `TRUE`, long `feature_id` labels are wrapped to multiple
+  lines using `label_wrap_width`. Default is `FALSE`.
+
+- label_wrap_width:
+
+  Integer. Maximum width in characters for wrapped labels when
+  `label_wrap = TRUE`. Default is `25`. Ignored when
+  `label_wrap = FALSE`.
+
 - font_base_size:
 
   Base font size for text. Default is 7.
@@ -151,17 +162,6 @@ plot_responsecurves(
   (`curve_layout = "cols"`) or per curve row (`curve_layout = "rows"`).
   If `FALSE` (default), each panel auto-scales. Silently ignored when
   `curve_layout = "overlay"`.
-
-- label_wrap:
-
-  Logical. If `TRUE`, long `feature_id` labels are wrapped to multiple
-  lines using `label_wrap_width`. Default is `FALSE`.
-
-- label_wrap_width:
-
-  Integer. Maximum width in characters for wrapped labels when
-  `label_wrap = TRUE`. Default is `25`. Ignored when
-  `label_wrap = FALSE`.
 
 - r2_vstep:
 

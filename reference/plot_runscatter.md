@@ -82,7 +82,13 @@ plot_runscatter(
   y_label_text = NA,
   pages_per_core = 1,
   use_dingbats = TRUE,
-  show_progress = TRUE
+  show_progress = TRUE,
+  remove_gaps = FALSE,
+  collapse_excluded = FALSE,
+  gap_line_color = "#e34a33",
+  gap_line_width = 0.3,
+  gap_label_size = 2.5,
+  gap_scale = 1
 )
 ```
 
@@ -303,6 +309,37 @@ plot_runscatter(
 - show_progress:
 
   Logical, whether to show a progress bar. Default is `TRUE`.
+
+- remove_gaps:
+
+  Logical. If `TRUE`, contiguous indices replace the original
+  `analysis_order` on the x-axis so that missing/filtered samples no
+  longer leave large gaps. Each gap is highlighted with a thick vertical
+  line and annotated with the flanking analysis-order IDs. Default is
+  `FALSE`.
+
+- collapse_excluded:
+
+  Logical. If `TRUE`, gaps in the x-axis caused by QC types that were
+  not selected (via `qc_types`) are collapsed, re-indexing x to a
+  contiguous sequence. Default is `FALSE`.
+
+- gap_line_color:
+
+  Color of the vertical gap-indicator lines. Default is `"#e34a33"`.
+
+- gap_line_width:
+
+  Line width of the vertical gap-indicator lines. Default is `0.3`.
+
+- gap_label_size:
+
+  Font size of the gap-boundary labels. Default is `2.5`.
+
+- gap_scale:
+
+  Numeric multiplication factor for the gap band width. Default is `1`.
+  Increase (e.g. `2`) for wider gaps, decrease for narrower.
 
 ## Value
 
