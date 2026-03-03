@@ -335,7 +335,7 @@ test_that("plot_rla_boxplot zebra works", {
       show_batches = TRUE,
       show_plot = FALSE,
       batch_zebra_stripe = TRUE,
-      remove_gaps = FALSE
+      collapse_excluded = FALSE
     )
   )
   expect_doppelganger_cond("plot_rla_boxplot zebrawithgaps", p$plot)
@@ -353,7 +353,7 @@ test_that("plot_rla_boxplot zebra removegaps works", {
       qc_types = c("SPL"),
       show_plot = FALSE,
       batch_zebra_stripe = TRUE,
-      remove_gaps = TRUE
+      collapse_excluded = TRUE
     )
   )
   expect_doppelganger_cond("plot_rla_boxplot zebranogaps2", p$plot)
@@ -493,7 +493,7 @@ test_that("plot_rla_boxplot abslog", {
 })
 
 
-test_that("plot_rla_boxplot qc subset range remove_gaps ", {
+test_that("plot_rla_boxplot qc subset range collapse_excluded ", {
   expect_no_error(
     p <- plot_rla_boxplot(
       mexp,
@@ -502,7 +502,7 @@ test_that("plot_rla_boxplot qc subset range remove_gaps ", {
       show_batches = TRUE,
       show_plot = FALSE,
       show_timestamp = FALSE,
-      remove_gaps = TRUE,
+      collapse_excluded = TRUE,
       qc_types = c("TQC", "BQC"),
       plot_range = c(50, 100),
       relative_log_abundances = FALSE
@@ -511,7 +511,7 @@ test_that("plot_rla_boxplot qc subset range remove_gaps ", {
   expect_doppelganger_cond("plot_rla_boxplot qctype removegaps", p$plot)
 })
 
-test_that("plot_rla_boxplot qc subset range remove_gaps ", {
+test_that("plot_rla_boxplot qc subset range collapse_excluded ", {
   expect_no_error(
     p <- plot_rla_boxplot(
       mexp,
@@ -520,7 +520,7 @@ test_that("plot_rla_boxplot qc subset range remove_gaps ", {
       show_batches = TRUE,
       show_plot = FALSE,
       show_timestamp = FALSE,
-      remove_gaps = TRUE,
+      collapse_excluded = TRUE,
       batch_zebra_stripe = TRUE,
       qc_types = c("TQC", "BQC"),
       plot_range = c(50, 100),
@@ -542,7 +542,7 @@ test_that("plot_rla_boxplot qc subset range with gaps ", {
       show_batches = TRUE,
       show_plot = FALSE,
       show_timestamp = FALSE,
-      remove_gaps = FALSE,
+      collapse_excluded = FALSE,
       qc_types = c("TQC", "BQC"),
       plot_range = c(50, 100),
       relative_log_abundances = FALSE
@@ -560,7 +560,7 @@ test_that("plot_rla_boxplot qc subset range with gaps date ", {
       show_batches = TRUE,
       show_plot = FALSE,
       show_timestamp = TRUE,
-      remove_gaps = FALSE,
+      collapse_excluded = FALSE,
       qc_types = c("TQC", "BQC"),
       plot_range = c(50, 100),
       relative_log_abundances = FALSE

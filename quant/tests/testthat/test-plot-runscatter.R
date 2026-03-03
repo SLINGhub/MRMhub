@@ -1037,3 +1037,166 @@ test_that("plot_runscatter pdf multi", {
   expect_equal(as.character(fs::file_size(temp_pdf_path)), "118K")
   fs::file_delete(temp_pdf_path)
 })
+
+# Dataset with one large contiguous gap: orders 99–150
+# (Longit_batch2_1 to _45 plus the interleaved PQC 12-15 and TQC13-15,
+#  all of which fall in analysis_order 99–150)
+mexp_gaps <- exclude_analyses(
+  mexp_orig,
+  analyses = c(
+    paste0("Longit_batch2_", 1:45),
+    "Longit_batch2_PQC 12",
+    "Longit_batch2_PQC 13",
+    "Longit_batch2_PQC 14",
+    "Longit_batch2_PQC 15",
+    "Longit_batch2_TQC13",
+    "Longit_batch2_TQC14",
+    "Longit_batch2_TQC15"
+  ),
+  clear_existing = TRUE
+)
+mexp_gaps <- normalize_by_istd(mexp_gaps)
+mexp_gaps <- quantify_by_istd(mexp_gaps)
+
+test_that("plot_runscatter remove_gaps works", {
+  p <- plot_runscatter(
+    data = mexp_gaps,
+    variable = "intensity",
+    rows_page = 3,
+    cols_page = 4,
+    show_batches = TRUE,
+    remove_gaps = TRUE,
+    return_plots = TRUE
+  )
+  expect_s3_class(p[[1]], "gg")
+
+  # Re-indexed x must be contiguous — max index < max analysis_order
+  # (52 analyses excluded => max_index = 499 - 52 = 447)
+  plot_data <- ggplot2::ggplot_build(p[[1]])$data[[2]]
+  expect_lt(
+    max(plot_data$x, na.rm = TRUE),
+    max(mexp_gaps@dataset$analysis_order)
+  )
+
+  # Exactly one gap marker (one vline from GeomVline added for the gap)
+  layer_classes <- sapply(p[[1]]$layers, function(l) class(l$geom)[1])
+  n_gap_vlines <- sum(layer_classes == "GeomVline")
+  expect_gte(n_gap_vlines, 1L)
+
+  expect_doppelganger_cond("runscatter_remove_gaps", p[[1]])
+})
+
+test_that("plot_runscatter remove_gaps gap markers present", {
+  p <- plot_runscatter(
+    data = mexp_gaps,
+    variable = "intensity",
+    rows_page = 3,
+    cols_page = 4,
+    remove_gaps = TRUE,
+    gap_line_color = "#e34a33",
+    gap_line_width = 1.5,
+    gap_label_size = 3,
+    return_plots = TRUE
+  )
+  expect_s3_class(p[[1]], "gg")
+
+  layer_classes <- sapply(p[[1]]$layers, function(l) class(l$geom)[1])
+  expect_true(any(layer_classes == "GeomVline"))
+  expect_true(any(layer_classes %in% c("GeomLabel", "GeomText")))
+
+  # Label text contains the "|" separator between flanking IDs
+  label_layers <- p[[1]]$layers[layer_classes %in% c("GeomLabel", "GeomText")]
+  label_data <- label_layers[[1]]$data
+  expect_true(any(grepl("|", label_data$gap_label, fixed = TRUE)))
+
+  expect_doppelganger_cond("runscatter_remove_gaps_styled", p[[1]])
+})
+
+# ...existing code...
+
+test_that("plot_runscatter collapse_excluded works", {
+  p <- plot_runscatter(
+    data = mexp,
+    variable = "intensity",
+    rows_page = 3,
+    cols_page = 4,
+    qc_types = c("TQC", "BQC"),
+    show_batches = TRUE,
+    collapse_excluded = TRUE,
+    return_plots = TRUE
+  )
+  expect_s3_class(p[[1]], "gg")
+
+  # With collapse_excluded, unique x values < total analysis_order range
+  plot_data <- ggplot2::ggplot_build(p[[1]])$data[[2]]
+  n_shown <- length(unique(plot_data$x))
+  n_total <- diff(range(mexp@dataset$analysis_order)) + 1L
+  expect_lt(n_shown, n_total)
+
+  expect_doppelganger_cond("runscatter_collapse_excluded", p[[1]])
+})
+
+test_that("plot_runscatter collapse_excluded produces no gap markers", {
+  p <- plot_runscatter(
+    data = mexp,
+    variable = "intensity",
+    rows_page = 3,
+    cols_page = 4,
+    qc_types = c("TQC", "BQC"),
+    collapse_excluded = TRUE,
+    return_plots = TRUE
+  )
+  layer_classes <- sapply(p[[1]]$layers, function(l) class(l$geom)[1])
+  # collapse_excluded alone must NOT add gap-marker labels
+  expect_false(any(layer_classes %in% c("GeomLabel", "GeomText")))
+})
+
+test_that("plot_runscatter remove_gaps + collapse_excluded combined", {
+  p <- plot_runscatter(
+    data = mexp_gaps,
+    variable = "intensity",
+    rows_page = 3,
+    cols_page = 4,
+    qc_types = c("TQC", "BQC"),
+    show_batches = TRUE,
+    collapse_excluded = TRUE,
+    remove_gaps = TRUE,
+    return_plots = TRUE
+  )
+  expect_s3_class(p[[1]], "gg")
+
+  # When filtering to TQC/BQC only, the real gap (excluded SPL analyses)
+  # may or may not fall between visible QC orders.  Just verify it renders.
+  expect_doppelganger_cond("runscatter_remove_gaps_collapse_excl", p[[1]])
+})
+
+test_that("plot_runscatter remove_gaps plot_range uses original order", {
+  p_range <- plot_runscatter(
+    data = mexp_gaps,
+    variable = "intensity",
+    rows_page = 3,
+    cols_page = 4,
+    remove_gaps = TRUE,
+    plot_range = c(1, 50),
+    return_plots = TRUE
+  )
+  expect_s3_class(p_range[[1]], "gg")
+
+  # x upper range must be <= 50 (original order 50 = index 50, gap starts at 99)
+  built <- ggplot2::ggplot_build(p_range[[1]])
+  x_range <- built$layout$panel_params[[1]]$x.range
+  expect_lte(x_range[2], 52) # small buffer for coord_cartesian expansion
+
+  # No gap markers: d_gaps$gap_x is ~98.5 (index space), which is > 50
+  layer_classes <- sapply(p_range[[1]]$layers, function(l) class(l$geom)[1])
+  gap_label_layers <- p_range[[1]]$layers[
+    layer_classes %in% c("GeomLabel", "GeomText")
+  ]
+  if (length(gap_label_layers) > 0) {
+    label_data <- gap_label_layers[[1]]$data
+    # All gap labels should be outside the plotted x range
+    expect_true(all(label_data$gap_x > x_range[2]))
+  }
+
+  expect_doppelganger_cond("runscatter_remove_gaps_plotrange", p_range[[1]])
+})

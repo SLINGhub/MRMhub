@@ -115,6 +115,19 @@
 #' @param use_dingbats Logical, whether to use Dingbats font in the PDF output for improved plotting speed. Default is `TRUE`. Set to `FALSE` if your PDF viewer does not show points correctly.
 #' @param show_progress Logical, whether to show a progress bar. Default is `TRUE`.
 #'
+#' @param remove_gaps Logical. If `TRUE`, contiguous indices replace the original
+#' `analysis_order` on the x-axis so that missing/filtered samples no longer
+#' leave large gaps. Each gap is highlighted with a thick vertical line and
+#' annotated with the flanking analysis-order IDs. Default is `FALSE`.
+#' @param collapse_excluded Logical. If `TRUE`, gaps in the x-axis caused by
+#' QC types that were not selected (via `qc_types`) are collapsed,
+#' re-indexing x to a contiguous sequence. Default is `FALSE`.
+#' @param gap_line_color Color of the vertical gap-indicator lines. Default is `"#e34a33"`.
+#' @param gap_line_width Line width of the vertical gap-indicator lines. Default is `0.3`.
+#' @param gap_label_size Font size of the gap-boundary labels. Default is `2.5`.
+#' @param gap_scale Numeric multiplication factor for the gap band width.
+#'   Default is `1`. Increase (e.g. `2`) for wider gaps, decrease for narrower.
+#'
 #' @return A list of ggplot2 plots, or `NULL` if `return
 #' @export
 
@@ -200,7 +213,15 @@ plot_runscatter <- function(
   use_dingbats = TRUE,
 
   # Progress bar settings
-  show_progress = TRUE
+  show_progress = TRUE,
+
+  # Remove gaps in analysis order
+  remove_gaps = FALSE,
+  collapse_excluded = FALSE,
+  gap_line_color = "#e34a33",
+  gap_line_width = 0.3,
+  gap_label_size = 2.5,
+  gap_scale = 1
 ) {
   # Check the validity of input data
   check_data(data)
@@ -302,6 +323,116 @@ plot_runscatter <- function(
     include_feature_filter = include_feature_filter,
     exclude_feature_filter = exclude_feature_filter
   )
+
+  # Build order map for remove_gaps / collapse_excluded feature
+  use_index_axis <- remove_gaps || collapse_excluded
+
+  if (use_index_axis) {
+    # When only remove_gaps = TRUE (not collapse_excluded), build order_map
+    # from the FULL dataset so that QC-type spacing is preserved on the x-axis.
+    # Only real gaps (excluded/missing analyses) are collapsed.
+    # When collapse_excluded = TRUE, build from filtered data (d_filt) so that
+    # gaps from excluded QC types are also collapsed.
+    if (collapse_excluded) {
+      unique_orders <- sort(unique(d_filt$analysis_order))
+    } else {
+      unique_orders <- sort(unique(data@dataset$analysis_order))
+    }
+    order_map <- dplyr::tibble(
+      analysis_order = unique_orders,
+      analysis_order_index = seq_along(unique_orders)
+    )
+    d_filt <- d_filt |>
+      dplyr::left_join(order_map, by = "analysis_order")
+
+    # Detect real gaps: gaps that exist in the FULL unfiltered @dataset
+    # (excluded/missing analyses), NOT gaps caused by qc_types filtering.
+    d_gaps <- NULL
+    if (remove_gaps) {
+      all_orders <- sort(unique(data@dataset$analysis_order))
+      all_diffs <- diff(all_orders)
+      all_gap_positions <- which(all_diffs > 1)
+      # Map real gaps onto unique_orders: for each gap in the full dataset,
+      # find the last visible order <= the left boundary and the first
+      # visible order >= the right boundary. They must be adjacent in
+      # unique_orders so the gap marker sits between them.
+      gap_idx <- integer(0)
+      for (gi in all_gap_positions) {
+        ord_left <- all_orders[gi]
+        ord_right <- all_orders[gi + 1L]
+        # Last visible order at or before the gap
+        cand_left <- which(unique_orders <= ord_left)
+        pos_left <- if (length(cand_left) > 0) max(cand_left) else 0L
+        # First visible order at or after the gap
+        cand_right <- which(unique_orders >= ord_right)
+        pos_right <- if (length(cand_right) > 0) {
+          min(cand_right)
+        } else {
+          length(unique_orders) + 1L
+        }
+        if (
+          pos_left >= 1L &&
+            pos_right <= length(unique_orders) &&
+            pos_right == pos_left + 1L
+        ) {
+          gap_idx <- c(gap_idx, pos_left)
+        }
+      }
+      if (length(gap_idx) > 0) {
+        # Gap width in index units: use a fixed 2 % of n_analyses so the band
+        # is always clearly visible regardless of panel size or point_size.
+        # At default point_size = 1.5 this is ≈ one marker diameter for typical
+        # run lengths (200–600 analyses). Minimum 3 to handle small datasets.
+        n_analyses <- length(unique_orders)
+        gap_width <- max(3L, round(n_analyses * 0.02 * gap_scale))
+
+        # Shift all post-gap indices by gap_width per gap.
+        for (i in seq_along(gap_idx)) {
+          shifted_idx <- gap_idx[i] + (i - 1L) * gap_width
+          order_map <- order_map |>
+            dplyr::mutate(
+              analysis_order_index = dplyr::if_else(
+                .data$analysis_order_index > shifted_idx,
+                .data$analysis_order_index + gap_width,
+                .data$analysis_order_index
+              )
+            )
+        }
+        # Re-join updated indices onto d_filt
+        d_filt <- d_filt |>
+          dplyr::select(-analysis_order_index) |>
+          dplyr::left_join(order_map, by = "analysis_order")
+
+        # Recompute gap positions using the updated order_map
+        updated_orders <- order_map$analysis_order_index[
+          match(unique_orders, order_map$analysis_order)
+        ]
+        gap_positions <- vapply(
+          gap_idx,
+          function(g) {
+            # midpoint between last pre-gap index and first post-gap index
+            left_idx <- updated_orders[g]
+            right_idx <- updated_orders[g + 1L]
+            (left_idx + right_idx) / 2
+          },
+          numeric(1)
+        )
+
+        d_gaps <- dplyr::tibble(
+          gap_x = gap_positions,
+          gap_x_left = updated_orders[gap_idx],
+          gap_x_right = updated_orders[gap_idx + 1L],
+          id_before = unique_orders[gap_idx],
+          id_after = unique_orders[gap_idx + 1L],
+          gap_label = paste0(
+            unique_orders[gap_idx],
+            " | ",
+            unique_orders[gap_idx + 1L]
+          )
+        )
+      }
+    }
+  }
 
   # Cleanup the data
 
@@ -471,7 +602,15 @@ plot_runscatter <- function(
     reference_linewidth = reference_linewidth,
     trend_color = trend_color,
     show_progress = show_progress,
-    use_dingbats = use_dingbats
+    use_dingbats = use_dingbats,
+    remove_gaps = remove_gaps,
+    use_index_axis = use_index_axis,
+    gap_line_color = gap_line_color,
+    gap_line_width = gap_line_width,
+    gap_label_size = gap_label_size,
+    gap_scale = gap_scale,
+    order_map = if (use_index_axis) order_map else NULL,
+    d_gaps = if (remove_gaps && use_index_axis) d_gaps else NULL
   )
   # subset the dataset with only the rows used for plotting the facets of the selected page
   n_samples <- length(unique(d_filt$analysis_id))
@@ -627,7 +766,15 @@ runscatter_plot_pages <- function(
   reference_linewidth,
   trend_color,
   show_progress,
-  use_dingbats
+  use_dingbats,
+  remove_gaps,
+  use_index_axis,
+  gap_line_color,
+  gap_line_width,
+  gap_label_size,
+  gap_scale,
+  order_map,
+  d_gaps
 ) {
   runscatter_one_page <- function(d_subset) {
     # For debugging
@@ -713,46 +860,104 @@ runscatter_plot_pages <- function(
         )
     }
     d_batches <- d_batches
+
+    # Remap batch boundaries to index space when use_index_axis is TRUE
+    if (use_index_axis && !is.null(order_map)) {
+      d_batches <- d_batches |>
+        dplyr::mutate(
+          mapped_start = purrr::map_dbl(
+            .data$id_batch_start,
+            ~ find_closest(.x, order_map$analysis_order, method = "higher")
+          ),
+          mapped_end = purrr::map_dbl(
+            .data$id_batch_end,
+            ~ find_closest(.x, order_map$analysis_order, method = "lower")
+          )
+        ) |>
+        dplyr::left_join(
+          order_map,
+          by = c("mapped_start" = "analysis_order")
+        ) |>
+        dplyr::rename(id_batch_start_index = "analysis_order_index") |>
+        dplyr::left_join(order_map, by = c("mapped_end" = "analysis_order")) |>
+        dplyr::rename(id_batch_end_index = "analysis_order_index")
+    }
+
     d_batch_data <- d_batches |>
       dplyr::slice(rep(1:dplyr::n(), each = nrow(dMax)))
     d_batch_data$feature_id <- rep(dMax$feature_id, times = nrow(d_batches))
     d_batch_data <- d_batch_data |> dplyr::left_join(dMax, by = c("feature_id"))
 
-    p <- ggplot2::ggplot(d_subset, aes(x = !!sym("analysis_order")))
+    # Choose x variable based on remove_gaps
+    x_var <- if (use_index_axis) "analysis_order_index" else "analysis_order"
+
+    p <- ggplot2::ggplot(d_subset, aes(x = !!sym(x_var)))
 
     # browser()
     if (show_batches) {
       if (!batch_zebra_stripe) {
         d_batches_temp <- d_batch_data |> filter(.data$id_batch_start != 1)
-        p <- p +
-          ggplot2::geom_vline(
-            data = d_batches_temp,
-            ggplot2::aes(xintercept = .data$id_batch_start - 0.5),
-            colour = batch_line_color,
-            linetype = "solid",
-            linewidth = .5,
-            na.rm = TRUE
-          )
+        if (use_index_axis) {
+          p <- p +
+            ggplot2::geom_vline(
+              data = d_batches_temp,
+              ggplot2::aes(xintercept = .data$id_batch_start_index - 0.5),
+              colour = batch_line_color,
+              linetype = "solid",
+              linewidth = .5,
+              na.rm = TRUE
+            )
+        } else {
+          p <- p +
+            ggplot2::geom_vline(
+              data = d_batches_temp,
+              ggplot2::aes(xintercept = .data$id_batch_start - 0.5),
+              colour = batch_line_color,
+              linetype = "solid",
+              linewidth = .5,
+              na.rm = TRUE
+            )
+        }
       } else {
         d_batches_temp <- d_batch_data |>
           dplyr::filter(.data$batch_no %% 2 != 1)
-        p <- p +
-          ggplot2::geom_rect(
-            data = d_batches_temp,
-            ggplot2::aes(
-              xmin = .data$id_batch_start - 0.5,
-              xmax = .data$id_batch_end + 0.5,
-              ymin = .data$y_min,
-              ymax = .data$y_max
-            ),
-            inherit.aes = FALSE,
-            fill = batch_fill_color,
-            color = NA,
-            alpha = 1,
-            linetype = "solid",
-            linewidth = 0.3,
-            na.rm = TRUE
-          )
+        if (use_index_axis) {
+          p <- p +
+            ggplot2::geom_rect(
+              data = d_batches_temp,
+              ggplot2::aes(
+                xmin = .data$id_batch_start_index - 0.5,
+                xmax = .data$id_batch_end_index + 0.5,
+                ymin = .data$y_min,
+                ymax = .data$y_max
+              ),
+              inherit.aes = FALSE,
+              fill = batch_fill_color,
+              color = NA,
+              alpha = 1,
+              linetype = "solid",
+              linewidth = 0.3,
+              na.rm = TRUE
+            )
+        } else {
+          p <- p +
+            ggplot2::geom_rect(
+              data = d_batches_temp,
+              ggplot2::aes(
+                xmin = .data$id_batch_start - 0.5,
+                xmax = .data$id_batch_end + 0.5,
+                ymin = .data$y_min,
+                ymax = .data$y_max
+              ),
+              inherit.aes = FALSE,
+              fill = batch_fill_color,
+              color = NA,
+              alpha = 1,
+              linetype = "solid",
+              linewidth = 0.3,
+              na.rm = TRUE
+            )
+        }
       }
     }
 
@@ -783,8 +988,16 @@ runscatter_plot_pages <- function(
             safe_max(.data$value_mod, na.rm = TRUE),
             .data$y_max
           ),
-          batch_start = min(.data$id_batch_start),
-          batch_end = max(.data$id_batch_end),
+          batch_start = if (use_index_axis) {
+            min(.data$id_batch_start_index)
+          } else {
+            min(.data$id_batch_start)
+          },
+          batch_end = if (use_index_axis) {
+            max(.data$id_batch_end_index)
+          } else {
+            max(.data$id_batch_end)
+          },
           batch_id = min(.data$batch_id),
           .groups = 'drop'
         )
@@ -829,7 +1042,7 @@ runscatter_plot_pages <- function(
     p <- p +
       ggplot2::geom_point(
         aes(
-          x = !!sym("analysis_order"),
+          x = !!sym(x_var),
           y = !!sym("value_mod"),
           color = .data$qc_type,
           fill = .data$qc_type,
@@ -852,7 +1065,7 @@ runscatter_plot_pages <- function(
       p <- p +
         ggplot2::geom_line(
           aes(
-            x = !!sym("analysis_order"),
+            x = !!sym(x_var),
             y = !!sym(y_var_trend),
             group = .data$batch_id
           ),
@@ -978,6 +1191,85 @@ runscatter_plot_pages <- function(
         na.value = 4
       )
 
+    # Add scale_x_continuous with round original analysis_order labels
+    if (use_index_axis && !is.null(order_map)) {
+      # Compute pretty breaks in ORIGINAL analysis_order space (round numbers)
+      # then map each to the nearest index for placement on the re-indexed axis.
+      orig_range <- range(order_map$analysis_order)
+      orig_breaks <- scales::breaks_pretty(n = 10)(orig_range)
+      orig_breaks <- orig_breaks[
+        orig_breaks >= orig_range[1] & orig_breaks <= orig_range[2]
+      ]
+      # Map each original-order break to the nearest index in order_map
+      idx_breaks <- vapply(
+        orig_breaks,
+        function(b) {
+          nearest <- which.min(abs(order_map$analysis_order - b))
+          order_map$analysis_order_index[nearest]
+        },
+        numeric(1)
+      )
+      p <- p +
+        ggplot2::scale_x_continuous(
+          breaks = idx_breaks,
+          labels = orig_breaks,
+          expand = c(0.02, 0.02)
+        )
+    }
+
+    # Add gap marker: white rect to punch through zebra stripes, then two
+    # border vlines + label. Drawn last so it renders on top of everything.
+    if (remove_gaps && !is.null(d_gaps) && nrow(d_gaps) > 0) {
+      p <- p +
+        # Transparent shaded rect to highlight the gap region
+        ggplot2::geom_rect(
+          data = d_gaps,
+          ggplot2::aes(
+            xmin = .data$gap_x_left + 0.5,
+            xmax = .data$gap_x_right - 0.5,
+            ymin = -Inf,
+            ymax = Inf
+          ),
+          inherit.aes = FALSE,
+          fill = gap_line_color,
+          color = NA,
+          alpha = 0.08,
+          na.rm = TRUE
+        ) +
+        # Left border vline
+        ggplot2::geom_vline(
+          data = d_gaps,
+          ggplot2::aes(xintercept = .data$gap_x_left + 0.5),
+          colour = gap_line_color,
+          linewidth = gap_line_width,
+          na.rm = TRUE
+        ) +
+        # Right border vline
+        ggplot2::geom_vline(
+          data = d_gaps,
+          ggplot2::aes(xintercept = .data$gap_x_right - 0.5),
+          colour = gap_line_color,
+          linewidth = gap_line_width,
+          na.rm = TRUE
+        ) +
+        ggplot2::geom_label(
+          data = d_gaps,
+          ggplot2::aes(
+            x = .data$gap_x,
+            y = Inf,
+            label = .data$gap_label
+          ),
+          inherit.aes = FALSE,
+          size = gap_label_size,
+          color = gap_line_color,
+          fill = "white",
+          linewidth = 0.15,
+          vjust = 1.2,
+          hjust = 0.5,
+          na.rm = TRUE
+        )
+    }
+
     p <- p +
       # aes(ymin=0) +
       ggplot2::xlab("Analysis order") +
@@ -1043,7 +1335,18 @@ runscatter_plot_pages <- function(
     }
 
     if (!all(is.na(plot_range))) {
-      p <- p + ggplot2::coord_cartesian(xlim = plot_range)
+      if (use_index_axis && !is.null(order_map)) {
+        # Remap plot_range from original analysis_order to index space
+        pr_start <- order_map$analysis_order_index[
+          which.min(abs(order_map$analysis_order - plot_range[1]))
+        ]
+        pr_end <- order_map$analysis_order_index[
+          which.min(abs(order_map$analysis_order - plot_range[2]))
+        ]
+        p <- p + ggplot2::coord_cartesian(xlim = c(pr_start, pr_end))
+      } else {
+        p <- p + ggplot2::coord_cartesian(xlim = plot_range)
+      }
     }
 
     plot(p)

@@ -27,6 +27,7 @@
 </defs>
 <g clip-path='url(#cpMzQuMjZ8NzE2LjAxfDE2LjU3fDQ4NC45OA==)'>
 <rect x='34.26' y='16.57' width='681.76' height='468.41' style='stroke-width: 0.78; stroke: none; fill: #FFFFFF;' />
+<line x1='-600.87' y1='484.98' x2='-600.87' y2='16.57' style='stroke-width: 2.13; stroke: #B6F0C5; stroke-linecap: butt;' />
 <line x1='617.50' y1='484.98' x2='617.50' y2='16.57' style='stroke-width: 2.13; stroke: #B6F0C5; stroke-linecap: butt;' />
 <line x1='1691.75' y1='484.98' x2='1691.75' y2='16.57' style='stroke-width: 2.13; stroke: #B6F0C5; stroke-linecap: butt;' />
 <line x1='2779.11' y1='484.98' x2='2779.11' y2='16.57' style='stroke-width: 2.13; stroke: #B6F0C5; stroke-linecap: butt;' />
@@ -308,17 +309,17 @@
 <polyline points='571.65,486.97 571.65,484.98 ' style='stroke-width: 0.78; stroke: #333333; stroke-linecap: butt;' />
 <polyline points='637.15,486.97 637.15,484.98 ' style='stroke-width: 0.78; stroke: #333333; stroke-linecap: butt;' />
 <polyline points='702.65,486.97 702.65,484.98 ' style='stroke-width: 0.78; stroke: #333333; stroke-linecap: butt;' />
-<text transform='translate(50.37,488.57) rotate(-90)' text-anchor='end' style='font-size: 8.00px; fill: #4D4D4D; font-family: sans;' textLength='74.29px' lengthAdjust='spacingAndGlyphs'>2017-10-22 17:19:59</text>
-<text transform='translate(115.87,488.57) rotate(-90)' text-anchor='end' style='font-size: 8.00px; fill: #4D4D4D; font-family: sans;' textLength='74.29px' lengthAdjust='spacingAndGlyphs'>2017-10-22 22:03:21</text>
-<text transform='translate(181.38,488.57) rotate(-90)' text-anchor='end' style='font-size: 8.00px; fill: #4D4D4D; font-family: sans;' textLength='74.29px' lengthAdjust='spacingAndGlyphs'>2017-10-23 03:43:40</text>
-<text transform='translate(246.88,488.57) rotate(-90)' text-anchor='end' style='font-size: 8.00px; fill: #4D4D4D; font-family: sans;' textLength='74.29px' lengthAdjust='spacingAndGlyphs'>2017-10-23 08:15:41</text>
-<text transform='translate(312.38,488.57) rotate(-90)' text-anchor='end' style='font-size: 8.00px; fill: #4D4D4D; font-family: sans;' textLength='74.29px' lengthAdjust='spacingAndGlyphs'>2017-10-23 13:22:07</text>
-<text transform='translate(377.89,488.57) rotate(-90)' text-anchor='end' style='font-size: 8.00px; fill: #4D4D4D; font-family: sans;' textLength='74.29px' lengthAdjust='spacingAndGlyphs'>2017-10-23 19:02:14</text>
-<text transform='translate(443.39,488.57) rotate(-90)' text-anchor='end' style='font-size: 8.00px; fill: #4D4D4D; font-family: sans;' textLength='74.29px' lengthAdjust='spacingAndGlyphs'>2017-10-23 23:23:13</text>
-<text transform='translate(508.89,488.57) rotate(-90)' text-anchor='end' style='font-size: 8.00px; fill: #4D4D4D; font-family: sans;' textLength='74.29px' lengthAdjust='spacingAndGlyphs'>2017-10-24 02:47:53</text>
-<text transform='translate(574.40,488.57) rotate(-90)' text-anchor='end' style='font-size: 8.00px; fill: #4D4D4D; font-family: sans;' textLength='74.29px' lengthAdjust='spacingAndGlyphs'>2017-10-24 08:39:22</text>
-<text transform='translate(639.90,488.57) rotate(-90)' text-anchor='end' style='font-size: 8.00px; fill: #4D4D4D; font-family: sans;' textLength='74.29px' lengthAdjust='spacingAndGlyphs'>2017-10-24 13:23:38</text>
-<text transform='translate(705.41,488.57) rotate(-90)' text-anchor='end' style='font-size: 8.00px; fill: #4D4D4D; font-family: sans;' textLength='11.12px' lengthAdjust='spacingAndGlyphs'>NA</text>
+<text transform='translate(50.37,488.57) rotate(-90)' text-anchor='end' style='font-size: 8.00px; fill: #4D4D4D; font-family: sans;' textLength='74.29px' lengthAdjust='spacingAndGlyphs'>2017-10-20 23:42:31</text>
+<text transform='translate(115.87,488.57) rotate(-90)' text-anchor='end' style='font-size: 8.00px; fill: #4D4D4D; font-family: sans;' textLength='74.29px' lengthAdjust='spacingAndGlyphs'>2017-10-21 00:39:11</text>
+<text transform='translate(181.38,488.57) rotate(-90)' text-anchor='end' style='font-size: 8.00px; fill: #4D4D4D; font-family: sans;' textLength='74.29px' lengthAdjust='spacingAndGlyphs'>2017-10-21 01:36:07</text>
+<text transform='translate(246.88,488.57) rotate(-90)' text-anchor='end' style='font-size: 8.00px; fill: #4D4D4D; font-family: sans;' textLength='74.29px' lengthAdjust='spacingAndGlyphs'>2017-10-21 02:32:47</text>
+<text transform='translate(312.38,488.57) rotate(-90)' text-anchor='end' style='font-size: 8.00px; fill: #4D4D4D; font-family: sans;' textLength='74.29px' lengthAdjust='spacingAndGlyphs'>2017-10-21 03:29:59</text>
+<text transform='translate(377.89,488.57) rotate(-90)' text-anchor='end' style='font-size: 8.00px; fill: #4D4D4D; font-family: sans;' textLength='74.29px' lengthAdjust='spacingAndGlyphs'>2017-10-21 04:26:40</text>
+<text transform='translate(443.39,488.57) rotate(-90)' text-anchor='end' style='font-size: 8.00px; fill: #4D4D4D; font-family: sans;' textLength='74.29px' lengthAdjust='spacingAndGlyphs'>2017-10-21 05:23:37</text>
+<text transform='translate(508.89,488.57) rotate(-90)' text-anchor='end' style='font-size: 8.00px; fill: #4D4D4D; font-family: sans;' textLength='74.29px' lengthAdjust='spacingAndGlyphs'>2017-10-21 06:20:33</text>
+<text transform='translate(574.40,488.57) rotate(-90)' text-anchor='end' style='font-size: 8.00px; fill: #4D4D4D; font-family: sans;' textLength='74.29px' lengthAdjust='spacingAndGlyphs'>2017-10-21 07:17:14</text>
+<text transform='translate(639.90,488.57) rotate(-90)' text-anchor='end' style='font-size: 8.00px; fill: #4D4D4D; font-family: sans;' textLength='74.29px' lengthAdjust='spacingAndGlyphs'>2017-10-21 08:14:13</text>
+<text transform='translate(705.41,488.57) rotate(-90)' text-anchor='end' style='font-size: 8.00px; fill: #4D4D4D; font-family: sans;' textLength='74.29px' lengthAdjust='spacingAndGlyphs'>2017-10-21 09:11:08</text>
 <text x='375.14' y='570.35' text-anchor='middle' style='font-size: 8.00px; font-weight: bold; font-family: sans;' textLength='67.15px' lengthAdjust='spacingAndGlyphs'>Analysis Order No.</text>
 <text transform='translate(9.78,288.02) rotate(-90)' style='font-size: 8.00px; font-weight: bold; font-family: sans;' textLength='1.78px' lengthAdjust='spacingAndGlyphs'>l</text>
 <text transform='translate(9.78,286.25) rotate(-90)' style='font-size: 8.00px; font-weight: bold; font-family: sans;' textLength='4.45px' lengthAdjust='spacingAndGlyphs'>o</text>

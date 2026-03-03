@@ -52,7 +52,13 @@ plot_runscatter(
   y_label_text = NA,
   pages_per_core = 1,
   use_dingbats = TRUE,
-  show_progress = TRUE
+  show_progress = TRUE,
+  remove_gaps = FALSE,
+  collapse_excluded = FALSE,
+  gap_line_color = "#e34a33",
+  gap_line_width = 0.3,
+  gap_label_size = 2.5,
+  gap_scale = 1
 )
 }
 \arguments{
@@ -157,6 +163,24 @@ If \code{NA} (default), the color assigned to the qc_type is used.}
 \item{use_dingbats}{Logical, whether to use Dingbats font in the PDF output for improved plotting speed. Default is \code{TRUE}. Set to \code{FALSE} if your PDF viewer does not show points correctly.}
 
 \item{show_progress}{Logical, whether to show a progress bar. Default is \code{TRUE}.}
+
+\item{remove_gaps}{Logical. If \code{TRUE}, contiguous indices replace the original
+\code{analysis_order} on the x-axis so that missing/filtered samples no longer
+leave large gaps. Each gap is highlighted with a thick vertical line and
+annotated with the flanking analysis-order IDs. Default is \code{FALSE}.}
+
+\item{collapse_excluded}{Logical. If \code{TRUE}, gaps in the x-axis caused by
+QC types that were not selected (via \code{qc_types}) are collapsed,
+re-indexing x to a contiguous sequence. Default is \code{FALSE}.}
+
+\item{gap_line_color}{Color of the vertical gap-indicator lines. Default is \code{"#e34a33"}.}
+
+\item{gap_line_width}{Line width of the vertical gap-indicator lines. Default is \code{0.3}.}
+
+\item{gap_label_size}{Font size of the gap-boundary labels. Default is \code{2.5}.}
+
+\item{gap_scale}{Numeric multiplication factor for the gap band width.
+Default is \code{1}. Increase (e.g. \code{2}) for wider gaps, decrease for narrower.}
 }
 \value{
 A list of ggplot2 plots, or \code{NULL} if `return

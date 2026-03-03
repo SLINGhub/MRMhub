@@ -323,9 +323,16 @@ plot_runsequence <- function(
 #' @param qc_types QC types to be plotted. Can be a vector of QC types or a regular expression pattern. `NA` (default) displays all available QC/Sample types.
 #' @param plot_range Numeric vector of length 2, specifying the start and end indices of the analysis order to be plotted. `NA` plots all samples.
 #' @param rla_limit_to_range Logical, whether to limit the RLA values to the specified `plot_range`. Default is `FALSE`, which means RLA values are calculated for all samples.
-#' @param remove_gaps Logical, whether to remove gaps in the x-axis, occuring from QC types that were not selected. Default is `TRUE`.
-#' is supplied, only features with exactly these names are excluded (applied individually as OR conditions).
-#'
+#' @param collapse_excluded Logical, whether to collapse gaps in the x-axis caused by QC types that were not selected, re-indexing x to a contiguous sequence. Default is `FALSE`.
+#' @param remove_gaps Logical. If `TRUE`, contiguous indices replace the original
+#' `analysis_order` on the x-axis so that missing/filtered samples no longer
+#' leave large gaps. Each gap is highlighted with a thick vertical line and
+#' annotated with the flanking analysis-order IDs. Default is `FALSE`.
+#' @param gap_line_color Color of the vertical gap-indicator lines. Default is `"#e34a33"`.
+#' @param gap_line_width Line width of the vertical gap-indicator lines. Default is `0.3`.
+#' @param gap_label_size Font size of the gap-boundary labels. Default is `2.5`.
+#' @param gap_scale Numeric multiplication factor for the gap band width.
+#'   Default is `1`. Increase (e.g. `2`) for wider gaps, decrease for narrower.
 #' @param filter_data Logical, whether to use QC-filtered data based on criteria set via `filter_features_qc()`.
 
 #' @param include_qualifier Logical, whether to include qualifier features. Default is `TRUE`.
@@ -377,8 +384,14 @@ plot_rla_boxplot <- function(
   qc_types = NA,
   plot_range = NA,
   rla_limit_to_range = FALSE,
+  collapse_excluded = FALSE,
   remove_gaps = FALSE,
+  gap_line_color = "#e34a33",
+  gap_line_width = 0.3,
+  gap_label_size = 2.5,
+  gap_scale = 1,
 
+  # Remove gaps in analysis order (from missing data, not just excluded QCs)
   filter_data = FALSE,
   include_qualifier = TRUE,
   include_istd = TRUE,
@@ -537,11 +550,24 @@ plot_rla_boxplot <- function(
     n_ticks <- 10
   }
 
-  unique_orders <- sort(unique(d_filt$analysis_order))
-  unique_timestamps <- sort(
-    unique(d_filt$acquisition_time_stamp),
-    na.last = TRUE
-  )
+  # When only remove_gaps = TRUE (not collapse_excluded), build order_map
+  # from the FULL dataset so that QC-type spacing is preserved on the x-axis.
+  # Only real gaps (excluded/missing analyses) are collapsed.
+  # When collapse_excluded = TRUE, build from filtered data (d_filt) so that
+  # gaps from excluded QC types are also collapsed.
+  if (collapse_excluded) {
+    unique_orders <- sort(unique(d_filt$analysis_order))
+    unique_timestamps <- sort(
+      unique(d_filt$acquisition_time_stamp),
+      na.last = TRUE
+    )
+  } else {
+    unique_orders <- sort(unique(data@dataset$analysis_order))
+    unique_timestamps <- sort(
+      unique(data@dataset$acquisition_time_stamp),
+      na.last = TRUE
+    )
+  }
 
   order_map <- tibble(
     analysis_order = unique_orders,
@@ -608,16 +634,129 @@ plot_rla_boxplot <- function(
 
   # Get labels corresponding to the breaks. TODO: write it more elegant and clear
 
-  if (remove_gaps) {
-    # If remove_gaps is TRUE, we use the analysis_order_index
-    #n_ticks = 50
-    breaks <- scales::breaks_pretty(n = n_ticks)(seq_along(unique_orders))
-    breaks <- breaks[breaks > 0 & breaks <= max(unique_orders)]
-    breaks <- breaks[breaks %% 1 == 0]
+  use_index_axis <- collapse_excluded || remove_gaps
+
+  # Detect real gaps: gaps that exist in the FULL unfiltered @dataset
+  # (excluded/missing analyses), NOT gaps caused by qc_types filtering.
+  d_gaps <- NULL
+  if (remove_gaps && length(unique_orders) > 1) {
+    all_orders <- sort(unique(data@dataset$analysis_order))
+    all_diffs <- diff(all_orders)
+    all_gap_positions <- which(all_diffs > 1)
+    # Map real gaps onto unique_orders: for each gap in the full dataset,
+    # find the last visible order <= the left boundary and the first
+    # visible order >= the right boundary. They must be adjacent in
+    # unique_orders so the gap marker sits between them.
+    gap_idx <- integer(0)
+    for (gi in all_gap_positions) {
+      ord_left <- all_orders[gi]
+      ord_right <- all_orders[gi + 1L]
+      # Last visible order at or before the gap
+      cand_left <- which(unique_orders <= ord_left)
+      pos_left <- if (length(cand_left) > 0) max(cand_left) else 0L
+      # First visible order at or after the gap
+      cand_right <- which(unique_orders >= ord_right)
+      pos_right <- if (length(cand_right) > 0) {
+        min(cand_right)
+      } else {
+        length(unique_orders) + 1L
+      }
+      if (
+        pos_left >= 1L &&
+          pos_right <= length(unique_orders) &&
+          pos_right == pos_left + 1L
+      ) {
+        gap_idx <- c(gap_idx, pos_left)
+      }
+    }
+    if (length(gap_idx) > 0) {
+      # Gap width in index units: same approach as plot_runscatter.
+      # Use 2% of n_analyses so the band is always clearly visible.
+      # Minimum 3 to handle small datasets.
+      n_analyses <- length(unique_orders)
+      gap_width <- max(3L, round(n_analyses * 0.02 * gap_scale))
+
+      # Shift all post-gap indices by gap_width per gap.
+      for (i in seq_along(gap_idx)) {
+        shifted_idx <- gap_idx[i] + (i - 1L) * gap_width
+        order_map <- order_map |>
+          dplyr::mutate(
+            analysis_order_index = dplyr::if_else(
+              .data$analysis_order_index > shifted_idx,
+              .data$analysis_order_index + gap_width,
+              .data$analysis_order_index
+            )
+          )
+      }
+      # Re-join updated indices onto d_filt
+      d_filt <- d_filt |>
+        dplyr::select(-"analysis_order_index") |>
+        dplyr::left_join(order_map, by = "analysis_order")
+
+      # Recompute gap positions using the updated order_map
+      updated_orders <- order_map$analysis_order_index[
+        match(unique_orders, order_map$analysis_order)
+      ]
+      gap_positions <- vapply(
+        gap_idx,
+        function(g) {
+          left_idx <- updated_orders[g]
+          right_idx <- updated_orders[g + 1L]
+          (left_idx + right_idx) / 2
+        },
+        numeric(1)
+      )
+
+      d_gaps <- dplyr::tibble(
+        gap_x = gap_positions,
+        gap_x_left = updated_orders[gap_idx],
+        gap_x_right = updated_orders[gap_idx + 1L],
+        id_before = unique_orders[gap_idx],
+        id_after = unique_orders[gap_idx + 1L],
+        gap_label = paste0(
+          unique_orders[gap_idx],
+          " | ",
+          unique_orders[gap_idx + 1L]
+        )
+      )
+    }
+  }
+
+  if (use_index_axis) {
+    # Compute pretty breaks in ORIGINAL analysis_order space (round numbers)
+    # then map each to the nearest index for placement on the re-indexed axis.
     if (x_axis_variable == "analysis_order") {
-      labels <- order_map$analysis_order[breaks]
+      orig_range <- range(order_map$analysis_order)
+      orig_breaks <- scales::breaks_pretty(n = n_ticks)(orig_range)
+      orig_breaks <- orig_breaks[
+        orig_breaks >= orig_range[1] & orig_breaks <= orig_range[2]
+      ]
+      idx_breaks <- vapply(
+        orig_breaks,
+        function(b) {
+          nearest <- which.min(abs(order_map$analysis_order - b))
+          order_map$analysis_order_index[nearest]
+        },
+        numeric(1)
+      )
+      breaks <- idx_breaks
+      labels <- orig_breaks
     } else {
-      labels <- order_map$time_stamp[breaks]
+      orig_range <- range(order_map$time_stamp, na.rm = TRUE)
+      orig_breaks <- scales::breaks_pretty(n = n_ticks)(orig_range)
+      orig_breaks <- orig_breaks[
+        orig_breaks >= orig_range[1] & orig_breaks <= orig_range[2]
+      ]
+      idx_breaks <- vapply(
+        orig_breaks,
+        function(b) {
+          nearest <- which.min(abs(order_map$time_stamp - b))
+          order_map$analysis_order_index[nearest]
+        },
+        numeric(1)
+      )
+      breaks <- idx_breaks
+      labels <- orig_breaks
     }
 
     p <- ggplot(
@@ -637,7 +776,7 @@ plot_rla_boxplot <- function(
     } else {
       labels <- order_map$time_stamp[breaks]
     }
-    # If remove_gaps is FALSE, we use the analysis_order
+    # If collapse_excluded is FALSE, we use the analysis_order
     p <- ggplot(
       d_filt,
       aes(
@@ -653,7 +792,7 @@ plot_rla_boxplot <- function(
     scale_x_continuous(
       breaks = breaks,
       labels = labels,
-      # limits = if (remove_gaps) {
+      # limits = if (use_index_axis) {
       #   range(d_filt$analysis_order_index)
       # } else {
       #   range(d_filt$analysis_order)
@@ -683,7 +822,7 @@ plot_rla_boxplot <- function(
       rename(id_batch_end_index = "analysis_order_index")
 
     if (!batch_zebra_stripe) {
-      if (remove_gaps) {
+      if (use_index_axis) {
         p <- p +
           geom_vline(
             data = d_batches,
@@ -703,7 +842,7 @@ plot_rla_boxplot <- function(
           )
       }
     } else {
-      if (remove_gaps) {
+      if (use_index_axis) {
         p <- p +
           geom_rect(
             data = d_batches |> filter(.data$batch_no %% 2 != 1),
@@ -745,6 +884,60 @@ plot_rla_boxplot <- function(
 
   x_text_angle <- ifelse(x_axis_variable != "analysis_order", 90, 0)
   x_text_just <- ifelse(x_axis_variable != "analysis_order", 1, 0.5)
+
+  # Add gap marker: white rect to punch through zebra stripes, then border
+  # vlines + label. Drawn before boxplot so it sits behind the boxes but
+  # above the zebra stripes.
+  if (remove_gaps && !is.null(d_gaps) && nrow(d_gaps) > 0) {
+    p <- p +
+      # Transparent shaded rect to highlight the gap region
+      ggplot2::geom_rect(
+        data = d_gaps,
+        ggplot2::aes(
+          xmin = .data$gap_x_left + 0.5,
+          xmax = .data$gap_x_right - 0.5,
+          ymin = -Inf,
+          ymax = Inf
+        ),
+        inherit.aes = FALSE,
+        fill = gap_line_color,
+        color = NA,
+        alpha = 0.08,
+        na.rm = TRUE
+      ) +
+      # Left border vline
+      ggplot2::geom_vline(
+        data = d_gaps,
+        ggplot2::aes(xintercept = .data$gap_x_left + 0.5),
+        colour = gap_line_color,
+        linewidth = gap_line_width,
+        na.rm = TRUE
+      ) +
+      # Right border vline
+      ggplot2::geom_vline(
+        data = d_gaps,
+        ggplot2::aes(xintercept = .data$gap_x_right - 0.5),
+        colour = gap_line_color,
+        linewidth = gap_line_width,
+        na.rm = TRUE
+      ) +
+      ggplot2::geom_label(
+        data = d_gaps,
+        ggplot2::aes(
+          x = .data$gap_x,
+          y = Inf,
+          label = .data$gap_label
+        ),
+        inherit.aes = FALSE,
+        size = gap_label_size,
+        color = gap_line_color,
+        fill = "white",
+        linewidth = 0.15,
+        vjust = 1.2,
+        hjust = 0.5,
+        na.rm = TRUE
+      )
+  }
 
   p <- p +
     geom_boxplot(
@@ -844,7 +1037,7 @@ plot_rla_boxplot <- function(
   }
 
   if (!all(is.na(plot_range))) {
-    if (remove_gaps) {
+    if (use_index_axis) {
       xlim <- c(
         order_map[
           order_map$analysis_order ==

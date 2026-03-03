@@ -11,7 +11,12 @@ plot_rla_boxplot(
   qc_types = NA,
   plot_range = NA,
   rla_limit_to_range = FALSE,
+  collapse_excluded = FALSE,
   remove_gaps = FALSE,
+  gap_line_color = "#e34a33",
+  gap_line_width = 0.3,
+  gap_label_size = 2.5,
+  gap_scale = 1,
   filter_data = FALSE,
   include_qualifier = TRUE,
   include_istd = TRUE,
@@ -50,8 +55,21 @@ plot_rla_boxplot(
 
 \item{rla_limit_to_range}{Logical, whether to limit the RLA values to the specified \code{plot_range}. Default is \code{FALSE}, which means RLA values are calculated for all samples.}
 
-\item{remove_gaps}{Logical, whether to remove gaps in the x-axis, occuring from QC types that were not selected. Default is \code{TRUE}.
-is supplied, only features with exactly these names are excluded (applied individually as OR conditions).}
+\item{collapse_excluded}{Logical, whether to collapse gaps in the x-axis caused by QC types that were not selected, re-indexing x to a contiguous sequence. Default is \code{FALSE}.}
+
+\item{remove_gaps}{Logical. If \code{TRUE}, contiguous indices replace the original
+\code{analysis_order} on the x-axis so that missing/filtered samples no longer
+leave large gaps. Each gap is highlighted with a thick vertical line and
+annotated with the flanking analysis-order IDs. Default is \code{FALSE}.}
+
+\item{gap_line_color}{Color of the vertical gap-indicator lines. Default is \code{"#e34a33"}.}
+
+\item{gap_line_width}{Line width of the vertical gap-indicator lines. Default is \code{0.3}.}
+
+\item{gap_label_size}{Font size of the gap-boundary labels. Default is \code{2.5}.}
+
+\item{gap_scale}{Numeric multiplication factor for the gap band width.
+Default is \code{1}. Increase (e.g. \code{2}) for wider gaps, decrease for narrower.}
 
 \item{filter_data}{Logical, whether to use QC-filtered data based on criteria set via \code{filter_features_qc()}.}
 
