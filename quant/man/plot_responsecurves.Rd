@@ -19,13 +19,13 @@ plot_responsecurves(
   color_curves = NULL,
   point_size = 1.5,
   line_width = 0.7,
+  label_wrap = FALSE,
+  label_wrap_width = 25,
   font_base_size = 7,
   rows_page = 4,
   cols_page = 5,
   curve_layout = "overlay",
   fixed_scale_curves = FALSE,
-  label_wrap = FALSE,
-  label_wrap_width = 25,
   r2_vstep = 0.06,
   specific_page = NA,
   page_orientation = "LANDSCAPE",
@@ -72,6 +72,12 @@ the number of colors must match the number of curves.}
 
 \item{line_width}{Width of regression lines.}
 
+\item{label_wrap}{Logical. If \code{TRUE}, long \code{feature_id} labels are wrapped to multiple
+lines using \code{label_wrap_width}. Default is \code{FALSE}.}
+
+\item{label_wrap_width}{Integer. Maximum width in characters for wrapped labels when
+\code{label_wrap = TRUE}. Default is \code{25}. Ignored when \code{label_wrap = FALSE}.}
+
 \item{font_base_size}{Base font size for text. Default is 7.}
 
 \item{rows_page}{Number of rows of plots per page. Used for pagination in
@@ -93,12 +99,6 @@ using \code{facet_grid2}. Pagination uses \code{cols_page} only.}
 \item{fixed_scale_curves}{Logical. If \code{TRUE}, fixes the y-axis scale per feature row
 (\code{curve_layout = "cols"}) or per curve row (\code{curve_layout = "rows"}). If \code{FALSE}
 (default), each panel auto-scales. Silently ignored when \code{curve_layout = "overlay"}.}
-
-\item{label_wrap}{Logical. If \code{TRUE}, long \code{feature_id} labels are wrapped to multiple
-lines using \code{label_wrap_width}. Default is \code{FALSE}.}
-
-\item{label_wrap_width}{Integer. Maximum width in characters for wrapped labels when
-\code{label_wrap = TRUE}. Default is \code{25}. Ignored when \code{label_wrap = FALSE}.}
 
 \item{r2_vstep}{Numeric. Vertical step between stacked R-squared labels when multiple
 curves are plotted in the same panel (\code{curve_layout = "overlay"}). Default is \code{0.06}.
