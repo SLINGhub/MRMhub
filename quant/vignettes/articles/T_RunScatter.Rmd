@@ -46,7 +46,7 @@ A minimal call plots all QC and sample types for one feature.
 #| results: false 
 #| message: false
 plot_runscatter(mexp, variable = "intensity",
-                include_feature_filter = "^CE 18:1$",
+                include_feature_filter = "TG 48\\:2 \\[\\-18:1\\]",
                 rows_page = 1, cols_page = 1)
 ```
 
@@ -60,7 +60,7 @@ Use `qc_types` to display only specific sample types.
 #| results: false 
 #| message: false
 plot_runscatter(mexp, variable = "intensity",
-                include_feature_filter = "^CE 18:1$",
+                include_feature_filter = "TG 48\\:2 \\[\\-18:1\\]",
                 qc_types = c("BQC", "SPL"),
                 rows_page = 1, cols_page = 1)
 ```
@@ -76,7 +76,7 @@ alternating shaded areas.
 #| results: false 
 #| message: false
 plot_runscatter(mexp, variable = "intensity",
-                include_feature_filter = "^CE 18:1$",
+                include_feature_filter = "TG 48\\:2 \\[\\-18:1\\]",
                 show_batches = TRUE,
                 batch_zebra_stripe = TRUE,
                 rows_page = 1, cols_page = 1)
@@ -93,9 +93,10 @@ to display the range as a shaded band instead of lines.
 #| results: false 
 #| message: false
 plot_runscatter(mexp, variable = "intensity",
-                include_feature_filter = "^CE 18:1$",
+                include_feature_filter = "TG 48\\:2 \\[\\-18:1\\]",
                 qc_types = c("BQC", "SPL"),
                 show_reference_lines = TRUE,
+                ref_qc_types = "BQC",
                 reference_k_sd = 2,
                 reference_sd_shade = TRUE,
                 rows_page = 1, cols_page = 1)
@@ -112,7 +113,7 @@ obscure the trends of QC or study samples.
 #| results: false 
 #| message: false
 plot_runscatter(mexp, variable = "intensity",
-                include_feature_filter = "^CE 18:1$",
+                include_feature_filter = "TG 48\\:2 \\[\\-18:1\\]",
                 cap_outliers = TRUE,
                 cap_sample_k_mad = 3,
                 rows_page = 1, cols_page = 1)
@@ -129,7 +130,7 @@ replaced with the minimum positive value divided by 5.
 #| results: false 
 #| message: false
 plot_runscatter(mexp, variable = "intensity",
-                include_feature_filter = "^CE 18:1$",
+                include_feature_filter = "TG 48\\:2 \\[\\-18:1\\]",
                 log_scale = TRUE,
                 rows_page = 1, cols_page = 1)
 ```
@@ -157,21 +158,46 @@ Both options can be combined.
 #| results: false 
 #| message: false
 plot_runscatter(mexp, variable = "intensity",
-                include_feature_filter = "^CE 18:1$",
-                qc_types = c("BQC"),
+                include_feature_filter = "TG 48\\:2 \\[\\-18:1\\]",
+                qc_types = c("LTR"),
                 collapse_excluded = TRUE,
                 rows_page = 1, cols_page = 1)
 ```
 
 ### Removing gaps from unannotated analyses
 
+To demonstrate this feature, we first simulate a dataset with unannotated analyses by excluding a
+block of runs from batch 2. This creates a contiguous gap in the analysis order, as would occur
+when solvent blanks or system suitability injections are not imported.
+
+```{r}
+#| results: false 
+#| message: false
+mexp_gaps <- exclude_analyses(
+  mexp,
+  analyses = c(
+    paste0("Longit_batch2_", 1:45),
+    "Longit_batch2_PQC 12",
+    "Longit_batch2_PQC 13",
+    "Longit_batch2_PQC 14",
+    "Longit_batch2_PQC 15",
+    "Longit_batch2_TQC13",
+    "Longit_batch2_TQC14",
+    "Longit_batch2_TQC15"
+  ),
+  clear_existing = TRUE
+)
+mexp_gaps <- normalize_by_istd(mexp_gaps)
+mexp_gaps <- calc_qc_metrics(mexp_gaps)
+```
+
 ```{r}
 #| fig.alt: >
 #|   RunScatter plot with gap indicator lines
 #| results: false 
 #| message: false
-plot_runscatter(mexp, variable = "intensity",
-                include_feature_filter = "^CE 18:1$",
+plot_runscatter(mexp_gaps, variable = "intensity",
+                include_feature_filter = "TG 48\\:2 \\[\\-18:1\\]",
                 remove_gaps = TRUE,
                 rows_page = 1, cols_page = 1)
 ```
@@ -187,8 +213,8 @@ fully annotated plot.
 #|   RunScatter plot with collapsed excluded types and gap indicators
 #| results: false 
 #| message: false
-plot_runscatter(mexp, variable = "intensity",
-                include_feature_filter = "^CE 18:1$",
+plot_runscatter(mexp_gaps, variable = "intensity",
+                include_feature_filter = "TG 48\\:2 \\[\\-18:1\\]",
                 qc_types = c("BQC"),
                 collapse_excluded = TRUE,
                 remove_gaps = TRUE,
@@ -207,11 +233,11 @@ the effect on strip text.
 #| results: false 
 #| message: false
 plot_runscatter(mexp, variable = "intensity",
-                include_feature_filter = "CE|PC 40",
+                include_feature_filter = "TG 48\\:2 \\[\\-18:1\\]",
                 rows_page = 1, cols_page = 3,
                 specific_page = 1,
                 label_wrap = TRUE,
-                label_wrap_width = 15)
+                label_wrap_width = 8)
 ```
 
 ## Trend curves

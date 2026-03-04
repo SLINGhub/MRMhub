@@ -850,6 +850,10 @@ test_that("plot_runscatter multicore 1 core", {
 })
 
 test_that("plot_runscatter multicore", {
+  skip_if(
+    nzchar(Sys.getenv("R_COVR")),
+    "mirai daemons corrupt covr trace files"
+  )
   mirai::daemons(4)
   p <- plot_runscatter(
     data = mexp,
@@ -979,6 +983,10 @@ test_that("plot_runscatter specific_page gried", {
 
 
 test_that("plot_runscatter pdf multi4", {
+  skip_if(
+    nzchar(Sys.getenv("R_COVR")),
+    "mirai daemons corrupt covr trace files"
+  )
   temp_pdf_path <- file.path(tempdir(), "mrmhub_test_runscay2.pdf")
   mirai::daemons(4)
   p <- plot_runscatter(
