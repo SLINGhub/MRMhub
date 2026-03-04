@@ -88,7 +88,9 @@ plot_runscatter(
   gap_line_color = "#e34a33",
   gap_line_width = 0.3,
   gap_label_size = 2.5,
-  gap_scale = 1
+  gap_scale = 1,
+  label_wrap = FALSE,
+  label_wrap_width = 25
 )
 ```
 
@@ -340,6 +342,17 @@ plot_runscatter(
 
   Numeric multiplication factor for the gap band width. Default is `1`.
   Increase (e.g. `2`) for wider gaps, decrease for narrower.
+
+- label_wrap:
+
+  Logical. If `TRUE`, long `feature_id` labels are wrapped to multiple
+  lines using `label_wrap_width`. Default is `FALSE`.
+
+- label_wrap_width:
+
+  Integer. Maximum width in characters for wrapped labels when
+  `label_wrap = TRUE`. Default is `25`. Ignored when
+  `label_wrap = FALSE`.
 
 ## Value
 

@@ -193,7 +193,9 @@ providing critical insights into data quality.</p>
 <span>  gap_line_color <span class="op">=</span> <span class="st">"#e34a33"</span>,</span>
 <span>  gap_line_width <span class="op">=</span> <span class="fl">0.3</span>,</span>
 <span>  gap_label_size <span class="op">=</span> <span class="fl">2.5</span>,</span>
-<span>  gap_scale <span class="op">=</span> <span class="fl">1</span></span>
+<span>  gap_scale <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  label_wrap <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  label_wrap_width <span class="op">=</span> <span class="fl">25</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -423,6 +425,16 @@ re-indexing x to a contiguous sequence. Default is <code>FALSE</code>.</p></dd>
 <dt id="arg-gap-scale">gap_scale<a class="anchor" aria-label="anchor" href="#arg-gap-scale"></a></dt>
 <dd><p>Numeric multiplication factor for the gap band width.
 Default is <code>1</code>. Increase (e.g. <code>2</code>) for wider gaps, decrease for narrower.</p></dd>
+
+
+<dt id="arg-label-wrap">label_wrap<a class="anchor" aria-label="anchor" href="#arg-label-wrap"></a></dt>
+<dd><p>Logical. If <code>TRUE</code>, long <code>feature_id</code> labels are wrapped to multiple
+lines using <code>label_wrap_width</code>. Default is <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-label-wrap-width">label_wrap_width<a class="anchor" aria-label="anchor" href="#arg-label-wrap-width"></a></dt>
+<dd><p>Integer. Maximum width in characters for wrapped labels when
+<code>label_wrap = TRUE</code>. Default is <code>25</code>. Ignored when <code>label_wrap = FALSE</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
