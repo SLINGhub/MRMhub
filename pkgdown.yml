@@ -18,10 +18,11 @@ articles:
   articles/T_BatchCorrect: T_BatchCorrect.html
   articles/T_CalibRef: T_CalibRef.html
   articles/T_DriftCorrect: T_DriftCorrect.html
+  articles/T_RunScatter: T_RunScatter.html
   articles/T01_prepdata: T01_prepdata.html
   articles/T01_targetlipidomics_workflow: T01_targetlipidomics_workflow.html
   articles/T02_settingup_workflow: T02_settingup_workflow.html
-last_built: 2026-03-04T06:15Z
+last_built: 2026-03-04T08:07Z
 urls:
   reference: https://slinghub.github.io/MRMhub/reference
   article: https://slinghub.github.io/MRMhub/articles

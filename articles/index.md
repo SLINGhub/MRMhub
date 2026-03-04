@@ -82,6 +82,9 @@
 - [Drift Correction
   (Smoothing)](https://slinghub.github.io/MRMhub/articles/T_DriftCorrect.md):
 
+- [RunScatter
+  Plot](https://slinghub.github.io/MRMhub/articles/T_RunScatter.md):
+
 - [Preparing and importing
   data](https://slinghub.github.io/MRMhub/articles/T01_prepdata.md):
 
