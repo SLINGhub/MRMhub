@@ -704,17 +704,17 @@ save_metadata_msorganiser_template <- function(
 
 
 
-save_summarizedexperiment  <- function(data) {
+# save_summarizedexperiment  <- function(data) {
   
 
-ds <- d_filt |>
-    dplyr::select(all_of(c("analysis_id", "feature_id", "feature_intensity"))) |>
-    tidyr::pivot_wider(names_from = "feature_id", values_from = feature_intensity)  |> column_to_rownames("feature_id")
+# ds <- d_filt |>
+#     dplyr::select(all_of(c("analysis_id", "feature_id", "feature_intensity"))) |>
+#     tidyr::pivot_wider(names_from = "feature_id", values_from = feature_intensity)  |> tibble::column_to_rownames("feature_id")
 
-  se <- SummarizedExperiment(
-  assays = list(intensity = as.matrix(ds)),
-  rowData = mexp@annot_analyses  |> filter(analysis_id %in% rownames(ds)),
-  colData = mexp@annot_features |> filter(feature_id %in% colnames(ds))
-)
+#   se <- SummarizedExperiment(
+#   assays = list(intensity = as.matrix(ds)),
+#   rowData = mexp@annot_analyses  |> filter(analysis_id %in% rownames(ds)),
+#   colData = mexp@annot_features |> filter(feature_id %in% colnames(ds))
+# )
 
-}
+# }

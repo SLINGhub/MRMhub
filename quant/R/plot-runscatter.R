@@ -347,8 +347,8 @@ plot_runscatter <- function(
       unique_orders <- sort(unique(data@dataset$analysis_order))
     }
     order_map <- dplyr::tibble(
-      analysis_order = unique_orders,
-      analysis_order_index = seq_along(unique_orders)
+      "analysis_order" := unique_orders,
+      "analysis_order_index" := seq_along(unique_orders)
     )
     d_filt <- d_filt |>
       dplyr::left_join(order_map, by = "analysis_order")
@@ -408,7 +408,7 @@ plot_runscatter <- function(
         }
         # Re-join updated indices onto d_filt
         d_filt <- d_filt |>
-          dplyr::select(-analysis_order_index) |>
+          dplyr::select(-"analysis_order_index") |>
           dplyr::left_join(order_map, by = "analysis_order")
 
         # Recompute gap positions using the updated order_map

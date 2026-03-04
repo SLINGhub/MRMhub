@@ -58,7 +58,9 @@ plot_runscatter(
   gap_line_color = "#e34a33",
   gap_line_width = 0.3,
   gap_label_size = 2.5,
-  gap_scale = 1
+  gap_scale = 1,
+  label_wrap = FALSE,
+  label_wrap_width = 25
 )
 }
 \arguments{
@@ -181,6 +183,12 @@ re-indexing x to a contiguous sequence. Default is \code{FALSE}.}
 
 \item{gap_scale}{Numeric multiplication factor for the gap band width.
 Default is \code{1}. Increase (e.g. \code{2}) for wider gaps, decrease for narrower.}
+
+\item{label_wrap}{Logical. If \code{TRUE}, long \code{feature_id} labels are wrapped to multiple
+lines using \code{label_wrap_width}. Default is \code{FALSE}.}
+
+\item{label_wrap_width}{Integer. Maximum width in characters for wrapped labels when
+\code{label_wrap = TRUE}. Default is \code{25}. Ignored when \code{label_wrap = FALSE}.}
 }
 \value{
 A list of ggplot2 plots, or \code{NULL} if `return
