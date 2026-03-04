@@ -35,6 +35,8 @@ navbar:
         href: articles/T02_settingup_workflow.html
       - text: Drift correction
         href: articles/T_DriftCorrect.html
+      - text: RunScatter plot
+        href: articles/T_RunScatter.html
       - text: Batch correction
         href: articles/T_BatchCorrect.html
       - text: Calibration by a reference sample
