@@ -39,11 +39,11 @@ INTEGRATOR and the corresponding Visualizer run as standalone applications. Howe
     -   The **INTEGRATOR** executable: `MRMhub`
     -   The visualizer application: `MRMhub-viz`
     -   A demo dataset comprising `.mzML` files and INTEGRATOR input files.
-
+<!--
 ::: callout-important
 **Note**: Upon the first launch, you will need to adjust security settings on both macOS and Windows to allow the applications to run. Please refer to the detailed [INTEGRATOR manual](https://slinghub.github.io/MRMhub/articles/Integrator_manual.html) for instructions.
 :::
-
+-->
 > [!NOTE]
 > Upon the first launch, you will need to adjust security settings on both macOS and Windows to allow the applications to run. Please refer to the detailed [INTEGRATOR manual](https://slinghub.github.io/MRMhub/articles/Integrator_manual.html) for instructions.
 
@@ -74,10 +74,13 @@ library(mrmhub)
     -   `long.csv`: Table in long format with peak areas, retention times, and other parameters for each feature-sample pair. This file can be directly used for postprocessing using the QUANT module.
 5.  Double-click on the `MRMhub-viz` executable to view and explore all transitions with peak integration results.
 6.  Run Step 4 in the `mrmhub` terminal to generate PDFs of each transition with peak integration results (Note: this requires an installation of R, see System Requirements). This step typically takes less than 1 min, but may take longer depending on the system. The PDF files can then be found in the folders starting with `by_`, specifically in `by_transition`.
-
+<!--
 ::: callout-important
 Please refer to the Installation instructions above if double-clicking the exetubales does not have any effect or a security warning appears, .
 :::
+-->
+> [!IMPORTANT]
+> Please refer to the Installation instructions above if double-clicking the executables does not have any effect or a security warning appears.
 
 ## Post Processing and QC using QUANT
 
