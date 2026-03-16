@@ -44,6 +44,9 @@ INTEGRATOR and the corresponding Visualizer run as standalone applications. Howe
 **Note**: Upon the first launch, you will need to adjust security settings on both macOS and Windows to allow the applications to run. Please refer to the detailed [INTEGRATOR manual](https://slinghub.github.io/MRMhub/articles/Integrator_manual.html) for instructions.
 :::
 
+> [!NOTE]
+> Upon the first launch, you will need to adjust security settings on both macOS and Windows to allow the applications to run. Please refer to the detailed [INTEGRATOR manual](https://slinghub.github.io/MRMhub/articles/Integrator_manual.html) for instructions.
+
 ### **QUANT** (Postprocessing and Quality Control Module)
 
 The **QUANT** module is implemented as an R package. It requires an installation of **R Version 4.2** or higher (available at (<https://cloud.r-project.org>). An installation of a corresponding GUI, such as [RStudio](https://posit.co/download/rstudio-desktop/) or [Positron](https://positron.posit.co), is recommended. To install the `mrmhub` package from GitHub, run the following commands in your R console:
