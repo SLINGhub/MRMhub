@@ -15,7 +15,7 @@ lipidomics_dataset <- import_data_mrmhub(
 
 lipidomics_dataset <- import_metadata_msorganiser(
   lipidomics_dataset,
-  here("data-raw/MRMhub_example_metadata.xlsm"),
+  here("data-raw/MRMhub_example_metadata.xlsx"),
   excl_unmatched_analyses = T
 )
 
@@ -47,10 +47,9 @@ mexp <- import_data_masshunter(
 
 quant_lcms_dataset <- import_metadata_msorganiser(
   mexp,
-  here("data-raw/QuantLCMS_Example_Metadata.xlsm"),
+  here("data-raw/QuantLCMS_Example_Metadata.xlsx"),
   excl_unmatched_analyses = T,
   ignore_warnings = T
 )
 
 usethis::use_data(quant_lcms_dataset, overwrite = TRUE, compress = "xz")
-
