@@ -3,8 +3,14 @@ name: R-CMD-check
 on:
   push:
     branches: [main, master, development]
+    paths-ignore:
+      - 'integrator/**'
+      - 'docs-site/**'
   pull_request:
     branches: [main, master, development]
+    paths-ignore:
+      - 'integrator/**'
+      - 'docs-site/**'
 
 permissions:
   contents: read
@@ -49,7 +55,6 @@ jobs:
       - name: Install dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          working-directory: ./quant
           extra-packages: |
             any::rcmdcheck
             any::carrier
@@ -59,7 +64,6 @@ jobs:
       - name: Run R CMD check
         uses: r-lib/actions/check-r-package@v2
         with:
-          working-directory: ./quant
           build_args: 'c("--no-manual")'
           upload-snapshots: ${{ env.RUN_VDIFFR }}
 
@@ -70,7 +74,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ runner.os }}-r${{ matrix.config.r }}-results
-          path: quant/check
+          path: check
 
       # ----------------------------------------------------------------
       # Upload vdiffr snapshots (macOS only)

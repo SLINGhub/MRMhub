@@ -4,3 +4,27 @@
 .RData
 .Rproj.user/
 *.tar.gz
+
+# Agent / Claude Code tooling (local state, not shared)
+.claude/
+.agents/
+skills-lock.json
+
+# R package build artifacts / stray outputs
+tests/testthat/Rplots.pdf
+vignettes/articles/*_files/
+vignettes/articles/output/
+inst/doc
+/doc/
+/Meta/
+.quarto
+.httr-oauth
+.Rdata
+*.Rout
+*.Rout.fail
+
+# Rust INTEGRATOR build output
+integrator/target/
+
+# Excel temp/lock files (created when a workbook is open)
+~$*

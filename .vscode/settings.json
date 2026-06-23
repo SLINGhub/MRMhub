@@ -1,0 +1,8 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "git commit": true,
+        "mkdir": true,
+        "touch": true,
+        "uniq": true
+    }
+}

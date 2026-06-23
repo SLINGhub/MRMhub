@@ -1,0 +1,65 @@
+name: integrator-release
+
+# Build the Rust INTEGRATOR executable and attach it to the GitHub Release.
+# Safe to keep in place before the Rust port lands: the "Detect crate" step makes
+# every later step a no-op until integrator/Cargo.toml exists.
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+  push:
+    paths:
+      - 'integrator/Cargo.toml'
+      - 'integrator/Cargo.lock'
+      - 'integrator/src/**'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            target: aarch64-apple-darwin
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Detect crate
+        id: crate
+        shell: bash
+        run: |
+          if [ -f integrator/Cargo.toml ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::integrator/Cargo.toml not found — skipping (Rust port not yet added)."
+          fi
+
+      - name: Install Rust toolchain
+        if: steps.crate.outputs.exists == 'true'
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Build release binary
+        if: steps.crate.outputs.exists == 'true'
+        working-directory: integrator
+        run: cargo build --release --target ${{ matrix.target }}
+
+      # Attach the built executable(s) to the Release. Adjust the binary name to the
+      # crate's [[bin]] name if it is not "MRMhub". Unmatched globs are ignored.
+      - name: Attach executables to release
+        if: steps.crate.outputs.exists == 'true' && github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            integrator/target/${{ matrix.target }}/release/MRMhub
+            integrator/target/${{ matrix.target }}/release/MRMhub.exe
+          fail_on_unmatched_files: false

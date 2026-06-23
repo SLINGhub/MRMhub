@@ -4,7 +4,9 @@ name: pkgdown
 on:
   push:
     branches: [main, master]
+    paths-ignore: ['integrator/**', 'docs-site/**']
   pull_request:
+    paths-ignore: ['integrator/**', 'docs-site/**']
   release:
     types: [published]
   workflow_dispatch:
@@ -30,7 +32,6 @@ jobs:
       - name: Install dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          working-directory: quant
           extra-packages: |
             any::remotes
             any::pkgdown
@@ -43,11 +44,9 @@ jobs:
         uses: quarto-dev/quarto-actions/setup@v2
 
       - name: Install mrmhub
-        working-directory: quant
         run: Rscript -e 'remotes::install_local(dependencies = FALSE)'
 
       - name: Build pkgdown site
-        working-directory: quant
         run: Rscript -e "pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)"
 
       - name: Deploy to GitHub Pages 🚀
@@ -56,4 +55,4 @@ jobs:
         with:
           clean: false
           branch: gh-pages
-          folder: quant/docs
+          folder: docs

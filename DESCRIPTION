@@ -8,21 +8,20 @@ Authors@R: c(person(given = "Bo", family = "Burla", role = c("aut", "cre"),
     person(given = "Hyungwon", family = "Choi", role = "aut",
     email = "hyung_won_choi@nus.edu.sg", comment = c(ORCID = "0000-0002-6687-3088"))
     )
-Description: MRMhub is a tool for processing, quality control, and visualization
-    of targeted metabolomics and lipidomics mass spectrometry data.
+Description: MRMhub-QUANT, the quantitation and reporting module of the MRMhub
+    toolchain, is a tool for processing, quality control, and visualization of
+    targeted metabolomics and lipidomics mass spectrometry data.
 License: GPL-3
 URL: https://github.com/SLINGhub/MRMhub,
-    https://slinghub.github.io/MRMhub/
+    https://slinghub.github.io/MRMhub/quant/
 BugReports: https://github.com/SLINGhub/MRMhub/issues
 Depends: R (>= 4.2)
-Imports: 
+Imports:
     assertr,
     methods,
-    broom,
     cli,
     dplyr (>= 1.2.0),
     tibble,
-    dtplyr,
     forcats,
     fs,
     glue,
@@ -33,11 +32,11 @@ Imports:
     scales,
     stringr,
     tidyr,
-    pillar,
     openxlsx2,
     ggh4x,
-    ggplot2 (>= 3.5.0)
-Suggests: 
+    ggplot2 (>= 3.5.0),
+    ggrepel
+Suggests:
     enviPat,
     qpdf,
     ggvenn,
@@ -47,7 +46,6 @@ Suggests:
     ggforce,
     ggpmisc,
     ggnewscale,
-    ggrepel,
     covr,
     lancer,
     rgoslin,
@@ -62,16 +60,19 @@ Suggests:
     testthat (>= 3.0.0),
     vdiffr,
     mirai,
-    carrier
-Remotes: 
-    SLINGhub/lancer
+    carrier,
+    shiny,
+    bslib,
+    rmzTabM
+Remotes:
+    SLINGhub/lancer,
+    github::lifs-tools/rmzTabM
 VignetteBuilder: 
     knitr
 biocViews:
 Config/testthat/edition: 3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.3
 LazyData: true
 LazyDataCompression: xz
 Collate: 
@@ -80,6 +81,7 @@ Collate:
     'calc-istd-normalization.R'
     'calc-ref-normalization.R'
     'calc-response.R'
+    'check-setup.R'
     'mrmhub-global-definitions.R'
     'classes.R'
     'correct-drift-batch.R'
@@ -89,6 +91,7 @@ Collate:
     'data-export.R'
     'data-import.R'
     'data-managment.R'
+    'data-mztab.R'
     'data-outlier.R'
     'data-summarize.R'
     'datasets.R'
@@ -113,5 +116,7 @@ Collate:
     'plots-qc-responsecurves.R'
     'plots-qc-runorder.R'
     'qc-filtering.R'
+    'run-walkthrough.R'
     'tibble-classes.R'
     'utils.R'
+Config/roxygen2/version: 8.0.0

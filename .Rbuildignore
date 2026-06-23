@@ -1,0 +1,34 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^\.github$
+^\.covrignore$
+^\.travis\.yml$
+^codecov\.yml$
+^_pkgdown\.yml$
+^pkgdown$
+^docs$
+^doc$
+^Meta$
+^data-raw$
+^dev$
+^recode_values$
+^air\.toml$
+^CODE_OF_CONDUCT\.md$
+^LICENSE\.md$
+^mydata\.csv$
+# Repo-level files that are not part of the R package
+^integrator$
+^docs-site$
+^CLAUDE\.md$
+^plan-.*\.prompt\.md$
+^justfile$
+^\.vscode$
+^\.claude$
+^\.agents$
+^skills-lock\.json$
+^README\.html$
+^README_files$
+^.*\.tar\.gz$
+# Build hygiene: dir placeholders + stray rendered-article output (knitr/Quarto _files)
+\.gitkeep$
+^vignettes/articles/.*_files

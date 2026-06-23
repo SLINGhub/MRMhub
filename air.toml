@@ -1,0 +1,11 @@
+# Air formatter config — https://posit-dev.github.io/air/
+# Run from `quant/`:
+#   air format .              # format all R sources in place
+#   air format --check .      # CI / pre-commit check (non-zero exit if drift)
+#   air format R/calc-eda.R   # one file
+
+[format]
+line-width = 80
+indent-width = 2
+indent-style = "space"
+line-ending = "auto"
