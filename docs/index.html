@@ -5,20 +5,21 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Small Molecule Mass Spectrometry Data Post-Processing, Quality Control, Exploration and Reporting • mrmhub</title>
+<title>Small Molecule Mass Spectrometry Data Processing, Quality Control, and Reporting • mrmhub</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <link rel="icon" sizes="any" href="favicon.ico">
 <link rel="manifest" href="site.webmanifest">
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Small Molecule Mass Spectrometry Data Post-Processing, Quality Control, Exploration and Reporting">
-<meta name="description" content="The mrmhub package offers R functions for processing, quality control, and visualization of lipidomics mass spectrometry data.">
-<meta property="og:description" content="The mrmhub package offers R functions for processing, quality control, and visualization of lipidomics mass spectrometry data.">
-<meta property="og:image" content="https://slinghub.github.io/mrmhub/logo.svg">
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><link href="extra.css" rel="stylesheet">
+<meta property="og:title" content="Small Molecule Mass Spectrometry Data Processing, Quality Control, and Reporting">
+<meta name="description" content="MRMhub-QUANT, the quantitation and reporting module of the MRMhub toolchain, is a tool for processing, quality control, and visualization of targeted metabolomics and lipidomics mass spectrometry data.">
+<meta property="og:description" content="MRMhub-QUANT, the quantitation and reporting module of the MRMhub toolchain, is a tool for processing, quality control, and visualization of targeted metabolomics and lipidomics mass spectrometry data.">
+<meta property="og:image" content="https://slinghub.github.io/MRMhub/quant/logo.svg">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -28,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,43 +38,63 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="articles/00_get_started.html">Getting started</a></li>
 <li class="nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-integrator" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">INTEGRATOR</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-integrator">
-<li><a class="dropdown-item" href="articles/Integrator_manual.html">INTEGRATOR Manual</a></li>
-    <li><a class="dropdown-item" href="articles/msconvert_manual.html">MSconvert Instructions</a></li>
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-get-started" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Get Started</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-get-started">
+<li><a class="dropdown-item" href="articles/manual-00-get-started.html">Installation</a></li>
+    <li><a class="dropdown-item" href="articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
+    <li><a class="dropdown-item" href="articles/manual-00-architecture.html">Design Overview</a></li>
+    <li><a class="dropdown-item" href="articles/manual-00-key-concepts.html">Key Concepts &amp; Glossary</a></li>
+    <li><a class="dropdown-item" href="articles/manual-00-sample-types.html">Sample Types &amp; QC Roles</a></li>
+    <li><a class="dropdown-item" href="articles/manual-11-cheatsheet.html">Function Cheatsheet</a></li>
+    <li><a class="dropdown-item" href="articles/manual-05a-which-importer.html">Import and prepare data files</a></li>
+    <li><a class="dropdown-item" href="articles/manual-00-integrator-vs-quant.html">INTEGRATOR vs QUANT</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="external-link dropdown-item" href="https://slinghub.github.io/MRMhub/integrator-manual.html">Need peak integration first?</a></li>
   </ul>
 </li>
 <li class="nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-tutorials-recipes" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Tutorials &amp; Recipes</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-tutorials-recipes">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-workflows" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Workflows</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-workflows">
 <li><h6 class="dropdown-header" data-toc-skip>Tutorials</h6></li>
-    <li><a class="dropdown-item" href="articles/T01_targetlipidomics_workflow.html">Lipidomics data processing (full workflow)</a></li>
-    <li><a class="dropdown-item" href="articles/T01_prepdata.html">Preparing and importing data</a></li>
-    <li><a class="dropdown-item" href="articles/T02_settingup_workflow.html">Basic MRMhub workflow</a></li>
-    <li><a class="dropdown-item" href="articles/T_DriftCorrect.html">Drift correction</a></li>
-    <li><a class="dropdown-item" href="articles/T_BatchCorrect.html">Batch correction</a></li>
-    <li><a class="dropdown-item" href="articles/T_CalibRef.html">Calibration by a reference sample</a></li>
-    <li><a class="dropdown-item" href="articles/R01_quantms.html">External calibration and QC</a></li>
+    <li><a class="dropdown-item" href="articles/tutorial-02-basic-workflow.html">Basic MRMhub workflow</a></li>
+    <li><a class="dropdown-item" href="articles/tutorial-03-lipidomics-workflow.html">Lipidomics (full workflow)</a></li>
+    <li><a class="dropdown-item" href="articles/tutorial-08-multi-batch.html">Multi-Batch Study</a></li>
+    <li><a class="dropdown-item" href="articles/tutorial-04-drift-correction.html">Drift correction</a></li>
+    <li><a class="dropdown-item" href="articles/tutorial-06-batch-correction.html">Batch correction</a></li>
+    <li><a class="dropdown-item" href="articles/tutorial-10-metadata-validation.html">Validating metadata</a></li>
+    <li><a class="dropdown-item" href="articles/tutorial-09-pca-exploration.html">QC exploration with PCA</a></li>
+    <li><a class="dropdown-item" href="articles/tutorial-11-interference-correction.html">Interference correction</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Recipes</h6></li>
+    <li><a class="dropdown-item" href="articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
+    <li><a class="dropdown-item" href="articles/tutorial-07-calibration-reference.html">Calibration by reference sample</a></li>
+    <li><a class="dropdown-item" href="articles/recipe-02-custom-qc-report.html">Custom QC Report</a></li>
+    <li><a class="dropdown-item" href="articles/recipe-03-mztab-export.html">Export to mzTab-M</a></li>
   </ul>
 </li>
 <li class="nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-manual" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Manual</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-manual">
-<li><h6 class="dropdown-header" data-toc-skip>Key concepts</h6></li>
-    <li><a class="dropdown-item" href="articles/01_datastructure.html">Data structures</a></li>
-    <li><a class="dropdown-item" href="articles/02_keydataids.html">Data indentifier</a></li>
-    <li><a class="dropdown-item" href="articles/02b_keyfeaturevar.html">Feature variables</a></li>
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-advanced" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Advanced</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-advanced">
+<li><h6 class="dropdown-header" data-toc-skip>Data Model</h6></li>
+    <li><a class="dropdown-item" href="articles/manual-01-data-structure.html">Data Structures</a></li>
+    <li><a class="dropdown-item" href="articles/manual-02-data-identifiers.html">Data Identifiers</a></li>
+    <li><a class="dropdown-item" href="articles/manual-03-feature-variables.html">Feature Variables</a></li>
+    <li><a class="dropdown-item" href="articles/manual-04-mrmhub-experiment.html">MRMhubExperiment Object</a></li>
     <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Data and metadata</h6></li>
-    <li><a class="dropdown-item" href="articles/03_MRMhubExperiment.html">MRMhubExperiment Object</a></li>
-    <li><a class="dropdown-item" href="articles/04_dataimport.html">Data import</a></li>
-    <li><a class="dropdown-item" href="articles/05_metadataimport.html">Metadata import</a></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Import &amp; Metadata</h6></li>
+    <li><a class="dropdown-item" href="articles/manual-05-data-import.html">Data Import</a></li>
+    <li><a class="dropdown-item" href="articles/manual-05b-data-file-structures.html">Data File Structures</a></li>
+    <li><a class="dropdown-item" href="articles/manual-06-metadata-import.html">Metadata Import</a></li>
+    <li><a class="dropdown-item" href="articles/manual-06a-metadata-table-structures.html">Metadata Table Structures</a></li>
     <li><hr class="dropdown-divider"></li>
-    <li><a class="dropdown-item" href="articles/07_driftbatchcorr.html">Batch/drift correction</a></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Correction Methods</h6></li>
+    <li><a class="dropdown-item" href="articles/manual-07-drift-batch-correction.html">Drift &amp; Batch Correction</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
+    <li><a class="dropdown-item" href="articles/manual-08-visualization.html">Visualisation Functions</a></li>
+    <li><a class="dropdown-item" href="articles/manual-09-troubleshooting.html">Troubleshooting &amp; FAQ</a></li>
+    <li><a class="dropdown-item" href="articles/manual-10-design-decisions.html">Design Decisions</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
@@ -83,7 +104,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="search.json">
 </form></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/SLINGhub/mrmhub/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/SLINGhub/MRMhub/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
@@ -93,91 +114,74 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header">
-<img src="logo.svg" class="logo" alt=""><h1 id="mrmhub-">MRMhub 
-<a class="anchor" aria-label="anchor" href="#mrmhub-"></a>
+<img src="logo.svg" class="logo" alt=""><h1 id="mrmhub-quant-">MRMhub-QUANT 
+<a class="anchor" aria-label="anchor" href="#mrmhub-quant-"></a>
 </h1>
 </div>
 <!-- badges: start -->
 
-<!-- badges: end -->
-<p><code>MRMhub</code> is an R package designed for the reproducible post-processing, quality control, and reporting of quantitative small-molecule mass spectrometry (MS) data. Its modular functionalities and defined data structure, support diverse analytical designs, data formats, and processing tasks, including metabolomics and lipidomics. <code>MRMhub</code> is intended for both analytical and bioinformatics scientists and to facilitate collaboration between them. It enables the creation of customizable, supervisable, and documented data processing workflows through intuitive high-level R functions and data objects.</p>
-<p><code>MRMhub</code>’s core tools, accessible also to those with limited R experience, allow analysts to annotate, inspect, and process data. This includes importing data and metadata from various file formats, managing and organizing data with integrity checks, performing processing tasks such as quantification, drift/batch correction, and applying QC-based feature filtering. Users can assess data quality using QC metrics and diagnostic plots, and share both raw and processed data along with the entire processing workflow for further analyses and documentation.</p>
-<p><code>MRMhub</code> also serves as a validated software framework for building robust and scalable data processing pipelines.</p>
+<p><strong>MRMhub-QUANT</strong> is the post-processing module of <a href="https://slinghub.github.io/MRMhub/" class="external-link">MRMhub</a>, distributed as the R package <code>mrmhub</code> (<code><a href="https://github.com/SLINGhub/MRMhub" class="external-link">library(mrmhub)</a></code>). It covers the full workflow from feature intensities to curated, QC-filtered concentrations, and works with any intensity data — such as from <a href="https://slinghub.github.io/MRMhub/" class="external-link">MRMhub</a>, Skyline, Agilent MassHunter, and generic CSV files. MRMhub-QUANT features:</p>
+<ul>
+<li>
+<strong>Reproducible pipelines.</strong> Create reproducible computational pipelines with QC vizualizations. Script, re-run, and share it.</li>
+<li>
+<strong>Flexible workflows.</strong> Metabolomics and lipidomics data post-processing using dedicated customizable functions.</li>
+<li>
+<strong>A single data object.</strong> Data, metadata, and processing details are stored in single sharable data object (<code>MRMhubExperiment</code>).</li>
+</ul>
+<div style="text-align: center; margin: 1.5em 0 0.5em;">
+<svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 840 130" style="max-width: 840px; width: 100%; height: auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;"><style>
+    .wf-box { rx: 8; ry: 8; stroke-width: 1.5; cursor: pointer; transition: opacity 0.2s; }
+    .wf-box:hover { opacity: 0.85; }
+    .wf-label { font-size: 12px; font-weight: 600; fill: #1a1a1a; pointer-events: none; text-decoration: underline; text-underline-offset: 2px; }
+    .wf-arrow { fill: #2C3E50; }
+    .wf-box-dashed { fill: transparent; stroke-dasharray: 4,3; }
+    .wf-box-dashed:hover { fill: rgba(91,143,168,0.08); }
+    .wf-detail { font-size: 9.5px; fill: #555; pointer-events: none; }
+  </style>
+<a href="articles/manual-05a-which-importer.html"><rect class="wf-box wf-box-dashed" x="35" y="10" width="110" height="70" stroke="#5B8FA8"></rect><text class="wf-label" x="90" y="50" text-anchor="middle">Data Import</text></a> <text class="wf-detail" x="90" y="98" text-anchor="middle">MRMhub-INTEGRATOR</text><text class="wf-detail" x="90" y="112" text-anchor="middle">Other formats</text><polygon class="wf-arrow" points="148,38 148,52 164,45"></polygon><a href="articles/manual-06-metadata-import.html"><rect class="wf-box" x="167" y="10" width="110" height="70" fill="#f5e0c8" stroke="#D4914E"></rect><text class="wf-label" x="222" y="50" text-anchor="middle">Metadata</text></a> <text class="wf-detail" x="222" y="98" text-anchor="middle">import CSV/XLS</text><text class="wf-detail" x="222" y="112" text-anchor="middle">Integrity validation</text><polygon class="wf-arrow" points="280,38 280,52 296,45"></polygon><a href="articles/recipe-01-ext-calibration-qc.html"><rect class="wf-box" x="299" y="10" width="110" height="70" fill="#d8e6d4" stroke="#6B9E5E"></rect><text class="wf-label" x="354" y="42" text-anchor="middle"><tspan x="354" dy="0">Normalize /</tspan><tspan x="354" dy="16">Quantify</tspan></text></a> <text class="wf-detail" x="354" y="98" text-anchor="middle">ISTD</text><text class="wf-detail" x="354" y="112" text-anchor="middle">Calibration curve</text><polygon class="wf-arrow" points="412,38 412,52 428,45"></polygon><a href="articles/manual-07-drift-batch-correction.html"><rect class="wf-box" x="431" y="10" width="110" height="70" fill="#ecd2d2" stroke="#C27171"></rect><text class="wf-label" x="486" y="50" text-anchor="middle">Corrections</text></a> <text class="wf-detail" x="486" y="98" text-anchor="middle">Drift</text><text class="wf-detail" x="486" y="112" text-anchor="middle">Batch</text><polygon class="wf-arrow" points="544,38 544,52 560,45"></polygon><a href="articles/tutorial-09-pca-exploration.html"><rect class="wf-box" x="563" y="10" width="110" height="70" fill="#d6e4eb" stroke="#5B8FA8"></rect><text class="wf-label" x="618" y="50" text-anchor="middle">QC</text></a> <text class="wf-detail" x="618" y="98" text-anchor="middle">Metrics</text><text class="wf-detail" x="618" y="112" text-anchor="middle">Plots</text><polygon class="wf-arrow" points="676,38 676,52 692,45"></polygon><a href="articles/recipe-02-custom-qc-report.html"><rect class="wf-box" x="695" y="10" width="110" height="70" fill="#c8cfd6" stroke="#2C3E50"></rect><text class="wf-label" x="750" y="50" text-anchor="middle">Reporting</text></a> <text class="wf-detail" x="750" y="98" text-anchor="middle">Plain tables</text><text class="wf-detail" x="750" y="112" text-anchor="middle">QC reports</text></svg>
 </div>
-<div class="section level1">
-<h1 id="getting-started">Getting Started<a class="anchor" aria-label="anchor" href="#getting-started"></a>
-</h1>
-<p>Please visit the <a href="https://slinghub.github.io/mrmhub/articles/00_get_started.html">Getting Started</a> page for tutorials and documentation on <code>MRMhub</code>.</p>
+<div class="section level2">
+<h2 id="quick-start-and-demos">Quick Start and Demos<a class="anchor" aria-label="anchor" href="#quick-start-and-demos"></a>
+</h2>
+<ul>
+<li>
+<strong><a href="articles/manual-00-get-started.html">Installation</a></strong> — install and verify your setup</li>
+<li>
+<strong><a href="articles/tutorial-03-lipidomics-workflow.html">Example</a></strong> - Targeted Lipidomics Data Processing</li>
+<li>
+<strong><a href="articles/recipe-01-ext-calibration-qc.html">Example</a></strong> - Quantitative Assay with Ext. Calibration</li>
+<li>
+<strong><a href="articles/tutorial-00-first-analysis.html">Quick Start</a></strong> - 5 minute run on bundled data</li>
+<li>
+<strong><a href="articles/manual-05a-which-importer.html">Prepare your data</a></strong> - file formats and importers</li>
+</ul>
 </div>
-<div class="section level1">
-<h1 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
-</h1>
-<p>To install, or to update, MRMhub, run the following code in the R console:</p>
+<div class="section level2">
+<h2 id="installation-and-updating">Installation and Updating<a class="anchor" aria-label="anchor" href="#installation-and-updating"></a>
+</h2>
+<p>Make sure to use a fresh R session without loaded packages (quit RStudio/Positron first to avoid locked packages):</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://remotes.r-lib.org" class="external-link">"remotes"</a></span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"SLINGhub/mrmhub"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://pak.r-lib.org/" class="external-link">"pak"</a></span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"pak"</span><span class="op">)</span></span>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"SLINGhub/MRMhub"</span><span class="op">)</span></span></code></pre></div>
+<p>For more details and troubleshooting see <a href="articles/manual-00-get-started.html">Installation</a> and <a href="articles/manual-09-troubleshooting.html">Installation Troubleshooting &amp; FAQ</a>.</p>
 </div>
-<div class="section level1">
-<h1 id="example-workflow">Example Workflow<a class="anchor" aria-label="anchor" href="#example-workflow"></a>
-</h1>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Path of example files included with this package</span></span>
-<span><span class="va">dir_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>,  package <span class="op">=</span> <span class="st">"mrmhub"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Create a MRMhubExperiment object</span></span>
-<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/MRMhubExperiment.html">MRMhubExperiment</a></span><span class="op">(</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Load data and metadata</span></span>
-<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/import_data_mrmhub.html">import_data_mrmhub</a></span><span class="op">(</span><span class="va">mexp</span>,</span>
-<span>                           path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">dir_path</span>, <span class="st">"MRMhub_demo.tsv"</span><span class="op">)</span>,</span>
-<span>                           import_metadata <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/import_metadata_analyses.html">import_metadata_analyses</a></span><span class="op">(</span><span class="va">mexp</span>, </span>
-<span>                                 path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">dir_path</span>, <span class="st">"MRMhub_AnalysesAnnot.csv"</span><span class="op">)</span>, </span>
-<span>                                 ignore_warnings <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
-<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/import_metadata_istds.html">import_metadata_istds</a></span><span class="op">(</span><span class="va">mexp</span>, </span>
-<span>                              path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">dir_path</span>, <span class="st">"MRMhub_ISTDconc.csv"</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Normalize and quantitate features by internal standards</span></span>
-<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/normalize_by_istd.html">normalize_by_istd</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span></span>
-<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/quantify_by_istd.html">quantify_by_istd</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Drift and batch-effect correction</span></span>
-<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/correct_drift_cubicspline.html">correct_drift_cubicspline</a></span><span class="op">(</span><span class="va">mexp</span>, variable <span class="op">=</span> <span class="st">"conc"</span>, ref_qc_types <span class="op">=</span> <span class="st">"BQC"</span><span class="op">)</span></span>
-<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/correct_batch_centering.html">correct_batch_centering</a></span><span class="op">(</span><span class="va">mexp</span>, variable <span class="op">=</span> <span class="st">"conc"</span>, ref_qc_types <span class="op">=</span> <span class="st">"BQC"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Plot analysis time-trends of final concentrations of each feature </span></span>
-<span><span class="fu"><a href="reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span><span class="va">mexp</span>,</span>
-<span>                variable <span class="op">=</span> <span class="st">"conc"</span>,</span>
-<span>                qc_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BQC"</span>, <span class="st">"TQC"</span>, <span class="st">"SPL"</span>, <span class="st">"PBLK"</span>, <span class="st">"SBLK"</span><span class="op">)</span>,</span>
-<span>                cap_outliers <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>                output_pdf <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>                path <span class="op">=</span> <span class="st">"./output/runscatter_istd.pdf"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Set features QC-filter criteria   </span></span>
-<span> <span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/filter_features_qc.html">filter_features_qc</a></span><span class="op">(</span><span class="va">mexp</span>,</span>
-<span>                            max.cv.conc.bqc <span class="op">=</span> <span class="fl">25</span>,</span>
-<span>                            min.signalblank.median.spl.pblk <span class="op">=</span> <span class="fl">3</span>,</span>
-<span>                            include_qualifier <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>                            include_istd <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span> </span>
-<span><span class="co"># Save concentration data</span></span>
-<span> <span class="fu"><a href="reference/save_dataset_csv.html">save_dataset_csv</a></span><span class="op">(</span> <span class="va">mexp</span>, </span>
-<span>                   path <span class="op">=</span> <span class="st">"mydata.csv"</span>, </span>
-<span>                   variable <span class="op">=</span> <span class="st">"conc"</span>, </span>
-<span>                   filter_data <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<div class="section level2">
+<h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
+</h2>
+<p>Questions, bug reports, feature requests, and suggestions are welcome via <a href="https://github.com/SLINGhub/MRMhub/issues" class="external-link">GitHub issues</a>. The project is released with a <a href="https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html" class="external-link">Contributor Code of Conduct</a>.</p>
 </div>
-<div class="section level1">
-<h1 id="contributor-code-of-conduct">Contributor Code of Conduct<a class="anchor" aria-label="anchor" href="#contributor-code-of-conduct"></a>
-</h1>
-<p>Please note that the mrmhub project is released with a <a href="https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html" class="external-link">Contributor Code of Conduct</a>. By contributing to this project, you agree to abide by its terms.</p>
+<div class="section level2">
+<h2 id="dual-licensing">Dual licensing<a class="anchor" aria-label="anchor" href="#dual-licensing"></a>
+</h2>
+<p>The source code is dual-licensed: <a href="https://www.gnu.org/licenses/agpl-3.0.en.html" class="external-link">GNU AGPLv3</a> for non-commercial use, or commercial licensing — contact Jonathan Tan (<a href="mailto:jonathan_tan@nus.edu.sg" class="email">jonathan_tan@nus.edu.sg</a>).</p>
 </div>
-
+</div>
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/SLINGhub/mrmhub/" class="external-link">Browse source code</a></li>
-<li><a href="https://github.com/SLINGhub/mrmhub/issues" class="external-link">Report a bug</a></li>
+<li><a href="https://github.com/SLINGhub/MRMhub/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/SLINGhub/MRMhub/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
 
@@ -207,6 +211,8 @@
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
 <li>Bo Burla <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-5918-3249" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
+<li>Guo Shou Teo <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0003-3891-1494" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
+<li>Hyungwon Choi <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-6687-3088" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
 </ul>
 </div>
 
@@ -214,8 +220,9 @@
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
 <li><a href="https://lifecycle.r-lib.org/articles/stages.html" class="external-link"><img src="https://img.shields.io/badge/lifecycle-stable-brightgreen.svg" alt="Lifecycle: stable"></a></li>
-<li><a href="https://github.com/SLINGhub/mrmhub/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/SLINGhub/mrmhub/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
-<li><a href="https://app.codecov.io/gh/slinghub/mrmhub?branch=main" class="external-link"><img src="https://codecov.io/gh/slinghub/mrmhub/branch/main/graph/badge.svg" alt="Codecov test coverage"></a></li>
+<li><a href="https://github.com/SLINGhub/MRMhub/actions/workflows/R-CMD-check.yml" class="external-link"><img src="https://github.com/SLINGhub/MRMhub/actions/workflows/R-CMD-check.yml/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://app.codecov.io/gh/SLINGhub/MRMhub" class="external-link"><img src="https://codecov.io/gh/SLINGhub/MRMhub/graph/badge.svg" alt="Codecov test coverage"></a></li>
+<li><a href="https://www.gnu.org/licenses/gpl-3.0" class="external-link"><img src="https://img.shields.io/badge/License-GPLv3-blue.svg" alt="License: GPL v3"></a></li>
 </ul>
 </div>
 
@@ -224,11 +231,11 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Bo Burla.</p>
+  <p>Developed by Bo Burla, Guo Shou Teo, Hyungwon Choi.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

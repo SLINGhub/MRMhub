@@ -1,0 +1,34 @@
+project:
+  type: website
+  output-dir: _site
+
+website:
+  title: "MRMhub"
+  navbar:
+    left:
+      - text: Home
+        href: index.qmd
+      - text: "INTEGRATOR"
+        menu:
+          - text: Manual
+            href: integrator-manual.qmd
+          - text: Input files
+            href: integrator-manual.qmd#input-files
+          - text: Running INTEGRATOR
+            href: integrator-manual.qmd#running-mrmhub-integrator
+          - text: MRMhub-viz
+            href: integrator-manual.qmd#mrmhub-viz-integration-vizualizer
+          - text: Vendor → mzML (msconvert)
+            href: msconvert.qmd
+      - text: "QUANT (R package) ↗"
+        href: https://slinghub.github.io/MRMhub/quant/
+    right:
+      - icon: github
+        href: https://github.com/SLINGhub/MRMhub
+        aria-label: GitHub
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true

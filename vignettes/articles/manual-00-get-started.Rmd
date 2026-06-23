@@ -1,0 +1,72 @@
+---
+title: "Installation"
+output:
+  rmarkdown::html_vignette:
+    fig_width: 6
+    fig_height: 2
+description: |
+  Install mrmhub, verify your setup, and fix common install errors.
+vignette: >
+  %\VignetteIndexEntry{Installation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r, include = FALSE, echo = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, results = FALSE, message = FALSE, comment = "#>", out.width = "100%")
+set.seed(1041)
+options(dplyr.print_max = 10)
+```
+
+## Requirements
+
+- **R ≥ 4.2** — install from [CRAN](https://cran.r-project.org)
+- **An IDE** — [Positron](https://positron.posit.co), [RStudio](https://posit.co/download/rstudio-desktop/), or [VS Code](https://code.visualstudio.com)
+
+## Installation
+
+<div class="callout callout-tip">
+<strong>Tip.</strong> Quit and reopen your IDE first — most install failures come from packages already loaded in memory.
+</div>
+
+In a fresh R session:
+
+```{r, eval=FALSE}
+if (!require("pak")) install.packages("pak")
+pak::pak("SLINGhub/mrmhub")
+```
+
+The same command works on Windows, macOS, and Linux. `pak` pulls prebuilt binaries where available, so compilation tools are usually not needed. If `pak` is unavailable, use `remotes::install_github("SLINGhub/mrmhub")`.
+
+## Verify Your Setup
+
+```{r, eval=FALSE}
+library(mrmhub)
+check_setup()
+```
+
+This checks your R version and dependencies and reports exactly what's missing if anything fails.
+
+## Troubleshooting Common Errors
+
+| Error | Cause | Fix |
+|-------|-------|-----|
+| `namespace 'rlang' is already loaded` | An old dependency is still loaded in the session | Restart R (`Ctrl+Shift+F10`) and retry the install |
+| `cannot open URL` | Firewall or proxy blocking GitHub | `options(download.file.method = "libcurl")`, or clone the repo and use `remotes::install_local("path/to/MRMhub")` |
+| `package 'X' was installed under R version …` | Package built for a different R | `install.packages("X")` to rebuild it for your R |
+| `there is no package called 'mrmhub'` | Install did not finish | Scroll up for the real error, then retry the install |
+| `ERROR: Rtools is required` (Windows) | A source-only dependency needs compilation | Install [Rtools](https://cran.r-project.org/bin/windows/Rtools/) matching your R version, restart R, retry |
+| `clang: error: ...` (macOS) | Compiler tools missing | Run `xcode-select --install` in Terminal, retry |
+| `cannot find -lcurl` (Linux) | System libraries missing | `sudo apt install libcurl4-openssl-dev libxml2-dev libssl-dev libfontconfig1-dev` |
+
+The longer list — proxies, mixed R installations on macOS, INTEGRATOR security warnings — lives in [Troubleshooting & FAQ](manual-09-troubleshooting.html).
+
+
+## Support
+
+File issues or questions on [GitHub](https://github.com/SLINGhub/MRMhub/issues), or contact the authors directly.
+
+

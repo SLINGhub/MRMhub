@@ -1,0 +1,234 @@
+---
+title: "Tutorial: Multi-Batch Study"
+output: 
+  rmarkdown::html_vignette:
+    fig_width: 7
+    fig_height: 4
+description: |
+  End-to-end workflow for a realistic multi-batch targeted metabolomics study 
+  with drift correction, batch correction, QC monitoring, and final merge.
+vignette: >
+  %\VignetteIndexEntry{Tutorial: Multi-Batch Study}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", eval = FALSE)
+```
+
+<div class="alert alert-info" role="alert">
+<strong>Time:</strong> ~15 minutes &nbsp;|&nbsp;
+<strong>Level:</strong> Intermediate &nbsp;|&nbsp;
+<strong>Prerequisites:</strong> <a href="tutorial-00-first-analysis.html">First Analysis</a> completed
+</div>
+
+## Overview
+
+Most real-world targeted MS studies span multiple analytical batches. This
+tutorial walks through the complete workflow for a 3-batch lipidomics study:
+
+1. Import data from all batches
+2. Assign analysis order and batch labels
+3. Drift correction within each batch
+4. Batch correction across batches
+5. ISTD normalization and quantification
+6. QC assessment and feature filtering
+7. Export final results
+
+## Scenario
+
+- **3 batches**, each with ~80 samples
+- **QC pool** injected every 10 samples within each batch
+- **15 lipid features** measured via MRM
+- Same QC pool used across all batches
+
+## Step 1: Import and Combine Data
+
+```{r}
+library(mrmhub)
+library(dplyr)
+
+# Import the combined long CSV (all batches in one file)
+mexp <- import_data_csv_long(
+  file = "data/study_all_batches.csv",
+  analysis_type = "lipidomics"
+)
+
+# Check dimensions
+get_analysis_count(mexp)
+get_feature_count(mexp)
+```
+
+## Step 2: Link Metadata
+
+The analysis annotation must include `batch_id` and `analysis_order` columns:
+
+```{r}
+annot <- readr::read_csv("data/annotation_analyses.csv")
+feat  <- readr::read_csv("data/annotation_features.csv")
+istds <- readr::read_csv("data/annotation_istds.csv")
+
+mexp <- add_metadata(mexp,
+                     annot_analyses = annot,
+                     annot_features = feat)
+mexp@annot_istds <- istds
+```
+
+<details>
+<summary><strong>Expected annotation structure</strong></summary>
+
+```
+| analysis_id | sample_type | batch_id | analysis_order |
+|-------------|-------------|----------|----------------|
+| Sample_001  | SST         | Batch_1  | 1              |
+| QC_001      | QC          | Batch_1  | 2              |
+| Sample_002  | SST         | Batch_1  | 3              |
+```
+
+See [Sample Types](manual-00-sample-types.html) for valid `sample_type` labels.
+
+</details>
+
+## Step 3: Set Analysis Order
+
+```{r}
+mexp <- set_analysis_order(mexp)
+
+# Verify batch structure
+get_batch_boundaries(mexp)
+```
+
+## Step 4: Drift Correction (Within-Batch)
+
+Drift correction models the signal trend using QC samples and removes
+systematic within-batch drift.
+
+```{r}
+# Visualise drift in a representative feature
+plot_runscatter(mexp, feature = "LPC_18:1", highlight_qc = TRUE)
+
+# Apply loess drift correction
+mexp <- correct_drift_loess(mexp)
+```
+
+<details>
+<summary><strong>Before vs After comparison</strong></summary>
+
+After correction, QC samples should show a flat trend:
+
+```{r}
+plot_runscatter(mexp, feature = "LPC_18:1", highlight_qc = TRUE)
+```
+
+If QCs are still trending, consider:
+
+- Increasing loess span (`span = 0.75`)
+- Using GAM: `correct_drift_gam(mexp)`
+- Checking if you have enough QC points (≥ 5 per batch)
+
+</details>
+
+## Step 5: Batch Correction (Between-Batch)
+
+Batch centering aligns the median QC intensity across batches.
+
+```{r}
+mexp <- correct_batch_centering(mexp)
+```
+
+<details>
+<summary><strong>Validation: QC medians per batch</strong></summary>
+
+```{r}
+# QC medians per batch should now be approximately equal
+get_analyticaldata(mexp) |>
+  filter(sample_type == "QC") |>
+  group_by(batch_id, feature_id) |>
+  summarise(median_area = median(area, na.rm = TRUE), .groups = "drop") |>
+  tidyr::pivot_wider(names_from = batch_id, values_from = median_area)
+```
+
+</details>
+
+## Step 6: ISTD Normalization and Quantification
+
+```{r}
+mexp <- normalize_by_istd(mexp)
+mexp <- quantify_by_istd(mexp)
+```
+
+## Step 7: QC Assessment
+
+```{r}
+mexp <- calc_qc_metrics(mexp)
+
+# View metrics sorted by worst CV
+mexp@metrics_qc |>
+  select(feature_id, cv_percent, bias_percent, n_detected) |>
+  arrange(desc(cv_percent))
+```
+
+| CV Range | Interpretation |
+|----------|---------------|
+| < 15% | Excellent reproducibility |
+| 15–30% | Acceptable for most applications |
+| > 30% | Consider excluding or investigating |
+
+## Step 8: Feature Filtering
+
+```{r}
+mexp <- filter_features_qc(mexp, max_cv = 30, min_detected_ratio = 0.67)
+
+# How many features remain?
+get_feature_count(mexp)
+
+# Which were excluded?
+mexp@features_excluded
+```
+
+## Step 9: Export Final Results
+
+```{r}
+# Export for downstream analysis
+save_dataset_csv(mexp, file = "results/quantified_filtered.csv")
+
+# Save the full object for reproducibility
+saveRDS(mexp, "results/mexp_processed.rds", compress = TRUE)
+```
+
+## Complete Pipeline Summary
+
+```{r}
+# Full pipeline in one block:
+mexp <- import_data_csv_long("data/study_all_batches.csv",
+                             analysis_type = "lipidomics")
+mexp <- add_metadata(mexp, annot_analyses = annot, annot_features = feat)
+mexp@annot_istds <- istds
+mexp <- set_analysis_order(mexp)
+mexp <- correct_drift_loess(mexp)
+mexp <- correct_batch_centering(mexp)
+mexp <- normalize_by_istd(mexp)
+mexp <- quantify_by_istd(mexp)
+mexp <- calc_qc_metrics(mexp)
+mexp <- filter_features_qc(mexp, max_cv = 30, min_detected_ratio = 0.67)
+```
+
+## Tips for Multi-Batch Studies
+
+<div class="alert alert-warning" role="alert">
+<ol>
+<li><strong>Always use the same QC pool</strong> across batches — batch correction assumes this</li>
+<li><strong>Inject QCs regularly</strong> (every 8–12 samples) for reliable drift estimation</li>
+<li><strong>Check QC trends visually</strong> before applying correction — not all features drift</li>
+<li><strong>Process all batches together</strong> — QUANT handles batch boundaries internally</li>
+<li><strong>Save intermediate objects</strong> with <code>saveRDS()</code> at key steps</li>
+</ol>
+</div>
+
+## Next Steps
+
+- [Drift Correction](tutorial-04-drift-correction.html) — detailed drift correction options
+- [Batch Correction](tutorial-06-batch-correction.html) — alternatives to centering
+- [External Calibration and QC](recipe-01-ext-calibration-qc.html) — absolute quantification
+- [Troubleshooting](manual-09-troubleshooting.html) — common errors and fixes

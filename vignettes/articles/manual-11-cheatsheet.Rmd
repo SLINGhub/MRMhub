@@ -1,0 +1,75 @@
+---
+title: "Function Cheatsheet"
+output:
+  rmarkdown::html_vignette:
+    fig_width: 6
+    fig_height: 2
+description: |
+  The 12 functions used in a typical MRMhub workflow, in order, with
+  one-line descriptions and links to the full reference.
+vignette: >
+  %\VignetteIndexEntry{Function Cheatsheet}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+editor_options:
+  markdown:
+    wrap: 100
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", eval = FALSE)
+```
+
+The `mrmhub` package exposes more than two hundred functions across import, processing, plotting,
+and reporting. A typical end-to-end workflow uses fewer than fifteen of them, in roughly this
+order. Use this page as a quick reminder of which function does what; click any function name for
+the full reference.
+
+## Workflow order
+
+| Stage | Function | Purpose |
+|---|---|---|
+| Import | [`import_data_mrmhub()`](../reference/import_data_mrmhub.html) / [`import_data_masshunter()`](../reference/import_data_masshunter.html) / [`import_data_skyline()`](../reference/import_data_skyline.html) | Read integrated peak data |
+| Metadata | [`import_metadata_msorganiser()`](../reference/import_metadata_msorganiser.html) / [`add_metadata()`](../reference/add_metadata.html) | Link analysis / feature / ISTD annotation |
+| Setup | [`set_analysis_order()`](../reference/set_analysis_order.html) | Set acquisition order |
+| Normalisation | [`normalize_by_istd()`](../reference/normalize_by_istd.html) | Per-feature ISTD normalisation |
+| Drift correction | [`correct_drift_loess()`](../reference/correct_drift_loess.html) / [`correct_drift_gaussiankernel()`](../reference/correct_drift_gaussiankernel.html) | Smooth run-order drift |
+| Batch correction | [`correct_batch_centering()`](../reference/correct_batch_centering.html) | Align medians across batches |
+| Quantitation | [`quantify_by_istd()`](../reference/quantify_by_istd.html) / [`quantify_by_calibration()`](../reference/quantify_by_calibration.html) | Concentration values |
+| QC metrics | [`calc_qc_metrics()`](../reference/calc_qc_metrics.html) | Per-feature CV, bias, etc. |
+| Filtering | [`filter_features_qc()`](../reference/filter_features_qc.html) | Pass/fail features against thresholds |
+| Reporting | [`save_report_xlsx()`](../reference/save_report_xlsx.html) / [`save_dataset_csv()`](../reference/save_dataset_csv.html) | Export final dataset |
+
+## Visualisation at each stage
+
+Plotting functions follow the same workflow logic — see
+[Visualisation Functions](manual-08-visualization.html) for the grouped reference, or
+[The MRMhub Workflow](tutorial-02-basic-workflow.html) for a walked-through example.
+
+## Reading the function names
+
+A naming convention runs through the public API. Once internalised, function names mostly
+predict themselves:
+
+- `import_data_*()` — read raw integrated peak data from a given source
+- `import_metadata_*()` — read an annotation table from a given source
+- `set_*()` — assign a slot on the experiment
+- `add_metadata()` — attach annotation
+- `normalize_by_*()` — divide one variable by another (e.g. by ISTD)
+- `correct_drift_*()` / `correct_batch_*()` — apply a named correction model
+- `quantify_by_*()` — compute concentration values via a given strategy
+- `calc_*()` — compute per-feature or per-analysis metrics
+- `filter_*()` — apply pass/fail thresholds
+- `plot_*()` — return a ggplot2 object
+- `save_*()` — write to disk
+- `get_*()` — read a derived value from the experiment
+
+See [Key Concepts & Glossary](manual-00-key-concepts.html) for the vocabulary
+(`MRMhubExperiment`, `analysis_id`, `feature_id`, `qc_type`, `ISTD`, ...).
+
+## See Also
+
+- [The MRMhub Workflow](tutorial-02-basic-workflow.html) — these functions in a real script
+- [Key Concepts & Glossary](manual-00-key-concepts.html) — vocabulary used in every function
+- [Visualisation Functions](manual-08-visualization.html) — plotting reference grouped by stage
+- [Full Reference](../reference/index.html) — every function with full parameter detail

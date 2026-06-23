@@ -1,0 +1,61 @@
+---
+title: "MRMhub"
+subtitle: "An open, reproducible pipeline for targeted MRM mass spectrometry"
+---
+
+MRMhub processes targeted MRM mass spectrometry data — from raw vendor files through
+peak integration, quality control, normalisation, drift/batch correction, calibration, and
+quantitative reporting. It consists of **two modules that can be used independently**:
+
+- **[INTEGRATOR](integrator-manual.qmd)** — stand-alone Python application for peak detection,
+  picking, and integration.
+- **[QUANT ↗](https://slinghub.github.io/MRMhub/quant/)** — R package (`mrmhub`) for the
+  post-processing pipeline. Accepts integrated peaks from INTEGRATOR **or** common vendor outputs.
+
+<div style="text-align: center; margin: 1.5em 0 0.5em;">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 90" style="max-width: 940px; width: 100%; height: auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+  <style>
+    .wf-box { rx: 8; ry: 8; stroke-width: 1.5; cursor: pointer; transition: opacity 0.2s; }
+    .wf-box:hover { opacity: 0.85; }
+    .wf-label { font-size: 13px; font-weight: 600; fill: #1a1a1a; pointer-events: none; }
+    .wf-arrow { fill: #666; }
+  </style>
+  <rect class="wf-box" x="0" y="10" width="160" height="70" fill="#e8e8ec" stroke="#2c3e50"/>
+  <text class="wf-label" x="80" y="50" text-anchor="middle">Raw data</text>
+  <polygon class="wf-arrow" points="170,45 180,38 180,52"/>
+  <a href="msconvert.html"><rect class="wf-box" x="190" y="10" width="160" height="70" fill="#f5e0c8" stroke="#c87f3b"/><text class="wf-label" x="270" y="50" text-anchor="middle">msconvert</text></a>
+  <polygon class="wf-arrow" points="360,45 370,38 370,52"/>
+  <a href="integrator-manual.html"><rect class="wf-box" x="380" y="10" width="160" height="70" fill="#d4e8d4" stroke="#5a9a5a"/><text class="wf-label" x="460" y="50" text-anchor="middle">INTEGRATOR</text></a>
+  <polygon class="wf-arrow" points="550,45 560,38 560,52"/>
+  <rect class="wf-box" x="570" y="10" width="160" height="70" fill="#f5f2fa" stroke="#7a6ba4"/>
+  <text class="wf-label" x="650" y="50" text-anchor="middle">long.csv</text>
+  <polygon class="wf-arrow" points="740,45 750,38 750,52"/>
+  <a href="https://slinghub.github.io/MRMhub/quant/"><rect class="wf-box" x="760" y="10" width="180" height="70" fill="#d6e8f0" stroke="#4a90a4"/><text class="wf-label" x="850" y="50" text-anchor="middle">QUANT ↗</text></a>
+</svg>
+</div>
+
+## Choose your path
+
+| If you have... | Use | Start here |
+|---|---|---|
+| Raw vendor files (`.raw`, `.d`, `.wiff`) and need integrated peaks | INTEGRATOR + QUANT | [INTEGRATOR Manual](integrator-manual.qmd) → [QUANT install ↗](https://slinghub.github.io/MRMhub/quant/articles/manual-00-get-started.html) |
+| Integrated peaks already (MassHunter, Skyline, MS-DIAL) | QUANT only | [QUANT install ↗](https://slinghub.github.io/MRMhub/quant/articles/manual-00-get-started.html) |
+| Only peak picking | INTEGRATOR only | [INTEGRATOR Manual](integrator-manual.qmd) |
+
+## Why MRMhub?
+
+- **Reproducible.** Every step is code — parameter files for INTEGRATOR, R scripts for QUANT.
+- **Modular.** Each module replaces or augments existing pipeline components without lock-in.
+- **MRM-specific.** Drift correction, batch correction (Broadhurst 2018), ISTD/calibration
+  quantitation, isotope-interference correction, and the QC vocabulary (BQC, TQC, SBLK, ...)
+  built into one container object.
+
+---
+
+<small>
+**Citation:** Teo et al. (2020). *MRMhub: Automated Data Processing for Large-Scale Targeted
+Metabolomics Analysis.* Anal. Chem. 92, 13677–13682.
+[doi:10.1021/acs.analchem.0c03060](https://doi.org/10.1021/acs.analchem.0c03060) &nbsp;|&nbsp;
+**Source:** [github.com/SLINGhub/MRMhub](https://github.com/SLINGhub/MRMhub) &nbsp;|&nbsp;
+**Example workflows:** [mrmhub-workflows ↗](https://slinghub.github.io/mrmhub-workflows/)
+</small>

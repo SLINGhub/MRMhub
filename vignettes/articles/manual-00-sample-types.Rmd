@@ -1,0 +1,186 @@
+---
+title: "Definitions: Sample Types and QC Roles"
+output: 
+  rmarkdown::html_vignette:
+    fig_width: 6
+    fig_height: 2
+description: |
+  Reference for all sample type labels used in MRMhub and their roles in 
+  quality control and data processing.
+vignette: >
+  %\VignetteIndexEntry{Definitions: Sample Types and QC Roles}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", eval = FALSE)
+```
+
+## Why Sample Types Matter
+
+MRMhub uses the `sample_type` (or `qc_type`) column in your analysis annotation
+to determine which samples are used for:
+
+- **Drift correction** — uses QC samples to model signal drift
+- **Batch correction** — uses QC samples to align batches
+- **QC metrics** — calculates CV, bias from QC replicates
+- **Calibration** — uses CAL samples for quantification curves
+- **Filtering** — excludes blanks and system suitability from final results
+
+<div class="alert alert-danger" role="alert">
+<strong>⚠ Critical:</strong> Assigning the wrong label means MRMhub will use 
+the wrong samples for corrections. Double-check your <code>sample_type</code> 
+column before processing.
+</div>
+
+## Sample Type Reference
+
+### Study Samples
+
+| Label | Full Name | Role |
+|-------|-----------|------|
+| `SST` | Study Sample (Test) | Your actual biological/clinical samples. These are the samples you want to quantify. |
+| `SPL` | Sample | Generic sample label (same as SST in most workflows) |
+
+### Quality Control Samples
+
+| Label | Full Name | Role |
+|-------|-----------|------|
+| `QC` | Pooled Quality Control | Generic QC pool — mix of all study samples. Injected regularly to monitor precision. |
+| `BQC` | Batch Quality Control | QC pool used for batch-level monitoring. Same meaning as QC in most setups. |
+| `TQC` | Technical Quality Control | QC for evaluating technical precision (injected at start/end of batch). |
+| `PQC` | Process Quality Control | Undergoes the full sample preparation. Monitors extraction variability. |
+| `HQC` | High-concentration QC | QC at high concentration level (for calibration range validation). |
+| `MQC` | Mid-concentration QC | QC at mid concentration level. |
+| `LQC` | Low-concentration QC | QC at low concentration level (near LOQ). |
+| `RQC` | Response QC (dilution series) | Serial dilution of QC pool. Assesses linearity/response curves. |
+| `EQC` | External QC | QC material from external provider (e.g., NIST, ring trial). |
+| `EQA` | External Quality Assessment | Samples from proficiency testing / ring trials. |
+| `NIST` | NIST Reference Material | Standard reference material (e.g., NIST SRM 1950). |
+| `LTR` | Long-Term Reference | Aliquots stored long-term; track instrument drift over weeks/months. |
+
+### Blanks
+
+| Label | Full Name | Role |
+|-------|-----------|------|
+| `SBLK` | Solvent Blank | Pure solvent injection. Detects carry-over and contamination. |
+| `TBLK` | Technical Blank | Blank processed through the instrument only (no extraction). |
+| `PBLK` | Process Blank | Blank that goes through full sample preparation. Detects extraction contamination. |
+| `MBLK` | Method Blank | Similar to PBLK; method-level blank control. |
+| `UBLK` | Unknown Blank | Unspecified blank type. |
+
+### Calibration
+
+| Label | Full Name | Role |
+|-------|-----------|------|
+| `CAL` | Calibration Standard | Known concentration for building calibration curves. Multiple levels (CAL1, CAL2, ...) are distinguished by concentration in metadata. |
+
+## Which Samples Are Used Where?
+
+| Processing Step | Uses | Sample Types |
+|----------------|------|--------------|
+| Drift correction (QC-based models) | Signal anchors | QC, BQC |
+| Batch correction (centering) | Cross-batch alignment | QC, BQC |
+| QC metrics (CV, bias) | Precision monitoring | QC, BQC, TQC, PQC, HQC, MQC, LQC |
+| Calibration curves | Quantification | CAL |
+| Excluded from study results | Not reported | All blanks, CAL, RQC |
+
+## Setting Sample Types in Your Annotation
+
+Your analysis annotation CSV must have a column called `sample_type` or `qc_type`:
+
+```
+analysis_id,sample_type,batch_id,analysis_order
+Inj_001,SBLK,Batch_1,1
+Inj_002,QC,Batch_1,2
+Inj_003,SST,Batch_1,3
+Inj_004,SST,Batch_1,4
+...
+Inj_010,QC,Batch_1,10
+Inj_080,QC,Batch_1,80
+Inj_081,SBLK,Batch_1,81
+```
+
+<div class="alert alert-info" role="alert">
+<strong>Rules:</strong>
+<ul>
+<li>Labels are <strong>case-sensitive</strong> — use uppercase exactly as shown</li>
+<li>Every analysis must have a <code>sample_type</code> assigned</li>
+<li>At least 5 QC injections per batch for reliable drift correction</li>
+<li>QC samples should be evenly distributed across the run</li>
+</ul>
+</div>
+
+## Typical Batch Layout
+
+<div style="text-align: center; margin: 1.5em 0;">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 90" style="max-width: 700px; width: 100%; height: auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+  <style>
+    .bl-box { rx: 4; ry: 4; stroke-width: 1.2; }
+    .bl-txt { font-size: 10px; font-weight: 600; fill: #fff; text-anchor: middle; }
+    .bl-ann { font-size: 9px; fill: #555; text-anchor: middle; }
+  </style>
+  <!-- SBLK -->
+  <rect class="bl-box" x="5" y="20" width="50" height="35" fill="#4a90d9" stroke="#2c5f99"/>
+  <text class="bl-txt" x="30" y="42">SBLK</text>
+  <text class="bl-ann" x="30" y="72">blank</text>
+  <!-- TQC -->
+  <rect class="bl-box" x="65" y="20" width="50" height="35" fill="#5a8aaa" stroke="#3a6a8a"/>
+  <text class="bl-txt" x="90" y="42">TQC</text>
+  <text class="bl-ann" x="90" y="72">tech</text>
+  <!-- QC -->
+  <rect class="bl-box" x="125" y="20" width="45" height="35" fill="#cc3333" stroke="#992222"/>
+  <text class="bl-txt" x="147" y="42">QC</text>
+  <text class="bl-ann" x="147" y="72">anchor</text>
+  <!-- SST block -->
+  <rect class="bl-box" x="180" y="20" width="180" height="35" fill="#666" stroke="#444"/>
+  <text class="bl-txt" x="270" y="42">SST  SST  SST  SST  SST  SST</text>
+  <text class="bl-ann" x="270" y="72">study samples</text>
+  <!-- QC mid -->
+  <rect class="bl-box" x="370" y="20" width="45" height="35" fill="#cc3333" stroke="#992222"/>
+  <text class="bl-txt" x="392" y="42">QC</text>
+  <text class="bl-ann" x="392" y="72">anchor</text>
+  <!-- SST block 2 -->
+  <rect class="bl-box" x="425" y="20" width="120" height="35" fill="#666" stroke="#444"/>
+  <text class="bl-txt" x="485" y="42">SST  SST  SST  SST</text>
+  <!-- QC end -->
+  <rect class="bl-box" x="555" y="20" width="45" height="35" fill="#cc3333" stroke="#992222"/>
+  <text class="bl-txt" x="577" y="42">QC</text>
+  <text class="bl-ann" x="577" y="72">anchor</text>
+  <!-- SBLK end -->
+  <rect class="bl-box" x="610" y="20" width="50" height="35" fill="#4a90d9" stroke="#2c5f99"/>
+  <text class="bl-txt" x="635" y="42">SBLK</text>
+  <text class="bl-ann" x="635" y="72">blank</text>
+  <!-- Arrows -->
+  <line x1="55" y1="37" x2="65" y2="37" stroke="#999" stroke-width="1"/>
+  <line x1="115" y1="37" x2="125" y2="37" stroke="#999" stroke-width="1"/>
+  <line x1="170" y1="37" x2="180" y2="37" stroke="#999" stroke-width="1"/>
+  <line x1="360" y1="37" x2="370" y2="37" stroke="#999" stroke-width="1"/>
+  <line x1="415" y1="37" x2="425" y2="37" stroke="#999" stroke-width="1"/>
+  <line x1="545" y1="37" x2="555" y2="37" stroke="#999" stroke-width="1"/>
+  <line x1="600" y1="37" x2="610" y2="37" stroke="#999" stroke-width="1"/>
+</svg>
+</div>
+
+## Colour Coding
+
+MRMhub uses consistent colours for sample types in all plots:
+
+| Type | Colour | <span style="display:inline-block; width:40px; height:14px; vertical-align:middle; border-radius:3px; border:1px solid #ccc;"></span> |
+|------|--------|---|
+| BQC/QC | Red | <span style="display:inline-block; width:40px; height:14px; background:#cc3333; border-radius:3px;"></span> |
+| TQC | Blue | <span style="display:inline-block; width:40px; height:14px; background:#4a90d9; border-radius:3px;"></span> |
+| PQC | Orange | <span style="display:inline-block; width:40px; height:14px; background:#e68a00; border-radius:3px;"></span> |
+| LQC/MQC | Dark orange | <span style="display:inline-block; width:40px; height:14px; background:#cc6600; border-radius:3px;"></span> |
+| HQC | Green | <span style="display:inline-block; width:40px; height:14px; background:#4a9a5a; border-radius:3px;"></span> |
+| SBLK | Blue | <span style="display:inline-block; width:40px; height:14px; background:#4a90d9; border-radius:3px;"></span> |
+| TBLK | Red | <span style="display:inline-block; width:40px; height:14px; background:#cc3333; border-radius:3px;"></span> |
+| SST/SPL | Grey | <span style="display:inline-block; width:40px; height:14px; background:#666; border-radius:3px;"></span> |
+| CAL | Purple | <span style="display:inline-block; width:40px; height:14px; background:#8a5aaa; border-radius:3px;"></span> |
+
+## Next Steps
+
+- [Key Concepts and Glossary](manual-00-key-concepts.html) — broader terminology
+- [Data Import](manual-05-data-import.html) — preparing your annotation files
+- [Multi-Batch Tutorial](tutorial-08-multi-batch.html) — see sample types in action

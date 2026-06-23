@@ -1,0 +1,176 @@
+---
+title: "Metadata table structures"
+output:
+  rmarkdown::html_vignette:
+    fig_width: 6
+    fig_height: 2
+description: |
+  Reference for the columns of each MRMhub metadata table and what they are used for.
+vignette: >
+  %\VignetteIndexEntry{Metadata table structures}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+editor_options:
+  markdown:
+    wrap: 72
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  collapse = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  comment = "#>"
+)
+
+# First rows of a bundled example CSV.
+show_csv <- function(file, n = 4) {
+  path <- system.file("extdata", file, package = "mrmhub")
+  df <- readr::read_csv(path, n_max = n, show_col_types = FALSE, name_repair = "minimal")
+  knitr::kable(df, caption = sprintf("Example file `%s`", file))
+}
+
+# Column headers of a sheet in the blank metadata template workbook.
+show_template <- function(sheet) {
+  path <- system.file("extdata", "mrmhub_metadata_templates.xlsx", package = "mrmhub")
+  df <- openxlsx2::read_xlsx(path, sheet = sheet)
+  knitr::kable(df, caption = sprintf("Template sheet `%s` (column headers)", sheet))
+}
+```
+
+You prepare the metadata tables yourself, so this page documents **every column and what it is
+for**. Each importer accepts the same three input modes — a **CSV file** (`path =`), a **sheet in
+an Excel workbook** (`path =` + `sheet =`), or an in-memory **`data.frame`** (`table =`).
+
+<div class="callout callout-getstarted">
+
+**Get blank templates for all these tables.** Save a ready-made workbook, fill it in, and load it back.
+
+```{r, eval = FALSE, echo = TRUE}
+save_metadata_templates()              # Individual metadata tables (XLSX)
+save_metadata_msorganiser_template()   # msorganizer metadata template (XLSX)
+```
+
+</div>
+
+Identifier columns must line up across tables: `analysis_id` / `sample_id` match the analysis
+metadata and the data; `analyte_id` links features to QC concentrations; `istd_feature_id` and
+`feature_id` reference the feature metadata.
+
+## Analyses (samples) {#str-analyses}
+
+One row per analysis (injection). Import with
+[`import_metadata_analyses()`](../reference/import_metadata_analyses.html).
+
+```{r}
+show_csv("MHQuant_demo_metadata_analyses.csv")
+```
+
+| Column | Required | Description |
+|---|---|---|
+| `analysis_id` | Yes | Unique identifier of each analysis/injection; must match the imported data. |
+| `qc_type` | Yes | Sample / QC role (e.g. `SPL`, `TQC`, `BQC`, `SBLK`, `PBLK`, `RQC`) that drives the QC logic. |
+| `sample_id` | Optional | Sample identifier; groups replicate injections of the same sample. |
+| `batch_id` | Optional | Batch identifier (defaults to `1`). |
+| `sample_amount` | Optional | Amount of sample used. |
+| `sample_amount_unit` | Optional | Unit of `sample_amount` (e.g. `uL`, `mg`). |
+| `istd_volume` | Optional | Volume of internal-standard mixture added. |
+| `valid_analysis` | Optional | Whether to include the analysis (default `TRUE`). |
+
+Also recognised (optional): `analysis_order`, `replicate_no`, `specimen`, `remarks`.
+
+## Features (analytes) {#str-features}
+
+One row per feature/compound. Import with
+[`import_metadata_features()`](../reference/import_metadata_features.html).
+
+```{r}
+show_template("Features")
+```
+
+| Column | Required | Description |
+|---|---|---|
+| `feature_id` | Yes | Unique feature/compound identifier; must match the imported data. |
+| `istd_feature_id` | Optional | `feature_id` of the internal standard used to normalise this feature. |
+| `feature_class` | Optional | Lipid / chemical class or group. |
+| `analyte_id` | Optional | Standardised analyte identifier (links to QC concentrations). |
+| `chem_formula` | Optional | Chemical formula (for molecular-weight / isotope calculations). |
+| `molecular_weight` | Optional | Molecular weight (Da). |
+| `feature_label` | Optional | Display name used to rename the feature. |
+| `response_factor` | Optional | Response correction factor (default `1`). |
+| `is_quantifier` | Optional | Whether this is the quantifier transition (default `TRUE`). |
+| `valid_integration` | Optional | Whether the feature should be kept (default `TRUE`). |
+| `interference_feature_id` | Optional | `feature_id` of an interfering feature to subtract. |
+| `interference_proportion` | Optional | Fraction (0–1) of the interfering signal that contributes. |
+| `remarks` | Optional | Free-text comment. |
+
+## Internal standards (ISTDs) {#str-istds}
+
+One row per internal standard. Import with
+[`import_metadata_istds()`](../reference/import_metadata_istds.html).
+
+```{r}
+show_csv("MRMhub_ISTDconc.csv")
+```
+
+| Column | Required | Description |
+|---|---|---|
+| `istd_feature_id` | Yes | `feature_id` of the internal standard. |
+| `istd_conc_nmolar` | Yes\* | ISTD concentration in nM. |
+| `istd_conc_ngml` | Yes\* | ISTD concentration in ng/mL. |
+| `remarks` | Optional | Free-text comment. |
+
+\* Provide **one** of `istd_conc_nmolar` or `istd_conc_ngml`.
+
+## Response curves {#str-responsecurves}
+
+Maps response-curve injections to the amount analysed. Import with
+[`import_metadata_responsecurves()`](../reference/import_metadata_responsecurves.html).
+
+```{r}
+show_template("ResponseCurves")
+```
+
+| Column | Required | Description |
+|---|---|---|
+| `analysis_id` | Yes | Analysis identifier of a response-curve injection; must match the data. |
+| `curve_id` | Yes | Identifier grouping injections into one response curve. |
+| `analyzed_amount` | Yes | Relative amount injected (e.g. dilution level or % of sample). |
+| `analyzed_amount_unit` | Yes | Unit of `analyzed_amount` (e.g. `%`). |
+
+## Calibration / QC concentrations {#str-qcconcentrations}
+
+Known analyte concentrations in calibration / QC samples. Import with
+[`import_metadata_qcconcentrations()`](../reference/import_metadata_qcconcentrations.html).
+
+```{r}
+show_template("QCconcentrations")
+```
+
+| Column | Required | Description |
+|---|---|---|
+| `sample_id` | Yes | QC sample identifier; must match `sample_id` in the analyses metadata. |
+| `analyte_id` | Yes | Analyte identifier; must match `analyte_id` in the feature metadata. |
+| `concentration` | Yes | Known/expected concentration of the analyte in that sample. |
+| `concentration_unit` | Yes | Unit (e.g. `nmol/L`, `ng/mL`). |
+| `include_in_analysis` | Optional | Whether to use this value (`yes`/`no`/`true`/`false`; default `TRUE`). |
+
+## All tables at once — MSOrganiser template {#str-msorganiser}
+
+The MSOrganiser workbook (`.xlsx`) bundles every table above as a sheet, so you can fill
+in all metadata in one file and load it with
+[`import_metadata_msorganiser()`](../reference/import_metadata_msorganiser.html). Get a blank copy
+with `save_metadata_msorganiser_template()`.
+
+Sheets: **Analyses (Samples)**, **Features (Analytes)**, **Internal Standards**,
+**Response Curves**, **QC Concentrations**. The workbook uses Title-Case headers (e.g.
+`Raw_Data_Filename`, `Sample_Type`, `ISTD_Feature_Name`) that are mapped to the snake_case columns
+documented above on import. See [Metadata Import](manual-06-metadata-import.html) for the full
+mapping and validation rules.
+
+## Next Steps
+
+- [Import and prepare data files](manual-05a-which-importer.html) — the importer decision table
+- [Data file structures](manual-05b-data-file-structures.html) — peak-table file layouts
+- [Metadata Import](manual-06-metadata-import.html) — validation rules and the MSOrganiser mapping

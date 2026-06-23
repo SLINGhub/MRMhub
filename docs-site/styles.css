@@ -1,0 +1,39 @@
+.workflow-diagram {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 2em 0;
+}
+.workflow-step {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #1a1a1a;
+  padding: 1em 1.5em;
+  border-radius: 8px;
+  border-left: 4px solid;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: transform 0.15s, box-shadow 0.15s;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+.workflow-step:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  text-decoration: none;
+  color: #1a1a1a;
+}
+.workflow-step.step-raw { border-left-color: #4a90a4; background: #f0f7fa; }
+.workflow-step.step-convert { border-left-color: #c87f3b; background: #fdf6ee; }
+.workflow-step.step-integrate { border-left-color: #5a9a5a; background: #f2f9f2; }
+.workflow-step.step-export { border-left-color: #7a6ba4; background: #f5f2fa; }
+.workflow-step.step-quant { border-left-color: #a45a8a; background: #faf2f7; }
+.workflow-arrow {
+  font-size: 1.4rem;
+  color: #999;
+  margin: 0 0.4em;
+  user-select: none;
+}

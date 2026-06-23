@@ -1,0 +1,111 @@
+---
+title: "Your First Analysis"
+output: 
+  rmarkdown::html_vignette:
+    fig_width: 6
+    fig_height: 3
+description: |
+  A 5-minute walkthrough: import demo data, inspect, normalize, and export.
+vignette: >
+  %\VignetteIndexEntry{Your First Analysis}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE, comment = "#>", out.width = "100%",
+  message = FALSE, warning = FALSE, eval = FALSE
+)
+```
+
+This walkthrough takes you from zero to a normalized dataset in under
+5 minutes using bundled demo data — no external files needed.
+
+<!-- TODO: Record screencast showing full first-analysis workflow -->
+<!-- ![First analysis end-to-end](../man/figures/screencasts/first-analysis.gif) -->
+
+<div class="alert alert-info" role="alert">
+<strong>Time:</strong> ~5 minutes &nbsp;|&nbsp;
+<strong>Prerequisites:</strong> MRMhub installed (<code>check_setup()</code> passes) &nbsp;|&nbsp;
+<strong>Data:</strong> Bundled demo (no downloads)
+</div>
+
+## Step 1: Load MRMhub
+
+```{r}
+library(mrmhub)
+```
+
+## Step 2: Import Demo Data
+
+MRMhub ships with a demo dataset produced by INTEGRATOR.
+Import it with `import_data_mrmhub()`:
+
+```{r}
+demo_file <- system.file("extdata", "MRMhub_demo.tsv", package = "mrmhub")
+mexp <- import_data_mrmhub(demo_file)
+mexp
+```
+
+The result is an `MRMhubExperiment` object — a structured container 
+holding your peak area data, sample annotations, and feature metadata.
+
+## Step 3: Explore the Data
+
+```{r}
+# Dimensions: samples × features
+get_analysis_count(mexp)
+get_feature_count(mexp)
+
+# First few sample annotations
+head(mexp@annot_analyses)
+
+# Feature list
+get_featurelist(mexp)
+```
+
+## Step 4: Normalize by Internal Standard
+
+Apply ISTD normalization to correct for extraction and injection variability:
+
+```{r}
+mexp <- normalize_by_istd(mexp)
+```
+
+<div class="alert alert-success" role="alert">
+After this step, <code>mexp@is_istd_normalized</code> is <code>TRUE</code>.
+The original data is preserved in <code>dataset_orig</code>.
+</div>
+
+## Step 5: Visualise
+
+Check the run sequence for signal drift:
+
+```{r, fig.height=4}
+plot_runscatter(mexp, y = "area_normalized")
+```
+
+## Step 6: Export
+
+Export the processed data to Excel or CSV:
+
+```{r}
+# Excel report (multiple sheets)
+save_report_xlsx(mexp, file = "my_first_results.xlsx")
+
+# Or as tidy CSV
+save_dataset_csv(mexp, file = "my_first_results.csv")
+```
+
+## What's Next?
+
+| Goal | Article |
+|------|---------|
+| Understand the data model | [Key Concepts](manual-00-key-concepts.html) |
+| Full lipidomics workflow | [Lipidomics Workflow](tutorial-03-lipidomics-workflow.html) |
+| Drift & batch correction | [Drift Correction](tutorial-04-drift-correction.html) |
+| Quantitative assay with calibration | [External Calibration](recipe-01-ext-calibration-qc.html) |

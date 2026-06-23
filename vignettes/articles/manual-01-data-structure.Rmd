@@ -1,0 +1,107 @@
+---
+title: "Data and Metadata in MRMhub"
+output: 
+  rmarkdown::html_vignette:
+    fig_width: 6
+    fig_height: 2
+description: |
+  Overview of how MRMhub organizes analytical data and metadata within
+  the MRMhubExperiment object.
+vignette: >
+  %\VignetteIndexEntry{Data and Metadata in MRMhub}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+editor_options: 
+  markdown: 
+    wrap: 80
+---
+
+```{r, include = FALSE, echo = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, results = FALSE, warning = FALSE,
+                      message = FALSE, comment = "#>", out.width = "100%")
+set.seed(1041)
+options(dplyr.print_max = 10)
+```
+
+## Overview
+
+The **`MRMhubExperiment`** object is the primary data container in the MRMhub 
+workflow. It holds all experimental and processed data and metadata, as well as 
+details of applied processing steps and the current status of the data. Most 
+MRMhub functions take the `MRMhubExperiment` object as input and return an 
+updated copy.
+
+Data within the `MRMhubExperiment` is organized into **data** and **metadata** 
+categories, each divided into tables (data frames).
+
+<div style="text-align: center; margin: 2em 0;">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 280" style="max-width: 600px; width: 100%; height: auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+  <rect x="5" y="5" width="590" height="270" rx="10" fill="#f8f9fa" stroke="#4a90a4" stroke-width="2"/>
+  <text x="300" y="30" text-anchor="middle" font-weight="700" font-size="14" fill="#1a1a1a">MRMhubExperiment</text>
+  <line x1="20" y1="40" x2="580" y2="40" stroke="#dee2e6"/>
+  <rect x="20" y="55" width="270" height="100" rx="6" fill="#d6e8f0" stroke="#4a90a4"/>
+  <text x="155" y="75" text-anchor="middle" font-weight="600" font-size="12" fill="#2c5f7a">DATA</text>
+  <text x="35" y="95" font-size="10" fill="#333">dataset_orig — original imported data</text>
+  <text x="35" y="112" font-size="10" fill="#333">dataset — annotated and processed data</text>
+  <text x="35" y="129" font-size="10" fill="#333">dataset_filtered — QC-filtered output</text>
+  <text x="35" y="146" font-size="10" fill="#333">feature_metrics — QC metrics per feature</text>
+  <rect x="310" y="55" width="270" height="100" rx="6" fill="#f5e0c8" stroke="#c87f3b"/>
+  <text x="445" y="75" text-anchor="middle" font-weight="600" font-size="12" fill="#7a4a1a">METADATA</text>
+  <text x="325" y="95" font-size="10" fill="#333">annot_analyses — sample/run annotations</text>
+  <text x="325" y="112" font-size="10" fill="#333">annot_features — feature annotations</text>
+  <text x="325" y="129" font-size="10" fill="#333">annot_istds — ISTD concentrations</text>
+  <text x="325" y="146" font-size="10" fill="#333">annot_batches / annot_standards / ...</text>
+  <rect x="20" y="170" width="560" height="50" rx="6" fill="#d4e8d4" stroke="#5a9a5a"/>
+  <text x="300" y="192" text-anchor="middle" font-weight="600" font-size="12" fill="#2c5f2c">STATUS AND FLAGS</text>
+  <text x="300" y="210" text-anchor="middle" font-size="10" fill="#333">is_istd_normalized, is_quantitated, var_drift_corrected, var_batch_corrected, ...</text>
+  <text x="300" y="258" text-anchor="middle" font-size="10" fill="#666">Functions take MRMhubExperiment in and return updated MRMhubExperiment</text>
+</svg>
+</div>
+
+## Data Tables
+
+| Category | Table (Slot) | Description |
+|----------|-------------|-------------|
+| Raw Data | `dataset_orig` | Original imported data — never modified after import. |
+| Processed Data | `dataset` | Working copy with all annotations and processing results. |
+| QC-filtered Data | `dataset_filtered` | Subset of `dataset` passing QC criteria. |
+| Feature Metrics | `feature_metrics` | Quality control metrics calculated per feature. |
+
+## Metadata Tables
+
+| Category | Table (Slot) | Description |
+|----------|-------------|-------------|
+| Analyses | `annot_analyses` | Sample categories, amounts, dilutions, batch assignments, and run order. |
+| Features | `annot_features` | ISTD assignments, response factors, feature classification, quantifier/qualifier flags. |
+| Internal Standards | `annot_istds` | ISTD concentrations added to each sample. |
+| Batches | `annot_batches` | Start and end boundaries for each analytical batch. |
+| Response Curves | `annot_responsecurves` | Dilution series definitions for response QC (RQC). |
+| Calibration | `annot_standards` | Known concentrations of standards in calibration and QC samples. |
+
+## How They Connect
+
+All tables are linked by shared identifiers:
+
+- **`analysis_id`** — links rows in `dataset` to rows in `annot_analyses`
+- **`feature_id`** — links measurements to feature properties in `annot_features`
+- **`batch_id`** — connects analyses to batch-level metadata in `annot_batches`
+
+```{r, eval = FALSE}
+library(mrmhub)
+mexp <- MRMhubExperiment()
+mexp <- data_load_example(mexp, 1)
+
+# Access data
+get_analyticaldata(mexp)
+
+# Access metadata
+mexp$annot_analyses
+mexp$annot_features
+```
+
+## See Also
+
+- [Data Identifiers](manual-02-data-identifiers.html) — detailed explanation of ID columns
+- [Feature Variables](manual-03-feature-variables.html) — all measurement variables
+- [MRMhubExperiment Object](manual-04-mrmhub-experiment.html) — creating and using the object
+- [Key Concepts & Glossary](manual-00-key-concepts.html) — plain-language overview

@@ -1,0 +1,547 @@
+# MRMhub-QUANT
+
+**MRMhub-QUANT** is the post-processing module of
+[MRMhub](https://slinghub.github.io/MRMhub/), distributed as the R
+package `mrmhub`
+([`library(mrmhub)`](https://github.com/SLINGhub/MRMhub)). It covers the
+full workflow from feature intensities to curated, QC-filtered
+concentrations, and works with any intensity data — such as from
+[MRMhub](https://slinghub.github.io/MRMhub/), Skyline, Agilent
+MassHunter, and generic CSV files. MRMhub-QUANT features:
+
+- **Reproducible pipelines.** Create reproducible computational
+  pipelines with QC vizualizations. Script, re-run, and share it.
+- **Flexible workflows.** Metabolomics and lipidomics data
+  post-processing using dedicated customizable functions.
+- **A single data object.** Data, metadata, and processing details are
+  stored in single sharable data object (`MRMhubExperiment`).
+
+![](data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdib3g9IjAgMCA4NDAgMTMwIiBzdHlsZT0ibWF4LXdpZHRoOiA4NDBweDsgd2lkdGg6IDEwMCU7IGhlaWdodDogYXV0bzsgZm9udC1mYW1pbHk6IC1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJiMzOTtTZWdvZSBVSSYjMzk7LCBzYW5zLXNlcmlmOyI+PHN0eWxlPgogICAgLndmLWJveCB7IHJ4OiA4OyByeTogODsgc3Ryb2tlLXdpZHRoOiAxLjU7IGN1cnNvcjogcG9pbnRlcjsgdHJhbnNpdGlvbjogb3BhY2l0eSAwLjJzOyB9CiAgICAud2YtYm94OmhvdmVyIHsgb3BhY2l0eTogMC44NTsgfQogICAgLndmLWxhYmVsIHsgZm9udC1zaXplOiAxMnB4OyBmb250LXdlaWdodDogNjAwOyBmaWxsOiAjMWExYTFhOyBwb2ludGVyLWV2ZW50czogbm9uZTsgdGV4dC1kZWNvcmF0aW9uOiB1bmRlcmxpbmU7IHRleHQtdW5kZXJsaW5lLW9mZnNldDogMnB4OyB9CiAgICAud2YtYXJyb3cgeyBmaWxsOiAjMkMzRTUwOyB9CiAgICAud2YtYm94LWRhc2hlZCB7IGZpbGw6IHRyYW5zcGFyZW50OyBzdHJva2UtZGFzaGFycmF5OiA0LDM7IH0KICAgIC53Zi1ib3gtZGFzaGVkOmhvdmVyIHsgZmlsbDogcmdiYSg5MSwxNDMsMTY4LDAuMDgpOyB9CiAgICAud2YtZGV0YWlsIHsgZm9udC1zaXplOiA5LjVweDsgZmlsbDogIzU1NTsgcG9pbnRlci1ldmVudHM6IG5vbmU7IH0KICA8L3N0eWxlPgo8YSBocmVmPSJodHRwczovL3NsaW5naHViLmdpdGh1Yi5pby9NUk1odWIvcXVhbnQvYXJ0aWNsZXMvbWFudWFsLTA1YS13aGljaC1pbXBvcnRlci5tZCI+PHJlY3QgY2xhc3M9IndmLWJveCB3Zi1ib3gtZGFzaGVkIiB4PSIzNSIgeT0iMTAiIHdpZHRoPSIxMTAiIGhlaWdodD0iNzAiIHN0cm9rZT0iIzVCOEZBOCIgLz48dGV4dCBjbGFzcz0id2YtbGFiZWwiIHg9IjkwIiB5PSI1MCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+RGF0YSBJbXBvcnQ8L3RleHQ+PC9hPiA8dGV4dCBjbGFzcz0id2YtZGV0YWlsIiB4PSI5MCIgeT0iOTgiIHRleHQtYW5jaG9yPSJtaWRkbGUiPk1STWh1Yi1JTlRFR1JBVE9SPC90ZXh0Pjx0ZXh0IGNsYXNzPSJ3Zi1kZXRhaWwiIHg9IjkwIiB5PSIxMTIiIHRleHQtYW5jaG9yPSJtaWRkbGUiPk90aGVyIGZvcm1hdHM8L3RleHQ+PHBvbHlnb24gY2xhc3M9IndmLWFycm93IiBwb2ludHM9IjE0OCwzOCAxNDgsNTIgMTY0LDQ1Ij48L3BvbHlnb24+PGEgaHJlZj0iaHR0cHM6Ly9zbGluZ2h1Yi5naXRodWIuaW8vTVJNaHViL3F1YW50L2FydGljbGVzL21hbnVhbC0wNi1tZXRhZGF0YS1pbXBvcnQubWQiPjxyZWN0IGNsYXNzPSJ3Zi1ib3giIHg9IjE2NyIgeT0iMTAiIHdpZHRoPSIxMTAiIGhlaWdodD0iNzAiIGZpbGw9IiNmNWUwYzgiIHN0cm9rZT0iI0Q0OTE0RSIgLz48dGV4dCBjbGFzcz0id2YtbGFiZWwiIHg9IjIyMiIgeT0iNTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiPk1ldGFkYXRhPC90ZXh0PjwvYT4gPHRleHQgY2xhc3M9IndmLWRldGFpbCIgeD0iMjIyIiB5PSI5OCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+aW1wb3J0IENTVi9YTFM8L3RleHQ+PHRleHQgY2xhc3M9IndmLWRldGFpbCIgeD0iMjIyIiB5PSIxMTIiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkludGVncml0eSB2YWxpZGF0aW9uPC90ZXh0Pjxwb2x5Z29uIGNsYXNzPSJ3Zi1hcnJvdyIgcG9pbnRzPSIyODAsMzggMjgwLDUyIDI5Niw0NSI+PC9wb2x5Z29uPjxhIGhyZWY9Imh0dHBzOi8vc2xpbmdodWIuZ2l0aHViLmlvL01STWh1Yi9xdWFudC9hcnRpY2xlcy9yZWNpcGUtMDEtZXh0LWNhbGlicmF0aW9uLXFjLm1kIj48cmVjdCBjbGFzcz0id2YtYm94IiB4PSIyOTkiIHk9IjEwIiB3aWR0aD0iMTEwIiBoZWlnaHQ9IjcwIiBmaWxsPSIjZDhlNmQ0IiBzdHJva2U9IiM2QjlFNUUiIC8+PHRleHQgY2xhc3M9IndmLWxhYmVsIiB4PSIzNTQiIHk9IjQyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj48dHNwYW4geD0iMzU0IiBkeT0iMCI+Tm9ybWFsaXplIC88L3RzcGFuPjx0c3BhbiB4PSIzNTQiIGR5PSIxNiI+UXVhbnRpZnk8L3RzcGFuPjwvdGV4dD48L2E+IDx0ZXh0IGNsYXNzPSJ3Zi1kZXRhaWwiIHg9IjM1NCIgeT0iOTgiIHRleHQtYW5jaG9yPSJtaWRkbGUiPklTVEQ8L3RleHQ+PHRleHQgY2xhc3M9IndmLWRldGFpbCIgeD0iMzU0IiB5PSIxMTIiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkNhbGlicmF0aW9uIGN1cnZlPC90ZXh0Pjxwb2x5Z29uIGNsYXNzPSJ3Zi1hcnJvdyIgcG9pbnRzPSI0MTIsMzggNDEyLDUyIDQyOCw0NSI+PC9wb2x5Z29uPjxhIGhyZWY9Imh0dHBzOi8vc2xpbmdodWIuZ2l0aHViLmlvL01STWh1Yi9xdWFudC9hcnRpY2xlcy9tYW51YWwtMDctZHJpZnQtYmF0Y2gtY29ycmVjdGlvbi5tZCI+PHJlY3QgY2xhc3M9IndmLWJveCIgeD0iNDMxIiB5PSIxMCIgd2lkdGg9IjExMCIgaGVpZ2h0PSI3MCIgZmlsbD0iI2VjZDJkMiIgc3Ryb2tlPSIjQzI3MTcxIiAvPjx0ZXh0IGNsYXNzPSJ3Zi1sYWJlbCIgeD0iNDg2IiB5PSI1MCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+Q29ycmVjdGlvbnM8L3RleHQ+PC9hPiA8dGV4dCBjbGFzcz0id2YtZGV0YWlsIiB4PSI0ODYiIHk9Ijk4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5EcmlmdDwvdGV4dD48dGV4dCBjbGFzcz0id2YtZGV0YWlsIiB4PSI0ODYiIHk9IjExMiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+QmF0Y2g8L3RleHQ+PHBvbHlnb24gY2xhc3M9IndmLWFycm93IiBwb2ludHM9IjU0NCwzOCA1NDQsNTIgNTYwLDQ1Ij48L3BvbHlnb24+PGEgaHJlZj0iaHR0cHM6Ly9zbGluZ2h1Yi5naXRodWIuaW8vTVJNaHViL3F1YW50L2FydGljbGVzL3R1dG9yaWFsLTA5LXBjYS1leHBsb3JhdGlvbi5tZCI+PHJlY3QgY2xhc3M9IndmLWJveCIgeD0iNTYzIiB5PSIxMCIgd2lkdGg9IjExMCIgaGVpZ2h0PSI3MCIgZmlsbD0iI2Q2ZTRlYiIgc3Ryb2tlPSIjNUI4RkE4IiAvPjx0ZXh0IGNsYXNzPSJ3Zi1sYWJlbCIgeD0iNjE4IiB5PSI1MCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+UUM8L3RleHQ+PC9hPiA8dGV4dCBjbGFzcz0id2YtZGV0YWlsIiB4PSI2MTgiIHk9Ijk4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5NZXRyaWNzPC90ZXh0Pjx0ZXh0IGNsYXNzPSJ3Zi1kZXRhaWwiIHg9IjYxOCIgeT0iMTEyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5QbG90czwvdGV4dD48cG9seWdvbiBjbGFzcz0id2YtYXJyb3ciIHBvaW50cz0iNjc2LDM4IDY3Niw1MiA2OTIsNDUiPjwvcG9seWdvbj48YSBocmVmPSJodHRwczovL3NsaW5naHViLmdpdGh1Yi5pby9NUk1odWIvcXVhbnQvYXJ0aWNsZXMvcmVjaXBlLTAyLWN1c3RvbS1xYy1yZXBvcnQubWQiPjxyZWN0IGNsYXNzPSJ3Zi1ib3giIHg9IjY5NSIgeT0iMTAiIHdpZHRoPSIxMTAiIGhlaWdodD0iNzAiIGZpbGw9IiNjOGNmZDYiIHN0cm9rZT0iIzJDM0U1MCIgLz48dGV4dCBjbGFzcz0id2YtbGFiZWwiIHg9Ijc1MCIgeT0iNTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlJlcG9ydGluZzwvdGV4dD48L2E+IDx0ZXh0IGNsYXNzPSJ3Zi1kZXRhaWwiIHg9Ijc1MCIgeT0iOTgiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlBsYWluIHRhYmxlczwvdGV4dD48dGV4dCBjbGFzcz0id2YtZGV0YWlsIiB4PSI3NTAiIHk9IjExMiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+UUMgcmVwb3J0czwvdGV4dD48L3N2Zz4=)
+
+## Quick Start and Demos
+
+- **[Installation](https://slinghub.github.io/MRMhub/quant/articles/manual-00-get-started.md)**
+  — install and verify your setup
+- **[Example](https://slinghub.github.io/MRMhub/quant/articles/tutorial-03-lipidomics-workflow.md)** -
+  Targeted Lipidomics Data Processing
+- **[Example](https://slinghub.github.io/MRMhub/quant/articles/recipe-01-ext-calibration-qc.md)** -
+  Quantitative Assay with Ext. Calibration
+- **[Quick
+  Start](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md)** -
+  5 minute run on bundled data
+- **[Prepare your
+  data](https://slinghub.github.io/MRMhub/quant/articles/manual-05a-which-importer.md)** -
+  file formats and importers
+
+## Installation and Updating
+
+Make sure to use a fresh R session without loaded packages (quit
+RStudio/Positron first to avoid locked packages):
+
+``` r
+
+if (!require("pak")) install.packages("pak")
+pak::pak("SLINGhub/MRMhub")
+```
+
+For more details and troubleshooting see
+[Installation](https://slinghub.github.io/MRMhub/quant/articles/manual-00-get-started.md)
+and [Installation Troubleshooting &
+FAQ](https://slinghub.github.io/MRMhub/quant/articles/manual-09-troubleshooting.md).
+
+## Contributing
+
+Questions, bug reports, feature requests, and suggestions are welcome
+via [GitHub issues](https://github.com/SLINGhub/MRMhub/issues). The
+project is released with a [Contributor Code of
+Conduct](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html).
+
+## Dual licensing
+
+The source code is dual-licensed: [GNU
+AGPLv3](https://www.gnu.org/licenses/agpl-3.0.en.html) for
+non-commercial use, or commercial licensing — contact Jonathan Tan
+(<jonathan_tan@nus.edu.sg>).
+
+# Package index
+
+## Getting started
+
+Functions to validate your R environment and explore the MRMhub workflow
+interactively.
+
+- [`check_setup()`](https://slinghub.github.io/MRMhub/quant/reference/check_setup.md)
+  : Check MRMhub Setup
+- [`run_walkthrough()`](https://slinghub.github.io/MRMhub/quant/reference/run_walkthrough.md)
+  : Launch the MRMhub Walkthrough App
+
+## QUANT R package reference
+
+Functions to create, access and query MRMhubExperiment objects, which
+are the central data object in the MRMhub workflow.
+
+- [`MRMhubExperiment()`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment.md)
+  : Constructor for the MRMhubExperiment object.
+- [`MRMhubExperiment-class`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  : S4 Class Representing the MRMhub Dataset
+- [`` `$`( ``*`<MRMhubExperiment>`*`)`](https://slinghub.github.io/MRMhub/quant/reference/cash-MRMhubExperiment-method.md)
+  : Access Slots of a MRMhubExperiment Object via \$ Syntax
+- [`set_analysis_order()`](https://slinghub.github.io/MRMhub/quant/reference/set_analysis_order.md)
+  : Set Analysis Order
+- [`get_batch_boundaries()`](https://slinghub.github.io/MRMhub/quant/reference/get_batch_boundaries.md)
+  : Get the start and end analysis numbers of specified batches
+- [`data_sum_features()`](https://slinghub.github.io/MRMhub/quant/reference/data_sum_features.md)
+  : Sum up feature intensities per analyte
+- [`exclude_analyses()`](https://slinghub.github.io/MRMhub/quant/reference/exclude_analyses.md)
+  : Exclude analyses from the dataset
+- [`exclude_features()`](https://slinghub.github.io/MRMhub/quant/reference/exclude_features.md)
+  : Exclude features from the dataset
+- [`get_analyticaldata()`](https://slinghub.github.io/MRMhub/quant/reference/get_analyticaldata.md)
+  : Get the annotated or the originally imported analytical data
+- [`set_intensity_var()`](https://slinghub.github.io/MRMhub/quant/reference/set_intensity_var.md)
+  : Set default variable to be used as feature raw signal value
+- [`get_analysis_count()`](https://slinghub.github.io/MRMhub/quant/reference/get_analysis_count.md)
+  : Get the number of analyses in the dataset
+- [`get_analyis_start()`](https://slinghub.github.io/MRMhub/quant/reference/get_analyis_start.md)
+  : Get the start time of the analysis sequence
+- [`get_analyis_end()`](https://slinghub.github.io/MRMhub/quant/reference/get_analyis_end.md)
+  : Get the end time of the analysis sequence
+- [`get_analysis_breaks()`](https://slinghub.github.io/MRMhub/quant/reference/get_analysis_breaks.md)
+  : Get the number of analysis breaks in the analysis
+- [`get_analysis_duration()`](https://slinghub.github.io/MRMhub/quant/reference/get_analysis_duration.md)
+  : Get the total duration of the analysis
+- [`get_runtime_median()`](https://slinghub.github.io/MRMhub/quant/reference/get_runtime_median.md)
+  : Get the median run time
+- [`get_feature_count()`](https://slinghub.github.io/MRMhub/quant/reference/get_feature_count.md)
+  : Get the number of features in the dataset
+- [`get_featurelist()`](https://slinghub.github.io/MRMhub/quant/reference/get_featurelist.md)
+  : Get feature IDs
+
+## Analysis data import
+
+Functions to import analytical data from different sources into
+MRMhubExperiment objects. Additionally, the file parser function used
+internally by these import functions are available for direct use,
+i.e. to import different analytical data into data frames.
+
+- [`import_data_mrmhub()`](https://slinghub.github.io/MRMhub/quant/reference/import_data_mrmhub.md)
+  : Import MRMhub peak integration results
+- [`import_data_masshunter()`](https://slinghub.github.io/MRMhub/quant/reference/import_data_masshunter.md)
+  : Import Agilent MassHunter Quantitative Analysis CSV files
+- [`import_data_skyline()`](https://slinghub.github.io/MRMhub/quant/reference/import_data_skyline.md)
+  : Import Skyline Peak Integration Results
+- [`import_data_csv_wide()`](https://slinghub.github.io/MRMhub/quant/reference/import_data_csv_wide.md)
+  : Import Analysis Results from Plain Wide-Format CSV Files
+- [`import_data_csv_long()`](https://slinghub.github.io/MRMhub/quant/reference/import_data_csv_long.md)
+  : Import Analysis Results from Long Format CSV Files
+- [`parse_mrmhub_result()`](https://slinghub.github.io/MRMhub/quant/reference/parse_mrmhub_result.md)
+  : Parses MRMhub peak integration results into a tibble
+- [`parse_masshunter_csv()`](https://slinghub.github.io/MRMhub/quant/reference/parse_masshunter_csv.md)
+  : Reads and parses one Agilent MassHunter Quant CSV result file
+- [`parse_skyline_result()`](https://slinghub.github.io/MRMhub/quant/reference/parse_skyline_result.md)
+  : Parses skyline peak integration results into a tibble
+- [`parse_plain_wide_csv()`](https://slinghub.github.io/MRMhub/quant/reference/parse_plain_wide_csv.md)
+  : Parses a plain wide CSV file
+- [`parse_plain_long_csv()`](https://slinghub.github.io/MRMhub/quant/reference/parse_plain_long_csv.md)
+  : Parses a plain long CSV file
+- [`import_data_csv()`](https://slinghub.github.io/MRMhub/quant/reference/import_data_csv.md)
+  : (Depreciated) Import Wide CSV Files
+
+## Metadata import
+
+Functions to import metadata describing the analyses (samples), features
+(analytes), internal standards and other relevant information from the
+MRMhub Excel template or CSV files.
+
+- [`import_metadata_analyses()`](https://slinghub.github.io/MRMhub/quant/reference/import_metadata_analyses.md)
+  : Import analysis metadata
+- [`import_metadata_features()`](https://slinghub.github.io/MRMhub/quant/reference/import_metadata_features.md)
+  : Import feature metadata
+- [`import_metadata_istds()`](https://slinghub.github.io/MRMhub/quant/reference/import_metadata_istds.md)
+  : Import Internal Standards (ISTD) metadata
+- [`import_metadata_responsecurves()`](https://slinghub.github.io/MRMhub/quant/reference/import_metadata_responsecurves.md)
+  : Import response curves metadata
+- [`import_metadata_qcconcentrations()`](https://slinghub.github.io/MRMhub/quant/reference/import_metadata_qcconcentrations.md)
+  : Import calibration curves metadata
+- [`import_metadata_msorganiser()`](https://slinghub.github.io/MRMhub/quant/reference/import_metadata_msorganiser.md)
+  : Import Metadata from a MRMhub Metadata Organizer file
+- [`import_metadata_from_data()`](https://slinghub.github.io/MRMhub/quant/reference/import_metadata_from_data.md)
+  : Retrieve Metadata from Imported Analysis Data
+- [`save_metadata_templates()`](https://slinghub.github.io/MRMhub/quant/reference/save_metadata_templates.md)
+  : Saves a Excel (xlsx) file with metadata templates
+- [`save_metadata_msorganiser_template()`](https://slinghub.github.io/MRMhub/quant/reference/save_metadata_msorganiser_template.md)
+  : Saves a MRMhub Metadata Organizer template
+- [`add_metadata()`](https://slinghub.github.io/MRMhub/quant/reference/add_metadata.md)
+  : Add metadata an MRMhubExperiment object
+- [`assert_metadata()`](https://slinghub.github.io/MRMhub/quant/reference/assert_metadata.md)
+  : Add metadata an MRMhubExperiment object
+
+## Isotope correction
+
+Functions to perform type II isotopic correction
+
+- [`correct_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/correct_interferences.md)
+  : Apply interference correction
+- [`correct_interference_manual()`](https://slinghub.github.io/MRMhub/quant/reference/correct_interference_manual.md)
+  : Manual isotopic interference correction
+
+## External Calibration
+
+Function to plot and analyze external calibration curves
+
+- [`quantify_by_calibration()`](https://slinghub.github.io/MRMhub/quant/reference/quantify_by_calibration.md)
+  : Calculate concentrations based on external calibration
+- [`plot_calibrationcurves()`](https://slinghub.github.io/MRMhub/quant/reference/plot_calibrationcurves.md)
+  : Plot Calibration Curves
+- [`calc_calibration_results()`](https://slinghub.github.io/MRMhub/quant/reference/calc_calibration_results.md)
+  : Calculate external calibration curve results
+- [`get_calibration_metrics()`](https://slinghub.github.io/MRMhub/quant/reference/get_calibration_metrics.md)
+  : Get Calibration Metrics
+- [`get_qc_bias_variability()`](https://slinghub.github.io/MRMhub/quant/reference/get_qc_bias_variability.md)
+  : Retrieve Calibration Regression Results
+
+## Normalization, Quantification
+
+Functions for normalization by internal standards and sample amounts, to
+calculate analyte concentrations based on internal standards amounts or
+external calibration curves. Function to for absolute or relative
+calibration using a reference sample.
+
+- [`normalize_by_istd()`](https://slinghub.github.io/MRMhub/quant/reference/normalize_by_istd.md)
+  : Normalize Feature Intensities Using Internal Standards
+- [`quantify_by_istd()`](https://slinghub.github.io/MRMhub/quant/reference/quantify_by_istd.md)
+  : Calculate Analyte Concentrations Using Internal Standards
+- [`calibrate_by_reference()`](https://slinghub.github.io/MRMhub/quant/reference/calibrate_by_reference.md)
+  : Calibrate Features Values Using Reference Sample
+
+## Drift/Batch Correction
+
+Function for drift and batch correction correction
+
+- [`correct_drift_gaussiankernel()`](https://slinghub.github.io/MRMhub/quant/reference/correct_drift_gaussiankernel.md)
+  : Drift Correction by Gaussian Kernel Smoothing
+- [`correct_drift_cubicspline()`](https://slinghub.github.io/MRMhub/quant/reference/correct_drift_cubicspline.md)
+  : Drift Correction by Cubic Spline Smoothing
+- [`correct_drift_loess()`](https://slinghub.github.io/MRMhub/quant/reference/correct_drift_loess.md)
+  : Drift Correction by LOESS Smoothing
+- [`correct_drift_gam()`](https://slinghub.github.io/MRMhub/quant/reference/correct_drift_gam.md)
+  : Drift Correction by Generalized Additive Model (GAM) Smoothing
+- [`correct_batch_centering()`](https://slinghub.github.io/MRMhub/quant/reference/correct_batch_centering.md)
+  : Batch Centering Correction
+
+## Quality Control and Filtering
+
+Functions to calculate feature QC metrics and apply QC filtering, and
+vizualize the filtering results.
+
+- [`calc_qc_metrics()`](https://slinghub.github.io/MRMhub/quant/reference/calc_qc_metrics.md)
+  : Calculate Quality Control (QC) Metrics for Features
+- [`filter_features_qc()`](https://slinghub.github.io/MRMhub/quant/reference/filter_features_qc.md)
+  : Feature Filtering Based on QC Criteria
+- [`detect_outlier_pca()`](https://slinghub.github.io/MRMhub/quant/reference/detect_outlier_pca.md)
+  : Get list of analyses classified as technical outliers
+- [`plot_qc_summary_byclass()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_summary_byclass.md)
+  : Plot QC Filtering Summary by Feature Class
+- [`plot_qc_summary_overall()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_summary_overall.md)
+  : Plot Overall QC Filtering Summary
+- [`plot_abundanceprofile()`](https://slinghub.github.io/MRMhub/quant/reference/plot_abundanceprofile.md)
+  : Plot Abundance Profile
+
+## Quality Control Plots
+
+Functions to plots diverse QC visualizatios.
+
+- [`plot_runsequence()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runsequence.md)
+  : RunSequence Plot
+- [`plot_runscatter()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.md)
+  : RunScatter Plot
+- [`plot_rla_boxplot()`](https://slinghub.github.io/MRMhub/quant/reference/plot_rla_boxplot.md)
+  : Relative Log Abundance (RLA) Plot
+- [`plot_pca()`](https://slinghub.github.io/MRMhub/quant/reference/plot_pca.md)
+  : PCA Plot for Quality Control
+- [`plot_pca_loading()`](https://slinghub.github.io/MRMhub/quant/reference/plot_pca_loading.md)
+  : Plot PCA loadings
+- [`plot_feature_correlations()`](https://slinghub.github.io/MRMhub/quant/reference/plot_feature_correlations.md)
+  : Plot Highly Correlated Feature Pairs
+- [`plot_rt_vs_chain()`](https://slinghub.github.io/MRMhub/quant/reference/plot_rt_vs_chain.md)
+  : Plot Retention Time versus Chain Length and Saturation
+- [`plot_qc_matrixeffects()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_matrixeffects.md)
+  : Plot standardized feature intensities grouped by QC type
+- [`plot_normalization_qc()`](https://slinghub.github.io/MRMhub/quant/reference/plot_normalization_qc.md)
+  : Compare Feature Variability Before and After Normalization
+- [`plot_qcmetrics_comparison()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qcmetrics_comparison.md)
+  : Comparison of two feature QC metrics variables
+- [`plot_qc_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_interferences.md)
+  : Plot the results of interference correction
+
+## Response Curves
+
+Functions to calculate and visualize response curves
+
+- [`plot_responsecurves()`](https://slinghub.github.io/MRMhub/quant/reference/plot_responsecurves.md)
+  : Plot Response Curves
+- [`get_response_curve_stats()`](https://slinghub.github.io/MRMhub/quant/reference/get_response_curve_stats.md)
+  : Linear Regression Statistics of Response Curves
+
+## Data Reporting and Sharing
+
+Functions to export processed and raw datasets and the processing steps
+in different formats.
+
+- [`save_report_xlsx()`](https://slinghub.github.io/MRMhub/quant/reference/save_report_xlsx.md)
+  : Write Data Processing Report (EXCEL)
+- [`save_dataset_csv()`](https://slinghub.github.io/MRMhub/quant/reference/save_dataset_csv.md)
+  : Export Data to CSV file
+- [`save_dataset_mztab()`](https://slinghub.github.io/MRMhub/quant/reference/save_dataset_mztab.md)
+  : Export an experiment to mzTab-M (HUPO-PSI)
+- [`save_feature_qc_metrics()`](https://slinghub.github.io/MRMhub/quant/reference/save_feature_qc_metrics.md)
+  : Save Feature QC Metrics to CSV
+
+## Lipidomics
+
+Functions specific to lipidomics data processing and analysis.
+
+- [`parse_lipid_feature_names()`](https://slinghub.github.io/MRMhub/quant/reference/parse_lipid_feature_names.md)
+  : Get lipid class, species and transition names
+
+## Datasets
+
+Example datasets for testing and demonstration.
+
+- [`lipidomics_dataset`](https://slinghub.github.io/MRMhub/quant/reference/lipidomics_dataset.md)
+  : Plasma Lipidomics Dataset with Metadata
+- [`quant_lcms_dataset`](https://slinghub.github.io/MRMhub/quant/reference/quant_lcms_dataset.md)
+  : LC-MS Dataset with External Calibration Curve and Metadata
+- [`data_load_example()`](https://slinghub.github.io/MRMhub/quant/reference/data_load_example.md)
+  : Load an example MRMhubExperiment dataset
+
+## Helper functions
+
+A collection of functions that may be useful in the context of mass
+spectrometry is also available.
+
+- [`cv()`](https://slinghub.github.io/MRMhub/quant/reference/cv.md) :
+  Percent coefficient of variation (%CV)
+- [`cv_log()`](https://slinghub.github.io/MRMhub/quant/reference/cv_log.md)
+  : Percent coefficient of variation (%CV) based on log-transformation
+- [`calc_average_molweight()`](https://slinghub.github.io/MRMhub/quant/reference/calc_average_molweight.md)
+  : Calculate Average Molecular Weight from Chemical Formulas
+- [`save_dataset_csv()`](https://slinghub.github.io/MRMhub/quant/reference/save_dataset_csv.md)
+  : Export Data to CSV file
+- [`fun_correct_drift()`](https://slinghub.github.io/MRMhub/quant/reference/fun_correct_drift.md)
+  : Drift Correction by Custom Function
+- [`fun_gauss.kernel.smooth()`](https://slinghub.github.io/MRMhub/quant/reference/fun_gauss.kernel.smooth.md)
+  : Gaussian Kernel smoothing helper function
+- [`fun_loess()`](https://slinghub.github.io/MRMhub/quant/reference/fun_loess.md)
+  : Loess smoothing helper function
+- [`fun_cspline()`](https://slinghub.github.io/MRMhub/quant/reference/fun_cspline.md)
+  : Cubic spline smoothing helper function
+- [`fun_gam_smooth()`](https://slinghub.github.io/MRMhub/quant/reference/fun_gam_smooth.md)
+  : Generalized Additive Model (GAM) smoothing helper function
+- [`get_mad_tails()`](https://slinghub.github.io/MRMhub/quant/reference/get_mad_tails.md)
+  : Get MAD-based tails
+- [`get_iqr_tails()`](https://slinghub.github.io/MRMhub/quant/reference/get_iqr_tails.md)
+  : Get Tukey's IQR fences
+- [`get_outlier_bounds()`](https://slinghub.github.io/MRMhub/quant/reference/get_outlier_bounds.md)
+  : Get outlier bounds via different methods
+- [`order_chained_columns_tbl()`](https://slinghub.github.io/MRMhub/quant/reference/order_chained_columns_tbl.md)
+  : Reorder Data Frame based on a chain of linked values in two columns.
+
+# Articles
+
+### All vignettes
+
+- [Design Overview: How Data Flows Through
+  MRMhub](https://slinghub.github.io/MRMhub/quant/articles/manual-00-architecture.md):
+
+  A bird’s-eye view of the MRMhub data pipeline from raw instrument
+  files to final quantitative results.
+
+- [Installation](https://slinghub.github.io/MRMhub/quant/articles/manual-00-get-started.md):
+
+  Install mrmhub, verify your setup, and fix common install errors.
+
+- [INTEGRATOR vs QUANT: Which Tool Do I
+  Need?](https://slinghub.github.io/MRMhub/quant/articles/manual-00-integrator-vs-quant.md):
+
+  Understand the relationship between INTEGRATOR and QUANT (the R
+  package mrmhub).
+
+- [Key Concepts &
+  Glossary](https://slinghub.github.io/MRMhub/quant/articles/manual-00-key-concepts.md):
+
+  Plain-language overview of MRMhub’s data model, terminology, and
+  architecture.
+
+- [Definitions: Sample Types and QC
+  Roles](https://slinghub.github.io/MRMhub/quant/articles/manual-00-sample-types.md):
+
+  Reference for all sample type labels used in MRMhub and their roles in
+  quality control and data processing.
+
+- [Data and Metadata in
+  MRMhub](https://slinghub.github.io/MRMhub/quant/articles/manual-01-data-structure.md):
+
+  Overview of how MRMhub organizes analytical data and metadata within
+  the MRMhubExperiment object.
+
+- [Data Identifiers in
+  MRMhub](https://slinghub.github.io/MRMhub/quant/articles/manual-02-data-identifiers.md):
+
+  Explanation of the key identifier columns used to organize data in
+  MRMhub.
+
+- [Feature Variables in
+  MRMhub](https://slinghub.github.io/MRMhub/quant/articles/manual-03-feature-variables.md):
+
+  Reference for all feature variables (measurement columns) available in
+  MRMhub.
+
+- [The MRMhubExperiment Data
+  Object](https://slinghub.github.io/MRMhub/quant/articles/manual-04-mrmhub-experiment.md):
+
+  How to create, use, and access data in MRMhubExperiment objects.
+
+- [Importing Analytical Data and
+  Metadata](https://slinghub.github.io/MRMhub/quant/articles/manual-05-data-import.md):
+
+  How to import analytical data and metadata into MRMhub from various
+  sources.
+
+- [Import and prepare data
+  files](https://slinghub.github.io/MRMhub/quant/articles/manual-05a-which-importer.md):
+
+  A decision guide for choosing the right data and metadata import
+  functions in MRMhub.
+
+- [Data file
+  structures](https://slinghub.github.io/MRMhub/quant/articles/manual-05b-data-file-structures.md):
+
+  Reference for the file layout and columns expected by each MRMhub data
+  importer.
+
+- [Metadata
+  import](https://slinghub.github.io/MRMhub/quant/articles/manual-06-metadata-import.md):
+
+  MRMhub: postprocessing and quality control of small molecule mass
+  spectrometry data
+
+- [Metadata table
+  structures](https://slinghub.github.io/MRMhub/quant/articles/manual-06a-metadata-table-structures.md):
+
+  Reference for the columns of each MRMhub metadata table and what they
+  are used for.
+
+- [Drift and Batch
+  Correction](https://slinghub.github.io/MRMhub/quant/articles/manual-07-drift-batch-correction.md):
+
+  MRMhub: postprocessing and quality control of small molecule mass
+  spectrometry data
+
+- [Visualisation
+  Functions](https://slinghub.github.io/MRMhub/quant/articles/manual-08-visualization.md):
+
+  Reference for the MRMhub plotting functions, grouped by workflow
+  stage, with the canonical argument forms and customisation guidance.
+
+- [Troubleshooting and
+  FAQ](https://slinghub.github.io/MRMhub/quant/articles/manual-09-troubleshooting.md):
+
+  Solutions to the most common errors and questions when using MRMhub
+  QUANT.
+
+- [Design Decisions: Why This
+  Architecture?](https://slinghub.github.io/MRMhub/quant/articles/manual-10-design-decisions.md):
+
+  Explains the key design decisions behind MRMhub QUANT – for power
+  users and contributors who want to understand or extend the package.
+
+- [Function
+  Cheatsheet](https://slinghub.github.io/MRMhub/quant/articles/manual-11-cheatsheet.md):
+
+  The 12 functions used in a typical MRMhub workflow, in order, with
+  one-line descriptions and links to the full reference.
+
+- [MRMhub](https://slinghub.github.io/MRMhub/quant/articles/mrmhub.md):
+
+- [Quantitative assay with Ext. calibration and
+  QC](https://slinghub.github.io/MRMhub/quant/articles/recipe-01-ext-calibration-qc.md):
+
+  MRMhub: Postprocessing and Quality Control of Small-Molecule Mass
+  Spectrometry Data
+
+- [Recipe: Custom QC
+  Report](https://slinghub.github.io/MRMhub/quant/articles/recipe-02-custom-qc-report.md):
+
+  Create a comprehensive HTML QC report from a processed
+  MRMhubExperiment using a parameterized Quarto template.
+
+- [Recipe: Export to
+  mzTab-M](https://slinghub.github.io/MRMhub/quant/articles/recipe-03-mztab-export.md):
+
+  Write a processed MRMhubExperiment to the HUPO-PSI mzTab-M standard
+  format for sharing, archiving, or submission to repositories such as
+  MetaboLights.
+
+- [Your First
+  Analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md):
+
+  A 5-minute walkthrough: import demo data, inspect, normalize, and
+  export.
+
+- [Preparing and importing
+  data](https://slinghub.github.io/MRMhub/quant/articles/tutorial-01-prep-data.md):
+
+  How to prepare data files and import analytical data and metadata into
+  MRMhub.
+
+- [A Real-World MRMhub
+  Workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md):
+
+  A realistic end-to-end workflow covering project setup, metadata
+  import, drift/batch correction, QC filtering, and export.
+
+- [Lipidomics Data
+  Processing](https://slinghub.github.io/MRMhub/quant/articles/tutorial-03-lipidomics-workflow.md):
+
+  MRMhub: Postprocessing and Quality Control of Small-Molecule Mass
+  Spectrometry Data
+
+- [Drift Correction
+  (Smoothing)](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.md):
+
+- [RunScatter
+  Plot](https://slinghub.github.io/MRMhub/quant/articles/tutorial-05-run-scatter.md):
+
+- [Batch-effect
+  correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-06-batch-correction.md):
+
+- [Calibration by a Reference
+  Sample](https://slinghub.github.io/MRMhub/quant/articles/tutorial-07-calibration-reference.md):
+
+- [Tutorial: Multi-Batch
+  Study](https://slinghub.github.io/MRMhub/quant/articles/tutorial-08-multi-batch.md):
+
+  End-to-end workflow for a realistic multi-batch targeted metabolomics
+  study with drift correction, batch correction, QC monitoring, and
+  final merge.
+
+- [QC Exploration with
+  PCA](https://slinghub.github.io/MRMhub/quant/articles/tutorial-09-pca-exploration.md):
+
+  Use Principal Component Analysis to identify outlier injections,
+  assess batch effects, and verify the result of drift and batch
+  corrections.
+
+- [Validating and Fixing
+  Metadata](https://slinghub.github.io/MRMhub/quant/articles/tutorial-10-metadata-validation.md):
+
+  How to validate analysis, feature, and ISTD annotations before
+  processing, diagnose common defects, and generate a metadata template
+  from your data.
+
+- [Interference
+  Correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-11-interference-correction.md):
+
+  Identify and correct isotopic or isobaric interferences between MRM
+  transitions using a contribution-based subtraction model.
