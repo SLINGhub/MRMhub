@@ -158,7 +158,7 @@ The calculated metrics are stored in the `metrics_qc` table of the
 - **Normalized Intensity Metrics** (only if
   `include_norm_intensity_stats = TRUE`): Requires that raw intensities
   were normalized, see
-  [`normalize_by_istd()`](https://slinghub.github.io/MRMhub/reference/normalize_by_istd.md)
+  [`normalize_by_istd()`](https://slinghub.github.io/MRMhub/quant/reference/normalize_by_istd.md)
   for details.
 
   - `norm_intensity_cv_*`: Coefficient of variation (CV) of normalized
@@ -166,9 +166,9 @@ The calculated metrics are stored in the `metrics_qc` table of the
 
 - **Concentration Metrics** (only if `include_conc_stats = TRUE`):
   Requires that concentration were calculated, see
-  [`quantify_by_istd()`](https://slinghub.github.io/MRMhub/reference/quantify_by_istd.md)
+  [`quantify_by_istd()`](https://slinghub.github.io/MRMhub/quant/reference/quantify_by_istd.md)
   or
-  [`quantify_by_calibration()`](https://slinghub.github.io/MRMhub/reference/quantify_by_calibration.md)
+  [`quantify_by_calibration()`](https://slinghub.github.io/MRMhub/quant/reference/quantify_by_calibration.md)
   for details.
 
   - `conc_median_*`: Median concentration values for different QC sample
@@ -186,7 +186,7 @@ The calculated metrics are stored in the `metrics_qc` table of the
   Calculates response curve statistics for each feature and each curve
   (where `#` refers to the curve identifier). Requires that response
   curves are defined in the data. See
-  [`get_response_curve_stats()`](https://slinghub.github.io/MRMhub/reference/get_response_curve_stats.md)
+  [`get_response_curve_stats()`](https://slinghub.github.io/MRMhub/quant/reference/get_response_curve_stats.md)
   for additional details.
 
   - `r2_rqc_#`: R-squared value of the linear regression for the

@@ -3,7 +3,7 @@
 This function generates scatter plots comparing two QC metrics variables
 across feature classes. A list of available QC metrics is available from
 the
-[`calc_qc_metrics()`](https://slinghub.github.io/MRMhub/reference/calc_qc_metrics.md)
+[`calc_qc_metrics()`](https://slinghub.github.io/MRMhub/quant/reference/calc_qc_metrics.md)
 documentation.
 
 ## Usage
@@ -75,7 +75,7 @@ plot_qcmetrics_comparison(
 
   Logical; whether to use all data (default) or only QC-filtered data
   (filtered via
-  [`filter_features_qc()`](https://slinghub.github.io/MRMhub/reference/filter_features_qc.md)).
+  [`filter_features_qc()`](https://slinghub.github.io/MRMhub/quant/reference/filter_features_qc.md)).
 
 - include_qualifier:
 
@@ -167,16 +167,16 @@ The comparison is visualized through one of three plot types:
 
 - `x_variable` and `y_variable` must be available in the QC metrics
   table. Please refer to the help page of
-  [`calc_qc_metrics()`](https://slinghub.github.io/MRMhub/reference/calc_qc_metrics.md)
+  [`calc_qc_metrics()`](https://slinghub.github.io/MRMhub/quant/reference/calc_qc_metrics.md)
   for more information on the available QC metric variables.
 
 - When `facet_by_class = TRUE`, then the `feature_class` must be defined
   in the metadata or retrieved via specific functions, e.g.,
-  [`parse_lipid_feature_names()`](https://slinghub.github.io/MRMhub/reference/parse_lipid_feature_names.md).
+  [`parse_lipid_feature_names()`](https://slinghub.github.io/MRMhub/quant/reference/parse_lipid_feature_names.md).
 
 ## See also
 
-[`calc_qc_metrics()`](https://slinghub.github.io/MRMhub/reference/calc_qc_metrics.md),
-[`filter_features_qc()`](https://slinghub.github.io/MRMhub/reference/filter_features_qc.md),
-[`plot_normalization_qc()`](https://slinghub.github.io/MRMhub/reference/plot_normalization_qc.md),
-[`normalize_by_istd()`](https://slinghub.github.io/MRMhub/reference/normalize_by_istd.md)
+[`calc_qc_metrics()`](https://slinghub.github.io/MRMhub/quant/reference/calc_qc_metrics.md),
+[`filter_features_qc()`](https://slinghub.github.io/MRMhub/quant/reference/filter_features_qc.md),
+[`plot_normalization_qc()`](https://slinghub.github.io/MRMhub/quant/reference/plot_normalization_qc.md),
+[`normalize_by_istd()`](https://slinghub.github.io/MRMhub/quant/reference/normalize_by_istd.md)

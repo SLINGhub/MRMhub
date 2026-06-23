@@ -73,5 +73,5 @@ column named `feature_conc`..
 
 ## See also
 
-[`quantify_by_calibration()`](https://slinghub.github.io/MRMhub/reference/quantify_by_calibration.md)
+[`quantify_by_calibration()`](https://slinghub.github.io/MRMhub/quant/reference/quantify_by_calibration.md)
 for calculating concentrations based on external calibration curves.

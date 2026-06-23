@@ -36,7 +36,7 @@ parse_plain_long_csv(
   A named character vector with the mapping of the columns in the input
   file to the columns in the output table. If NULL (default), the
   function will use the default mapping. See
-  [`import_data_csv_long()`](https://slinghub.github.io/MRMhub/reference/import_data_csv_long.md)
+  [`import_data_csv_long()`](https://slinghub.github.io/MRMhub/quant/reference/import_data_csv_long.md)
   for details.
 
 - warn_unrecognized_columns:
@@ -62,6 +62,7 @@ A tibble in the long format
 ## Examples
 
 ``` r
+
 file_path = system.file("extdata", "plain_long_dataset.csv", package = "mrmhub")
 
 tbl <- parse_plain_long_csv(path = file_path)

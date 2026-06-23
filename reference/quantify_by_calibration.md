@@ -85,9 +85,9 @@ values are stored in the `metrics_calibration` table of the returned
 
 ## See also
 
-[`calc_calibration_results()`](https://slinghub.github.io/MRMhub/reference/calc_calibration_results.md)
+[`calc_calibration_results()`](https://slinghub.github.io/MRMhub/quant/reference/calc_calibration_results.md)
 for calculating the calibration curve results including LoD and LoQ.
 
-[`quantify_by_istd()`](https://slinghub.github.io/MRMhub/reference/quantify_by_istd.md)
+[`quantify_by_istd()`](https://slinghub.github.io/MRMhub/quant/reference/quantify_by_istd.md)
 for calculation of concentrations based on spiked-in internal standard
 concentration.

@@ -50,7 +50,7 @@ plot_responsecurves(
 
   Whether to use all data (default) or only QC-filtered data (filtered
   via
-  [`filter_features_qc()`](https://slinghub.github.io/MRMhub/reference/filter_features_qc.md)).
+  [`filter_features_qc()`](https://slinghub.github.io/MRMhub/quant/reference/filter_features_qc.md)).
 
 - include_qualifier:
 
@@ -192,7 +192,7 @@ anything.
 ## Details
 
 Features for plotting can be filtered using QC filters defined via
-[`filter_features_qc()`](https://slinghub.github.io/MRMhub/reference/filter_features_qc.md)
+[`filter_features_qc()`](https://slinghub.github.io/MRMhub/quant/reference/filter_features_qc.md)
 or through `include_feature_filter` and `exclude_feature_filter`
 arguments. The resulting plots offer extensive customization options,
 including point size, line width, point color, point fill, point shape,

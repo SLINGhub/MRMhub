@@ -95,7 +95,7 @@ plot_feature_correlations(
 
   A logical value indicating whether to use all data (default) or only
   QC-filtered data (filtered via
-  [`filter_features_qc()`](https://slinghub.github.io/MRMhub/reference/filter_features_qc.md)).
+  [`filter_features_qc()`](https://slinghub.github.io/MRMhub/quant/reference/filter_features_qc.md)).
 
 - include_qualifier:
 
@@ -129,7 +129,7 @@ plot_feature_correlations(
   will be applied. This parameter provides an fast way to exclude noisy
   features from the analysis. However, it is recommended to use
   `filter_data` with
-  [`filter_features_qc()`](https://slinghub.github.io/MRMhub/reference/filter_features_qc.md).
+  [`filter_features_qc()`](https://slinghub.github.io/MRMhub/quant/reference/filter_features_qc.md).
 
 - output_pdf:
 

@@ -40,6 +40,7 @@ A tibble in the long format
 ## Examples
 
 ``` r
+
 file_path = system.file("extdata", "MRMhub_demo.tsv", package = "mrmhub")
 
 tbl <- parse_mrmhub_result(path = file_path)

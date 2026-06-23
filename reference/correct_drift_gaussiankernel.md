@@ -23,11 +23,11 @@ threshold (`cv_diff_threshold`). The conditional correction is applied
 separately for each batch if `batch_wise = TRUE`, .
 
 It is recommended to visually inspect the correction using the
-[`plot_runscatter()`](https://slinghub.github.io/MRMhub/reference/plot_runscatter.md)
+[`plot_runscatter()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.md)
 function. Set the argument `recalc_trend_after = TRUE` so that the
 trends after correction are also available for plotting. For further
 details, refer to the description of
-[`plot_runscatter()`](https://slinghub.github.io/MRMhub/reference/plot_runscatter.md).
+[`plot_runscatter()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.md).
 This will double the processing time.
 
 **Note**: The function outputs a message indicating the median CV change
@@ -134,7 +134,7 @@ correct_drift_gaussiankernel(
 - recalc_trend_after:
 
   Logical. Recalculate trends post-smoothing for visualization (e.g.,
-  [`plot_runscatter()`](https://slinghub.github.io/MRMhub/reference/plot_runscatter.md)).
+  [`plot_runscatter()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.md)).
 
 - feature_list:
 

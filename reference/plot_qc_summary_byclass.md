@@ -33,7 +33,7 @@ class.
 
 ## See also
 
-[`plot_qc_summary_overall`](https://slinghub.github.io/MRMhub/reference/plot_qc_summary_overall.md)
+[`plot_qc_summary_overall`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_summary_overall.md)
 for an overall summary plot
-[`filter_features_qc`](https://slinghub.github.io/MRMhub/reference/filter_features_qc.md)
+[`filter_features_qc`](https://slinghub.github.io/MRMhub/quant/reference/filter_features_qc.md)
 for comparing QC metrics

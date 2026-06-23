@@ -7,7 +7,7 @@ to different filtering criteria such as signal-to-blank ratios, CV
 thresholds, and linearity. The criteria are applied hierarchically,
 meaning a feature must pass all lower-tier filters before being
 considered for failure on higher-tier filters. See
-[`plot_qc_summary_byclass()`](https://slinghub.github.io/MRMhub/reference/plot_qc_summary_byclass.md)
+[`plot_qc_summary_byclass()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_summary_byclass.md)
 for more information.
 
 ## Usage

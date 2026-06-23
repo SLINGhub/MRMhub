@@ -60,7 +60,7 @@ MRMhubExperiment object
 ## Details
 
 This function is deprecated. Please use
-[`import_data_csv_wide()`](https://slinghub.github.io/MRMhub/reference/import_data_csv_wide.md)
+[`import_data_csv_wide()`](https://slinghub.github.io/MRMhub/quant/reference/import_data_csv_wide.md)
 instead.
 
 ## Examples

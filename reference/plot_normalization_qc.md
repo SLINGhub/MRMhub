@@ -86,7 +86,7 @@ plot_normalization_qc(
 
   Whether to use all data (default) or only QC-filtered data (filtered
   via
-  [`filter_features_qc()`](https://slinghub.github.io/MRMhub/reference/filter_features_qc.md)).
+  [`filter_features_qc()`](https://slinghub.github.io/MRMhub/quant/reference/filter_features_qc.md)).
 
 - include_qualifier:
 
@@ -133,26 +133,26 @@ before and after normalization.
 
 The function preselects the corresponding variables from the QC metrics
 and uses
-[`plot_qcmetrics_comparison()`](https://slinghub.github.io/MRMhub/reference/plot_qcmetrics_comparison.md)
+[`plot_qcmetrics_comparison()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qcmetrics_comparison.md)
 to visualize the results.
 
 - The data must be normalized before using
-  [`normalize_by_istd()`](https://slinghub.github.io/MRMhub/reference/normalize_by_istd.md)
+  [`normalize_by_istd()`](https://slinghub.github.io/MRMhub/quant/reference/normalize_by_istd.md)
   followed by calculation of the QC metrics table via
-  [`calc_qc_metrics()`](https://slinghub.github.io/MRMhub/reference/calc_qc_metrics.md)
+  [`calc_qc_metrics()`](https://slinghub.github.io/MRMhub/quant/reference/calc_qc_metrics.md)
   or
-  [`filter_features_qc()`](https://slinghub.github.io/MRMhub/reference/filter_features_qc.md),
+  [`filter_features_qc()`](https://slinghub.github.io/MRMhub/quant/reference/filter_features_qc.md),
   see examples below.
 
 - When `facet_by_class = TRUE`, then the `feature_class` must be defined
   in the metadata or retrieved via specific functions, e.g.,
-  [`parse_lipid_feature_names()`](https://slinghub.github.io/MRMhub/reference/parse_lipid_feature_names.md).
+  [`parse_lipid_feature_names()`](https://slinghub.github.io/MRMhub/quant/reference/parse_lipid_feature_names.md).
 
 ## See also
 
-[`plot_qcmetrics_comparison()`](https://slinghub.github.io/MRMhub/reference/plot_qcmetrics_comparison.md),
-[`calc_qc_metrics()`](https://slinghub.github.io/MRMhub/reference/calc_qc_metrics.md),
-[`filter_features_qc()`](https://slinghub.github.io/MRMhub/reference/filter_features_qc.md),
+[`plot_qcmetrics_comparison()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qcmetrics_comparison.md),
+[`calc_qc_metrics()`](https://slinghub.github.io/MRMhub/quant/reference/calc_qc_metrics.md),
+[`filter_features_qc()`](https://slinghub.github.io/MRMhub/quant/reference/filter_features_qc.md),
 
 ## Examples
 

@@ -92,7 +92,7 @@ plot_abundanceprofile(
 
   A logical value indicating whether to use all data (`FALSE`, default)
   or only QC-filtered data (`TRUE`, via
-  [`filter_features_qc()`](https://slinghub.github.io/MRMhub/reference/filter_features_qc.md)).
+  [`filter_features_qc()`](https://slinghub.github.io/MRMhub/quant/reference/filter_features_qc.md)).
   This is ignored if `use_qc_metrics` is `TRUE`.
 
 - include_qualifier:

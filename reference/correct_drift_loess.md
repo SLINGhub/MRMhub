@@ -14,11 +14,11 @@ to control the degree of the polynomial used in the local regression
 (default is 2)
 
 It is recommended to visually inspect the correction using the
-[`plot_runscatter()`](https://slinghub.github.io/MRMhub/reference/plot_runscatter.md)
+[`plot_runscatter()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.md)
 function. Set the argument `recalc_trend_after = TRUE` so that the
 trends after correction are also available for plotting. For further
 details, refer to the description of
-[`plot_runscatter()`](https://slinghub.github.io/MRMhub/reference/plot_runscatter.md).
+[`plot_runscatter()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.md).
 
 The LOESS correction only applies to samples that lie within the span of
 the QC samples used for smoothing. Extrapolation outside this range is

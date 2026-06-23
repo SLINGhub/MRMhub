@@ -67,7 +67,7 @@ correct_batch_centering(
 
   A logical value indicating whether to replace trend curves from
   previous corrections. This is only use for plotting using
-  [`plot_runscatter()`](https://slinghub.github.io/MRMhub/reference/plot_runscatter.md).
+  [`plot_runscatter()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.md).
   Default is `FALSE`.
 
 - ...:

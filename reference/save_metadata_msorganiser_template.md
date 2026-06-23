@@ -6,7 +6,7 @@ location.
 ## Usage
 
 ``` r
-save_metadata_msorganiser_template(path = "metadata_msorganiser_template.xlsm")
+save_metadata_msorganiser_template(path = "metadata_msorganiser_template.xlsx")
 ```
 
 ## Arguments
@@ -15,4 +15,4 @@ save_metadata_msorganiser_template(path = "metadata_msorganiser_template.xlsm")
 
   File path where the MRMhub Metadata Organizer file will be saved. If
   left empty (default), the file will be saved in the current working
-  directory under the file "metadata_msorganiser_template.xlsm"
+  directory under the file "metadata_msorganiser_template.xlsx"

@@ -48,7 +48,7 @@ A tibble with exported calibration metrics.
 ## Details
 
 Requires prior computation of regression results using
-[`calc_calibration_results()`](https://slinghub.github.io/MRMhub/reference/calc_calibration_results.md).
+[`calc_calibration_results()`](https://slinghub.github.io/MRMhub/quant/reference/calc_calibration_results.md).
 See its documentation for details.
 
 ### Returned Details and Metrics

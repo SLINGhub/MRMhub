@@ -48,8 +48,9 @@ instructions on how to use INTEGRATOR.
 Install the `mrmhub` package from Github using the following command:
 
 ``` r
+
 if (!require("remotes")) install.packages("remotes")
-remotes::install_github("SLINGhub/MRMhub", subdir = "quant")
+remotes::install_github("SLINGhub/MRMhub")
 ```
 
 Load the package in your R session via

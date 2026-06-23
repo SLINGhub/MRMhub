@@ -151,7 +151,7 @@ concentrations, or relative, resulting in ratios:
     or underestimation.
 
     To export the calibrated concentrations use
-    [`save_dataset_csv()`](https://slinghub.github.io/MRMhub/reference/save_dataset_csv.md)
+    [`save_dataset_csv()`](https://slinghub.github.io/MRMhub/quant/reference/save_dataset_csv.md)
     with
     `variable = "conc", or to export non-calibrated values with `variable
     =
@@ -168,20 +168,20 @@ concentrations, or relative, resulting in ratios:
     e.g., `conc_normalized`.
 
     To export the normalized abundances , use
-    [`save_dataset_csv()`](https://slinghub.github.io/MRMhub/reference/save_dataset_csv.md)
+    [`save_dataset_csv()`](https://slinghub.github.io/MRMhub/quant/reference/save_dataset_csv.md)
     with `variable = "[VARIABLE]_normalized"` For MRMhub XLSX report,
     use
-    [`save_report_xlsx()`](https://slinghub.github.io/MRMhub/reference/save_report_xlsx.md)
+    [`save_report_xlsx()`](https://slinghub.github.io/MRMhub/quant/reference/save_report_xlsx.md)
     with same variable setting as for
-    [`save_dataset_csv()`](https://slinghub.github.io/MRMhub/reference/save_dataset_csv.md)
+    [`save_dataset_csv()`](https://slinghub.github.io/MRMhub/quant/reference/save_dataset_csv.md)
     to When saving the MRMhub XLSX report via
-    [`save_report_xlsx()`](https://slinghub.github.io/MRMhub/reference/save_report_xlsx.md),
+    [`save_report_xlsx()`](https://slinghub.github.io/MRMhub/quant/reference/save_report_xlsx.md),
     availble unfiltered normalized feature abundances will be included
     by default. To include filtered normalized feature abundances, set
     `filtered_variable = "[VARIABLE]_normalized"`.
 
 ## See also
 
-[`normalize_by_istd()`](https://slinghub.github.io/MRMhub/reference/normalize_by_istd.md),
-[`quantify_by_istd()`](https://slinghub.github.io/MRMhub/reference/quantify_by_istd.md),
-[`quantify_by_calibration()`](https://slinghub.github.io/MRMhub/reference/quantify_by_calibration.md)
+[`normalize_by_istd()`](https://slinghub.github.io/MRMhub/quant/reference/normalize_by_istd.md),
+[`quantify_by_istd()`](https://slinghub.github.io/MRMhub/quant/reference/quantify_by_istd.md),
+[`quantify_by_calibration()`](https://slinghub.github.io/MRMhub/quant/reference/quantify_by_calibration.md)

@@ -64,12 +64,12 @@ specified Excel file.
 - QCfilt_x_StudySamples: Feature (QC)-filtered data (variable defiend
   via `filtered_variable`) in study samples ('SPL'). Filter have to be
   set via
-  [`filter_features_qc()`](https://slinghub.github.io/MRMhub/reference/filter_features_qc.md).
+  [`filter_features_qc()`](https://slinghub.github.io/MRMhub/quant/reference/filter_features_qc.md).
   The *x* corresponds to the `filtered_variable` argument.
 
 - QCfilt_x_AllSamples: Feature (QC)-filtered data (variable defiend via
   `filtered_variable`) in all samples. Filter have to be set via
-  [`filter_features_qc()`](https://slinghub.github.io/MRMhub/reference/filter_features_qc.md).
+  [`filter_features_qc()`](https://slinghub.github.io/MRMhub/quant/reference/filter_features_qc.md).
   The *x* corresponds to the `filtered_variable` argument.
 
 - Conc_FullDataset: Final feature concentrations from the full,
@@ -103,10 +103,10 @@ reflect these corrections.
 
 ## See also
 
-[`normalize_by_istd()`](https://slinghub.github.io/MRMhub/reference/normalize_by_istd.md),
-[`quantify_by_istd()`](https://slinghub.github.io/MRMhub/reference/quantify_by_istd.md),
-[`quantify_by_calibration()`](https://slinghub.github.io/MRMhub/reference/quantify_by_calibration.md),
-[`calibrate_by_reference()`](https://slinghub.github.io/MRMhub/reference/calibrate_by_reference.md)
+[`normalize_by_istd()`](https://slinghub.github.io/MRMhub/quant/reference/normalize_by_istd.md),
+[`quantify_by_istd()`](https://slinghub.github.io/MRMhub/quant/reference/quantify_by_istd.md),
+[`quantify_by_calibration()`](https://slinghub.github.io/MRMhub/quant/reference/quantify_by_calibration.md),
+[`calibrate_by_reference()`](https://slinghub.github.io/MRMhub/quant/reference/calibrate_by_reference.md)
 
 ## Examples
 

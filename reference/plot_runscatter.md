@@ -112,7 +112,7 @@ plot_runscatter(
 - filter_data:
 
   Logical, whether to use QC-filtered data based on criteria set via
-  [`filter_features_qc()`](https://slinghub.github.io/MRMhub/reference/filter_features_qc.md).
+  [`filter_features_qc()`](https://slinghub.github.io/MRMhub/quant/reference/filter_features_qc.md).
 
 - qc_types:
 

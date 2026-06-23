@@ -1,87 +1,64 @@
-# MRMhub
+# MRMhub-QUANT
 
-MRMhub is a set of tools for reproducible raw data processing,
-post-processing, quality control, and reporting of targeted quantitative
-small-molecule mass spectrometry experiments using Multiple Reaction
-Monitoring (MRM). The platform includes two complementary tools:
+**MRMhub-QUANT** is the post-processing module of
+[MRMhub](https://slinghub.github.io/MRMhub/), distributed as the R
+package `mrmhub`
+([`library(mrmhub)`](https://github.com/SLINGhub/MRMhub)). It covers the
+full workflow from feature intensities to curated, QC-filtered
+concentrations, and works with any intensity data — such as from
+[MRMhub](https://slinghub.github.io/MRMhub/), Skyline, Agilent
+MassHunter, and generic CSV files. MRMhub-QUANT features:
 
-- **INTEGRATOR**: Python application for efficient and automated raw
-  data processing, i.e., peak detection, picking, and integration.
+- **Reproducible pipelines.** Create reproducible computational
+  pipelines with QC vizualizations. Script, re-run, and share it.
+- **Flexible workflows.** Metabolomics and lipidomics data
+  post-processing using dedicated customizable functions.
+- **A single data object.** Data, metadata, and processing details are
+  stored in single sharable data object (`MRMhubExperiment`).
 
-- **QUANT**: R package providing a function library for data post-
-  processing, including quantitation, data corrections, comprehensive
-  quality control, and reporting.
+![](data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdib3g9IjAgMCA4NDAgMTMwIiBzdHlsZT0ibWF4LXdpZHRoOiA4NDBweDsgd2lkdGg6IDEwMCU7IGhlaWdodDogYXV0bzsgZm9udC1mYW1pbHk6IC1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJiMzOTtTZWdvZSBVSSYjMzk7LCBzYW5zLXNlcmlmOyI+PHN0eWxlPgogICAgLndmLWJveCB7IHJ4OiA4OyByeTogODsgc3Ryb2tlLXdpZHRoOiAxLjU7IGN1cnNvcjogcG9pbnRlcjsgdHJhbnNpdGlvbjogb3BhY2l0eSAwLjJzOyB9CiAgICAud2YtYm94OmhvdmVyIHsgb3BhY2l0eTogMC44NTsgfQogICAgLndmLWxhYmVsIHsgZm9udC1zaXplOiAxMnB4OyBmb250LXdlaWdodDogNjAwOyBmaWxsOiAjMWExYTFhOyBwb2ludGVyLWV2ZW50czogbm9uZTsgdGV4dC1kZWNvcmF0aW9uOiB1bmRlcmxpbmU7IHRleHQtdW5kZXJsaW5lLW9mZnNldDogMnB4OyB9CiAgICAud2YtYXJyb3cgeyBmaWxsOiAjMkMzRTUwOyB9CiAgICAud2YtYm94LWRhc2hlZCB7IGZpbGw6IHRyYW5zcGFyZW50OyBzdHJva2UtZGFzaGFycmF5OiA0LDM7IH0KICAgIC53Zi1ib3gtZGFzaGVkOmhvdmVyIHsgZmlsbDogcmdiYSg5MSwxNDMsMTY4LDAuMDgpOyB9CiAgICAud2YtZGV0YWlsIHsgZm9udC1zaXplOiA5LjVweDsgZmlsbDogIzU1NTsgcG9pbnRlci1ldmVudHM6IG5vbmU7IH0KICA8L3N0eWxlPgo8YSBocmVmPSJodHRwczovL3NsaW5naHViLmdpdGh1Yi5pby9NUk1odWIvcXVhbnQvYXJ0aWNsZXMvbWFudWFsLTA1YS13aGljaC1pbXBvcnRlci5tZCI+PHJlY3QgY2xhc3M9IndmLWJveCB3Zi1ib3gtZGFzaGVkIiB4PSIzNSIgeT0iMTAiIHdpZHRoPSIxMTAiIGhlaWdodD0iNzAiIHN0cm9rZT0iIzVCOEZBOCIgLz48dGV4dCBjbGFzcz0id2YtbGFiZWwiIHg9IjkwIiB5PSI1MCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+RGF0YSBJbXBvcnQ8L3RleHQ+PC9hPiA8dGV4dCBjbGFzcz0id2YtZGV0YWlsIiB4PSI5MCIgeT0iOTgiIHRleHQtYW5jaG9yPSJtaWRkbGUiPk1STWh1Yi1JTlRFR1JBVE9SPC90ZXh0Pjx0ZXh0IGNsYXNzPSJ3Zi1kZXRhaWwiIHg9IjkwIiB5PSIxMTIiIHRleHQtYW5jaG9yPSJtaWRkbGUiPk90aGVyIGZvcm1hdHM8L3RleHQ+PHBvbHlnb24gY2xhc3M9IndmLWFycm93IiBwb2ludHM9IjE0OCwzOCAxNDgsNTIgMTY0LDQ1Ij48L3BvbHlnb24+PGEgaHJlZj0iaHR0cHM6Ly9zbGluZ2h1Yi5naXRodWIuaW8vTVJNaHViL3F1YW50L2FydGljbGVzL21hbnVhbC0wNi1tZXRhZGF0YS1pbXBvcnQubWQiPjxyZWN0IGNsYXNzPSJ3Zi1ib3giIHg9IjE2NyIgeT0iMTAiIHdpZHRoPSIxMTAiIGhlaWdodD0iNzAiIGZpbGw9IiNmNWUwYzgiIHN0cm9rZT0iI0Q0OTE0RSIgLz48dGV4dCBjbGFzcz0id2YtbGFiZWwiIHg9IjIyMiIgeT0iNTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiPk1ldGFkYXRhPC90ZXh0PjwvYT4gPHRleHQgY2xhc3M9IndmLWRldGFpbCIgeD0iMjIyIiB5PSI5OCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+aW1wb3J0IENTVi9YTFM8L3RleHQ+PHRleHQgY2xhc3M9IndmLWRldGFpbCIgeD0iMjIyIiB5PSIxMTIiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkludGVncml0eSB2YWxpZGF0aW9uPC90ZXh0Pjxwb2x5Z29uIGNsYXNzPSJ3Zi1hcnJvdyIgcG9pbnRzPSIyODAsMzggMjgwLDUyIDI5Niw0NSI+PC9wb2x5Z29uPjxhIGhyZWY9Imh0dHBzOi8vc2xpbmdodWIuZ2l0aHViLmlvL01STWh1Yi9xdWFudC9hcnRpY2xlcy9yZWNpcGUtMDEtZXh0LWNhbGlicmF0aW9uLXFjLm1kIj48cmVjdCBjbGFzcz0id2YtYm94IiB4PSIyOTkiIHk9IjEwIiB3aWR0aD0iMTEwIiBoZWlnaHQ9IjcwIiBmaWxsPSIjZDhlNmQ0IiBzdHJva2U9IiM2QjlFNUUiIC8+PHRleHQgY2xhc3M9IndmLWxhYmVsIiB4PSIzNTQiIHk9IjQyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj48dHNwYW4geD0iMzU0IiBkeT0iMCI+Tm9ybWFsaXplIC88L3RzcGFuPjx0c3BhbiB4PSIzNTQiIGR5PSIxNiI+UXVhbnRpZnk8L3RzcGFuPjwvdGV4dD48L2E+IDx0ZXh0IGNsYXNzPSJ3Zi1kZXRhaWwiIHg9IjM1NCIgeT0iOTgiIHRleHQtYW5jaG9yPSJtaWRkbGUiPklTVEQ8L3RleHQ+PHRleHQgY2xhc3M9IndmLWRldGFpbCIgeD0iMzU0IiB5PSIxMTIiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkNhbGlicmF0aW9uIGN1cnZlPC90ZXh0Pjxwb2x5Z29uIGNsYXNzPSJ3Zi1hcnJvdyIgcG9pbnRzPSI0MTIsMzggNDEyLDUyIDQyOCw0NSI+PC9wb2x5Z29uPjxhIGhyZWY9Imh0dHBzOi8vc2xpbmdodWIuZ2l0aHViLmlvL01STWh1Yi9xdWFudC9hcnRpY2xlcy9tYW51YWwtMDctZHJpZnQtYmF0Y2gtY29ycmVjdGlvbi5tZCI+PHJlY3QgY2xhc3M9IndmLWJveCIgeD0iNDMxIiB5PSIxMCIgd2lkdGg9IjExMCIgaGVpZ2h0PSI3MCIgZmlsbD0iI2VjZDJkMiIgc3Ryb2tlPSIjQzI3MTcxIiAvPjx0ZXh0IGNsYXNzPSJ3Zi1sYWJlbCIgeD0iNDg2IiB5PSI1MCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+Q29ycmVjdGlvbnM8L3RleHQ+PC9hPiA8dGV4dCBjbGFzcz0id2YtZGV0YWlsIiB4PSI0ODYiIHk9Ijk4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5EcmlmdDwvdGV4dD48dGV4dCBjbGFzcz0id2YtZGV0YWlsIiB4PSI0ODYiIHk9IjExMiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+QmF0Y2g8L3RleHQ+PHBvbHlnb24gY2xhc3M9IndmLWFycm93IiBwb2ludHM9IjU0NCwzOCA1NDQsNTIgNTYwLDQ1Ij48L3BvbHlnb24+PGEgaHJlZj0iaHR0cHM6Ly9zbGluZ2h1Yi5naXRodWIuaW8vTVJNaHViL3F1YW50L2FydGljbGVzL3R1dG9yaWFsLTA5LXBjYS1leHBsb3JhdGlvbi5tZCI+PHJlY3QgY2xhc3M9IndmLWJveCIgeD0iNTYzIiB5PSIxMCIgd2lkdGg9IjExMCIgaGVpZ2h0PSI3MCIgZmlsbD0iI2Q2ZTRlYiIgc3Ryb2tlPSIjNUI4RkE4IiAvPjx0ZXh0IGNsYXNzPSJ3Zi1sYWJlbCIgeD0iNjE4IiB5PSI1MCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+UUM8L3RleHQ+PC9hPiA8dGV4dCBjbGFzcz0id2YtZGV0YWlsIiB4PSI2MTgiIHk9Ijk4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5NZXRyaWNzPC90ZXh0Pjx0ZXh0IGNsYXNzPSJ3Zi1kZXRhaWwiIHg9IjYxOCIgeT0iMTEyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5QbG90czwvdGV4dD48cG9seWdvbiBjbGFzcz0id2YtYXJyb3ciIHBvaW50cz0iNjc2LDM4IDY3Niw1MiA2OTIsNDUiPjwvcG9seWdvbj48YSBocmVmPSJodHRwczovL3NsaW5naHViLmdpdGh1Yi5pby9NUk1odWIvcXVhbnQvYXJ0aWNsZXMvcmVjaXBlLTAyLWN1c3RvbS1xYy1yZXBvcnQubWQiPjxyZWN0IGNsYXNzPSJ3Zi1ib3giIHg9IjY5NSIgeT0iMTAiIHdpZHRoPSIxMTAiIGhlaWdodD0iNzAiIGZpbGw9IiNjOGNmZDYiIHN0cm9rZT0iIzJDM0U1MCIgLz48dGV4dCBjbGFzcz0id2YtbGFiZWwiIHg9Ijc1MCIgeT0iNTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlJlcG9ydGluZzwvdGV4dD48L2E+IDx0ZXh0IGNsYXNzPSJ3Zi1kZXRhaWwiIHg9Ijc1MCIgeT0iOTgiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlBsYWluIHRhYmxlczwvdGV4dD48dGV4dCBjbGFzcz0id2YtZGV0YWlsIiB4PSI3NTAiIHk9IjExMiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+UUMgcmVwb3J0czwvdGV4dD48L3N2Zz4=)
 
-The modular functionalities and defined data structures support diverse
-analytical designs, data formats, and processing tasks, as found in
-metabolomics, lipidomics and other quantitative small molecule analyses.
-`MRMhub` is intended for both analytical and bioinformatics scientists
-and facilitates collaboration between them. It enables the creation of
-efficient, customizable, supervisable, and documented end-to-end data
-processing workflows through intuitive functions and data objects.
+## Quick Start and Demos
 
-## Usage
+- **[Installation](https://slinghub.github.io/MRMhub/quant/articles/manual-00-get-started.md)**
+  — install and verify your setup
+- **[Example](https://slinghub.github.io/MRMhub/quant/articles/tutorial-03-lipidomics-workflow.md)** -
+  Targeted Lipidomics Data Processing
+- **[Example](https://slinghub.github.io/MRMhub/quant/articles/recipe-01-ext-calibration-qc.md)** -
+  Quantitative Assay with Ext. Calibration
+- **[Quick
+  Start](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md)** -
+  5 minute run on bundled data
+- **[Prepare your
+  data](https://slinghub.github.io/MRMhub/quant/articles/manual-05a-which-importer.md)** -
+  file formats and importers
 
-**INTEGRATOR** (Peak Integration)
+## Installation and Updating
 
-To download the latest release of INTEGRATOR, visit the [Releases
-page](https://github.com/SLINGhub/MRMhub/releases). Choose the
-appropriate version for your operating system (Windows, macOS, or Linux)
-and download the corresponding executable file. Unzip the downloaded
-file and double-click the executable to launch the application. Refer to
-the [Documentation](https://slinghub.github.io/MRMhub/) for detailed
-instructions on how to use INTEGRATOR.
-
-**QUANT** (Postprocessing and Quality Control)
-
-Install the `mrmhub` package from Github using the following command:
+Make sure to use a fresh R session without loaded packages (quit
+RStudio/Positron first to avoid locked packages):
 
 ``` r
-if (!require("remotes")) install.packages("remotes")
-remotes::install_github("SLINGhub/MRMhub", subdir = "quant")
+
+if (!require("pak")) install.packages("pak")
+pak::pak("SLINGhub/MRMhub")
 ```
 
-Load the package in your R session via
-[`library(mrmhub)`](https://github.com/SLINGhub/MRMhub). For detailed
-usage instructions and examples, refer to the
-[Documentation](https://slinghub.github.io/MRMhub/).
-
-## Documentation
-
-See the online Documentation on
-[https://slinghub.github.io/MRMhub](https://slinghub.github.io/MRMhub/)
-for detailed information on installation, usage, and examples of MRMhub.
+For more details and troubleshooting see
+[Installation](https://slinghub.github.io/MRMhub/quant/articles/manual-00-get-started.md)
+and [Installation Troubleshooting &
+FAQ](https://slinghub.github.io/MRMhub/quant/articles/manual-09-troubleshooting.md).
 
 ## Contributing
 
-We welcome contributions. For questions, bug reports, feature requests,
-or suggestions, please contact us directly or submit an issue through
-the [GitHub issues](https://github.com/SLINGhub/MRMhub/issues) page.
-
-Please note that the MRMhub project is released with a [Contributor Code
-of
+Questions, bug reports, feature requests, and suggestions are welcome
+via [GitHub issues](https://github.com/SLINGhub/MRMhub/issues). The
+project is released with a [Contributor Code of
 Conduct](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html).
-By contributing to this project, you agree to abide by its terms.
 
-## Dual Licensing Options
+## Dual licensing
 
-The source code and models within this repository are dual licenced. You
-may choose to use it under the terms of the [GNU
+The source code is dual-licensed: [GNU
 AGPLv3](https://www.gnu.org/licenses/agpl-3.0.en.html) for
-non-commercial purposes, or you can obtain a commercial license for
-commercial use.
-
-For non-commercial uses and licensing of this / these code and models
-and its derivatives, an open-source licence is granted in accordance
-with the following terms and conditions - [GNU
-AGPLv3](https://www.gnu.org/licenses/agpl-3.0.en.html).
-
-### For commercial use and licensing of this / these code and models, please contact -
-
-Jonathan Tan ( <jonathan_tan@nus.edu.sg> )
-
-Reporting unauthorized commercial use and/or further enquiries
-
-If you become aware of any unauthorised commercial use of this source
-code and models or have any questions regarding licensing terms, please
-contact Jonathan Tan ( <jonathan_tan@nus.edu.sg> ).
+non-commercial use, or commercial licensing — contact Jonathan Tan
+(<jonathan_tan@nus.edu.sg>).

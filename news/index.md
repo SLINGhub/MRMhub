@@ -4,6 +4,21 @@
 
 ### New features
 
+#### Export to mzTab-M (`save_dataset_mztab()`)
+
+- New
+  [`save_dataset_mztab()`](https://slinghub.github.io/MRMhub/quant/reference/save_dataset_mztab.md)
+  writes a processed `MRMhubExperiment` to the HUPO-PSI
+  [mzTab-M](https://github.com/HUPO-PSI/mzTab-M) 2.0.0-M standard format
+  (the format expected by repositories such as MetaboLights). Each
+  analysis becomes an assay, each feature a Small Molecule Feature
+  (`SMF`) row grouped into Small Molecule Summary (`SML`) rows by
+  analyte. The abundance variable is selectable via `variable` (default
+  `"conc"`, with fall-back to raw intensity for unquantified data), and
+  the metadata header can be enriched with `instrument`, `contact` and
+  `publication`. The writer is pure R and adds no runtime dependency.
+  See the *Export to mzTab-M* recipe article.
+
 #### Handling of analytical sequence gaps in `plot_runscatter()` and `plot_rla_boxplot()`
 
 These functions gain the following new arguments to handle gaps in the
@@ -27,7 +42,7 @@ analytical sequence:
 
 #### Plotting multiple response curves per feature in `plot_responsecurves()`
 
-[`plot_responsecurves()`](https://slinghub.github.io/MRMhub/reference/plot_responsecurves.md)
+[`plot_responsecurves()`](https://slinghub.github.io/MRMhub/quant/reference/plot_responsecurves.md)
 gains the following new arguments:
 
 - `curve_layout` — one of `"overlay"`, `"rows"`, or `"cols"`.

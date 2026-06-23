@@ -9,11 +9,11 @@ run sequence. The correction can be applied to "intensity",
 "norm_intensity", or "conc" data.
 
 It is recommended to visually inspect the correction using the
-[`plot_runscatter()`](https://slinghub.github.io/MRMhub/reference/plot_runscatter.md)
+[`plot_runscatter()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.md)
 function. Set the argument `recalc_trend_after = TRUE` so that the
 trends after correction are also available for plotting. For further
 details, refer to the description of
-[`plot_runscatter()`](https://slinghub.github.io/MRMhub/reference/plot_runscatter.md).
+[`plot_runscatter()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.md).
 
 The corrections can be applied on a batch-by-batch basis
 (`batch_wise = TRUE`, default) or across all batches

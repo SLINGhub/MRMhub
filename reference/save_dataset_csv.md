@@ -42,7 +42,7 @@ save_dataset_csv(
 
   A logical value indicating whether to use all data (default) or only
   QC-filtered data (filtered via
-  [`filter_features_qc()`](https://slinghub.github.io/MRMhub/reference/filter_features_qc.md)).
+  [`filter_features_qc()`](https://slinghub.github.io/MRMhub/quant/reference/filter_features_qc.md)).
   Default is `FALSE`.
 
 - qc_types:
@@ -84,7 +84,7 @@ save_dataset_csv(
 
 ## See also
 
-[`normalize_by_istd()`](https://slinghub.github.io/MRMhub/reference/normalize_by_istd.md),
-[`quantify_by_istd()`](https://slinghub.github.io/MRMhub/reference/quantify_by_istd.md),
-[`quantify_by_calibration()`](https://slinghub.github.io/MRMhub/reference/quantify_by_calibration.md),
-[`calibrate_by_reference()`](https://slinghub.github.io/MRMhub/reference/calibrate_by_reference.md)
+[`normalize_by_istd()`](https://slinghub.github.io/MRMhub/quant/reference/normalize_by_istd.md),
+[`quantify_by_istd()`](https://slinghub.github.io/MRMhub/quant/reference/quantify_by_istd.md),
+[`quantify_by_calibration()`](https://slinghub.github.io/MRMhub/quant/reference/quantify_by_calibration.md),
+[`calibrate_by_reference()`](https://slinghub.github.io/MRMhub/quant/reference/calibrate_by_reference.md)
