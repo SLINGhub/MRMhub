@@ -141,6 +141,65 @@ test_that("table-section headers are stable (snapshot)", {
   expect_snapshot(cat(headers, sep = "\n"))
 })
 
+test_that("import_data_mztab reads a Lipid Data Analyzer file", {
+  f <- system.file("extdata", "lda_example.mzTab", package = "mrmhub")
+  expect_true(file.exists(f))
+
+  mexp <- import_data_mztab(MRMhubExperiment(title = "LDA"), f, silent = TRUE)
+
+  # 3 assays x 4 features (one analyte split into two adduct features)
+  expect_equal(length(unique(mexp@dataset_orig$analysis_id)), 3L)
+  expect_equal(length(unique(mexp@dataset_orig$feature_id)), 4L)
+
+  # analysis_id derived from ms_run location basename, extension stripped
+  expect_setequal(
+    unique(mexp@dataset_orig$analysis_id),
+    c("001_liver_A", "002_liver_B", "003_liver_C")
+  )
+
+  # shared analyte name disambiguated by adduct
+  expect_true("Cer d18:1/16:0 | [M-H]-" %in% mexp@dataset_orig$feature_id)
+  expect_true("Cer d18:1/16:0 | [M+HCOO]-" %in% mexp@dataset_orig$feature_id)
+
+  # abundance -> feature_intensity, with "null" abundance -> NA
+  lps <- mexp@dataset_orig |>
+    dplyr::filter(.data$feature_id == "LPS 11:1") |>
+    dplyr::arrange(.data$analysis_id)
+  expect_equal(lps$feature_intensity, c(12345.6, 23456.7, NA))
+
+  # study_variable membership imported as batch_id (best effort)
+  expect_setequal(
+    unique(mexp@annot_analyses$batch_id),
+    c("mouse liver 1", "mouse liver 2")
+  )
+
+  # feature metadata carried through to annot_features
+  expect_true(any(!is.na(mexp@annot_features$molecular_weight)))
+  expect_equal(
+    mexp@annot_features$chem_formula[
+      mexp@annot_features$feature_id == "LPS 11:1"
+    ],
+    "C17H32NO9P"
+  )
+})
+
+test_that("export -> import round-trips feature and analysis counts", {
+  out <- withr::local_tempfile(fileext = ".mzTab")
+  suppressMessages(save_dataset_mztab(mexp_quant, out, variable = "intensity"))
+
+  back <- import_data_mztab(MRMhubExperiment(), out, silent = TRUE)
+
+  expect_equal(
+    length(unique(back@dataset_orig$analysis_id)),
+    length(unique(mexp_quant@dataset$analysis_id))
+  )
+  expect_equal(
+    length(unique(back@dataset_orig$feature_id)),
+    length(unique(mexp_quant@dataset$feature_id))
+  )
+  expect_true(any(!is.na(back@dataset_orig$feature_intensity)))
+})
+
 test_that("output parses with the rmzTabM reference reader (oracle)", {
   skip_on_cran()
   skip_if_not_installed("rmzTabM")

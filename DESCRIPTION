@@ -63,7 +63,8 @@ Suggests:
     carrier,
     shiny,
     bslib,
-    rmzTabM
+    rmzTabM,
+    DT
 Remotes:
     SLINGhub/lancer,
     github::lifs-tools/rmzTabM

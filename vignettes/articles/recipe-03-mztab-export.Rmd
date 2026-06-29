@@ -1,14 +1,15 @@
 ---
-title: "Recipe: Export to mzTab-M"
+title: "Recipe: Import & Export mzTab-M"
 output:
   rmarkdown::html_vignette:
     fig_width: 7
     fig_height: 5
 description: |
-  Write a processed MRMhubExperiment to the HUPO-PSI mzTab-M standard format
-  for sharing, archiving, or submission to repositories such as MetaboLights.
+  Exchange data with the HUPO-PSI mzTab-M standard format: export a processed
+  MRMhubExperiment for sharing or MetaboLights submission, and import results
+  from tools such as Lipid Data Analyzer, MS-DIAL or MZmine.
 vignette: >
-  %\VignetteIndexEntry{Recipe: Export to mzTab-M}
+  %\VignetteIndexEntry{Recipe: Import & Export mzTab-M}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -119,6 +120,32 @@ rmzTabM::extractSmallMoleculeFeatures(m)
 
 `mrmhub` itself has **no runtime dependency** on `rmzTabM` &mdash; the writer is
 self-contained.
+
+## Importing mzTab-M
+
+`import_data_mztab()` ingests mzTab-M produced by other tools &mdash; for
+example [Lipid Data Analyzer](http://genome.tugraz.at/lda2/), MS-DIAL or
+MZmine &mdash; into an `MRMhubExperiment`:
+
+```{r}
+mexp <- MRMhubExperiment(title = "Imported lipidomics")
+mexp <- import_data_mztab(mexp, "LDA_export.mzTab")
+```
+
+Each Small Molecule Feature (`SMF`) becomes an mrmhub feature and each assay an
+analysis. The per-assay abundances are imported as `feature_intensity`, and
+feature identities (name, formula, neutral mass, m/z, retention time) are taken
+from the `SMF`/`SML` sections. Where one analyte is reported as several
+features (e.g. different adducts), the adduct is appended to keep `feature_id`
+unique (`Cer d18:1/16:0 | [M-H]-`).
+
+<div class="alert alert-warning" role="alert">
+<strong>Import is partial by nature.</strong> mzTab-M carries a single
+abundance per feature, so internal-standard relationships, QC-type assignments,
+and calibration metadata are <em>not</em> present and must be supplied with
+<code>add_metadata()</code>. <code>study_variable</code> groups are imported
+best-effort as <code>batch_id</code> (mzTab-M has no analytical-batch concept).
+</div>
 
 ## Next Steps
 

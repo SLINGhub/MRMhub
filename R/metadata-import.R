@@ -36,7 +36,7 @@ import_metadata_from_data <- function(
       "feature_id",
       dplyr::any_of(c(
         "feature_class",
-        "feature_sum_formula",
+        "chem_formula",
         "molecular_weight",
         "precursor_mz",
         "product_mz",

@@ -2,7 +2,7 @@
 
 ## New features
 
-### Export to mzTab-M (`save_dataset_mztab()`)
+### mzTab-M import & export
 
 * New `save_dataset_mztab()` writes a processed `MRMhubExperiment` to the
   HUPO-PSI [mzTab-M](https://github.com/HUPO-PSI/mzTab-M) 2.0.0-M standard
@@ -11,9 +11,17 @@
   row grouped into Small Molecule Summary (`SML`) rows by analyte. The
   abundance variable is selectable via `variable` (default `"conc"`, with
   fall-back to raw intensity for unquantified data), and the metadata header
-  can be enriched with `instrument`, `contact` and `publication`. The writer
-  is pure R and adds no runtime dependency. See the *Export to mzTab-M* recipe
-  article.
+  can be enriched with `instrument`, `contact` and `publication`. Output is
+  validator-passing against the official LIFS mzTab-M validator.
+
+* New `import_data_mztab()` imports mzTab-M files produced by other tools
+  (e.g. Lipid Data Analyzer, MS-DIAL, MZmine). Each `SMF` becomes a feature
+  and each assay an analysis; per-assay abundances are imported as
+  `feature_intensity`, with feature identities and `study_variable` grouping
+  (as `batch_id`) carried over where available.
+
+* Both directions are pure R and add **no runtime dependency**. See the
+  *Import & Export mzTab-M* recipe article.
 
 ### Handling of analytical sequence gaps in `plot_runscatter()` and `plot_rla_boxplot()`
 

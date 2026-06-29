@@ -591,3 +591,348 @@ save_dataset_mztab <- function(
   )))
   invisible(path)
 }
+
+# ---- import -----------------------------------------------------------------
+
+# Split a vector of raw mzTab lines into a tibble for one section, given its
+# header line (e.g. the "SFH ..." line) and the matching data-row prefix
+# (e.g. "SMF"). Returns NULL if the section is absent. "null"/empty -> NA.
+.mztab_read_section <- function(parts, prefixes, header_prefix, row_prefix) {
+  hidx <- which(prefixes == header_prefix)
+  if (length(hidx) == 0) {
+    return(NULL)
+  }
+  header <- parts[[hidx[[1]]]][-1]
+  rows <- parts[prefixes == row_prefix]
+  if (length(rows) == 0) {
+    return(NULL)
+  }
+  ncol <- length(header)
+  mat <- t(vapply(
+    rows,
+    function(r) {
+      r <- r[-1]
+      length(r) <- ncol
+      r
+    },
+    character(ncol)
+  ))
+  out <- tibble::as_tibble(mat, .name_repair = "minimal")
+  names(out) <- header
+  out |>
+    dplyr::mutate(dplyr::across(
+      dplyr::everything(),
+      \(x) dplyr::na_if(dplyr::na_if(x, "null"), "")
+    ))
+}
+
+# pull MTD index from a key like "assay[3]-ms_run_ref" -> 3
+.mztab_index <- function(x) {
+  as.integer(stringr::str_match(x, "\\[(\\d+)\\]")[, 2])
+}
+
+#' Parse an mzTab-M file into a long mrmhub table
+#'
+#' Internal worker behind [import_data_mztab()]. Reads the `MTD`, `SMF`/`SFH`
+#' and `SML`/`SMH` sections of an mzTab-M file and returns a long tibble (one
+#' row per analysis x feature) shaped like the output of [parse_plain_long_csv()].
+#'
+#' @param path Path to a `.mzTab` file.
+#' @param silent Suppress messages.
+#' @return A long-format tibble.
+#' @keywords internal
+parse_mztab <- function(path, silent = FALSE) {
+  lines <- readr::read_lines(path, progress = FALSE)
+  parts <- stringr::str_split(lines, "\t")
+  prefixes <- purrr::map_chr(parts, \(p) if (length(p) > 0) p[[1]] else "")
+
+  # --- MTD: key/value pairs -------------------------------------------------
+  mtd_parts <- parts[prefixes == "MTD"]
+  mtd <- tibble::tibble(
+    key = purrr::map_chr(mtd_parts, \(p) p[[2]]),
+    value = purrr::map_chr(
+      mtd_parts,
+      \(p) if (length(p) >= 3) p[[3]] else NA_character_
+    )
+  )
+
+  # assay[n] -> ms_run[m] -> location -> analysis_id
+  assays <- mtd |>
+    dplyr::filter(stringr::str_detect(
+      .data$key,
+      "^assay\\[\\d+\\]-ms_run_ref$"
+    )) |>
+    dplyr::transmute(
+      assay_no = .mztab_index(.data$key),
+      ms_run_no = .mztab_index(.data$value)
+    )
+  ms_runs <- mtd |>
+    dplyr::filter(stringr::str_detect(
+      .data$key,
+      "^ms_run\\[\\d+\\]-location$"
+    )) |>
+    dplyr::transmute(
+      ms_run_no = .mztab_index(.data$key),
+      location = .data$value
+    )
+
+  if (nrow(assays) == 0) {
+    # no assay refs: fall back to ms_run order, else number the abundance cols
+    assays <- ms_runs |>
+      dplyr::mutate(assay_no = dplyr::row_number())
+  } else {
+    assays <- dplyr::left_join(assays, ms_runs, by = "ms_run_no")
+  }
+
+  assays <- assays |>
+    dplyr::mutate(
+      raw_data_filename = .mztab_clean_location(.data$location),
+      analysis_id = stringr::str_remove(
+        .data$raw_data_filename,
+        stringr::regex(
+          "\\.(mzML|d|raw|wiff|wiff2|lcd|chrom)$",
+          ignore_case = TRUE
+        )
+      ),
+      analysis_id = dplyr::if_else(
+        is.na(.data$analysis_id) | .data$analysis_id == "",
+        paste0("assay_", .data$assay_no),
+        .data$analysis_id
+      )
+    )
+
+  # study_variable[k] membership -> best-effort batch_id
+  sv_name <- mtd |>
+    dplyr::filter(stringr::str_detect(
+      .data$key,
+      "^study_variable\\[\\d+\\]$"
+    )) |>
+    dplyr::transmute(sv_no = .mztab_index(.data$key), batch_id = .data$value)
+  sv_refs <- mtd |>
+    dplyr::filter(stringr::str_detect(
+      .data$key,
+      "^study_variable\\[\\d+\\]-assay_refs$"
+    )) |>
+    dplyr::transmute(
+      sv_no = .mztab_index(.data$key),
+      assay_no = stringr::str_split(.data$value, "\\s*\\|\\s*")
+    ) |>
+    tidyr::unnest("assay_no") |>
+    dplyr::mutate(assay_no = .mztab_index(.data$assay_no))
+  sv_map <- sv_refs |>
+    dplyr::left_join(sv_name, by = "sv_no") |>
+    dplyr::distinct(.data$assay_no, .keep_all = TRUE) |>
+    dplyr::select("assay_no", "batch_id")
+  if (nrow(sv_map) > 0) {
+    assays <- dplyr::left_join(assays, sv_map, by = "assay_no")
+  }
+
+  # --- SMF (features) + SML (analyte names) ---------------------------------
+  smf <- .mztab_read_section(parts, prefixes, "SFH", "SMF")
+  if (is.null(smf)) {
+    cli_abort(col_red(
+      "No small molecule feature (SMF) section found in '{path}'. mzTab import requires SMF rows."
+    ))
+  }
+  smf <- dplyr::mutate(smf, SMF_ID = stringr::str_squish(.data$SMF_ID))
+  sml <- .mztab_read_section(parts, prefixes, "SMH", "SML")
+
+  # SMF_ID -> chemical name / formula / mass, taken from the referencing SML
+  if (!is.null(sml) && "SMF_ID_REFS" %in% names(sml)) {
+    sml_map <- sml |>
+      dplyr::transmute(
+        smf_id = stringr::str_split(.data$SMF_ID_REFS, "\\s*\\|\\s*"),
+        chemical_name = dplyr::coalesce(
+          .mztab_col(sml, "chemical_name"),
+          .mztab_col(sml, "database_identifier")
+        ),
+        chem_formula = .mztab_col(sml, "chemical_formula"),
+        molecular_weight = suppressWarnings(as.numeric(
+          .mztab_col(sml, "theoretical_neutral_mass")
+        ))
+      ) |>
+      tidyr::unnest("smf_id") |>
+      dplyr::mutate(smf_id = stringr::str_squish(.data$smf_id)) |>
+      dplyr::distinct(.data$smf_id, .keep_all = TRUE)
+  } else {
+    sml_map <- tibble::tibble(smf_id = character(), chemical_name = character())
+  }
+
+  features <- smf |>
+    dplyr::transmute(
+      smf_id = .data$SMF_ID,
+      adduct_ion = .mztab_col(smf, "adduct_ion"),
+      method_product_mz = suppressWarnings(as.numeric(
+        .mztab_col(smf, "exp_mass_to_charge")
+      )),
+      feature_rt = suppressWarnings(as.numeric(
+        .mztab_col(smf, "retention_time_in_seconds")
+      )) /
+        60,
+      is_istd = .mztab_logical(.mztab_col(
+        smf,
+        "opt_global_is_internal_standard"
+      ))
+    ) |>
+    dplyr::left_join(sml_map, by = "smf_id") |>
+    dplyr::mutate(
+      method_polarity = dplyr::case_when(
+        stringr::str_ends(.data$adduct_ion, "-") ~ "NEG",
+        stringr::str_ends(.data$adduct_ion, "\\+") ~ "POS",
+        TRUE ~ NA_character_
+      ),
+      .base = dplyr::coalesce(.data$chemical_name, paste0("SMF_", .data$smf_id))
+    )
+
+  # build a unique, human-readable feature_id (disambiguate shared names)
+  features <- features |>
+    dplyr::mutate(.shared = dplyr::n() > 1, .by = ".base") |>
+    dplyr::mutate(
+      feature_id = dplyr::if_else(
+        .data$.shared,
+        paste0(
+          .data$.base,
+          " | ",
+          dplyr::coalesce(.data$adduct_ion, paste0("SMF", .data$smf_id))
+        ),
+        .data$.base
+      )
+    )
+  features$feature_id <- make.unique(features$feature_id, sep = " #")
+
+  # --- abundance_assay[n] -> long feature_intensity -------------------------
+  smf_names <- names(smf)
+  abund_cols <- smf_names[stringr::str_detect(
+    smf_names,
+    "^abundance_assay\\[\\d+\\]$"
+  )]
+  if (length(abund_cols) == 0) {
+    cli_abort(col_red(
+      "No 'abundance_assay[n]' columns found in the SMF section of '{path}'."
+    ))
+  }
+
+  long <- smf |>
+    dplyr::select(smf_id = "SMF_ID", dplyr::all_of(abund_cols)) |>
+    tidyr::pivot_longer(
+      dplyr::all_of(abund_cols),
+      names_to = "assay_label",
+      values_to = "feature_intensity"
+    ) |>
+    dplyr::mutate(
+      assay_no = .mztab_index(.data$assay_label),
+      feature_intensity = suppressWarnings(as.numeric(.data$feature_intensity))
+    ) |>
+    dplyr::left_join(assays, by = "assay_no") |>
+    dplyr::left_join(features, by = "smf_id") |>
+    dplyr::mutate(integration_qualifier = FALSE) |>
+    dplyr::select(
+      "analysis_id",
+      "raw_data_filename",
+      "feature_id",
+      "feature_intensity",
+      "integration_qualifier",
+      dplyr::any_of(c(
+        "batch_id",
+        "method_product_mz",
+        "method_polarity",
+        "feature_rt",
+        "chem_formula",
+        "molecular_weight",
+        "is_istd"
+      ))
+    )
+
+  if (!silent) {
+    cli_alert_info(glue::glue(
+      "Parsed mzTab-M: {dplyr::n_distinct(long$analysis_id)} analyses x {dplyr::n_distinct(long$feature_id)} features."
+    ))
+  }
+  long
+}
+
+# helper: safe column extraction (returns NA vector if column absent)
+.mztab_col <- function(tbl, name) {
+  if (name %in% names(tbl)) tbl[[name]] else rep(NA_character_, nrow(tbl))
+}
+
+# helper: "TRUE"/"true" -> TRUE, else FALSE/NA
+.mztab_logical <- function(x) {
+  out <- toupper(x) == "TRUE"
+  out
+}
+
+# helper: turn an ms_run location URI into a plain filename
+.mztab_clean_location <- function(loc) {
+  loc <- stringr::str_remove(loc, "^file://+")
+  loc <- vapply(
+    loc,
+    function(x) if (is.na(x)) NA_character_ else utils::URLdecode(x),
+    character(1),
+    USE.NAMES = FALSE
+  )
+  fs::path_file(loc)
+}
+
+#' Import data from an mzTab-M file
+#'
+#' Imports quantitative results from an
+#' [mzTab-M](https://github.com/HUPO-PSI/mzTab-M) file (e.g. produced by
+#' Lipid Data Analyzer, MS-DIAL or MZmine) into an `MRMhubExperiment`. Each
+#' Small Molecule Feature (`SMF`) becomes an mrmhub feature and each assay an
+#' analysis; the per-assay abundances are imported as `feature_intensity`.
+#'
+#' @details
+#' mzTab-M is a quantification *report*, so an import is necessarily partial:
+#' the single reported abundance per feature is mapped to `feature_intensity`,
+#' and feature identities (name, formula, neutral mass, m/z, retention time)
+#' are taken from the `SMF`/`SML` sections where available. Internal-standard
+#' relationships, QC-type assignments and calibration metadata are **not**
+#' part of mzTab-M and must be supplied afterwards with [add_metadata()].
+#' `study_variable` group membership is imported best-effort as `batch_id`
+#' (mzTab-M has no analytical-batch concept).
+#'
+#' @param data An `MRMhubExperiment` object (e.g. from [MRMhubExperiment()]).
+#' @param path Path to a `.mzTab` file, or a directory of them.
+#' @param import_metadata If `TRUE` (default), derive analysis/feature metadata
+#'   (incl. `batch_id`, formula, neutral mass) from the imported data via
+#'   [import_metadata_from_data()].
+#' @param silent Suppress messages.
+#'
+#' @return The updated `MRMhubExperiment`.
+#'
+#' @seealso [import_data_mrmhub()], [save_dataset_mztab()], [add_metadata()]
+#'
+#' @examples
+#' \dontrun{
+#' mexp <- MRMhubExperiment()
+#' mexp <- import_data_mztab(mexp, "LDA_export.mzTab")
+#' }
+#'
+#' @export
+import_data_mztab <- function(
+  data = NULL,
+  path,
+  import_metadata = TRUE,
+  silent = FALSE
+) {
+  check_data(data)
+  data <- import_data_main(
+    data = data,
+    path = path,
+    import_function = "parse_mztab",
+    file_ext = "*.mzTab|*.mztab",
+    silent = silent
+  )
+  data <- set_intensity_var(
+    data,
+    variable_name = NULL,
+    auto_select = TRUE,
+    warnings = !silent,
+    "feature_intensity"
+  )
+  if (import_metadata) {
+    data <- import_metadata_from_data(data, qc_type_column_name = "qc_type")
+  }
+  data
+}

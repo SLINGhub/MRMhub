@@ -51,6 +51,7 @@ Click a **Format** to see the file structure and column meanings.
 | Skyline (small molecule) | [Long CSV](manual-05b-data-file-structures.html#str-skyline) | [`import_data_skyline()`](../reference/import_data_skyline.html) |
 | Generic spreadsheet (samples × features) | [Wide CSV](manual-05b-data-file-structures.html#str-csv-wide) | [`import_data_csv_wide()`](../reference/import_data_csv_wide.html) |
 | Generic table (one row per measurement) | [Long CSV](manual-05b-data-file-structures.html#str-csv-long) | [`import_data_csv_long()`](../reference/import_data_csv_long.html) |
+| mzTab-M (Lipid Data Analyzer, MS-DIAL, MZmine) | [mzTab-M 2.0](https://github.com/HUPO-PSI/mzTab-M) | [`import_data_mztab()`](../reference/import_data_mztab.html) |
 
 ## Metadata import
 

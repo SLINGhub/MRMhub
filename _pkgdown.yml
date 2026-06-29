@@ -69,7 +69,7 @@ navbar:
         href: articles/tutorial-07-calibration-reference.html
       - text: Custom QC Report
         href: articles/recipe-02-custom-qc-report.html
-      - text: Export to mzTab-M
+      - text: Import & Export mzTab-M
         href: articles/recipe-03-mztab-export.html
     advanced:
       text: Advanced
