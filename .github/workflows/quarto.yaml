@@ -1,0 +1,46 @@
+# .github/workflows/quarto.yml
+# Builds the Quarto docs-site/ (MRMhub landing page + INTEGRATOR manual) and
+# publishes it to the ROOT of the gh-pages branch. The QUANT pkgdown site is
+# published separately to the /quant/ subfolder by pkgdown.yaml.
+name: quarto
+
+on:
+  push:
+    branches: [main, master]
+    paths: ['docs-site/**', '.github/workflows/quarto.yaml']
+  pull_request:
+    paths: ['docs-site/**', '.github/workflows/quarto.yaml']
+  workflow_dispatch:
+
+jobs:
+  quarto:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+
+      - name: Render Quarto site
+        run: quarto render docs-site
+
+      # GitHub Pages serves with Jekyll by default, which drops files/dirs
+      # whose names start with "_". A .nojekyll marker disables that.
+      - name: Add .nojekyll
+        run: touch docs-site/_site/.nojekyll
+
+      - name: Deploy to GitHub Pages 🚀
+        if: github.event_name != 'pull_request'
+        uses: JamesIves/github-pages-deploy-action@v4.5.0
+        with:
+          # Landing page + INTEGRATOR manual own the Pages root. clean: true
+          # removes stale root files, but clean-exclude protects the QUANT
+          # pkgdown subsite deployed by pkgdown.yaml.
+          clean: true
+          clean-exclude: |
+            quant
+          branch: gh-pages
+          folder: docs-site/_site

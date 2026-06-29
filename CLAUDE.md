@@ -16,7 +16,11 @@ The two tools talk only through files: INTEGRATOR emits `long.csv` / `quant_raw.
 
 **Task runner.** A `justfile` at the root wraps the common commands — `just test`, `just check`, `just document`, `just site`, `just format` (R package) and `just build-rust` (INTEGRATOR). Install `just` with `brew install just`; `just --list` shows the menu.
 
-> **Published URL note:** the pkgdown site is served at `https://slinghub.github.io/MRMhub/quant/` — that `/quant/` is a deliberate *deploy subpath* (the Quarto `docs-site/` owns the Pages root), independent of where the package source lives. `_pkgdown.yml: url` is unchanged by the package living at the root; don't "fix" it.
+> **Published URL note:** the GitHub Pages site (`gh-pages` branch) hosts **two sites** that share the branch:
+> - **root** `https://slinghub.github.io/MRMhub/` — the Quarto `docs-site/` (landing page + INTEGRATOR manual), built and deployed by `.github/workflows/quarto.yaml` (`clean: true` with `clean-exclude: quant`).
+> - **`/quant/`** `https://slinghub.github.io/MRMhub/quant/` — the pkgdown site, deployed by `.github/workflows/pkgdown.yaml` into the `quant/` subfolder (`target-folder: quant`, `clean: true` scoped to that folder). This subpath is deliberate and matches `_pkgdown.yml: url`; don't "fix" it.
+>
+> The two deploys are coordinated so neither clobbers the other (pkgdown cleans only `quant/`; Quarto cleans the root but excludes `quant/`). Cross-links rely on this layout: the pkgdown navbar links to `integrator-manual.html` at the root, and `docs-site/` links to `/quant/`. After a structural change to the gh-pages layout, trigger the `quarto` workflow once (it owns the root) to clear stale files.
 
 ## Active documentation work
 

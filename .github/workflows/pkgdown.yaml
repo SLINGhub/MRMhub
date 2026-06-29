@@ -54,6 +54,12 @@ jobs:
         if: github.event_name != 'pull_request'
         uses: JamesIves/github-pages-deploy-action@v4.5.0
         with:
-          clean: false
+          # QUANT pkgdown site lives under the /quant/ subpath (matches
+          # `url:` in _pkgdown.yml). The Quarto docs-site/ owns the Pages
+          # root. target-folder scopes `clean` to quant/ only, so this
+          # deploy refreshes the QUANT subsite without touching the root
+          # landing page / INTEGRATOR site published by quarto.yaml.
+          clean: true
           branch: gh-pages
           folder: docs
+          target-folder: quant
