@@ -19,7 +19,7 @@ Open-source toolchain for targeted Multiple Reaction Monitoring (MRM) mass spect
 
 ## Install
 
-- **INTEGRATOR:** download from [Releases](https://github.com/SLINGhub/MRMhub/releases), unzip, double-click. macOS/Windows security setup: see [INTEGRATOR Manual](https://slinghub.github.io/MRMhub/integrator-manual.html).
+- **INTEGRATOR:** download from [Releases](https://github.com/SLINGhub/MRMhub/releases), unzip, double-click. macOS/Windows security setup: see [INTEGRATOR Manual](https://slinghub.github.io/MRMhub/integrator/).
 - **QUANT (R ≥ 4.2):** quit RStudio/Positron entirely first (locked dependencies cause most failures), then in a fresh R session:
 
   ```r
@@ -32,7 +32,8 @@ Open-source toolchain for targeted Multiple Reaction Monitoring (MRM) mass spect
 
 ## Documentation
 
-**Docs hub:** <https://slinghub.github.io/MRMhub/> — project overview + INTEGRATOR docs.
+**Docs hub:** <https://slinghub.github.io/MRMhub/> — project overview + routing.
+**INTEGRATOR docs:** <https://slinghub.github.io/MRMhub/integrator/> — manual, input files, msconvert.
 **QUANT R package docs:** <https://slinghub.github.io/MRMhub/quant/> — manual, tutorials, function reference.
 **Example workflows:** <https://slinghub.github.io/mrmhub-workflows/> — reproducible end-to-end examples.
 

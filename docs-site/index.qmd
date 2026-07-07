@@ -7,8 +7,8 @@ MRMhub processes targeted MRM mass spectrometry data — from raw vendor files t
 peak integration, quality control, normalisation, drift/batch correction, calibration, and
 quantitative reporting. It consists of **two modules that can be used independently**:
 
-- **[INTEGRATOR](integrator-manual.qmd)** — stand-alone Python application for peak detection,
-  picking, and integration.
+- **[INTEGRATOR ↗](https://slinghub.github.io/MRMhub/integrator/)** — stand-alone Python application
+  for peak detection, picking, and integration.
 - **[QUANT ↗](https://slinghub.github.io/MRMhub/quant/)** — R package (`mrmhub`) for the
   post-processing pipeline. Accepts integrated peaks from INTEGRATOR **or** common vendor outputs.
 
@@ -23,9 +23,9 @@ quantitative reporting. It consists of **two modules that can be used independen
   <rect class="wf-box" x="0" y="10" width="160" height="70" fill="#e8e8ec" stroke="#2c3e50"/>
   <text class="wf-label" x="80" y="50" text-anchor="middle">Raw data</text>
   <polygon class="wf-arrow" points="170,45 180,38 180,52"/>
-  <a href="msconvert.html"><rect class="wf-box" x="190" y="10" width="160" height="70" fill="#f5e0c8" stroke="#c87f3b"/><text class="wf-label" x="270" y="50" text-anchor="middle">msconvert</text></a>
+  <a href="https://slinghub.github.io/MRMhub/integrator/msconvert.html"><rect class="wf-box" x="190" y="10" width="160" height="70" fill="#f5e0c8" stroke="#c87f3b"/><text class="wf-label" x="270" y="50" text-anchor="middle">msconvert</text></a>
   <polygon class="wf-arrow" points="360,45 370,38 370,52"/>
-  <a href="integrator-manual.html"><rect class="wf-box" x="380" y="10" width="160" height="70" fill="#d4e8d4" stroke="#5a9a5a"/><text class="wf-label" x="460" y="50" text-anchor="middle">INTEGRATOR</text></a>
+  <a href="https://slinghub.github.io/MRMhub/integrator/"><rect class="wf-box" x="380" y="10" width="160" height="70" fill="#d4e8d4" stroke="#5a9a5a"/><text class="wf-label" x="460" y="50" text-anchor="middle">INTEGRATOR</text></a>
   <polygon class="wf-arrow" points="550,45 560,38 560,52"/>
   <rect class="wf-box" x="570" y="10" width="160" height="70" fill="#f5f2fa" stroke="#7a6ba4"/>
   <text class="wf-label" x="650" y="50" text-anchor="middle">long.csv</text>
@@ -38,9 +38,9 @@ quantitative reporting. It consists of **two modules that can be used independen
 
 | If you have... | Use | Start here |
 |---|---|---|
-| Raw vendor files (`.raw`, `.d`, `.wiff`) and need integrated peaks | INTEGRATOR + QUANT | [INTEGRATOR Manual](integrator-manual.qmd) → [QUANT install ↗](https://slinghub.github.io/MRMhub/quant/articles/manual-00-get-started.html) |
+| Raw vendor files (`.raw`, `.d`, `.wiff`) and need integrated peaks | INTEGRATOR + QUANT | [INTEGRATOR Manual ↗](https://slinghub.github.io/MRMhub/integrator/) → [QUANT install ↗](https://slinghub.github.io/MRMhub/quant/articles/manual-00-get-started.html) |
 | Integrated peaks already (MassHunter, Skyline, MS-DIAL) | QUANT only | [QUANT install ↗](https://slinghub.github.io/MRMhub/quant/articles/manual-00-get-started.html) |
-| Only peak picking | INTEGRATOR only | [INTEGRATOR Manual](integrator-manual.qmd) |
+| Only peak picking | INTEGRATOR only | [INTEGRATOR Manual ↗](https://slinghub.github.io/MRMhub/integrator/) |
 
 ## Why MRMhub?
 

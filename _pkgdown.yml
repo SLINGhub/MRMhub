@@ -40,7 +40,7 @@ navbar:
         href: articles/manual-00-integrator-vs-quant.html
       - text: '-------'
       - text: Need peak integration first?
-        href: https://slinghub.github.io/MRMhub/integrator-manual.html
+        href: https://slinghub.github.io/MRMhub/integrator/
     workflows:
       text: Workflows
       menu:

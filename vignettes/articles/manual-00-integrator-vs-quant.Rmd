@@ -107,6 +107,6 @@ walkthrough is a useful gauge of the R learning curve involved.
 
 ## See Also
 
-- [INTEGRATOR Manual ↗](https://slinghub.github.io/MRMhub/integrator-manual.html) (separate site)
+- [INTEGRATOR Manual ↗](https://slinghub.github.io/MRMhub/integrator/) (separate site)
 - [Import and prepare data files](manual-05a-which-importer.html)
 - [Your First Analysis](tutorial-00-first-analysis.html)

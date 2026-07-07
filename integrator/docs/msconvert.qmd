@@ -8,8 +8,6 @@ editor_options:
     wrap: 72
 ---
 
-# 
-
 INTEGRATOR uses mzML files as input. Users can use the MSconvert tool,
 available as part of the Proteowizard software to convert proprietary
 raw data files (.wiff for SCIEX/Waters, .raw files for Thermo Fisher, .d
@@ -36,6 +34,9 @@ on Windows PC.
 5.  Run conversion by clicking "Start", and copy the mzML files to the
     MRMhub subfolder mzML
 
-# 
-
 ![](images/paste-13.png){fig-align="center"}
+
+## Next
+
+- [Download & Project Setup](setup.qmd) — download the standalone INTEGRATOR executable.
+- [Running INTEGRATOR](running.qmd) — process your mzML files.

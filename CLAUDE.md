@@ -7,8 +7,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This repo bundles two complementary tools that share a common workflow but are independent code bases:
 
 - **Repo root** — **R package `mrmhub`**. `DESCRIPTION`, `R/`, `tests/`, `vignettes/`, `man/`, `_pkgdown.yml` all live at the top level: the repo root *is* the package root, so `R CMD check`, `devtools::*`, `pkgload`, RStudio, and CI all run from here — **no `cd` needed**. Non-package top-level items (`integrator/`, `docs-site/`, `docs/`, `CLAUDE.md`, `plan-*.prompt.md`, `justfile`, `.vscode/`, …) are hidden from the package build via `.Rbuildignore` — add an entry there when introducing a new top-level file, or `R CMD check` emits a "non-standard files at top level" NOTE.
-- `integrator/` — **INTEGRATOR**, a stand-alone application for raw peak detection / picking / integration on MRM data, shipped as a pre-built executable. Being rewritten in **Rust** (self-contained crate in `integrator/`, built + released by `.github/workflows/integrator-release.yml`); the Python in `integrator/src/*.py` is the legacy reference implementation. `integrator/MRMhub_plot.r` is a separate base-R script the executable shells out to for PDF plotting — **not** part of `mrmhub`, no dependency on it.
-- `docs-site/` — Quarto site source (`_quarto.yml`, `*.qmd`) for the project landing page / INTEGRATOR manual, published separately from the pkgdown site.
+- `integrator/` — **INTEGRATOR**, a stand-alone application for raw peak detection / picking / integration on MRM data, shipped as a pre-built executable. Being rewritten in **Rust** (self-contained crate in `integrator/`, built + released by `.github/workflows/integrator-release.yml`); the Python in `integrator/src/*.py` is the legacy reference implementation. `integrator/MRMhub_plot.r` is a separate base-R script the executable shells out to for PDF plotting — **not** part of `mrmhub`, no dependency on it. `integrator/docs/` is the **independent multi-page INTEGRATOR Quarto site**, published to `/integrator/` — co-located with the tool it documents, just as QUANT's pkgdown docs live with the R package. Pages: `index.qmd` (overview), `quickstart.qmd`, `setup.qmd` (download + per-project setup — INTEGRATOR is a portable executable, *not* installed), `input-files.qmd`, `running.qmd`, `viz.qmd`, `sharing.qmd`, `msconvert.qmd`, shared `images/`; navbar (Home / Quick Start / Manual ▾) + sidebar are defined in `integrator/docs/_quarto.yml`. These `.qmd` use Quarto-native syntax (`::: {.callout-*}`, `.grid`) — unlike the pkgdown articles.
+- `docs-site/` — Quarto site source for the **project landing page only** (`index.qmd` — routes to INTEGRATOR + QUANT), published to the Pages root. The INTEGRATOR manual lives in `integrator/docs/`, not here.
 - `docs/` — generated pkgdown output (committed). Don't hand-edit; regenerate with `pkgdown::build_site()` from the repo root (or `just site`).
 - `README.md` at the repo root is the package README (GitHub home); `integrator/README.md` covers the Rust tool. The detailed manual + tutorials live as `vignettes/articles/*.Rmd`, published via pkgdown.
 
@@ -16,11 +16,12 @@ The two tools talk only through files: INTEGRATOR emits `long.csv` / `quant_raw.
 
 **Task runner.** A `justfile` at the root wraps the common commands — `just test`, `just check`, `just document`, `just site`, `just format` (R package) and `just build-rust` (INTEGRATOR). Install `just` with `brew install just`; `just --list` shows the menu.
 
-> **Published URL note:** the GitHub Pages site (`gh-pages` branch) hosts **two sites** that share the branch:
-> - **root** `https://slinghub.github.io/MRMhub/` — the Quarto `docs-site/` (landing page + INTEGRATOR manual), built and deployed by `.github/workflows/quarto.yaml` (`clean: true` with `clean-exclude: quant`).
-> - **`/quant/`** `https://slinghub.github.io/MRMhub/quant/` — the pkgdown site, deployed by `.github/workflows/pkgdown.yaml` into the `quant/` subfolder (`target-folder: quant`, `clean: true` scoped to that folder). This subpath is deliberate and matches `_pkgdown.yml: url`; don't "fix" it.
+> **Published URL note:** the GitHub Pages site (`gh-pages` branch) hosts **three independent sites** that share the branch:
+> - **root** `https://slinghub.github.io/MRMhub/` — the landing page (Quarto `docs-site/`).
+> - **`/integrator/`** `https://slinghub.github.io/MRMhub/integrator/` — the INTEGRATOR manual (Quarto `integrator/docs/`).
+> - **`/quant/`** `https://slinghub.github.io/MRMhub/quant/` — the QUANT pkgdown site (matches `_pkgdown.yml: url`; don't "fix" it).
 >
-> The two deploys are coordinated so neither clobbers the other (pkgdown cleans only `quant/`; Quarto cleans the root but excludes `quant/`). Cross-links rely on this layout: the pkgdown navbar links to `integrator-manual.html` at the root, and `docs-site/` links to `/quant/`. After a structural change to the gh-pages layout, trigger the `quarto` workflow once (it owns the root) to clear stale files.
+> Two workflows build them: `.github/workflows/quarto.yaml` renders **both** Quarto sites — landing → root (`clean: true`, `clean-exclude: quant` + `integrator`) and INTEGRATOR → `/integrator/` (`target-folder: integrator`, `clean` scoped there); `.github/workflows/pkgdown.yaml` deploys QUANT → `/quant/` (`target-folder: quant`, `clean` scoped there). The scoped cleans mean no deploy clobbers another's subfolder. Cross-links rely on this layout: both the landing page and the pkgdown navbar link to `/integrator/` (absolute URLs); the INTEGRATOR and landing sites link to `/quant/`. After a structural change to the gh-pages layout, trigger the `quarto` workflow once (it owns the root) to clear stale files.
 
 ## Active documentation work
 
@@ -118,7 +119,7 @@ After adding/removing exported functions or changing roxygen, run `devtools::doc
 - **Cross-links + Next Steps**: every article ends with a `## Next Steps` (or equivalent) list of 2–4 links to related articles. Use bare relative `.html` links (e.g. `manual-05a-which-importer.html`), not absolute URLs.
 - **Navbar sync**: any new/renamed article must be added to `_pkgdown.yml` in the same change. Orphan articles are the #1 doc bug here.
 
-The Quarto `.qmd` files under `docs-site/` and `vignettes/articles/integrator-*.qmd` are a separate site (INTEGRATOR landing) and *can* use Quarto-native syntax — don't cross-apply the pkgdown conventions there.
+The Quarto `.qmd` files under `docs-site/` (landing page) and `integrator/docs/` (INTEGRATOR manual) are separate sites and *can* use Quarto-native syntax — don't cross-apply the pkgdown conventions there.
 
 ## Working on INTEGRATOR (`integrator/`)
 

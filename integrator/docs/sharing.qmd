@@ -1,0 +1,22 @@
+---
+title: "Sharing Results & Reproducible Workflows"
+description: |
+  How to share a complete, reproducible INTEGRATOR peak-integration dataset — raw data, input
+  files, parameters, and results — together with the lightweight applications.
+---
+
+In addition to the CSV files containing the peak area results, the
+complete set of raw data, input files with all integration parameters,
+and individual integration results can be shared together with the
+lightweight **MRMhub** application (\~1 MB). This allows others to fully
+inspect, reproduce, and modify the raw data processing of your dataset.
+
+For documentation, individual integration results can be provided as PDF
+files. Alternatively, they can be explored interactively using the
+standalone **MRMhub-viz** application (\~10 MB), which can also be
+included in the shared dataset.
+
+## Next
+
+- [QUANT documentation ↗](https://slinghub.github.io/MRMhub/quant/) — continue with the
+  post-processing pipeline once `long.csv` is produced.

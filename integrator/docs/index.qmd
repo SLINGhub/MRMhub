@@ -1,0 +1,102 @@
+---
+title: "INTEGRATOR"
+subtitle: "Peak detection, picking, and integration for targeted MRM mass spectrometry"
+description: |
+  INTEGRATOR is the stand-alone peak-integration application of the MRMhub pipeline. It reads
+  mzML files, finds and integrates MRM peaks, and exports long.csv / quant_raw.csv for downstream
+  quantitation in the QUANT R package.
+toc: false
+---
+
+**INTEGRATOR** is the stand-alone peak-integration module of the MRMhub pipeline. It takes
+converted mzML files, detects and integrates MRM peaks across all your samples, lets you review
+and fine-tune the results interactively, and exports tables ready for quantitation.
+
+It ships as a small, self-contained executable for macOS and Windows — **nothing to install, no
+Python or R required**. Keep one copy in each analysis project folder and the whole project stays
+re-runnable.
+
+## The workflow
+
+<div style="text-align: center; margin: 1.5em 0;">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 90" style="max-width: 940px; width: 100%; height: auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+  <style>
+    .wf-box { rx: 8; ry: 8; stroke-width: 1.5; }
+    .wf-label { font-size: 13px; font-weight: 600; fill: #1a1a1a; pointer-events: none; }
+    .wf-arrow { fill: #666; }
+  </style>
+  <rect class="wf-box" x="0" y="10" width="160" height="70" fill="#e8e8ec" stroke="#2c3e50"/>
+  <text class="wf-label" x="80" y="50" text-anchor="middle">Raw vendor files</text>
+  <polygon class="wf-arrow" points="170,45 180,38 180,52"/>
+  <a href="msconvert.html"><rect class="wf-box" x="190" y="10" width="160" height="70" fill="#f5e0c8" stroke="#c87f3b"/><text class="wf-label" x="270" y="50" text-anchor="middle">mzML (msconvert)</text></a>
+  <polygon class="wf-arrow" points="360,45 370,38 370,52"/>
+  <a href="running.html"><rect class="wf-box" x="380" y="10" width="160" height="70" fill="#d4e8d4" stroke="#5a9a5a"/><text class="wf-label" x="460" y="50" text-anchor="middle">INTEGRATOR</text></a>
+  <polygon class="wf-arrow" points="550,45 560,38 560,52"/>
+  <rect class="wf-box" x="570" y="10" width="160" height="70" fill="#f5f2fa" stroke="#7a6ba4"/>
+  <text class="wf-label" x="650" y="50" text-anchor="middle">long.csv</text>
+  <polygon class="wf-arrow" points="740,45 750,38 750,52"/>
+  <a href="https://slinghub.github.io/MRMhub/quant/"><rect class="wf-box" x="760" y="10" width="180" height="70" fill="#d6e8f0" stroke="#4a90a4"/><text class="wf-label" x="850" y="50" text-anchor="middle">QUANT ↗</text></a>
+</svg>
+</div>
+
+::: {.callout-note}
+**Just want post-processing in R?** INTEGRATOR is not required to use the QUANT R package — QUANT
+imports directly from vendor outputs (MassHunter, Skyline) as well. See the
+[QUANT documentation ↗](https://slinghub.github.io/MRMhub/quant/).
+:::
+
+## Where to start
+
+::: {.grid}
+
+::: {.g-col-12 .g-col-md-6}
+### 🚀 [Quick Start](quickstart.qmd)
+New here? Get from raw files to integrated peaks in a handful of steps.
+:::
+
+::: {.g-col-12 .g-col-md-6}
+### 📦 [Download & Project Setup](setup.qmd)
+Download the standalone executable, clear the first-launch security prompt, and set up one
+re-runnable copy per project.
+:::
+
+::: {.g-col-12 .g-col-md-6}
+### 📄 [Input Files](input-files.qmd)
+Reference for `param.txt`, `batch_info.csv`, and the transition list — plus how to tune peak
+integration.
+:::
+
+::: {.g-col-12 .g-col-md-6}
+### ▶️ [Running INTEGRATOR](running.qmd)
+The four processing steps: validation, peak finding, integration, and PDF output.
+:::
+
+::: {.g-col-12 .g-col-md-6}
+### 🔍 [MRMhub-viz Visualizer](viz.qmd)
+Review and refine integration results interactively.
+:::
+
+::: {.g-col-12 .g-col-md-6}
+### 🤝 [Sharing Results](sharing.qmd)
+Bundle raw data, parameters, and results for fully reproducible peak integration.
+:::
+
+:::
+
+::: {.callout-tip}
+**Learn by example.** The [Dataset 3 workflow ↗](https://slinghub.github.io/mrmhub-workflows/Dataset3.html)
+walks through a complete, real analysis — from raw-file conversion and INTEGRATOR settings to QUANT
+post-processing — with all input files shown. More end-to-end examples live at
+[mrmhub-workflows ↗](https://slinghub.github.io/mrmhub-workflows/).
+:::
+
+## Next step in the pipeline
+
+Once INTEGRATOR produces `long.csv`, hand it off to the **QUANT** R package for ISTD
+normalisation, drift/batch correction, calibration, QC, and reporting:
+
+```r
+import_data_mrmhub("path/to/long.csv", import_metadata = TRUE)
+```
+
+See the [QUANT documentation ↗](https://slinghub.github.io/MRMhub/quant/) to continue.
