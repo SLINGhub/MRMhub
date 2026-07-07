@@ -4,20 +4,20 @@
     "href": "index.html",
     "title": "MRMhub",
     "section": "",
-    "text": "MRMhub is an open-source toolchain for targeted Multiple Reaction Monitoring (MRM) mass spectrometry — the assay type used for quantitative lipidomics and metabolomics. It takes data from raw instrument files to quality-controlled, quantitative results: peak integration, QC, normalisation, drift and batch correction, calibration, and reporting.\nIt is intended for analytical scientists and biochemists who run targeted assays — the tutorials require running R scripts rather than writing them — as well as for bioinformaticians who build reproducible pipelines. MRMhub consists of two modules that can be used independently:"
+    "text": "MRMhub takes targeted Multiple Reaction Monitoring (MRM) mass spectrometry — the assay behind quantitative lipidomics and metabolomics — from instrument data to a clean, quantitative report: peak integration, QC, normalisation, drift and batch correction, calibration, and reporting."
   },
   {
-    "objectID": "index.html#choosing-the-right-tool",
-    "href": "index.html#choosing-the-right-tool",
+    "objectID": "index.html#what-you-get",
+    "href": "index.html#what-you-get",
     "title": "MRMhub",
-    "section": "Choosing the right tool",
-    "text": "Choosing the right tool\nFor guidance on selecting a module, see INTEGRATOR vs QUANT ↗.\n\n\n\nAvailable input\nModules\nStarting point\n\n\n\n\nRaw vendor files (.raw, .d, .wiff) and need integrated peaks\nINTEGRATOR + QUANT\nINTEGRATOR Manual ↗ → QUANT install ↗\n\n\nIntegrated peaks already (MassHunter, Skyline, or mzTab/CSV)\nQUANT only\nQUANT install ↗\n\n\nOnly peak picking\nINTEGRATOR only\nINTEGRATOR Manual ↗"
+    "section": "What you get",
+    "text": "What you get\n\nQuality-controlled. Per-feature QC metrics with RunScatter, PCA, and RLA diagnostics, plus rule-based filtering that flags unreliable results before they reach your report.\nQuantified. Absolute or relative concentrations by internal standard or by external calibration curve.\nReproducible. Every step is code — INTEGRATOR parameter files and QUANT R scripts — so an analysis can be re-run, audited, and shared without a click-trail."
   },
   {
-    "objectID": "index.html#why-mrmhub",
-    "href": "index.html#why-mrmhub",
+    "objectID": "index.html#the-two-tools",
+    "href": "index.html#the-two-tools",
     "title": "MRMhub",
-    "section": "Why MRMhub?",
-    "text": "Why MRMhub?\n\nReproducible. Every step is code — parameter files for INTEGRATOR, R scripts for QUANT.\nModular. Each module replaces or augments existing pipeline components without lock-in.\nMRM-specific. Drift correction, batch correction (Broadhurst 2018), ISTD/calibration quantitation, isotope-interference correction, and the QC vocabulary (BQC, TQC, SBLK, …) built into one container object. The terminology is defined in the Key Concepts & Glossary ↗.\n\n\n Citation: Teo et al. (2020). MRMhub: Automated Data Processing for Large-Scale Targeted Metabolomics Analysis. Anal. Chem. 92, 13677–13682. doi:10.1021/acs.analchem.0c03060  |  Source: github.com/SLINGhub/MRMhub  |  Example workflows: mrmhub-workflows ↗"
+    "section": "The two tools",
+    "text": "The two tools\nMost analyses start from integrated peaks, so QUANT is the usual starting point; INTEGRATOR is only needed when you begin from raw instrument files.\n\nQUANT (the mrmhub R package) ↗ — the post-processing pipeline. Start here if you already have integrated peaks — from INTEGRATOR, Agilent MassHunter, Skyline, or a CSV / mzTab export.\nINTEGRATOR ↗ — the stand-alone peak-detection and integration app. Start here first only when you have raw vendor files.\n\n\n\n\n Raw data  msconvert  INTEGRATOR   long.csv  QUANT ↗\n\n\n\nStarting from raw vendor files?\nIf you have .raw, .d, or .wiff files and need integrated peaks, run INTEGRATOR first, then continue in QUANT. For a fuller comparison, see INTEGRATOR vs QUANT ↗.\n\n\n\nAvailable input\nWhere to start\n\n\n\n\nIntegrated peaks (INTEGRATOR, MassHunter, Skyline, mzTab/CSV)\nQUANT install ↗ — the usual path\n\n\nRaw vendor files (.raw, .d, .wiff)\nINTEGRATOR Manual ↗ → then QUANT ↗\n\n\nPeak picking only\nINTEGRATOR Manual ↗\n\n\n\n\n Citation: Teo et al. (2020). MRMhub: Automated Data Processing for Large-Scale Targeted Metabolomics Analysis. Anal. Chem. 92, 13677–13682. doi:10.1021/acs.analchem.0c03060  |  Source: github.com/SLINGhub/MRMhub  |  Example workflows: mrmhub-workflows ↗"
   }
 ]

@@ -130,8 +130,11 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#choosing-the-right-tool" id="toc-choosing-the-right-tool" class="nav-link active" data-scroll-target="#choosing-the-right-tool">Choosing the right tool</a></li>
-  <li><a href="#why-mrmhub" id="toc-why-mrmhub" class="nav-link" data-scroll-target="#why-mrmhub">Why MRMhub?</a></li>
+  <li><a href="#what-you-get" id="toc-what-you-get" class="nav-link active" data-scroll-target="#what-you-get">What you get</a></li>
+  <li><a href="#the-two-tools" id="toc-the-two-tools" class="nav-link" data-scroll-target="#the-two-tools">The two tools</a>
+  <ul class="collapse">
+  <li><a href="#starting-from-raw-vendor-files" id="toc-starting-from-raw-vendor-files" class="nav-link" data-scroll-target="#starting-from-raw-vendor-files">Starting from raw vendor files?</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -141,7 +144,7 @@ ul.task-list li input[type="checkbox"] {
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
 <h1 class="title">MRMhub</h1>
-<p class="subtitle lead">An open, reproducible pipeline for targeted MRM mass spectrometry</p>
+<p class="subtitle lead">Turn targeted MRM data into quality-controlled, quantified results — reproducibly.</p>
 </div>
 
 
@@ -158,11 +161,42 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p><strong>MRMhub</strong> is an open-source toolchain for <strong>targeted Multiple Reaction Monitoring (MRM)</strong> mass spectrometry — the assay type used for quantitative lipidomics and metabolomics. It takes data from raw instrument files to quality-controlled, quantitative results: peak integration, QC, normalisation, drift and batch correction, calibration, and reporting.</p>
-<p>It is intended for analytical scientists and biochemists who run targeted assays — the tutorials require running R scripts rather than writing them — as well as for bioinformaticians who build reproducible pipelines. MRMhub consists of two modules that can be used independently:</p>
+<p><strong>MRMhub</strong> takes targeted Multiple Reaction Monitoring (MRM) mass spectrometry — the assay behind quantitative lipidomics and metabolomics — from instrument data to a clean, quantitative report: peak integration, QC, normalisation, drift and batch correction, calibration, and reporting.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/hero-runsequence.png" class="img-fluid figure-img"></p>
+<figcaption>A RunSequence overview of a 499-injection MRM batch: quality-control samples (TQC, BQC, blanks, LTR) mapped across the analysis order alongside the study samples, with batch boundaries and a run-time summary — one of the QC views MRMhub produces from a single command.</figcaption>
+</figure>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="New here? Start with a 5-minute analysis">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>New here? Start with a 5-minute analysis
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Run a complete analysis on bundled demo data — no files of your own required, and no raw-versus-integrated decision to make first.</p>
+<p><a href="https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.html" class="btn btn-primary" role="button">Run your first analysis (5 min) →</a></p>
+<p>Prefer point-and-click? The <code>run_walkthrough()</code> app walks you through the same steps (one-time <code>install.packages(c("shiny", "bslib"))</code>). New to the terminology (BQC, TQC, ISTD, drift)? See the <a href="https://slinghub.github.io/MRMhub/quant/articles/manual-00-key-concepts.html">Key Concepts &amp; Glossary ↗</a>.</p>
+</div>
+</div>
+<section id="what-you-get" class="level2">
+<h2 class="anchored" data-anchor-id="what-you-get">What you get</h2>
 <ul>
-<li><strong><a href="https://slinghub.github.io/MRMhub/integrator/">INTEGRATOR ↗</a></strong> — stand-alone application for peak detection, picking, and integration.</li>
-<li><strong><a href="https://slinghub.github.io/MRMhub/quant/">QUANT ↗</a></strong> — R package (<code>mrmhub</code>) for the post-processing pipeline. Accepts integrated peaks from INTEGRATOR or common vendor outputs.</li>
+<li><strong>Quality-controlled.</strong> Per-feature QC metrics with RunScatter, PCA, and RLA diagnostics, plus rule-based filtering that flags unreliable results before they reach your report.</li>
+<li><strong>Quantified.</strong> Absolute or relative concentrations by internal standard or by external calibration curve.</li>
+<li><strong>Reproducible.</strong> Every step is code — INTEGRATOR parameter files and QUANT R scripts — so an analysis can be re-run, audited, and shared without a click-trail.</li>
+</ul>
+</section>
+<section id="the-two-tools" class="level2">
+<h2 class="anchored" data-anchor-id="the-two-tools">The two tools</h2>
+<p>Most analyses start from integrated peaks, so <strong>QUANT is the usual starting point</strong>; INTEGRATOR is only needed when you begin from raw instrument files.</p>
+<ul>
+<li><strong><a href="https://slinghub.github.io/MRMhub/quant/">QUANT (the <code>mrmhub</code> R package) ↗</a></strong> — the post-processing pipeline. Start here if you already have integrated peaks — from INTEGRATOR, Agilent MassHunter, Skyline, or a CSV / mzTab export.</li>
+<li><strong><a href="https://slinghub.github.io/MRMhub/integrator/">INTEGRATOR ↗</a></strong> — the stand-alone peak-detection and integration app. Start here first only when you have raw vendor files.</li>
 </ul>
 <div style="text-align: center; margin: 1.5em 0 0.5em;">
 <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 940 90" style="max-width: 940px; width: 100%; height: auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
@@ -175,62 +209,36 @@ ul.task-list li input[type="checkbox"] {
 <rect class="wf-box" x="0" y="10" width="160" height="70" fill="#e8e8ec" stroke="#2c3e50"></rect> <text class="wf-label" x="80" y="50" text-anchor="middle">Raw data</text> <polygon class="wf-arrow" points="170,45 180,38 180,52"></polygon> <a href="https://slinghub.github.io/MRMhub/integrator/msconvert.html"><rect class="wf-box" x="190" y="10" width="160" height="70" fill="#f5e0c8" stroke="#c87f3b"></rect><text class="wf-label" x="270" y="50" text-anchor="middle">msconvert</text></a> <polygon class="wf-arrow" points="360,45 370,38 370,52"></polygon> <a href="https://slinghub.github.io/MRMhub/integrator/"><rect class="wf-box" x="380" y="10" width="160" height="70" fill="#d4e8d4" stroke="#5a9a5a"></rect><text class="wf-label" x="460" y="50" text-anchor="middle">INTEGRATOR</text></a> <polygon class="wf-arrow" points="550,45 560,38 560,52"></polygon> <rect class="wf-box" x="570" y="10" width="160" height="70" fill="#f5f2fa" stroke="#7a6ba4"></rect> <text class="wf-label" x="650" y="50" text-anchor="middle">long.csv</text> <polygon class="wf-arrow" points="740,45 750,38 750,52"></polygon> <a href="https://slinghub.github.io/MRMhub/quant/"><rect class="wf-box" x="760" y="10" width="180" height="70" fill="#d6e8f0" stroke="#4a90a4"></rect><text class="wf-label" x="850" y="50" text-anchor="middle">QUANT ↗</text></a>
 </svg>
 </div>
-<div class="callout callout-style-default callout-tip callout-titled" title="Getting started">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Getting started
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Most analyses begin with integrated peak data — from INTEGRATOR, Agilent MassHunter, Skyline, or a CSV export. In that case, install the <strong>QUANT</strong> R package and follow the five-minute first analysis on the bundled dataset:</p>
-<p><strong>→ <a href="https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.html">Install QUANT and run a first analysis ↗</a></strong></p>
-<p>Analyses that begin from raw instrument files, and guidance on selecting a module, are covered under <strong>Choosing the right tool</strong> below.</p>
-</div>
-</div>
-<section id="choosing-the-right-tool" class="level2">
-<h2 class="anchored" data-anchor-id="choosing-the-right-tool">Choosing the right tool</h2>
-<p>For guidance on selecting a module, see <a href="https://slinghub.github.io/MRMhub/quant/articles/manual-00-integrator-vs-quant.html">INTEGRATOR vs QUANT ↗</a>.</p>
+<section id="starting-from-raw-vendor-files" class="level3">
+<h3 class="anchored" data-anchor-id="starting-from-raw-vendor-files">Starting from raw vendor files?</h3>
+<p>If you have <code>.raw</code>, <code>.d</code>, or <code>.wiff</code> files and need integrated peaks, run INTEGRATOR first, then continue in QUANT. For a fuller comparison, see <a href="https://slinghub.github.io/MRMhub/quant/articles/manual-00-integrator-vs-quant.html">INTEGRATOR vs QUANT ↗</a>.</p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
 <th>Available input</th>
-<th>Modules</th>
-<th>Starting point</th>
+<th>Where to start</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>Raw vendor files (<code>.raw</code>, <code>.d</code>, <code>.wiff</code>) and need integrated peaks</td>
-<td>INTEGRATOR + QUANT</td>
-<td><a href="https://slinghub.github.io/MRMhub/integrator/">INTEGRATOR Manual ↗</a> → <a href="https://slinghub.github.io/MRMhub/quant/articles/manual-00-installation.html">QUANT install ↗</a></td>
+<td>Integrated peaks (INTEGRATOR, MassHunter, Skyline, mzTab/CSV)</td>
+<td><strong><a href="https://slinghub.github.io/MRMhub/quant/articles/manual-00-installation.html">QUANT install ↗</a></strong> — the usual path</td>
 </tr>
 <tr class="even">
-<td>Integrated peaks already (MassHunter, Skyline, or mzTab/CSV)</td>
-<td>QUANT only</td>
-<td><a href="https://slinghub.github.io/MRMhub/quant/articles/manual-00-installation.html">QUANT install ↗</a></td>
+<td>Raw vendor files (<code>.raw</code>, <code>.d</code>, <code>.wiff</code>)</td>
+<td><strong><a href="https://slinghub.github.io/MRMhub/integrator/">INTEGRATOR Manual ↗</a></strong> → then <a href="https://slinghub.github.io/MRMhub/quant/articles/manual-00-installation.html">QUANT ↗</a></td>
 </tr>
 <tr class="odd">
-<td>Only peak picking</td>
-<td>INTEGRATOR only</td>
-<td><a href="https://slinghub.github.io/MRMhub/integrator/">INTEGRATOR Manual ↗</a></td>
+<td>Peak picking only</td>
+<td><strong><a href="https://slinghub.github.io/MRMhub/integrator/">INTEGRATOR Manual ↗</a></strong></td>
 </tr>
 </tbody>
 </table>
-</section>
-<section id="why-mrmhub" class="level2">
-<h2 class="anchored" data-anchor-id="why-mrmhub">Why MRMhub?</h2>
-<ul>
-<li><strong>Reproducible.</strong> Every step is code — parameter files for INTEGRATOR, R scripts for QUANT.</li>
-<li><strong>Modular.</strong> Each module replaces or augments existing pipeline components without lock-in.</li>
-<li><strong>MRM-specific.</strong> Drift correction, batch correction (Broadhurst 2018), ISTD/calibration quantitation, isotope-interference correction, and the QC vocabulary (BQC, TQC, SBLK, …) built into one container object. The terminology is defined in the <a href="https://slinghub.github.io/MRMhub/quant/articles/manual-00-key-concepts.html">Key Concepts &amp; Glossary ↗</a>.</li>
-</ul>
 <hr>
 <p><small> <strong>Citation:</strong> Teo et al.&nbsp;(2020). <em>MRMhub: Automated Data Processing for Large-Scale Targeted Metabolomics Analysis.</em> Anal. Chem. 92, 13677–13682. <a href="https://doi.org/10.1021/acs.analchem.0c03060">doi:10.1021/acs.analchem.0c03060</a> &nbsp;|&nbsp; <strong>Source:</strong> <a href="https://github.com/SLINGhub/MRMhub">github.com/SLINGhub/MRMhub</a> &nbsp;|&nbsp; <strong>Example workflows:</strong> <a href="https://slinghub.github.io/mrmhub-workflows/">mrmhub-workflows ↗</a> </small></p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
