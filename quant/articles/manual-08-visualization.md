@@ -56,14 +56,14 @@ plot_runsequence(mexp,
 ```
 
 Set `show_timestamp = TRUE` to use the acquisition timestamp on the
-x-axis — useful for identifying interruptions between or within batches
-that would not be visible against the analysis sequence number.
+x-axis; this helps identify interruptions between or within batches that
+would not be visible against the analysis sequence number.
 
 ## Drift, batch, and per-feature inspection
 
 ### `plot_runscatter()` — values vs analysis order
 
-The work-horse plot for drift and batch QC. Plots a feature variable
+The primary plot for drift and batch QC. Plots a feature variable
 (intensity, normalised intensity, concentration) against the analysis
 order, optionally with fitted drift trends from the correction
 functions. Returns one panel per feature (paged).
@@ -81,7 +81,7 @@ plot_runscatter(mexp,
 Use `variable = "intensity_before"` / `"conc_before"` to inspect
 pre-correction values, and `variable = "intensity"` / `"conc"` for
 post-correction. Setting `output_pdf = TRUE` and a `path` writes a
-multi-page PDF — practical for large feature lists.
+multi-page PDF, which is practical for large feature lists.
 
 ### `plot_abundanceprofile()` — feature abundance distribution
 
@@ -204,7 +204,7 @@ plot_qcmetrics_comparison(mexp,
 ```
 
 Points below the equality line indicate features for which CV was
-reduced by normalisation; points above indicate features made worse —
+reduced by normalisation; points above indicate features made worse,
 typically a misassigned ISTD.
 
 ### `plot_qc_summary_byclass()` / `plot_qc_summary_overall()` — filter outcome
@@ -347,7 +347,7 @@ p_rla  <- plot_rla_boxplot(mexp, variable = "norm_intensity",
 p_seq / (p_pca | p_rla)
 ```
 
-### See Also
+### Next Steps
 
 - [Run-Scatter Plot
   (tutorial)](https://slinghub.github.io/MRMhub/quant/articles/tutorial-05-run-scatter.md)

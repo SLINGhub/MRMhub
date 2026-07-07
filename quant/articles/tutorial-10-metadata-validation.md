@@ -5,15 +5,19 @@ tables rather than the analytical data itself. The most frequent
 offenders are mismatched `analysis_id` between data and annotation,
 missing required columns (`qc_type`, `batch_id`, `analysis_order`), and
 `qc_type` labels that do not match the canonical vocabulary used
-internally for QC selection. This tutorial walks through generating a
-template, validating annotations against imported data, and resolving
-the typical defects.
+internally for QC selection. This tutorial covers generating a template,
+validating annotations against imported data, and resolving the typical
+defects.
 
 See [Sample Types and QC
 Roles](https://slinghub.github.io/MRMhub/quant/articles/manual-00-sample-types.md)
 for the canonical `qc_type` vocabulary and [Metadata
 Import](https://slinghub.github.io/MRMhub/quant/articles/manual-06-metadata-import.md)
 for the per-table importer reference.
+
+**Time:** ~10 min  \|  **Level:** Beginner  \|  **Prerequisites:** [Your
+first
+analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md)
 
 ## 1. Generate a metadata template
 
@@ -239,7 +243,7 @@ hand-edited Excel file.
 - Keep the annotation file under version control alongside the data
   file.
 
-## See Also
+## Next Steps
 
 - [Sample Types and QC
   Roles](https://slinghub.github.io/MRMhub/quant/articles/manual-00-sample-types.md)

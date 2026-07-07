@@ -31,10 +31,12 @@ but are independent code bases:
   R package. Pages: `index.qmd` (overview), `quickstart.qmd`,
   `setup.qmd` (download + per-project setup — INTEGRATOR is a portable
   executable, *not* installed), `input-files.qmd`, `running.qmd`,
-  `viz.qmd`, `sharing.qmd`, `msconvert.qmd`, shared `images/`; navbar
-  (Home / Quick Start / Manual ▾) + sidebar are defined in
-  `integrator/docs/_quarto.yml`. These `.qmd` use Quarto-native syntax
-  (`::: {.callout-*}`, `.grid`) — unlike the pkgdown articles.
+  `algorithm.qmd` (peak-detection/integration method reference, built
+  from `source/description.md`), `viz.qmd`, `sharing.qmd`,
+  `msconvert.qmd`, shared `images/`; navbar (Home / Quick Start / Manual
+  ▾) + sidebar are defined in `integrator/docs/_quarto.yml`. These
+  `.qmd` use Quarto-native syntax (`::: {.callout-*}`, `.grid`) — unlike
+  the pkgdown articles.
 - `docs-site/` — Quarto site source for the **project landing page
   only** (`index.qmd` — routes to INTEGRATOR + QUANT), published to the
   Pages root. The INTEGRATOR manual lives in `integrator/docs/`, not
@@ -252,7 +254,7 @@ rename an article, update `_pkgdown.yml` too or it will be orphaned.
 deliberate, not accidental):
 
 - **Diagrams**: hand-rolled inline `<svg>` (see
-  `manual-00-architecture.Rmd`, `manual-00-key-concepts.Rmd`,
+  `manual-00-design-overview.Rmd`, `manual-00-key-concepts.Rmd`,
   `manual-05a-which-importer.Rmd`). Use the brand palette in
   `plan-workflowDiagrams.prompt.md` (steel blue `#5B8FA8`, warm orange
   `#D4914E`, muted green `#6B9E5E`, dusty rose `#C27171`, navy
@@ -263,13 +265,19 @@ deliberate, not accidental):
   `class = "compact stripe"` for anything filterable/sortable
   (glossaries, comparisons). Plain Markdown tables are fine for short
   reference matrices.
-- **Callouts**: Modest
-  `<div class="callout callout-{note|tip|caution}">...</div>` boxes
+- **Callouts**: pandoc **fenced-div** boxes —
+  `::: {.callout .callout-{note|tip|caution|getstarted}}` … `:::`
   (styles in `pkgdown/extra.css` — steel blue Note, warm orange Tip,
-  dusty rose Caution). Use sparingly — plain prose by default. Bootstrap
-  `alert-*` still renders but reads too loudly on onboarding pages.
-  **Never** use Quarto `::: callout-*` syntax — articles render through
-  pkgdown/rmarkdown, not Quarto.
+  dusty rose Caution). Pandoc renders these to
+  `<div class="callout callout-*">`, so they work through
+  pkgdown/rmarkdown *and* keep Markdown (links, code, lists) live
+  inside. Use sparingly — plain prose by default. **Always include the
+  base `.callout` class** (two classes): the single-class Quarto form
+  `::: {.callout-note}` is *not* styled by pkgdown (only Quarto renders
+  that). Prefer fenced-div callouts over Bootstrap `alert-*` boxes
+  (which read too loudly and have been migrated); raw
+  `<div class="callout …">` HTML also works but the fenced-div form is
+  the convention.
 - **Collapsibles**:
   `<details><summary><strong>Title</strong></summary> ... </details>`
   for “alternatives considered”, troubleshooting steps, full slot trees,

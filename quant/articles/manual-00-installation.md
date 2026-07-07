@@ -9,21 +9,21 @@
 
 ## Installation
 
-**Tip.** Quit and reopen your IDE first — most install failures come
-from packages already loaded in memory.
+**Tip.** Quit and reopen the IDE first; most install failures come from
+packages already loaded in memory.
 
 In a fresh R session:
 
 ``` r
 
 if (!require("pak")) install.packages("pak")
-pak::pak("SLINGhub/mrmhub")
+pak::pak("SLINGhub/MRMhub")
 ```
 
 The same command works on Windows, macOS, and Linux. `pak` pulls
 prebuilt binaries where available, so compilation tools are usually not
 needed. If `pak` is unavailable, use
-`remotes::install_github("SLINGhub/mrmhub")`.
+`remotes::install_github("SLINGhub/MRMhub")`.
 
 ## Verify Your Setup
 
@@ -33,8 +33,8 @@ library(mrmhub)
 check_setup()
 ```
 
-This checks your R version and dependencies and reports exactly what’s
-missing if anything fails.
+This checks the R version and dependencies and reports what is missing
+if a check fails.
 
 ## Troubleshooting Common Errors
 
@@ -48,12 +48,18 @@ missing if anything fails.
 | `clang: error: ...` (macOS) | Compiler tools missing | Run `xcode-select --install` in Terminal, retry |
 | `cannot find -lcurl` (Linux) | System libraries missing | `sudo apt install libcurl4-openssl-dev libxml2-dev libssl-dev libfontconfig1-dev` |
 
-The longer list — proxies, mixed R installations on macOS, INTEGRATOR
-security warnings — lives in [Troubleshooting &
+A longer list, covering proxies, mixed R installations on macOS, and
+INTEGRATOR security warnings, is given in [Troubleshooting &
 FAQ](https://slinghub.github.io/MRMhub/quant/articles/manual-09-troubleshooting.md).
 
-## Support
+## Next Steps
 
-File issues or questions on
-[GitHub](https://github.com/SLINGhub/MRMhub/issues), or contact the
-authors directly.
+- [Key Concepts &
+  Glossary](https://slinghub.github.io/MRMhub/quant/articles/manual-00-key-concepts.md)
+  — core vocabulary and the MRMhubExperiment object
+- [Your First
+  Analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md)
+  — a short end-to-end walkthrough
+- Questions or bug reports? File an issue on
+  [GitHub](https://github.com/SLINGhub/MRMhub/issues), or contact the
+  authors directly.

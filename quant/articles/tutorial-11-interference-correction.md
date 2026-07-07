@@ -13,6 +13,10 @@ This tutorial covers when to apply interference correction, how to
 define interference relationships in the feature annotation, and how to
 apply both batch and manual corrections.
 
+**Time:** ~15 min  \|  **Level:** Advanced  \|  **Prerequisites:**
+[Basic
+workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md)
+
 ## 1. When is correction needed?
 
 Interference correction should be considered when:
@@ -40,8 +44,8 @@ mexp <- readRDS("results/mexp_processed.rds")
 ```
 
 Interference correction operates on raw feature intensities
-(`feature_intensity`). Apply it **before** ISTD normalisation, drift,
-and batch correction, so that those downstream steps use corrected raw
+(`feature_intensity`). Apply it before ISTD normalisation, drift, and
+batch correction, so that those downstream steps use corrected raw
 signals.
 
 ## 3. Inspecting candidate pairs
@@ -216,7 +220,7 @@ applying broadly.
   but consider leaving it uncorrected.
 - After correction, verify blank residual signal approaches zero.
 
-## See Also
+## Next Steps
 
 - [Drift
   Correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.md)

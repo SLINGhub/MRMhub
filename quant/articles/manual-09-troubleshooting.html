@@ -27,7 +27,7 @@
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
-    <nav class="navbar navbar-expand-lg fixed-top bg-primary" data-bs-theme="dark" aria-label="Site navigation"><div class="container">
+    <nav class="navbar navbar-expand-lg fixed-top bg-dark" data-bs-theme="dark" aria-label="Site navigation"><div class="container">
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
@@ -40,62 +40,63 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item dropdown">
+<li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-get-started" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Get Started</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-get-started">
-<li><a class="dropdown-item" href="../articles/manual-00-get-started.html">Installation</a></li>
+<li><a class="dropdown-item" href="../articles/manual-00-installation.html">Installation</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-00-architecture.html">Design Overview</a></li>
     <li><a class="dropdown-item" href="../articles/manual-00-key-concepts.html">Key Concepts &amp; Glossary</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-00-sample-types.html">Sample Types &amp; QC Roles</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-11-cheatsheet.html">Function Cheatsheet</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-05a-which-importer.html">Import and prepare data files</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-00-integrator-vs-quant.html">INTEGRATOR vs QUANT</a></li>
-    <li><hr class="dropdown-divider"></li>
-    <li><a class="external-link dropdown-item" href="https://slinghub.github.io/MRMhub/integrator/">Need peak integration first?</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-09-troubleshooting.html">Troubleshooting &amp; FAQ</a></li>
   </ul>
 </li>
 <li class="nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-workflows" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Workflows</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-workflows">
-<li><h6 class="dropdown-header" data-toc-skip>Tutorials</h6></li>
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-tutorials" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Tutorials</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-tutorials">
+<li><a class="dropdown-item" href="../articles/tutorial-01-prep-data.html">Preparing &amp; importing data</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-02-basic-workflow.html">Basic MRMhub workflow</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-03-lipidomics-workflow.html">Lipidomics (full workflow)</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-08-multi-batch.html">Multi-Batch Study</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-04-drift-correction.html">Drift correction</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-05-run-scatter.html">RunScatter plots</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-06-batch-correction.html">Batch correction</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-10-metadata-validation.html">Validating metadata</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-07-calibration-reference.html">Calibration by reference sample</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-08-multi-batch.html">Multi-batch study</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-09-pca-exploration.html">QC exploration with PCA</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-10-metadata-validation.html">Validating metadata</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-11-interference-correction.html">Interference correction</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Recipes</h6></li>
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-07-calibration-reference.html">Calibration by reference sample</a></li>
-    <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC Report</a></li>
-    <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; Export mzTab-M</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
   </ul>
 </li>
-<li class="active nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-advanced" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Advanced</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-advanced">
-<li><h6 class="dropdown-header" data-toc-skip>Data Model</h6></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-manual" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Manual</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-manual">
+<li><h6 class="dropdown-header" data-toc-skip>Concepts &amp; Design</h6></li>
+    <li><a class="dropdown-item" href="../articles/manual-00-design-overview.html">Design Overview</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-00-integrator-vs-quant.html">INTEGRATOR vs QUANT</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-00-sample-types.html">Sample Types &amp; QC Roles</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Data Model</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-01-data-structure.html">Data Structures</a></li>
     <li><a class="dropdown-item" href="../articles/manual-02-data-identifiers.html">Data Identifiers</a></li>
     <li><a class="dropdown-item" href="../articles/manual-03-feature-variables.html">Feature Variables</a></li>
     <li><a class="dropdown-item" href="../articles/manual-04-mrmhub-experiment.html">MRMhubExperiment Object</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Import &amp; Metadata</h6></li>
+    <li><a class="dropdown-item" href="../articles/manual-05a-which-importer.html">Import &amp; prepare data files</a></li>
     <li><a class="dropdown-item" href="../articles/manual-05-data-import.html">Data Import</a></li>
     <li><a class="dropdown-item" href="../articles/manual-05b-data-file-structures.html">Data File Structures</a></li>
     <li><a class="dropdown-item" href="../articles/manual-06-metadata-import.html">Metadata Import</a></li>
     <li><a class="dropdown-item" href="../articles/manual-06a-metadata-table-structures.html">Metadata Table Structures</a></li>
     <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Correction Methods</h6></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Corrections</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-07-drift-batch-correction.html">Drift &amp; Batch Correction</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
+    <li><a class="dropdown-item" href="../articles/manual-11-cheatsheet.html">Function Cheatsheet</a></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-09-troubleshooting.html">Troubleshooting &amp; FAQ</a></li>
     <li><a class="dropdown-item" href="../articles/manual-10-design-decisions.html">Design Decisions</a></li>
   </ul>
 </li>
@@ -103,6 +104,7 @@
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
       </ul>
 <ul class="navbar-nav">
+<li class="nav-item"><a class="external-link nav-link" href="https://slinghub.github.io/MRMhub/">← MRMhub home</a></li>
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
@@ -153,8 +155,8 @@ Positron. Restarting R does not always release the lock on Windows.</p>
 <span><span class="co"># 4. Immediately, before opening any project, run the install command</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"SLINGhub/mrmhub"</span><span class="op">)</span></span></code></pre></div>
 <p>If the message names a specific package (e.g. <code>'rlang'</code> is
-locked), you can also try installing just that package first into a
-fresh session, then retry MRMhub.</p>
+locked), install just that package first into a fresh session, then
+retry MRMhub.</p>
 </details><details><summary><strong>“namespace ‘rlang’ is already loaded”</strong>
 </summary><p>A package that other packages depend on is locked into the current
 namespace. Quitting RStudio entirely (see above) usually resolves it;
@@ -167,21 +169,21 @@ the lighter touch is:</p>
 </details><details><summary><strong>“Rtools is required to build R packages”</strong> (Windows)
 </summary><p>Install <a href="https://cran.r-project.org/bin/windows/Rtools/" class="external-link">Rtools</a> for
 your R version (Rtools43 for R 4.3, Rtools44 for R 4.4, …), then restart
-R and retry. Rtools is needed for compiling source packages — necessary
-for some MRMhub dependencies that aren’t yet available as Windows
-binaries.</p>
+R and retry. Rtools is needed for compiling source packages, which some
+MRMhub dependencies require when a Windows binary is not yet
+available.</p>
 </details><details><summary><strong>Use <code>pak</code> instead of <code>remotes</code></strong>
 </summary><p><a href="https://pak.r-lib.org/" class="external-link"><code>pak</code></a> handles locked
 packages more cleanly than <code>remotes</code> on Windows, gives
 clearer error messages on transitive failures, and parallelises
-downloads. If <code>remotes</code> is giving you trouble:</p>
+downloads. If <code>remotes</code> fails:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"pak"</span><span class="op">)</span></span>
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"SLINGhub/mrmhub"</span><span class="op">)</span></span></code></pre></div>
 <p><code>pak</code> automatically restarts R if needed to release locks,
 and resolves the dependency graph in one pass.</p>
 </details><details><summary><strong>“cannot open URL” or timeout during install</strong>
-</summary><p>Your network is blocking GitHub or a CRAN mirror.</p>
+</summary><p>The network is blocking GitHub or a CRAN mirror.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Option 1: change download method</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>download.file.method <span class="op">=</span> <span class="st">"libcurl"</span><span class="op">)</span></span>
@@ -207,13 +209,13 @@ clones — aborts the whole install. Fix:</p>
 <span>  <span class="st">"SLINGhub/mrmhub"</span>,</span>
 <span>  dependencies <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Depends"</span>, <span class="st">"Imports"</span>, <span class="st">"LinkingTo"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>Optional packages can be added later as you need them:
+<p>Optional packages can be added later as needed:
 <code>install.packages(c("patchwork", "ggrepel"))</code>.</p>
 </details><details><summary><strong>Apple Silicon: package compilation fails / “no binary
 available”</strong>
 </summary><p>On Apple Silicon, if a dependency is not yet built as an
-<code>arm64</code> binary on CRAN, R falls back to building from source
-— which then needs Xcode Command Line Tools. Two fixes:</p>
+<code>arm64</code> binary on CRAN, R falls back to building from source,
+which then requires Xcode Command Line Tools. Two fixes:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Option A: install Xcode Command Line Tools (run in terminal, not R)</span></span>
 <span><span class="co"># xcode-select --install</span></span>
@@ -221,15 +223,15 @@ available”</strong>
 <span><span class="co"># Option B: ask R to skip source builds when only a binary is missing</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>install.packages.compile.from.source <span class="op">=</span> <span class="st">"never"</span><span class="op">)</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"SLINGhub/mrmhub"</span><span class="op">)</span></span></code></pre></div>
-<p>Option B can leave you with slightly older versions of those
-packages, but avoids the toolchain entirely.</p>
+<p>Option B may leave slightly older versions of those packages but
+avoids the toolchain entirely.</p>
 </details><hr>
 </div>
 <div class="section level2">
 <h2 id="data-import-issues">Data Import Issues<a class="anchor" aria-label="anchor" href="#data-import-issues"></a>
 </h2>
 <details><summary><strong>“Column X not found” or unexpected column names</strong>
-</summary><p>Your CSV uses different column names than expected. Check with:</p>
+</summary><p>The CSV uses different column names than expected. Check with:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Read the first few rows to inspect</span></span>
 <span><span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html" class="external-link">read_csv</a></span><span class="op">(</span><span class="st">"your_file.csv"</span>, n_max <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></code></pre></div>
@@ -247,7 +249,7 @@ check)</li>
 <code class="sourceCode R"><span><span class="co"># For semicolon-separated files:</span></span>
 <span><span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html" class="external-link">read_csv2</a></span><span class="op">(</span><span class="st">"your_file.csv"</span>, n_max <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></code></pre></div>
 </details><details><summary><strong>“No features found” after import</strong>
-</summary><p>Your feature names in the data file don’t match those in the feature
+</summary><p>The feature names in the data file do not match those in the feature
 annotation. Check for:</p>
 <ul>
 <li>Trailing whitespace: <code>"Compound A "</code> vs
@@ -291,11 +293,14 @@ divides by nothing → <code>NA</code> result.</p>
 </ul>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Visualise before correcting</span></span>
-<span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span><span class="va">mexp</span>, feature <span class="op">=</span> <span class="st">"your_feature"</span>, highlight_qc <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span><span class="va">mexp</span>,</span>
+<span>                variable <span class="op">=</span> <span class="st">"norm_intensity"</span>,</span>
+<span>                include_feature_filter <span class="op">=</span> <span class="st">"your_feature"</span>,</span>
+<span>                qc_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BQC"</span>, <span class="st">"SPL"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>If the QC trend is flat, skip drift correction for that batch.</p>
 </details><details><summary><strong>Batch correction flattens real biological signal</strong>
 </summary><p><code><a href="../reference/correct_batch_centering.html">correct_batch_centering()</a></code> assumes QC samples have equal
-concentration across batches. If your QC pool differs between batches,
+concentration across batches. If the QC pool differs between batches,
 centering will introduce artefacts.</p>
 <p><strong>Solution:</strong> Ensure the same QC pool is used across all
 batches.</p>
@@ -307,7 +312,7 @@ batches.</p>
 <details><summary><strong>How do I extract the final data as a data frame?</strong>
 </summary><div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># After all processing and filtering:</span></span>
-<span><span class="va">final_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_analyticaldata.html">get_analyticaldata</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span></span>
+<span><span class="va">final_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_analyticaldata.html">get_analyticaldata</a></span><span class="op">(</span><span class="va">mexp</span>, annotated <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Or the filtered dataset directly:</span></span>
 <span><span class="va">final_filtered</span> <span class="op">&lt;-</span> <span class="va">mexp</span><span class="op">@</span><span class="va">dataset_filtered</span></span></code></pre></div>
@@ -353,23 +358,29 @@ batches.</p>
 </tr>
 </tbody>
 </table></details><details><summary><strong>My features are all filtered out</strong>
-</summary><p>Your thresholds may be too strict. Check:</p>
+</summary><p>The thresholds may be too strict. Check:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># See QC metrics before filtering</span></span>
 <span><span class="va">mexp</span><span class="op">@</span><span class="va">metrics_qc</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">cv_percent</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">norm_intensity_cv_bqc</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Use more lenient thresholds</span></span>
-<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/filter_features_qc.html">filter_features_qc</a></span><span class="op">(</span><span class="va">mexp</span>, max_cv <span class="op">=</span> <span class="fl">40</span>, min_detected_ratio <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/filter_features_qc.html">filter_features_qc</a></span><span class="op">(</span></span>
+<span>  <span class="va">mexp</span>,</span>
+<span>  include_qualifier <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  include_istd <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  max.cv.normintensity.bqc <span class="op">=</span> <span class="fl">40</span>,</span>
+<span>  max.prop.missing.normintensity.spl <span class="op">=</span> <span class="fl">0.5</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </details><hr>
 </div>
 <div class="section level2">
 <h2 id="calibration">Calibration<a class="anchor" aria-label="anchor" href="#calibration"></a>
 </h2>
 <details><summary><strong>“No calibration points found”</strong>
-</summary><p>Your calibration annotation doesn’t match sample labels in the data.
+</summary><p>The calibration annotation does not match sample labels in the data.
 Check that <code>annot_qcconcentrations</code> uses the same
-<code>analysis_id</code> values as your data.</p>
+<code>analysis_id</code> values as the data.</p>
 </details><details><summary><strong>Calibration curve has R² &lt; 0.9</strong>
 </summary><p>Consider:</p>
 <ul>
@@ -387,11 +398,11 @@ Check that <code>annot_qcconcentrations</code> uses the same
 <h2 id="faq">FAQ<a class="anchor" aria-label="anchor" href="#faq"></a>
 </h2>
 <details><summary><strong>Can I use MRMhub with non-MRM data (e.g., PRM, SRM)?</strong>
-</summary><p>Yes, as long as your data can be formatted as a long CSV with feature
+</summary><p>Yes, provided the data can be formatted as a long CSV with feature
 IDs and peak areas. The processing is agnostic to acquisition mode.</p>
 </details><details><summary><strong>Can I process only one batch?</strong>
-</summary><p>Yes. Simply don’t apply batch correction. All other functions work
-with single-batch data.</p>
+</summary><p>Yes. Do not apply batch correction. All other functions work with
+single-batch data.</p>
 </details><details><summary><strong>Is there a size limit?</strong>
 </summary><p>No hard limit, but very large datasets (&gt;100k rows) may be slow
 for drift correction. Consider processing batches separately and
@@ -406,11 +417,11 @@ Issues</a></p>
 </h2>
 <ul>
 <li>
-<a href="manual-00-architecture.html">Design Overview</a> —
+<a href="manual-00-design-overview.html">Design Overview</a> —
 understand the full pipeline</li>
 <li>
-<a href="manual-00-get-started.html">Welcome and Installation</a> —
-verify your setup with <code><a href="../reference/check_setup.html">check_setup()</a></code>
+<a href="manual-00-installation.html">Installation</a> — verify your
+setup with <code><a href="../reference/check_setup.html">check_setup()</a></code>
 </li>
 </ul>
 </div>

@@ -9,9 +9,12 @@ concentrations in a reference sample (e.g., NIST SRM1950 plasma).
 Normalization (relative calibration) is based on calculating the
 abundance ratios of features in samples and a reference sample.
 
-Below, we will demonstrate both absolute and relative calibration using
-NIST SRM1950 plasma samples that were measured as part of the same
-analysis..
+Both absolute and relative calibration are demonstrated below using NIST
+SRM1950 plasma samples that were measured as part of the same analysis.
+
+**Time:** ~15 min  \|  **Level:** Intermediate  \|  **Prerequisites:**
+[Basic
+workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md)
 
 ## Import data and metadata
 
@@ -34,11 +37,10 @@ mexp <- import_metadata_istds(mexp, path = meta_file, sheet = "ISTDs")
 
 ## Load known analyte concentrations of the reference sample
 
-A table containing the known analyte concentrations for the NIST SRM1950
-reference sample is now been added to the `MRMhubExperiment object`.
-Please note that the S1P concentrations provided in this table are
-intended for illustrative purposes only. The actual absolute S1P
-concentrations in NIST SRM1950 may differ significantly.
+A table of known analyte concentrations for the NIST SRM1950 reference
+sample is added to the `MRMhubExperiment object`. Note that the S1P
+concentrations in this table are for illustration only; the actual
+absolute S1P concentrations in NIST SRM1950 may differ significantly.
 
 ``` r
 
@@ -52,10 +54,10 @@ mexp <- import_metadata_qcconcentrations(mexp, path = meta_file, sheet = "QCconc
 
 ## Process the data
 
-The analysis was performed using HILIC chromatography; thus, we need to
-correct for the isotope interferences from S1P 18:2;O2 M+2 and S1P
-18:1;O2 M+2. Subsequently, initial quantification is done using the
-spiked-in ISTD concentration.
+The analysis was performed using HILIC chromatography; the isotope
+interferences from S1P 18:2;O2 M+2 and S1P 18:1;O2 M+2 must therefore be
+corrected. Initial quantification is then done using the spiked-in ISTD
+concentration.
 
 ``` r
 
@@ -73,12 +75,11 @@ mexp <- quantify_by_istd(mexp)
 
 ## Absolute calibration
 
-We perform the absolute re-calibration using the function
+Absolute re-calibration is performed with the function
 [`calibrate_by_reference()`](https://slinghub.github.io/MRMhub/quant/reference/calibrate_by_reference.md).
-The reference sample is set via `reference_sample_id`. In cases where
-multiple analyses of the same reference sample are present in the
-dataset, either the mean or median is calculated (defined via the
-`summarize_fun`).
+The reference sample is set via `reference_sample_id`. Where multiple
+analyses of the same reference sample are present in the dataset, either
+the mean or median is calculated (defined via `summarize_fun`).
 
 The calibrated concentration is calculated as:
 
@@ -114,25 +115,25 @@ appear in the MRMhub XLSX report as concentrations.
 
 # Export absolute calibration concentrations
 save_dataset_csv(mexp, tempfile(fileext = ".csv"), variable = "conc")
-#> ✔ Concentration values for 65 analyses and 7 features have been exported to '/tmp/RtmpsqnZrb/file418048a9270.csv'.
+#> ✔ Concentration values for 65 analyses and 7 features have been exported to '/tmp/RtmpXASLqr/file3b0562ed841.csv'.
   
 # Export non-calibrated concentrations
 save_dataset_csv(mexp_res, tempfile(fileext = ".csv"), variable = "conc_beforecal")
-#> ✔ Conc_beforecal values for 65 analyses and 16 features have been exported to '/tmp/RtmpsqnZrb/file418010b0616.csv'.
+#> ✔ Conc_beforecal values for 65 analyses and 16 features have been exported to '/tmp/RtmpXASLqr/file3b05260e75d.csv'.
 
 # Create XLSX report with calibrated concentrations as filtered dataset
 save_report_xlsx(mexp_res, tempfile(fileext = ".xlsx"), filtered_variable = "conc")
 #> Saving report to disk - please wait...
-#> ✔ The data processing report has been saved to '/tmp/RtmpsqnZrb/file4180757dae35.xlsx'.
+#> ✔ The data processing report has been saved to '/tmp/RtmpXASLqr/file3b0519defd39.xlsx'.
 ```
 
 ## Normalization (relative calibration)
 
-We can perform a simple normalization with a reference sample using the
+Normalization with a reference sample is performed with the
 [`calibrate_by_reference()`](https://slinghub.github.io/MRMhub/quant/reference/calibrate_by_reference.md)
-function, setting `absolute_calibration = FALSE`. In this approach, in
-cases where multiple analyses of the same reference sample are present
-in the dataset, either the mean or median is calculated (defined via the
+function, setting `absolute_calibration = FALSE`. As above, where
+multiple analyses of the same reference sample are present in the
+dataset, either the mean or median is calculated (defined via
 `summarize_fun`).
 
 ``` r
@@ -149,7 +150,7 @@ mexp_res <- calibrate_by_reference(
 ```
 
 The results of the normalization are stored, unlike for the absolute
-calibration, as **ratios**, in a new variable, `[VARIABLE]_normalized`,
+calibration, as ratios, in a new variable, `[VARIABLE]_normalized`,
 where
 ``` math
 VARIABLE
@@ -179,7 +180,7 @@ save_dataset_csv(mexp_res, "norm.csv", variable = "conc_normalized")
 # Create XLSX report with normalized concentrations as filtered dataset
 save_report_xlsx(mexp_res, path = tempfile(fileext = ".xlsx"), filtered_variable = "conc_normalized")
 #> Saving report to disk - please wait...
-#> ✔ The data processing report has been saved to '/tmp/RtmpsqnZrb/file41801631ea64.xlsx'.
+#> ✔ The data processing report has been saved to '/tmp/RtmpXASLqr/file3b051c656d95.xlsx'.
 ```
 
 ## Batch-wise calibration
@@ -208,7 +209,7 @@ mexp_res <- calibrate_by_reference(
 #> ℹ Concentrations are given in umol/L.
 
 save_dataset_csv(mexp_res, tempfile(fileext = ".csv"), variable = "conc_beforecal")
-#> ✔ Conc_beforecal values for 65 analyses and 16 features have been exported to '/tmp/RtmpsqnZrb/file4180274fa08b.csv'.
+#> ✔ Conc_beforecal values for 65 analyses and 16 features have been exported to '/tmp/RtmpXASLqr/file3b0541208df6.csv'.
 ```
 
 ## Concentration ratio and bias
@@ -265,13 +266,13 @@ The ratio values can also be visualized or further analyzed to identify
 outliers or investigate potential issues in the analytical process or
 calibration.
 
-We can also calculate ratio and bias of QC samples directly without
-having to apply
+The ratio and bias of QC samples can also be calculated directly,
+without applying
 [`calibrate_by_reference()`](https://slinghub.github.io/MRMhub/quant/reference/calibrate_by_reference.md).
-For illustration, we calculated the ratio and bias of the QC samples
-using the re-calibrated data from above, expecting all corrected feature
-concentrations in the reference sample to have no bias (0%) and a ratio
-of 1.
+For illustration, the ratio and bias of the QC samples are calculated
+using the re-calibrated data from above; all corrected feature
+concentrations in the reference sample are expected to have no bias (0%)
+and a ratio of 1.
 
 ``` r
 

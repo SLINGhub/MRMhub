@@ -2,9 +2,9 @@
 
 The `mrmhub` package exposes more than two hundred functions across
 import, processing, plotting, and reporting. A typical end-to-end
-workflow uses fewer than fifteen of them, in roughly this order. Use
-this page as a quick reminder of which function does what; click any
-function name for the full reference.
+workflow uses fewer than fifteen of them, in roughly this order. This
+page summarises which function does what; each function name links to
+the full reference.
 
 ## Workflow order
 
@@ -23,7 +23,7 @@ function name for the full reference.
 
 ## Visualisation at each stage
 
-Plotting functions follow the same workflow logic — see [Visualisation
+Plotting functions follow the same workflow logic. See [Visualisation
 Functions](https://slinghub.github.io/MRMhub/quant/articles/manual-08-visualization.md)
 for the grouped reference, or [The MRMhub
 Workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md)
@@ -31,8 +31,8 @@ for a walked-through example.
 
 ## Reading the function names
 
-A naming convention runs through the public API. Once internalised,
-function names mostly predict themselves:
+A naming convention runs through the public API. Once internalised, the
+function names are largely predictable:
 
 - `import_data_*()` — read raw integrated peak data from a given source
 - `import_metadata_*()` — read an annotation table from a given source
@@ -54,7 +54,7 @@ Glossary](https://slinghub.github.io/MRMhub/quant/articles/manual-00-key-concept
 for the vocabulary (`MRMhubExperiment`, `analysis_id`, `feature_id`,
 `qc_type`, `ISTD`, …).
 
-## See Also
+## Next Steps
 
 - [The MRMhub
   Workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md)

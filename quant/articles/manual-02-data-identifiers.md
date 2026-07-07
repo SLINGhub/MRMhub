@@ -16,11 +16,11 @@ by processing functions throughout the package.
 |  | `istd_feature_id` | The `feature_id` of the internal standard used for normalization. |
 |  | `analyte_id` | Identifies the analyte (compound). |
 
-**Why `analysis_id` instead of `sample_id`?** A sample may be measured
-multiple times (replicates, different methods). Each injection needs a
-unique identifier. Similarly, one analyte can be measured through
-multiple transitions, so `feature_id` (not `analyte_id`) is the primary
-key.
+**Use of `analysis_id` rather than `sample_id`** A sample may be
+measured multiple times (replicates, different methods). Each injection
+needs a unique identifier. Similarly, one analyte can be measured
+through multiple transitions, so `feature_id` (not `analyte_id`) is the
+primary key.
 
 ## QC Types (Sample Types)
 
@@ -32,7 +32,7 @@ chemistry (LQC, MQC, HQC, CAL, NIST, SST, blanks).
 QC types are shown with consistent colors and point shapes in all MRMhub
 plots, allowing quick visual identification across different figures.
 
-## See Also
+## Next Steps
 
 - [Sample Types & QC
   Roles](https://slinghub.github.io/MRMhub/quant/articles/manual-00-sample-types.md)

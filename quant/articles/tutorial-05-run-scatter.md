@@ -4,7 +4,11 @@
 visualises feature signals across the analysis sequence, helping to
 identify trends, detect outliers, and assess analytical performance.
 This tutorial demonstrates the main parameters using a single feature
-(`CE 18:1`) from the built-in lipidomics dataset.
+(`TG 48:2 [-18:1]`) from the built-in lipidomics dataset.
+
+**Time:** ~10 min  \|  **Level:** Intermediate  \|  **Prerequisites:**
+[Basic
+workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md)
 
 ## Setup
 
@@ -28,7 +32,7 @@ plot_runscatter(mexp, variable = "intensity",
                 rows_page = 1, cols_page = 1)
 ```
 
-![Basic RunScatter plot of CE 18:1
+![Basic RunScatter plot of TG 48:2 \[-18:1\]
 ](tutorial-05-run-scatter_files/figure-html/unnamed-chunk-2-1.png)
 
 ## Selecting QC types

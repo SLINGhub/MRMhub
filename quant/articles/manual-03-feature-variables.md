@@ -38,11 +38,10 @@ variable name.
 These variables are stored in the `dataset_orig` table and are never
 modified by any MRMhub function. One of them is copied to `intensity` at
 import (by default `area` if available, then `height`, `response`, or
-`intensity` in that order). You can manually set the source variable
-with
+`intensity` in that order). The source variable can be set manually with
 [`set_intensity_var()`](https://slinghub.github.io/MRMhub/quant/reference/set_intensity_var.md).
 
-## See Also
+## Next Steps
 
 - [Data
   Structures](https://slinghub.github.io/MRMhub/quant/articles/manual-01-data-structure.md)

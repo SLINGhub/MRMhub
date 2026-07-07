@@ -61,7 +61,7 @@ myexp <- normalize_by_istd(myexp)
 #> ✔ 20 features normalized with 9 ISTDs in 499 analyses.
 
 save_dataset_csv(myexp, tempfile(fileext = ".csv"), "norm_intensity", FALSE)
-#> ✔ Norm_intensity values for 499 analyses and 20 features have been exported to '/tmp/RtmpFXCehV/file2e5c479efe4.csv'.
+#> ✔ Norm_intensity values for 499 analyses and 20 features have been exported to '/tmp/RtmppjuJyQ/file27ac74294962.csv'.
 ```
 
 R pipes allow chaining multiple functions together, making the
@@ -76,7 +76,7 @@ myexp <- MRMhubExperiment() |>
 
 ## Multiple MRMhubExperiment Objects
 
-You can create and process multiple objects independently within the
+Multiple objects can be created and processed independently within the
 same script:
 
 ``` r
@@ -122,7 +122,7 @@ View the current dataset and processing status at any time:
 myexp
 ```
 
-## See Also
+## Next Steps
 
 - [Data and
   Metadata](https://slinghub.github.io/MRMhub/quant/articles/manual-01-data-structure.md)

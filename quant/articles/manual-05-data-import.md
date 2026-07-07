@@ -6,7 +6,7 @@ for a visual decision flowchart.
 
 **Caution.** Do not manually edit data files exported from instrument
 software before importing. Manual edits can corrupt the file structure
-or introduce accidental errors — MRMhub emphasises reproducible,
+or introduce accidental errors. MRMhub is designed for reproducible,
 automated workflows.
 
 ## Part 1: Importing Analytical Data
@@ -93,7 +93,7 @@ of the
 function.
 
 To export results from Skyline: Navigate to “File” \> “Export” and
-select ‘Molecule Transition Results’ format. Ensure your export includes
+select ‘Molecule Transition Results’ format. Ensure the export includes
 `Replicate Name`, `Molecule Name`, and either `Precursor Mz` and
 `Product Mz,` or `Precursor Name` and `Product Name`. Also, export at
 least one feature variable like `Area` or `Retention Time (RT)`.
@@ -149,14 +149,14 @@ supported — please refer to the documentation for
 [`import_data_csv_long()`](https://slinghub.github.io/MRMhub/quant/reference/import_data_csv_long.md)
 for further details.
 
-If your CSV file uses different column names, you can import it by
+If the CSV file uses different column names, it can be imported by
 specifying a column name mapping. This mapping associates the MRMhub
-expected column names with the corresponding column names in your CSV
+expected column names with the corresponding column names in the CSV
 file (refer to the MRMhub Manual for details).
 
 The column mapping is defined as a named vector, where the names
 correspond to the MRMhub column names and the values correspond to the
-column names in your CSV.
+column names in the CSV.
 
 ``` r
 
@@ -201,11 +201,11 @@ was integrated in different raw data processing batches.
 
 ## Part 2: Preparing and Importing Metadata
 
-Metadata refers to the annotations that describe your analytical data at
+Metadata refers to the annotations that describe the analytical data at
 the sample level and feature level. This includes sample types, batch
 assignments, internal standard assignments, concentrations, and more.
 
-Which metadata tables you need depends on your processing workflow. See
+The metadata tables required depend on the processing workflow. See
 [Data
 Structures](https://slinghub.github.io/MRMhub/quant/articles/manual-01-data-structure.md)
 for an overview of all metadata categories.
@@ -273,8 +273,9 @@ mexp <- import_metadata_istds(mexp,
 
 ### Importing Metadata from R Data Frames
 
-Metadata can also be provided directly as R data frames — useful when
-metadata comes from a database, LIMS, or is prepared programmatically:
+Metadata can also be provided directly as R data frames, which is useful
+when metadata comes from a database, LIMS, or is prepared
+programmatically:
 
 ``` r
 
@@ -316,12 +317,18 @@ for a detailed walkthrough of the MSOrganiser workflow.
 
 ### Validating Metadata
 
-Before processing, validate that your metadata is complete and
+Before processing, validate that the metadata is complete and
 consistent:
 
 ``` r
 
-assert_metadata(mexp)
+validated <- assert_metadata(
+  mexp,
+  metadata = list(annot_analyses = annot_analyses,
+                  annot_features = annot_features),
+  ignore_warnings = FALSE,
+  excl_unmatched_analyses = FALSE
+)
 ```
 
 See the [Metadata Validation
@@ -330,9 +337,15 @@ for a full walkthrough of common validation errors and how to fix them.
 
 ### Next Steps
 
-| Goal | Article |
-|----|----|
-| Decide which importer to use | [Import and prepare data files](https://slinghub.github.io/MRMhub/quant/articles/manual-05a-which-importer.md) |
-| Prepare metadata files | [Metadata Import](https://slinghub.github.io/MRMhub/quant/articles/manual-06-metadata-import.md) |
-| Validate metadata | [Metadata Validation](https://slinghub.github.io/MRMhub/quant/articles/tutorial-10-metadata-validation.md) |
-| Start processing | [Real-World Workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md) |
+- [Import and prepare data
+  files](https://slinghub.github.io/MRMhub/quant/articles/manual-05a-which-importer.md)
+  — decide which importer to use
+- [Metadata
+  Import](https://slinghub.github.io/MRMhub/quant/articles/manual-06-metadata-import.md)
+  — prepare metadata files
+- [Metadata
+  Validation](https://slinghub.github.io/MRMhub/quant/articles/tutorial-10-metadata-validation.md)
+  — validate metadata
+- [Real-World
+  Workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md)
+  — start processing

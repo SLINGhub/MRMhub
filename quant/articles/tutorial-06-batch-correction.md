@@ -7,13 +7,17 @@ The data must be provided via a MRMhubExperiment object, whereby raw
 data that was imported or processed data can be corrected, such as
 `intensity` or `conc` values.
 
+**Time:** ~10 min  \|  **Level:** Intermediate  \|  **Prerequisites:**
+[Basic
+workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md)
+
 ## Import data
 
-In this tutorial, we import pre-calculated concentration values from a
-CSV file. This file must contain a column with batch information
-(`batch_id`), see
-[`import_data_csv()`](https://slinghub.github.io/MRMhub/quant/reference/import_data_csv.md)
-for more information.
+This tutorial imports pre-calculated concentration values from a CSV
+file. The file must contain a column with batch information
+(`batch_id`); see
+[`import_data_csv_wide()`](https://slinghub.github.io/MRMhub/quant/reference/import_data_csv_wide.md)
+for details.
 
 ``` r
 
@@ -21,18 +25,21 @@ library(mrmhub)
 
 myexp <- mrmhub::MRMhubExperiment()
 
-myexp <- import_data_csv(
+myexp <- import_data_csv_wide(
   myexp,
-  path = "simdata-u1000-sd100_7batches.csv", 
-  variable_name = "conc", 
+  path = "simdata-u1000-sd100_7batches.csv",
+  variable_name = "conc",
   import_metadata = TRUE)
 ```
 
 ## Apply batch-centering
 
-Now we center the concentration values of batches based on a reference
-qc type, the samples (`ref_qc_types = "SPL"`) in this case. The
-`correct_scale` parameter
+The concentration values of each batch are centered on a reference QC
+type, here the samples (`ref_qc_types = "SPL"`). The `correct_scale`
+parameter controls whether the batch-to-batch differences in variance
+(scale) are also corrected. Here it is set to `FALSE`, so only the
+median (location) of each batch is aligned; variance scaling is
+disabled.
 
 ``` r
 
@@ -47,10 +54,10 @@ myexp <- correct_batch_centering(
 #> ℹ The median CV change of all features in study samples was -30.49% (range: -30.50% to -30.50%).  The median absolute CV of all features decreased from 44.05% to 13.56%.
 ```
 
-Next, we inspect the data before and after batch correction. We observe
-that the batches are now aligned. Note: If the samples or other quality
-control types do not follow the reference samples, they may not be
-appropriately corrected.
+The data before and after batch correction are compared below. The
+batches are now aligned. Note: if the samples or other quality control
+types do not follow the reference samples, they may not be corrected
+appropriately.
 
 ``` r
 
@@ -70,11 +77,10 @@ plot_runscatter(myexp, variable = "conc", rows_page = 1, cols_page = 1)
 
 ## Batch-centering with variance scaling
 
-Above, we observe that while the batches are aligned, the spread
-(variance) of the data points varies considerably between the batches.
-We can correct this by scaling the variance via `correct_scale = TRUE`.
-As shown in the plot below, the variance of the data points now appears
-fairly consistent across the batches.
+Although the batches are aligned, the spread (variance) of the data
+points varies considerably between the batches. This can be corrected by
+scaling the variance via `correct_scale = TRUE`. In the plot below, the
+variance of the data points is now fairly consistent across the batches.
 
 ``` r
 
@@ -99,8 +105,8 @@ plot_runscatter(myexp, variable = "conc", rows_page = 1, cols_page = 1)
 
 ## Export batch-corrected data
 
-Next, we can either continue to work with the corrected data using
-`MRMhub` functions or export the data.
+The corrected data can be processed further with `MRMhub` functions, or
+exported.
 
 ``` r
 

@@ -261,8 +261,6 @@ spectrometry is also available.
   : Percent coefficient of variation (%CV) based on log-transformation
 - [`calc_average_molweight()`](https://slinghub.github.io/MRMhub/quant/reference/calc_average_molweight.md)
   : Calculate Average Molecular Weight from Chemical Formulas
-- [`save_dataset_csv()`](https://slinghub.github.io/MRMhub/quant/reference/save_dataset_csv.md)
-  : Export Data to CSV file
 - [`fun_correct_drift()`](https://slinghub.github.io/MRMhub/quant/reference/fun_correct_drift.md)
   : Drift Correction by Custom Function
 - [`fun_gauss.kernel.smooth()`](https://slinghub.github.io/MRMhub/quant/reference/fun_gauss.kernel.smooth.md)

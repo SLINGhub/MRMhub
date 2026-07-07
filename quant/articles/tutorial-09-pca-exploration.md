@@ -13,7 +13,11 @@ ISTD-normalised intensities
 ([`normalize_by_istd()`](https://slinghub.github.io/MRMhub/quant/reference/normalize_by_istd.md))
 and, optionally, drift/batch correction applied. See [The MRMhub
 Workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md)
-if you are not yet at this stage.
+if these steps have not been completed.
+
+**Time:** ~10 min  \|  **Level:** Intermediate  \|  **Prerequisites:**
+[Basic
+workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md)
 
 ## 1. Setup
 
@@ -220,7 +224,7 @@ if (!is.null(outliers)) {
 }
 ```
 
-## See Also
+## Next Steps
 
 - [Drift and Batch Correction
   (reference)](https://slinghub.github.io/MRMhub/quant/articles/manual-07-drift-batch-correction.md)

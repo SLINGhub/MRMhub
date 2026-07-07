@@ -6,13 +6,15 @@ MRMhub processes targeted mass spectrometry data in two stages:
 
 ![](data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdib3g9IjAgMCA4NjAgMTAwIiBzdHlsZT0ibWF4LXdpZHRoOiA4NjBweDsgd2lkdGg6IDEwMCU7IGhlaWdodDogYXV0bzsgZm9udC1mYW1pbHk6IC1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJiMzOTtTZWdvZSBVSSYjMzk7LCBzYW5zLXNlcmlmOyI+PHN0eWxlPgogICAgLmFyY2gtYm94IHsgcng6IDg7IHJ5OiA4OyBzdHJva2Utd2lkdGg6IDEuNTsgfQogICAgLmFyY2gtbGFiZWwgeyBmb250LXNpemU6IDEycHg7IGZvbnQtd2VpZ2h0OiA2MDA7IGZpbGw6ICMxYTFhMWE7IH0KICAgIC5hcmNoLXN1YiB7IGZvbnQtc2l6ZTogMTBweDsgZmlsbDogIzU1NTsgfQogICAgLmFyY2gtYXJyb3cgeyBmaWxsOiAjNjY2OyB9CiAgPC9zdHlsZT4KPHJlY3QgY2xhc3M9ImFyY2gtYm94IiB4PSIwIiB5PSIxNSIgd2lkdGg9IjE0MCIgaGVpZ2h0PSI3MCIgZmlsbD0iI2U4ZThlOCIgc3Ryb2tlPSIjODg4IiAvPjx0ZXh0IGNsYXNzPSJhcmNoLWxhYmVsIiB4PSI3MCIgeT0iNDUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlJhdwpGaWxlczwvdGV4dD48dGV4dCBjbGFzcz0iYXJjaC1zdWIiIHg9IjcwIiB5PSI2MiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+KC53aWZmIC8KLmQpPC90ZXh0Pjxwb2x5Z29uIGNsYXNzPSJhcmNoLWFycm93IiBwb2ludHM9IjE1MCw1MCAxNjIsNDMgMTYyLDU3Ij48L3BvbHlnb24+PHJlY3QgY2xhc3M9ImFyY2gtYm94IiB4PSIxNzIiIHk9IjE1IiB3aWR0aD0iMTQwIiBoZWlnaHQ9IjcwIiBmaWxsPSIjZDZlOGYwIiBzdHJva2U9IiM0YTkwYTQiIC8+PHRleHQgY2xhc3M9ImFyY2gtbGFiZWwiIHg9IjI0MiIgeT0iNDUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPm1zY29udmVydDwvdGV4dD48dGV4dCBjbGFzcz0iYXJjaC1zdWIiIHg9IjI0MiIgeT0iNjIiIHRleHQtYW5jaG9yPSJtaWRkbGUiPuKGkgoubXpNTDwvdGV4dD48cG9seWdvbiBjbGFzcz0iYXJjaC1hcnJvdyIgcG9pbnRzPSIzMjIsNTAgMzM0LDQzIDMzNCw1NyI+PC9wb2x5Z29uPjxyZWN0IGNsYXNzPSJhcmNoLWJveCIgeD0iMzQ0IiB5PSIxNSIgd2lkdGg9IjE0MCIgaGVpZ2h0PSI3MCIgZmlsbD0iI2Y1ZTBjOCIgc3Ryb2tlPSIjYzg3ZjNiIiAvPjx0ZXh0IGNsYXNzPSJhcmNoLWxhYmVsIiB4PSI0MTQiIHk9IjQ1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5JTlRFR1JBVE9SPC90ZXh0Pjx0ZXh0IGNsYXNzPSJhcmNoLXN1YiIgeD0iNDE0IiB5PSI2MiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+UGVhawppbnRlZ3JhdGlvbjwvdGV4dD48cG9seWdvbiBjbGFzcz0iYXJjaC1hcnJvdyIgcG9pbnRzPSI0OTQsNTAgNTA2LDQzIDUwNiw1NyI+PC9wb2x5Z29uPjxyZWN0IGNsYXNzPSJhcmNoLWJveCIgeD0iNTE2IiB5PSIxNSIgd2lkdGg9IjE0MCIgaGVpZ2h0PSI3MCIgZmlsbD0iI2YwZjBmMCIgc3Ryb2tlPSIjODg4IiAvPjx0ZXh0IGNsYXNzPSJhcmNoLWxhYmVsIiB4PSI1ODYiIHk9IjQ1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5sb25nLmNzdjwvdGV4dD48dGV4dCBjbGFzcz0iYXJjaC1zdWIiIHg9IjU4NiIgeT0iNjIiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlRpZHkKZXhjaGFuZ2U8L3RleHQ+PHBvbHlnb24gY2xhc3M9ImFyY2gtYXJyb3ciIHBvaW50cz0iNjY2LDUwIDY3OCw0MyA2NzgsNTciPjwvcG9seWdvbj48YSBocmVmPSJodHRwczovL3NsaW5naHViLmdpdGh1Yi5pby9NUk1odWIvcXVhbnQvYXJ0aWNsZXMvbWFudWFsLTA1LWRhdGEtaW1wb3J0Lm1kIj4KPHJlY3QgY2xhc3M9ImFyY2gtYm94IiB4PSI2ODgiIHk9IjE1IiB3aWR0aD0iMTYwIiBoZWlnaHQ9IjcwIiBmaWxsPSIjZDRlOGQ0IiBzdHJva2U9IiM1YTlhNWEiIC8+PHRleHQgY2xhc3M9ImFyY2gtbGFiZWwiIHg9Ijc2OCIgeT0iNDUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlFVQU5UCihSKTwvdGV4dD48dGV4dCBjbGFzcz0iYXJjaC1zdWIiIHg9Ijc2OCIgeT0iNjIiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlBvc3QtcHJvY2Vzc2luZzwvdGV4dD48L2E+Cjwvc3ZnPg==)
 
-**Stage 1 — INTEGRATOR** converts vendor raw files into a standardized
-long-format CSV containing peak areas per feature per sample. This
-handles:
+**Stage 1 — INTEGRATOR** detects, picks, and integrates chromatographic
+peaks from mzML files, producing a standardized long-format CSV with
+peak areas per feature per sample. This covers:
 
-- File format conversion (msconvert)
 - Peak detection, picking, and integration
 - Batch-aware file organization
+
+Vendor raw files (`.wiff`, `.d`, `.raw`) are first converted to mzML
+with a separate tool (ProteoWizard MSConvert) before INTEGRATOR is run.
 
 **Stage 2 — QUANT (this R package)** takes the long CSV and provides:
 
@@ -34,13 +36,13 @@ handles:
 library(mrmhub)
 
 # 1. Import data into MRMhubExperiment
-mexp <- import_data_csv_long("path/to/long.csv",
-                             analysis_type = "lipidomics")
+mexp <- MRMhubExperiment(analysis_type = "lipidomics") |>
+  import_data_csv_long(path = "path/to/long.csv")
 
 # 2. Add metadata (sample and feature annotations)
 mexp <- add_metadata(mexp,
-                     annot_analyses = annot_analyses,
-                     annot_features = annot_features)
+                     metadata = list(annot_analyses = annot_analyses,
+                                     annot_features = annot_features))
 
 # 3. Set analysis order (critical for drift correction)
 mexp <- set_analysis_order(mexp)
@@ -100,9 +102,9 @@ get_featurelist(mexp)
 # Batch boundaries (for plotting)
 get_batch_boundaries(mexp)
 
-# Run start/end
-get_analysis_start(mexp)
-get_analysis_end(mexp)
+# Run timing
+get_analysis_duration(mexp, estimate_sequence_end = TRUE)
+get_runtime_median(mexp)
 ```
 
 ## Decision Points

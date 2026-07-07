@@ -3,12 +3,12 @@
 ### All vignettes
 
 - [Design Overview: How Data Flows Through
-  MRMhub](https://slinghub.github.io/MRMhub/quant/articles/manual-00-architecture.md):
+  MRMhub](https://slinghub.github.io/MRMhub/quant/articles/manual-00-design-overview.md):
 
   A bird’s-eye view of the MRMhub data pipeline from raw instrument
   files to final quantitative results.
 
-- [Installation](https://slinghub.github.io/MRMhub/quant/articles/manual-00-get-started.md):
+- [Installation](https://slinghub.github.io/MRMhub/quant/articles/manual-00-installation.md):
 
   Install mrmhub, verify your setup, and fix common install errors.
 
@@ -110,7 +110,7 @@
 - [Function
   Cheatsheet](https://slinghub.github.io/MRMhub/quant/articles/manual-11-cheatsheet.md):
 
-  The 12 functions used in a typical MRMhub workflow, in order, with
+  The core functions used in a typical MRMhub workflow, in order, with
   one-line descriptions and links to the full reference.
 
 - [MRMhub](https://slinghub.github.io/MRMhub/quant/articles/mrmhub.md):
@@ -121,13 +121,13 @@
   MRMhub: Postprocessing and Quality Control of Small-Molecule Mass
   Spectrometry Data
 
-- [Recipe: Custom QC
+- [Custom QC
   Report](https://slinghub.github.io/MRMhub/quant/articles/recipe-02-custom-qc-report.md):
 
-  Create a comprehensive HTML QC report from a processed
-  MRMhubExperiment using a parameterized Quarto template.
+  Create a detailed HTML QC report from a processed MRMhubExperiment
+  using a parameterized Quarto template.
 
-- [Recipe: Import & Export
+- [Import & Export
   mzTab-M](https://slinghub.github.io/MRMhub/quant/articles/recipe-03-mztab-export.md):
 
   Exchange data with the HUPO-PSI mzTab-M standard format: export a
@@ -147,7 +147,7 @@
   How to prepare data files and import analytical data and metadata into
   MRMhub.
 
-- [A Real-World MRMhub
+- [Basic MRMhub
   Workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md):
 
   A realistic end-to-end workflow covering project setup, metadata
@@ -171,7 +171,7 @@
 - [Calibration by a Reference
   Sample](https://slinghub.github.io/MRMhub/quant/articles/tutorial-07-calibration-reference.md):
 
-- [Tutorial: Multi-Batch
+- [Multi-Batch
   Study](https://slinghub.github.io/MRMhub/quant/articles/tutorial-08-multi-batch.md):
 
   End-to-end workflow for a realistic multi-batch targeted metabolomics

@@ -1,4 +1,4 @@
-# Recipe: Import & Export mzTab-M
+# Import & Export mzTab-M
 
 **Level:** Intermediate  \|  **Output:** `.mzTab` file (mzTab-M 2.0.0-M)
  \|  **Requires:** a processed `MRMhubExperiment`
@@ -65,7 +65,7 @@ calibration samples) and every feature:
 | `SML` (summary) | one row per analyte, grouping its features; the quantifier drives the summary abundance and per-group mean / %CV |
 | `SME` (evidence) | a minimal identification stub per feature |
 
-You can enrich the metadata header with optional arguments:
+The metadata header can be enriched with optional arguments:
 
 ``` r
 
@@ -91,9 +91,9 @@ as the authoritative processing record.
 
 The output targets mzTab-M **2.0.0-M**. To confirm conformance, upload
 the file to the official HUPO-PSI / LIFS web validator at
-<https://apps.lifs-tools.org/mztabvalidator/>, or, if you have the
-reference R package [`rmzTabM`](https://lifs-tools.github.io/rmzTabM/)
-installed, parse it back:
+<https://apps.lifs-tools.org/mztabvalidator/>, or, if the reference R
+package [`rmzTabM`](https://lifs-tools.github.io/rmzTabM/) is installed,
+parse it back:
 
 ``` r
 

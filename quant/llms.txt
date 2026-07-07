@@ -20,18 +20,20 @@ MassHunter, and generic CSV files. MRMhub-QUANT features:
 
 ## Quick Start and Demos
 
-- **[Installation](https://slinghub.github.io/MRMhub/quant/articles/manual-00-get-started.md)**
+- **[Installation](https://slinghub.github.io/MRMhub/quant/articles/manual-00-installation.md)**
   — install and verify your setup
-- **[Example](https://slinghub.github.io/MRMhub/quant/articles/tutorial-03-lipidomics-workflow.md)** -
-  Targeted Lipidomics Data Processing
-- **[Example](https://slinghub.github.io/MRMhub/quant/articles/recipe-01-ext-calibration-qc.md)** -
-  Quantitative Assay with Ext. Calibration
-- **[Quick
-  Start](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md)** -
-  5 minute run on bundled data
+- **[Your First
+  Analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md)**
+  — a 5-minute run on bundled data
 - **[Prepare your
-  data](https://slinghub.github.io/MRMhub/quant/articles/manual-05a-which-importer.md)** -
-  file formats and importers
+  data](https://slinghub.github.io/MRMhub/quant/articles/manual-05a-which-importer.md)**
+  — file formats and importers
+- **[Example: targeted
+  lipidomics](https://slinghub.github.io/MRMhub/quant/articles/tutorial-03-lipidomics-workflow.md)**
+  — a full lipidomics workflow
+- **[Example: external
+  calibration](https://slinghub.github.io/MRMhub/quant/articles/recipe-01-ext-calibration-qc.md)**
+  — a quantitative assay with calibration curves
 
 ## Installation and Updating
 
@@ -42,11 +44,14 @@ RStudio/Positron first to avoid locked packages):
 
 if (!require("pak")) install.packages("pak")
 pak::pak("SLINGhub/MRMhub")
+library(mrmhub); mrmhub::check_setup()
 ```
 
+`pak` resolves locked packages and parallelises downloads;
+`remotes::install_github("SLINGhub/MRMhub")` is an equivalent fallback.
 For more details and troubleshooting see
-[Installation](https://slinghub.github.io/MRMhub/quant/articles/manual-00-get-started.md)
-and [Installation Troubleshooting &
+[Installation](https://slinghub.github.io/MRMhub/quant/articles/manual-00-installation.md)
+and [Troubleshooting &
 FAQ](https://slinghub.github.io/MRMhub/quant/articles/manual-09-troubleshooting.md).
 
 ## Contributing
@@ -326,8 +331,6 @@ spectrometry is also available.
   : Percent coefficient of variation (%CV) based on log-transformation
 - [`calc_average_molweight()`](https://slinghub.github.io/MRMhub/quant/reference/calc_average_molweight.md)
   : Calculate Average Molecular Weight from Chemical Formulas
-- [`save_dataset_csv()`](https://slinghub.github.io/MRMhub/quant/reference/save_dataset_csv.md)
-  : Export Data to CSV file
 - [`fun_correct_drift()`](https://slinghub.github.io/MRMhub/quant/reference/fun_correct_drift.md)
   : Drift Correction by Custom Function
 - [`fun_gauss.kernel.smooth()`](https://slinghub.github.io/MRMhub/quant/reference/fun_gauss.kernel.smooth.md)
@@ -352,12 +355,12 @@ spectrometry is also available.
 ### All vignettes
 
 - [Design Overview: How Data Flows Through
-  MRMhub](https://slinghub.github.io/MRMhub/quant/articles/manual-00-architecture.md):
+  MRMhub](https://slinghub.github.io/MRMhub/quant/articles/manual-00-design-overview.md):
 
   A bird’s-eye view of the MRMhub data pipeline from raw instrument
   files to final quantitative results.
 
-- [Installation](https://slinghub.github.io/MRMhub/quant/articles/manual-00-get-started.md):
+- [Installation](https://slinghub.github.io/MRMhub/quant/articles/manual-00-installation.md):
 
   Install mrmhub, verify your setup, and fix common install errors.
 
@@ -459,7 +462,7 @@ spectrometry is also available.
 - [Function
   Cheatsheet](https://slinghub.github.io/MRMhub/quant/articles/manual-11-cheatsheet.md):
 
-  The 12 functions used in a typical MRMhub workflow, in order, with
+  The core functions used in a typical MRMhub workflow, in order, with
   one-line descriptions and links to the full reference.
 
 - [MRMhub](https://slinghub.github.io/MRMhub/quant/articles/mrmhub.md):
@@ -470,13 +473,13 @@ spectrometry is also available.
   MRMhub: Postprocessing and Quality Control of Small-Molecule Mass
   Spectrometry Data
 
-- [Recipe: Custom QC
+- [Custom QC
   Report](https://slinghub.github.io/MRMhub/quant/articles/recipe-02-custom-qc-report.md):
 
-  Create a comprehensive HTML QC report from a processed
-  MRMhubExperiment using a parameterized Quarto template.
+  Create a detailed HTML QC report from a processed MRMhubExperiment
+  using a parameterized Quarto template.
 
-- [Recipe: Import & Export
+- [Import & Export
   mzTab-M](https://slinghub.github.io/MRMhub/quant/articles/recipe-03-mztab-export.md):
 
   Exchange data with the HUPO-PSI mzTab-M standard format: export a
@@ -496,7 +499,7 @@ spectrometry is also available.
   How to prepare data files and import analytical data and metadata into
   MRMhub.
 
-- [A Real-World MRMhub
+- [Basic MRMhub
   Workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md):
 
   A realistic end-to-end workflow covering project setup, metadata
@@ -520,7 +523,7 @@ spectrometry is also available.
 - [Calibration by a Reference
   Sample](https://slinghub.github.io/MRMhub/quant/articles/tutorial-07-calibration-reference.md):
 
-- [Tutorial: Multi-Batch
+- [Multi-Batch
   Study](https://slinghub.github.io/MRMhub/quant/articles/tutorial-08-multi-batch.md):
 
   End-to-end workflow for a realistic multi-batch targeted metabolomics

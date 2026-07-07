@@ -20,18 +20,20 @@ MassHunter, and generic CSV files. MRMhub-QUANT features:
 
 ## Quick Start and Demos
 
-- **[Installation](https://slinghub.github.io/MRMhub/quant/articles/manual-00-get-started.md)**
+- **[Installation](https://slinghub.github.io/MRMhub/quant/articles/manual-00-installation.md)**
   — install and verify your setup
-- **[Example](https://slinghub.github.io/MRMhub/quant/articles/tutorial-03-lipidomics-workflow.md)** -
-  Targeted Lipidomics Data Processing
-- **[Example](https://slinghub.github.io/MRMhub/quant/articles/recipe-01-ext-calibration-qc.md)** -
-  Quantitative Assay with Ext. Calibration
-- **[Quick
-  Start](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md)** -
-  5 minute run on bundled data
+- **[Your First
+  Analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md)**
+  — a 5-minute run on bundled data
 - **[Prepare your
-  data](https://slinghub.github.io/MRMhub/quant/articles/manual-05a-which-importer.md)** -
-  file formats and importers
+  data](https://slinghub.github.io/MRMhub/quant/articles/manual-05a-which-importer.md)**
+  — file formats and importers
+- **[Example: targeted
+  lipidomics](https://slinghub.github.io/MRMhub/quant/articles/tutorial-03-lipidomics-workflow.md)**
+  — a full lipidomics workflow
+- **[Example: external
+  calibration](https://slinghub.github.io/MRMhub/quant/articles/recipe-01-ext-calibration-qc.md)**
+  — a quantitative assay with calibration curves
 
 ## Installation and Updating
 
@@ -42,11 +44,14 @@ RStudio/Positron first to avoid locked packages):
 
 if (!require("pak")) install.packages("pak")
 pak::pak("SLINGhub/MRMhub")
+library(mrmhub); mrmhub::check_setup()
 ```
 
+`pak` resolves locked packages and parallelises downloads;
+`remotes::install_github("SLINGhub/MRMhub")` is an equivalent fallback.
 For more details and troubleshooting see
-[Installation](https://slinghub.github.io/MRMhub/quant/articles/manual-00-get-started.md)
-and [Installation Troubleshooting &
+[Installation](https://slinghub.github.io/MRMhub/quant/articles/manual-00-installation.md)
+and [Troubleshooting &
 FAQ](https://slinghub.github.io/MRMhub/quant/articles/manual-09-troubleshooting.md).
 
 ## Contributing

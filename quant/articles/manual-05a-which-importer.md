@@ -1,14 +1,15 @@
 # Import and prepare data files
 
 Loading an experiment takes two steps: import the **peak table**
-produced by your integration software, then attach the **metadata** that
+produced by the integration software, then attach the **metadata** that
 describes samples, features, and standards. MRMhub stores everything
 internally in **long** format (one row per sample × feature); **wide**
 files (one row per sample, one column per feature) are pivoted
 automatically on import.
 
 **Start from a blank template.** Save a ready-made metadata workbook,
-fill it in, and load it back — no need to build the tables from scratch.
+fill it in, and load it back; there is no need to build the tables from
+scratch.
 
 ``` r
 
@@ -18,7 +19,7 @@ save_metadata_msorganiser_template()   # msorganizer metadata template (XLSX)
 
 ## Data import
 
-Pick the importer that matches the software that produced your peak
+Pick the importer that matches the software that produced the peak
 table. Each reads a CSV/TSV file and returns an `MRMhubExperiment`.
 
 Click a **Format** to see the file structure and column meanings.
@@ -54,11 +55,11 @@ A minimal import looks like this:
 
 ``` r
 
-exp <- import_data_mrmhub("datasets/integrator_output.tsv")
+exp <- MRMhubExperiment() |> import_data_mrmhub(path = "datasets/integrator_output.tsv")
 exp <- import_metadata_msorganiser(exp, path = "datasets/metadata.xlsx")
 ```
 
-## See Also
+## Next Steps
 
 - [Data file
   structures](https://slinghub.github.io/MRMhub/quant/articles/manual-05b-data-file-structures.md)
