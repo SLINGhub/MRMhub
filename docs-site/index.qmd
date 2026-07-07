@@ -3,9 +3,14 @@ title: "MRMhub"
 subtitle: "An open, reproducible pipeline for targeted MRM mass spectrometry"
 ---
 
-MRMhub processes targeted MRM mass spectrometry data, from raw vendor files through
-peak integration, quality control, normalisation, drift/batch correction, calibration, and
-quantitative reporting. It consists of two modules that can be used independently:
+**MRMhub** is an open-source toolchain for **targeted Multiple Reaction Monitoring (MRM)**
+mass spectrometry — the assay type used for quantitative lipidomics and metabolomics. It takes
+data from raw instrument files to quality-controlled, quantitative results: peak integration, QC,
+normalisation, drift and batch correction, calibration, and reporting.
+
+It is intended for analytical scientists and biochemists who run targeted assays — the tutorials
+require running R scripts rather than writing them — as well as for bioinformaticians who build
+reproducible pipelines. MRMhub consists of two modules that can be used independently:
 
 - **[INTEGRATOR ↗](https://slinghub.github.io/MRMhub/integrator/)** — stand-alone application
   for peak detection, picking, and integration.
@@ -34,12 +39,26 @@ quantitative reporting. It consists of two modules that can be used independentl
 </svg>
 </div>
 
-## Choose your path
+::: {.callout-tip title="Getting started"}
+Most analyses begin with integrated peak data — from INTEGRATOR, Agilent MassHunter, Skyline, or a
+CSV export. In that case, install the **QUANT** R package and follow the five-minute first analysis
+on the bundled dataset:
 
-| If you have... | Use | Start here |
+**→ [Install QUANT and run a first analysis ↗](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.html)**
+
+Analyses that begin from raw instrument files, and guidance on selecting a module, are covered under
+**Choosing the right tool** below.
+:::
+
+## Choosing the right tool
+
+For guidance on selecting a module, see
+[INTEGRATOR vs QUANT ↗](https://slinghub.github.io/MRMhub/quant/articles/manual-00-integrator-vs-quant.html).
+
+| Available input | Modules | Starting point |
 |---|---|---|
-| Raw vendor files (`.raw`, `.d`, `.wiff`) and need integrated peaks | INTEGRATOR + QUANT | [INTEGRATOR Manual ↗](https://slinghub.github.io/MRMhub/integrator/) → [QUANT install ↗](https://slinghub.github.io/MRMhub/quant/articles/manual-00-get-started.html) |
-| Integrated peaks already (MassHunter, Skyline, or mzTab/CSV) | QUANT only | [QUANT install ↗](https://slinghub.github.io/MRMhub/quant/articles/manual-00-get-started.html) |
+| Raw vendor files (`.raw`, `.d`, `.wiff`) and need integrated peaks | INTEGRATOR + QUANT | [INTEGRATOR Manual ↗](https://slinghub.github.io/MRMhub/integrator/) → [QUANT install ↗](https://slinghub.github.io/MRMhub/quant/articles/manual-00-installation.html) |
+| Integrated peaks already (MassHunter, Skyline, or mzTab/CSV) | QUANT only | [QUANT install ↗](https://slinghub.github.io/MRMhub/quant/articles/manual-00-installation.html) |
 | Only peak picking | INTEGRATOR only | [INTEGRATOR Manual ↗](https://slinghub.github.io/MRMhub/integrator/) |
 
 ## Why MRMhub?
@@ -48,7 +67,8 @@ quantitative reporting. It consists of two modules that can be used independentl
 - **Modular.** Each module replaces or augments existing pipeline components without lock-in.
 - **MRM-specific.** Drift correction, batch correction (Broadhurst 2018), ISTD/calibration
   quantitation, isotope-interference correction, and the QC vocabulary (BQC, TQC, SBLK, ...)
-  built into one container object.
+  built into one container object. The terminology is defined in the
+  [Key Concepts & Glossary ↗](https://slinghub.github.io/MRMhub/quant/articles/manual-00-key-concepts.html).
 
 ---
 
