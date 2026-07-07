@@ -76,10 +76,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-0a6b7249c26820e032cb0bd839ff02b1.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-bba5ebae505b5c03f3f0d8040a416a6b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-011108973cccfa058b9d53d4b7eb11ad.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-b0172729d9e3827b305e14eb5a71532e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-011108973cccfa058b9d53d4b7eb11ad.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -155,6 +159,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="dropdown-text">Running INTEGRATOR</span></a>
   </li>  
         <li>
+    <a class="dropdown-item" href="./algorithm.html">
+ <span class="dropdown-text">Algorithm</span></a>
+  </li>  
+        <li>
     <a class="dropdown-item" href="./viz.html">
  <span class="dropdown-text">MRMhub-viz Visualizer</span></a>
   </li>  
@@ -165,7 +173,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li><hr class="dropdown-divider"></li>
         <li>
     <a class="dropdown-item" href="./msconvert.html">
- <span class="dropdown-text">Vendor → mzML (msconvert)</span></a>
+ <span class="dropdown-text">Vendor → mzML (MSConvert)</span></a>
   </li>  
     </ul>
   </li>
@@ -248,6 +256,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./algorithm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Algorithm</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./viz.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">MRMhub-viz Visualizer</span></a>
   </div>
@@ -261,7 +275,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./msconvert.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Vendor → mzML (msconvert)</span></a>
+ <span class="menu-text">Vendor → mzML (MSConvert)</span></a>
   </div>
 </li>
       </ul>
@@ -300,8 +314,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p><strong>INTEGRATOR</strong> is the stand-alone peak-integration module of the MRMhub pipeline. It takes converted mzML files, detects and integrates MRM peaks across all your samples, lets you review and fine-tune the results interactively, and exports tables ready for quantitation.</p>
-<p>It ships as a small, self-contained executable for macOS and Windows — <strong>nothing to install, no Python or R required</strong>. Keep one copy in each analysis project folder and the whole project stays re-runnable.</p>
+<p><strong>INTEGRATOR</strong> is the stand-alone peak-integration module of the MRMhub pipeline. It reads converted mzML files, detects and integrates MRM peaks across all samples, supports interactive review and refinement of the results, and exports tables for quantitation.</p>
+<p>It is distributed as a self-contained executable for macOS and Windows and requires no installation and no separate runtime. Retaining one copy in each analysis project folder keeps the project reproducible.</p>
 <section id="the-workflow" class="level2">
 <h2 class="anchored" data-anchor-id="the-workflow">The workflow</h2>
 <div style="text-align: center; margin: 1.5em 0;">
@@ -324,7 +338,7 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><strong>Just want post-processing in R?</strong> INTEGRATOR is not required to use the QUANT R package — QUANT imports directly from vendor outputs (MassHunter, Skyline) as well. See the <a href="https://slinghub.github.io/MRMhub/quant/">QUANT documentation ↗</a>.</p>
+<p>INTEGRATOR is not required to use the QUANT R package; QUANT also imports directly from vendor outputs (MassHunter, Skyline). See the <a href="https://slinghub.github.io/MRMhub/quant/">QUANT documentation ↗</a>.</p>
 </div>
 </div>
 </section>
@@ -333,19 +347,23 @@ Note
 <div class="grid">
 <section id="quick-start" class="level3 g-col-12 g-col-md-6">
 <h3 class="anchored" data-anchor-id="quick-start">🚀 <a href="./quickstart.html">Quick Start</a></h3>
-<p>New here? Get from raw files to integrated peaks in a handful of steps.</p>
+<p>A condensed path from raw files to integrated peaks in a handful of steps.</p>
 </section>
 <section id="download-project-setup" class="level3 g-col-12 g-col-md-6">
 <h3 class="anchored" data-anchor-id="download-project-setup">📦 <a href="./setup.html">Download &amp; Project Setup</a></h3>
-<p>Download the standalone executable, clear the first-launch security prompt, and set up one re-runnable copy per project.</p>
+<p>Download the standalone executable, clear the first-launch security prompt, and set up one reproducible copy per project.</p>
 </section>
 <section id="input-files" class="level3 g-col-12 g-col-md-6">
 <h3 class="anchored" data-anchor-id="input-files">📄 <a href="./input-files.html">Input Files</a></h3>
-<p>Reference for <code>param.txt</code>, <code>batch_info.csv</code>, and the transition list — plus how to tune peak integration.</p>
+<p>Reference for <code>param.txt</code>, <code>run_order.csv</code>, and the transition list, including how to tune peak integration.</p>
 </section>
 <section id="running-integrator" class="level3 g-col-12 g-col-md-6">
 <h3 class="anchored" data-anchor-id="running-integrator">▶️ <a href="./running.html">Running INTEGRATOR</a></h3>
 <p>The four processing steps: validation, peak finding, integration, and PDF output.</p>
+</section>
+<section id="algorithm" class="level3 g-col-12 g-col-md-6">
+<h3 class="anchored" data-anchor-id="algorithm">⚙️ <a href="./algorithm.html">Algorithm</a></h3>
+<p>How INTEGRATOR detects, picks, and integrates peaks: RT-shift correction, CWT feature detection, and integration-border determination.</p>
 </section>
 <section id="mrmhub-viz-visualizer" class="level3 g-col-12 g-col-md-6">
 <h3 class="anchored" data-anchor-id="mrmhub-viz-visualizer">🔍 <a href="./viz.html">MRMhub-viz Visualizer</a></h3>
@@ -366,14 +384,14 @@ Tip
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><strong>Learn by example.</strong> The <a href="https://slinghub.github.io/mrmhub-workflows/Dataset3.html">Dataset 3 workflow ↗</a> walks through a complete, real analysis — from raw-file conversion and INTEGRATOR settings to QUANT post-processing — with all input files shown. More end-to-end examples live at <a href="https://slinghub.github.io/mrmhub-workflows/">mrmhub-workflows ↗</a>.</p>
+<p>The <a href="https://slinghub.github.io/mrmhub-workflows/Dataset3.html">Dataset 3 workflow ↗</a> presents a complete analysis, from raw-file conversion and INTEGRATOR settings through QUANT post-processing, with all input files shown. Additional end-to-end examples are available at <a href="https://slinghub.github.io/mrmhub-workflows/">mrmhub-workflows ↗</a>.</p>
 </div>
 </div>
 </section>
 <section id="next-step-in-the-pipeline" class="level2">
 <h2 class="anchored" data-anchor-id="next-step-in-the-pipeline">Next step in the pipeline</h2>
-<p>Once INTEGRATOR produces <code>long.csv</code>, hand it off to the <strong>QUANT</strong> R package for ISTD normalisation, drift/batch correction, calibration, QC, and reporting:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">import_data_mrmhub</span>(<span class="st">"path/to/long.csv"</span>, <span class="at">import_metadata =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Once INTEGRATOR produces <code>long.csv</code>, pass it to the QUANT R package for ISTD normalisation, drift/batch correction, calibration, QC, and reporting:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">import_data_mrmhub</span>(<span class="at">path =</span> <span class="st">"path/to/long.csv"</span>, <span class="at">import_metadata =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>See the <a href="https://slinghub.github.io/MRMhub/quant/">QUANT documentation ↗</a> to continue.</p>
 
 

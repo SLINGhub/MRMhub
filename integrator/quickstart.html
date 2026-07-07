@@ -77,10 +77,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-0a6b7249c26820e032cb0bd839ff02b1.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-bba5ebae505b5c03f3f0d8040a416a6b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-011108973cccfa058b9d53d4b7eb11ad.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-b0172729d9e3827b305e14eb5a71532e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-011108973cccfa058b9d53d4b7eb11ad.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -156,6 +160,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="dropdown-text">Running INTEGRATOR</span></a>
   </li>  
         <li>
+    <a class="dropdown-item" href="./algorithm.html">
+ <span class="dropdown-text">Algorithm</span></a>
+  </li>  
+        <li>
     <a class="dropdown-item" href="./viz.html">
  <span class="dropdown-text">MRMhub-viz Visualizer</span></a>
   </li>  
@@ -166,7 +174,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li><hr class="dropdown-divider"></li>
         <li>
     <a class="dropdown-item" href="./msconvert.html">
- <span class="dropdown-text">Vendor → mzML (msconvert)</span></a>
+ <span class="dropdown-text">Vendor → mzML (MSConvert)</span></a>
   </li>  
     </ul>
   </li>
@@ -249,6 +257,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./algorithm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Algorithm</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./viz.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">MRMhub-viz Visualizer</span></a>
   </div>
@@ -262,7 +276,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./msconvert.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Vendor → mzML (msconvert)</span></a>
+ <span class="menu-text">Vendor → mzML (MSConvert)</span></a>
   </div>
 </li>
       </ul>
@@ -313,7 +327,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>This page is the condensed path from raw files to integrated peaks. Each step links to the full reference if you need detail.</p>
+<p>This page presents the condensed path from raw files to integrated peaks. Each step links to the full reference.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -324,20 +338,20 @@ Tip
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>A complete <strong>test dataset</strong> ships with the download — a full set of input and raw-data files you can use as templates for your own analysis. For a fully worked, real-world analysis with concrete settings, see the <a href="https://slinghub.github.io/mrmhub-workflows/Dataset3.html">Dataset 3 workflow ↗</a>.</p>
+<p>A complete test dataset is included with the download, providing input and raw-data files that can serve as templates for a new analysis. For a fully worked analysis with concrete settings, see the <a href="https://slinghub.github.io/mrmhub-workflows/Dataset3.html">Dataset 3 workflow ↗</a>.</p>
 </div>
 </div>
 <section id="convert-raw-files-to-mzml" class="level2">
 <h2 class="anchored" data-anchor-id="convert-raw-files-to-mzml">1. Convert raw files to mzML</h2>
-<p>INTEGRATOR reads <strong>mzML</strong>. Convert your vendor files (<code>.raw</code>, <code>.wiff</code>, <code>.d</code>, …) with ProteoWizard MSConvert (Windows only). → <a href="./msconvert.html">Vendor → mzML (msconvert)</a></p>
+<p>INTEGRATOR reads mzML. Convert the vendor files (<code>.raw</code>, <code>.wiff</code>, <code>.d</code>, …) with ProteoWizard MSConvert (Windows only). → <a href="./msconvert.html">Vendor → mzML (MSConvert)</a></p>
 </section>
 <section id="download-the-app-into-your-project" class="level2">
 <h2 class="anchored" data-anchor-id="download-the-app-into-your-project">2. Download the app into your project</h2>
-<p>INTEGRATOR is a standalone executable — nothing to install. Download the macOS/Windows build from <a href="https://github.com/SLINGhub/MRMhub/releases">Releases</a>, unzip it into your project folder, and clear the one-time security prompt. Keeping one copy per project keeps the analysis re-runnable. → <a href="./setup.html">Download &amp; Project Setup</a></p>
+<p>INTEGRATOR is a standalone executable and requires no installation. Download the macOS or Windows build from the <a href="https://github.com/SLINGhub/MRMhub/releases">Releases</a> page, unzip it into the project folder, and clear the one-time security prompt; retaining one copy per project keeps the analysis reproducible. → <a href="./setup.html">Download &amp; Project Setup</a></p>
 </section>
 <section id="prepare-the-input-files" class="level2">
 <h2 class="anchored" data-anchor-id="prepare-the-input-files">3. Prepare the input files</h2>
-<p>Drop your <code>.mzML</code> files into the <code>mzML/</code> folder and fill in three files (templates are included):</p>
+<p>Place the <code>.mzML</code> files in the <code>mzML/</code> folder and complete three files (templates are included):</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 50%">
@@ -355,7 +369,7 @@ Tip
 <td>Global parameters (tolerances, peak-width windows, threads)</td>
 </tr>
 <tr class="even">
-<td><code>batch_info.csv</code></td>
+<td><code>run_order.csv</code></td>
 <td>Sample list, in processing order, with sample/QC types</td>
 </tr>
 <tr class="odd">
@@ -368,7 +382,7 @@ Tip
 </section>
 <section id="run-the-four-steps" class="level2">
 <h2 class="anchored" data-anchor-id="run-the-four-steps">4. Run the four steps</h2>
-<p>Launch <strong>MRMhub</strong> and work through the terminal menu:</p>
+<p>Launch MRMhub and work through the terminal menu:</p>
 <ol type="1">
 <li><strong>Data Validation</strong> — check input files for inconsistencies.</li>
 <li><strong>Peak Finding &amp; RT-shift estimation</strong> — produces <code>RT_matrix.csv</code>.</li>
@@ -379,12 +393,12 @@ Tip
 </section>
 <section id="review-the-results" class="level2">
 <h2 class="anchored" data-anchor-id="review-the-results">5. Review the results</h2>
-<p>Open <strong>MRMhub-viz</strong> to inspect chromatograms, then refine global or per-feature parameters and re-run as needed. → <a href="./viz.html">MRMhub-viz Visualizer</a></p>
+<p>Open MRMhub-viz to inspect chromatograms, then refine global or per-feature parameters and re-run as needed. → <a href="./viz.html">MRMhub-viz Visualizer</a></p>
 </section>
 <section id="continue-in-quant" class="level2">
 <h2 class="anchored" data-anchor-id="continue-in-quant">6. Continue in QUANT</h2>
-<p>Hand <code>long.csv</code> to the QUANT R package for the post-processing pipeline:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">import_data_mrmhub</span>(<span class="st">"path/to/long.csv"</span>, <span class="at">import_metadata =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Pass <code>long.csv</code> to the QUANT R package for the post-processing pipeline:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">import_data_mrmhub</span>(<span class="at">path =</span> <span class="st">"path/to/long.csv"</span>, <span class="at">import_metadata =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>→ <a href="https://slinghub.github.io/MRMhub/quant/">QUANT documentation ↗</a></p>
 
 

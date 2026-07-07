@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Reference for the INTEGRATOR input files — global parameters (param.txt), the sample list (batch_info.csv), and the transition/feature list — plus guidance on tuning peak integration.">
+<meta name="description" content="Reference for the INTEGRATOR input files: the global parameters (param.txt), the sample list (run_order.csv), and the transition/feature list, with guidance on tuning peak integration.">
 
 <title>Input Files – MRMhub · INTEGRATOR</title>
 <style>
@@ -42,10 +42,14 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-0a6b7249c26820e032cb0bd839ff02b1.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-bba5ebae505b5c03f3f0d8040a416a6b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-011108973cccfa058b9d53d4b7eb11ad.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-b0172729d9e3827b305e14eb5a71532e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-011108973cccfa058b9d53d4b7eb11ad.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -121,6 +125,10 @@ ul.task-list li input[type="checkbox"] {
  <span class="dropdown-text">Running INTEGRATOR</span></a>
   </li>  
         <li>
+    <a class="dropdown-item" href="./algorithm.html">
+ <span class="dropdown-text">Algorithm</span></a>
+  </li>  
+        <li>
     <a class="dropdown-item" href="./viz.html">
  <span class="dropdown-text">MRMhub-viz Visualizer</span></a>
   </li>  
@@ -131,7 +139,7 @@ ul.task-list li input[type="checkbox"] {
         <li><hr class="dropdown-divider"></li>
         <li>
     <a class="dropdown-item" href="./msconvert.html">
- <span class="dropdown-text">Vendor → mzML (msconvert)</span></a>
+ <span class="dropdown-text">Vendor → mzML (MSConvert)</span></a>
   </li>  
     </ul>
   </li>
@@ -214,6 +222,12 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./algorithm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Algorithm</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./viz.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">MRMhub-viz Visualizer</span></a>
   </div>
@@ -227,7 +241,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./msconvert.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Vendor → mzML (msconvert)</span></a>
+ <span class="menu-text">Vendor → mzML (MSConvert)</span></a>
   </div>
 </li>
       </ul>
@@ -243,8 +257,8 @@ ul.task-list li input[type="checkbox"] {
    
   <ul>
   <li><a href="#global-parameters-param.txt" id="toc-global-parameters-param.txt" class="nav-link active" data-scroll-target="#global-parameters-param.txt">Global parameters (param.txt)</a></li>
-  <li><a href="#sample-list-batch_info.csv" id="toc-sample-list-batch_info.csv" class="nav-link" data-scroll-target="#sample-list-batch_info.csv">Sample list (batch_info.csv)</a></li>
-  <li><a href="#transition-feature-list-transition_list.csv" id="toc-transition-feature-list-transition_list.csv" class="nav-link" data-scroll-target="#transition-feature-list-transition_list.csv">Transition / Feature list (transition_list.csv)</a></li>
+  <li><a href="#sample-list-run_order.csv" id="toc-sample-list-run_order.csv" class="nav-link" data-scroll-target="#sample-list-run_order.csv">Sample list (run_order.csv)</a></li>
+  <li><a href="#transition-feature-list-feature_list.csv" id="toc-transition-feature-list-feature_list.csv" class="nav-link" data-scroll-target="#transition-feature-list-feature_list.csv">Transition / Feature list (feature_list.csv)</a></li>
   <li><a href="#effects-of-the-key-settings" id="toc-effects-of-the-key-settings" class="nav-link" data-scroll-target="#effects-of-the-key-settings">Effects of the key settings</a></li>
   <li><a href="#recommendations-for-setting-peak-integration-parameters" id="toc-recommendations-for-setting-peak-integration-parameters" class="nav-link" data-scroll-target="#recommendations-for-setting-peak-integration-parameters">Recommendations for setting peak integration parameters</a></li>
   <li><a href="#next" id="toc-next" class="nav-link" data-scroll-target="#next">Next</a></li>
@@ -261,7 +275,7 @@ ul.task-list li input[type="checkbox"] {
 
 <div>
   <div class="description">
-    <p>Reference for the INTEGRATOR input files — global parameters (param.txt), the sample list (batch_info.csv), and the transition/feature list — plus guidance on tuning peak integration.</p>
+    <p>Reference for the INTEGRATOR input files: the global parameters (param.txt), the sample list (run_order.csv), and the transition/feature list, with guidance on tuning peak integration.</p>
   </div>
 </div>
 
@@ -278,69 +292,68 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>INTEGRATOR is driven by three input files plus the <code>mzML/</code> data folder. This page is the reference for each.</p>
+<p>INTEGRATOR reads three input files together with the <code>mzML/</code> data folder. This page documents each of them. For how the software uses these settings internally, see the <a href="./algorithm.html">Peak Detection and Integration Algorithm</a>.</p>
 <section id="global-parameters-param.txt" class="level2">
 <h2 class="anchored" data-anchor-id="global-parameters-param.txt">Global parameters (param.txt)</h2>
-<p>The software requires global parameter file (param.txt by default), which points the software to the required information.</p>
+<p>The software requires a global parameter file (<code>param.txt</code> by default), which directs it to the required information and controls peak detection and integration.</p>
 <table class="caption-top table">
 <colgroup>
-<col style="width: 20%">
-<col style="width: 29%">
-<col style="width: 20%">
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
 </colgroup>
 <thead>
 <tr class="header">
-<th>Par ameter</th>
+<th>Parameter</th>
 <th>Description</th>
 <th>Default</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>mzML_files</td>
-<td>Location of mzML files to be used for peak integration</td>
-<td>mzML</td>
+<td><code>mzML_files</code></td>
+<td>Location of the mzML files used for peak integration.</td>
+<td><code>mzML</code></td>
 </tr>
 <tr class="even">
-<td>batch_info</td>
-<td>Input file with mzML file names and meta information (see below)</td>
-<td>b a tch_info.csv</td>
+<td><code>batch_info</code></td>
+<td>Input file listing the mzML file names and their metadata (see below).</td>
+<td><code>run_order.csv</code></td>
 </tr>
 <tr class="odd">
-<td>tran sition_list</td>
-<td>Input file with MRM transition information (see below)</td>
-<td>fea t ure_info.csv</td>
+<td><code>transition_list</code></td>
+<td>Input file with the MRM transition information (see below).</td>
+<td><code>feature_list.csv</code></td>
 </tr>
 <tr class="even">
-<td>peak_width</td>
-<td>[w, x, y, z] define allowed integration bounds:<br>
-left = w–x min, right = y–z min from apex (see below).</td>
-<td>[0.17, 0.05, 0.1, 0.35]</td>
+<td><code>peak_width</code></td>
+<td><code>[w, x, y, z]</code> define the allowed integration bounds: the left border falls <em>w–x</em> min and the right border <em>y–z</em> min from the apex (see below).</td>
+<td><code>[0.17, 0.05, 0.1, 0.35]</code></td>
 </tr>
 <tr class="odd">
-<td>num_t hreads</td>
-<td>Number of CPU threads to be used for integration task.</td>
-<td>2</td>
+<td><code>num_threads</code></td>
+<td>Number of CPU threads used for the integration task.</td>
+<td><code>2</code></td>
 </tr>
 <tr class="even">
-<td>mz_tol</td>
-<td>Tolerance between indicated m/z and detected m/z values</td>
-<td>0.06</td>
+<td><code>mz_tol</code></td>
+<td>Tolerance between the indicated and the detected <em>m/z</em> values.</td>
+<td><code>0.06</code></td>
 </tr>
 <tr class="odd">
-<td>RT_tol</td>
-<td>Tolerance between indicated RT and detected RT. Note**: This is a key setting in processing or complex ch romatograms.</td>
-<td>0.1</td>
+<td><code>RT_tol</code></td>
+<td>Tolerance between the indicated and the detected RT. A key setting when processing complex chromatograms.</td>
+<td><code>0.1</code></td>
 </tr>
 <tr class="even">
-<td>RT _shift</td>
-<td>[x, y] indicate that RT drift is at most x minutes left and y minutes right of the peak in the reference samples</td>
-<td>[-0.2, 0.2]</td>
+<td><code>RT_shift</code></td>
+<td><code>[x, y]</code> bound the RT drift relative to the reference samples: the peak may lie at most <em>x</em> min earlier and <em>y</em> min later than expected. The lower bound is written as a <strong>negative</strong> value (earlier RT); the upper bound is positive (later RT). Setting <code>[0, 0]</code> disables RT-shift correction.</td>
+<td><code>[-0.2, 0.2]</code></td>
 </tr>
 <tr class="odd">
-<td>RT_ shift_bound</td>
-<td>Maximum allowed RT drift between adjacent samples</td>
-<td>0.1</td>
+<td><code>RT_shift_bound</code></td>
+<td>Maximum allowed RT drift between adjacent samples.</td>
+<td><code>0.1</code></td>
 </tr>
 </tbody>
 </table>
@@ -354,43 +367,42 @@ Tip
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><strong>Worked example.</strong> A published lipidomics dataset (Agilent triple-quadrupole) used <code>mz_tol = 0.06</code>, <code>RT_tol = 0.04</code>, <code>peak_width = [0.15, 0.08, 0.08, 0.18]</code> globally — with per-feature overrides for broad or convoluted peaks — an RT-shift window of <code>(-0.1, 0.4)</code>, and a maximum sample-to-sample RT shift (<code>RT_shift_bound</code>) of <code>0.05</code>. These make good starting points for a fast, well-resolved method. See the full <a href="https://slinghub.github.io/mrmhub-workflows/Dataset3.html">Dataset 3 workflow ↗</a> for the complete input files and the resulting integration.</p>
+<p><strong>Worked example.</strong> A published lipidomics dataset (Agilent triple-quadrupole) used <code>mz_tol = 0.06</code>, <code>RT_tol = 0.04</code>, and <code>peak_width = [0.15, 0.08, 0.08, 0.18]</code> globally, with per-feature overrides for broad or convoluted peaks, an RT-shift window of <code>(-0.1, 0.4)</code>, and a maximum sample-to-sample RT shift (<code>RT_shift_bound</code>) of <code>0.05</code>. These values provide reasonable starting points for a fast, well-resolved method. See the full <a href="https://slinghub.github.io/mrmhub-workflows/Dataset3.html">Dataset 3 workflow ↗</a> for the complete input files and the resulting integration.</p>
 </div>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/paste-7.png" class="img-fluid figure-img" style="width:70.0%"></p>
+<figcaption>The <code>param.txt</code> file used for the Dataset 3 worked example, showing all configured parameters and their values.</figcaption>
+</figure>
 </div>
 </section>
-<section id="sample-list-batch_info.csv" class="level2">
-<h2 class="anchored" data-anchor-id="sample-list-batch_info.csv">Sample list (batch_info.csv)</h2>
-<p>This file defines data files. The file names must be presented in their processing order from top to bottom. mzML files present in the data folder but not listed here will be ignored. Columns containing required information for individual data files are marked in <strong>bold</strong>.</p>
+<section id="sample-list-run_order.csv" class="level2">
+<h2 class="anchored" data-anchor-id="sample-list-run_order.csv">Sample list (run_order.csv)</h2>
+<p>This file lists the data files to be processed. The file names must be given in their processing order, from top to bottom. mzML files present in the data folder but not listed here are ignored. Columns containing required information for individual data files are marked in <strong>bold</strong>.</p>
 <table class="caption-top table">
-<colgroup>
-<col style="width: 15%">
-<col style="width: 43%">
-<col style="width: 40%">
-</colgroup>
+<thead>
+<tr class="header">
+<th>Column</th>
+<th>Description</th>
+</tr>
+</thead>
 <tbody>
 <tr class="odd">
-<td rowspan="2"><h1 id="column">Column</h1>
-<p><strong>file name</strong></p></td>
-<td rowspan="2"><h1 id="description">Description</h1>
-<p>The mzML file names to be processed, which are in the folder defined under `m zML_files` in the param.txt file. Must include the .mzML file extension.</p></td>
-<td></td>
+<td><strong>file name</strong></td>
+<td>The mzML file names to be processed, located in the folder defined under <code>mzML_files</code> in <code>param.txt</code>. Must include the <code>.mzML</code> extension.</td>
 </tr>
 <tr class="even">
-<td></td>
-</tr>
-<tr class="odd">
 <td>batch</td>
-<td>The analysis batch identifier to which the file belong to. This value has no function in the INTEGRATOR, but the value is included in the result.</td>
-<td></td>
-</tr>
-<tr class="even">
-<td>s ample_type</td>
-<td colspan="2">The sample (QC) type of the co rresponding | sample. Blanks must be labeled with text | containing <em><code>BLK</code></em>, as these are processed | differently (see below). For all other | cases, any sample type may be defined, and | the information will be forwarded to the | integration results. The field may also be | left empty. Use of the default MRMhub QC | types (see <a href="https://slinghub.github.io/MRMhub/quant/articles/manual-00-sample-types.html">QUANT — Sample Types &amp; QC | Roles</a>) is recommended to ensure seamless | integration with the QUANT module. |</td>
+<td>The analysis batch identifier the file belongs to. This value has no function inside INTEGRATOR, but is carried through to the result.</td>
 </tr>
 <tr class="odd">
+<td>sample_type</td>
+<td>The sample (QC) type of the corresponding sample. Blanks must be labelled with text containing <code>BLK</code>, as these are processed differently (see below). For all other cases, any sample type may be defined, and the information is forwarded to the integration results; the field may also be left empty. Use of the default MRMhub QC types (see <a href="https://slinghub.github.io/MRMhub/quant/articles/manual-00-sample-types.html">QUANT — Sample Types &amp; QC Roles</a>) is recommended to ensure reliable integration with the QUANT module.</td>
+</tr>
+<tr class="even">
 <td>reference</td>
-<td>Indicates that this sample will be used as reference for RT shift estimation (see below). Label with <code>x</code>. If selecting multiple samples, ensure they exhibit negligible RT shifts relative to one another.</td>
-<td></td>
+<td>Indicates that the sample is used as a reference for RT-shift estimation (see below). Label with <code>x</code>. When selecting multiple samples, ensure they exhibit negligible RT shifts relative to one another.</td>
 </tr>
 </tbody>
 </table>
@@ -404,18 +416,23 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><strong>How <code>sample_type</code> is used.</strong> INTEGRATOR itself only distinguishes <strong>blanks</strong> (any <code>sample_type</code> containing the text <code>BLK</code>) from <strong>non-blanks</strong> — blanks are processed differently during peak finding. Every other sample/QC-type label has no effect inside INTEGRATOR; it is simply carried through to <code>long.csv</code> for use by the QUANT module. Using the standard <a href="https://slinghub.github.io/MRMhub/quant/articles/manual-00-sample-types.html">MRMhub QC nomenclature</a> here means QUANT picks up the QC roles automatically.</p>
+<p><strong>How <code>sample_type</code> is used.</strong> INTEGRATOR distinguishes only <strong>blanks</strong> (any <code>sample_type</code> containing the text <code>BLK</code>), which are processed differently during peak finding, from <strong>non-blanks</strong>. Every other sample/QC-type label has no effect inside INTEGRATOR; it is carried through to <code>long.csv</code> for use by the QUANT module. Using the standard <a href="https://slinghub.github.io/MRMhub/quant/articles/manual-00-sample-types.html">MRMhub QC nomenclature</a> here allows QUANT to assign the QC roles automatically.</p>
 </div>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/paste-8.png" class="img-fluid figure-img" style="width:50.0%"></p>
+<figcaption>A portion of the sample list from the Dataset 3 worked example. The first two BQC samples, located early in the analytical sequence, were designated as retention-time reference anchors (the <code>reference</code> column).</figcaption>
+</figure>
 </div>
 </section>
-<section id="transition-feature-list-transition_list.csv" class="level2">
-<h2 class="anchored" data-anchor-id="transition-feature-list-transition_list.csv">Transition / Feature list (transition_list.csv)</h2>
-<p>This file defines the transitions to be processed and which features to be integrated. Transitions defined in the mzML files, but not in this file will be ignored. Columns with required information for each feature are marked in bold.</p>
-<p>This file specifies the transitions to be processed and the features to be integrated for each transition. Transitions present in the mzML files but not listed here will be ignored. Columns containing required information for each feature are marked in <strong>bold</strong>.</p>
+<section id="transition-feature-list-feature_list.csv" class="level2">
+<h2 class="anchored" data-anchor-id="transition-feature-list-feature_list.csv">Transition / Feature list (feature_list.csv)</h2>
+<p>This file specifies the transitions to be processed and the features to be integrated for each transition. Transitions present in the mzML files but not listed here are ignored. Columns containing required information for each feature are marked in <strong>bold</strong>.</p>
 <table class="caption-top table">
 <colgroup>
-<col style="width: 22%">
-<col style="width: 66%">
+<col style="width: 50%">
+<col style="width: 50%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -426,55 +443,54 @@ Note
 <tbody>
 <tr class="odd">
 <td><strong>Compound Name</strong></td>
-<td>Feature (analyte) identifier name. Must be a unique value, identifying typically a single peak. Multiple distinct features can be defined for a transition.</td>
+<td>Feature (analyte) identifier. Must be a unique value, typically identifying a single peak. Multiple distinct features can be defined for one transition.</td>
 </tr>
 <tr class="even">
 <td><strong>Transition Name</strong></td>
-<td>Transition identifier. Can be repeated values.</td>
+<td>Transition identifier. Values may be repeated.</td>
 </tr>
 <tr class="odd">
 <td>ISTD</td>
-<td>The internal standard feature assigned to the c orresponding compound. This value has currently no function in the INTEGRATOR modules, but will be included in the results and will be read in by the QUANT module. Can be left empty, but if defined must correspond to a defined Compound Name.</td>
+<td>The internal standard feature assigned to the corresponding compound. This value currently has no function in the INTEGRATOR modules, but is included in the results and read by the QUANT module. May be left empty; if defined, it must correspond to a defined Compound Name.</td>
 </tr>
 <tr class="even">
 <td><strong>Precursor Ion</strong></td>
-<td>The m/z value of the precursor ion. Must match the c orresponding value in the mzML file within the tolerance given via <code>mz_tol</code> in the param.txt file.</td>
+<td>The <em>m/z</em> value of the precursor ion. Must match the corresponding value in the mzML file within the tolerance set by <code>mz_tol</code> in <code>param.txt</code>.</td>
 </tr>
 <tr class="odd">
 <td><strong>Product Ion</strong></td>
-<td>The m/z value of the product ion. Must match the c orresponding value in the mzML file within the tolerance given via <code>mz_tol</code> in the param.txt file.</td>
+<td>The <em>m/z</em> value of the product ion. Must match the corresponding value in the mzML file within the tolerance set by <code>mz_tol</code> in <code>param.txt</code>.</td>
 </tr>
 <tr class="even">
 <td><strong>RT</strong></td>
-<td>The expected retention time of the c orresponding feature, given in minutes.</td>
+<td>The expected retention time of the corresponding feature, in minutes.</td>
 </tr>
 <tr class="odd">
-<td>u n iform_width</td>
-<td>Either <code>y</code> or <code>n</code> (default). If yes, the peak boundaries are set to the median of the results from the automatic border d e termination.</td>
+<td>uniform_width</td>
+<td>Either <code>y</code> or <code>n</code> (default). If <code>y</code>, the peak boundaries are set to the median of the automatically determined borders.</td>
 </tr>
 <tr class="even">
 <td>left integration bound</td>
-<td>Sets fixed left peak border for all samples, in minutes (with respect to the reference sample)</td>
+<td>Sets a fixed left peak border for all samples, in minutes (with respect to the reference sample).</td>
 </tr>
 <tr class="odd">
 <td>right integration bound</td>
-<td>Sets fixed right peak border for all samples, in minutes (with respect to the reference sample)</td>
+<td>Sets a fixed right peak border for all samples, in minutes (with respect to the reference sample).</td>
 </tr>
 <tr class="even">
 <td>peak width</td>
-<td>[w, x, y, z] define allowed integration bounds: left = w–x min, right = y–z min from apex (see below).<br>
-Note: This overwrites the globally defined peak width (param.txt). See below.</td>
+<td><code>[w, x, y, z]</code> define the allowed integration bounds: left = <em>w–x</em> min, right = <em>y–z</em> min from the apex (see below). Overrides the globally defined <code>peak_width</code> in <code>param.txt</code>.</td>
 </tr>
 <tr class="odd">
 <td>Remarks</td>
-<td>Used to document integration settings</td>
+<td>Used to document integration settings.</td>
 </tr>
 </tbody>
 </table>
 </section>
 <section id="effects-of-the-key-settings" class="level2">
 <h2 class="anchored" data-anchor-id="effects-of-the-key-settings">Effects of the key settings</h2>
-<p>Most settings trade <strong>sensitivity</strong> (finding and fully capturing the intended peak) against <strong>specificity</strong> (not grabbing a neighbouring transition, an adjacent peak, or noise). The table below summarises what happens at each extreme; the <a href="#recommendations-for-setting-peak-integration-parameters">peak-width recommendations</a> below go deeper on <code>peak_width</code>, the single most influential setting for difficult chromatograms.</p>
+<p>Most settings trade <strong>sensitivity</strong> (finding and fully capturing the intended peak) against <strong>specificity</strong> (not grabbing a neighbouring transition, an adjacent peak, or noise). The table below summarises what happens at each extreme; the <a href="#recommendations-for-setting-peak-integration-parameters">peak-width recommendations</a> below provide further detail on <code>peak_width</code>, the most influential setting for difficult chromatograms. For the algorithm that consumes these settings, see the <a href="./algorithm.html">Peak Detection and Integration Algorithm</a>.</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 25%">
@@ -546,19 +562,25 @@ Tip
 <section id="recommendations-for-setting-peak-integration-parameters" class="level2">
 <h2 class="anchored" data-anchor-id="recommendations-for-setting-peak-integration-parameters">Recommendations for setting peak integration parameters</h2>
 <p>The <code>peak_width</code> parameter, defined globally in <code>param.txt</code> and optionally per feature in the Transition List, is a key setting for automated integration of complex chromatograms. Values are specified in the format <code>[w, x, y, z]</code>, where the ranges <em>w–x</em> and <em>y–z</em> define the allowed windows for the left and right peak borders, respectively. The integration algorithm is constrained to set peak start and end points within these ranges, even if its automatic boundary detection would otherwise extend beyond them.</p>
-<p>Too narrow ranges in the <code>peak_width</code> parameter may result in incomplete integration of peaks, especially when there is tailing or when the peak widths are not stable. To wide ranges may results in inclusion of smaller peak adjacent to the peak to be integrated. We suggest to use a setting that fits the majority of the peaks in the dataset globally via the <code>param.txt</code> file and then use per-feature settings for convoluted, asymmetric or otherwise broadened peaks. Narrower per-feature values may be used when nearby interferences are not recognized as separated peaks and are therefore are co-integrated.</p>
-<p>Too narrow ranges may lead to incomplete peak integration, especially in cases of peak tailing or unstable peak widths. Too wide ranges may result in inclusion of smaller adjacent peaks. We suggest defining a global setting in<code>param.txt</code> that suits the majority of peaks in the dataset, and applying per-feature settings for convoluted, asymmetric, or broadened peaks. Narrower per-feature ranges can also be used when nearby interferences are not recognized as separate peaks and are therefore co-integrated.</p>
+<p>Ranges that are too narrow may lead to incomplete integration, particularly for tailing peaks or peaks of unstable width, whereas ranges that are too wide may cause smaller adjacent peaks to be included in the integration. A global setting that suits the majority of peaks in the dataset should be defined in <code>param.txt</code>, with per-feature settings applied to convoluted, asymmetric, or otherwise broadened peaks. Narrower per-feature ranges can also be used where nearby interferences are not recognised as separate peaks and are consequently co-integrated.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="images/paste-11.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="570"></p>
+<p><img src="images/paste-11.png" class="img-fluid quarto-figure quarto-figure-center figure-img" alt="Schematic of a chromatographic peak illustrating the peak_width [w, x, y, z] parameter. Intensity is on the y-axis and retention time on the x-axis, with the apex marked by a vertical line. Short arrows x and y span the inner windows just left and right of the apex, while wider arrows w and z span the outer windows; the shaded bands mark the allowed ranges for the left border (w to x) and the right border (y to z) relative to the apex." width="570"></p>
 </figure>
 </div>
-<p>Set the <code>uniform_width</code> parameter to <em>true</em> for features where integration was deemed correct in the majority, but incorrect or inaccurate in a minority of samples.</p>
-<p>Use <em>fixed left/right left integration bound times</em> for cases automated integration and fine-tuning of weak width settings did not correctly and consistently integrated convoluted peaks or peaks with nearby interferences. The use of these hard border settings is recommended only as a last resort, as hard border may require re-adjustment when used in processing of other datasets of the same analytical method. <em><strong>Note</strong>:</em> These defined borders will still be adjusted for retention time shifts.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/paste-9.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption>Examples of manually set peak boundaries in INTEGRATOR. (a, b) Effect of the <code>peak_width</code> parameter on a peak with clear tailing (PC 36:6): (a) the global setting, suitable for the majority of peaks, and (b) a feature-specific <code>peak width</code> overriding the global value for improved integration. (c, d) Effect on a peak with nearby interferences (PC O-38:4): (c) the global setting, and (d) an excessively wide <code>peak_width</code> that causes incorrect integration, underscoring the importance of an appropriate global value. (e, f) A complex chromatogram of three overlapping LPC 17:0 isomers: (e) the global setting yields only partial integration, with the first peak unrecognised, whereas (f) fixed boundaries defined for the first peak enable correct picking and integration of all three isomers.</figcaption>
+</figure>
+</div>
+<p>Set the <code>uniform_width</code> parameter to <em>true</em> for features whose integration is correct in most samples but incorrect or inaccurate in a minority.</p>
+<p>Use <em>fixed left/right integration bound times</em> where automated integration, even after tuning the <code>peak_width</code> settings, does not correctly and consistently integrate convoluted peaks or peaks with nearby interferences. These hard border settings are recommended only as a last resort, since fixed borders may require re-adjustment when the same analytical method is applied to other datasets. <em><strong>Note</strong>:</em> These defined borders are still adjusted for retention-time shifts.</p>
 </section>
 <section id="next" class="level2">
 <h2 class="anchored" data-anchor-id="next">Next</h2>
 <ul>
+<li><a href="./algorithm.html">Peak Detection and Integration Algorithm</a> — how these settings drive peak detection and integration.</li>
 <li><a href="./running.html">Running INTEGRATOR</a> — run the four processing steps.</li>
 <li><a href="./viz.html">MRMhub-viz Visualizer</a> — review results and fine-tune these parameters.</li>
 </ul>

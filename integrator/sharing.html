@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="How to share a complete, reproducible INTEGRATOR peak-integration dataset — raw data, input files, parameters, and results — together with the lightweight applications.">
+<meta name="description" content="Sharing a complete, reproducible INTEGRATOR peak-integration dataset (raw data, input files, parameters, and results) together with the accompanying applications.">
 
 <title>Sharing Results &amp; Reproducible Workflows – MRMhub · INTEGRATOR</title>
 <style>
@@ -42,10 +42,14 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-0a6b7249c26820e032cb0bd839ff02b1.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-bba5ebae505b5c03f3f0d8040a416a6b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-011108973cccfa058b9d53d4b7eb11ad.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-b0172729d9e3827b305e14eb5a71532e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-011108973cccfa058b9d53d4b7eb11ad.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -121,6 +125,10 @@ ul.task-list li input[type="checkbox"] {
  <span class="dropdown-text">Running INTEGRATOR</span></a>
   </li>  
         <li>
+    <a class="dropdown-item" href="./algorithm.html">
+ <span class="dropdown-text">Algorithm</span></a>
+  </li>  
+        <li>
     <a class="dropdown-item" href="./viz.html">
  <span class="dropdown-text">MRMhub-viz Visualizer</span></a>
   </li>  
@@ -131,7 +139,7 @@ ul.task-list li input[type="checkbox"] {
         <li><hr class="dropdown-divider"></li>
         <li>
     <a class="dropdown-item" href="./msconvert.html">
- <span class="dropdown-text">Vendor → mzML (msconvert)</span></a>
+ <span class="dropdown-text">Vendor → mzML (MSConvert)</span></a>
   </li>  
     </ul>
   </li>
@@ -214,6 +222,12 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./algorithm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Algorithm</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./viz.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">MRMhub-viz Visualizer</span></a>
   </div>
@@ -227,7 +241,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./msconvert.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Vendor → mzML (msconvert)</span></a>
+ <span class="menu-text">Vendor → mzML (MSConvert)</span></a>
   </div>
 </li>
       </ul>
@@ -242,7 +256,13 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#next" id="toc-next" class="nav-link active" data-scroll-target="#next">Next</a></li>
+  <li><a href="#what-to-bundle" id="toc-what-to-bundle" class="nav-link active" data-scroll-target="#what-to-bundle">What to bundle</a>
+  <ul class="collapse">
+  <li><a href="#raw-data-and-input-files" id="toc-raw-data-and-input-files" class="nav-link" data-scroll-target="#raw-data-and-input-files">Raw data and input files</a></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">Results</a></li>
+  <li><a href="#applications" id="toc-applications" class="nav-link" data-scroll-target="#applications">Applications</a></li>
+  </ul></li>
+  <li><a href="#next" id="toc-next" class="nav-link" data-scroll-target="#next">Next</a></li>
   </ul>
 </nav>
     </div>
@@ -256,7 +276,7 @@ ul.task-list li input[type="checkbox"] {
 
 <div>
   <div class="description">
-    <p>How to share a complete, reproducible INTEGRATOR peak-integration dataset — raw data, input files, parameters, and results — together with the lightweight applications.</p>
+    <p>Sharing a complete, reproducible INTEGRATOR peak-integration dataset (raw data, input files, parameters, and results) together with the accompanying applications.</p>
   </div>
 </div>
 
@@ -273,11 +293,120 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>In addition to the CSV files containing the peak area results, the complete set of raw data, input files with all integration parameters, and individual integration results can be shared together with the lightweight <strong>MRMhub</strong> application (~1 MB). This allows others to fully inspect, reproduce, and modify the raw data processing of your dataset.</p>
-<p>For documentation, individual integration results can be provided as PDF files. Alternatively, they can be explored interactively using the standalone <strong>MRMhub-viz</strong> application (~10 MB), which can also be included in the shared dataset.</p>
+<p>Because INTEGRATOR and MRMhub-viz are self-contained executables that require no installation, a complete peak-integration dataset can be shared as a single folder, allowing others to inspect, reproduce, and modify the raw-data processing. Beyond the CSV tables of peak areas, the raw data, the input files with all integration parameters, and the individual integration results can be bundled together with the applications.</p>
+<section id="what-to-bundle" class="level2">
+<h2 class="anchored" data-anchor-id="what-to-bundle">What to bundle</h2>
+<p>The components below make a shared dataset fully self-contained. The <strong>raw data and input files</strong> are what is needed to re-run the processing; the <strong>results</strong> allow the outcome to be inspected without re-running; and the <strong>applications</strong> provide the means to do either.</p>
+<section id="raw-data-and-input-files" class="level3">
+<h3 class="anchored" data-anchor-id="raw-data-and-input-files">Raw data and input files</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Item</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>mzML/</code> folder</td>
+<td>The converted raw data on which integration is performed.</td>
+</tr>
+<tr class="even">
+<td><code>param.txt</code></td>
+<td>All global parameters (tolerances, peak-width windows, RT-shift bounds, threads).</td>
+</tr>
+<tr class="odd">
+<td><code>run_order.csv</code></td>
+<td>The sample list, in processing order, with sample/QC types and reference-sample designations.</td>
+</tr>
+<tr class="even">
+<td><code>feature_list.csv</code></td>
+<td>The transitions and features to integrate, including any per-feature overrides.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="results" class="level3">
+<h3 class="anchored" data-anchor-id="results">Results</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Item</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>long.csv</code></td>
+<td>The canonical long-format results and the hand-off to the QUANT R package.</td>
+</tr>
+<tr class="even">
+<td><code>quant_raw.csv</code></td>
+<td>The wide-format table of peak areas.</td>
+</tr>
+<tr class="odd">
+<td><code>RT_matrix.csv</code></td>
+<td>The finalised integration borders, including any manual adjustments — required to reproduce the exact integration.</td>
+</tr>
+<tr class="even">
+<td><code>misc/</code> folder</td>
+<td>The binary integration results read by MRMhub-viz for interactive review.</td>
+</tr>
+<tr class="odd">
+<td>PDF folders (optional)</td>
+<td><code>by_transition</code>, <code>by_transition_low</code>, and <code>by_sample</code> PDFs documenting the integration (see <a href="./running.html">Running INTEGRATOR — Step 4</a>).</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="applications" class="level3">
+<h3 class="anchored" data-anchor-id="applications">Applications</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Item</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>MRMhub</strong> (~1 MB)</td>
+<td>The integration application, to re-run or modify any processing step.</td>
+</tr>
+<tr class="even">
+<td><strong>MRMhub-viz</strong> (~10 MB)</td>
+<td>The visualizer, to review the integration interactively (see <a href="./viz.html">MRMhub-viz</a>).</td>
+</tr>
+<tr class="odd">
+<td><code>MRMhub_plot.r</code></td>
+<td>The base-R script that generates the PDF results; it can be edited to tailor the plot layout.</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Retaining one copy of the applications in each analysis project folder keeps the project reproducible and self-documenting: a recipient can open MRMhub-viz to inspect every peak, or re-run INTEGRATOR to reproduce or adjust the integration, without any installation.</p>
+</div>
+</div>
+</section>
+</section>
 <section id="next" class="level2">
 <h2 class="anchored" data-anchor-id="next">Next</h2>
 <ul>
+<li><a href="./viz.html">MRMhub-viz Visualizer</a> — the interactive tool bundled with the dataset for review.</li>
+<li><a href="./running.html">Running INTEGRATOR</a> — the processing steps that generate these results.</li>
 <li><a href="https://slinghub.github.io/MRMhub/quant/">QUANT documentation ↗</a> — continue with the post-processing pipeline once <code>long.csv</code> is produced.</li>
 </ul>
 
@@ -692,8 +821,8 @@ ul.task-list li input[type="checkbox"] {
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./msconvert.html" class="pagination-link" aria-label="Vendor → mzML (msconvert)">
-        <span class="nav-page-text">Vendor → mzML (msconvert)</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./msconvert.html" class="pagination-link" aria-label="Vendor → mzML (MSConvert)">
+        <span class="nav-page-text">Vendor → mzML (MSConvert)</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

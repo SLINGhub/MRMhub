@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Convert vendor raw files (.raw, .wiff, .d) to mzML using ProteoWizard MSConvert, the input format expected by INTEGRATOR.">
+<meta name="description" content="The algorithm behind INTEGRATOR — memory-efficient design, input validation, RT-shift correction, CWT feature detection, integration-border determination, and baseline modes.">
 
-<title>MSConvert Instructions – MRMhub · INTEGRATOR</title>
+<title>Peak Detection and Integration Algorithm – MRMhub · INTEGRATOR</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -34,7 +34,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./sharing.html" rel="prev">
+<link href="./viz.html" rel="next">
+<link href="./running.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -168,7 +169,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./setup.html">Manual</a></li><li class="breadcrumb-item"><a href="./msconvert.html">Vendor → mzML (MSConvert)</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./setup.html">Manual</a></li><li class="breadcrumb-item"><a href="./algorithm.html">Algorithm</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -221,7 +222,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./algorithm.html" class="sidebar-item-text sidebar-link">
+  <a href="./algorithm.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Algorithm</span></a>
   </div>
 </li>
@@ -239,7 +240,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./msconvert.html" class="sidebar-item-text sidebar-link active">
+  <a href="./msconvert.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Vendor → mzML (MSConvert)</span></a>
   </div>
 </li>
@@ -255,21 +256,27 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#next" id="toc-next" class="nav-link active" data-scroll-target="#next">Next</a></li>
+  <li><a href="#implementation" id="toc-implementation" class="nav-link active" data-scroll-target="#implementation">Implementation</a></li>
+  <li><a href="#sample-and-transition-list-validation" id="toc-sample-and-transition-list-validation" class="nav-link" data-scroll-target="#sample-and-transition-list-validation">Sample and transition-list validation</a></li>
+  <li><a href="#retention-time-shift-correction" id="toc-retention-time-shift-correction" class="nav-link" data-scroll-target="#retention-time-shift-correction">Retention-time shift correction</a></li>
+  <li><a href="#feature-detection" id="toc-feature-detection" class="nav-link" data-scroll-target="#feature-detection">Feature detection</a></li>
+  <li><a href="#determination-of-peak-integration-borders" id="toc-determination-of-peak-integration-borders" class="nav-link" data-scroll-target="#determination-of-peak-integration-borders">Determination of peak integration borders</a></li>
+  <li><a href="#baseline-determination" id="toc-baseline-determination" class="nav-link" data-scroll-target="#baseline-determination">Baseline determination</a></li>
+  <li><a href="#next" id="toc-next" class="nav-link" data-scroll-target="#next">Next</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./setup.html">Manual</a></li><li class="breadcrumb-item"><a href="./msconvert.html">Vendor → mzML (MSConvert)</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./setup.html">Manual</a></li><li class="breadcrumb-item"><a href="./algorithm.html">Algorithm</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">MSConvert Instructions</h1>
+<h1 class="title">Peak Detection and Integration Algorithm</h1>
 </div>
 
 <div>
   <div class="description">
-    <p>Convert vendor raw files (.raw, .wiff, .d) to mzML using ProteoWizard MSConvert, the input format expected by INTEGRATOR.</p>
+    <p>The algorithm behind INTEGRATOR — memory-efficient design, input validation, RT-shift correction, CWT feature detection, integration-border determination, and baseline modes.</p>
   </div>
 </div>
 
@@ -286,24 +293,63 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>INTEGRATOR uses mzML files as input. The MSConvert tool, part of the ProteoWizard software, converts proprietary raw data files (.wiff for SCIEX, .raw folders for Waters, .raw files for Thermo Fisher, .d folders for Agilent, etc.) into mzML format. This step can only be performed on a Windows PC.</p>
-<ol type="1">
-<li><p>Download or upgrade to a recent version of ProteoWizard (<a href="https://proteowizard.sourceforge.io" class="uri">https://proteowizard.sourceforge.io</a>) on a Windows computer. A recent version ensures successful conversion of current vendor-specific formats.</p></li>
-<li><p>Start “MSConvert” via the START menu, or by right-clicking on the raw files to be converted and selecting MSConvertGUI.</p></li>
-<li><p>In the MSConvert window, use the “Browse” button to select the raw files to be converted. Note: .wiff and .wiff.scan files need to be located in the same folder.</p></li>
-<li><p>Set the following options: “<em>mzML</em>” for “<em>Output format”</em>, “<em>32-bit</em>” for “<em>Binary encoding precision</em>”, check “<em>Write index</em>” and to improve performance, increase “Files to convert in parallel” to the number of available CPU cores.</p></li>
-<li><p>Run the conversion by clicking “Start”, and copy the mzML files to the MRMhub subfolder mzML</p></li>
-</ol>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/paste-13.png" class="img-fluid quarto-figure quarto-figure-center figure-img" alt="Screenshot of the MSConvertGUI window configured to output mzML. In the Options panel, Output format is set to mzML with 32-bit binary encoding, and Write index and Use zlib compression are enabled; the Start button at the bottom right runs the conversion."></p>
-</figure>
+<p>This page is a reference for the algorithm that detects, picks, and integrates MRM peaks inside INTEGRATOR. It describes <em>what the software does internally</em>; for the operational menu steps see <a href="./running.html">Running INTEGRATOR</a>, and for how to set each parameter mentioned below see <a href="./input-files.html">Input Files</a>.</p>
+<section id="implementation" class="level2">
+<h2 class="anchored" data-anchor-id="implementation">Implementation</h2>
+<p>INTEGRATOR and its viewer app are implemented as a self-contained, light-weight application for macOS (Apple Silicon) and Windows 11 (x64) that requires no installation. It provides a terminal user interface, while its viewer (<strong>MRMhub-viz</strong>) comes with a graphical interface.</p>
+<p>Considering the scalability to large-scale projects (e.g.&nbsp;&gt; 10,000 samples), INTEGRATOR avoids loading the data from all mzML files into memory simultaneously. Instead, it first surveys peak features across all samples and writes the information to the file system as binary files, which are reloaded as needed in subsequent steps. This design significantly reduces the memory footprint and processing time for large-scale datasets, making it executable on relatively modest hardware — such as a standard laptop.</p>
+</section>
+<section id="sample-and-transition-list-validation" class="level2">
+<h2 class="anchored" data-anchor-id="sample-and-transition-list-validation">Sample and transition-list validation</h2>
+<p>The mzML file names in the sample-list file are checked against the actual files in the data directory provided by the user. Files absent from the directory are reported in a text file (<code>missing_files.txt</code>) so the user can check them. The input transition list is used to assign transition names and attributes to the chromatograms in each mzML file by matching precursor-ion <em>m/z</em>, product-ion <em>m/z</em>, and RT. Transitions that fail to match any chromatogram are skipped and reported in a text file (<code>missing_compounds.txt</code>). Chromatograms in mzML files without any assignment are also excluded from the analysis. The user may proceed with the analysis even if some files or compounds are missing.</p>
+<p>Where the same transition (same Q1/Q3 values) with identical or nearly identical MRM start and end windows appears two or more times in an mzML file, the user is alerted and can choose which transition/MRM index to map to which feature in the transition input file.</p>
+</section>
+<section id="retention-time-shift-correction" class="level2">
+<h2 class="anchored" data-anchor-id="retention-time-shift-correction">Retention-time shift correction</h2>
+<p>The algorithm begins with an initial RT-drift estimation. For each transition, it treats the ion trace in the user-designated <strong>reference sample(s)</strong> as the reference pattern and uses it to track potential RT drift in all samples. The reference samples are expected to be selected from an early part of the analysis sequence, and not dispersed throughout the entire sequence. The chromatograms in all samples are then aligned to those of the reference samples within individual MRM windows, yielding estimates of the RT shifts.</p>
+<p>The user can set a maximum allowance of RT drift (in minutes) in the parameter file (<code>param.txt</code>) using the <code>RT_shift</code> parameter. The syntax is <code>RT_shift = [x, y]</code>, where <em>x</em> and <em>y</em> are the forward and backward drift allowances: the algorithm interprets that the RT drift is no more than <em>x</em> minutes earlier and no more than <em>y</em> minutes later than the expected RT in the reference samples. In addition, the <code>RT_shift_bound</code> parameter restricts the RT shift between adjacent sample injections.</p>
+<p>RT-shift correction can be disabled by setting <code>RT_shift = [0, 0]</code>, which can help for datasets with strong variability of features and/or interferences in the chromatograms, where the cross-correlation approach may yield inaccurate results. In the absence of chromatographic peaks for blank samples, their RT shifts are determined by interpolation from the shifts observed in adjacent samples of the analytical sequence.</p>
+<p>When the user chooses to process only a specific part of the chromatograms — by globally setting an RT window relative to the expected RT — RT-shift correction is performed only on the corresponding RT window.</p>
+</section>
+<section id="feature-detection" class="level2">
+<h2 class="anchored" data-anchor-id="feature-detection">Feature detection</h2>
+<p>INTEGRATOR performs a first-round search of peak features in all files using continuous wavelet transform (CWT)–based pattern matching. For each MRM window, using the resulting survey of features, the algorithm determines the <strong>target number of features per transition</strong> as the median number of features detected in the initial survey, and treats it as the upper limit for the number of stable, consistent features to report in the second-round survey.</p>
+<p>In the second round, the algorithm maps all peak features across the samples, connecting each peak in one sample to the corresponding peak in the next sample so that every reported feature is stable (i.e.&nbsp;can be detected as a feature) and consistent. The key part of this mapping is that peaks are matched while accounting for the RT drift estimated above. The user sets the <code>RT_tol</code> parameter to indicate the maximum deviation of RT from the value given in the method table. If no feature can be detected within this bound, the integrated area is reported as zero.</p>
+</section>
+<section id="determination-of-peak-integration-borders" class="level2">
+<h2 class="anchored" data-anchor-id="determination-of-peak-integration-borders">Determination of peak integration borders</h2>
+<p>In the final step, the algorithm goes through the transitions to finalize the integration borders.</p>
+<p>For the simple case of unimodal ion traces, the user can set the <code>peak_width</code> parameter quartet <code>[w, x, y, z]</code> to define the default start and end integration points. This can be customized for individual analytes with a <code>peak width</code> column in the transition-list table. The user can also set the <code>uniform_width</code> option (its own column in the transition table) so that the integration width remains the same between samples for a given transition, and can set fixed <strong>left/right integration bounds</strong> to fix the integration points with respect to the reference samples.</p>
+<p>In complex cases — ion traces showing multiple peaks with or without baseline separation — the algorithm searches for valleys between features to cut the integration in the drift-corrected RT space, reconverts the border positions to the original RT space, and writes all RT borders to a CSV file (<code>RT_matrix.csv</code>) for user inspection and optional manual adjustment before peak areas are calculated.</p>
+</section>
+<section id="baseline-determination" class="level2">
+<h2 class="anchored" data-anchor-id="baseline-determination">Baseline determination</h2>
+<p>The baseline is determined on the <em>x</em> axis from the integration borders. On the <em>y</em> axis, three modes are available:</p>
+<ul>
+<li><strong>5th percentile (default)</strong> — a horizontal baseline set at the 5th percentile of the intensities within the integration window.</li>
+<li><strong><code>v_drop</code></strong> — a horizontal baseline set at the minimum of the left and right border <em>y</em> values of the curve.</li>
+<li><strong>Valley-to-valley</strong> — a sloped baseline fitted between the points where the left and right integration borders intersect the ion trace.</li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
 </div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Where to set these parameters.</strong> <code>RT_shift</code>, <code>RT_shift_bound</code>, <code>RT_tol</code>, <code>peak_width</code>, <code>uniform_width</code>, and the fixed integration bounds are all configured in <code>param.txt</code> and the transition list — see <a href="./input-files.html">Input Files</a> for the syntax, defaults, and tuning recommendations. To see the algorithm in action across the four processing steps, see <a href="./running.html">Running INTEGRATOR</a>.</p>
+</div>
+</div>
+</section>
 <section id="next" class="level2">
 <h2 class="anchored" data-anchor-id="next">Next</h2>
 <ul>
-<li><a href="./setup.html">Download &amp; Project Setup</a> — download the standalone INTEGRATOR executable.</li>
-<li><a href="./running.html">Running INTEGRATOR</a> — process your mzML files.</li>
+<li><a href="./input-files.html">Input Files</a> — set <code>param.txt</code> and the transition list that drive the steps above.</li>
+<li><a href="./running.html">Running INTEGRATOR</a> — the four processing steps that execute this algorithm.</li>
+<li><a href="./viz.html">MRMhub-viz Visualizer</a> — review the detected features and integration borders.</li>
 </ul>
 
 
@@ -712,11 +758,14 @@ ul.task-list li input[type="checkbox"] {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./sharing.html" class="pagination-link" aria-label="Sharing Results">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Sharing Results</span>
+      <a href="./running.html" class="pagination-link" aria-label="Running INTEGRATOR">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Running INTEGRATOR</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
+      <a href="./viz.html" class="pagination-link" aria-label="MRMhub-viz Visualizer">
+        <span class="nav-page-text">MRMhub-viz Visualizer</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
   </div>
 </nav>
 </div> <!-- /content -->

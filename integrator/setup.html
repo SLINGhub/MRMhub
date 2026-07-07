@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="INTEGRATOR is a standalone executable — nothing to install. Download it, clear the one-time macOS/Windows security prompt, and keep one copy per analysis project so the project stays re-runnable.">
+<meta name="description" content="INTEGRATOR is a standalone executable and requires no installation. Download it, clear the one-time macOS or Windows security prompt, and retain one copy per analysis project so the project remains reproducible.">
 
 <title>Download &amp; Project Setup – MRMhub · INTEGRATOR</title>
 <style>
@@ -42,10 +42,14 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-0a6b7249c26820e032cb0bd839ff02b1.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-bba5ebae505b5c03f3f0d8040a416a6b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-011108973cccfa058b9d53d4b7eb11ad.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-b0172729d9e3827b305e14eb5a71532e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-011108973cccfa058b9d53d4b7eb11ad.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -121,6 +125,10 @@ ul.task-list li input[type="checkbox"] {
  <span class="dropdown-text">Running INTEGRATOR</span></a>
   </li>  
         <li>
+    <a class="dropdown-item" href="./algorithm.html">
+ <span class="dropdown-text">Algorithm</span></a>
+  </li>  
+        <li>
     <a class="dropdown-item" href="./viz.html">
  <span class="dropdown-text">MRMhub-viz Visualizer</span></a>
   </li>  
@@ -131,7 +139,7 @@ ul.task-list li input[type="checkbox"] {
         <li><hr class="dropdown-divider"></li>
         <li>
     <a class="dropdown-item" href="./msconvert.html">
- <span class="dropdown-text">Vendor → mzML (msconvert)</span></a>
+ <span class="dropdown-text">Vendor → mzML (MSConvert)</span></a>
   </li>  
     </ul>
   </li>
@@ -214,6 +222,12 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./algorithm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Algorithm</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./viz.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">MRMhub-viz Visualizer</span></a>
   </div>
@@ -227,7 +241,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./msconvert.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Vendor → mzML (msconvert)</span></a>
+ <span class="menu-text">Vendor → mzML (MSConvert)</span></a>
   </div>
 </li>
       </ul>
@@ -260,7 +274,7 @@ ul.task-list li input[type="checkbox"] {
 
 <div>
   <div class="description">
-    <p>INTEGRATOR is a standalone executable — nothing to install. Download it, clear the one-time macOS/Windows security prompt, and keep one copy per analysis project so the project stays re-runnable.</p>
+    <p>INTEGRATOR is a standalone executable and requires no installation. Download it, clear the one-time macOS or Windows security prompt, and retain one copy per analysis project so the project remains reproducible.</p>
   </div>
 </div>
 
@@ -287,12 +301,12 @@ Important
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><strong>INTEGRATOR is not installed.</strong> It is a <strong>self-contained, portable executable</strong> — there is no installer and nothing is added to your system. You simply download it, unzip it, and run it from a folder.</p>
+<p>INTEGRATOR is not installed. It is a self-contained, portable executable: there is no installer, and nothing is added to the system. It is downloaded, unzipped, and run from a folder.</p>
 </div>
 </div>
 <section id="one-copy-per-project" class="level2">
 <h2 class="anchored" data-anchor-id="one-copy-per-project">One copy per project</h2>
-<p>The recommended way to work is to keep <strong>one copy of the INTEGRATOR folder inside each data-analysis project</strong>, alongside that project’s raw data and input files. Because the executable, the parameters (<code>param.txt</code>), the input files, and the results all live together in one self-contained folder, the <strong>entire analysis stays re-runnable and reproducible</strong> — you (or a colleague) can re-open the folder months later, adjust a parameter, and re-run the integration exactly as before. It also means different projects can use different versions of INTEGRATOR without interfering with each other.</p>
+<p>The recommended approach is to keep one copy of the INTEGRATOR folder inside each data-analysis project, alongside that project’s raw data and input files. Because the executable, the parameters (<code>param.txt</code>), the input files, and the results reside together in one self-contained folder, the entire analysis remains reproducible: the folder can be re-opened months later, a parameter adjusted, and the integration re-run exactly as before. Different projects can also use different versions of INTEGRATOR without interfering with each other.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -303,49 +317,49 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><strong>Just want post-processing in R?</strong> INTEGRATOR is not required to use the QUANT R package — QUANT imports directly from vendor outputs (MassHunter, Skyline) as well. See the <a href="https://slinghub.github.io/MRMhub/quant/">QUANT documentation ↗</a>.</p>
+<p>INTEGRATOR is not required to use the QUANT R package; QUANT imports directly from vendor outputs (MassHunter, Skyline) as well. See the <a href="https://slinghub.github.io/MRMhub/quant/">QUANT documentation ↗</a>.</p>
 </div>
 </div>
 </section>
 <section id="get-the-application" class="level2">
 <h2 class="anchored" data-anchor-id="get-the-application">Get the application</h2>
-<p>INTEGRATOR comes as pre-compiled executables for Windows and macOS, which can be downloaded from <a href="https://github.com/SLINGhub/MRMhub/releases" class="uri">https://github.com/SLINGhub/MRMhub/releases</a>. Unzip the downloaded file and copy the folder into your project location. The folder comprises the following files and subfolders: <strong>MRMhub</strong> is the main application, and <strong>MRMhub-viz</strong> is an application to review peak integration results.</p>
+<p>INTEGRATOR is distributed as pre-compiled executables for Windows and macOS, available from <a href="https://github.com/SLINGhub/MRMhub/releases" class="uri">https://github.com/SLINGhub/MRMhub/releases</a>. Unzip the downloaded file and copy the folder into the project location. The folder comprises the following files and subfolders: <strong>MRMhub</strong> is the main application, and <strong>MRMhub-viz</strong> is an application for reviewing peak integration results.</p>
 </section>
 <section id="first-launch-clear-the-security-prompt" class="level2">
 <h2 class="anchored" data-anchor-id="first-launch-clear-the-security-prompt">First launch (clear the security prompt)</h2>
-<p>The executable is unsigned, so the operating system shows a one-time security warning the first time you run it. This is expected — clear it as follows.</p>
+<p>The executable is unsigned, so the operating system displays a one-time security warning on first launch. Clear it as follows.</p>
 <p>On <strong>macOS</strong>, the following error is shown:</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="images/macOS_warning.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+<p><img src="images/macOS_warning.png" class="img-fluid quarto-figure quarto-figure-center figure-img" alt="Screenshot of a macOS security dialog headed 'MRMhub Not Opened', warning that Apple could not verify the app is free of malware, with Done and Move to Bin buttons. This one-time block appears on first launch because the executable is unsigned."></p>
 </figure>
 </div>
 <p>To resolve this, go to “<strong>Systems Settings</strong>”, “<strong>Privacy &amp; Security</strong>” tab, and click “<strong>Open Anyway</strong>” button to enable the software.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="images/security_setting.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+<p><img src="images/security_setting.png" class="img-fluid quarto-figure quarto-figure-center figure-img" alt="Screenshot of the macOS System Settings Privacy and Security pane. Under Security, 'Allow applications from' reads App Store and Known Developers, and a row states that MRMhub was blocked to protect your Mac, beside an Open Anyway button that permits the app to run."></p>
 </figure>
 </div>
 <p>On <strong>Windows</strong>, right-click on the executable, select “<strong>Properties</strong>”, and on the “<strong>General</strong>” tab, check the “<strong>Unblock</strong>” box near the bottom if available, then click OK or Apply.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="images/unblock.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+<p><img src="images/unblock.png" class="img-fluid quarto-figure quarto-figure-center figure-img" alt="Screenshot of the Windows MRMhub Properties dialog on the General tab. It identifies the file as an Application (.exe) of 1.33 MB and, near the bottom, shows a Security note that the file came from another computer and might be blocked, beside an Unblock checkbox that must be ticked to allow the app to run."></p>
 </figure>
 </div>
 </section>
 <section id="folder-layout" class="level2">
 <h2 class="anchored" data-anchor-id="folder-layout">Folder layout</h2>
-<p>The input files required by the <strong>MRMhub</strong> application are <code>feature_list.csv</code>, <code>run_order.csv</code>, and <code>param.txt</code>. The mzML folder is used to store MS raw data files. All of these are explained in <a href="./input-files.html">Input Files</a>. Furthermore, this distribution contains a test dataset, with a complete set of input and raw data files, which can be used as templates for future analysis. The <code>MRMhub_plot.r</code> is an R script used to generate the PDFs. It can be modified to tailor for specific layouts and design features of the plots.</p>
+<p>The input files required by the <strong>MRMhub</strong> application are <code>feature_list.csv</code>, <code>run_order.csv</code>, and <code>param.txt</code>. The mzML folder is used to store the mzML data files. All of these are explained in <a href="./input-files.html">Input Files</a>. Furthermore, this distribution contains a test dataset, with a complete set of input and raw data files, which can be used as templates for future analysis. The <code>MRMhub_plot.r</code> is an R script used to generate the PDFs. It can be modified to tailor for specific layouts and design features of the plots.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="images/paste-3.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="526"></p>
+<p><img src="images/paste-3.png" class="img-fluid quarto-figure quarto-figure-center figure-img" alt="Screenshot of a macOS Finder window for the MRMhub-INTEGRATOR project folder. It contains the _testdata and mzML folders, the MRMhub (1.4 MB) and MRMhub-viz (9.3 MB) executables, the MRMhub_plot.r plotting script, param.txt, README.txt, manual.pdf, and two input CSV files, feature_list.csv and run_order.csv." width="526"></p>
 </figure>
 </div>
 </section>
 <section id="next" class="level2">
 <h2 class="anchored" data-anchor-id="next">Next</h2>
 <ul>
-<li><a href="./input-files.html">Input Files</a> — set up <code>param.txt</code>, <code>batch_info.csv</code>, and the transition list.</li>
+<li><a href="./input-files.html">Input Files</a> — set up <code>param.txt</code>, <code>run_order.csv</code>, and the transition list.</li>
 <li><a href="./running.html">Running INTEGRATOR</a> — the four processing steps.</li>
 </ul>
 

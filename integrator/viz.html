@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="MRMhub-viz is a lightweight, standalone, interactive tool for reviewing INTEGRATOR peak integration results.">
+<meta name="description" content="MRMhub-viz is a standalone, interactive tool for reviewing INTEGRATOR peak integration results and guiding the refinement of integration parameters.">
 
 <title>MRMhub-viz: Integration Visualizer – MRMhub · INTEGRATOR</title>
 <style>
@@ -35,17 +35,21 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
 <link href="./sharing.html" rel="next">
-<link href="./running.html" rel="prev">
+<link href="./algorithm.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-0a6b7249c26820e032cb0bd839ff02b1.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-bba5ebae505b5c03f3f0d8040a416a6b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-011108973cccfa058b9d53d4b7eb11ad.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-b0172729d9e3827b305e14eb5a71532e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-011108973cccfa058b9d53d4b7eb11ad.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -121,6 +125,10 @@ ul.task-list li input[type="checkbox"] {
  <span class="dropdown-text">Running INTEGRATOR</span></a>
   </li>  
         <li>
+    <a class="dropdown-item" href="./algorithm.html">
+ <span class="dropdown-text">Algorithm</span></a>
+  </li>  
+        <li>
     <a class="dropdown-item" href="./viz.html">
  <span class="dropdown-text">MRMhub-viz Visualizer</span></a>
   </li>  
@@ -131,7 +139,7 @@ ul.task-list li input[type="checkbox"] {
         <li><hr class="dropdown-divider"></li>
         <li>
     <a class="dropdown-item" href="./msconvert.html">
- <span class="dropdown-text">Vendor → mzML (msconvert)</span></a>
+ <span class="dropdown-text">Vendor → mzML (MSConvert)</span></a>
   </li>  
     </ul>
   </li>
@@ -214,6 +222,12 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./algorithm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Algorithm</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./viz.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">MRMhub-viz Visualizer</span></a>
   </div>
@@ -227,7 +241,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./msconvert.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Vendor → mzML (msconvert)</span></a>
+ <span class="menu-text">Vendor → mzML (MSConvert)</span></a>
   </div>
 </li>
       </ul>
@@ -242,7 +256,9 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#next" id="toc-next" class="nav-link active" data-scroll-target="#next">Next</a></li>
+  <li><a href="#what-it-displays" id="toc-what-it-displays" class="nav-link active" data-scroll-target="#what-it-displays">What it displays</a></li>
+  <li><a href="#the-review-refine-loop" id="toc-the-review-refine-loop" class="nav-link" data-scroll-target="#the-review-refine-loop">The review → refine loop</a></li>
+  <li><a href="#next" id="toc-next" class="nav-link" data-scroll-target="#next">Next</a></li>
   </ul>
 </nav>
     </div>
@@ -256,7 +272,7 @@ ul.task-list li input[type="checkbox"] {
 
 <div>
   <div class="description">
-    <p>MRMhub-viz is a lightweight, standalone, interactive tool for reviewing INTEGRATOR peak integration results.</p>
+    <p>MRMhub-viz is a standalone, interactive tool for reviewing INTEGRATOR peak integration results and guiding the refinement of integration parameters.</p>
   </div>
 </div>
 
@@ -273,13 +289,54 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>The <strong>MRMhub-viz</strong> application is a lightweight, standalone, interactive tool for reviewing peak integration results generated by the MRMhub application (see <a href="./running.html">Running INTEGRATOR — Step 3</a>). It is located in the same folder as the <strong>MRMhub</strong> application and launched like a regular application. The displayed transition can be selected using the dropdown menu in the top-left corner, and when moving the mouse over the chromatograms the exact retention time is shown. This is useful when defining fixed peak borders in the Transition List file (see <a href="./input-files.html">Input Files — Transition list</a>).</p>
-<p><img src="images/paste-12.png" class="img-fluid"></p>
+<p><strong>MRMhub-viz</strong> is a standalone, interactive application for reviewing the peak-integration results produced by INTEGRATOR (see <a href="./running.html">Running INTEGRATOR — Step 3</a>). It is distributed as a self-contained executable (~10 MB), resides in the same folder as the <strong>MRMhub</strong> application, and is launched like any other application. Because it reads the binary results written to the <code>misc/</code> folder during peak integration, Step 3 must have been run at least once before the visualizer can display a dataset.</p>
+<section id="what-it-displays" class="level2">
+<h2 class="anchored" data-anchor-id="what-it-displays">What it displays</h2>
+<p>The transition to be inspected is selected from the dropdown menu in the top-left corner. For the selected transition, the extracted ion chromatograms of the individual samples are shown together with the detected peak and its left and right integration borders, so that the integration can be reviewed across the entire analytical sequence at a glance. Moving the pointer over a chromatogram reports the exact retention time at the cursor — the value used when defining fixed peak borders in the transition list (see <a href="./input-files.html">Input Files — Transition list</a>).</p>
+<p><img src="images/paste-12.png" class="img-fluid" alt="Screenshot of the MRMhub-viz window for transition LPC 22:5 (570.4 to 184.1 m/z), selected from the dropdown at the top left. A grid of per-sample chromatogram panels, one per injection (labelled Longit_batch1_6, _7, _8 and so on), each plots intensity against retention time from about 1.6 to 2.6 minutes, with the detected peak and its left (blue) and right (orange) integration borders shaded."></p>
+</section>
+<section id="the-review-refine-loop" class="level2">
+<h2 class="anchored" data-anchor-id="the-review-refine-loop">The review → refine loop</h2>
+<p>MRMhub-viz is the inspection half of an iterative loop between visual review and parameter adjustment. Automated integration is rarely optimal for every feature on the first pass; the visualizer identifies where it fails, and the input files are adjusted to correct it. A typical cycle proceeds as follows.</p>
+<ol type="1">
+<li><strong>Inspect.</strong> Step through the transitions and confirm that the intended peak is detected and correctly bounded, both in the reference samples and across the sequence. Look for missed peaks, co-integrated neighbours, truncated tails, and failures of retention-time tracking.</li>
+<li><strong>Diagnose.</strong> Relate each problem to the setting responsible for it — a missed peak to <code>RT_tol</code> or <code>RT_shift</code>, a co-integrated neighbour to <code>peak_width</code>, an untracked retention-time jump to <code>RT_shift_bound</code> (see <a href="./input-files.html#effects-of-the-key-settings">Effects of the key settings</a>).</li>
+<li><strong>Refine.</strong> Adjust the global parameters in <code>param.txt</code>, or add per-feature overrides in the transition list (<code>peak width</code>, <code>uniform_width</code>, fixed integration bounds) for the problematic minority. Individual peaks that resist automated integration can also have their borders edited directly in <code>RT_matrix.csv</code>.</li>
+<li><strong>Re-integrate.</strong> After a change to <code>param.txt</code> or the transition list, re-run peak finding (Steps 1–2) followed by integration (Step 3); when only <code>RT_matrix.csv</code> has been edited, re-run Step 3 alone. Reload the dataset in MRMhub-viz and repeat until the integration is satisfactory.</li>
+</ol>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Refine globally first, then per-feature.</strong> Tune <code>param.txt</code> so that the majority of peaks integrate correctly, and reserve transition-list overrides and fixed borders for the remaining difficult peaks. Confirm every change in MRMhub-viz before re-integrating the whole dataset — see the <a href="./input-files.html#recommendations-for-setting-peak-integration-parameters">peak-width recommendations</a>.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Re-running Step 2 overwrites <code>RT_matrix.csv</code>.</strong> Any manual edits to the integration borders are lost when peak finding is re-run. Make manual <code>RT_matrix.csv</code> adjustments only once the automated integration is otherwise final, then run Step 3 (see <a href="./running.html">Running INTEGRATOR — Step 2</a>).</p>
+</div>
+</div>
+</section>
 <section id="next" class="level2">
 <h2 class="anchored" data-anchor-id="next">Next</h2>
 <ul>
 <li><a href="./input-files.html">Input Files</a> — adjust global and per-feature integration parameters.</li>
-<li><a href="./sharing.html">Sharing Results</a> — bundle the visualizer with your dataset for review by others.</li>
+<li><a href="./running.html">Running INTEGRATOR</a> — re-run peak finding and integration after each change.</li>
+<li><a href="./sharing.html">Sharing Results</a> — bundle the visualizer with the dataset for review by others.</li>
 </ul>
 
 
@@ -688,8 +745,8 @@ ul.task-list li input[type="checkbox"] {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./running.html" class="pagination-link" aria-label="Running INTEGRATOR">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Running INTEGRATOR</span>
+      <a href="./algorithm.html" class="pagination-link" aria-label="Algorithm">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Algorithm</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
