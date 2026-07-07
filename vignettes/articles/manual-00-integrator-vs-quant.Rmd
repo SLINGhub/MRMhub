@@ -59,9 +59,9 @@ appropriate importer:
 ```{r, eval = FALSE}
 library(mrmhub)
 # From MassHunter:
-exp <- import_data_masshunter(path = "masshunter_export.csv")
+exp <- MRMhubExperiment() |> import_data_masshunter(path = "masshunter_export.csv")
 # From Skyline:
-exp <- import_data_skyline(path = "skyline_results.csv")
+exp <- MRMhubExperiment() |> import_data_skyline(path = "skyline_results.csv")
 ```
 
 ## You Might NOT Need QUANT If...

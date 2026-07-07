@@ -73,7 +73,7 @@ Click a **Structure** to see the table columns and what each one is for.
 A minimal import looks like this:
 
 ```{r, eval = FALSE}
-exp <- import_data_mrmhub(path = "datasets/integrator_output.tsv")
+exp <- MRMhubExperiment() |> import_data_mrmhub(path = "datasets/integrator_output.tsv")
 exp <- import_metadata_msorganiser(exp, path = "datasets/metadata.xlsx")
 ```
 

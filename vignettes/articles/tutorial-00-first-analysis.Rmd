@@ -1,6 +1,6 @@
 ---
 title: "Your First Analysis"
-output: 
+output:
   rmarkdown::html_vignette:
     fig_width: 6
     fig_height: 3
@@ -10,8 +10,8 @@ vignette: >
   %\VignetteIndexEntry{Your First Analysis}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-editor_options: 
-  markdown: 
+editor_options:
+  markdown:
     wrap: 72
 ---
 
@@ -25,34 +25,69 @@ knitr::opts_chunk$set(
 This walkthrough produces a normalized dataset in under 5 minutes using
 bundled demo data; no external files are needed.
 
-<!-- TODO: Record screencast showing full first-analysis workflow -->
-<!-- ![First analysis end-to-end](../man/figures/screencasts/first-analysis.gif) -->
-
 ::: {.callout .callout-note}
 **Time:** ~5 min &nbsp;|&nbsp; **Level:** Beginner &nbsp;|&nbsp; **Prerequisites:** MRMhub installed (`check_setup()` passes)
 :::
 
-## Step 1: Load MRMhub
+## The complete workflow in one script
+
+The complete workflow on the bundled demo data is shown below. The printed summary and plot are
+produced by this code.
+
+```{r whole-thing, eval=TRUE, fig.height=4}
+library(mrmhub)
+
+# 1. Import the bundled demo dataset (produced by INTEGRATOR)
+demo_file <- system.file("extdata", "MRMhub_demo.tsv", package = "mrmhub")
+mexp <- MRMhubExperiment()
+mexp <- import_data_mrmhub(mexp, path = demo_file, import_metadata = TRUE)
+mexp
+
+# 2. Normalise each feature by its internal standard
+mexp <- normalize_by_istd(mexp)
+
+# 3. Inspect the normalised signal across the analytical run
+plot_runscatter(mexp, variable = "norm_intensity")
+```
+
+To save the processed data to an Excel report (or a tidy CSV), add one line:
+
+```{r eval=FALSE}
+save_report_xlsx(mexp, path = "my_first_results.xlsx")
+```
+
+::: {.callout .callout-tip}
+**Interactive alternative.** `run_walkthrough()` opens a point-and-click application that validates
+the data, generates the equivalent workflow script, and displays the results. The code-first
+workflow above remains the reproducible path.
+:::
+
+## Step by step
+
+The rest of this page explains each step of the script above.
+
+### Step 1: Load MRMhub
 
 ```{r}
 library(mrmhub)
 ```
 
-## Step 2: Import Demo Data
+### Step 2: Import Demo Data
 
 MRMhub ships with a demo dataset produced by INTEGRATOR.
 Import it with `import_data_mrmhub()`:
 
 ```{r}
 demo_file <- system.file("extdata", "MRMhub_demo.tsv", package = "mrmhub")
-mexp <- import_data_mrmhub(path = demo_file)
+mexp <- MRMhubExperiment()
+mexp <- import_data_mrmhub(mexp, path = demo_file, import_metadata = TRUE)
 mexp
 ```
 
 The result is an `MRMhubExperiment` object, a structured container
 holding the peak area data, sample annotations, and feature metadata.
 
-## Step 3: Explore the Data
+### Step 3: Explore the Data
 
 ```{r}
 # Dimensions: samples × features
@@ -66,7 +101,7 @@ head(mexp@annot_analyses)
 get_featurelist(mexp)
 ```
 
-## Step 4: Normalize by Internal Standard
+### Step 4: Normalize by Internal Standard
 
 Apply ISTD normalization to correct for extraction and injection variability:
 
@@ -79,7 +114,7 @@ After this step, `mexp@is_istd_normalized` is `TRUE`.
 The original data is preserved in `dataset_orig`.
 :::
 
-## Step 5: Visualise
+### Step 5: Visualise
 
 Check the run sequence for signal drift:
 
@@ -87,7 +122,7 @@ Check the run sequence for signal drift:
 plot_runscatter(mexp, variable = "norm_intensity")
 ```
 
-## Step 6: Export
+### Step 6: Export
 
 Export the processed data to Excel or CSV:
 
