@@ -25,7 +25,7 @@ This article is for:
 - Contributors who want to extend the package
 - Developers building tools on top of MRMhub
 
-To process data directly, see the [Design Overview](manual-00-architecture.html) instead.
+To process data directly, see the [Design Overview](manual-00-design-overview.html) instead.
 
 ## Decision 1: S4 Class (MRMhubExperiment) vs Tidy Tibbles
 
@@ -237,6 +237,6 @@ All functions should:
 
 ## Next Steps
 
-- [Design Overview](manual-00-architecture.html) — the pipeline at a high level
+- [Design Overview](manual-00-design-overview.html) — the pipeline at a high level
 - [Data Structures](manual-01-data-structure.html) — detailed slot documentation
 - [MRMhubExperiment Object](manual-04-mrmhub-experiment.html) — creating and using the object

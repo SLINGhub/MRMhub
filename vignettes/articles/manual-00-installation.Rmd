@@ -36,10 +36,10 @@ In a fresh R session:
 
 ```{r, eval=FALSE}
 if (!require("pak")) install.packages("pak")
-pak::pak("SLINGhub/mrmhub")
+pak::pak("SLINGhub/MRMhub")
 ```
 
-The same command works on Windows, macOS, and Linux. `pak` pulls prebuilt binaries where available, so compilation tools are usually not needed. If `pak` is unavailable, use `remotes::install_github("SLINGhub/mrmhub")`.
+The same command works on Windows, macOS, and Linux. `pak` pulls prebuilt binaries where available, so compilation tools are usually not needed. If `pak` is unavailable, use `remotes::install_github("SLINGhub/MRMhub")`.
 
 ## Verify Your Setup
 

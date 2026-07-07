@@ -1,5 +1,5 @@
 ---
-title: "Recipe: Custom QC Report"
+title: "Custom QC Report"
 output: 
   rmarkdown::html_vignette:
     fig_width: 7
@@ -8,7 +8,7 @@ description: |
   Create a detailed HTML QC report from a processed MRMhubExperiment
   using a parameterized Quarto template.
 vignette: >
-  %\VignetteIndexEntry{Recipe: Custom QC Report}
+  %\VignetteIndexEntry{Custom QC Report}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

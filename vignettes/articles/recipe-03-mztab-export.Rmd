@@ -1,5 +1,5 @@
 ---
-title: "Recipe: Import & Export mzTab-M"
+title: "Import & Export mzTab-M"
 output:
   rmarkdown::html_vignette:
     fig_width: 7
@@ -9,7 +9,7 @@ description: |
   MRMhubExperiment for sharing or MetaboLights submission, and import results
   from tools such as Lipid Data Analyzer, MS-DIAL or MZmine.
 vignette: >
-  %\VignetteIndexEntry{Recipe: Import & Export mzTab-M}
+  %\VignetteIndexEntry{Import & Export mzTab-M}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

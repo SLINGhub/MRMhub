@@ -1,5 +1,5 @@
 ---
-title: "Tutorial: Multi-Batch Study"
+title: "Multi-Batch Study"
 output: 
   rmarkdown::html_vignette:
     fig_width: 7
@@ -8,7 +8,7 @@ description: |
   End-to-end workflow for a realistic multi-batch targeted metabolomics study 
   with drift correction, batch correction, QC monitoring, and final merge.
 vignette: >
-  %\VignetteIndexEntry{Tutorial: Multi-Batch Study}
+  %\VignetteIndexEntry{Multi-Batch Study}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

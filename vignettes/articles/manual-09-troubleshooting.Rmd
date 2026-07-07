@@ -401,5 +401,5 @@ correction. Consider processing batches separately and merging.
 
 ## Next Steps
 
-- [Design Overview](manual-00-architecture.html) — understand the full pipeline
-- [Welcome and Installation](manual-00-get-started.html) — verify your setup with `check_setup()`
+- [Design Overview](manual-00-design-overview.html) — understand the full pipeline
+- [Installation](manual-00-installation.html) — verify your setup with `check_setup()`

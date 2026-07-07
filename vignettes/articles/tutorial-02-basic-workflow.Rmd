@@ -1,5 +1,5 @@
 ---
-title: "A Real-World MRMhub Workflow"
+title: "Basic MRMhub Workflow"
 output: 
   rmarkdown::html_vignette:
     fig_width: 6
@@ -8,7 +8,7 @@ description: |
   A realistic end-to-end workflow covering project setup, metadata import, 
   drift/batch correction, QC filtering, and export.
 vignette: >
-  %\VignetteIndexEntry{A Real-World MRMhub Workflow}
+  %\VignetteIndexEntry{Basic MRMhub Workflow}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 editor_options: 
@@ -201,7 +201,7 @@ The recommended order is:
 4. Batch correction
 5. QC filtering
 
-See [Design Overview](manual-00-architecture.html) for the full pipeline diagram.
+See [Design Overview](manual-00-design-overview.html) for the full pipeline diagram.
 
 </details>
 
