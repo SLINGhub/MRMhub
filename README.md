@@ -14,7 +14,7 @@ Open-source toolchain for targeted Multiple Reaction Monitoring (MRM) mass spect
 | If you have... | Use | Start here |
 |---|---|---|
 | Raw vendor files (`.raw`, `.d`, `.wiff`) | INTEGRATOR + QUANT | [Releases](https://github.com/SLINGhub/MRMhub/releases) → [Docs hub](https://slinghub.github.io/MRMhub/) |
-| Integrated peaks (MassHunter, Skyline, MS-DIAL) | QUANT only | [QUANT install](https://slinghub.github.io/MRMhub/quant/articles/manual-00-get-started.html) |
+| Integrated peaks (MassHunter, Skyline, MS-DIAL) | QUANT only | [QUANT install](https://slinghub.github.io/MRMhub/quant/articles/manual-00-installation.html) |
 | Only peak picking | INTEGRATOR only | [Releases](https://github.com/SLINGhub/MRMhub/releases) |
 
 ## Install

@@ -52,11 +52,11 @@
 
 ## Quick Start and Demos
  
-- **[Installation](articles/manual-00-get-started.html)** — install and verify your setup
-- **[Example](articles/tutorial-03-lipidomics-workflow.html)** - Targeted Lipidomics Data Processing
-- **[Example](articles/recipe-01-ext-calibration-qc.html)** - Quantitative Assay with Ext. Calibration
-- **[Quick Start](articles/tutorial-00-first-analysis.html)** - 5 minute run on bundled data
-- **[Prepare your data](articles/manual-05a-which-importer.html)** - file formats and importers
+- **[Installation](articles/manual-00-installation.html)** — install and verify your setup
+- **[Your First Analysis](articles/tutorial-00-first-analysis.html)** — a 5-minute run on bundled data
+- **[Prepare your data](articles/manual-05a-which-importer.html)** — file formats and importers
+- **[Example: targeted lipidomics](articles/tutorial-03-lipidomics-workflow.html)** — a full lipidomics workflow
+- **[Example: external calibration](articles/recipe-01-ext-calibration-qc.html)** — a quantitative assay with calibration curves
 
 
 ## Installation and Updating
@@ -66,9 +66,10 @@ Make sure to use a fresh R session without loaded packages (quit RStudio/Positro
 ```r
 if (!require("pak")) install.packages("pak")
 pak::pak("SLINGhub/MRMhub")
+library(mrmhub); mrmhub::check_setup()
 ```
 
-For more details and troubleshooting see [Installation](articles/manual-00-get-started.html) and [Installation Troubleshooting & FAQ](articles/manual-09-troubleshooting.html).
+`pak` resolves locked packages and parallelises downloads; `remotes::install_github("SLINGhub/MRMhub")` is an equivalent fallback. For more details and troubleshooting see [Installation](articles/manual-00-installation.html) and [Troubleshooting & FAQ](articles/manual-09-troubleshooting.html).
 
 
 

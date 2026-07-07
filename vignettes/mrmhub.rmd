@@ -56,11 +56,12 @@ To download the latest release of INTEGRATOR, visit the [Releases page](https://
 Install the `mrmhub` package from Github using the following command:
 
 ``` r
-if (!require("remotes")) install.packages("remotes")
-remotes::install_github("SLINGhub/MRMhub")
+if (!require("pak")) install.packages("pak")
+pak::pak("SLINGhub/MRMhub")
+library(mrmhub); mrmhub::check_setup()
 ```
 
-Load the package in your R session via `library(mrmhub)`. For detailed usage instructions and examples, refer to the [Documentation](https://slinghub.github.io/MRMhub/quant/).
+`pak` resolves locked packages and parallelises downloads; `remotes::install_github("SLINGhub/MRMhub")` is an equivalent fallback. For detailed usage instructions and examples, refer to the [Documentation](https://slinghub.github.io/MRMhub/quant/).
 
 ## Documentation
 
@@ -89,6 +90,6 @@ If you become aware of any unauthorised commercial use of this source code and m
 
 ## Next Steps
 
-- [Installation](manual-00-get-started.html) — requirements and setup
-- [Key Concepts & Glossary](manual-00-key-concepts.html) — core terminology and the MRMhubExperiment object
-- [Your First Analysis](tutorial-00-first-analysis.html) — a short end-to-end walkthrough
+- [Installation](https://slinghub.github.io/MRMhub/quant/articles/manual-00-installation.html) — requirements and setup
+- [Key Concepts & Glossary](https://slinghub.github.io/MRMhub/quant/articles/manual-00-key-concepts.html) — core terminology and the MRMhubExperiment object
+- [Your First Analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.html) — a short end-to-end walkthrough
