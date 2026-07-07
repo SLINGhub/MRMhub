@@ -27,9 +27,8 @@ Positron. Restarting R does not always release the lock on Windows.
 remotes::install_github("SLINGhub/mrmhub")
 ```
 
-If the message names a specific package (e.g. `'rlang'` is locked), you
-can also try installing just that package first into a fresh session,
-then retry MRMhub.
+If the message names a specific package (e.g. `'rlang'` is locked),
+install just that package first into a fresh session, then retry MRMhub.
 
 **“namespace ‘rlang’ is already loaded”**
 
@@ -49,16 +48,14 @@ install.packages("rlang")
 
 Install [Rtools](https://cran.r-project.org/bin/windows/Rtools/) for
 your R version (Rtools43 for R 4.3, Rtools44 for R 4.4, …), then restart
-R and retry. Rtools is needed for compiling source packages — necessary
-for some MRMhub dependencies that aren’t yet available as Windows
-binaries.
+R and retry. Rtools is needed for compiling source packages, which some
+MRMhub dependencies require when a Windows binary is not yet available.
 
 **Use `pak` instead of `remotes`**
 
 [`pak`](https://pak.r-lib.org/) handles locked packages more cleanly
 than `remotes` on Windows, gives clearer error messages on transitive
-failures, and parallelises downloads. If `remotes` is giving you
-trouble:
+failures, and parallelises downloads. If `remotes` fails:
 
 ``` r
 
@@ -71,7 +68,7 @@ the dependency graph in one pass.
 
 **“cannot open URL” or timeout during install**
 
-Your network is blocking GitHub or a CRAN mirror.
+The network is blocking GitHub or a CRAN mirror.
 
 ``` r
 
@@ -105,13 +102,13 @@ remotes::install_github(
 )
 ```
 
-Optional packages can be added later as you need them:
+Optional packages can be added later as needed:
 `install.packages(c("patchwork", "ggrepel"))`.
 
 **Apple Silicon: package compilation fails / “no binary available”**
 
 On Apple Silicon, if a dependency is not yet built as an `arm64` binary
-on CRAN, R falls back to building from source — which then needs Xcode
+on CRAN, R falls back to building from source, which then requires Xcode
 Command Line Tools. Two fixes:
 
 ``` r
@@ -124,8 +121,8 @@ options(install.packages.compile.from.source = "never")
 remotes::install_github("SLINGhub/mrmhub")
 ```
 
-Option B can leave you with slightly older versions of those packages,
-but avoids the toolchain entirely.
+Option B may leave slightly older versions of those packages but avoids
+the toolchain entirely.
 
 ------------------------------------------------------------------------
 
@@ -133,7 +130,7 @@ but avoids the toolchain entirely.
 
 **“Column X not found” or unexpected column names**
 
-Your CSV uses different column names than expected. Check with:
+The CSV uses different column names than expected. Check with:
 
 ``` r
 
@@ -157,7 +154,7 @@ readr::read_csv2("your_file.csv", n_max = 5)
 
 **“No features found” after import**
 
-Your feature names in the data file don’t match those in the feature
+The feature names in the data file do not match those in the feature
 annotation. Check for:
 
 - Trailing whitespace: `"Compound A "` vs `"Compound A"`
@@ -210,7 +207,10 @@ This can happen when:
 ``` r
 
 # Visualise before correcting
-plot_runscatter(mexp, feature = "your_feature", highlight_qc = TRUE)
+plot_runscatter(mexp,
+                variable = "norm_intensity",
+                include_feature_filter = "your_feature",
+                qc_types = c("BQC", "SPL"))
 ```
 
 If the QC trend is flat, skip drift correction for that batch.
@@ -218,7 +218,7 @@ If the QC trend is flat, skip drift correction for that batch.
 **Batch correction flattens real biological signal**
 
 [`correct_batch_centering()`](https://slinghub.github.io/MRMhub/quant/reference/correct_batch_centering.md)
-assumes QC samples have equal concentration across batches. If your QC
+assumes QC samples have equal concentration across batches. If the QC
 pool differs between batches, centering will introduce artefacts.
 
 **Solution:** Ensure the same QC pool is used across all batches.
@@ -232,7 +232,7 @@ pool differs between batches, centering will introduce artefacts.
 ``` r
 
 # After all processing and filtering:
-final_data <- get_analyticaldata(mexp)
+final_data <- get_analyticaldata(mexp, annotated = TRUE)
 
 # Or the filtered dataset directly:
 final_filtered <- mexp@dataset_filtered
@@ -273,16 +273,22 @@ mexp@dataset <- mexp@dataset_orig
 
 **My features are all filtered out**
 
-Your thresholds may be too strict. Check:
+The thresholds may be too strict. Check:
 
 ``` r
 
 # See QC metrics before filtering
 mexp@metrics_qc |>
-  dplyr::arrange(dplyr::desc(cv_percent))
+  dplyr::arrange(dplyr::desc(norm_intensity_cv_bqc))
 
 # Use more lenient thresholds
-mexp <- filter_features_qc(mexp, max_cv = 40, min_detected_ratio = 0.5)
+mexp <- filter_features_qc(
+  mexp,
+  include_qualifier = FALSE,
+  include_istd = FALSE,
+  max.cv.normintensity.bqc = 40,
+  max.prop.missing.normintensity.spl = 0.5
+)
 ```
 
 ------------------------------------------------------------------------
@@ -291,9 +297,9 @@ mexp <- filter_features_qc(mexp, max_cv = 40, min_detected_ratio = 0.5)
 
 **“No calibration points found”**
 
-Your calibration annotation doesn’t match sample labels in the data.
+The calibration annotation does not match sample labels in the data.
 Check that `annot_qcconcentrations` uses the same `analysis_id` values
-as your data.
+as the data.
 
 **Calibration curve has R² \< 0.9**
 
@@ -316,12 +322,12 @@ get_calibration_metrics(mexp) |>
 
 **Can I use MRMhub with non-MRM data (e.g., PRM, SRM)?**
 
-Yes, as long as your data can be formatted as a long CSV with feature
-IDs and peak areas. The processing is agnostic to acquisition mode.
+Yes, provided the data can be formatted as a long CSV with feature IDs
+and peak areas. The processing is agnostic to acquisition mode.
 
 **Can I process only one batch?**
 
-Yes. Simply don’t apply batch correction. All other functions work with
+Yes. Do not apply batch correction. All other functions work with
 single-batch data.
 
 **Is there a size limit?**
@@ -338,9 +344,8 @@ drift correction. Consider processing batches separately and merging.
 ## Next Steps
 
 - [Design
-  Overview](https://slinghub.github.io/MRMhub/quant/articles/manual-00-architecture.md)
+  Overview](https://slinghub.github.io/MRMhub/quant/articles/manual-00-design-overview.md)
   — understand the full pipeline
-- [Welcome and
-  Installation](https://slinghub.github.io/MRMhub/quant/articles/manual-00-get-started.md)
+- [Installation](https://slinghub.github.io/MRMhub/quant/articles/manual-00-installation.md)
   — verify your setup with
   [`check_setup()`](https://slinghub.github.io/MRMhub/quant/reference/check_setup.md)

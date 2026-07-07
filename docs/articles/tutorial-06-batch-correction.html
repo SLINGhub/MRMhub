@@ -22,7 +22,7 @@
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
-    <nav class="navbar navbar-expand-lg fixed-top bg-primary" data-bs-theme="dark" aria-label="Site navigation"><div class="container">
+    <nav class="navbar navbar-expand-lg fixed-top bg-dark" data-bs-theme="dark" aria-label="Site navigation"><div class="container">
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
@@ -38,59 +38,60 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-get-started" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Get Started</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-get-started">
-<li><a class="dropdown-item" href="../articles/manual-00-get-started.html">Installation</a></li>
+<li><a class="dropdown-item" href="../articles/manual-00-installation.html">Installation</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-00-architecture.html">Design Overview</a></li>
     <li><a class="dropdown-item" href="../articles/manual-00-key-concepts.html">Key Concepts &amp; Glossary</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-00-sample-types.html">Sample Types &amp; QC Roles</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-11-cheatsheet.html">Function Cheatsheet</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-05a-which-importer.html">Import and prepare data files</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-00-integrator-vs-quant.html">INTEGRATOR vs QUANT</a></li>
-    <li><hr class="dropdown-divider"></li>
-    <li><a class="external-link dropdown-item" href="https://slinghub.github.io/MRMhub/integrator-manual.html">Need peak integration first?</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-09-troubleshooting.html">Troubleshooting &amp; FAQ</a></li>
   </ul>
 </li>
 <li class="active nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-workflows" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Workflows</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-workflows">
-<li><h6 class="dropdown-header" data-toc-skip>Tutorials</h6></li>
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-tutorials" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Tutorials</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-tutorials">
+<li><a class="dropdown-item" href="../articles/tutorial-01-prep-data.html">Preparing &amp; importing data</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-02-basic-workflow.html">Basic MRMhub workflow</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-03-lipidomics-workflow.html">Lipidomics (full workflow)</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-08-multi-batch.html">Multi-Batch Study</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-04-drift-correction.html">Drift correction</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-05-run-scatter.html">RunScatter plots</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-06-batch-correction.html">Batch correction</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-10-metadata-validation.html">Validating metadata</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-07-calibration-reference.html">Calibration by reference sample</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-08-multi-batch.html">Multi-batch study</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-09-pca-exploration.html">QC exploration with PCA</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-10-metadata-validation.html">Validating metadata</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-11-interference-correction.html">Interference correction</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Recipes</h6></li>
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-07-calibration-reference.html">Calibration by reference sample</a></li>
-    <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC Report</a></li>
-    <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Export to mzTab-M</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
   </ul>
 </li>
 <li class="nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-advanced" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Advanced</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-advanced">
-<li><h6 class="dropdown-header" data-toc-skip>Data Model</h6></li>
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-manual" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Manual</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-manual">
+<li><h6 class="dropdown-header" data-toc-skip>Concepts &amp; Design</h6></li>
+    <li><a class="dropdown-item" href="../articles/manual-00-design-overview.html">Design Overview</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-00-integrator-vs-quant.html">INTEGRATOR vs QUANT</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-00-sample-types.html">Sample Types &amp; QC Roles</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Data Model</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-01-data-structure.html">Data Structures</a></li>
     <li><a class="dropdown-item" href="../articles/manual-02-data-identifiers.html">Data Identifiers</a></li>
     <li><a class="dropdown-item" href="../articles/manual-03-feature-variables.html">Feature Variables</a></li>
     <li><a class="dropdown-item" href="../articles/manual-04-mrmhub-experiment.html">MRMhubExperiment Object</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Import &amp; Metadata</h6></li>
+    <li><a class="dropdown-item" href="../articles/manual-05a-which-importer.html">Import &amp; prepare data files</a></li>
     <li><a class="dropdown-item" href="../articles/manual-05-data-import.html">Data Import</a></li>
     <li><a class="dropdown-item" href="../articles/manual-05b-data-file-structures.html">Data File Structures</a></li>
     <li><a class="dropdown-item" href="../articles/manual-06-metadata-import.html">Metadata Import</a></li>
     <li><a class="dropdown-item" href="../articles/manual-06a-metadata-table-structures.html">Metadata Table Structures</a></li>
     <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Correction Methods</h6></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Corrections</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-07-drift-batch-correction.html">Drift &amp; Batch Correction</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
+    <li><a class="dropdown-item" href="../articles/manual-11-cheatsheet.html">Function Cheatsheet</a></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-09-troubleshooting.html">Troubleshooting &amp; FAQ</a></li>
     <li><a class="dropdown-item" href="../articles/manual-10-design-decisions.html">Design Decisions</a></li>
   </ul>
 </li>
@@ -98,6 +99,7 @@
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
       </ul>
 <ul class="navbar-nav">
+<li class="nav-item"><a class="external-link nav-link" href="https://slinghub.github.io/MRMhub/">← MRMhub home</a></li>
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
@@ -128,30 +130,37 @@ correction.</p>
 <p>The data must be provided via a MRMhubExperiment object, whereby raw
 data that was imported or processed data can be corrected, such as
 <code>intensity</code> or <code>conc</code> values.</p>
+<div class="callout callout-note">
+<p><strong>Time:</strong> ~10 min  |  <strong>Level:</strong>
+Intermediate  |  <strong>Prerequisites:</strong> <a href="tutorial-02-basic-workflow.html">Basic workflow</a></p>
+</div>
 <div class="section level2">
 <h2 id="import-data">Import data<a class="anchor" aria-label="anchor" href="#import-data"></a>
 </h2>
-<p>In this tutorial, we import pre-calculated concentration values from
-a CSV file. This file must contain a column with batch information
-(<code>batch_id</code>), see <code><a href="../reference/import_data_csv.html">import_data_csv()</a></code> for more
-information.</p>
+<p>This tutorial imports pre-calculated concentration values from a CSV
+file. The file must contain a column with batch information
+(<code>batch_id</code>); see <code><a href="../reference/import_data_csv_wide.html">import_data_csv_wide()</a></code> for
+details.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/SLINGhub/MRMhub" class="external-link">mrmhub</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu">mrmhub</span><span class="fu">::</span><span class="fu"><a href="../reference/MRMhubExperiment.html">MRMhubExperiment</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_data_csv.html">import_data_csv</a></span><span class="op">(</span></span>
+<span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_data_csv_wide.html">import_data_csv_wide</a></span><span class="op">(</span></span>
 <span>  <span class="va">myexp</span>,</span>
-<span>  path <span class="op">=</span> <span class="st">"simdata-u1000-sd100_7batches.csv"</span>, </span>
-<span>  variable_name <span class="op">=</span> <span class="st">"conc"</span>, </span>
+<span>  path <span class="op">=</span> <span class="st">"simdata-u1000-sd100_7batches.csv"</span>,</span>
+<span>  variable_name <span class="op">=</span> <span class="st">"conc"</span>,</span>
 <span>  import_metadata <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="apply-batch-centering">Apply batch-centering<a class="anchor" aria-label="anchor" href="#apply-batch-centering"></a>
 </h2>
-<p>Now we center the concentration values of batches based on a
-reference qc type, the samples (<code>ref_qc_types = "SPL"</code>) in
-this case. The <code>correct_scale</code> parameter</p>
+<p>The concentration values of each batch are centered on a reference QC
+type, here the samples (<code>ref_qc_types = "SPL"</code>). The
+<code>correct_scale</code> parameter controls whether the batch-to-batch
+differences in variance (scale) are also corrected. Here it is set to
+<code>FALSE</code>, so only the median (location) of each batch is
+aligned; variance scaling is disabled.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/correct_batch_centering.html">correct_batch_centering</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">myexp</span>, </span>
@@ -162,10 +171,10 @@ this case. The <code>correct_scale</code> parameter</p>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #BBBB00;">Adding batch correction to `conc` data.</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Batch median-centering of 7 batches was applied to raw concentrations of all 1 features.</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #555555;">The median CV change of all features in study samples was </span><span style="color: #555555; font-weight: bold;">-30.49%</span><span style="color: #555555;"> (range: -30.50% to -30.50%).  The median absolute CV of all features </span><span style="color: #555555; font-weight: bold;">decreased from</span><span style="color: #555555;"> </span><span style="color: #555555; font-weight: bold;">44.05% to 13.56%</span><span style="color: #555555;">.</span></span></span></code></pre></div>
-<p>Next, we inspect the data before and after batch correction. We
-observe that the batches are now aligned. Note: If the samples or other
-quality control types do not follow the reference samples, they may not
-be appropriately corrected.</p>
+<p>The data before and after batch correction are compared below. The
+batches are now aligned. Note: if the samples or other quality control
+types do not follow the reference samples, they may not be corrected
+appropriately.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span><span class="va">myexp</span>, variable <span class="op">=</span> <span class="st">"conc_before"</span>, rows_page <span class="op">=</span> <span class="fl">1</span>, cols_page <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 <p><img src="tutorial-06-batch-correction_files/figure-html/unnamed-chunk-3-1.png" class="r-plt" alt="RunScatter plots before and after batch correction
@@ -178,12 +187,11 @@ be appropriately corrected.</p>
 <div class="section level2">
 <h2 id="batch-centering-with-variance-scaling">Batch-centering with variance scaling<a class="anchor" aria-label="anchor" href="#batch-centering-with-variance-scaling"></a>
 </h2>
-<p>Above, we observe that while the batches are aligned, the spread
-(variance) of the data points varies considerably between the batches.
-We can correct this by scaling the variance via
-<code>correct_scale = TRUE</code>. As shown in the plot below, the
-variance of the data points now appears fairly consistent across the
-batches.</p>
+<p>Although the batches are aligned, the spread (variance) of the data
+points varies considerably between the batches. This can be corrected by
+scaling the variance via <code>correct_scale = TRUE</code>. In the plot
+below, the variance of the data points is now fairly consistent across
+the batches.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu">mrmhub</span><span class="fu">::</span><span class="fu"><a href="../reference/correct_batch_centering.html">correct_batch_centering</a></span><span class="op">(</span></span>
 <span>  <span class="va">myexp</span>, </span>
@@ -202,8 +210,8 @@ batches.</p>
 <div class="section level2">
 <h2 id="export-batch-corrected-data">Export batch-corrected data<a class="anchor" aria-label="anchor" href="#export-batch-corrected-data"></a>
 </h2>
-<p>Next, we can either continue to work with the corrected data using
-<code>MRMhub</code> functions or export the data.</p>
+<p>The corrected data can be processed further with <code>MRMhub</code>
+functions, or exported.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/save_dataset_csv.html">save_dataset_csv</a></span><span class="op">(</span></span>
 <span>  <span class="va">myexp</span>, </span>

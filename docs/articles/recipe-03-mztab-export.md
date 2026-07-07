@@ -1,4 +1,4 @@
-# Recipe: Export to mzTab-M
+# Import & Export mzTab-M
 
 **Level:** Intermediate  \|  **Output:** `.mzTab` file (mzTab-M 2.0.0-M)
  \|  **Requires:** a processed `MRMhubExperiment`
@@ -65,7 +65,7 @@ calibration samples) and every feature:
 | `SML` (summary) | one row per analyte, grouping its features; the quantifier drives the summary abundance and per-group mean / %CV |
 | `SME` (evidence) | a minimal identification stub per feature |
 
-You can enrich the metadata header with optional arguments:
+The metadata header can be enriched with optional arguments:
 
 ``` r
 
@@ -91,9 +91,9 @@ as the authoritative processing record.
 
 The output targets mzTab-M **2.0.0-M**. To confirm conformance, upload
 the file to the official HUPO-PSI / LIFS web validator at
-<https://apps.lifs-tools.org/mztabvalidator/>, or, if you have the
-reference R package [`rmzTabM`](https://lifs-tools.github.io/rmzTabM/)
-installed, parse it back:
+<https://apps.lifs-tools.org/mztabvalidator/>, or, if the reference R
+package [`rmzTabM`](https://lifs-tools.github.io/rmzTabM/) is installed,
+parse it back:
 
 ``` r
 
@@ -104,6 +104,33 @@ rmzTabM::extractSmallMoleculeFeatures(m)
 
 `mrmhub` itself has **no runtime dependency** on `rmzTabM` — the writer
 is self-contained.
+
+## Importing mzTab-M
+
+`import_data_mztab()` ingests mzTab-M produced by other tools — for
+example [Lipid Data Analyzer](http://genome.tugraz.at/lda2/), MS-DIAL or
+MZmine — into an `MRMhubExperiment`:
+
+``` r
+
+mexp <- MRMhubExperiment(title = "Imported lipidomics")
+mexp <- import_data_mztab(mexp, "LDA_export.mzTab")
+```
+
+Each Small Molecule Feature (`SMF`) becomes an mrmhub feature and each
+assay an analysis. The per-assay abundances are imported as
+`feature_intensity`, and feature identities (name, formula, neutral
+mass, m/z, retention time) are taken from the `SMF`/`SML` sections.
+Where one analyte is reported as several features (e.g. different
+adducts), the adduct is appended to keep `feature_id` unique
+(`Cer d18:1/16:0 | [M-H]-`).
+
+**Import is partial by nature.** mzTab-M carries a single abundance per
+feature, so internal-standard relationships, QC-type assignments, and
+calibration metadata are *not* present and must be supplied with
+[`add_metadata()`](https://slinghub.github.io/MRMhub/quant/reference/add_metadata.md).
+`study_variable` groups are imported best-effort as `batch_id` (mzTab-M
+has no analytical-batch concept).
 
 ## Next Steps
 

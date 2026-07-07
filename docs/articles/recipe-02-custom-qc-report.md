@@ -1,4 +1,4 @@
-# Recipe: Custom QC Report
+# Custom QC Report
 
 **Level:** Intermediate  \|  **Output:** Self-contained HTML report  \| 
 **Requires:** `gt`, `ggplot2`, `patchwork` (optional), `quarto` (for
@@ -33,14 +33,14 @@ mexp <- readRDS("results/mexp_processed.rds")
 ``` r
 
 summary_tbl <- tibble::tibble(
-  Metric = c("Total analyses", "Study samples (SST)", "QC samples",
+  Metric = c("Total analyses", "Study samples (SPL)", "QC samples",
              "Blanks", "Features (total)", "Features (passed QC)",
              "Batches", "Drift corrected?", "Batch corrected?"),
   Value = c(
     get_analysis_count(mexp),
-    mexp@annot_analyses |> filter(sample_type == "SST") |> nrow(),
-    mexp@annot_analyses |> filter(grepl("QC", sample_type)) |> nrow(),
-    mexp@annot_analyses |> filter(grepl("BLK", sample_type)) |> nrow(),
+    mexp@annot_analyses |> filter(qc_type == "SPL") |> nrow(),
+    mexp@annot_analyses |> filter(grepl("QC", qc_type)) |> nrow(),
+    mexp@annot_analyses |> filter(grepl("BLK", qc_type)) |> nrow(),
     nrow(mexp@annot_features),
     get_feature_count(mexp),
     length(unique(mexp@annot_analyses$batch_id)),
@@ -57,15 +57,15 @@ summary_tbl |> gt::gt() |> gt::tab_header(title = "Study Summary")
 ``` r
 
 cv_data <- mexp@metrics_qc |>
-  select(feature_id, cv_percent) |>
-  filter(!is.na(cv_percent))
+  select(feature_id, cv = norm_intensity_cv_bqc) |>
+  filter(!is.na(cv))
 
-ggplot(cv_data, aes(x = cv_percent)) +
+ggplot(cv_data, aes(x = cv)) +
   geom_histogram(binwidth = 5, fill = "#4a90a4", colour = "white") +
   geom_vline(xintercept = 30, linetype = "dashed", colour = "red") +
   labs(
     title = "QC CV Distribution",
-    subtitle = paste0(sum(cv_data$cv_percent <= 30), "/", nrow(cv_data),
+    subtitle = paste0(sum(cv_data$cv <= 30), "/", nrow(cv_data),
                       " features with CV \u2264 30%"),
     x = "CV (%)", y = "Count"
   ) +
@@ -78,12 +78,15 @@ ggplot(cv_data, aes(x = cv_percent)) +
 
 # Plot run scatter for the 4 features with highest CV
 top_cv_features <- cv_data |>
-  arrange(desc(cv_percent)) |>
+  arrange(desc(cv)) |>
   head(4) |>
   pull(feature_id)
 
 plots <- lapply(top_cv_features, function(feat) {
-  plot_runscatter(mexp, feature = feat, highlight_qc = TRUE) +
+  plot_runscatter(mexp,
+                  variable = "norm_intensity",
+                  include_feature_filter = feat,
+                  qc_types = c("BQC", "SPL")) +
     ggtitle(feat)
 })
 
@@ -97,22 +100,22 @@ if (requireNamespace("patchwork", quietly = TRUE)) {
 ``` r
 
 qc_table <- mexp@metrics_qc |>
-  select(feature_id, cv_percent, bias_percent, n_detected) |>
+  select(feature_id, norm_intensity_cv_bqc, normint_dratio_sd_bqc) |>
   mutate(
-    cv_pass = cv_percent <= 30,
-    bias_pass = abs(bias_percent) <= 20,
+    cv_pass = norm_intensity_cv_bqc <= 30,
+    dratio_pass = normint_dratio_sd_bqc <= 0.5,
     status = case_when(
-      cv_pass & bias_pass ~ "PASS",
-      !cv_pass & !bias_pass ~ "FAIL (CV + Bias)",
+      cv_pass & dratio_pass ~ "PASS",
+      !cv_pass & !dratio_pass ~ "FAIL (CV + D-ratio)",
       !cv_pass ~ "FAIL (CV)",
-      !bias_pass ~ "FAIL (Bias)"
+      !dratio_pass ~ "FAIL (D-ratio)"
     )
   ) |>
-  arrange(desc(cv_percent))
+  arrange(desc(norm_intensity_cv_bqc))
 
 qc_table |>
   gt::gt() |>
-  gt::fmt_number(columns = c(cv_percent, bias_percent), decimals = 1) |>
+  gt::fmt_number(columns = c(norm_intensity_cv_bqc, normint_dratio_sd_bqc), decimals = 1) |>
   gt::data_color(
     columns = status,
     fn = function(x) ifelse(x == "PASS", "#d4e8d4", "#f8d4d4")
@@ -179,7 +182,8 @@ quarto::quarto_render(
 
 ## Tips
 
-- **Self-contained HTML** — single file you can email or archive
+- **Self-contained HTML** — a single file that can be emailed or
+  archived
 - **Parameterize** the RDS path so the same template works for any study
 - **Date stamp** (`date: today`) for audit trail
 - **Session info** at the end for reproducibility

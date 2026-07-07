@@ -1,9 +1,9 @@
 # Data file structures
 
 This page shows the **expected layout** of each data file and what its
-columns mean, so you can recognise and prepare your input before
-importing. Pick the importer that matches the software that produced
-your peak table — see [Import and prepare data
+columns mean, so that the input can be recognised and prepared before
+importing. Pick the importer that matches the software that produced the
+peak table; see [Import and prepare data
 files](https://slinghub.github.io/MRMhub/quant/articles/manual-05a-which-importer.md)
 for the decision table.
 
@@ -14,15 +14,15 @@ bundled with the package
 Files fall into two groups:
 
 - **Vendor / tool exports** (MRMhub/INTEGRATOR, MassHunter, Skyline) —
-  the columns are produced by the software; you don’t edit them. Just
-  confirm you exported the right report.
-- **Generic CSV** (wide / long) — *you* build these, so the full column
-  reference is given.
+  the columns are produced by the software and are not edited manually.
+  Confirm that the correct report was exported.
+- **Generic CSV** (wide / long) — these are prepared manually, so the
+  full column reference is given.
 
 ## MRMhub / INTEGRATOR — long CSV/TSV
 
 INTEGRATOR’s long output: one row per analysis × feature. Tab-separated
-(`.tsv`) or comma-separated (`.csv`). This is the preferred format —
+(`.tsv`) or comma-separated (`.csv`). This is the preferred format;
 import with
 [`import_data_mrmhub()`](https://slinghub.github.io/MRMhub/quant/reference/import_data_mrmhub.md).
 
@@ -37,7 +37,7 @@ First 3 rows of `MRMhub_demo.tsv` (showing 6 of 18 columns) {.table}
 The file also carries `internal_standard`, `time_stamp`, transition
 columns (`precursor_mz`, `product_mz`, `collision_energy`, `polarity`),
 and integration columns (`height`, `FWHM`, `rt_int_start`,
-`rt_int_end`). You don’t prepare this file by hand — it comes from
+`rt_int_end`). This file is not prepared by hand; it is produced by
 INTEGRATOR. See [Data Import
 (detailed)](https://slinghub.github.io/MRMhub/quant/articles/manual-05-data-import.md).
 
@@ -56,8 +56,8 @@ row holds the actual sub-headers. Import with
 | 002\_…02.d | 002\_…02 | Sample | 4/12/18 18:39 | 668.6 | 369.3 | 10 | 7.16 | 7.16 | 4789505 | 0.080 |  |
 
 The `Method`/`Results` blocks repeat for every compound (quantifiers and
-qualifiers). MassHunter produces this layout — you don’t edit it. See
-[Data Import
+qualifiers). MassHunter produces this layout; it is not edited manually.
+See [Data Import
 (detailed)](https://slinghub.github.io/MRMhub/quant/articles/manual-05-data-import.md)
 for handling qualifier transitions and choosing the concentration
 column.
@@ -79,14 +79,14 @@ columns) {.table}
 
 `Replicate Name` becomes `analysis_id`, `Molecule Name` becomes
 `feature_id`, and transitions are identified by precursor/product name
-or *m/z*. Export this report from Skyline — see [Data Import
+or *m/z*. Export this report from Skyline; see [Data Import
 (detailed)](https://slinghub.github.io/MRMhub/quant/articles/manual-05-data-import.md).
 
 ## Generic spreadsheet (wide CSV)
 
 One row per sample, one column per feature. Import with
 [`import_data_csv_wide()`](https://slinghub.github.io/MRMhub/quant/reference/import_data_csv_wide.md),
-passing `variable_name` to say what the values are.
+passing `variable_name` to declare what the values represent.
 
 | analysis_id | qc_type | batch_id | S1P 18:1;O2 | S1P 18:2;O2 | S1P 18:0;O2 | S1P 16:1;O2 | S1P 17:1;O2 |
 |---:|:---|---:|---:|---:|---:|---:|---:|
@@ -131,7 +131,7 @@ First 3 rows of `plain_long_dataset.csv` (showing 6 of 18 columns)
 
 (The bundled example uses INTEGRATOR-style headers such as
 `raw_data_filename` and `rt_apex`, so it is imported with a
-`column_mapping` — see the example in
+`column_mapping`; see the example in
 [`import_data_csv_long()`](https://slinghub.github.io/MRMhub/quant/reference/import_data_csv_long.md).)
 
 Auto-detected columns:

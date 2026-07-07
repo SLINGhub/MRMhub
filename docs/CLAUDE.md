@@ -25,10 +25,22 @@ but are independent code bases:
   `integrator/src/*.py` is the legacy reference implementation.
   `integrator/MRMhub_plot.r` is a separate base-R script the executable
   shells out to for PDF plotting — **not** part of `mrmhub`, no
-  dependency on it.
-- `docs-site/` — Quarto site source (`_quarto.yml`, `*.qmd`) for the
-  project landing page / INTEGRATOR manual, published separately from
-  the pkgdown site.
+  dependency on it. `integrator/docs/` is the **independent multi-page
+  INTEGRATOR Quarto site**, published to `/integrator/` — co-located
+  with the tool it documents, just as QUANT’s pkgdown docs live with the
+  R package. Pages: `index.qmd` (overview), `quickstart.qmd`,
+  `setup.qmd` (download + per-project setup — INTEGRATOR is a portable
+  executable, *not* installed), `input-files.qmd`, `running.qmd`,
+  `algorithm.qmd` (peak-detection/integration method reference, built
+  from `source/description.md`), `viz.qmd`, `sharing.qmd`,
+  `msconvert.qmd`, shared `images/`; navbar (Home / Quick Start / Manual
+  ▾) + sidebar are defined in `integrator/docs/_quarto.yml`. These
+  `.qmd` use Quarto-native syntax (`::: {.callout-*}`, `.grid`) — unlike
+  the pkgdown articles.
+- `docs-site/` — Quarto site source for the **project landing page
+  only** (`index.qmd` — routes to INTEGRATOR + QUANT), published to the
+  Pages root. The INTEGRATOR manual lives in `integrator/docs/`, not
+  here.
 - `docs/` — generated pkgdown output (committed). Don’t hand-edit;
   regenerate with
   [`pkgdown::build_site()`](https://pkgdown.r-lib.org/reference/build_site.html)
@@ -45,12 +57,27 @@ The two tools talk only through files: INTEGRATOR emits `long.csv` /
 (R package) and `just build-rust` (INTEGRATOR). Install `just` with
 `brew install just`; `just --list` shows the menu.
 
-> **Published URL note:** the pkgdown site is served at
-> `https://slinghub.github.io/MRMhub/quant/` — that `/quant/` is a
-> deliberate *deploy subpath* (the Quarto `docs-site/` owns the Pages
-> root), independent of where the package source lives.
-> `_pkgdown.yml: url` is unchanged by the package living at the root;
-> don’t “fix” it.
+> **Published URL note:** the GitHub Pages site (`gh-pages` branch)
+> hosts **three independent sites** that share the branch: - **root**
+> `https://slinghub.github.io/MRMhub/` — the landing page (Quarto
+> `docs-site/`). - **`/integrator/`**
+> `https://slinghub.github.io/MRMhub/integrator/` — the INTEGRATOR
+> manual (Quarto `integrator/docs/`). - **`/quant/`**
+> `https://slinghub.github.io/MRMhub/quant/` — the QUANT pkgdown site
+> (matches `_pkgdown.yml: url`; don’t “fix” it).
+>
+> Two workflows build them: `.github/workflows/quarto.yaml` renders
+> **both** Quarto sites — landing → root (`clean: true`,
+> `clean-exclude: quant` + `integrator`) and INTEGRATOR → `/integrator/`
+> (`target-folder: integrator`, `clean` scoped there);
+> `.github/workflows/pkgdown.yaml` deploys QUANT → `/quant/`
+> (`target-folder: quant`, `clean` scoped there). The scoped cleans mean
+> no deploy clobbers another’s subfolder. Cross-links rely on this
+> layout: both the landing page and the pkgdown navbar link to
+> `/integrator/` (absolute URLs); the INTEGRATOR and landing sites link
+> to `/quant/`. After a structural change to the gh-pages layout,
+> trigger the `quarto` workflow once (it owns the root) to clear stale
+> files.
 
 ## Active documentation work
 
@@ -230,7 +257,7 @@ rename an article, update `_pkgdown.yml` too or it will be orphaned.
 deliberate, not accidental):
 
 - **Diagrams**: hand-rolled inline `<svg>` (see
-  `manual-00-architecture.Rmd`, `manual-00-key-concepts.Rmd`,
+  `manual-00-design-overview.Rmd`, `manual-00-key-concepts.Rmd`,
   `manual-05a-which-importer.Rmd`). Use the brand palette in
   `plan-workflowDiagrams.prompt.md` (steel blue `#5B8FA8`, warm orange
   `#D4914E`, muted green `#6B9E5E`, dusty rose `#C27171`, navy
@@ -241,13 +268,19 @@ deliberate, not accidental):
   `class = "compact stripe"` for anything filterable/sortable
   (glossaries, comparisons). Plain Markdown tables are fine for short
   reference matrices.
-- **Callouts**: Modest
-  `<div class="callout callout-{note|tip|caution}">...</div>` boxes
+- **Callouts**: pandoc **fenced-div** boxes —
+  `::: {.callout .callout-{note|tip|caution|getstarted}}` … `:::`
   (styles in `pkgdown/extra.css` — steel blue Note, warm orange Tip,
-  dusty rose Caution). Use sparingly — plain prose by default. Bootstrap
-  `alert-*` still renders but reads too loudly on onboarding pages.
-  **Never** use Quarto `::: callout-*` syntax — articles render through
-  pkgdown/rmarkdown, not Quarto.
+  dusty rose Caution). Pandoc renders these to
+  `<div class="callout callout-*">`, so they work through
+  pkgdown/rmarkdown *and* keep Markdown (links, code, lists) live
+  inside. Use sparingly — plain prose by default. **Always include the
+  base `.callout` class** (two classes): the single-class Quarto form
+  `::: {.callout-note}` is *not* styled by pkgdown (only Quarto renders
+  that). Prefer fenced-div callouts over Bootstrap `alert-*` boxes
+  (which read too loudly and have been migrated); raw
+  `<div class="callout …">` HTML also works but the fenced-div form is
+  the convention.
 - **Collapsibles**:
   `<details><summary><strong>Title</strong></summary> ... </details>`
   for “alternatives considered”, troubleshooting steps, full slot trees,
@@ -260,10 +293,9 @@ deliberate, not accidental):
   `_pkgdown.yml` in the same change. Orphan articles are the \#1 doc bug
   here.
 
-The Quarto `.qmd` files under `docs-site/` and
-`vignettes/articles/integrator-*.qmd` are a separate site (INTEGRATOR
-landing) and *can* use Quarto-native syntax — don’t cross-apply the
-pkgdown conventions there.
+The Quarto `.qmd` files under `docs-site/` (landing page) and
+`integrator/docs/` (INTEGRATOR manual) are separate sites and *can* use
+Quarto-native syntax — don’t cross-apply the pkgdown conventions there.
 
 ## Working on INTEGRATOR (`integrator/`)
 

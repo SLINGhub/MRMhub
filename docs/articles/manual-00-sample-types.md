@@ -2,8 +2,8 @@
 
 ## Why Sample Types Matter
 
-MRMhub uses the `sample_type` (or `qc_type`) column in your analysis
-annotation to determine which samples are used for:
+MRMhub uses the `qc_type` column in the analysis annotation to determine
+which samples are used for:
 
 - **Drift correction** — uses QC samples to model signal drift
 - **Batch correction** — uses QC samples to align batches
@@ -12,9 +12,8 @@ annotation to determine which samples are used for:
 - **Filtering** — excludes blanks and system suitability from final
   results
 
-**⚠ Critical:** Assigning the wrong label means MRMhub will use the
-wrong samples for corrections. Double-check your `sample_type` column
-before processing.
+**⚠ Critical:** Assigning the wrong label causes MRMhub to use the wrong
+samples for corrections. Check the `qc_type` column before processing.
 
 ## Sample Type Reference
 
@@ -22,8 +21,8 @@ before processing.
 
 | Label | Full Name | Role |
 |----|----|----|
-| `SST` | Study Sample (Test) | Your actual biological/clinical samples. These are the samples you want to quantify. |
-| `SPL` | Sample | Generic sample label (same as SST in most workflows) |
+| `SPL` | Study Sample | Your actual biological/clinical samples. These are the samples you want to quantify. |
+| `SST` | System Suitability Test | Injection used to verify instrument/system performance. Distinct from study samples; not reported as a result. |
 
 ### Quality Control Samples
 
@@ -70,14 +69,14 @@ before processing.
 
 ## Setting Sample Types in Your Annotation
 
-Your analysis annotation CSV must have a column called `sample_type` or
+The analysis annotation CSV must have a column called `sample_type` or
 `qc_type`:
 
     analysis_id,sample_type,batch_id,analysis_order
     Inj_001,SBLK,Batch_1,1
     Inj_002,QC,Batch_1,2
-    Inj_003,SST,Batch_1,3
-    Inj_004,SST,Batch_1,4
+    Inj_003,SPL,Batch_1,3
+    Inj_004,SPL,Batch_1,4
     ...
     Inj_010,QC,Batch_1,10
     Inj_080,QC,Batch_1,80
@@ -92,23 +91,24 @@ Your analysis annotation CSV must have a column called `sample_type` or
 
 ## Typical Batch Layout
 
-![](data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdib3g9IjAgMCA3MDAgOTAiIHN0eWxlPSJtYXgtd2lkdGg6IDcwMHB4OyB3aWR0aDogMTAwJTsgaGVpZ2h0OiBhdXRvOyBmb250LWZhbWlseTogLWFwcGxlLXN5c3RlbSwgQmxpbmtNYWNTeXN0ZW1Gb250LCAmIzM5O1NlZ29lIFVJJiMzOTssIHNhbnMtc2VyaWY7Ij48c3R5bGU+CiAgICAuYmwtYm94IHsgcng6IDQ7IHJ5OiA0OyBzdHJva2Utd2lkdGg6IDEuMjsgfQogICAgLmJsLXR4dCB7IGZvbnQtc2l6ZTogMTBweDsgZm9udC13ZWlnaHQ6IDYwMDsgZmlsbDogI2ZmZjsgdGV4dC1hbmNob3I6IG1pZGRsZTsgfQogICAgLmJsLWFubiB7IGZvbnQtc2l6ZTogOXB4OyBmaWxsOiAjNTU1OyB0ZXh0LWFuY2hvcjogbWlkZGxlOyB9CiAgPC9zdHlsZT4KPCEtLSBTQkxLIC0tPjxyZWN0IGNsYXNzPSJibC1ib3giIHg9IjUiIHk9IjIwIiB3aWR0aD0iNTAiIGhlaWdodD0iMzUiIGZpbGw9IiM0YTkwZDkiIHN0cm9rZT0iIzJjNWY5OSIgLz48dGV4dCBjbGFzcz0iYmwtdHh0IiB4PSIzMCIgeT0iNDIiPlNCTEs8L3RleHQ+PHRleHQgY2xhc3M9ImJsLWFubiIgeD0iMzAiIHk9IjcyIj5ibGFuazwvdGV4dD48IS0tIFRRQyAtLT48cmVjdCBjbGFzcz0iYmwtYm94IiB4PSI2NSIgeT0iMjAiIHdpZHRoPSI1MCIgaGVpZ2h0PSIzNSIgZmlsbD0iIzVhOGFhYSIgc3Ryb2tlPSIjM2E2YThhIiAvPjx0ZXh0IGNsYXNzPSJibC10eHQiIHg9IjkwIiB5PSI0MiI+VFFDPC90ZXh0Pjx0ZXh0IGNsYXNzPSJibC1hbm4iIHg9IjkwIiB5PSI3MiI+dGVjaDwvdGV4dD48IS0tIFFDIC0tPjxyZWN0IGNsYXNzPSJibC1ib3giIHg9IjEyNSIgeT0iMjAiIHdpZHRoPSI0NSIgaGVpZ2h0PSIzNSIgZmlsbD0iI2NjMzMzMyIgc3Ryb2tlPSIjOTkyMjIyIiAvPjx0ZXh0IGNsYXNzPSJibC10eHQiIHg9IjE0NyIgeT0iNDIiPlFDPC90ZXh0Pjx0ZXh0IGNsYXNzPSJibC1hbm4iIHg9IjE0NyIgeT0iNzIiPmFuY2hvcjwvdGV4dD48IS0tIFNTVCBibG9jayAtLT48cmVjdCBjbGFzcz0iYmwtYm94IiB4PSIxODAiIHk9IjIwIiB3aWR0aD0iMTgwIiBoZWlnaHQ9IjM1IiBmaWxsPSIjNjY2IiBzdHJva2U9IiM0NDQiIC8+PHRleHQgY2xhc3M9ImJsLXR4dCIgeD0iMjcwIiB5PSI0MiI+U1NUIFNTVCBTU1QgU1NUIFNTVCBTU1Q8L3RleHQ+PHRleHQgY2xhc3M9ImJsLWFubiIgeD0iMjcwIiB5PSI3MiI+c3R1ZHkgc2FtcGxlczwvdGV4dD48IS0tIFFDIG1pZCAtLT48cmVjdCBjbGFzcz0iYmwtYm94IiB4PSIzNzAiIHk9IjIwIiB3aWR0aD0iNDUiIGhlaWdodD0iMzUiIGZpbGw9IiNjYzMzMzMiIHN0cm9rZT0iIzk5MjIyMiIgLz48dGV4dCBjbGFzcz0iYmwtdHh0IiB4PSIzOTIiIHk9IjQyIj5RQzwvdGV4dD48dGV4dCBjbGFzcz0iYmwtYW5uIiB4PSIzOTIiIHk9IjcyIj5hbmNob3I8L3RleHQ+PCEtLSBTU1QgYmxvY2sgMiAtLT48cmVjdCBjbGFzcz0iYmwtYm94IiB4PSI0MjUiIHk9IjIwIiB3aWR0aD0iMTIwIiBoZWlnaHQ9IjM1IiBmaWxsPSIjNjY2IiBzdHJva2U9IiM0NDQiIC8+PHRleHQgY2xhc3M9ImJsLXR4dCIgeD0iNDg1IiB5PSI0MiI+U1NUIFNTVCBTU1QgU1NUPC90ZXh0PjwhLS0gUUMgZW5kIC0tPjxyZWN0IGNsYXNzPSJibC1ib3giIHg9IjU1NSIgeT0iMjAiIHdpZHRoPSI0NSIgaGVpZ2h0PSIzNSIgZmlsbD0iI2NjMzMzMyIgc3Ryb2tlPSIjOTkyMjIyIiAvPjx0ZXh0IGNsYXNzPSJibC10eHQiIHg9IjU3NyIgeT0iNDIiPlFDPC90ZXh0Pjx0ZXh0IGNsYXNzPSJibC1hbm4iIHg9IjU3NyIgeT0iNzIiPmFuY2hvcjwvdGV4dD48IS0tIFNCTEsgZW5kIC0tPjxyZWN0IGNsYXNzPSJibC1ib3giIHg9IjYxMCIgeT0iMjAiIHdpZHRoPSI1MCIgaGVpZ2h0PSIzNSIgZmlsbD0iIzRhOTBkOSIgc3Ryb2tlPSIjMmM1Zjk5IiAvPjx0ZXh0IGNsYXNzPSJibC10eHQiIHg9IjYzNSIgeT0iNDIiPlNCTEs8L3RleHQ+PHRleHQgY2xhc3M9ImJsLWFubiIgeD0iNjM1IiB5PSI3MiI+Ymxhbms8L3RleHQ+PCEtLSBBcnJvd3MgLS0+PGxpbmUgeDE9IjU1IiB5MT0iMzciIHgyPSI2NSIgeTI9IjM3IiBzdHJva2U9IiM5OTkiIHN0cm9rZS13aWR0aD0iMSI+PC9saW5lPjxsaW5lIHgxPSIxMTUiIHkxPSIzNyIgeDI9IjEyNSIgeTI9IjM3IiBzdHJva2U9IiM5OTkiIHN0cm9rZS13aWR0aD0iMSI+PC9saW5lPjxsaW5lIHgxPSIxNzAiIHkxPSIzNyIgeDI9IjE4MCIgeTI9IjM3IiBzdHJva2U9IiM5OTkiIHN0cm9rZS13aWR0aD0iMSI+PC9saW5lPjxsaW5lIHgxPSIzNjAiIHkxPSIzNyIgeDI9IjM3MCIgeTI9IjM3IiBzdHJva2U9IiM5OTkiIHN0cm9rZS13aWR0aD0iMSI+PC9saW5lPjxsaW5lIHgxPSI0MTUiIHkxPSIzNyIgeDI9IjQyNSIgeTI9IjM3IiBzdHJva2U9IiM5OTkiIHN0cm9rZS13aWR0aD0iMSI+PC9saW5lPjxsaW5lIHgxPSI1NDUiIHkxPSIzNyIgeDI9IjU1NSIgeTI9IjM3IiBzdHJva2U9IiM5OTkiIHN0cm9rZS13aWR0aD0iMSI+PC9saW5lPjxsaW5lIHgxPSI2MDAiIHkxPSIzNyIgeDI9IjYxMCIgeTI9IjM3IiBzdHJva2U9IiM5OTkiIHN0cm9rZS13aWR0aD0iMSI+PC9saW5lPjwvc3ZnPg==)
+![](data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdib3g9IjAgMCA3MDAgOTAiIHN0eWxlPSJtYXgtd2lkdGg6IDcwMHB4OyB3aWR0aDogMTAwJTsgaGVpZ2h0OiBhdXRvOyBmb250LWZhbWlseTogLWFwcGxlLXN5c3RlbSwgQmxpbmtNYWNTeXN0ZW1Gb250LCAmIzM5O1NlZ29lIFVJJiMzOTssIHNhbnMtc2VyaWY7Ij48c3R5bGU+CiAgICAuYmwtYm94IHsgcng6IDQ7IHJ5OiA0OyBzdHJva2Utd2lkdGg6IDEuMjsgfQogICAgLmJsLXR4dCB7IGZvbnQtc2l6ZTogMTBweDsgZm9udC13ZWlnaHQ6IDYwMDsgZmlsbDogI2ZmZjsgdGV4dC1hbmNob3I6IG1pZGRsZTsgfQogICAgLmJsLWFubiB7IGZvbnQtc2l6ZTogOXB4OyBmaWxsOiAjNTU1OyB0ZXh0LWFuY2hvcjogbWlkZGxlOyB9CiAgPC9zdHlsZT4KPCEtLSBTQkxLIC0tPjxyZWN0IGNsYXNzPSJibC1ib3giIHg9IjUiIHk9IjIwIiB3aWR0aD0iNTAiIGhlaWdodD0iMzUiIGZpbGw9IiM0YTkwZDkiIHN0cm9rZT0iIzJjNWY5OSIgLz48dGV4dCBjbGFzcz0iYmwtdHh0IiB4PSIzMCIgeT0iNDIiPlNCTEs8L3RleHQ+PHRleHQgY2xhc3M9ImJsLWFubiIgeD0iMzAiIHk9IjcyIj5ibGFuazwvdGV4dD48IS0tIFRRQyAtLT48cmVjdCBjbGFzcz0iYmwtYm94IiB4PSI2NSIgeT0iMjAiIHdpZHRoPSI1MCIgaGVpZ2h0PSIzNSIgZmlsbD0iIzVhOGFhYSIgc3Ryb2tlPSIjM2E2YThhIiAvPjx0ZXh0IGNsYXNzPSJibC10eHQiIHg9IjkwIiB5PSI0MiI+VFFDPC90ZXh0Pjx0ZXh0IGNsYXNzPSJibC1hbm4iIHg9IjkwIiB5PSI3MiI+dGVjaDwvdGV4dD48IS0tIFFDIC0tPjxyZWN0IGNsYXNzPSJibC1ib3giIHg9IjEyNSIgeT0iMjAiIHdpZHRoPSI0NSIgaGVpZ2h0PSIzNSIgZmlsbD0iI2NjMzMzMyIgc3Ryb2tlPSIjOTkyMjIyIiAvPjx0ZXh0IGNsYXNzPSJibC10eHQiIHg9IjE0NyIgeT0iNDIiPlFDPC90ZXh0Pjx0ZXh0IGNsYXNzPSJibC1hbm4iIHg9IjE0NyIgeT0iNzIiPmFuY2hvcjwvdGV4dD48IS0tIFNQTCBibG9jayAtLT48cmVjdCBjbGFzcz0iYmwtYm94IiB4PSIxODAiIHk9IjIwIiB3aWR0aD0iMTgwIiBoZWlnaHQ9IjM1IiBmaWxsPSIjNjY2IiBzdHJva2U9IiM0NDQiIC8+PHRleHQgY2xhc3M9ImJsLXR4dCIgeD0iMjcwIiB5PSI0MiI+U1BMIFNQTCBTUEwgU1BMIFNQTCBTUEw8L3RleHQ+PHRleHQgY2xhc3M9ImJsLWFubiIgeD0iMjcwIiB5PSI3MiI+c3R1ZHkgc2FtcGxlczwvdGV4dD48IS0tIFFDIG1pZCAtLT48cmVjdCBjbGFzcz0iYmwtYm94IiB4PSIzNzAiIHk9IjIwIiB3aWR0aD0iNDUiIGhlaWdodD0iMzUiIGZpbGw9IiNjYzMzMzMiIHN0cm9rZT0iIzk5MjIyMiIgLz48dGV4dCBjbGFzcz0iYmwtdHh0IiB4PSIzOTIiIHk9IjQyIj5RQzwvdGV4dD48dGV4dCBjbGFzcz0iYmwtYW5uIiB4PSIzOTIiIHk9IjcyIj5hbmNob3I8L3RleHQ+PCEtLSBTUEwgYmxvY2sgMiAtLT48cmVjdCBjbGFzcz0iYmwtYm94IiB4PSI0MjUiIHk9IjIwIiB3aWR0aD0iMTIwIiBoZWlnaHQ9IjM1IiBmaWxsPSIjNjY2IiBzdHJva2U9IiM0NDQiIC8+PHRleHQgY2xhc3M9ImJsLXR4dCIgeD0iNDg1IiB5PSI0MiI+U1BMIFNQTCBTUEwgU1BMPC90ZXh0PjwhLS0gUUMgZW5kIC0tPjxyZWN0IGNsYXNzPSJibC1ib3giIHg9IjU1NSIgeT0iMjAiIHdpZHRoPSI0NSIgaGVpZ2h0PSIzNSIgZmlsbD0iI2NjMzMzMyIgc3Ryb2tlPSIjOTkyMjIyIiAvPjx0ZXh0IGNsYXNzPSJibC10eHQiIHg9IjU3NyIgeT0iNDIiPlFDPC90ZXh0Pjx0ZXh0IGNsYXNzPSJibC1hbm4iIHg9IjU3NyIgeT0iNzIiPmFuY2hvcjwvdGV4dD48IS0tIFNCTEsgZW5kIC0tPjxyZWN0IGNsYXNzPSJibC1ib3giIHg9IjYxMCIgeT0iMjAiIHdpZHRoPSI1MCIgaGVpZ2h0PSIzNSIgZmlsbD0iIzRhOTBkOSIgc3Ryb2tlPSIjMmM1Zjk5IiAvPjx0ZXh0IGNsYXNzPSJibC10eHQiIHg9IjYzNSIgeT0iNDIiPlNCTEs8L3RleHQ+PHRleHQgY2xhc3M9ImJsLWFubiIgeD0iNjM1IiB5PSI3MiI+Ymxhbms8L3RleHQ+PCEtLSBBcnJvd3MgLS0+PGxpbmUgeDE9IjU1IiB5MT0iMzciIHgyPSI2NSIgeTI9IjM3IiBzdHJva2U9IiM5OTkiIHN0cm9rZS13aWR0aD0iMSI+PC9saW5lPjxsaW5lIHgxPSIxMTUiIHkxPSIzNyIgeDI9IjEyNSIgeTI9IjM3IiBzdHJva2U9IiM5OTkiIHN0cm9rZS13aWR0aD0iMSI+PC9saW5lPjxsaW5lIHgxPSIxNzAiIHkxPSIzNyIgeDI9IjE4MCIgeTI9IjM3IiBzdHJva2U9IiM5OTkiIHN0cm9rZS13aWR0aD0iMSI+PC9saW5lPjxsaW5lIHgxPSIzNjAiIHkxPSIzNyIgeDI9IjM3MCIgeTI9IjM3IiBzdHJva2U9IiM5OTkiIHN0cm9rZS13aWR0aD0iMSI+PC9saW5lPjxsaW5lIHgxPSI0MTUiIHkxPSIzNyIgeDI9IjQyNSIgeTI9IjM3IiBzdHJva2U9IiM5OTkiIHN0cm9rZS13aWR0aD0iMSI+PC9saW5lPjxsaW5lIHgxPSI1NDUiIHkxPSIzNyIgeDI9IjU1NSIgeTI9IjM3IiBzdHJva2U9IiM5OTkiIHN0cm9rZS13aWR0aD0iMSI+PC9saW5lPjxsaW5lIHgxPSI2MDAiIHkxPSIzNyIgeDI9IjYxMCIgeTI9IjM3IiBzdHJva2U9IiM5OTkiIHN0cm9rZS13aWR0aD0iMSI+PC9saW5lPjwvc3ZnPg==)
 
 ## Colour Coding
 
 MRMhub uses consistent colours for sample types in all plots:
 
-| Type    | Colour      |     |
-|---------|-------------|-----|
-| BQC/QC  | Red         |     |
-| TQC     | Blue        |     |
-| PQC     | Orange      |     |
-| LQC/MQC | Dark orange |     |
-| HQC     | Green       |     |
-| SBLK    | Blue        |     |
-| TBLK    | Red         |     |
-| SST/SPL | Grey        |     |
-| CAL     | Purple      |     |
+| Type    | Colour       |     |
+|---------|--------------|-----|
+| BQC/QC  | Red          |     |
+| TQC     | Blue         |     |
+| PQC     | Orange       |     |
+| LQC/MQC | Dark orange  |     |
+| HQC     | Green        |     |
+| SBLK    | Blue         |     |
+| TBLK    | Red          |     |
+| SPL     | Grey         |     |
+| SST     | Yellow-green |     |
+| CAL     | Purple       |     |
 
 ## Next Steps
 

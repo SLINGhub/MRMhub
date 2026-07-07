@@ -27,7 +27,7 @@
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
-    <nav class="navbar navbar-expand-lg fixed-top bg-primary" data-bs-theme="dark" aria-label="Site navigation"><div class="container">
+    <nav class="navbar navbar-expand-lg fixed-top bg-dark" data-bs-theme="dark" aria-label="Site navigation"><div class="container">
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
@@ -43,59 +43,60 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-get-started" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Get Started</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-get-started">
-<li><a class="dropdown-item" href="../articles/manual-00-get-started.html">Installation</a></li>
+<li><a class="dropdown-item" href="../articles/manual-00-installation.html">Installation</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-00-architecture.html">Design Overview</a></li>
     <li><a class="dropdown-item" href="../articles/manual-00-key-concepts.html">Key Concepts &amp; Glossary</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-00-sample-types.html">Sample Types &amp; QC Roles</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-11-cheatsheet.html">Function Cheatsheet</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-05a-which-importer.html">Import and prepare data files</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-00-integrator-vs-quant.html">INTEGRATOR vs QUANT</a></li>
-    <li><hr class="dropdown-divider"></li>
-    <li><a class="external-link dropdown-item" href="https://slinghub.github.io/MRMhub/integrator-manual.html">Need peak integration first?</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-09-troubleshooting.html">Troubleshooting &amp; FAQ</a></li>
   </ul>
 </li>
 <li class="nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-workflows" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Workflows</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-workflows">
-<li><h6 class="dropdown-header" data-toc-skip>Tutorials</h6></li>
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-tutorials" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Tutorials</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-tutorials">
+<li><a class="dropdown-item" href="../articles/tutorial-01-prep-data.html">Preparing &amp; importing data</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-02-basic-workflow.html">Basic MRMhub workflow</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-03-lipidomics-workflow.html">Lipidomics (full workflow)</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-08-multi-batch.html">Multi-Batch Study</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-04-drift-correction.html">Drift correction</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-05-run-scatter.html">RunScatter plots</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-06-batch-correction.html">Batch correction</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-10-metadata-validation.html">Validating metadata</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-07-calibration-reference.html">Calibration by reference sample</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-08-multi-batch.html">Multi-batch study</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-09-pca-exploration.html">QC exploration with PCA</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-10-metadata-validation.html">Validating metadata</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-11-interference-correction.html">Interference correction</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Recipes</h6></li>
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-07-calibration-reference.html">Calibration by reference sample</a></li>
-    <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC Report</a></li>
-    <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Export to mzTab-M</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
   </ul>
 </li>
 <li class="active nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-advanced" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Advanced</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-advanced">
-<li><h6 class="dropdown-header" data-toc-skip>Data Model</h6></li>
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-manual" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Manual</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-manual">
+<li><h6 class="dropdown-header" data-toc-skip>Concepts &amp; Design</h6></li>
+    <li><a class="dropdown-item" href="../articles/manual-00-design-overview.html">Design Overview</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-00-integrator-vs-quant.html">INTEGRATOR vs QUANT</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-00-sample-types.html">Sample Types &amp; QC Roles</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Data Model</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-01-data-structure.html">Data Structures</a></li>
     <li><a class="dropdown-item" href="../articles/manual-02-data-identifiers.html">Data Identifiers</a></li>
     <li><a class="dropdown-item" href="../articles/manual-03-feature-variables.html">Feature Variables</a></li>
     <li><a class="dropdown-item" href="../articles/manual-04-mrmhub-experiment.html">MRMhubExperiment Object</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Import &amp; Metadata</h6></li>
+    <li><a class="dropdown-item" href="../articles/manual-05a-which-importer.html">Import &amp; prepare data files</a></li>
     <li><a class="dropdown-item" href="../articles/manual-05-data-import.html">Data Import</a></li>
     <li><a class="dropdown-item" href="../articles/manual-05b-data-file-structures.html">Data File Structures</a></li>
     <li><a class="dropdown-item" href="../articles/manual-06-metadata-import.html">Metadata Import</a></li>
     <li><a class="dropdown-item" href="../articles/manual-06a-metadata-table-structures.html">Metadata Table Structures</a></li>
     <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Correction Methods</h6></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Corrections</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-07-drift-batch-correction.html">Drift &amp; Batch Correction</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
+    <li><a class="dropdown-item" href="../articles/manual-11-cheatsheet.html">Function Cheatsheet</a></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-09-troubleshooting.html">Troubleshooting &amp; FAQ</a></li>
     <li><a class="dropdown-item" href="../articles/manual-10-design-decisions.html">Design Decisions</a></li>
   </ul>
 </li>
@@ -103,6 +104,7 @@
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
       </ul>
 <ul class="navbar-nav">
+<li class="nav-item"><a class="external-link nav-link" href="https://slinghub.github.io/MRMhub/">← MRMhub home</a></li>
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
@@ -129,9 +131,9 @@
     
     
 <p>This page shows the <strong>expected layout</strong> of each data
-file and what its columns mean, so you can recognise and prepare your
-input before importing. Pick the importer that matches the software that
-produced your peak table — see <a href="manual-05a-which-importer.html">Import and prepare data files</a>
+file and what its columns mean, so that the input can be recognised and
+prepared before importing. Pick the importer that matches the software
+that produced the peak table; see <a href="manual-05a-which-importer.html">Import and prepare data files</a>
 for the decision table.</p>
 <p>The previews below are the actual first rows of the example files
 bundled with the package
@@ -140,18 +142,18 @@ bundled with the package
 <ul>
 <li>
 <strong>Vendor / tool exports</strong> (MRMhub/INTEGRATOR,
-MassHunter, Skyline) — the columns are produced by the software; you
-don’t edit them. Just confirm you exported the right report.</li>
+MassHunter, Skyline) — the columns are produced by the software and are
+not edited manually. Confirm that the correct report was exported.</li>
 <li>
-<strong>Generic CSV</strong> (wide / long) — <em>you</em> build
-these, so the full column reference is given.</li>
+<strong>Generic CSV</strong> (wide / long) — these are prepared
+manually, so the full column reference is given.</li>
 </ul>
 <div class="section level2">
 <h2 id="str-mrmhub">MRMhub / INTEGRATOR — long CSV/TSV<a class="anchor" aria-label="anchor" href="#str-mrmhub"></a>
 </h2>
 <p>INTEGRATOR’s long output: one row per analysis × feature.
 Tab-separated (<code>.tsv</code>) or comma-separated
-(<code>.csv</code>). This is the preferred format — import with <a href="../reference/import_data_mrmhub.html"><code>import_data_mrmhub()</code></a>.</p>
+(<code>.csv</code>). This is the preferred format; import with <a href="../reference/import_data_mrmhub.html"><code>import_data_mrmhub()</code></a>.</p>
 <table class="table">
 <caption>First 3 rows of <code>MRMhub_demo.tsv</code> (showing 6 of 18
 columns)</caption>
@@ -203,7 +205,7 @@ columns)</caption>
 <code>product_mz</code>, <code>collision_energy</code>,
 <code>polarity</code>), and integration columns (<code>height</code>,
 <code>FWHM</code>, <code>rt_int_start</code>, <code>rt_int_end</code>).
-You don’t prepare this file by hand — it comes from INTEGRATOR. See <a href="manual-05-data-import.html">Data Import (detailed)</a>.</p>
+This file is not prepared by hand; it is produced by INTEGRATOR. See <a href="manual-05-data-import.html">Data Import (detailed)</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="str-masshunter">Agilent MassHunter Quant — wide CSV<a class="anchor" aria-label="anchor" href="#str-masshunter"></a>
@@ -340,10 +342,10 @@ Sample
 </tbody>
 </table>
 <p>The <code>Method</code>/<code>Results</code> blocks repeat for every
-compound (quantifiers and qualifiers). MassHunter produces this layout —
-you don’t edit it. See <a href="manual-05-data-import.html">Data Import
-(detailed)</a> for handling qualifier transitions and choosing the
-concentration column.</p>
+compound (quantifiers and qualifiers). MassHunter produces this layout;
+it is not edited manually. See <a href="manual-05-data-import.html">Data
+Import (detailed)</a> for handling qualifier transitions and choosing
+the concentration column.</p>
 </div>
 <div class="section level2">
 <h2 id="str-skyline">Skyline (small molecule) — long CSV<a class="anchor" aria-label="anchor" href="#str-skyline"></a>
@@ -400,13 +402,14 @@ columns)</caption>
 <p><code>Replicate Name</code> becomes <code>analysis_id</code>,
 <code>Molecule Name</code> becomes <code>feature_id</code>, and
 transitions are identified by precursor/product name or <em>m/z</em>.
-Export this report from Skyline — see <a href="manual-05-data-import.html">Data Import (detailed)</a>.</p>
+Export this report from Skyline; see <a href="manual-05-data-import.html">Data Import (detailed)</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="str-csv-wide">Generic spreadsheet (wide CSV)<a class="anchor" aria-label="anchor" href="#str-csv-wide"></a>
 </h2>
 <p>One row per sample, one column per feature. Import with <a href="../reference/import_data_csv_wide.html"><code>import_data_csv_wide()</code></a>,
-passing <code>variable_name</code> to say what the values are.</p>
+passing <code>variable_name</code> to declare what the values
+represent.</p>
 <table class="table">
 <caption>First 3 rows of <code>plain_wide_dataset.csv</code>
 </caption>
@@ -581,7 +584,7 @@ of 18 columns)</caption>
 </table>
 <p>(The bundled example uses INTEGRATOR-style headers such as
 <code>raw_data_filename</code> and <code>rt_apex</code>, so it is
-imported with a <code>column_mapping</code> — see the example in <a href="../reference/import_data_csv_long.html"><code>import_data_csv_long()</code></a>.)</p>
+imported with a <code>column_mapping</code>; see the example in <a href="../reference/import_data_csv_long.html"><code>import_data_csv_long()</code></a>.)</p>
 <p>Auto-detected columns:</p>
 <table class="table">
 <colgroup>

@@ -1,13 +1,17 @@
 # Lipidomics Data Processing
 
 This tutorial illustrates a postprocessing and quality control workflow
-starting from a preprocessing data from an lipidomics analysis. Starting
+starting from a preprocessing data from a lipidomics analysis. Starting
 from peak areas, the aim is to produce a curated dataset with lipid
 species concentrations that is ready for subsequent statistical
-analysss. This post-processing will include an assessment of the
+analysis. This post-processing will include an assessment of the
 analytical and data quality of the lipidomics analysis, followed by
 normalisation/quantification, feature filtering and reporting of the
 dataset.
+
+**Time:** ~45 min  \|  **Level:** Advanced  \|  **Prerequisites:**
+[Basic
+workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md)
 
 ``` r
 
@@ -43,10 +47,10 @@ myexp <- import_data_mrmhub(data = myexp, path = data_path, import_metadata = TR
 
 ## 2. A glimpse on the imported data
 
-Let us examine the imported data by executing the code below or by
-entering the command `View(myexp@dataset_orig)` in the console. As can
-be observed, the data is in long format, thereby enabling the user to
-view multiple parameters for each analysis-feature pair.
+Examine the imported data by executing the code below or by entering the
+command `View(myexp@dataset_orig)` in the console. The data is in long
+format, which allows multiple parameters to be viewed for each
+analysis-feature pair.
 
 Exercises
 
@@ -55,7 +59,7 @@ Exercises
 
 ``` r
 
-print(myexp@dataset) # Better use `get_rawdata(mexp, "original")`
+print(myexp@dataset) # Better use `get_analyticaldata(mexp, annotated = TRUE)`
 #> # A tibble: 250,997 × 20
 #>    analysis_order analysis_id  acquisition_time_stamp qc_type batch_id sample_id
 #>             <int> <chr>        <dttm>                 <chr>   <chr>    <chr>    
@@ -152,10 +156,10 @@ plot_rt_vs_chain(
 
 ## 6. Signal trends of Internal Standards
 
-We can look at the internal standards (ISTDs) in all samples across all
-six batches to see how the analyses went. The same ISTD amount was
-spiked into each sample (except `SBLK`) so we should expect the same
-intensities in all samples and sample types.
+We can examine the internal standards (ISTDs) in all samples across all
+six batches to assess how the analyses performed. The same ISTD amount
+was spiked into each sample (except `SBLK`), so the same intensities are
+expected in all samples and sample types.
 
 Exercises
 
@@ -299,7 +303,7 @@ plot_pca(
   include_istd = FALSE)
 #> ! 2 features contained missing or non-numeric values and were exluded.
 #> ℹ The PCA was calculated based on `feature_intensity` values of 423 features.
-#> ggrepel: 10000 iterations in 0.002784s, 5 overlaps. Consider increasing 'max.iter'.
+#> ggrepel: 10000 iterations in 0.002804s, 5 overlaps. Consider increasing 'max.iter'.
 ```
 
 ![PCA
@@ -314,7 +318,7 @@ decided to remove it from all downstream processing via the function
 Exercises
 
 > What do we now see in the new PCA plot? Explore also different PCA
-> dimensions (by modifying `pca_dim`).
+> dimensions (by modifying `pca_dims`).
 
 ``` r
 
@@ -327,7 +331,7 @@ plot_pca(
   data = myexp,
   variable = "intensity",
   filter_data = FALSE,
-  pca_dim = c(1,2),
+  pca_dims = c(1,2),
   labels_threshold_mad = 3,
   qc_types = c("SPL", "BQC", "TQC"),
   log_transform = TRUE,
@@ -336,7 +340,7 @@ plot_pca(
   shared_labeltext_hide = NA)
 #> ! 2 features contained missing or non-numeric values and were exluded.
 #> ℹ The PCA was calculated based on `feature_intensity` values of 423 features.
-#> ggrepel: 10000 iterations in 0.006511s, 7 overlaps. Consider increasing 'max.iter'.
+#> ggrepel: 10000 iterations in 0.006905s, 7 overlaps. Consider increasing 'max.iter'.
 ```
 
 ![PCA
@@ -344,7 +348,7 @@ plot](tutorial-03-lipidomics-workflow_files/figure-html/outlier-removal-1.png)
 
 ## 11. Response curves
 
-A linear response in quantification is a prerequisite for to compared
+A linear response in quantification is a prerequisite for comparing
 differences in analyte concentrations between samples. Given the
 considerable dynamic range of plasma lipid species abundances and the
 fact that the class-specific ISTD is spiked at a single concentration,
@@ -399,10 +403,10 @@ plots](tutorial-03-lipidomics-workflow_files/figure-html/responsecurves-1.png)
 
 As demonstrated in the course presentation, there are several instances
 where the peaks of interest were co-integrated with the interfering
-isotope peaks of other lipid species. These intereferences can be
+isotope peaks of other lipid species. These interferences can be
 subtracted from the raw intensities (areas) using the below function,
-which utilises information from the metadata. The relative abundances
-for the interfering fragments were obtained using LICAR
+which uses information from the metadata. The relative abundances for
+the interfering fragments were obtained using LICAR
 (<https://github.com/SLINGhub/LICAR>).
 
 Exercises
@@ -492,12 +496,15 @@ plot](tutorial-03-lipidomics-workflow_files/figure-html/norm-effects-1.png)
 
 ## 15. Drift correction
 
-We’re going to use a Gaussian kernel smoothing based on the study sample
-to correct for any drifts in the concentration data within each batch.
-The summary returned by the function below isn’t meant as actual
-diagnostics of the fit, but rather to understand if the fit caused any
-major artefacts. There is also an option to scale along the fit by
-setting `scale_smooth = TRUE`.
+A Gaussian kernel smoothing based on the study samples is used to
+correct for any drifts in the concentration data within each batch. Note
+that study-sample-based smoothing is only appropriate for large,
+well-randomised sample sets; the QC-based convention (Broadhurst et
+al. 2018) instead fits the drift trend on dedicated QC injections. The
+summary returned by the function below is not intended as diagnostics of
+the fit, but rather to indicate whether the fit caused any major
+artefacts. An option to scale along the fit is available by setting
+`scale_smooth = TRUE`.
 
 ``` r
 
@@ -553,10 +560,10 @@ my_trend_plot <- function(variable, feature){
 
 Exercises
 
-> Let’s use this before defined function to plot the trends of one
-> selected example before and after within-batch smoothing. What may
-> have caused such a drift in the raw concentrations? Do the QC samples
-> follow the trend of the sample? Look also at other lipid species.
+> Use the function defined above to plot the trends of one selected
+> example before and after within-batch smoothing. What may have caused
+> such a drift in the raw concentrations? Do the QC samples follow the
+> trend of the sample? Look also at other lipid species.
 >
 > Try changing `batch_wise = FALSE` in the code chunk above with
 > [`correct_drift_gaussiankernel()`](https://slinghub.github.io/MRMhub/quant/reference/correct_drift_gaussiankernel.md)
@@ -585,12 +592,13 @@ my_trend_plot("conc", "PC 40:8")
 ## 16. Batch-effect correction
 
 As we observed, the trend lines of the different batches are not
-aligned. We will use `correct_batcheffects()` to correct for median
-center (location) and scale differences between the batches. The define
-that the correction should be based on the study samples medians. An
-optional scale correction can be performed by setting
-`correct_scale = FALSE`. After the correction we directly plot our
-example lipid species again.
+aligned. We will use
+[`correct_batch_centering()`](https://slinghub.github.io/MRMhub/quant/reference/correct_batch_centering.md)
+to correct for median center (location) and scale differences between
+the batches. The define that the correction should be based on the study
+samples medians. An optional scale correction can be performed by
+setting `correct_scale = TRUE`. After the correction we directly plot
+our example lipid species again.
 
 Exercises
 
@@ -626,8 +634,9 @@ blanks, as they can exhibit random concentrations when signals of
 features and internal standards are in close proximity or below the
 limit of detection. The corresponding PDF can be accessed within the
 `output` subfolder. Use `filt_` arguments to include or exclude specific
-analytes. The filter can use regular expressions (regex). (Hint: try
-using ChatGPT to generate more complex regex-based filters).
+analytes. The filter can use regular expressions (regex). A language
+model such as ChatGPT can assist in generating more complex regex-based
+filters.
 
 Exercises
 
@@ -789,12 +798,12 @@ Exercises
 
 mrmhub::save_report_xlsx(myexp, path = tempfile(fileext = ".xlsx"))
 #> Saving report to disk - please wait...
-#> ✔ The data processing report of experiment 'sPerfect' has been saved to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpEADk95/file148a15baf7fc8.xlsx'.
+#> ✔ The data processing report of experiment 'sPerfect' has been saved to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpmKOX5H/filec74d6faaceee.xlsx'.
 ```
 
-You can also save specific data subsets as a clean flat, wide CSV file.
-This is how we shared the data for the statistical analysis that will be
-presented in the next part of this workshop!
+Specific data subsets can also be saved as a clean flat, wide CSV file.
+This is the format used to share the data for the statistical analysis
+presented in the next part of this workshop.
 
 Exercises
 
@@ -810,7 +819,7 @@ mrmhub::save_dataset_csv(
   qc_types = "SPL", 
   include_qualifier = FALSE,
   filter_data = TRUE)
-#> ✔ Concentration values for 377 analyses and 324 features have been exported to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpEADk95/file148a14997b413.csv'.
+#> ✔ Concentration values for 377 analyses and 324 features have been exported to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpmKOX5H/filec74d5db55445.csv'.
 ```
 
 ## 22. Sharing the `MRMhubExperiment` dataset
@@ -818,8 +827,8 @@ mrmhub::save_dataset_csv(
 The `myexp` object can be saved as an `RDS` file and shared. `RDS` files
 are serialized R variables/objects that can be opened in R by anyone,
 even in the absence of `mrmhub` package. The imported `MRMhubExperiment`
-object can also be utilized for re-processing, plotting, or inspection
-using the `mrmhub` package.
+object can also be used for re-processing, plotting, or inspection using
+the `mrmhub` package.
 
 Exercises
 
@@ -868,3 +877,15 @@ print(myexp)
 #> • Analyses manually excluded (`analysis_id`): Longit_batch6_51
 #> • Features manually excluded (`feature_id`): ✖
 ```
+
+## Next Steps
+
+- [Drift
+  Correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.md)
+  — drift correction methods and diagnostics
+- [Batch
+  Correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-06-batch-correction.md)
+  — inter-batch correction options
+- [External Calibration &
+  QC](https://slinghub.github.io/MRMhub/quant/articles/recipe-01-ext-calibration-qc.md)
+  — quantify with external calibration curves

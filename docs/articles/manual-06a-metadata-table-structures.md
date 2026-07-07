@@ -1,8 +1,8 @@
 # Metadata table structures
 
-You prepare the metadata tables yourself, so this page documents **every
-column and what it is for**. Each importer accepts the same three input
-modes — a **CSV file** (`path =`), a **sheet in an Excel workbook**
+The metadata tables are prepared manually, so this page documents every
+column and its purpose. Each importer accepts the same three input modes
+— a **CSV file** (`path =`), a **sheet in an Excel workbook**
 (`path =` + `sheet =`), or an in-memory **`data.frame`** (`table =`).
 
 **Get blank templates for all these tables.** Save a ready-made
@@ -14,7 +14,7 @@ save_metadata_templates()              # Individual metadata tables (XLSX)
 save_metadata_msorganiser_template()   # msorganizer metadata template (XLSX)
 ```
 
-Identifier columns must line up across tables: `analysis_id` /
+Identifier columns must be consistent across tables: `analysis_id` /
 `sample_id` match the analysis metadata and the data; `analyte_id` links
 features to QC concentrations; `istd_feature_id` and `feature_id`
 reference the feature metadata.

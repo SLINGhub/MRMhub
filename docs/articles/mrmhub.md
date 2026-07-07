@@ -9,27 +9,27 @@ v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/li
 coverage](https://codecov.io/gh/SLINGhub/MRMhub/branch/main/graph/badge.svg)](https://app.codecov.io/gh/SLINGhub/MRMhub?branch=main)
 [![Platform](https://img.shields.io/badge/platform-linux%20%7C%20osx%20%7C%20win-lightgrey)](https://github.com/SLINGhub/MRMhub)
 
-## Overview TEST
+## Overview
 
 MRMhub is a set of tools for reproducible raw data processing,
 post-processing, quality control, and reporting of targeted quantitative
 small-molecule mass spectrometry experiments using Multiple Reaction
 Monitoring (MRM). The platform includes two complementary tools:
 
-- **INTEGRATOR**: Python application for efficient and automated raw
-  data processing, i.e., peak detection, picking, and integration.
+- **INTEGRATOR**: standalone application for automated peak detection,
+  picking, and integration from mzML files.
 
 - **QUANT**: R package providing a function library for data post-
-  processing, including quantitation, data corrections, comprehensive
-  quality control, and reporting.
+  processing, including quantitation, data corrections, quality control,
+  and reporting.
 
 The modular functionalities and defined data structures support diverse
 analytical designs, data formats, and processing tasks, as found in
 metabolomics, lipidomics and other quantitative small molecule analyses.
 `MRMhub` is intended for both analytical and bioinformatics scientists
-and facilitates collaboration between them. It enables the creation of
+and supports collaboration between them. It enables the creation of
 efficient, customizable, supervisable, and documented end-to-end data
-processing workflows through intuitive functions and data objects.
+processing workflows through its functions and data objects.
 
 ## Usage
 
@@ -40,8 +40,8 @@ page](https://github.com/SLINGhub/MRMhub/releases). Choose the
 appropriate version for your operating system (Windows, macOS, or Linux)
 and download the corresponding executable file. Unzip the downloaded
 file and double-click the executable to launch the application. Refer to
-the [Documentation](https://slinghub.github.io/mrmhub/) for detailed
-instructions on how to use INTEGRATOR.
+the [Documentation](https://slinghub.github.io/MRMhub/integrator/) for
+detailed instructions on how to use INTEGRATOR.
 
 #### QUANT (Postprocessing and Quality Control)
 
@@ -49,20 +49,21 @@ Install the `mrmhub` package from Github using the following command:
 
 ``` r
 
-if (!require("remotes")) install.packages("remotes")
-remotes::install_github("SLINGhub/MRMhub")
+if (!require("pak")) install.packages("pak")
+pak::pak("SLINGhub/MRMhub")
+library(mrmhub); mrmhub::check_setup()
 ```
 
-Load the package in your R session via
-[`library(mrmhub)`](https://github.com/SLINGhub/MRMhub). For detailed
-usage instructions and examples, refer to the
-[Documentation](https://slinghub.github.io/mrmhub/).
+`pak` resolves locked packages and parallelises downloads;
+`remotes::install_github("SLINGhub/MRMhub")` is an equivalent fallback.
+For detailed usage instructions and examples, refer to the
+[Documentation](https://slinghub.github.io/MRMhub/quant/).
 
 ## Documentation
 
 See the online Documentation on
-[https://slinghub.github.io/mrmhub](https://slinghub.github.io/mrmhub/)
-for detailed information on installation, usage, and examples of MRMhub.
+<https://slinghub.github.io/MRMhub/quant/> for detailed information on
+installation, usage, and examples of MRMhub.
 
 ## Contributing
 
@@ -97,3 +98,14 @@ Reporting unauthorized commercial use and/or further enquiries
 If you become aware of any unauthorised commercial use of this source
 code and models or have any questions regarding licensing terms, please
 contact Jonathan Tan ( <jonathan_tan@nus.edu.sg> ).
+
+## Next Steps
+
+- [Installation](https://slinghub.github.io/MRMhub/quant/articles/manual-00-installation.html)
+  — requirements and setup
+- [Key Concepts &
+  Glossary](https://slinghub.github.io/MRMhub/quant/articles/manual-00-key-concepts.html)
+  — core terminology and the MRMhubExperiment object
+- [Your First
+  Analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.html)
+  — a short end-to-end walkthrough

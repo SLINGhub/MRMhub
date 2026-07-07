@@ -29,7 +29,7 @@ quality control and data processing.
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
-    <nav class="navbar navbar-expand-lg fixed-top bg-primary" data-bs-theme="dark" aria-label="Site navigation"><div class="container">
+    <nav class="navbar navbar-expand-lg fixed-top bg-dark" data-bs-theme="dark" aria-label="Site navigation"><div class="container">
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
@@ -42,62 +42,63 @@ quality control and data processing.
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="active nav-item dropdown">
+<li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-get-started" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Get Started</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-get-started">
-<li><a class="dropdown-item" href="../articles/manual-00-get-started.html">Installation</a></li>
+<li><a class="dropdown-item" href="../articles/manual-00-installation.html">Installation</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-00-architecture.html">Design Overview</a></li>
     <li><a class="dropdown-item" href="../articles/manual-00-key-concepts.html">Key Concepts &amp; Glossary</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-00-sample-types.html">Sample Types &amp; QC Roles</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-11-cheatsheet.html">Function Cheatsheet</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-05a-which-importer.html">Import and prepare data files</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-00-integrator-vs-quant.html">INTEGRATOR vs QUANT</a></li>
-    <li><hr class="dropdown-divider"></li>
-    <li><a class="external-link dropdown-item" href="https://slinghub.github.io/MRMhub/integrator-manual.html">Need peak integration first?</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-09-troubleshooting.html">Troubleshooting &amp; FAQ</a></li>
   </ul>
 </li>
 <li class="nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-workflows" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Workflows</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-workflows">
-<li><h6 class="dropdown-header" data-toc-skip>Tutorials</h6></li>
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-tutorials" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Tutorials</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-tutorials">
+<li><a class="dropdown-item" href="../articles/tutorial-01-prep-data.html">Preparing &amp; importing data</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-02-basic-workflow.html">Basic MRMhub workflow</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-03-lipidomics-workflow.html">Lipidomics (full workflow)</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-08-multi-batch.html">Multi-Batch Study</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-04-drift-correction.html">Drift correction</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-05-run-scatter.html">RunScatter plots</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-06-batch-correction.html">Batch correction</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-10-metadata-validation.html">Validating metadata</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-07-calibration-reference.html">Calibration by reference sample</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-08-multi-batch.html">Multi-batch study</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-09-pca-exploration.html">QC exploration with PCA</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-10-metadata-validation.html">Validating metadata</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-11-interference-correction.html">Interference correction</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Recipes</h6></li>
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-07-calibration-reference.html">Calibration by reference sample</a></li>
-    <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC Report</a></li>
-    <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Export to mzTab-M</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
   </ul>
 </li>
-<li class="nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-advanced" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Advanced</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-advanced">
-<li><h6 class="dropdown-header" data-toc-skip>Data Model</h6></li>
+<li class="active nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-manual" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Manual</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-manual">
+<li><h6 class="dropdown-header" data-toc-skip>Concepts &amp; Design</h6></li>
+    <li><a class="dropdown-item" href="../articles/manual-00-design-overview.html">Design Overview</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-00-integrator-vs-quant.html">INTEGRATOR vs QUANT</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-00-sample-types.html">Sample Types &amp; QC Roles</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Data Model</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-01-data-structure.html">Data Structures</a></li>
     <li><a class="dropdown-item" href="../articles/manual-02-data-identifiers.html">Data Identifiers</a></li>
     <li><a class="dropdown-item" href="../articles/manual-03-feature-variables.html">Feature Variables</a></li>
     <li><a class="dropdown-item" href="../articles/manual-04-mrmhub-experiment.html">MRMhubExperiment Object</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Import &amp; Metadata</h6></li>
+    <li><a class="dropdown-item" href="../articles/manual-05a-which-importer.html">Import &amp; prepare data files</a></li>
     <li><a class="dropdown-item" href="../articles/manual-05-data-import.html">Data Import</a></li>
     <li><a class="dropdown-item" href="../articles/manual-05b-data-file-structures.html">Data File Structures</a></li>
     <li><a class="dropdown-item" href="../articles/manual-06-metadata-import.html">Metadata Import</a></li>
     <li><a class="dropdown-item" href="../articles/manual-06a-metadata-table-structures.html">Metadata Table Structures</a></li>
     <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Correction Methods</h6></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Corrections</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-07-drift-batch-correction.html">Drift &amp; Batch Correction</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
+    <li><a class="dropdown-item" href="../articles/manual-11-cheatsheet.html">Function Cheatsheet</a></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-09-troubleshooting.html">Troubleshooting &amp; FAQ</a></li>
     <li><a class="dropdown-item" href="../articles/manual-10-design-decisions.html">Design Decisions</a></li>
   </ul>
 </li>
@@ -105,6 +106,7 @@ quality control and data processing.
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
       </ul>
 <ul class="navbar-nav">
+<li class="nav-item"><a class="external-link nav-link" href="https://slinghub.github.io/MRMhub/">← MRMhub home</a></li>
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
@@ -133,9 +135,8 @@ quality control and data processing.
 <div class="section level2">
 <h2 id="why-sample-types-matter">Why Sample Types Matter<a class="anchor" aria-label="anchor" href="#why-sample-types-matter"></a>
 </h2>
-<p>MRMhub uses the <code>sample_type</code> (or <code>qc_type</code>)
-column in your analysis annotation to determine which samples are used
-for:</p>
+<p>MRMhub uses the <code>qc_type</code> column in the analysis
+annotation to determine which samples are used for:</p>
 <ul>
 <li>
 <strong>Drift correction</strong> — uses QC samples to model signal
@@ -153,10 +154,10 @@ curves</li>
 <strong>Filtering</strong> — excludes blanks and system suitability
 from final results</li>
 </ul>
-<div class="alert alert-danger" role="alert">
-<p><strong>⚠ Critical:</strong> Assigning the wrong label means MRMhub
-will use the wrong samples for corrections. Double-check your
-<code>sample_type</code> column before processing.</p>
+<div class="callout callout-caution">
+<p><strong>⚠ Critical:</strong> Assigning the wrong label causes MRMhub
+to use the wrong samples for corrections. Check the <code>qc_type</code>
+column before processing.</p>
 </div>
 </div>
 <div class="section level2">
@@ -178,15 +179,16 @@ will use the wrong samples for corrections. Double-check your
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td><code>SST</code></td>
-<td>Study Sample (Test)</td>
+<td><code>SPL</code></td>
+<td>Study Sample</td>
 <td>Your actual biological/clinical samples. These are the samples you
 want to quantify.</td>
 </tr>
 <tr class="even">
-<td><code>SPL</code></td>
-<td>Sample</td>
-<td>Generic sample label (same as SST in most workflows)</td>
+<td><code>SST</code></td>
+<td>System Suitability Test</td>
+<td>Injection used to verify instrument/system performance. Distinct
+from study samples; not reported as a result.</td>
 </tr>
 </tbody>
 </table>
@@ -388,33 +390,26 @@ contamination.</td>
 <div class="section level2">
 <h2 id="setting-sample-types-in-your-annotation">Setting Sample Types in Your Annotation<a class="anchor" aria-label="anchor" href="#setting-sample-types-in-your-annotation"></a>
 </h2>
-<p>Your analysis annotation CSV must have a column called
+<p>The analysis annotation CSV must have a column called
 <code>sample_type</code> or <code>qc_type</code>:</p>
 <pre><code>analysis_id,sample_type,batch_id,analysis_order
 Inj_001,SBLK,Batch_1,1
 Inj_002,QC,Batch_1,2
-Inj_003,SST,Batch_1,3
-Inj_004,SST,Batch_1,4
+Inj_003,SPL,Batch_1,3
+Inj_004,SPL,Batch_1,4
 ...
 Inj_010,QC,Batch_1,10
 Inj_080,QC,Batch_1,80
 Inj_081,SBLK,Batch_1,81</code></pre>
-<div class="alert alert-info" role="alert">
-<strong>Rules:</strong>
+<div class="callout callout-note">
+<p><strong>Rules:</strong></p>
 <ul>
-<li>
-Labels are <strong>case-sensitive</strong> — use uppercase exactly as
-shown
-</li>
-<li>
-Every analysis must have a <code>sample_type</code> assigned
-</li>
-<li>
-At least 5 QC injections per batch for reliable drift correction
-</li>
-<li>
-QC samples should be evenly distributed across the run
-</li>
+<li>Labels are <strong>case-sensitive</strong> — use uppercase exactly
+as shown</li>
+<li>Every analysis must have a <code>sample_type</code> assigned</li>
+<li>At least 5 QC injections per batch for reliable drift
+correction</li>
+<li>QC samples should be evenly distributed across the run</li>
 </ul>
 </div>
 </div>
@@ -427,7 +422,7 @@ QC samples should be evenly distributed across the run
     .bl-txt { font-size: 10px; font-weight: 600; fill: #fff; text-anchor: middle; }
     .bl-ann { font-size: 9px; fill: #555; text-anchor: middle; }
   </style>
-<!-- SBLK --><rect class="bl-box" x="5" y="20" width="50" height="35" fill="#4a90d9" stroke="#2c5f99"></rect><text class="bl-txt" x="30" y="42">SBLK</text><text class="bl-ann" x="30" y="72">blank</text><!-- TQC --><rect class="bl-box" x="65" y="20" width="50" height="35" fill="#5a8aaa" stroke="#3a6a8a"></rect><text class="bl-txt" x="90" y="42">TQC</text><text class="bl-ann" x="90" y="72">tech</text><!-- QC --><rect class="bl-box" x="125" y="20" width="45" height="35" fill="#cc3333" stroke="#992222"></rect><text class="bl-txt" x="147" y="42">QC</text><text class="bl-ann" x="147" y="72">anchor</text><!-- SST block --><rect class="bl-box" x="180" y="20" width="180" height="35" fill="#666" stroke="#444"></rect><text class="bl-txt" x="270" y="42">SST SST SST SST SST SST</text><text class="bl-ann" x="270" y="72">study samples</text><!-- QC mid --><rect class="bl-box" x="370" y="20" width="45" height="35" fill="#cc3333" stroke="#992222"></rect><text class="bl-txt" x="392" y="42">QC</text><text class="bl-ann" x="392" y="72">anchor</text><!-- SST block 2 --><rect class="bl-box" x="425" y="20" width="120" height="35" fill="#666" stroke="#444"></rect><text class="bl-txt" x="485" y="42">SST SST SST SST</text><!-- QC end --><rect class="bl-box" x="555" y="20" width="45" height="35" fill="#cc3333" stroke="#992222"></rect><text class="bl-txt" x="577" y="42">QC</text><text class="bl-ann" x="577" y="72">anchor</text><!-- SBLK end --><rect class="bl-box" x="610" y="20" width="50" height="35" fill="#4a90d9" stroke="#2c5f99"></rect><text class="bl-txt" x="635" y="42">SBLK</text><text class="bl-ann" x="635" y="72">blank</text><!-- Arrows --><line x1="55" y1="37" x2="65" y2="37" stroke="#999" stroke-width="1"></line><line x1="115" y1="37" x2="125" y2="37" stroke="#999" stroke-width="1"></line><line x1="170" y1="37" x2="180" y2="37" stroke="#999" stroke-width="1"></line><line x1="360" y1="37" x2="370" y2="37" stroke="#999" stroke-width="1"></line><line x1="415" y1="37" x2="425" y2="37" stroke="#999" stroke-width="1"></line><line x1="545" y1="37" x2="555" y2="37" stroke="#999" stroke-width="1"></line><line x1="600" y1="37" x2="610" y2="37" stroke="#999" stroke-width="1"></line></svg>
+<!-- SBLK --><rect class="bl-box" x="5" y="20" width="50" height="35" fill="#4a90d9" stroke="#2c5f99"></rect><text class="bl-txt" x="30" y="42">SBLK</text><text class="bl-ann" x="30" y="72">blank</text><!-- TQC --><rect class="bl-box" x="65" y="20" width="50" height="35" fill="#5a8aaa" stroke="#3a6a8a"></rect><text class="bl-txt" x="90" y="42">TQC</text><text class="bl-ann" x="90" y="72">tech</text><!-- QC --><rect class="bl-box" x="125" y="20" width="45" height="35" fill="#cc3333" stroke="#992222"></rect><text class="bl-txt" x="147" y="42">QC</text><text class="bl-ann" x="147" y="72">anchor</text><!-- SPL block --><rect class="bl-box" x="180" y="20" width="180" height="35" fill="#666" stroke="#444"></rect><text class="bl-txt" x="270" y="42">SPL SPL SPL SPL SPL SPL</text><text class="bl-ann" x="270" y="72">study samples</text><!-- QC mid --><rect class="bl-box" x="370" y="20" width="45" height="35" fill="#cc3333" stroke="#992222"></rect><text class="bl-txt" x="392" y="42">QC</text><text class="bl-ann" x="392" y="72">anchor</text><!-- SPL block 2 --><rect class="bl-box" x="425" y="20" width="120" height="35" fill="#666" stroke="#444"></rect><text class="bl-txt" x="485" y="42">SPL SPL SPL SPL</text><!-- QC end --><rect class="bl-box" x="555" y="20" width="45" height="35" fill="#cc3333" stroke="#992222"></rect><text class="bl-txt" x="577" y="42">QC</text><text class="bl-ann" x="577" y="72">anchor</text><!-- SBLK end --><rect class="bl-box" x="610" y="20" width="50" height="35" fill="#4a90d9" stroke="#2c5f99"></rect><text class="bl-txt" x="635" y="42">SBLK</text><text class="bl-ann" x="635" y="72">blank</text><!-- Arrows --><line x1="55" y1="37" x2="65" y2="37" stroke="#999" stroke-width="1"></line><line x1="115" y1="37" x2="125" y2="37" stroke="#999" stroke-width="1"></line><line x1="170" y1="37" x2="180" y2="37" stroke="#999" stroke-width="1"></line><line x1="360" y1="37" x2="370" y2="37" stroke="#999" stroke-width="1"></line><line x1="415" y1="37" x2="425" y2="37" stroke="#999" stroke-width="1"></line><line x1="545" y1="37" x2="555" y2="37" stroke="#999" stroke-width="1"></line><line x1="600" y1="37" x2="610" y2="37" stroke="#999" stroke-width="1"></line></svg>
 </div>
 </div>
 <div class="section level2">
@@ -482,11 +477,16 @@ QC samples should be evenly distributed across the run
 <td><span style="display:inline-block; width:40px; height:14px; background:#cc3333; border-radius:3px;"></span></td>
 </tr>
 <tr class="even">
-<td>SST/SPL</td>
+<td>SPL</td>
 <td>Grey</td>
-<td><span style="display:inline-block; width:40px; height:14px; background:#666; border-radius:3px;"></span></td>
+<td><span style="display:inline-block; width:40px; height:14px; background:#8e9b9e; border-radius:3px;"></span></td>
 </tr>
 <tr class="odd">
+<td>SST</td>
+<td>Yellow-green</td>
+<td><span style="display:inline-block; width:40px; height:14px; background:#bafc03; border-radius:3px;"></span></td>
+</tr>
+<tr class="even">
 <td>CAL</td>
 <td>Purple</td>
 <td><span style="display:inline-block; width:40px; height:14px; background:#8a5aaa; border-radius:3px;"></span></td>

@@ -1,9 +1,8 @@
-# A Real-World MRMhub Workflow
+# Basic MRMhub Workflow
 
-**Time:** ~15 minutes  \|  **Level:** Beginner–Intermediate  \| 
-**Builds on:** [Your First
+**Time:** ~15 min  \|  **Level:** Beginner–Intermediate  \| 
+**Prerequisites:** [Your First
 Analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md)
-(5-minute minimal demo)
 
 **How this differs from “Your First Analysis”:** That tutorial uses
 bundled demo data and covers only import, normalize, and export in 5
@@ -16,7 +15,7 @@ lipidomics dataset. See the [Lipidomics Data
 Processing](https://slinghub.github.io/MRMhub/quant/articles/tutorial-03-lipidomics-workflow.md)
 tutorial for an even more detailed example.
 
-These examples are simplified and may not apply to your data and
+These examples are simplified and may not apply to every dataset and
 experimental setup. See other tutorials and recipes for additional
 workflows and data types.
 
@@ -181,7 +180,7 @@ myexp <- correct_drift_gaussiankernel(
 )
 #> ℹ Applying `conc` drift correction...
 #> ℹ 2 feature(s) contain one or more zero or negative `conc` values. Verify your data or use `log_transform_internal = FALSE`.
-#>  ■■■■■■■■■■■■■■■■■■■■■■■■■■        82% |  ETA:  1s
+#>  ■■■■■■■■■■■■■■■■■■■               61% |  ETA:  2s
 #> ! 1 features showed no variation in the study sample's original values across analyses. 
 #> ! 1 features have invalid values after smoothing. NA will be be returned for all values of these faetures. Set `use_original_if_fail = FALSE to return orginal values..
 #> ✔ Drift correction was applied to 459 of 460 features (batch-wise).
@@ -213,6 +212,12 @@ myexp <- filter_features_qc(
 #> ✔ New feature QC filters were defined: 181 of 423 quantifier features meet QC criteria (not including the 25 quantifier ISTD features).
 ```
 
+Note that the drift correction above uses the study samples
+(`ref_qc_types = "SPL"`) as the reference. Study-sample smoothing is
+only appropriate for large, well-randomised sample sets; the QC-based
+convention (Broadhurst et al. 2018) instead fits the drift trend on
+dedicated QC injections.
+
 **Processing step order**
 
 The recommended order is:
@@ -224,7 +229,7 @@ The recommended order is:
 5.  QC filtering
 
 See [Design
-Overview](https://slinghub.github.io/MRMhub/quant/articles/manual-00-architecture.md)
+Overview](https://slinghub.github.io/MRMhub/quant/articles/manual-00-design-overview.md)
 for the full pipeline diagram.
 
 ## Step 6: Visualize Results
@@ -260,7 +265,7 @@ for the full list of plotting functions grouped by workflow stage.
 # Detailed Excel report with multiple sheets
 save_report_xlsx(myexp, path = tempfile(fileext = ".xlsx"))
 #> Saving report to disk - please wait...
-#> ✔ The data processing report has been saved to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpIAEDtu/file1482511783f4c.xlsx'.
+#> ✔ The data processing report has been saved to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpXemyjG/filec6b97c428ed4.xlsx'.
 
 # Flat CSV with concentration values that passed QC
 save_dataset_csv(
@@ -271,7 +276,7 @@ save_dataset_csv(
   include_qualifier = FALSE,
   filter_data = TRUE
 )
-#> ✔ Concentration values for 378 analyses and 181 features have been exported to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpIAEDtu/file1482565fbf866.csv'.
+#> ✔ Concentration values for 378 analyses and 181 features have been exported to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpXemyjG/filec6b93d1bbc8.csv'.
 
 # Save the complete object for reproducibility or sharing
 saveRDS(myexp, file = tempfile(fileext = ".rds"), compress = TRUE)
@@ -279,14 +284,22 @@ saveRDS(myexp, file = tempfile(fileext = ".rds"), compress = TRUE)
 
 The `.rds` file preserves the entire `MRMhubExperiment` object. A
 colleague can open it in R and run their own processing, plots, and QC
-checks — no code needed to reproduce your data state.
+checks; no code is needed to reproduce the data state.
 
 ### Next Steps
 
-| Goal | Article |
-|----|----|
-| More detailed lipidomics example | [Lipidomics Workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-03-lipidomics-workflow.md) |
-| Drift correction methods | [Drift Correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.md) |
-| Batch correction options | [Batch Correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-06-batch-correction.md) |
-| QC exploration with PCA | [PCA Exploration](https://slinghub.github.io/MRMhub/quant/articles/tutorial-09-pca-exploration.md) |
-| External calibration | [External Calibration & QC](https://slinghub.github.io/MRMhub/quant/articles/recipe-01-ext-calibration-qc.md) |
+- [Lipidomics
+  Workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-03-lipidomics-workflow.md)
+  — more detailed lipidomics example
+- [Drift
+  Correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.md)
+  — drift correction methods
+- [Batch
+  Correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-06-batch-correction.md)
+  — batch correction options
+- [PCA
+  Exploration](https://slinghub.github.io/MRMhub/quant/articles/tutorial-09-pca-exploration.md)
+  — QC exploration with PCA
+- [External Calibration &
+  QC](https://slinghub.github.io/MRMhub/quant/articles/recipe-01-ext-calibration-qc.md)
+  — external calibration

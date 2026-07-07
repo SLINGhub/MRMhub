@@ -8,8 +8,8 @@ This article is for:
 - Contributors who want to extend the package
 - Developers building tools on top of MRMhub
 
-If you just want to process data, see the [Design
-Overview](https://slinghub.github.io/MRMhub/quant/articles/manual-00-architecture.md)
+To process data directly, see the [Design
+Overview](https://slinghub.github.io/MRMhub/quant/articles/manual-00-design-overview.md)
 instead.
 
 ## Decision 1: S4 Class (MRMhubExperiment) vs Tidy Tibbles
@@ -31,7 +31,7 @@ state.
     data, annotations, and processing flags in one place.
 
 2.  **Integrity checking** — S4 validity methods ensure data and
-    metadata stay in sync. You cannot accidentally delete analyses
+    metadata stay in sync. Analyses cannot be accidentally deleted
     without updating annotations.
 
 3.  **Pipeline state** — Flags like `is_istd_normalized`,
@@ -139,8 +139,8 @@ samples, never study samples.
 
 Reference: Broadhurst et al. (2018). *Metabolomics*, 14, 72.
 
-**Implication:** You must have sufficient QC samples (≥ 5 per batch,
-evenly distributed) for correction to work well.
+**Implication:** Sufficient QC samples (≥ 5 per batch, evenly
+distributed) are required for correction to work well.
 
 ## Decision 6: Explicit Processing Order
 
@@ -173,15 +173,15 @@ communicates via status flags rather than enforcing with hard errors.
 **Choice:** Raw data processing (peak integration) and post-processing
 (normalization, QC) are separate tools in different languages.
 
-| INTEGRATOR (Python)       | QUANT (R)                |
+| INTEGRATOR                | QUANT (R)                |
 |---------------------------|--------------------------|
 | Automated, batch-oriented | Interactive, exploratory |
 | Computationally intensive | Statistically intensive  |
 | Run once per study        | Run iteratively          |
 | No user decisions needed  | Many user decisions      |
 
-**The interface is a CSV file.** This means either tool can be replaced
-independently, and data can be inspected at the handoff point.
+The interface is a CSV file. Either tool can be replaced independently,
+and data can be inspected at the handoff point.
 
 ## Extending MRMhub
 
@@ -211,7 +211,7 @@ All functions should:
 ## Next Steps
 
 - [Design
-  Overview](https://slinghub.github.io/MRMhub/quant/articles/manual-00-architecture.md)
+  Overview](https://slinghub.github.io/MRMhub/quant/articles/manual-00-design-overview.md)
   — the pipeline at a high level
 - [Data
   Structures](https://slinghub.github.io/MRMhub/quant/articles/manual-01-data-structure.md)

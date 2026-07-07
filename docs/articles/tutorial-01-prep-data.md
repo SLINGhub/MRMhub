@@ -1,5 +1,9 @@
 # Preparing and importing data
 
+**Time:** ~10 min  \|  **Level:** Beginner  \|  **Prerequisites:** [Your
+First
+Analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md)
+
 **See also:** [Import and prepare data
 files](https://slinghub.github.io/MRMhub/quant/articles/manual-05a-which-importer.md)
 (decision guide) \| [Validating
@@ -35,8 +39,8 @@ mexp <- import_data_mrmhub(mexp,
 
 # Add analysis data from a CSV file (replaces all previous data)
 mexp2 <- MRMhubExperiment()
-mexp2 <- import_data_csv(mexp, 
-                        path = "data/plain_wide_dataset.csv", 
+mexp2 <- import_data_csv_wide(mexp2,
+                        path = "data/plain_wide_dataset.csv",
                         variable_name = "area",
                         import_metadata = TRUE)
 ```
@@ -71,9 +75,9 @@ Furthermore, a specific metadata template file can be used to prepare
 metadata in a structured way.
 
 Preparation of metadata is often a manual step, where the information is
-collected from various sources. To facilitate this process, MRMhub
-provides metadata templates in Excel format. These templates contain
-column headers and instructions on how to use. In the beginning, it is
+collected from various sources. To support this process, MRMhub provides
+metadata templates in Excel format. These templates contain column
+headers and instructions on how to use. In the beginning, it is
 recommended to start from a metadata template and fill in the required
 information. Templates for all metadata types supported by MRMhub can be
 obtained via:
