@@ -39,9 +39,13 @@ keeps the project reproducible.
 </svg>
 </div>
 
+::: {.text-center}
+[Get started — Quick Start →](quickstart.qmd){.btn .btn-primary role="button"}
+:::
+
 ::: {.callout-note}
-INTEGRATOR is not required to use the QUANT R package; QUANT also imports directly from vendor
-outputs (MassHunter, Skyline). See the
+INTEGRATOR is not required to use QUANT (the `mrmhub` R package); QUANT also imports directly from
+vendor outputs (MassHunter, Skyline). See the
 [QUANT documentation ↗](https://slinghub.github.io/MRMhub/quant/).
 :::
 

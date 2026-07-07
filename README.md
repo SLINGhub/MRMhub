@@ -7,7 +7,9 @@
 Open-source toolchain for targeted Multiple Reaction Monitoring (MRM) mass spectrometry — from raw vendor files to QC'd quantitative reports. Two modules that work independently or together:
 
 - **INTEGRATOR** — stand-alone application for peak detection, picking, and integration. Pre-built executable, no Python install required.
-- **QUANT** — R package (`mrmhub`) for the post-processing pipeline: ISTD normalisation, drift/batch correction, ISTD- or calibration-based quantitation, QC metrics, filtering, reporting. Accepts integrated peaks from INTEGRATOR **and** vendor outputs (MassHunter, Skyline, MS-DIAL, generic CSV).
+- **QUANT** (the `mrmhub` R package) — the post-processing pipeline: ISTD normalisation, drift/batch correction, ISTD- or calibration-based quantitation, QC metrics, filtering, reporting. Accepts integrated peaks from INTEGRATOR **and** vendor outputs (MassHunter, Skyline, MS-DIAL, generic CSV).
+
+> **New here?** Install QUANT and run a [5-minute first analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.html) on bundled demo data — no files of your own required.
 
 ## Choose your path
 

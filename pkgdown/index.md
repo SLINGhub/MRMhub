@@ -7,11 +7,19 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 <!-- badges: end -->
 
-**MRMhub-QUANT** is the post-processing module of [MRMhub](https://slinghub.github.io/MRMhub/), distributed as the R package `mrmhub` (`library(mrmhub)`). It covers the full workflow from feature intensities to curated, QC-filtered concentrations, and works with any intensity data — such as from [MRMhub](https://slinghub.github.io/MRMhub/), Skyline, Agilent MassHunter, and generic CSV files. MRMhub-QUANT features:
+**MRMhub-QUANT** turns targeted MRM feature intensities into curated, QC-filtered, quantified results. It is the post-processing module of [MRMhub](https://slinghub.github.io/MRMhub/), distributed as the R package `mrmhub` (`library(mrmhub)`), and works with any intensity data — from [MRMhub-INTEGRATOR](https://slinghub.github.io/MRMhub/integrator/), Skyline, Agilent MassHunter, or generic CSV files. MRMhub-QUANT features:
 
 - **Reproducible pipelines.** Create reproducible computational pipelines with QC vizualizations. Script, re-run, and share it.
 - **Flexible workflows.** Metabolomics and lipidomics data post-processing using dedicated customizable functions. 
 - **A single data object.** Data, metadata, and processing details are stored in single sharable data object (`MRMhubExperiment`).
+
+![A RunSequence overview of a 499-injection MRM batch: quality-control samples (TQC, BQC, blanks, LTR) mapped across the analysis order alongside the study samples, with batch boundaries and a run-time summary — one of the QC views produced from a single command.](man/figures/hero-runsequence.png)
+
+<p style="margin: 1em 0;">
+<a href="articles/tutorial-00-first-analysis.html" class="btn btn-primary" role="button">Run your first analysis (5 min) →</a>
+</p>
+
+Prefer point-and-click? `run_walkthrough()` opens a guided app that validates your data and generates the workflow script (one-time `install.packages(c("shiny", "bslib"))`).
 
 <div style="text-align: center; margin: 1.5em 0 0.5em;">
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 130" style="max-width: 840px; width: 100%; height: auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
