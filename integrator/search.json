@@ -392,7 +392,7 @@
     "href": "index.html#the-workflow",
     "title": "INTEGRATOR",
     "section": "The workflow",
-    "text": "The workflow\n\n\n\n Raw vendor files  mzML (msconvert)  INTEGRATOR   long.csv  QUANT ↗\n\n\n\n\n\n\n\n\nNote\n\n\n\nINTEGRATOR is not required to use the QUANT R package; QUANT also imports directly from vendor outputs (MassHunter, Skyline). See the QUANT documentation ↗.",
+    "text": "The workflow\n\n\n\n Raw vendor files  mzML (msconvert)  INTEGRATOR   long.csv  QUANT ↗\n\n\n\nGet started — Quick Start →\n\n\n\n\n\n\n\nNote\n\n\n\nINTEGRATOR is not required to use QUANT (the mrmhub R package); QUANT also imports directly from vendor outputs (MassHunter, Skyline). See the QUANT documentation ↗.",
     "crumbs": [
       "Home",
       "Overview"
