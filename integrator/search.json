@@ -1,0 +1,423 @@
+[
+  {
+    "objectID": "msconvert.html",
+    "href": "msconvert.html",
+    "title": "MSconvert Instructions",
+    "section": "",
+    "text": "INTEGRATOR uses mzML files as input. Users can use the MSconvert tool, available as part of the Proteowizard software to convert proprietary raw data files (.wiff for SCIEX/Waters, .raw files for Thermo Fisher, .d folders for Agilent, etc) into mzML format. This step can only be done on Windows PC.",
+    "crumbs": [
+      "Home",
+      "Manual",
+      "Vendor → mzML (msconvert)"
+    ]
+  },
+  {
+    "objectID": "msconvert.html#next",
+    "href": "msconvert.html#next",
+    "title": "MSconvert Instructions",
+    "section": "Next",
+    "text": "Next\n\nDownload & Project Setup — download the standalone INTEGRATOR executable.\nRunning INTEGRATOR — process your mzML files.",
+    "crumbs": [
+      "Home",
+      "Manual",
+      "Vendor → mzML (msconvert)"
+    ]
+  },
+  {
+    "objectID": "running.html",
+    "href": "running.html",
+    "title": "Running INTEGRATOR",
+    "section": "",
+    "text": "flow chart for MRMhub INTEGRATOR\nUpon execution, the software launches a terminal user interface with four different menu options. For new datasets, the steps 1 - 2 are applied sequentially. The final step 4 is optional and only used when integration results as PDFs files are needed.",
+    "crumbs": [
+      "Home",
+      "Manual",
+      "Running INTEGRATOR"
+    ]
+  },
+  {
+    "objectID": "running.html#step-1-data-validation",
+    "href": "running.html#step-1-data-validation",
+    "title": "Running INTEGRATOR",
+    "section": "Step 1 — Data Validation",
+    "text": "Step 1 — Data Validation\nThe first step verifies the files and information provided by the user in the input files. Inconsistencies are reported via the text files, which are saved into the directory as the MRMhub application. The files are are only generated when issues were identified.\n\nmissing_files.txt lists mzML files that are present in the data folder but not listed in the Sample List, as well as files listed in the Sample List but absent from the data folder.\nmissing_compounds.txt reports transitions defined in the Transition List but not found in all mzML files. Note: Transitions present only in a subset of the mzML files are currently not processed.\nmissing_details.txt This report details the missing transitions and identifies exactly which samples lack them. This is useful when a transition appears in some samples but not others.",
+    "crumbs": [
+      "Home",
+      "Manual",
+      "Running INTEGRATOR"
+    ]
+  },
+  {
+    "objectID": "running.html#step-2-peak-finding-and-rt-shift-estimation",
+    "href": "running.html#step-2-peak-finding-and-rt-shift-estimation",
+    "title": "Running INTEGRATOR",
+    "section": "Step 2 — Peak Finding and RT-shift estimation",
+    "text": "Step 2 — Peak Finding and RT-shift estimation\nThe second step runs the peak finding and picking algorithm. The result of this step is a table with identified peaks (features) with their left and right peak borders in each sample. This table is saved as a CSV file RT_matrix.csv into the same folder as the application and is required for step 3.\nThe user may further refine these integration bounds per transition and sample basis, before proceeding with the actual peak integration in step 3. For a new dataset, we recommend proceeding directly with peak integration directly, followed by visualization of the results using steps 3 (and 4) and only then to manually adjust specific integration borders. However, we generally discourage users from doing so, unless certain integration can only be achieved through manual intervention.\nAt this point, the user can launch the integration visualizer application MRMhub-viz (see MRMhub-viz Visualizer) to inspect the integration results, and revise global and per-feature integration parameters (via param.txt and Transition List) and re-attempt peak integration via steps 1 and 2.\nOnce automated integration is deemed optimized, final manual adjustments to individual peaks can be made in the RT_matrix.csv (see Step 2). After these optional manual adjustment, the final peak integration is performed by (re-)running step 3.\nWarning: Each time step 2 is executed, RT_matrix.csv is overwritten, and any manual modifications made by the user will be lost.",
+    "crumbs": [
+      "Home",
+      "Manual",
+      "Running INTEGRATOR"
+    ]
+  },
+  {
+    "objectID": "running.html#step-3-peak-integration",
+    "href": "running.html#step-3-peak-integration",
+    "title": "Running INTEGRATOR",
+    "section": "Step 3 — Peak Integration",
+    "text": "Step 3 — Peak Integration\nIn the third step, peaks integration of peaks identified in step 2 will be performed and corresponding results saved in following default output files:\n\nquant_raw.csv A wide format table with peak areas. Additionally the top 3 rows contain the precursor and product m/z and peak apex retention time values.\nlong.csv A long format table contain peak area,s height, peak apex retention time, FWMH (Full Width at Half Maximum) and integration borders. Additionally, the corresponding precursor and product m/z values, the analysis time stamp (extracted from the mzML files) as well as the metadata from the input files (i.e. sample type, ISTD, batch identifier) are also included.\nmisc A folder containing the peak integration results in a binary format, which is used by the visualizer application MRMhub-viz and in step 4.\n\nAll output tables are plain comma-separated CSV. long.csv is the canonical hand-off to QUANT (one row per sample × feature); quant_raw.csv is a convenience wide-format export of peak areas and is not read by the QUANT module.\n\n\n\n\n\n\nNotelong.csv columns\n\n\n\n\n\nThese are the columns QUANT’s import_data_mrmhub() reads from long.csv. Only feature_name and raw_data_filename are strictly required (plus at least one intensity column); the rest are metadata and measurements carried through to the MRMhubExperiment.\n\n\n\n\n\n\n\nlong.csv column\nMeaning\n\n\n\n\nraw_data_filename\nSource mzML file name (becomes the analysis identifier)\n\n\ntime_stamp\nAcquisition timestamp, read from the mzML\n\n\nsample_type\nSample / QC type, from batch_info.csv\n\n\nbatch\nBatch identifier, from batch_info.csv\n\n\nfeature_name\nFeature (analyte) identifier, from the transition list\n\n\ninternal_standard\nAssigned ISTD feature, from the transition list\n\n\nrt_apex\nRetention time at the peak apex (min)\n\n\narea\nIntegrated peak area\n\n\nheight\nPeak height\n\n\nFWHM\nFull width at half maximum\n\n\nrt_int_start / rt_int_end\nLeft / right integration borders (min)\n\n\npolarity\nIonisation polarity\n\n\nprecursor_mz / product_mz\nTransition m/z values\n\n\ncollision_energy\nCollision energy\n\n\n\nquant_raw.csv is a wide table of peak areas (features × samples); its top rows additionally carry the precursor and product m/z and the apex retention time per transition.\n\n\n\n\n\n\n\n\n\nTip\n\n\n\nContinue post-processing in QUANT. The long.csv file is the canonical hand-off into the QUANT R package: import_data_mrmhub(\"path/to/long.csv\", import_metadata = TRUE) loads the file and its embedded metadata into an MRMhubExperiment for ISTD normalisation, drift/batch correction, QC, and reporting. See the QUANT documentation ↗.",
+    "crumbs": [
+      "Home",
+      "Manual",
+      "Running INTEGRATOR"
+    ]
+  },
+  {
+    "objectID": "running.html#step-4-generate-pdf-results-optional",
+    "href": "running.html#step-4-generate-pdf-results-optional",
+    "title": "Running INTEGRATOR",
+    "section": "Step 4 — Generate PDF results (optional)",
+    "text": "Step 4 — Generate PDF results (optional)\nThe fourth step produces integration results into PDF files, which is an optional step. This step creates three folder with different types of results:\n\nby_transition: Contains one PDF per transition, with chromatograms plotted for each sample. Only transitions with at least one feature (peak) exceeding the minimum intensity threshold value are included here (see by_transition_low).\nby_transition_low: Contains PDFs of transitions where none of the integrated features (peaks) had an area exceeding the minimum intensity threshold defined by the constant low_intensity_threshold in the provided MRMhub_plot.r R script.\nby_sample: Provides a PDF for each reference sample; all of the sample’s transitions are plotted within the same file.\n\nFor efficient viewing of PDFs on macOS, open the PDF folder, press Space to start Quick Look, then use the up/down arrow keys to move to between transitions (files). Use the scroll wheel or trackpad to scroll through each PDF.\nNote: In large-scale projects, generating many large PDF files can take considerable time depending on computer performance and the number of cores used. The number of cores use to generate the PDFs can be adjusted via the constant ncores in the provided MRMhub_plot.rscript.",
+    "crumbs": [
+      "Home",
+      "Manual",
+      "Running INTEGRATOR"
+    ]
+  },
+  {
+    "objectID": "running.html#next",
+    "href": "running.html#next",
+    "title": "Running INTEGRATOR",
+    "section": "Next",
+    "text": "Next\n\nMRMhub-viz Visualizer — review and refine the integration results.\nSharing Results — bundle data and parameters for reproducibility.",
+    "crumbs": [
+      "Home",
+      "Manual",
+      "Running INTEGRATOR"
+    ]
+  },
+  {
+    "objectID": "setup.html",
+    "href": "setup.html",
+    "title": "Download & Project Setup",
+    "section": "",
+    "text": "Important\n\n\n\nINTEGRATOR is not installed. It is a self-contained, portable executable — there is no installer and nothing is added to your system. You simply download it, unzip it, and run it from a folder.",
+    "crumbs": [
+      "Home",
+      "Manual",
+      "Download & Setup"
+    ]
+  },
+  {
+    "objectID": "setup.html#one-copy-per-project",
+    "href": "setup.html#one-copy-per-project",
+    "title": "Download & Project Setup",
+    "section": "One copy per project",
+    "text": "One copy per project\nThe recommended way to work is to keep one copy of the INTEGRATOR folder inside each data-analysis project, alongside that project’s raw data and input files. Because the executable, the parameters (param.txt), the input files, and the results all live together in one self-contained folder, the entire analysis stays re-runnable and reproducible — you (or a colleague) can re-open the folder months later, adjust a parameter, and re-run the integration exactly as before. It also means different projects can use different versions of INTEGRATOR without interfering with each other.\n\n\n\n\n\n\nNote\n\n\n\nJust want post-processing in R? INTEGRATOR is not required to use the QUANT R package — QUANT imports directly from vendor outputs (MassHunter, Skyline) as well. See the QUANT documentation ↗.",
+    "crumbs": [
+      "Home",
+      "Manual",
+      "Download & Setup"
+    ]
+  },
+  {
+    "objectID": "setup.html#get-the-application",
+    "href": "setup.html#get-the-application",
+    "title": "Download & Project Setup",
+    "section": "Get the application",
+    "text": "Get the application\nINTEGRATOR comes as pre-compiled executables for Windows and macOS, which can be downloaded from https://github.com/SLINGhub/MRMhub/releases. Unzip the downloaded file and copy the folder into your project location. The folder comprises the following files and subfolders: MRMhub is the main application, and MRMhub-viz is an application to review peak integration results.",
+    "crumbs": [
+      "Home",
+      "Manual",
+      "Download & Setup"
+    ]
+  },
+  {
+    "objectID": "setup.html#first-launch-clear-the-security-prompt",
+    "href": "setup.html#first-launch-clear-the-security-prompt",
+    "title": "Download & Project Setup",
+    "section": "First launch (clear the security prompt)",
+    "text": "First launch (clear the security prompt)\nThe executable is unsigned, so the operating system shows a one-time security warning the first time you run it. This is expected — clear it as follows.\nOn macOS, the following error is shown:\n\n\n\n\n\nTo resolve this, go to “Systems Settings”, “Privacy & Security” tab, and click “Open Anyway” button to enable the software.\n\n\n\n\n\nOn Windows, right-click on the executable, select “Properties”, and on the “General” tab, check the “Unblock” box near the bottom if available, then click OK or Apply.",
+    "crumbs": [
+      "Home",
+      "Manual",
+      "Download & Setup"
+    ]
+  },
+  {
+    "objectID": "setup.html#folder-layout",
+    "href": "setup.html#folder-layout",
+    "title": "Download & Project Setup",
+    "section": "Folder layout",
+    "text": "Folder layout\nThe input files required by the MRMhub application are feature_list.csv, run_order.csv, and param.txt. The mzML folder is used to store MS raw data files. All of these are explained in Input Files. Furthermore, this distribution contains a test dataset, with a complete set of input and raw data files, which can be used as templates for future analysis. The MRMhub_plot.r is an R script used to generate the PDFs. It can be modified to tailor for specific layouts and design features of the plots.",
+    "crumbs": [
+      "Home",
+      "Manual",
+      "Download & Setup"
+    ]
+  },
+  {
+    "objectID": "setup.html#next",
+    "href": "setup.html#next",
+    "title": "Download & Project Setup",
+    "section": "Next",
+    "text": "Next\n\nInput Files — set up param.txt, batch_info.csv, and the transition list.\nRunning INTEGRATOR — the four processing steps.",
+    "crumbs": [
+      "Home",
+      "Manual",
+      "Download & Setup"
+    ]
+  },
+  {
+    "objectID": "viz.html",
+    "href": "viz.html",
+    "title": "MRMhub-viz: Integration Visualizer",
+    "section": "",
+    "text": "The MRMhub-viz application is a lightweight, standalone, interactive tool for reviewing peak integration results generated by the MRMhub application (see Running INTEGRATOR — Step 3). It is located in the same folder as the MRMhub application and launched like a regular application. The displayed transition can be selected using the dropdown menu in the top-left corner, and when moving the mouse over the chromatograms the exact retention time is shown. This is useful when defining fixed peak borders in the Transition List file (see Input Files — Transition list).",
+    "crumbs": [
+      "Home",
+      "Manual",
+      "MRMhub-viz Visualizer"
+    ]
+  },
+  {
+    "objectID": "viz.html#next",
+    "href": "viz.html#next",
+    "title": "MRMhub-viz: Integration Visualizer",
+    "section": "Next",
+    "text": "Next\n\nInput Files — adjust global and per-feature integration parameters.\nSharing Results — bundle the visualizer with your dataset for review by others.",
+    "crumbs": [
+      "Home",
+      "Manual",
+      "MRMhub-viz Visualizer"
+    ]
+  },
+  {
+    "objectID": "input-files.html",
+    "href": "input-files.html",
+    "title": "Input Files",
+    "section": "",
+    "text": "INTEGRATOR is driven by three input files plus the mzML/ data folder. This page is the reference for each.",
+    "crumbs": [
+      "Home",
+      "Manual",
+      "Input Files"
+    ]
+  },
+  {
+    "objectID": "input-files.html#global-parameters-param.txt",
+    "href": "input-files.html#global-parameters-param.txt",
+    "title": "Input Files",
+    "section": "Global parameters (param.txt)",
+    "text": "Global parameters (param.txt)\nThe software requires global parameter file (param.txt by default), which points the software to the required information.\n\n\n\n\n\n\n\n\nPar ameter\nDescription\nDefault\n\n\n\n\nmzML_files\nLocation of mzML files to be used for peak integration\nmzML\n\n\nbatch_info\nInput file with mzML file names and meta information (see below)\nb a tch_info.csv\n\n\ntran sition_list\nInput file with MRM transition information (see below)\nfea t ure_info.csv\n\n\npeak_width\n[w, x, y, z] define allowed integration bounds:\nleft = w–x min, right = y–z min from apex (see below).\n[0.17, 0.05, 0.1, 0.35]\n\n\nnum_t hreads\nNumber of CPU threads to be used for integration task.\n2\n\n\nmz_tol\nTolerance between indicated m/z and detected m/z values\n0.06\n\n\nRT_tol\nTolerance between indicated RT and detected RT. Note**: This is a key setting in processing or complex ch romatograms.\n0.1\n\n\nRT _shift\n[x, y] indicate that RT drift is at most x minutes left and y minutes right of the peak in the reference samples\n[-0.2, 0.2]\n\n\nRT_ shift_bound\nMaximum allowed RT drift between adjacent samples\n0.1\n\n\n\n\n\n\n\n\n\nTip\n\n\n\nWorked example. A published lipidomics dataset (Agilent triple-quadrupole) used mz_tol = 0.06, RT_tol = 0.04, peak_width = [0.15, 0.08, 0.08, 0.18] globally — with per-feature overrides for broad or convoluted peaks — an RT-shift window of (-0.1, 0.4), and a maximum sample-to-sample RT shift (RT_shift_bound) of 0.05. These make good starting points for a fast, well-resolved method. See the full Dataset 3 workflow ↗ for the complete input files and the resulting integration.",
+    "crumbs": [
+      "Home",
+      "Manual",
+      "Input Files"
+    ]
+  },
+  {
+    "objectID": "input-files.html#sample-list-batch_info.csv",
+    "href": "input-files.html#sample-list-batch_info.csv",
+    "title": "Input Files",
+    "section": "Sample list (batch_info.csv)",
+    "text": "Sample list (batch_info.csv)\nThis file defines data files. The file names must be presented in their processing order from top to bottom. mzML files present in the data folder but not listed here will be ignored. Columns containing required information for individual data files are marked in bold.\n\n\n\n\n\n\n\n\nColumn\nfile name\nDescription\nThe mzML file names to be processed, which are in the folder defined under `m zML_files` in the param.txt file. Must include the .mzML file extension.\n\n\n\n\n\n\nbatch\nThe analysis batch identifier to which the file belong to. This value has no function in the INTEGRATOR, but the value is included in the result.\n\n\n\ns ample_type\nThe sample (QC) type of the co rresponding | sample. Blanks must be labeled with text | containing BLK, as these are processed | differently (see below). For all other | cases, any sample type may be defined, and | the information will be forwarded to the | integration results. The field may also be | left empty. Use of the default MRMhub QC | types (see QUANT — Sample Types & QC | Roles) is recommended to ensure seamless | integration with the QUANT module. |\n\n\nreference\nIndicates that this sample will be used as reference for RT shift estimation (see below). Label with x. If selecting multiple samples, ensure they exhibit negligible RT shifts relative to one another.\n\n\n\n\n\n\n\n\n\n\nNote\n\n\n\nHow sample_type is used. INTEGRATOR itself only distinguishes blanks (any sample_type containing the text BLK) from non-blanks — blanks are processed differently during peak finding. Every other sample/QC-type label has no effect inside INTEGRATOR; it is simply carried through to long.csv for use by the QUANT module. Using the standard MRMhub QC nomenclature here means QUANT picks up the QC roles automatically.",
+    "crumbs": [
+      "Home",
+      "Manual",
+      "Input Files"
+    ]
+  },
+  {
+    "objectID": "input-files.html#transition-feature-list-transition_list.csv",
+    "href": "input-files.html#transition-feature-list-transition_list.csv",
+    "title": "Input Files",
+    "section": "Transition / Feature list (transition_list.csv)",
+    "text": "Transition / Feature list (transition_list.csv)\nThis file defines the transitions to be processed and which features to be integrated. Transitions defined in the mzML files, but not in this file will be ignored. Columns with required information for each feature are marked in bold.\nThis file specifies the transitions to be processed and the features to be integrated for each transition. Transitions present in the mzML files but not listed here will be ignored. Columns containing required information for each feature are marked in bold.\n\n\n\n\n\n\n\nColumn\nDescription\n\n\n\n\nCompound Name\nFeature (analyte) identifier name. Must be a unique value, identifying typically a single peak. Multiple distinct features can be defined for a transition.\n\n\nTransition Name\nTransition identifier. Can be repeated values.\n\n\nISTD\nThe internal standard feature assigned to the c orresponding compound. This value has currently no function in the INTEGRATOR modules, but will be included in the results and will be read in by the QUANT module. Can be left empty, but if defined must correspond to a defined Compound Name.\n\n\nPrecursor Ion\nThe m/z value of the precursor ion. Must match the c orresponding value in the mzML file within the tolerance given via mz_tol in the param.txt file.\n\n\nProduct Ion\nThe m/z value of the product ion. Must match the c orresponding value in the mzML file within the tolerance given via mz_tol in the param.txt file.\n\n\nRT\nThe expected retention time of the c orresponding feature, given in minutes.\n\n\nu n iform_width\nEither y or n (default). If yes, the peak boundaries are set to the median of the results from the automatic border d e termination.\n\n\nleft integration bound\nSets fixed left peak border for all samples, in minutes (with respect to the reference sample)\n\n\nright integration bound\nSets fixed right peak border for all samples, in minutes (with respect to the reference sample)\n\n\npeak width\n[w, x, y, z] define allowed integration bounds: left = w–x min, right = y–z min from apex (see below).\nNote: This overwrites the globally defined peak width (param.txt). See below.\n\n\nRemarks\nUsed to document integration settings",
+    "crumbs": [
+      "Home",
+      "Manual",
+      "Input Files"
+    ]
+  },
+  {
+    "objectID": "input-files.html#effects-of-the-key-settings",
+    "href": "input-files.html#effects-of-the-key-settings",
+    "title": "Input Files",
+    "section": "Effects of the key settings",
+    "text": "Effects of the key settings\nMost settings trade sensitivity (finding and fully capturing the intended peak) against specificity (not grabbing a neighbouring transition, an adjacent peak, or noise). The table below summarises what happens at each extreme; the peak-width recommendations below go deeper on peak_width, the single most influential setting for difficult chromatograms.\n\n\n\n\n\n\n\n\n\nSetting\nWhat it controls\nToo small/narrow\nToo large/wide\n\n\n\n\nmz_tol\nHow far the detected m/z may deviate from the value in the transition list\nA transition may not be matched at all if the instrument’s m/z calibration is slightly off\nA nearby transition / channel may be matched by mistake\n\n\nRT_tol\nThe retention-time window searched around the expected RT (key for complex chromatograms)\nThe peak is missed when its RT drifts beyond the window\nA wrong, co-eluting, or adjacent peak may be selected instead of the intended one\n\n\npeak_width [w,x,y,z]\nAllowed windows for the left (w–x) and right (y–z) peak borders, relative to the apex\nIncomplete integration — tailing or broadened peaks get cut short\nSmaller adjacent/interfering peaks get co-integrated into the area\n\n\nRT_shift [x,y]\nThe maximum RT drift expected across the reference samples\nGenuine drift between references is not accommodated, hurting peak tracking\nThe algorithm searches an unnecessarily wide window, raising the chance of picking the wrong peak\n\n\nRT_shift_bound\nThe maximum RT drift allowed between adjacent samples\nA real run-to-run RT jump can break sample-to-sample tracking\nSpurious jumps may be followed, tracking drift that isn’t there\n\n\nnum_threads\nCPU threads used for integration\nSlower processing only — no effect on results\nFaster, bounded by available cores — no effect on results\n\n\n\n\n\n\n\n\n\nTip\n\n\n\nAdjust globally in param.txt to suit the majority of peaks, then use per-feature overrides in the transition list (peak width, uniform_width, fixed integration bounds) only for the problematic minority. Always confirm the effect of a change visually in MRMhub-viz before re-integrating the whole dataset.",
+    "crumbs": [
+      "Home",
+      "Manual",
+      "Input Files"
+    ]
+  },
+  {
+    "objectID": "input-files.html#recommendations-for-setting-peak-integration-parameters",
+    "href": "input-files.html#recommendations-for-setting-peak-integration-parameters",
+    "title": "Input Files",
+    "section": "Recommendations for setting peak integration parameters",
+    "text": "Recommendations for setting peak integration parameters\nThe peak_width parameter, defined globally in param.txt and optionally per feature in the Transition List, is a key setting for automated integration of complex chromatograms. Values are specified in the format [w, x, y, z], where the ranges w–x and y–z define the allowed windows for the left and right peak borders, respectively. The integration algorithm is constrained to set peak start and end points within these ranges, even if its automatic boundary detection would otherwise extend beyond them.\nToo narrow ranges in the peak_width parameter may result in incomplete integration of peaks, especially when there is tailing or when the peak widths are not stable. To wide ranges may results in inclusion of smaller peak adjacent to the peak to be integrated. We suggest to use a setting that fits the majority of the peaks in the dataset globally via the param.txt file and then use per-feature settings for convoluted, asymmetric or otherwise broadened peaks. Narrower per-feature values may be used when nearby interferences are not recognized as separated peaks and are therefore are co-integrated.\nToo narrow ranges may lead to incomplete peak integration, especially in cases of peak tailing or unstable peak widths. Too wide ranges may result in inclusion of smaller adjacent peaks. We suggest defining a global setting inparam.txt that suits the majority of peaks in the dataset, and applying per-feature settings for convoluted, asymmetric, or broadened peaks. Narrower per-feature ranges can also be used when nearby interferences are not recognized as separate peaks and are therefore co-integrated.\n\n\n\n\n\nSet the uniform_width parameter to true for features where integration was deemed correct in the majority, but incorrect or inaccurate in a minority of samples.\nUse fixed left/right left integration bound times for cases automated integration and fine-tuning of weak width settings did not correctly and consistently integrated convoluted peaks or peaks with nearby interferences. The use of these hard border settings is recommended only as a last resort, as hard border may require re-adjustment when used in processing of other datasets of the same analytical method. Note: These defined borders will still be adjusted for retention time shifts.",
+    "crumbs": [
+      "Home",
+      "Manual",
+      "Input Files"
+    ]
+  },
+  {
+    "objectID": "input-files.html#next",
+    "href": "input-files.html#next",
+    "title": "Input Files",
+    "section": "Next",
+    "text": "Next\n\nRunning INTEGRATOR — run the four processing steps.\nMRMhub-viz Visualizer — review results and fine-tune these parameters.",
+    "crumbs": [
+      "Home",
+      "Manual",
+      "Input Files"
+    ]
+  },
+  {
+    "objectID": "quickstart.html",
+    "href": "quickstart.html",
+    "title": "Quick Start",
+    "section": "",
+    "text": "This page is the condensed path from raw files to integrated peaks. Each step links to the full reference if you need detail.",
+    "crumbs": [
+      "Home",
+      "Quick Start"
+    ]
+  },
+  {
+    "objectID": "quickstart.html#convert-raw-files-to-mzml",
+    "href": "quickstart.html#convert-raw-files-to-mzml",
+    "title": "Quick Start",
+    "section": "1. Convert raw files to mzML",
+    "text": "1. Convert raw files to mzML\nINTEGRATOR reads mzML. Convert your vendor files (.raw, .wiff, .d, …) with ProteoWizard MSConvert (Windows only). → Vendor → mzML (msconvert)",
+    "crumbs": [
+      "Home",
+      "Quick Start"
+    ]
+  },
+  {
+    "objectID": "quickstart.html#download-the-app-into-your-project",
+    "href": "quickstart.html#download-the-app-into-your-project",
+    "title": "Quick Start",
+    "section": "2. Download the app into your project",
+    "text": "2. Download the app into your project\nINTEGRATOR is a standalone executable — nothing to install. Download the macOS/Windows build from Releases, unzip it into your project folder, and clear the one-time security prompt. Keeping one copy per project keeps the analysis re-runnable. → Download & Project Setup",
+    "crumbs": [
+      "Home",
+      "Quick Start"
+    ]
+  },
+  {
+    "objectID": "quickstart.html#prepare-the-input-files",
+    "href": "quickstart.html#prepare-the-input-files",
+    "title": "Quick Start",
+    "section": "3. Prepare the input files",
+    "text": "3. Prepare the input files\nDrop your .mzML files into the mzML/ folder and fill in three files (templates are included):\n\n\n\n\n\n\n\nFile\nPurpose\n\n\n\n\nparam.txt\nGlobal parameters (tolerances, peak-width windows, threads)\n\n\nbatch_info.csv\nSample list, in processing order, with sample/QC types\n\n\ntransition list\nTransitions and features to integrate\n\n\n\n→ Input Files reference",
+    "crumbs": [
+      "Home",
+      "Quick Start"
+    ]
+  },
+  {
+    "objectID": "quickstart.html#run-the-four-steps",
+    "href": "quickstart.html#run-the-four-steps",
+    "title": "Quick Start",
+    "section": "4. Run the four steps",
+    "text": "4. Run the four steps\nLaunch MRMhub and work through the terminal menu:\n\nData Validation — check input files for inconsistencies.\nPeak Finding & RT-shift estimation — produces RT_matrix.csv.\nPeak Integration — produces long.csv and quant_raw.csv.\nGenerate PDF results (optional) — per-transition / per-sample chromatogram PDFs.\n\n→ Running INTEGRATOR",
+    "crumbs": [
+      "Home",
+      "Quick Start"
+    ]
+  },
+  {
+    "objectID": "quickstart.html#review-the-results",
+    "href": "quickstart.html#review-the-results",
+    "title": "Quick Start",
+    "section": "5. Review the results",
+    "text": "5. Review the results\nOpen MRMhub-viz to inspect chromatograms, then refine global or per-feature parameters and re-run as needed. → MRMhub-viz Visualizer",
+    "crumbs": [
+      "Home",
+      "Quick Start"
+    ]
+  },
+  {
+    "objectID": "quickstart.html#continue-in-quant",
+    "href": "quickstart.html#continue-in-quant",
+    "title": "Quick Start",
+    "section": "6. Continue in QUANT",
+    "text": "6. Continue in QUANT\nHand long.csv to the QUANT R package for the post-processing pipeline:\nimport_data_mrmhub(\"path/to/long.csv\", import_metadata = TRUE)\n→ QUANT documentation ↗",
+    "crumbs": [
+      "Home",
+      "Quick Start"
+    ]
+  },
+  {
+    "objectID": "sharing.html",
+    "href": "sharing.html",
+    "title": "Sharing Results & Reproducible Workflows",
+    "section": "",
+    "text": "In addition to the CSV files containing the peak area results, the complete set of raw data, input files with all integration parameters, and individual integration results can be shared together with the lightweight MRMhub application (~1 MB). This allows others to fully inspect, reproduce, and modify the raw data processing of your dataset.\nFor documentation, individual integration results can be provided as PDF files. Alternatively, they can be explored interactively using the standalone MRMhub-viz application (~10 MB), which can also be included in the shared dataset.",
+    "crumbs": [
+      "Home",
+      "Manual",
+      "Sharing Results"
+    ]
+  },
+  {
+    "objectID": "sharing.html#next",
+    "href": "sharing.html#next",
+    "title": "Sharing Results & Reproducible Workflows",
+    "section": "Next",
+    "text": "Next\n\nQUANT documentation ↗ — continue with the post-processing pipeline once long.csv is produced.",
+    "crumbs": [
+      "Home",
+      "Manual",
+      "Sharing Results"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "INTEGRATOR",
+    "section": "",
+    "text": "INTEGRATOR is the stand-alone peak-integration module of the MRMhub pipeline. It takes converted mzML files, detects and integrates MRM peaks across all your samples, lets you review and fine-tune the results interactively, and exports tables ready for quantitation.\nIt ships as a small, self-contained executable for macOS and Windows — nothing to install, no Python or R required. Keep one copy in each analysis project folder and the whole project stays re-runnable.",
+    "crumbs": [
+      "Home",
+      "Overview"
+    ]
+  },
+  {
+    "objectID": "index.html#the-workflow",
+    "href": "index.html#the-workflow",
+    "title": "INTEGRATOR",
+    "section": "The workflow",
+    "text": "The workflow\n\n\n\n Raw vendor files  mzML (msconvert)  INTEGRATOR   long.csv  QUANT ↗\n\n\n\n\n\n\n\n\nNote\n\n\n\nJust want post-processing in R? INTEGRATOR is not required to use the QUANT R package — QUANT imports directly from vendor outputs (MassHunter, Skyline) as well. See the QUANT documentation ↗.",
+    "crumbs": [
+      "Home",
+      "Overview"
+    ]
+  },
+  {
+    "objectID": "index.html#where-to-start",
+    "href": "index.html#where-to-start",
+    "title": "INTEGRATOR",
+    "section": "Where to start",
+    "text": "Where to start\n\n\n🚀 Quick Start\nNew here? Get from raw files to integrated peaks in a handful of steps.\n\n\n📦 Download & Project Setup\nDownload the standalone executable, clear the first-launch security prompt, and set up one re-runnable copy per project.\n\n\n📄 Input Files\nReference for param.txt, batch_info.csv, and the transition list — plus how to tune peak integration.\n\n\n▶️ Running INTEGRATOR\nThe four processing steps: validation, peak finding, integration, and PDF output.\n\n\n🔍 MRMhub-viz Visualizer\nReview and refine integration results interactively.\n\n\n🤝 Sharing Results\nBundle raw data, parameters, and results for fully reproducible peak integration.\n\n\n\n\n\n\n\n\nTip\n\n\n\nLearn by example. The Dataset 3 workflow ↗ walks through a complete, real analysis — from raw-file conversion and INTEGRATOR settings to QUANT post-processing — with all input files shown. More end-to-end examples live at mrmhub-workflows ↗.",
+    "crumbs": [
+      "Home",
+      "Overview"
+    ]
+  },
+  {
+    "objectID": "index.html#next-step-in-the-pipeline",
+    "href": "index.html#next-step-in-the-pipeline",
+    "title": "INTEGRATOR",
+    "section": "Next step in the pipeline",
+    "text": "Next step in the pipeline\nOnce INTEGRATOR produces long.csv, hand it off to the QUANT R package for ISTD normalisation, drift/batch correction, calibration, QC, and reporting:\nimport_data_mrmhub(\"path/to/long.csv\", import_metadata = TRUE)\nSee the QUANT documentation ↗ to continue.",
+    "crumbs": [
+      "Home",
+      "Overview"
+    ]
+  }
+]
