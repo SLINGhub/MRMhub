@@ -30,7 +30,7 @@ setup and a full walkthrough are in the
 ## Building from source
 
 > **Note:** INTEGRATOR is being rewritten in Rust. The Rust crate lives in this directory
-> (`integrator/Cargo.toml`); until that lands, the reference implementation is the Python in `src/`.
+> (`integrator/Cargo.toml`).
 
 Once the Rust crate is in place:
 
@@ -49,5 +49,4 @@ binaries to the Release.
 | Path | Purpose |
 |------|---------|
 | `Cargo.toml`, `src/` | Rust crate (the executable) — *in progress* |
-| `src/*.py` | Legacy Python reference implementation (CWT peak picking, peak selection, ISTD handling, RT correction/alignment, EIC building) |
 | `MRMhub_plot.r` | Base-R per-transition PDF plotting, invoked by the executable |
