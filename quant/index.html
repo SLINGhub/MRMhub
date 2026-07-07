@@ -122,7 +122,7 @@
 </div>
 <!-- badges: start -->
 
-<p><strong>MRMhub-QUANT</strong> is the post-processing module of <a href="https://slinghub.github.io/MRMhub/" class="external-link">MRMhub</a>, distributed as the R package <code>mrmhub</code> (<code><a href="https://github.com/SLINGhub/MRMhub" class="external-link">library(mrmhub)</a></code>). It covers the full workflow from feature intensities to curated, QC-filtered concentrations, and works with any intensity data — such as from <a href="https://slinghub.github.io/MRMhub/" class="external-link">MRMhub</a>, Skyline, Agilent MassHunter, and generic CSV files. MRMhub-QUANT features:</p>
+<p><strong>MRMhub-QUANT</strong> turns targeted MRM feature intensities into curated, QC-filtered, quantified results. It is the post-processing module of <a href="https://slinghub.github.io/MRMhub/" class="external-link">MRMhub</a>, distributed as the R package <code>mrmhub</code> (<code><a href="https://github.com/SLINGhub/MRMhub" class="external-link">library(mrmhub)</a></code>), and works with any intensity data — from <a href="https://slinghub.github.io/MRMhub/integrator/" class="external-link">MRMhub-INTEGRATOR</a>, Skyline, Agilent MassHunter, or generic CSV files. MRMhub-QUANT features:</p>
 <ul>
 <li>
 <strong>Reproducible pipelines.</strong> Create reproducible computational pipelines with QC vizualizations. Script, re-run, and share it.</li>
@@ -131,6 +131,13 @@
 <li>
 <strong>A single data object.</strong> Data, metadata, and processing details are stored in single sharable data object (<code>MRMhubExperiment</code>).</li>
 </ul>
+<div class="float">
+<img src="reference/figures/hero-runsequence.png" alt="A RunSequence overview of a 499-injection MRM batch: quality-control samples (TQC, BQC, blanks, LTR) mapped across the analysis order alongside the study samples, with batch boundaries and a run-time summary — one of the QC views produced from a single command."><div class="figcaption">A RunSequence overview of a 499-injection MRM batch: quality-control samples (TQC, BQC, blanks, LTR) mapped across the analysis order alongside the study samples, with batch boundaries and a run-time summary — one of the QC views produced from a single command.</div>
+</div>
+<p style="margin: 1em 0;">
+<a href="articles/tutorial-00-first-analysis.html" class="btn btn-primary" role="button">Run your first analysis (5 min) →</a>
+</p>
+<p>Prefer point-and-click? <code><a href="reference/run_walkthrough.html">run_walkthrough()</a></code> opens a guided app that validates your data and generates the workflow script (one-time <code>install.packages(c("shiny", "bslib"))</code>).</p>
 <div style="text-align: center; margin: 1.5em 0 0.5em;">
 <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 840 130" style="max-width: 840px; width: 100%; height: auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;"><style>
     .wf-box { rx: 8; ry: 8; stroke-width: 1.5; cursor: pointer; transition: opacity 0.2s; }
