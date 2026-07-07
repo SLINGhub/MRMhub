@@ -1,22 +1,58 @@
 ---
 title: "Sharing Results & Reproducible Workflows"
 description: |
-  How to share a complete, reproducible INTEGRATOR peak-integration dataset — raw data, input
-  files, parameters, and results — together with the lightweight applications.
+  Sharing a complete, reproducible INTEGRATOR peak-integration dataset (raw data, input files,
+  parameters, and results) together with the accompanying applications.
 ---
 
-In addition to the CSV files containing the peak area results, the
-complete set of raw data, input files with all integration parameters,
-and individual integration results can be shared together with the
-lightweight **MRMhub** application (\~1 MB). This allows others to fully
-inspect, reproduce, and modify the raw data processing of your dataset.
+Because INTEGRATOR and MRMhub-viz are self-contained executables that require no installation, a
+complete peak-integration dataset can be shared as a single folder, allowing others to inspect,
+reproduce, and modify the raw-data processing. Beyond the CSV tables of peak areas, the raw data,
+the input files with all integration parameters, and the individual integration results can be
+bundled together with the applications.
 
-For documentation, individual integration results can be provided as PDF
-files. Alternatively, they can be explored interactively using the
-standalone **MRMhub-viz** application (\~10 MB), which can also be
-included in the shared dataset.
+## What to bundle
+
+The components below make a shared dataset fully self-contained. The **raw data and input files**
+are what is needed to re-run the processing; the **results** allow the outcome to be inspected
+without re-running; and the **applications** provide the means to do either.
+
+### Raw data and input files
+
+| Item | Purpose |
+|---|---|
+| `mzML/` folder | The converted raw data on which integration is performed. |
+| `param.txt` | All global parameters (tolerances, peak-width windows, RT-shift bounds, threads). |
+| `run_order.csv` | The sample list, in processing order, with sample/QC types and reference-sample designations. |
+| `feature_list.csv` | The transitions and features to integrate, including any per-feature overrides. |
+
+### Results
+
+| Item | Purpose |
+|---|---|
+| `long.csv` | The canonical long-format results and the hand-off to the QUANT R package. |
+| `quant_raw.csv` | The wide-format table of peak areas. |
+| `RT_matrix.csv` | The finalised integration borders, including any manual adjustments — required to reproduce the exact integration. |
+| `misc/` folder | The binary integration results read by MRMhub-viz for interactive review. |
+| PDF folders (optional) | `by_transition`, `by_transition_low`, and `by_sample` PDFs documenting the integration (see [Running INTEGRATOR — Step 4](running.qmd)). |
+
+### Applications
+
+| Item | Purpose |
+|---|---|
+| **MRMhub** (~1 MB) | The integration application, to re-run or modify any processing step. |
+| **MRMhub-viz** (~10 MB) | The visualizer, to review the integration interactively (see [MRMhub-viz](viz.qmd)). |
+| `MRMhub_plot.r` | The base-R script that generates the PDF results; it can be edited to tailor the plot layout. |
+
+::: {.callout-tip}
+Retaining one copy of the applications in each analysis project folder keeps the project
+reproducible and self-documenting: a recipient can open MRMhub-viz to inspect every peak, or re-run
+INTEGRATOR to reproduce or adjust the integration, without any installation.
+:::
 
 ## Next
 
+- [MRMhub-viz Visualizer](viz.qmd) — the interactive tool bundled with the dataset for review.
+- [Running INTEGRATOR](running.qmd) — the processing steps that generate these results.
 - [QUANT documentation ↗](https://slinghub.github.io/MRMhub/quant/) — continue with the
   post-processing pipeline once `long.csv` is produced.

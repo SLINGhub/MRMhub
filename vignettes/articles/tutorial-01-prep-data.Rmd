@@ -24,12 +24,16 @@ if (fs::file_exists("metadata_template.xlsx")) fs::file_delete("metadata_templat
 if (fs::file_exists("metadata_msorganiser_template.xlsx")) fs::file_delete("metadata_msorganiser_template.xlsx")
 ```
 
-<div class="alert alert-info" role="alert">
-<strong>See also:</strong>
-<a href="manual-05a-which-importer.html">Import and prepare data files</a> (decision guide) |
-<a href="tutorial-10-metadata-validation.html">Validating Metadata</a> (error checking) |
-<a href="manual-05-data-import.html">Data Import Reference</a> (full API)
-</div>
+::: {.callout .callout-note}
+**Time:** ~10 min &nbsp;|&nbsp; **Level:** Beginner &nbsp;|&nbsp; **Prerequisites:** [Your First Analysis](tutorial-00-first-analysis.html)
+:::
+
+::: {.callout .callout-note}
+**See also:**
+[Import and prepare data files](manual-05a-which-importer.html) (decision guide) |
+[Validating Metadata](tutorial-10-metadata-validation.html) (error checking) |
+[Data Import Reference](manual-05-data-import.html) (full API)
+:::
 
 # Analytical Data
 
@@ -54,8 +58,8 @@ mexp <- import_data_mrmhub(mexp,
 
 # Add analysis data from a CSV file (replaces all previous data)
 mexp2 <- MRMhubExperiment()
-mexp2 <- import_data_csv(mexp, 
-                        path = "data/plain_wide_dataset.csv", 
+mexp2 <- import_data_csv_wide(mexp2,
+                        path = "data/plain_wide_dataset.csv",
                         variable_name = "area",
                         import_metadata = TRUE)
 ```
@@ -84,7 +88,7 @@ Metadata can be imported from Excel Sheets, CSV files, or R data frames. Further
 metadata template file can be used to prepare metadata in a structured way.
 
 Preparation of metadata is often a manual step, where the information is collected from various sources. 
-To facilitate this process, MRMhub provides metadata templates in Excel format. 
+To support this process, MRMhub provides metadata templates in Excel format.
 These templates contain column headers and instructions on how to use. 
 In the beginning, it is recommended to start from a metadata template and fill in 
 the required information. Templates for all metadata types supported by MRMhub can be obtained via:

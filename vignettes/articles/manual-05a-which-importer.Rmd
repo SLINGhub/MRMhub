@@ -19,27 +19,27 @@ editor_options:
 knitr::opts_chunk$set(collapse = TRUE, results = FALSE, message = FALSE, comment = "#>")
 ```
 
-Loading an experiment takes two steps: import the **peak table** produced by your
+Loading an experiment takes two steps: import the **peak table** produced by the
 integration software, then attach the **metadata** that describes samples, features,
 and standards. MRMhub stores everything internally in **long** format (one row per
 sample × feature); **wide** files (one row per sample, one column per feature) are
 pivoted automatically on import.
 
-<div class="callout callout-getstarted">
+::: {.callout .callout-getstarted}
 
 **Start from a blank template.** Save a ready-made metadata workbook, fill it in, and
-load it back — no need to build the tables from scratch.
+load it back; there is no need to build the tables from scratch.
 
 ```{r, eval = FALSE}
 save_metadata_templates()              # Individual metadata tables (XLSX)
 save_metadata_msorganiser_template()   # msorganizer metadata template (XLSX)
 ```
 
-</div>
+:::
 
 ## Data import
 
-Pick the importer that matches the software that produced your peak table. Each reads
+Pick the importer that matches the software that produced the peak table. Each reads
 a CSV/TSV file and returns an `MRMhubExperiment`.
 
 Click a **Format** to see the file structure and column meanings.
@@ -73,11 +73,11 @@ Click a **Structure** to see the table columns and what each one is for.
 A minimal import looks like this:
 
 ```{r, eval = FALSE}
-exp <- import_data_mrmhub("datasets/integrator_output.tsv")
+exp <- import_data_mrmhub(path = "datasets/integrator_output.tsv")
 exp <- import_metadata_msorganiser(exp, path = "datasets/metadata.xlsx")
 ```
 
-## See Also
+## Next Steps
 
 - [Data file structures](manual-05b-data-file-structures.html) — per-importer file layout and column reference
 - [Metadata table structures](manual-06a-metadata-table-structures.html) — per-table columns and what each is for

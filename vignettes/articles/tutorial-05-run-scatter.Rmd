@@ -22,7 +22,11 @@ knitr::opts_chunk$set(
 
 `plot_runscatter()` visualises feature signals across the analysis sequence, helping to identify
 trends, detect outliers, and assess analytical performance. This tutorial demonstrates the main
-parameters using a single feature (`CE 18:1`) from the built-in lipidomics dataset.
+parameters using a single feature (`TG 48:2 [-18:1]`) from the built-in lipidomics dataset.
+
+::: {.callout .callout-note}
+**Time:** ~10 min &nbsp;|&nbsp; **Level:** Intermediate &nbsp;|&nbsp; **Prerequisites:** [Basic workflow](tutorial-02-basic-workflow.html)
+:::
 
 ## Setup
 
@@ -42,7 +46,7 @@ A minimal call plots all QC and sample types for one feature.
 
 ```{r}
 #| fig.alt: >
-#|   Basic RunScatter plot of CE 18:1
+#|   Basic RunScatter plot of TG 48:2 [-18:1]
 #| results: false 
 #| message: false
 plot_runscatter(mexp, variable = "intensity",

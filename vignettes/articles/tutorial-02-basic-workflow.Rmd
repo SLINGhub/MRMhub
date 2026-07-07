@@ -22,25 +22,23 @@ set.seed(1041)
 options(dplyr.print_max = 10)
 ```
 
-<div class="alert alert-info" role="alert">
-<strong>Time:</strong> ~15 minutes &nbsp;|&nbsp;
-<strong>Level:</strong> Beginner–Intermediate &nbsp;|&nbsp;
-<strong>Builds on:</strong> <a href="tutorial-00-first-analysis.html">Your First Analysis</a> (5-minute minimal demo)
-</div>
+::: {.callout .callout-note}
+**Time:** ~15 min &nbsp;|&nbsp; **Level:** Beginner–Intermediate &nbsp;|&nbsp; **Prerequisites:** [Your First Analysis](tutorial-00-first-analysis.html)
+:::
 
-<div class="alert alert-warning" role="alert">
-<strong>How this differs from "Your First Analysis":</strong> That tutorial uses 
-bundled demo data and covers only import, normalize, and export in 5 minutes. 
-This tutorial uses real file paths, imports metadata via MSOrganiser, applies 
-drift and batch correction, runs QC filtering, and exports a full report — 
+::: {.callout .callout-caution}
+**How this differs from "Your First Analysis":** That tutorial uses
+bundled demo data and covers only import, normalize, and export in 5 minutes.
+This tutorial uses real file paths, imports metadata via MSOrganiser, applies
+drift and batch correction, runs QC filtering, and exports a full report —
 a realistic end-to-end workflow.
-</div>
+:::
 
 This tutorial outlines the key steps in a MRMhub workflow, based on a
 lipidomics dataset. See the [Lipidomics Data Processing](tutorial-03-lipidomics-workflow.html) 
 tutorial for an even more detailed example.
 
-These examples are simplified and may not apply to your data and
+These examples are simplified and may not apply to every dataset and
 experimental setup. See other tutorials and recipes for additional
 workflows and data types.
 
@@ -122,12 +120,12 @@ myexp <- import_metadata_msorganiser(
 )
 ```
 
-<div class="alert alert-info" role="alert">
-The validation checks may produce warnings. Setting 
-<code>ignore_warnings = TRUE</code> allows the import to proceed, but 
-warnings are still displayed in the console (marked with <code>*</code>). 
+::: {.callout .callout-note}
+The validation checks may produce warnings. Setting
+`ignore_warnings = TRUE` allows the import to proceed, but
+warnings are still displayed in the console (marked with `*`).
 Review them to ensure nothing critical is missed.
-</div>
+:::
 
 <details>
 <summary><strong>Validating metadata before import</strong></summary>
@@ -187,6 +185,11 @@ myexp <- filter_features_qc(
 )
 ```
 
+Note that the drift correction above uses the study samples
+(`ref_qc_types = "SPL"`) as the reference. Study-sample smoothing is only
+appropriate for large, well-randomised sample sets; the QC-based convention
+(Broadhurst et al. 2018) instead fits the drift trend on dedicated QC injections.
+
 <details>
 <summary><strong>Processing step order</strong></summary>
 
@@ -244,19 +247,17 @@ save_dataset_csv(
 saveRDS(myexp, file = tempfile(fileext = ".rds"), compress = TRUE)
 ```
 
-<div class="alert alert-success" role="alert">
-The <code>.rds</code> file preserves the entire <code>MRMhubExperiment</code> 
-object. A colleague can open it in R and run their own processing, plots, 
-and QC checks — no code needed to reproduce your data state.
-</div>
+::: {.callout .callout-tip}
+The `.rds` file preserves the entire `MRMhubExperiment`
+object. A colleague can open it in R and run their own processing, plots,
+and QC checks; no code is needed to reproduce the data state.
+:::
 
 ## Next Steps
 
-| Goal | Article |
-|------|---------|
-| More detailed lipidomics example | [Lipidomics Workflow](tutorial-03-lipidomics-workflow.html) |
-| Drift correction methods | [Drift Correction](tutorial-04-drift-correction.html) |
-| Batch correction options | [Batch Correction](tutorial-06-batch-correction.html) |
-| QC exploration with PCA | [PCA Exploration](tutorial-09-pca-exploration.html) |
-| External calibration | [External Calibration & QC](recipe-01-ext-calibration-qc.html) |
+- [Lipidomics Workflow](tutorial-03-lipidomics-workflow.html) — more detailed lipidomics example
+- [Drift Correction](tutorial-04-drift-correction.html) — drift correction methods
+- [Batch Correction](tutorial-06-batch-correction.html) — batch correction options
+- [PCA Exploration](tutorial-09-pca-exploration.html) — QC exploration with PCA
+- [External Calibration & QC](recipe-01-ext-calibration-qc.html) — external calibration
 

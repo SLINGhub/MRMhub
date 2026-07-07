@@ -1,0 +1,122 @@
+---
+title: "Peak Detection and Integration Algorithm"
+description: |
+  The algorithm behind INTEGRATOR — memory-efficient design, input validation, RT-shift
+  correction, CWT feature detection, integration-border determination, and baseline modes.
+---
+
+This page is a reference for the algorithm that detects, picks, and integrates MRM peaks inside
+INTEGRATOR. It describes *what the software does internally*; for the operational menu steps see
+[Running INTEGRATOR](running.qmd), and for how to set each parameter mentioned below see
+[Input Files](input-files.qmd).
+
+## Implementation
+
+INTEGRATOR and its viewer app are implemented as a self-contained, light-weight application for
+macOS (Apple Silicon) and Windows 11 (x64) that requires no installation. It provides a terminal
+user interface, while its viewer (**MRMhub-viz**) comes with a graphical interface.
+
+Considering the scalability to large-scale projects (e.g. > 10,000 samples), INTEGRATOR avoids
+loading the data from all mzML files into memory simultaneously. Instead, it first surveys peak features across
+all samples and writes the information to the file system as binary files, which are reloaded as
+needed in subsequent steps. This design significantly reduces the memory footprint and processing
+time for large-scale datasets, making it executable on relatively modest hardware — such as a
+standard laptop.
+
+## Sample and transition-list validation
+
+The mzML file names in the sample-list file are checked against the actual files in the data
+directory provided by the user. Files absent from the directory are reported in a text file
+(`missing_files.txt`) so the user can check them. The input transition list is used to assign
+transition names and attributes to the chromatograms in each mzML file by matching precursor-ion
+*m/z*, product-ion *m/z*, and RT. Transitions that fail to match any chromatogram are skipped and
+reported in a text file (`missing_compounds.txt`). Chromatograms in mzML files without any
+assignment are also excluded from the analysis. The user may proceed with the analysis even if some
+files or compounds are missing.
+
+Where the same transition (same Q1/Q3 values) with identical or nearly identical MRM start and end
+windows appears two or more times in an mzML file, the user is alerted and can choose which
+transition/MRM index to map to which feature in the transition input file.
+
+## Retention-time shift correction
+
+The algorithm begins with an initial RT-drift estimation. For each transition, it treats the ion
+trace in the user-designated **reference sample(s)** as the reference pattern and uses it to track
+potential RT drift in all samples. The reference samples are expected to be selected from an early
+part of the analysis sequence, and not dispersed throughout the entire sequence. The chromatograms
+in all samples are then aligned to those of the reference samples within individual MRM windows,
+yielding estimates of the RT shifts.
+
+The user can set a maximum allowance of RT drift (in minutes) in the parameter file (`param.txt`)
+using the `RT_shift` parameter. The syntax is `RT_shift = [x, y]`, where *x* and *y* are the forward
+and backward drift allowances: the algorithm interprets that the RT drift is no more than *x*
+minutes earlier and no more than *y* minutes later than the expected RT in the reference samples. In
+addition, the `RT_shift_bound` parameter restricts the RT shift between adjacent sample injections.
+
+RT-shift correction can be disabled by setting `RT_shift = [0, 0]`, which can help for datasets with
+strong variability of features and/or interferences in the chromatograms, where the
+cross-correlation approach may yield inaccurate results. In the absence of chromatographic peaks for
+blank samples, their RT shifts are determined by interpolation from the shifts observed in adjacent
+samples of the analytical sequence.
+
+When the user chooses to process only a specific part of the chromatograms — by globally setting an
+RT window relative to the expected RT — RT-shift correction is performed only on the corresponding
+RT window.
+
+## Feature detection
+
+INTEGRATOR performs a first-round search of peak features in all files using continuous wavelet
+transform (CWT)–based pattern matching. For each MRM window, using the resulting survey of features,
+the algorithm determines the **target number of features per transition** as the median number of
+features detected in the initial survey, and treats it as the upper limit for the number of stable,
+consistent features to report in the second-round survey.
+
+In the second round, the algorithm maps all peak features across the samples, connecting each peak
+in one sample to the corresponding peak in the next sample so that every reported feature is stable
+(i.e. can be detected as a feature) and consistent. The key part of this mapping is that peaks are
+matched while accounting for the RT drift estimated above. The user sets the `RT_tol` parameter to
+indicate the maximum deviation of RT from the value given in the method table. If no feature can be
+detected within this bound, the integrated area is reported as zero.
+
+## Determination of peak integration borders
+
+In the final step, the algorithm goes through the transitions to finalize the integration borders.
+
+For the simple case of unimodal ion traces, the user can set the `peak_width` parameter quartet
+`[w, x, y, z]` to define the default start and end integration points. This can be customized for
+individual analytes with a `peak width` column in the transition-list table. The user can also set
+the `uniform_width` option (its own column in the transition table) so that the integration width
+remains the same between samples for a given transition, and can set fixed **left/right integration
+bounds** to fix the integration points with respect to the reference samples.
+
+In complex cases — ion traces showing multiple peaks with or without baseline separation — the
+algorithm searches for valleys between features to cut the integration in the drift-corrected RT
+space, reconverts the border positions to the original RT space, and writes all RT borders to a CSV
+file (`RT_matrix.csv`) for user inspection and optional manual adjustment before peak areas are
+calculated.
+
+## Baseline determination
+
+The baseline is determined on the *x* axis from the integration borders. On the *y* axis, three
+modes are available:
+
+- **5th percentile (default)** — a horizontal baseline set at the 5th percentile of the intensities
+  within the integration window.
+- **`v_drop`** — a horizontal baseline set at the minimum of the left and right border *y* values of
+  the curve.
+- **Valley-to-valley** — a sloped baseline fitted between the points where the left and right
+  integration borders intersect the ion trace.
+
+::: {.callout-note}
+**Where to set these parameters.** `RT_shift`, `RT_shift_bound`, `RT_tol`, `peak_width`,
+`uniform_width`, and the fixed integration bounds are all configured in `param.txt` and the
+transition list — see [Input Files](input-files.qmd) for the syntax, defaults, and tuning
+recommendations. To see the algorithm in action across the four processing steps, see
+[Running INTEGRATOR](running.qmd).
+:::
+
+## Next
+
+- [Input Files](input-files.qmd) — set `param.txt` and the transition list that drive the steps above.
+- [Running INTEGRATOR](running.qmd) — the four processing steps that execute this algorithm.
+- [MRMhub-viz Visualizer](viz.qmd) — review the detected features and integration borders.

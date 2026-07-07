@@ -39,13 +39,13 @@ functions throughout the package.
 |  | `istd_feature_id` | The `feature_id` of the internal standard used for normalization. |
 |  | `analyte_id` | Identifies the analyte (compound). |
 
-<div class="alert alert-info" role="alert">
-<strong>Why <code>analysis_id</code> instead of <code>sample_id</code>?</strong>
-A sample may be measured multiple times (replicates, different methods). Each 
-injection needs a unique identifier. Similarly, one analyte can be measured 
-through multiple transitions, so <code>feature_id</code> (not <code>analyte_id</code>) 
+::: {.callout .callout-note}
+**Use of `analysis_id` rather than `sample_id`**
+A sample may be measured multiple times (replicates, different methods). Each
+injection needs a unique identifier. Similarly, one analyte can be measured
+through multiple transitions, so `feature_id` (not `analyte_id`)
 is the primary key.
-</div>
+:::
 
 ## QC Types (Sample Types)
 
@@ -93,7 +93,7 @@ DT::datatable(
 QC types are shown with consistent colors and point shapes in all MRMhub plots,
 allowing quick visual identification across different figures.
 
-## See Also
+## Next Steps
 
 - [Sample Types & QC Roles](manual-00-sample-types.html) — detailed definitions and usage rules
 - [Data Structures](manual-01-data-structure.html) — overview of all tables

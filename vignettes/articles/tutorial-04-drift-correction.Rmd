@@ -31,11 +31,15 @@ processed data can be corrected, such as `intensity` or `conc` values.
 These drift correction functions have various options for customization, please refer the manual
 page on [Drift and Batch Correction](manual-07-drift-batch-correction.html) for more details.
 
+::: {.callout .callout-note}
+**Time:** ~15 min &nbsp;|&nbsp; **Level:** Intermediate &nbsp;|&nbsp; **Prerequisites:** [Basic workflow](tutorial-02-basic-workflow.html)
+:::
+
 ## Import data
 
 In this tutorial, we import pre-calculated raw concentration values from a CSV file. This file must
 contain a column with batch information (`batch_id`) if batch-wise correction should be applied, see
-`import_data_csv()` for more information.
+`import_data_csv_wide()` for more information.
 
 ```{r setup}
 #| results: false  
@@ -44,16 +48,16 @@ library(mrmhub)
 
 myexp <- mrmhub::MRMhubExperiment()
 
-myexp <- import_data_csv(
+myexp <- import_data_csv_wide(
   myexp,
-  path = "smooth-testdata.csv", 
-  variable_name = "conc", 
+  path = "smooth-testdata.csv",
+  variable_name = "conc",
   import_metadata = TRUE)
 ```
 
 ## QC-based smoothing
 
-Now we apply a QC-based drift correction using cubic spline. See `correct_drift_cubicspline()` for
+We apply a QC-based drift correction using cubic spline. See `correct_drift_cubicspline()` for
 more information.
 
 ```{r}
@@ -88,7 +92,7 @@ Above, we observe that the QC samples do not fully represent the trends of the s
 discrepancy can occur when the QC samples, which often based on pooled samples, differ in handling
 or properties from the study samples.
 
-We therefore now try a sample-based drift correction gaussian kernel smoothing. See
+We therefore apply a sample-based drift correction using gaussian kernel smoothing. See
 `correct_drift_gaussiankernel()` for more information.
 
 ```{r}
@@ -186,11 +190,12 @@ plot_runscatter(mexp_drift, variable = "conc", qc_types = c("BQC", "SPL"),
 
 ## Method comparison
 
-`MRMhub` provides three drift correction methods. Loess and cubic spline are typically used with
-QC samples as the reference, gaussian kernel smoothing with study samples. The method comparison
-below summarises the typical use cases — see the
+`MRMhub` provides four drift correction methods. Loess and cubic spline are typically used with
+QC samples as the reference, gaussian kernel smoothing with study samples; a fourth method,
+generalized additive model (GAM) smoothing via `correct_drift_gam()`, is also available. The method
+comparison below summarises the typical use cases of the three most common — see the
 [Drift and Batch Correction (reference)](manual-07-drift-batch-correction.html) for the full
-parameter description.
+parameter description of all four.
 
 | Method | Function | Reference samples | Typical use |
 |--------|----------|-------------------|-------------|

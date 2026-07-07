@@ -29,24 +29,24 @@ if(fs::file_exists("metadata_msorganiser_template.xlsx")) fs::file_delete("metad
 
 Metadata in this context refers to analysis metadata, i.e., data that
 annotate the analytical data. Metadata can be retrieved from the
-imported analysis data file as far as available, or can be imported from
+imported analysis data file where available, or imported from
 separate files or R data frames.
 
-Integrity of metadata and data is instrumental for correct and smooth
-post processing of data. MRMhub therefore inspects imported data/metadata
-for completeness of data and consistency of IDs used across differet
-metadata tables. After importing metadata a summary of identified error,
-warnings and notes concerning metadata is printed to the console, to
-allow user to identify and adress possible issues.
+Integrity of metadata and data is essential for correct post-processing.
+MRMhub therefore inspects imported data and metadata for completeness and
+for consistency of the IDs used across the different metadata tables.
+After metadata import, a summary of the identified errors, warnings, and
+notes is printed to the console so that possible issues can be identified
+and addressed.
 
 ### Metadata formats and templates
 
-The structure and required/optional columns for each metadata type is
-descrived in the Manual and in the help of the corresponding import
-functions.
+The structure and the required and optional columns for each metadata type
+are described in the Manual and in the help pages of the corresponding
+import functions.
 
-To obtain templates for metadata, an Excel file containing all template
-metadata table templates can be saved.
+To obtain metadata templates, an Excel file containing all metadata table
+templates can be saved.
 
 ```{r}
 mrmhub::save_metadata_templates()
@@ -54,19 +54,19 @@ mrmhub::save_metadata_templates()
 
 ### Importing metadata from files/sheets
 
-First we import the analysis data as outlined in "Importing data". In
-this case we explicitly do not import any metadata present in the
-analysis data, i.e., we only import the peak areas.
+The analysis data are first imported as outlined in "Importing data". In
+this case, metadata present in the analysis data is not imported; only the
+peak areas are read.
 
 ```{r}
 library(mrmhub)
 mexp <- mrmhub::MRMhubExperiment()
 
 data_path <- "datasets/sPerfect_MRMhub.tsv"
-mexp <- import_data_mrmhub(data = mexp, path = data_path, import_metadata = TRUE)
+mexp <- import_data_mrmhub(data = mexp, path = data_path, import_metadata = FALSE)
 ```
 
-Now we can add corresponding metadata file-by-file
+The corresponding metadata can then be added file by file.
 
 ```{r}
 mexp <- import_metadata_analyses(mexp, 
@@ -80,9 +80,9 @@ mexp <- import_metadata_features(mexp,
 ```
 
 Metadata can also be imported from sheets of an Excel workbook, which
-allows to store all metadata in one file. \
-In this case below we add metadata on internal standard and response
-curves to the MRMhubExperiment object
+allows all metadata to be stored in one file. \
+Here, metadata on internal standards and response curves is added to the
+MRMhubExperiment object
 
 ```{r}
 mexp <- import_metadata_istds(mexp, 
@@ -91,9 +91,9 @@ mexp <- import_metadata_istds(mexp,
                               ignore_warnings= TRUE)
 ```
 
-Furthermore, metadata can be imported from R `data.frame` objects, thus
-allowing users to obtain metadata from additional sources, e.g. from
-databases or a LIMS.
+Furthermore, metadata can be imported from R `data.frame` objects, which
+allows metadata to be obtained from additional sources, e.g. databases or
+a LIMS.
 
 ```{r}
 df_qcinfo <- readr::read_table(file = "datasets/qc_metadata.txt")
@@ -103,9 +103,9 @@ mexp <- import_metadata_qcconcentrations(mexp, table = df_qcinfo)
 ### Importing MSOrganiser metadata file template
 
 Another option to import metadata is via the MSOrganiser template file,
-an Excel file (`.xlsx`). This template offers tables for all
-metadata types supported by MRMhub, with options to do perform checks on
-validatiy and integrity of the metadata.
+an Excel file (`.xlsx`). This template provides tables for all
+metadata types supported by MRMhub, with options to check the validity
+and integrity of the metadata.
 
 The template can be obtained from <https://github.com/SLINGhub/mrmhub> or
 via a mrmhub function
@@ -115,8 +115,8 @@ mrmhub::save_metadata_msorganiser_template()
 ```
 
 Only the metadata tables required by the intended processing workflow
-need to be completed. With following import function all completed
-tables will be imported.
+need to be completed. The following import function imports all completed
+tables.
 
 ```{r}
 mexp <- import_metadata_msorganiser(mexp, 
@@ -124,4 +124,8 @@ mexp <- import_metadata_msorganiser(mexp,
                                     ignore_warnings= TRUE)
 ```
 
-### 
+## Next Steps
+
+- [Import and prepare data files](manual-05a-which-importer.html) — the importer decision table
+- [Metadata table structures](manual-06a-metadata-table-structures.html) — per-table columns and templates
+- [Data Import](manual-05-data-import.html) — importing the measurement data

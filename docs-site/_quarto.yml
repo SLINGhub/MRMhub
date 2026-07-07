@@ -5,6 +5,8 @@ project:
 website:
   title: "MRMhub"
   navbar:
+    background: "#2C3E50"   # brand navy title bar (shared across all three sites)
+    foreground: "#ffffff"
     left:
       - text: Home
         href: index.qmd
@@ -19,5 +21,9 @@ website:
 
 format:
   html:
-    theme: cosmo
+    # `brand` after `cosmo` so _brand.yml (steel-blue primary) overrides cosmo's
+    # default blue; navy navbar is set above via website.navbar.background.
+    theme:
+      - cosmo
+      - brand
     toc: true

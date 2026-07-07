@@ -44,13 +44,13 @@ categories, each divided into tables (data frames).
   <text x="35" y="95" font-size="10" fill="#333">dataset_orig — original imported data</text>
   <text x="35" y="112" font-size="10" fill="#333">dataset — annotated and processed data</text>
   <text x="35" y="129" font-size="10" fill="#333">dataset_filtered — QC-filtered output</text>
-  <text x="35" y="146" font-size="10" fill="#333">feature_metrics — QC metrics per feature</text>
+  <text x="35" y="146" font-size="10" fill="#333">metrics_qc — QC metrics per feature</text>
   <rect x="310" y="55" width="270" height="100" rx="6" fill="#f5e0c8" stroke="#c87f3b"/>
   <text x="445" y="75" text-anchor="middle" font-weight="600" font-size="12" fill="#7a4a1a">METADATA</text>
   <text x="325" y="95" font-size="10" fill="#333">annot_analyses — sample/run annotations</text>
   <text x="325" y="112" font-size="10" fill="#333">annot_features — feature annotations</text>
   <text x="325" y="129" font-size="10" fill="#333">annot_istds — ISTD concentrations</text>
-  <text x="325" y="146" font-size="10" fill="#333">annot_batches / annot_standards / ...</text>
+  <text x="325" y="146" font-size="10" fill="#333">annot_batches / annot_qcconcentrations / ...</text>
   <rect x="20" y="170" width="560" height="50" rx="6" fill="#d4e8d4" stroke="#5a9a5a"/>
   <text x="300" y="192" text-anchor="middle" font-weight="600" font-size="12" fill="#2c5f2c">STATUS AND FLAGS</text>
   <text x="300" y="210" text-anchor="middle" font-size="10" fill="#333">is_istd_normalized, is_quantitated, var_drift_corrected, var_batch_corrected, ...</text>
@@ -65,7 +65,7 @@ categories, each divided into tables (data frames).
 | Raw Data | `dataset_orig` | Original imported data — never modified after import. |
 | Processed Data | `dataset` | Working copy with all annotations and processing results. |
 | QC-filtered Data | `dataset_filtered` | Subset of `dataset` passing QC criteria. |
-| Feature Metrics | `feature_metrics` | Quality control metrics calculated per feature. |
+| Feature Metrics | `metrics_qc` | Quality control metrics calculated per feature. |
 
 ## Metadata Tables
 
@@ -76,7 +76,7 @@ categories, each divided into tables (data frames).
 | Internal Standards | `annot_istds` | ISTD concentrations added to each sample. |
 | Batches | `annot_batches` | Start and end boundaries for each analytical batch. |
 | Response Curves | `annot_responsecurves` | Dilution series definitions for response QC (RQC). |
-| Calibration | `annot_standards` | Known concentrations of standards in calibration and QC samples. |
+| Calibration | `annot_qcconcentrations` | Known concentrations of standards in calibration and QC samples. |
 
 ## How They Connect
 
@@ -99,7 +99,7 @@ mexp$annot_analyses
 mexp$annot_features
 ```
 
-## See Also
+## Next Steps
 
 - [Data Identifiers](manual-02-data-identifiers.html) — detailed explanation of ID columns
 - [Feature Variables](manual-03-feature-variables.html) — all measurement variables

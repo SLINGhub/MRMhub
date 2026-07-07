@@ -1,210 +1,95 @@
 ---
 title: "Input Files"
 description: |
-  Reference for the INTEGRATOR input files — global parameters (param.txt), the sample list
-  (batch_info.csv), and the transition/feature list — plus guidance on tuning peak integration.
+  Reference for the INTEGRATOR input files: the global parameters (param.txt), the sample list
+  (run_order.csv), and the transition/feature list, with guidance on tuning peak integration.
 ---
 
-INTEGRATOR is driven by three input files plus the `mzML/` data folder. This page is the
-reference for each.
+INTEGRATOR reads three input files together with the `mzML/` data folder. This page documents
+each of them. For how the software uses these settings internally, see the
+[Peak Detection and Integration Algorithm](algorithm.qmd).
 
 ## Global parameters (param.txt)
 
-The software requires global parameter file (param.txt by default),
-which points the software to the required information.
+The software requires a global parameter file (`param.txt` by default), which directs it to the
+required information and controls peak detection and integration.
 
-+--------------+--------------------+--------------+
-| Par ameter   | Description        | Default      |
-+==============+====================+==============+
-| mzML_files   | Location of mzML   | mzML         |
-|              | files to be used   |              |
-|              | for peak           |              |
-|              | integration        |              |
-+--------------+--------------------+--------------+
-| batch_info   | Input file with    | b a          |
-|              | mzML file names    | tch_info.csv |
-|              | and meta           |              |
-|              | information (see   |              |
-|              | below)             |              |
-+--------------+--------------------+--------------+
-| tran         | Input file with    | fea t        |
-| sition_list  | MRM transition     | ure_info.csv |
-|              | information (see   |              |
-|              | below)             |              |
-+--------------+--------------------+--------------+
-| peak_width   | \[w, x, y, z\]     | \[0.17,      |
-|              | define allowed     | 0.05, 0.1,   |
-|              | integration        | 0.35\]       |
-|              | bounds:\           |              |
-|              | left = w–x min,    |              |
-|              | right = y–z min    |              |
-|              | from apex (see     |              |
-|              | below).            |              |
-+--------------+--------------------+--------------+
-| num_t hreads | Number of CPU      | 2            |
-|              | threads to be used |              |
-|              | for integration    |              |
-|              | task.              |              |
-+--------------+--------------------+--------------+
-| mz_tol       | Tolerance between  | 0.06         |
-|              | indicated m/z and  |              |
-|              | detected m/z       |              |
-|              | values             |              |
-+--------------+--------------------+--------------+
-| RT_tol       | Tolerance between  | 0.1          |
-|              | indicated RT and   |              |
-|              | detected RT.       |              |
-|              | Note\*\*: This is  |              |
-|              | a key setting in   |              |
-|              | processing or      |              |
-|              | complex ch         |              |
-|              | romatograms.       |              |
-+--------------+--------------------+--------------+
-| RT \_shift   | \[x, y\] indicate  | \[-0.2,      |
-|              | that RT drift is   | 0.2\]        |
-|              | at most x minutes  |              |
-|              | left and y minutes |              |
-|              | right of the peak  |              |
-|              | in the reference   |              |
-|              | samples            |              |
-+--------------+--------------------+--------------+
-| RT\_         | Maximum allowed RT | 0.1          |
-| shift_bound  | drift between      |              |
-|              | adjacent samples   |              |
-+--------------+--------------------+--------------+
+| Parameter | Description | Default |
+|---|---|---|
+| `mzML_files` | Location of the mzML files used for peak integration. | `mzML` |
+| `batch_info` | Input file listing the mzML file names and their metadata (see below). | `run_order.csv` |
+| `transition_list` | Input file with the MRM transition information (see below). | `feature_list.csv` |
+| `peak_width` | `[w, x, y, z]` define the allowed integration bounds: the left border falls *w–x* min and the right border *y–z* min from the apex (see below). | `[0.17, 0.05, 0.1, 0.35]` |
+| `num_threads` | Number of CPU threads used for the integration task. | `2` |
+| `mz_tol` | Tolerance between the indicated and the detected *m/z* values. | `0.06` |
+| `RT_tol` | Tolerance between the indicated and the detected RT. A key setting when processing complex chromatograms. | `0.1` |
+| `RT_shift` | `[x, y]` bound the RT drift relative to the reference samples: the peak may lie at most *x* min earlier and *y* min later than expected. The lower bound is written as a **negative** value (earlier RT); the upper bound is positive (later RT). Setting `[0, 0]` disables RT-shift correction. | `[-0.2, 0.2]` |
+| `RT_shift_bound` | Maximum allowed RT drift between adjacent samples. | `0.1` |
 
 ::: {.callout-tip}
 **Worked example.** A published lipidomics dataset (Agilent triple-quadrupole) used
-`mz_tol = 0.06`, `RT_tol = 0.04`, `peak_width = [0.15, 0.08, 0.08, 0.18]` globally — with
-per-feature overrides for broad or convoluted peaks — an RT-shift window of `(-0.1, 0.4)`, and a
-maximum sample-to-sample RT shift (`RT_shift_bound`) of `0.05`. These make good starting points for
-a fast, well-resolved method. See the full
+`mz_tol = 0.06`, `RT_tol = 0.04`, and `peak_width = [0.15, 0.08, 0.08, 0.18]` globally, with
+per-feature overrides for broad or convoluted peaks, an RT-shift window of `(-0.1, 0.4)`, and a
+maximum sample-to-sample RT shift (`RT_shift_bound`) of `0.05`. These values provide reasonable
+starting points for a fast, well-resolved method. See the full
 [Dataset 3 workflow ↗](https://slinghub.github.io/mrmhub-workflows/Dataset3.html) for the complete
 input files and the resulting integration.
 :::
 
-## Sample list (batch_info.csv)
+![The `param.txt` file used for the Dataset 3 worked example, showing all configured parameters and their values.](images/paste-7.png){fig-align="center" width="70%"}
 
-This file defines data files. The file names must be presented in their
-processing order from top to bottom. mzML files present in the data
-folder but not listed here will be ignored. Columns containing required
-information for individual data files are marked in **bold**.
+## Sample list (run_order.csv)
 
-+---------------+---------------------------------------------+
-| Column        | Description                                 |
-+===============+=============================================+
-| **file name** | The mzML file names to be processed, which  |
-|               | are in the folder defined under \`m         |
-|               | zML_files\` in the param.txt file. Must     |
-|               | include the .mzML file extension.           |
-+---------------+---------------------------------------------+
-| batch         | The analysis batch identifier to which the  |
-|               | file belong to. This value has no function  |
-|               | in the INTEGRATOR, but the value is         |
-|               | included in the result.                     |
-+---------------+---------------------------------------------+
-| s ample_type  | The sample (QC) type of the co rresponding  |
-|               | sample. Blanks must be labeled with text    |
-|               | containing *`BLK`*, as these are processed  |
-|               | differently (see below). For all other      |
-|               | cases, any sample type may be defined, and  |
-|               | the information will be forwarded to the    |
-|               | integration results. The field may also be  |
-|               | left empty. Use of the default MRMhub QC    |
-|               | types (see [QUANT — Sample Types & QC       |
-|               | Roles](https://slinghub.github.io/MRMhub/quant/articles/manual-00-sample-types.html)) |
-|               | is recommended to ensure seamless           |
-|               | integration with the QUANT module.          |
-+---------------+---------------------------------------------+
-| reference     | Indicates that this sample will be used as  |
-|               | reference for RT shift estimation (see      |
-|               | below). Label with `x`. If selecting        |
-|               | multiple samples, ensure they exhibit       |
-|               | negligible RT shifts relative to one        |
-|               | another.                                    |
-+---------------+---------------------------------------------+
+This file lists the data files to be processed. The file names must be given in their processing
+order, from top to bottom. mzML files present in the data folder but not listed here are ignored.
+Columns containing required information for individual data files are marked in **bold**.
+
+| Column | Description |
+|---|---|
+| **file name** | The mzML file names to be processed, located in the folder defined under `mzML_files` in `param.txt`. Must include the `.mzML` extension. |
+| batch | The analysis batch identifier the file belongs to. This value has no function inside INTEGRATOR, but is carried through to the result. |
+| sample_type | The sample (QC) type of the corresponding sample. Blanks must be labelled with text containing `BLK`, as these are processed differently (see below). For all other cases, any sample type may be defined, and the information is forwarded to the integration results; the field may also be left empty. Use of the default MRMhub QC types (see [QUANT — Sample Types & QC Roles](https://slinghub.github.io/MRMhub/quant/articles/manual-00-sample-types.html)) is recommended to ensure reliable integration with the QUANT module. |
+| reference | Indicates that the sample is used as a reference for RT-shift estimation (see below). Label with `x`. When selecting multiple samples, ensure they exhibit negligible RT shifts relative to one another. |
 
 ::: {.callout-note}
-**How `sample_type` is used.** INTEGRATOR itself only distinguishes **blanks** (any `sample_type`
-containing the text `BLK`) from **non-blanks** — blanks are processed differently during peak
-finding. Every other sample/QC-type label has no effect inside INTEGRATOR; it is simply carried
+**How `sample_type` is used.** INTEGRATOR distinguishes only **blanks** (any `sample_type`
+containing the text `BLK`), which are processed differently during peak finding, from
+**non-blanks**. Every other sample/QC-type label has no effect inside INTEGRATOR; it is carried
 through to `long.csv` for use by the QUANT module. Using the standard
 [MRMhub QC nomenclature](https://slinghub.github.io/MRMhub/quant/articles/manual-00-sample-types.html)
-here means QUANT picks up the QC roles automatically.
+here allows QUANT to assign the QC roles automatically.
 :::
 
-## Transition / Feature list (transition_list.csv)
+![A portion of the sample list from the Dataset 3 worked example. The first two BQC samples, located early in the analytical sequence, were designated as retention-time reference anchors (the `reference` column).](images/paste-8.png){fig-align="center" width="50%"}
 
-This file defines the transitions to be processed and which features to
-be integrated. Transitions defined in the mzML files, but not in this
-file will be ignored. Columns with required information for each feature
-are marked in bold.
+## Transition / Feature list (feature_list.csv)
 
-This file specifies the transitions to be processed and the features to
-be integrated for each transition. Transitions present in the mzML files
-but not listed here will be ignored. Columns containing required
-information for each feature are marked in **bold**.
+This file specifies the transitions to be processed and the features to be integrated for each
+transition. Transitions present in the mzML files but not listed here are ignored. Columns
+containing required information for each feature are marked in **bold**.
 
-+---------------+-----------------------------------------------+
-| Column        | Description                                   |
-+===============+===============================================+
-| **Compound    | Feature (analyte) identifier name. Must be a  |
-| Name**        | unique value, identifying typically a single  |
-|               | peak. Multiple distinct features can be       |
-|               | defined for a transition.                     |
-+---------------+-----------------------------------------------+
-| **Transition  | Transition identifier. Can be repeated        |
-| Name**        | values.                                       |
-+---------------+-----------------------------------------------+
-| ISTD          | The internal standard feature assigned to the |
-|               | c orresponding compound. This value has       |
-|               | currently no function in the INTEGRATOR       |
-|               | modules, but will be included in the results  |
-|               | and will be read in by the QUANT module. Can  |
-|               | be left empty, but if defined must correspond |
-|               | to a defined Compound Name.                   |
-+---------------+-----------------------------------------------+
-| **Precursor   | The m/z value of the precursor ion. Must      |
-| Ion**         | match the c orresponding value in the mzML    |
-|               | file within the tolerance given via `mz_tol`  |
-|               | in the param.txt file.                        |
-+---------------+-----------------------------------------------+
-| **Product     | The m/z value of the product ion. Must match  |
-| Ion**         | the c orresponding value in the mzML file     |
-|               | within the tolerance given via `mz_tol` in    |
-|               | the param.txt file.                           |
-+---------------+-----------------------------------------------+
-| **RT**        | The expected retention time of the c          |
-|               | orresponding feature, given in minutes.       |
-+---------------+-----------------------------------------------+
-| u n           | Either `y` or `n` (default). If yes, the peak |
-| iform_width   | boundaries are set to the median of the       |
-|               | results from the automatic border d e         |
-|               | termination.                                  |
-+---------------+-----------------------------------------------+
-| left          | Sets fixed left peak border for all samples,  |
-| integration   | in minutes (with respect to the reference     |
-| bound         | sample)                                       |
-+---------------+-----------------------------------------------+
-| right         | Sets fixed right peak border for all samples, |
-| integration   | in minutes (with respect to the reference     |
-| bound         | sample)                                       |
-+---------------+-----------------------------------------------+
-| peak width    | \[w, x, y, z\] define allowed integration     |
-|               | bounds: left = w–x min, right = y–z min from  |
-|               | apex (see below).\                            |
-|               | Note: This overwrites the globally defined    |
-|               | peak width (param.txt). See below.            |
-+---------------+-----------------------------------------------+
-| Remarks       | Used to document integration settings         |
-+---------------+-----------------------------------------------+
+| Column | Description |
+|---|---|
+| **Compound Name** | Feature (analyte) identifier. Must be a unique value, typically identifying a single peak. Multiple distinct features can be defined for one transition. |
+| **Transition Name** | Transition identifier. Values may be repeated. |
+| ISTD | The internal standard feature assigned to the corresponding compound. This value currently has no function in the INTEGRATOR modules, but is included in the results and read by the QUANT module. May be left empty; if defined, it must correspond to a defined Compound Name. |
+| **Precursor Ion** | The *m/z* value of the precursor ion. Must match the corresponding value in the mzML file within the tolerance set by `mz_tol` in `param.txt`. |
+| **Product Ion** | The *m/z* value of the product ion. Must match the corresponding value in the mzML file within the tolerance set by `mz_tol` in `param.txt`. |
+| **RT** | The expected retention time of the corresponding feature, in minutes. |
+| uniform_width | Either `y` or `n` (default). If `y`, the peak boundaries are set to the median of the automatically determined borders. |
+| left integration bound | Sets a fixed left peak border for all samples, in minutes (with respect to the reference sample). |
+| right integration bound | Sets a fixed right peak border for all samples, in minutes (with respect to the reference sample). |
+| peak width | `[w, x, y, z]` define the allowed integration bounds: left = *w–x* min, right = *y–z* min from the apex (see below). Overrides the globally defined `peak_width` in `param.txt`. |
+| Remarks | Used to document integration settings. |
 
 ## Effects of the key settings
 
 Most settings trade **sensitivity** (finding and fully capturing the intended peak) against
 **specificity** (not grabbing a neighbouring transition, an adjacent peak, or noise). The table
 below summarises what happens at each extreme; the [peak-width recommendations](#recommendations-for-setting-peak-integration-parameters)
-below go deeper on `peak_width`, the single most influential setting for difficult chromatograms.
+below provide further detail on `peak_width`, the most influential setting for difficult chromatograms.
+For the algorithm that consumes these settings, see the
+[Peak Detection and Integration Algorithm](algorithm.qmd).
 
 | Setting | What it controls | Too **small/narrow** | Too **large/wide** |
 |---|---|---|---|
@@ -233,40 +118,30 @@ integration algorithm is constrained to set peak start and end points
 within these ranges, even if its automatic boundary detection would
 otherwise extend beyond them.
 
-Too narrow ranges in the `peak_width` parameter may result in incomplete
-integration of peaks, especially when there is tailing or when the peak
-widths are not stable. To wide ranges may results in inclusion of
-smaller peak adjacent to the peak to be integrated. We suggest to use a
-setting that fits the majority of the peaks in the dataset globally via
-the `param.txt` file and then use per-feature settings for convoluted,
-asymmetric or otherwise broadened peaks. Narrower per-feature values may
-be used when nearby interferences are not recognized as separated peaks
-and are therefore are co-integrated.
+Ranges that are too narrow may lead to incomplete integration, particularly for
+tailing peaks or peaks of unstable width, whereas ranges that are too wide may cause
+smaller adjacent peaks to be included in the integration. A global setting that suits
+the majority of peaks in the dataset should be defined in `param.txt`, with per-feature
+settings applied to convoluted, asymmetric, or otherwise broadened peaks. Narrower
+per-feature ranges can also be used where nearby interferences are not recognised as
+separate peaks and are consequently co-integrated.
 
-Too narrow ranges may lead to incomplete peak integration, especially in
-cases of peak tailing or unstable peak widths. Too wide ranges may
-result in inclusion of smaller adjacent peaks. We suggest defining a
-global setting in`param.txt` that suits the majority of peaks in the
-dataset, and applying per-feature settings for convoluted, asymmetric,
-or broadened peaks. Narrower per-feature ranges can also be used when
-nearby interferences are not recognized as separate peaks and are
-therefore co-integrated.
+![](images/paste-11.png){fig-align="center" width="570" fig-alt="Schematic of a chromatographic peak illustrating the peak_width [w, x, y, z] parameter. Intensity is on the y-axis and retention time on the x-axis, with the apex marked by a vertical line. Short arrows x and y span the inner windows just left and right of the apex, while wider arrows w and z span the outer windows; the shaded bands mark the allowed ranges for the left border (w to x) and the right border (y to z) relative to the apex."}
 
-![](images/paste-11.png){fig-align="center" width="570"}
+![Examples of manually set peak boundaries in INTEGRATOR. (a, b) Effect of the `peak_width` parameter on a peak with clear tailing (PC 36:6): (a) the global setting, suitable for the majority of peaks, and (b) a feature-specific `peak width` overriding the global value for improved integration. (c, d) Effect on a peak with nearby interferences (PC O-38:4): (c) the global setting, and (d) an excessively wide `peak_width` that causes incorrect integration, underscoring the importance of an appropriate global value. (e, f) A complex chromatogram of three overlapping LPC 17:0 isomers: (e) the global setting yields only partial integration, with the first peak unrecognised, whereas (f) fixed boundaries defined for the first peak enable correct picking and integration of all three isomers.](images/paste-9.png){fig-align="center" width="100%"}
 
-Set the `uniform_width` parameter to *true* for features where
-integration was deemed correct in the majority, but incorrect or
-inaccurate in a minority of samples.
+Set the `uniform_width` parameter to *true* for features whose integration
+is correct in most samples but incorrect or inaccurate in a minority.
 
-Use *fixed left/right left integration bound times* for cases automated
-integration and fine-tuning of weak width settings did not correctly and
-consistently integrated convoluted peaks or peaks with nearby
-interferences. The use of these hard border settings is recommended only
-as a last resort, as hard border may require re-adjustment when used in
-processing of other datasets of the same analytical method. ***Note**:*
-These defined borders will still be adjusted for retention time shifts.
+Use *fixed left/right integration bound times* where automated integration,
+even after tuning the `peak_width` settings, does not correctly and consistently
+integrate convoluted peaks or peaks with nearby interferences. These hard border
+settings are recommended only as a last resort, since fixed borders may require
+re-adjustment when the same analytical method is applied to other datasets.
+***Note**:* These defined borders are still adjusted for retention-time shifts.
 
 ## Next
 
+- [Peak Detection and Integration Algorithm](algorithm.qmd) — how these settings drive peak detection and integration.
 - [Running INTEGRATOR](running.qmd) — run the four processing steps.
 - [MRMhub-viz Visualizer](viz.qmd) — review results and fine-tune these parameters.

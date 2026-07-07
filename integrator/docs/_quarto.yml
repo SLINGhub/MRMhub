@@ -1,11 +1,17 @@
 project:
   type: website
   output-dir: _site
+  # source/ holds raw source text (e.g. description.md) that feeds the manual
+  # pages — render only the .qmd pages so it is not published as an orphan page.
+  render:
+    - "*.qmd"
 
 website:
   title: "MRMhub · INTEGRATOR"
   page-navigation: true
   navbar:
+    background: "#2C3E50"   # brand navy title bar (shared across all three sites)
+    foreground: "#ffffff"
     left:
       - text: Home
         href: index.qmd
@@ -19,12 +25,14 @@ website:
             href: input-files.qmd
           - text: Running INTEGRATOR
             href: running.qmd
+          - text: Algorithm
+            href: algorithm.qmd
           - text: MRMhub-viz Visualizer
             href: viz.qmd
           - text: Sharing Results
             href: sharing.qmd
           - text: "---"
-          - text: Vendor → mzML (msconvert)
+          - text: Vendor → mzML (MSConvert)
             href: msconvert.qmd
     right:
       - text: "← MRMhub home"
@@ -50,15 +58,21 @@ website:
             href: input-files.qmd
           - text: Running INTEGRATOR
             href: running.qmd
+          - text: Algorithm
+            href: algorithm.qmd
           - text: MRMhub-viz Visualizer
             href: viz.qmd
           - text: Sharing Results
             href: sharing.qmd
-          - text: Vendor → mzML (msconvert)
+          - text: Vendor → mzML (MSConvert)
             href: msconvert.qmd
 
 format:
   html:
-    theme: cosmo
+    # `brand` after `cosmo` so _brand.yml (steel-blue primary) overrides cosmo's
+    # default blue; navy navbar is set above via website.navbar.background.
+    theme:
+      - cosmo
+      - brand
     css: styles.css
     toc: true

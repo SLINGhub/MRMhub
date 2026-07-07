@@ -23,31 +23,30 @@ options(dplyr.print_max = 10)
 ```
 
 `MRMhub` provides functions for run-order drift and batch correction. The
-correction is based on user-selected reference sample types (`qc_types`), based on which
-all other samples are adjusted. The
-corrections can be applied to `intensity`, `norm_intensity`, or `conc`
-data.
+correction is based on user-selected reference sample types (`ref_qc_types`),
+relative to which all other samples are adjusted. The corrections can be
+applied to `intensity`, `norm_intensity`, or `conc` data.
 
-<div class="callout callout-caution">
-<strong>Caution.</strong> Drift and batch corrections must be fitted on dedicated <em>reference</em> samples (typically QC pools) — never on study samples [@broadhurst2018GuidelinesConsiderationsUse]. The <code>correct_drift_gaussiankernel()</code> option that fits on study samples is the sole exception and is only safe for large, well-randomised cohorts.
-</div>
+::: {.callout .callout-caution}
+**Caution.** Drift and batch corrections must be fitted on dedicated *reference* samples (typically QC pools), never on study samples [@broadhurst2018GuidelinesConsiderationsUse]. The `correct_drift_gaussiankernel()` option that fits on study samples is the sole exception and is only safe for large, well-randomised cohorts.
+:::
 
 # Drift correction (smoothing)
 
-Following drift correction method are available in `MRMhub`, two of which
-are typically used for QC samples and one (gaussian kernel-based) for
+The following drift correction methods are available in `MRMhub`, two of
+which are typically used for QC samples and one (gaussian kernel-based) for
 study samples.
 
 Corrections can be applied on a batch-by-batch basis
 (`batch_wise = TRUE`, default) or across all batches
 (`batch_wise = FALSE`). The correction can either replace existing drift
-or batch corrections (`⁠replace_previous = ⁠TRUE⁠`, default) or applied on
-top of existing corrections (`⁠replace_previous = FALSE').
+or batch corrections (`replace_previous = TRUE`, default) or applied on
+top of existing corrections (`replace_previous = FALSE`).
 
 Drift correction can be applied to all features
 (`conditional_correction = FALSE`) or conditionally, based on whether
 the sample CV difference before and after correction is below a defined
-threshold (`cv_diff_threshold)`. The conditional correction is applied
+threshold (`cv_diff_threshold`). The conditional correction is applied
 separately for each batch if `batch_wise = TRUE`.
 
 It is recommended to visually inspect the correction using the
@@ -79,14 +78,14 @@ on how to use these functions and plot the results.
 # Batch-effect correction (centering)
 
 `MRMhub` currently supports median centering-based batch correction
-`correct_batch_centering()\`, whereby the scale of the batches can
+`correct_batch_centering()`, whereby the scale of the batches can
 optionally also be normalized. The selected QC types (`ref_qc_types`)
 are used to calculate the medians, which are then used to align all
 other samples.
 
 See the tutorial [Drift and Batch Correction](tutorial-04-drift-correction.html) for more information.
 
-## See Also
+## Next Steps
 
 - [Drift Correction Tutorial](tutorial-04-drift-correction.html)
 - [Batch Correction Tutorial](tutorial-06-batch-correction.html)

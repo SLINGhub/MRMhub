@@ -22,17 +22,15 @@ knitr::opts_chunk$set(
 )
 ```
 
-This walkthrough takes you from zero to a normalized dataset in under
-5 minutes using bundled demo data — no external files needed.
+This walkthrough produces a normalized dataset in under 5 minutes using
+bundled demo data; no external files are needed.
 
 <!-- TODO: Record screencast showing full first-analysis workflow -->
 <!-- ![First analysis end-to-end](../man/figures/screencasts/first-analysis.gif) -->
 
-<div class="alert alert-info" role="alert">
-<strong>Time:</strong> ~5 minutes &nbsp;|&nbsp;
-<strong>Prerequisites:</strong> MRMhub installed (<code>check_setup()</code> passes) &nbsp;|&nbsp;
-<strong>Data:</strong> Bundled demo (no downloads)
-</div>
+::: {.callout .callout-note}
+**Time:** ~5 min &nbsp;|&nbsp; **Level:** Beginner &nbsp;|&nbsp; **Prerequisites:** MRMhub installed (`check_setup()` passes)
+:::
 
 ## Step 1: Load MRMhub
 
@@ -47,12 +45,12 @@ Import it with `import_data_mrmhub()`:
 
 ```{r}
 demo_file <- system.file("extdata", "MRMhub_demo.tsv", package = "mrmhub")
-mexp <- import_data_mrmhub(demo_file)
+mexp <- import_data_mrmhub(path = demo_file)
 mexp
 ```
 
-The result is an `MRMhubExperiment` object — a structured container 
-holding your peak area data, sample annotations, and feature metadata.
+The result is an `MRMhubExperiment` object, a structured container
+holding the peak area data, sample annotations, and feature metadata.
 
 ## Step 3: Explore the Data
 
@@ -76,17 +74,17 @@ Apply ISTD normalization to correct for extraction and injection variability:
 mexp <- normalize_by_istd(mexp)
 ```
 
-<div class="alert alert-success" role="alert">
-After this step, <code>mexp@is_istd_normalized</code> is <code>TRUE</code>.
-The original data is preserved in <code>dataset_orig</code>.
-</div>
+::: {.callout .callout-tip}
+After this step, `mexp@is_istd_normalized` is `TRUE`.
+The original data is preserved in `dataset_orig`.
+:::
 
 ## Step 5: Visualise
 
 Check the run sequence for signal drift:
 
 ```{r, fig.height=4}
-plot_runscatter(mexp, y = "area_normalized")
+plot_runscatter(mexp, variable = "norm_intensity")
 ```
 
 ## Step 6: Export
@@ -95,17 +93,15 @@ Export the processed data to Excel or CSV:
 
 ```{r}
 # Excel report (multiple sheets)
-save_report_xlsx(mexp, file = "my_first_results.xlsx")
+save_report_xlsx(mexp, path = "my_first_results.xlsx")
 
 # Or as tidy CSV
-save_dataset_csv(mexp, file = "my_first_results.csv")
+save_dataset_csv(mexp, path = "my_first_results.csv")
 ```
 
-## What's Next?
+## Next Steps
 
-| Goal | Article |
-|------|---------|
-| Understand the data model | [Key Concepts](manual-00-key-concepts.html) |
-| Full lipidomics workflow | [Lipidomics Workflow](tutorial-03-lipidomics-workflow.html) |
-| Drift & batch correction | [Drift Correction](tutorial-04-drift-correction.html) |
-| Quantitative assay with calibration | [External Calibration](recipe-01-ext-calibration-qc.html) |
+- [Key Concepts](manual-00-key-concepts.html) — understand the data model
+- [Lipidomics Workflow](tutorial-03-lipidomics-workflow.html) — full lipidomics workflow
+- [Drift Correction](tutorial-04-drift-correction.html) — drift & batch correction
+- [External Calibration](recipe-01-ext-calibration-qc.html) — quantitative assay with calibration

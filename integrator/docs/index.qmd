@@ -8,13 +8,13 @@ description: |
 toc: false
 ---
 
-**INTEGRATOR** is the stand-alone peak-integration module of the MRMhub pipeline. It takes
-converted mzML files, detects and integrates MRM peaks across all your samples, lets you review
-and fine-tune the results interactively, and exports tables ready for quantitation.
+**INTEGRATOR** is the stand-alone peak-integration module of the MRMhub pipeline. It reads
+converted mzML files, detects and integrates MRM peaks across all samples, supports interactive
+review and refinement of the results, and exports tables for quantitation.
 
-It ships as a small, self-contained executable for macOS and Windows — **nothing to install, no
-Python or R required**. Keep one copy in each analysis project folder and the whole project stays
-re-runnable.
+It is distributed as a self-contained executable for macOS and Windows and requires no
+installation and no separate runtime. Retaining one copy in each analysis project folder
+keeps the project reproducible.
 
 ## The workflow
 
@@ -40,8 +40,8 @@ re-runnable.
 </div>
 
 ::: {.callout-note}
-**Just want post-processing in R?** INTEGRATOR is not required to use the QUANT R package — QUANT
-imports directly from vendor outputs (MassHunter, Skyline) as well. See the
+INTEGRATOR is not required to use the QUANT R package; QUANT also imports directly from vendor
+outputs (MassHunter, Skyline). See the
 [QUANT documentation ↗](https://slinghub.github.io/MRMhub/quant/).
 :::
 
@@ -51,24 +51,30 @@ imports directly from vendor outputs (MassHunter, Skyline) as well. See the
 
 ::: {.g-col-12 .g-col-md-6}
 ### 🚀 [Quick Start](quickstart.qmd)
-New here? Get from raw files to integrated peaks in a handful of steps.
+A condensed path from raw files to integrated peaks in a handful of steps.
 :::
 
 ::: {.g-col-12 .g-col-md-6}
 ### 📦 [Download & Project Setup](setup.qmd)
 Download the standalone executable, clear the first-launch security prompt, and set up one
-re-runnable copy per project.
+reproducible copy per project.
 :::
 
 ::: {.g-col-12 .g-col-md-6}
 ### 📄 [Input Files](input-files.qmd)
-Reference for `param.txt`, `batch_info.csv`, and the transition list — plus how to tune peak
+Reference for `param.txt`, `run_order.csv`, and the transition list, including how to tune peak
 integration.
 :::
 
 ::: {.g-col-12 .g-col-md-6}
 ### ▶️ [Running INTEGRATOR](running.qmd)
 The four processing steps: validation, peak finding, integration, and PDF output.
+:::
+
+::: {.g-col-12 .g-col-md-6}
+### ⚙️ [Algorithm](algorithm.qmd)
+How INTEGRATOR detects, picks, and integrates peaks: RT-shift correction, CWT feature detection,
+and integration-border determination.
 :::
 
 ::: {.g-col-12 .g-col-md-6}
@@ -84,19 +90,19 @@ Bundle raw data, parameters, and results for fully reproducible peak integration
 :::
 
 ::: {.callout-tip}
-**Learn by example.** The [Dataset 3 workflow ↗](https://slinghub.github.io/mrmhub-workflows/Dataset3.html)
-walks through a complete, real analysis — from raw-file conversion and INTEGRATOR settings to QUANT
-post-processing — with all input files shown. More end-to-end examples live at
+The [Dataset 3 workflow ↗](https://slinghub.github.io/mrmhub-workflows/Dataset3.html)
+presents a complete analysis, from raw-file conversion and INTEGRATOR settings through QUANT
+post-processing, with all input files shown. Additional end-to-end examples are available at
 [mrmhub-workflows ↗](https://slinghub.github.io/mrmhub-workflows/).
 :::
 
 ## Next step in the pipeline
 
-Once INTEGRATOR produces `long.csv`, hand it off to the **QUANT** R package for ISTD
+Once INTEGRATOR produces `long.csv`, pass it to the QUANT R package for ISTD
 normalisation, drift/batch correction, calibration, QC, and reporting:
 
 ```r
-import_data_mrmhub("path/to/long.csv", import_metadata = TRUE)
+import_data_mrmhub(path = "path/to/long.csv", import_metadata = TRUE)
 ```
 
 See the [QUANT documentation ↗](https://slinghub.github.io/MRMhub/quant/) to continue.

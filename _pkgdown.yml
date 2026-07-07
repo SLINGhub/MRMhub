@@ -5,7 +5,13 @@ template:
   bootswatch: cosmo
   bslib:
     font_scale: 0.9
+    # Shared MRMhub brand (pkgdown 2.2.0 cannot read _brand.yml, so the palette
+    # is mirrored here from docs-site/_brand.yml + integrator/docs/_brand.yml).
+    primary: "#5B8FA8"   # steel-blue accent: links, buttons
+    dark: "#2C3E50"      # brand navy: drives the navbar via navbar.bg below
 navbar:
+  bg: dark    # navy title bar, shared across all three sites
+  type: dark  # light text on the dark navbar
   structure:
     left:
     - getstarted
@@ -14,11 +20,15 @@ navbar:
     - reference
     - news
     right:
+    - mrmhub
     - search
     - github
     - lightswitch
   components:
     home: ~
+    mrmhub:                       # link back to the landing hub (parity with INTEGRATOR)
+      text: "← MRMhub home"
+      href: https://slinghub.github.io/MRMhub/
     getstarted:
       text: Get Started
       menu:
@@ -42,9 +52,8 @@ navbar:
       - text: Need peak integration first?
         href: https://slinghub.github.io/MRMhub/integrator/
     workflows:
-      text: Workflows
+      text: Tutorials
       menu:
-      - text: Tutorials
       - text: Basic MRMhub workflow
         href: articles/tutorial-02-basic-workflow.html
       - text: Lipidomics (full workflow)
@@ -55,24 +64,22 @@ navbar:
         href: articles/tutorial-04-drift-correction.html
       - text: Batch correction
         href: articles/tutorial-06-batch-correction.html
+      - text: Calibration by reference sample
+        href: articles/tutorial-07-calibration-reference.html
+      - text: External calibration & QC
+        href: articles/recipe-01-ext-calibration-qc.html
+      - text: Custom QC report
+        href: articles/recipe-02-custom-qc-report.html
+      - text: Import & export mzTab-M
+        href: articles/recipe-03-mztab-export.html
       - text: Validating metadata
         href: articles/tutorial-10-metadata-validation.html
       - text: QC exploration with PCA
         href: articles/tutorial-09-pca-exploration.html
       - text: Interference correction
         href: articles/tutorial-11-interference-correction.html
-      - text: '-------'
-      - text: Recipes
-      - text: External calibration & QC
-        href: articles/recipe-01-ext-calibration-qc.html
-      - text: Calibration by reference sample
-        href: articles/tutorial-07-calibration-reference.html
-      - text: Custom QC Report
-        href: articles/recipe-02-custom-qc-report.html
-      - text: Import & Export mzTab-M
-        href: articles/recipe-03-mztab-export.html
     advanced:
-      text: Advanced
+      text: Manual
       menu:
       - text: Data Model
       - text: Data Structures

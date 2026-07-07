@@ -4,42 +4,42 @@ description: |
   Get from raw vendor files to integrated MRM peaks with INTEGRATOR in a handful of steps.
 ---
 
-This page is the condensed path from raw files to integrated peaks. Each step links to the full
-reference if you need detail.
+This page presents the condensed path from raw files to integrated peaks. Each step links to the
+full reference.
 
 ::: {.callout-tip}
-A complete **test dataset** ships with the download — a full set of input and raw-data files you
-can use as templates for your own analysis. For a fully worked, real-world analysis with concrete
-settings, see the [Dataset 3 workflow ↗](https://slinghub.github.io/mrmhub-workflows/Dataset3.html).
+A complete test dataset is included with the download, providing input and raw-data files that can
+serve as templates for a new analysis. For a fully worked analysis with concrete settings, see the
+[Dataset 3 workflow ↗](https://slinghub.github.io/mrmhub-workflows/Dataset3.html).
 :::
 
 ## 1. Convert raw files to mzML
 
-INTEGRATOR reads **mzML**. Convert your vendor files (`.raw`, `.wiff`, `.d`, …) with ProteoWizard
-MSConvert (Windows only). → [Vendor → mzML (msconvert)](msconvert.qmd)
+INTEGRATOR reads mzML. Convert the vendor files (`.raw`, `.wiff`, `.d`, …) with ProteoWizard
+MSConvert (Windows only). → [Vendor → mzML (MSConvert)](msconvert.qmd)
 
 ## 2. Download the app into your project
 
-INTEGRATOR is a standalone executable — nothing to install. Download the macOS/Windows build from
-[Releases](https://github.com/SLINGhub/MRMhub/releases), unzip it into your project folder, and
-clear the one-time security prompt. Keeping one copy per project keeps the analysis re-runnable.
-→ [Download & Project Setup](setup.qmd)
+INTEGRATOR is a standalone executable and requires no installation. Download the macOS or Windows
+build from the [Releases](https://github.com/SLINGhub/MRMhub/releases) page, unzip it into the
+project folder, and clear the one-time security prompt; retaining one copy per project keeps the
+analysis reproducible. → [Download & Project Setup](setup.qmd)
 
 ## 3. Prepare the input files
 
-Drop your `.mzML` files into the `mzML/` folder and fill in three files (templates are included):
+Place the `.mzML` files in the `mzML/` folder and complete three files (templates are included):
 
 | File | Purpose |
 |---|---|
 | `param.txt` | Global parameters (tolerances, peak-width windows, threads) |
-| `batch_info.csv` | Sample list, in processing order, with sample/QC types |
+| `run_order.csv` | Sample list, in processing order, with sample/QC types |
 | transition list | Transitions and features to integrate |
 
 → [Input Files reference](input-files.qmd)
 
 ## 4. Run the four steps
 
-Launch **MRMhub** and work through the terminal menu:
+Launch MRMhub and work through the terminal menu:
 
 1. **Data Validation** — check input files for inconsistencies.
 2. **Peak Finding & RT-shift estimation** — produces `RT_matrix.csv`.
@@ -50,15 +50,15 @@ Launch **MRMhub** and work through the terminal menu:
 
 ## 5. Review the results
 
-Open **MRMhub-viz** to inspect chromatograms, then refine global or per-feature parameters and
+Open MRMhub-viz to inspect chromatograms, then refine global or per-feature parameters and
 re-run as needed. → [MRMhub-viz Visualizer](viz.qmd)
 
 ## 6. Continue in QUANT
 
-Hand `long.csv` to the QUANT R package for the post-processing pipeline:
+Pass `long.csv` to the QUANT R package for the post-processing pipeline:
 
 ```r
-import_data_mrmhub("path/to/long.csv", import_metadata = TRUE)
+import_data_mrmhub(path = "path/to/long.csv", import_metadata = TRUE)
 ```
 
 → [QUANT documentation ↗](https://slinghub.github.io/MRMhub/quant/)

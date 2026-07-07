@@ -26,7 +26,7 @@ knitr::opts_chunk$set(
 
 MRMhub organizes targeted mass spectrometry data around two axes:
  
-- **Analyses** (rows) — individual injections/samples in your run
+- **Analyses** (rows) — individual injections/samples in the run
 - **Features** (columns) — individual MRM transitions (compound + precursor/product ion pair)
 
 Every measurement is a **peak area** at the intersection of one analysis
@@ -49,8 +49,8 @@ and one feature. All of this is stored in a single object: the
   <!-- METADATA section -->
   <rect x="250" y="60" width="200" height="90" rx="6" fill="#f5e0c8" stroke="#c87f3b"/>
   <text x="350" y="82" text-anchor="middle" font-weight="600" font-size="12" fill="#7a4a1a">METADATA</text>
-  <text x="265" y="102" font-size="11" fill="#333">• analyses_table</text>
-  <text x="265" y="118" font-size="11" fill="#333">• features_table</text>
+  <text x="265" y="102" font-size="11" fill="#333">• annot_analyses</text>
+  <text x="265" y="118" font-size="11" fill="#333">• annot_features</text>
   <text x="265" y="134" font-size="11" fill="#333">• processing log</text>
   <!-- Pipeline concept -->
   <rect x="30" y="170" width="420" height="50" rx="6" fill="#d4e8d4" stroke="#5a9a5a"/>
@@ -61,8 +61,8 @@ and one feature. All of this is stored in a single object: the
 </svg>
 </div>
 
-Functions take an `MRMhubExperiment` in and return an updated one —
-you chain them together to build your workflow.
+Functions take an `MRMhubExperiment` and return an updated one; these
+calls are chained together to build a workflow.
 
 ## Glossary
 
@@ -76,7 +76,7 @@ glossary <- data.frame(
    "Unique identifier for each injection/sample in the run",
    "Unique identifier for each MRM transition",
    "Internal Standard — a spiked compound used for normalization",
-   "Response Quality Control — pooled QC sample injected repeatedly",
+   "Response Quality Control — a serial-dilution (response) curve of the QC pool, used to assess linearity and response",
    "A secondary MRM transition used to confirm compound identity",
    "The primary MRM transition used for quantification",
    "Statistical correction for signal drift across a run",
@@ -84,7 +84,7 @@ glossary <- data.frame(
    "One row per analysis × feature (tidy format)",
    "One row per analysis, features as columns",
    "The S4 object holding all data + metadata for a project",
-   "Standalone Python tool for peak integration from mzML files",
+   "Standalone tool for peak integration from mzML files",
    "The post-processing module (this R package, mrmhub): QC, normalization, quantitation, reporting"
  ),
  stringsAsFactors = FALSE
@@ -111,11 +111,11 @@ MRMhub uses consistent column names across all data:
 |--------|-------|---------|
 | `analysis_id` | analyses table, data tables | Links a row to a specific injection |
 | `feature_id` | features table, data tables | Links a value to a specific transition |
-| `analysis_type` | analyses table | Sample, RQC, blank, calibration, etc. |
-| `compound_name` | features table | Human-readable compound name |
+| `qc_type` | analyses table | Sample role — SPL, BQC, RQC, blank, calibration, etc. |
+| `analyte_id` | features table | Human-readable compound/analyte name |
 | `istd_feature_id` | features table | Maps each analyte to its internal standard |
 
-## See Also
+## Next Steps
 
 - [Data Structures](manual-01-data-structure.html) — technical details of each table
 - [Data Identifiers](manual-02-data-identifiers.html) — deep dive on ID columns

@@ -25,11 +25,15 @@ Most processing errors in MRMhub trace back to defects in the annotation tables 
 analytical data itself. The most frequent offenders are mismatched `analysis_id` between data and
 annotation, missing required columns (`qc_type`, `batch_id`, `analysis_order`), and `qc_type`
 labels that do not match the canonical vocabulary used internally for QC selection. This tutorial
-walks through generating a template, validating annotations against imported data, and resolving
+covers generating a template, validating annotations against imported data, and resolving
 the typical defects.
 
 See [Sample Types and QC Roles](manual-00-sample-types.html) for the canonical `qc_type` vocabulary
 and [Metadata Import](manual-06-metadata-import.html) for the per-table importer reference.
+
+::: {.callout .callout-note}
+**Time:** ~10 min &nbsp;|&nbsp; **Level:** Beginner &nbsp;|&nbsp; **Prerequisites:** [Your first analysis](tutorial-00-first-analysis.html)
+:::
 
 ## 1. Generate a metadata template
 
@@ -231,7 +235,7 @@ between the integration software output and a hand-edited Excel file.
   survive R but complicate downstream column references. Letters, digits, underscores, hyphens.
 - Keep the annotation file under version control alongside the data file.
 
-## See Also
+## Next Steps
 
 - [Sample Types and QC Roles](manual-00-sample-types.html) — canonical `qc_type` vocabulary
 - [Metadata Import](manual-06-metadata-import.html) — per-table importer reference

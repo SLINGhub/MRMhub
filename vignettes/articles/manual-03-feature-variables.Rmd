@@ -64,10 +64,10 @@ DT::datatable(
 )
 ```
 
-<div class="alert alert-info" role="alert">
-Many processing and plotting functions accept a <code>variable</code> argument 
+::: {.callout .callout-note}
+Many processing and plotting functions accept a `variable` argument
 that selects which feature variable to use as input.
-</div>
+:::
 
 ## Backup Feature Variables
 
@@ -87,8 +87,8 @@ backup variable with a postfix appended to the variable name.
 
 These variables are stored in the `dataset_orig` table and are never modified by 
 any MRMhub function. One of them is copied to `intensity` at import (by default 
-`area` if available, then `height`, `response`, or `intensity` in that order). 
-You can manually set the source variable with `set_intensity_var()`.
+`area` if available, then `height`, `response`, or `intensity` in that order).
+The source variable can be set manually with `set_intensity_var()`.
 
 ```{r, echo = FALSE, results = 'asis'}
 raw_vars <- data.frame(
@@ -118,7 +118,7 @@ DT::datatable(
 )
 ```
 
-## See Also
+## Next Steps
 
 - [Data Structures](manual-01-data-structure.html) — overview of all data tables
 - [Data Identifiers](manual-02-data-identifiers.html) — ID columns

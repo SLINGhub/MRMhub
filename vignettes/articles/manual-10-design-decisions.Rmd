@@ -25,7 +25,7 @@ This article is for:
 - Contributors who want to extend the package
 - Developers building tools on top of MRMhub
 
-If you just want to process data, see the [Design Overview](manual-00-architecture.html) instead.
+To process data directly, see the [Design Overview](manual-00-architecture.html) instead.
 
 ## Decision 1: S4 Class (MRMhubExperiment) vs Tidy Tibbles
 
@@ -48,7 +48,7 @@ If you just want to process data, see the [Design Overview](manual-00-architectu
    annotations, and processing flags in one place.
 
 2. **Integrity checking** — S4 validity methods ensure data and metadata stay
-   in sync. You cannot accidentally delete analyses without updating annotations.
+   in sync. Analyses cannot be accidentally deleted without updating annotations.
 
 3. **Pipeline state** — Flags like `is_istd_normalized`, `var_drift_corrected`
    prevent accidental double-processing.
@@ -162,8 +162,8 @@ Reference: Broadhurst et al. (2018). *Metabolomics*, 14, 72.
 
 </details>
 
-**Implication:** You must have sufficient QC samples (≥ 5 per batch, evenly
-distributed) for correction to work well.
+**Implication:** Sufficient QC samples (≥ 5 per batch, evenly
+distributed) are required for correction to work well.
 
 ## Decision 6: Explicit Processing Order
 
@@ -198,14 +198,14 @@ via status flags rather than enforcing with hard errors.
 **Choice:** Raw data processing (peak integration) and post-processing 
 (normalization, QC) are separate tools in different languages.
 
-| INTEGRATOR (Python) | QUANT (R) |
+| INTEGRATOR | QUANT (R) |
 |---------------------|-----------|
 | Automated, batch-oriented | Interactive, exploratory |
 | Computationally intensive | Statistically intensive |
 | Run once per study | Run iteratively |
 | No user decisions needed | Many user decisions |
 
-**The interface is a CSV file.** This means either tool can be replaced
+The interface is a CSV file. Either tool can be replaced
 independently, and data can be inspected at the handoff point.
 
 ## Extending MRMhub

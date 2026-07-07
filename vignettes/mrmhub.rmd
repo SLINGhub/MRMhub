@@ -35,21 +35,21 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Overview TEST
+## Overview
 
 MRMhub is a set of tools for reproducible raw data processing, post-processing, quality control, and reporting of targeted quantitative small-molecule mass spectrometry experiments using Multiple Reaction Monitoring (MRM). The platform includes two complementary tools:
 
--   **INTEGRATOR**: Python application for efficient and automated raw data processing, i.e., peak detection, picking, and integration.
+-   **INTEGRATOR**: standalone application for automated peak detection, picking, and integration from mzML files.
 
--   **QUANT**: R package providing a function library for data post- processing, including quantitation, data corrections, comprehensive quality control, and reporting.
+-   **QUANT**: R package providing a function library for data post- processing, including quantitation, data corrections, quality control, and reporting.
 
-The modular functionalities and defined data structures support diverse analytical designs, data formats, and processing tasks, as found in metabolomics, lipidomics and other quantitative small molecule analyses. `MRMhub` is intended for both analytical and bioinformatics scientists and facilitates collaboration between them. It enables the creation of efficient, customizable, supervisable, and documented end-to-end data processing workflows through intuitive functions and data objects.
+The modular functionalities and defined data structures support diverse analytical designs, data formats, and processing tasks, as found in metabolomics, lipidomics and other quantitative small molecule analyses. `MRMhub` is intended for both analytical and bioinformatics scientists and supports collaboration between them. It enables the creation of efficient, customizable, supervisable, and documented end-to-end data processing workflows through its functions and data objects.
 
 ## Usage
 
 #### INTEGRATOR (Peak Integration)
 
-To download the latest release of INTEGRATOR, visit the [Releases page](https://github.com/SLINGhub/MRMhub/releases). Choose the appropriate version for your operating system (Windows, macOS, or Linux) and download the corresponding executable file. Unzip the downloaded file and double-click the executable to launch the application. Refer to the [Documentation](https://slinghub.github.io/mrmhub/) for detailed instructions on how to use INTEGRATOR.
+To download the latest release of INTEGRATOR, visit the [Releases page](https://github.com/SLINGhub/MRMhub/releases). Choose the appropriate version for your operating system (Windows, macOS, or Linux) and download the corresponding executable file. Unzip the downloaded file and double-click the executable to launch the application. Refer to the [Documentation](https://slinghub.github.io/MRMhub/integrator/) for detailed instructions on how to use INTEGRATOR.
 
 #### QUANT (Postprocessing and Quality Control)
 
@@ -60,11 +60,11 @@ if (!require("remotes")) install.packages("remotes")
 remotes::install_github("SLINGhub/MRMhub")
 ```
 
-Load the package in your R session via `library(mrmhub)`. For detailed usage instructions and examples, refer to the [Documentation](https://slinghub.github.io/mrmhub/).
+Load the package in your R session via `library(mrmhub)`. For detailed usage instructions and examples, refer to the [Documentation](https://slinghub.github.io/MRMhub/quant/).
 
 ## Documentation
 
-See the online Documentation on [https://slinghub.github.io/mrmhub](https://slinghub.github.io/mrmhub/) for detailed information on installation, usage, and examples of MRMhub.
+See the online Documentation on [https://slinghub.github.io/MRMhub/quant/](https://slinghub.github.io/MRMhub/quant/) for detailed information on installation, usage, and examples of MRMhub.
 
 ## Contributing
 
@@ -86,3 +86,9 @@ For non-commercial uses and licensing of this / these code and models and its de
 Reporting unauthorized commercial use and/or further enquiries
 
 If you become aware of any unauthorised commercial use of this source code and models or have any questions regarding licensing terms, please contact Jonathan Tan ( jonathan_tan@nus.edu.sg ).
+
+## Next Steps
+
+- [Installation](manual-00-get-started.html) — requirements and setup
+- [Key Concepts & Glossary](manual-00-key-concepts.html) — core terminology and the MRMhubExperiment object
+- [Your First Analysis](tutorial-00-first-analysis.html) — a short end-to-end walkthrough

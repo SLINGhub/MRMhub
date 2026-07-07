@@ -27,8 +27,12 @@ Absolute calibration of feature abundances is based on known metabolite concentr
 reference sample (e.g., NIST SRM1950 plasma). Normalization (relative calibration) is based on
 calculating the abundance ratios of features in samples and a reference sample.
 
-Below, we will demonstrate both absolute and relative calibration using NIST SRM1950 plasma samples
-that were measured as part of the same analysis..
+Both absolute and relative calibration are demonstrated below using NIST SRM1950 plasma samples
+that were measured as part of the same analysis.
+
+::: {.callout .callout-note}
+**Time:** ~15 min &nbsp;|&nbsp; **Level:** Intermediate &nbsp;|&nbsp; **Prerequisites:** [Basic workflow](tutorial-02-basic-workflow.html)
+:::
 
 ## Import data and metadata
 
@@ -52,9 +56,9 @@ mexp <- import_metadata_istds(mexp, path = meta_file, sheet = "ISTDs")
 
 ## Load known analyte concentrations of the reference sample
 
-A table containing the known analyte concentrations for the NIST SRM1950 reference sample is now
-been added to the `MRMhubExperiment object`. Please note that the S1P concentrations provided in this
-table are intended for illustrative purposes only. The actual absolute S1P concentrations in NIST
+A table of known analyte concentrations for the NIST SRM1950 reference sample is added to the
+`MRMhubExperiment object`. Note that the S1P concentrations in this
+table are for illustration only; the actual absolute S1P concentrations in NIST
 SRM1950 may differ significantly.
 
 ```{r}
@@ -68,8 +72,8 @@ mexp <- import_metadata_qcconcentrations(mexp, path = meta_file, sheet = "QCconc
 
 ## Process the data
 
-The analysis was performed using HILIC chromatography; thus, we need to correct for the isotope
-interferences from S1P 18:2;O2 M+2 and S1P 18:1;O2 M+2. Subsequently, initial quantification is done
+The analysis was performed using HILIC chromatography; the isotope
+interferences from S1P 18:2;O2 M+2 and S1P 18:1;O2 M+2 must therefore be corrected. Initial quantification is then done
 using the spiked-in ISTD concentration.
 
 ```{r}
@@ -86,9 +90,9 @@ mexp <- quantify_by_istd(mexp)
 
 ## Absolute calibration
 
-We perform the absolute re-calibration using the function `calibrate_by_reference()`. The reference
-sample is set via `reference_sample_id`. In cases where multiple analyses of the same reference
-sample are present in the dataset, either the mean or median is calculated (defined via the
+Absolute re-calibration is performed with the function `calibrate_by_reference()`. The reference
+sample is set via `reference_sample_id`. Where multiple analyses of the same reference
+sample are present in the dataset, either the mean or median is calculated (defined via
 `summarize_fun`).
 
 The calibrated concentration is calculated as:
@@ -134,10 +138,10 @@ save_report_xlsx(mexp_res, tempfile(fileext = ".xlsx"), filtered_variable = "con
 
 ## Normalization (relative calibration)
 
-We can perform a simple normalization with a reference sample using the `calibrate_by_reference()`
-function, setting `absolute_calibration = FALSE`. In this approach, in cases where multiple analyses
+Normalization with a reference sample is performed with the `calibrate_by_reference()`
+function, setting `absolute_calibration = FALSE`. As above, where multiple analyses
 of the same reference sample are present in the dataset, either the mean or median is calculated
-(defined via the `summarize_fun`).
+(defined via `summarize_fun`).
 
 ```{r}
 #| results: false 
@@ -152,7 +156,7 @@ mexp_res <- calibrate_by_reference(
   )
 ```
 
-The results of the normalization are stored, unlike for the absolute calibration, as **ratios**, in
+The results of the normalization are stored, unlike for the absolute calibration, as ratios, in
 a new variable, `[VARIABLE]_normalized`, where \[VARIABLE\] is the input variable, e.g.,
 `conc_normalized` or `intensity_normalized`.
 
@@ -238,10 +242,10 @@ Values greater than 1 suggest overestimation, while values less than 1 indicate 
 The ratio values can also be visualized or further analyzed to identify outliers or investigate
 potential issues in the analytical process or calibration.
 
-We can also calculate ratio and bias of QC samples directly without having to apply
-`calibrate_by_reference()`. For illustration, we calculated the ratio and bias of the QC samples
-using the re-calibrated data from above, expecting all corrected feature concentrations in the
-reference sample to have no bias (0%) and a ratio of 1.
+The ratio and bias of QC samples can also be calculated directly, without applying
+`calibrate_by_reference()`. For illustration, the ratio and bias of the QC samples are calculated
+using the re-calibrated data from above; all corrected feature concentrations in the
+reference sample are expected to have no bias (0%) and a ratio of 1.
 
 ```{r}
 #| results: true 

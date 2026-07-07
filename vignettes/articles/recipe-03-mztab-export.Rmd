@@ -18,11 +18,11 @@ vignette: >
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>", eval = FALSE)
 ```
 
-<div class="alert alert-info" role="alert">
-<strong>Level:</strong> Intermediate &nbsp;|&nbsp;
-<strong>Output:</strong> <code>.mzTab</code> file (mzTab-M 2.0.0-M) &nbsp;|&nbsp;
-<strong>Requires:</strong> a processed <code>MRMhubExperiment</code>
-</div>
+::: {.callout .callout-note}
+**Level:** Intermediate &nbsp;|&nbsp;
+**Output:** `.mzTab` file (mzTab-M 2.0.0-M) &nbsp;|&nbsp;
+**Requires:** a processed `MRMhubExperiment`
+:::
 
 ## Goal
 
@@ -83,7 +83,7 @@ calibration samples) and every feature:
 | `SML` (summary) | one row per analyte, grouping its features; the quantifier drives the summary abundance and per-group mean / %CV |
 | `SME` (evidence) | a minimal identification stub per feature |
 
-You can enrich the metadata header with optional arguments:
+The metadata header can be enriched with optional arguments:
 
 ```{r}
 save_dataset_mztab(
@@ -94,22 +94,22 @@ save_dataset_mztab(
 )
 ```
 
-<div class="alert alert-warning" role="alert">
-<strong>mzTab-M is a quantification report, not a full processing record.</strong>
+::: {.callout .callout-caution}
+**mzTab-M is a quantification report, not a full processing record.**
 Internal-standard relationships, QC and calibration metrics,
 drift/batch-correction state, and the QC-type / batch structure are not part of
-the mzTab-M model and are therefore <em>not</em> reproduced on round-trip. The
+the mzTab-M model and are therefore *not* reproduced on round-trip. The
 file captures identities, the chosen abundance matrix, and the study-variable
-grouping. Keep the <code>MRMhubExperiment</code> (or the Excel report from
-<code>save_report_xlsx()</code>) as the authoritative processing record.
-</div>
+grouping. Keep the `MRMhubExperiment` (or the Excel report from
+`save_report_xlsx()`) as the authoritative processing record.
+:::
 
 ## Validating the file
 
 The output targets mzTab-M **2.0.0-M**. To confirm conformance, upload the file
 to the official HUPO-PSI / LIFS web validator at
-<https://apps.lifs-tools.org/mztabvalidator/>, or, if you have the reference R
-package [`rmzTabM`](https://lifs-tools.github.io/rmzTabM/) installed, parse it
+<https://apps.lifs-tools.org/mztabvalidator/>, or, if the reference R
+package [`rmzTabM`](https://lifs-tools.github.io/rmzTabM/) is installed, parse it
 back:
 
 ```{r}
@@ -139,13 +139,13 @@ from the `SMF`/`SML` sections. Where one analyte is reported as several
 features (e.g. different adducts), the adduct is appended to keep `feature_id`
 unique (`Cer d18:1/16:0 | [M-H]-`).
 
-<div class="alert alert-warning" role="alert">
-<strong>Import is partial by nature.</strong> mzTab-M carries a single
+::: {.callout .callout-caution}
+**Import is partial by nature.** mzTab-M carries a single
 abundance per feature, so internal-standard relationships, QC-type assignments,
-and calibration metadata are <em>not</em> present and must be supplied with
-<code>add_metadata()</code>. <code>study_variable</code> groups are imported
-best-effort as <code>batch_id</code> (mzTab-M has no analytical-batch concept).
-</div>
+and calibration metadata are *not* present and must be supplied with
+`add_metadata()`. `study_variable` groups are imported
+best-effort as `batch_id` (mzTab-M has no analytical-batch concept).
+:::
 
 ## Next Steps
 

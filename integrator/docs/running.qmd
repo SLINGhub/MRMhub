@@ -1,7 +1,7 @@
 ---
 title: "Running INTEGRATOR"
 description: |
-  The four INTEGRATOR processing steps — data validation, peak finding and RT-shift estimation,
+  The four INTEGRATOR processing steps: data validation, peak finding and RT-shift estimation,
   peak integration, and optional PDF generation.
 ---
 
@@ -9,18 +9,18 @@ description: |
 INTEGRATOR](images/workflow.png){fig-align="center"}
 
 Upon execution, the software launches a terminal user interface with
-four different menu options. For new datasets, the steps 1 - 2 are
-applied sequentially. The final step 4 is optional and only used when
-integration results as PDFs files are needed.
+four menu options. For new datasets, steps 1 and 2 are applied
+sequentially. The final step 4 is optional and used only when
+integration results as PDF files are required.
 
-![](images/MRMhub-Main.png){fig-align="center" width="622"}
+![](images/MRMhub-Main.png){fig-align="center" width="622" fig-alt="Screenshot of the INTEGRATOR terminal interface, showing the MRMHUB banner and its four-item menu: 1 Validate data; 2 RT-shift estimation and feature detection; 3 update integration bounds and areas using RT_matrix.csv; and 4 generate chromatogram PDFs (optional)."}
 
 ## Step 1 — Data Validation
 
-The first step verifies the files and information provided by the user
-in the input files. Inconsistencies are reported via the text files,
-which are saved into the directory as the **MRMhub** application. The
-files are are only generated when issues were identified.
+The first step verifies the files and information provided in the input
+files. Inconsistencies are reported in text files saved to the same
+directory as the **MRMhub** application. These files are generated only
+when issues are identified.
 
 -   **`missing_files.txt`** lists mzML files that are present in the
     data folder but not listed in the Sample List, as well as files
@@ -29,62 +29,61 @@ files are are only generated when issues were identified.
     Transition List but not found in all mzML files. *Note:* Transitions
     present only in a subset of the mzML files are currently not
     processed.
--   **`missing_details.txt`** This report details the missing
-    transitions and identifies exactly which samples lack them. This is
-    useful when a transition appears in some samples but not others.
+-   **`missing_details.txt`** details the missing transitions and
+    identifies exactly which samples lack them. This is useful when a
+    transition appears in some samples but not others.
 
 ## Step 2 — Peak Finding and RT-shift estimation
 
-The second step runs the peak finding and picking algorithm. The result
-of this step is a table with identified peaks (features) with their left
-and right peak borders in each sample. This table is saved as a CSV file
-`RT_matrix.csv` into the same folder as the application and is required
-for step 3.
+The second step runs the peak finding and picking algorithm (see
+[Peak Detection and Integration Algorithm](algorithm.qmd) for how it works). The result
+of this step is a table of identified peaks (features) with their left
+and right peak borders in each sample. This table is saved as the CSV
+file `RT_matrix.csv` in the same folder as the application and is
+required for step 3.
 
-The user may further refine these integration bounds per transition and
-sample basis, before proceeding with the actual peak integration in step
-3. For a new dataset, we recommend proceeding directly with peak
-integration directly, followed by visualization of the results using
-steps 3 (and 4) and only then to manually adjust specific integration
-borders. However, we generally discourage users from doing so, unless
-certain integration can only be achieved through manual intervention.
+These integration bounds may be refined further on a per-transition and
+per-sample basis before peak integration is performed in step 3. For a
+new dataset, the recommended approach is to proceed directly to peak
+integration, followed by visualization of the results in steps 3 (and
+4), and to adjust specific integration borders manually only afterward.
+Manual adjustment is generally discouraged unless certain integrations
+can only be achieved through it.
 
-At this point, the user can launch the integration visualizer
-application **MRMhub-viz** (see [MRMhub-viz Visualizer](viz.qmd)) to inspect the integration
-results, and revise global and per-feature integration parameters (via
-param.txt and Transition List) and re-attempt peak integration via steps
-1 and 2.
+At this point, the integration visualizer application **MRMhub-viz**
+(see [MRMhub-viz Visualizer](viz.qmd)) can be launched to inspect the integration
+results. Global and per-feature integration parameters can then be
+revised (via param.txt and the Transition List), and peak integration
+re-attempted via steps 1 and 2.
 
-Once automated integration is deemed optimized, final manual adjustments
-to individual peaks can be made in the `RT_matrix.csv` (see Step 2).
-After these optional manual adjustment, the final peak integration is
-performed by (re-)running step 3.
+Once automated integration is considered optimal, final manual
+adjustments to individual peaks can be made in `RT_matrix.csv` (see Step
+2). After these optional manual adjustments, the final peak integration
+is performed by (re-)running step 3.
 
 **Warning**: Each time step 2 is executed, `RT_matrix.csv` is
-**overwritten**, and any manual modifications made by the user will be
-lost.
+**overwritten** and any manual modifications are lost.
 
 ## Step 3 — Peak Integration
 
-In the third step, peaks integration of peaks identified in step 2 will
-be performed and corresponding results saved in following default output
-files:
+In the third step, the peaks identified in step 2 are integrated and the
+corresponding results saved to the following default output files:
 
--   **`quant_raw.csv`** A wide format table with peak areas.
-    Additionally the top 3 rows contain the precursor and product m/z
-    and peak apex retention time values.
--   **`long.csv`** A long format table contain peak area,s height, peak
-    apex retention time, FWMH (Full Width at Half Maximum) and
-    integration borders. Additionally, the corresponding precursor and
-    product m/z values, the analysis time stamp (extracted from the mzML
-    files) as well as the metadata from the input files (i.e. sample
-    type, ISTD, batch identifier) are also included.
+-   **`quant_raw.csv`** A wide-format table of peak areas. The top three
+    rows additionally contain the precursor and product m/z and peak
+    apex retention time values.
+-   **`long.csv`** A long-format table containing peak area, height,
+    peak apex retention time, FWHM (Full Width at Half Maximum) and
+    integration borders. The corresponding precursor and product m/z
+    values, the analysis time stamp (extracted from the mzML files) and
+    the metadata from the input files (sample type, ISTD, batch
+    identifier) are also included.
 -   **`misc`** A folder containing the peak integration results in a
-    binary format, which is used by the visualizer application
-    MRMhub-viz and in step 4.
+    binary format, used by the visualizer application MRMhub-viz and in
+    step 4.
 
-All output tables are plain comma-separated CSV. `long.csv` is the canonical hand-off to QUANT
-(one row per *sample × feature*); `quant_raw.csv` is a convenience wide-format export of peak
+All output tables are plain comma-separated CSV files. `long.csv` is the canonical hand-off to QUANT
+(one row per *sample × feature*); `quant_raw.csv` is a wide-format export of peak
 areas and is **not** read by the QUANT module.
 
 ::: {.callout-note collapse="true"}
@@ -98,8 +97,8 @@ metadata and measurements carried through to the `MRMhubExperiment`.
 |---|---|
 | `raw_data_filename` | Source mzML file name (becomes the analysis identifier) |
 | `time_stamp` | Acquisition timestamp, read from the mzML |
-| `sample_type` | Sample / QC type, from `batch_info.csv` |
-| `batch` | Batch identifier, from `batch_info.csv` |
+| `sample_type` | Sample / QC type, from `run_order.csv` |
+| `batch` | Batch identifier, from `run_order.csv` |
 | `feature_name` | Feature (analyte) identifier, from the transition list |
 | `internal_standard` | Assigned ISTD feature, from the transition list |
 | `rt_apex` | Retention time at the peak apex (min) |
@@ -117,7 +116,7 @@ carry the precursor and product *m/z* and the apex retention time per transition
 
 ::: {.callout-tip}
 **Continue post-processing in QUANT.** The `long.csv` file is the canonical hand-off into the
-QUANT R package: `import_data_mrmhub("path/to/long.csv", import_metadata = TRUE)` loads the file
+QUANT R package: `import_data_mrmhub(path = "path/to/long.csv", import_metadata = TRUE)` loads the file
 and its embedded metadata into an `MRMhubExperiment` for ISTD normalisation, drift/batch
 correction, QC, and reporting. See the
 [QUANT documentation ↗](https://slinghub.github.io/MRMhub/quant/).
@@ -125,9 +124,8 @@ correction, QC, and reporting. See the
 
 ## Step 4 — Generate PDF results (optional)
 
-The fourth step produces integration results into PDF files, which is an
-optional step. This step creates three folder with different types of
-results:
+The fourth step, which is optional, produces integration results as PDF
+files. It creates three folders with different types of results:
 
 -   `by_transition`: Contains one PDF per transition, with chromatograms
     plotted for each sample. Only transitions with at least one feature
@@ -142,14 +140,23 @@ results:
 
 For efficient viewing of PDFs on macOS, open the PDF folder, press
 *Space* to start Quick Look, then use the *up/down* arrow keys to move
-to between transitions (files). Use the scroll wheel or trackpad to
+between transitions (files). Use the scroll wheel or trackpad to
 scroll through each PDF.
 
 **Note**: In large-scale projects, generating many large PDF files can
-take considerable time depending on computer performance and the number
-of cores used. The number of cores use to generate the PDFs can be
-adjusted via the constant `ncores` in the provided
-`MRMhub_plot.r`script.
+take considerable time, depending on computer performance and the number
+of cores used. The number of cores used to generate the PDFs can be
+adjusted via the constant `ncores` in the provided `MRMhub_plot.r`
+script.
+
+::: {.callout-note}
+**Reviewing retention-time stability at scale.** The per-transition PDFs provide an efficient means
+of confirming that RT-shift correction has tracked the peaks across the entire analytical sequence.
+In a published 4,591-sample lipidomics analysis, for example, RT shifts remained below 0.04 min
+across the whole run, with the exception of approximately 20 samples at the start of one batch near
+the end of the sequence, which were readily identified by scanning the `by_transition` PDFs. See the
+[Dataset 3 workflow ↗](https://slinghub.github.io/mrmhub-workflows/Dataset3.html).
+:::
 
 ## Next
 

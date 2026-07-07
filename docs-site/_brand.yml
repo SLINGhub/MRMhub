@@ -1,0 +1,20 @@
+# Shared MRMhub brand — navy title bar + steel-blue accents.
+#
+# Palette source of truth: plan-workflowDiagrams.prompt.md (steel blue #5B8FA8,
+# warm orange #D4914E, muted green #6B9E5E, dusty rose #C27171, navy #2C3E50).
+# `primary` (steel blue) drives links / buttons; the navy navbar is set in
+# _quarto.yml -> website.navbar.background so it stays distinct from the accent.
+#
+# The QUANT pkgdown site cannot read _brand.yml (pkgdown 2.2.0), so it mirrors
+# these values in _pkgdown.yml (template.bslib primary + dark, navbar bg). The
+# INTEGRATOR Quarto site carries an identical copy at integrator/docs/_brand.yml.
+# Keep the three in sync.
+meta:
+  name: MRMhub
+  link: https://slinghub.github.io/MRMhub/
+
+color:
+  palette:
+    steel-blue: "#5B8FA8"
+    navy: "#2C3E50"
+  primary: steel-blue

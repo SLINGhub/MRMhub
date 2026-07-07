@@ -94,7 +94,7 @@ myexp <- MRMhubExperiment() |>
 
 ## Multiple MRMhubExperiment Objects
 
-You can create and process multiple objects independently within the same script:
+Multiple objects can be created and processed independently within the same script:
 
 ```{r, results = TRUE}
 m_polars <- MRMhubExperiment(title = "Polar metabolites")
@@ -134,7 +134,7 @@ View the current dataset and processing status at any time:
 myexp
 ```
 
-## See Also
+## Next Steps
 
 - [Data and Metadata](manual-01-data-structure.html) — table overview
 - [Data Identifiers](manual-02-data-identifiers.html) — ID columns explained

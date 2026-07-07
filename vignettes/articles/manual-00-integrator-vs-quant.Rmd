@@ -19,17 +19,17 @@ editor_options:
 
 MRMhub consists of two complementary modules that handle different stages
 of a targeted mass spectrometry workflow. This page documents **MRMhub-QUANT**
-(referred to as **QUANT** here) — the post-processing module, distributed as
+(referred to as **QUANT** here), the post-processing module distributed as
 the R package `mrmhub`.
 
 | | INTEGRATOR | QUANT (R package `mrmhub`) |
 |---|---|---|
-| **What it does** | Peak detection, picking & integration from raw mzML files | Post-processing: QC, normalization, quantitation, reporting |
-| **Language** | Python (standalone executable) | R |
+| **What it does** | Peak detection, picking & integration from mzML files | Post-processing: QC, normalization, quantitation, reporting |
+| **Language** | Standalone executable | R |
 | **Input** | `.mzML` raw data files + `param.txt` + transition list | Long-format `.csv`/`.tsv` + metadata |
 | **Output** | Integrated peak areas (long-format `.csv`) | Corrected data, QC reports, publication figures |
 | **Requires R?** | No | Yes |
-| **Requires Python?** | No (pre-built binary) | No |
+| **Installation** | None (pre-built binary) | R package |
 
 ## The Typical MRMhub Pipeline
 
@@ -48,10 +48,10 @@ Final results, QC reports
 
 ## You Might NOT Need INTEGRATOR If...
  
-- Your lab already uses **MassHunter**, **Skyline**, or another vendor
+- The lab already uses **MassHunter**, **Skyline**, or another vendor
   tool for peak integration
-- You already have a table of integrated peak areas
-- You only need the post-processing / QC / reporting functionality
+- A table of integrated peak areas already exists
+- Only the post-processing, QC, and reporting functionality is needed
 
 In these cases, skip directly to QUANT (the `mrmhub` package) and use the
 appropriate importer:
@@ -59,16 +59,16 @@ appropriate importer:
 ```{r, eval = FALSE}
 library(mrmhub)
 # From MassHunter:
-exp <- import_data_masshunter("masshunter_export.csv")
+exp <- import_data_masshunter(path = "masshunter_export.csv")
 # From Skyline:
-exp <- import_data_skyline("skyline_results.csv")
+exp <- import_data_skyline(path = "skyline_results.csv")
 ```
 
 ## You Might NOT Need QUANT If...
 
-- You only need peak integration and will do downstream analysis in
+- Only peak integration is needed, with downstream analysis performed in
   another tool (e.g., Excel, Python, or a LIMS)
-- INTEGRATOR's `.csv` output is your final deliverable
+- INTEGRATOR's `.csv` output is the final deliverable
 
 ## Using Both Together (Recommended)
 
@@ -87,25 +87,25 @@ reproducible.
 QUANT is implemented in R rather than Python because the bulk of its
 work is statistical and visual: smoothing, robust regression, mixed
 modelling, multivariate QC, and ggplot2-driven inspection plots. R
-provides mature, audit-friendly implementations of these primitives
+provides established, audit-friendly implementations of these primitives
 (loess, cubic splines, prcomp, mixed models, kernel smoothers) and a
 large ecosystem of neighbouring tools (`tidyverse`, Bioconductor,
 `learnr`, `shiny`) familiar to most academic mass spectrometry and
 bioinformatics groups. Literate `.Rmd` / `.qmd` notebooks make the
-final analysis self-documenting — the same file produces the figures,
+final analysis self-documenting: the same file produces the figures,
 the report, and the audit trail.
 
 The audience is twofold. For lab scientists who write R, QUANT is a
-direct tool — every step is an `mexp -> mexp` transform of the
+direct tool: every step is an `mexp -> mexp` transform of the
 `MRMhubExperiment` container, composable in standard pipelines. For
-lab scientists who do not write R, the recommended path is to team up
-with a bioinformatician or core-facility analyst: the package is
+lab scientists who do not write R, the recommended approach is to
+collaborate with a bioinformatician or core-facility analyst; the package is
 designed so that processing scripts can be authored once and re-run
 unchanged across cohorts, with QC outputs that are readable without
-needing R knowledge. The 5-minute [Your First Analysis](tutorial-00-first-analysis.html)
+R knowledge. The 5-minute [Your First Analysis](tutorial-00-first-analysis.html)
 walkthrough is a useful gauge of the R learning curve involved.
 
-## See Also
+## Next Steps
 
 - [INTEGRATOR Manual ↗](https://slinghub.github.io/MRMhub/integrator/) (separate site)
 - [Import and prepare data files](manual-05a-which-importer.html)

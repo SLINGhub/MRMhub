@@ -28,8 +28,12 @@ unwanted variance.
 
 This tutorial assumes a processed `MRMhubExperiment` with metadata linked (`add_metadata()`),
 ISTD-normalised intensities (`normalize_by_istd()`) and, optionally, drift/batch correction
-applied. See [The MRMhub Workflow](tutorial-02-basic-workflow.html) if you are not yet at this
-stage.
+applied. See [The MRMhub Workflow](tutorial-02-basic-workflow.html) if these steps have not been
+completed.
+
+::: {.callout .callout-note}
+**Time:** ~10 min &nbsp;|&nbsp; **Level:** Intermediate &nbsp;|&nbsp; **Prerequisites:** [Basic workflow](tutorial-02-basic-workflow.html)
+:::
 
 ## 1. Setup
 
@@ -121,12 +125,12 @@ function evaluates one principal component at a time — re-run with `pca_compon
 PC2.
 </details>
 
-<div class="alert alert-warning" role="alert">
-<strong>Important:</strong> A sample flagged by PCA is a candidate for investigation, not a verdict.
+::: {.callout .callout-caution}
+**Important:** A sample flagged by PCA is a candidate for investigation, not a verdict.
 Outlier patterns frequently reflect genuine biology (e.g. a disease group, a sex difference). Only
 exclude an injection where a documented technical cause is identified — failed injection,
 contamination, instrument fault, or sample-handling error.
-</div>
+:::
 
 ## 6. Excluding analyses and features
 
@@ -219,7 +223,7 @@ if (!is.null(outliers)) {
 }
 ```
 
-## See Also
+## Next Steps
 
 - [Drift and Batch Correction (reference)](manual-07-drift-batch-correction.html) — methods used before this PCA check
 - [Drift Correction (tutorial)](tutorial-04-drift-correction.html) — how to fit and inspect drift trends

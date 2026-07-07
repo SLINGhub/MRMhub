@@ -28,9 +28,9 @@ options(dplyr.print_max = 10)
 
 ## Installation
 
-<div class="callout callout-tip">
-<strong>Tip.</strong> Quit and reopen your IDE first — most install failures come from packages already loaded in memory.
-</div>
+::: {.callout .callout-tip}
+**Tip.** Quit and reopen the IDE first; most install failures come from packages already loaded in memory.
+:::
 
 In a fresh R session:
 
@@ -48,7 +48,7 @@ library(mrmhub)
 check_setup()
 ```
 
-This checks your R version and dependencies and reports exactly what's missing if anything fails.
+This checks the R version and dependencies and reports what is missing if a check fails.
 
 ## Troubleshooting Common Errors
 
@@ -62,11 +62,13 @@ This checks your R version and dependencies and reports exactly what's missing i
 | `clang: error: ...` (macOS) | Compiler tools missing | Run `xcode-select --install` in Terminal, retry |
 | `cannot find -lcurl` (Linux) | System libraries missing | `sudo apt install libcurl4-openssl-dev libxml2-dev libssl-dev libfontconfig1-dev` |
 
-The longer list — proxies, mixed R installations on macOS, INTEGRATOR security warnings — lives in [Troubleshooting & FAQ](manual-09-troubleshooting.html).
+A longer list, covering proxies, mixed R installations on macOS, and INTEGRATOR security warnings, is given in [Troubleshooting & FAQ](manual-09-troubleshooting.html).
 
 
-## Support
+## Next Steps
 
-File issues or questions on [GitHub](https://github.com/SLINGhub/MRMhub/issues), or contact the authors directly.
+- [Key Concepts & Glossary](manual-00-key-concepts.html) — core vocabulary and the MRMhubExperiment object
+- [Your First Analysis](tutorial-00-first-analysis.html) — a short end-to-end walkthrough
+- Questions or bug reports? File an issue on [GitHub](https://github.com/SLINGhub/MRMhub/issues), or contact the authors directly.
 
 
