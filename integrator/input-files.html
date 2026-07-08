@@ -355,6 +355,11 @@ ul.task-list li input[type="checkbox"] {
 <td>Maximum allowed RT drift between adjacent samples.</td>
 <td><code>0.1</code></td>
 </tr>
+<tr class="even">
+<td><code>crop_window</code></td>
+<td>A crop_window of [y, z] crops the chromatogram to a window spanning from y minutes before to z minutes after the indicated RT.</td>
+<td><code>[1.5, 2.0]</code></td>
+</tr>
 </tbody>
 </table>
 <div class="callout callout-style-default callout-tip callout-titled">
@@ -480,6 +485,14 @@ Note
 <tr class="even">
 <td>peak width</td>
 <td><code>[w, x, y, z]</code> define the allowed integration bounds: left = <em>w–x</em> min, right = <em>y–z</em> min from the apex (see below). Overrides the globally defined <code>peak_width</code> in <code>param.txt</code>.</td>
+</tr>
+<tr class="odd">
+<td>baseline</td>
+<td><code>default</code> / <code>v_drop</code> / <code>v2v</code> For <code>default</code>, the baseline is a horizontal line at the 5th percentile of data points within the window. For <code>v_drop</code> (vertical drop), it is a horizontal line at the lowest intensities of the integrated region. For <code>v2v</code> (valley to valley), it is a straight line connecting the left and right integration bounds.</td>
+</tr>
+<tr class="even">
+<td>chromatogram index</td>
+<td>Allows the user to override the assignment of chromatograms to transitions.</td>
 </tr>
 <tr class="odd">
 <td>Remarks</td>
