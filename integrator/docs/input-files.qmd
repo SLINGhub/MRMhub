@@ -25,6 +25,7 @@ required information and controls peak detection and integration.
 | `RT_tol` | Tolerance between the indicated and the detected RT. A key setting when processing complex chromatograms. | `0.1` |
 | `RT_shift` | `[x, y]` bound the RT drift relative to the reference samples: the peak may lie at most *x* min earlier and *y* min later than expected. The lower bound is written as a **negative** value (earlier RT); the upper bound is positive (later RT). Setting `[0, 0]` disables RT-shift correction. | `[-0.2, 0.2]` |
 | `RT_shift_bound` | Maximum allowed RT drift between adjacent samples. | `0.1` |
+| `crop_window` | A crop_window of [y, z] crops the chromatogram to a window spanning from y minutes before to z minutes after the indicated RT. | `[1.5, 2.0]` |
 
 ::: {.callout-tip}
 **Worked example.** A published lipidomics dataset (Agilent triple-quadrupole) used
@@ -80,6 +81,8 @@ containing required information for each feature are marked in **bold**.
 | left integration bound | Sets a fixed left peak border for all samples, in minutes (with respect to the reference sample). |
 | right integration bound | Sets a fixed right peak border for all samples, in minutes (with respect to the reference sample). |
 | peak width | `[w, x, y, z]` define the allowed integration bounds: left = *w–x* min, right = *y–z* min from the apex (see below). Overrides the globally defined `peak_width` in `param.txt`. |
+| baseline | `default` / `v_drop` / `v2v` For `default`, the baseline is a horizontal line at the 5th percentile of data points within the window. For `v_drop` (vertical drop), it is a horizontal line at the lowest intensities of the integrated region. For `v2v` (valley to valley), it is a straight line connecting the left and right integration bounds.|
+| chromatogram index | Allows the user to override the assignment of chromatograms to transitions. |
 | Remarks | Used to document integration settings. |
 
 ## Effects of the key settings
