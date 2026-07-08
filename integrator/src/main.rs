@@ -7,6 +7,7 @@ const MISCDIR: &str = "misc";
 const RTM: &str = "RT_matrix.csv";
 const TRANS_L: &str = "trans_list.bin";
 const MZML_L: &str = "mzML_list.txt";
+const VERSION: &str = env!("CARGO_PKG_VERSION");
 use std::error::Error;
 use std::path::PathBuf;
 struct Param {
@@ -25,12 +26,18 @@ struct Param {
 fn main() -> Result<(), Box<dyn Error>> {
     let mut args = std::env::args();
     args.next();
+    let arg1 = args.next();
+    // Report the version without needing a param.txt / working directory.
+    if matches!(arg1.as_deref(), Some("--version" | "-V")) {
+        println!("MRMhub INTEGRATOR {VERSION}");
+        return Ok(());
+    }
     std::env::set_current_dir(std::env::current_exe()?.parent().unwrap())?;
     let param_t = common::read_param()?;
     rayon::ThreadPoolBuilder::new()
         .num_threads(param_t.num_t)
         .build_global()?;
-    match args.next().as_deref() {
+    match arg1.as_deref() {
         Some("1") => read_mzml::read(&param_t)?,
         Some("2") => feat::detect(&param_t)?,
         Some("3") => get_auc::calc_auc()?,
@@ -38,12 +45,13 @@ fn main() -> Result<(), Box<dyn Error>> {
         _ => {
             println!(
                 r"
-███    ███ ██████  ███    ███ ██   ██ ██    ██ ██████  
-████  ████ ██   ██ ████  ████ ██   ██ ██    ██ ██   ██ 
-██ ████ ██ ██████  ██ ████ ██ ███████ ██    ██ ██████  
-██  ██  ██ ██   ██ ██  ██  ██ ██   ██ ██    ██ ██   ██ 
+███    ███ ██████  ███    ███ ██   ██ ██    ██ ██████
+████  ████ ██   ██ ████  ████ ██   ██ ██    ██ ██   ██
+██ ████ ██ ██████  ██ ████ ██ ███████ ██    ██ ██████
+██  ██  ██ ██   ██ ██  ██  ██ ██   ██ ██    ██ ██   ██
 ██      ██ ██   ██ ██      ██ ██   ██  ██████  ██████  "
             );
+            println!("  targeted MRM peak integration  v{VERSION}");
             loop {
                 if let Err(x) = handle_input() {
                     use yansi::Paint;

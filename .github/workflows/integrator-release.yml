@@ -1,8 +1,10 @@
 name: integrator-release
 
-# Build the Rust INTEGRATOR executable and attach it to the GitHub Release.
-# Safe to keep in place before the Rust port lands: the "Detect crate" step makes
-# every later step a no-op until integrator/Cargo.toml exists.
+# Build the Rust INTEGRATOR executable for macOS / Windows / Linux, package it
+# (binary + MRMhub_plot.r + example inputs), and attach the archives to a GitHub
+# Release. macOS builds are code-signed + notarized when the signing secrets are
+# present, and fall back to an ad-hoc signature otherwise.
+
 on:
   release:
     types: [published]
@@ -12,6 +14,10 @@ on:
       - 'integrator/Cargo.toml'
       - 'integrator/Cargo.lock'
       - 'integrator/src/**'
+      - 'integrator/build.rs'
+      - 'integrator/example/**'
+      - 'integrator/MRMhub_plot.r'
+      - '.github/workflows/integrator-release.yml'
 
 permissions:
   contents: write
@@ -22,44 +28,157 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: macos-latest
-            target: aarch64-apple-darwin
-          - os: windows-latest
-            target: x86_64-pc-windows-msvc
+          - { os: macos-latest,   target: aarch64-apple-darwin }
+          - { os: windows-latest, target: x86_64-pc-windows-msvc }
+          - { os: ubuntu-latest,  target: x86_64-unknown-linux-gnu }
     runs-on: ${{ matrix.os }}
+    env:
+      DEMO_DATA_URL: ${{ vars.DEMO_DATA_URL }}
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Detect crate
-        id: crate
-        shell: bash
-        run: |
-          if [ -f integrator/Cargo.toml ]; then
-            echo "exists=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "exists=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::integrator/Cargo.toml not found — skipping (Rust port not yet added)."
-          fi
-
-      - name: Install Rust toolchain
-        if: steps.crate.outputs.exists == 'true'
-        uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
 
-      - name: Build release binary
-        if: steps.crate.outputs.exists == 'true'
+      - name: Build
         working-directory: integrator
-        run: cargo build --release --target ${{ matrix.target }}
+        run: cargo build --release --locked --target ${{ matrix.target }}
 
-      # Attach the built executable(s) to the Release. Adjust the binary name to the
-      # crate's [[bin]] name if it is not "MRMhub". Unmatched globs are ignored.
-      - name: Attach executables to release
-        if: steps.crate.outputs.exists == 'true' && github.event_name == 'release'
+      - name: Resolve version and names
+        id: vars
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "release" ]; then
+            v="${{ github.event.release.tag_name }}"; v="${v#v}"
+          else
+            v="$(grep -m1 '^version' integrator/Cargo.toml | sed -E 's/.*"(.*)".*/\1/')"
+          fi
+          ext=""; [ "${{ runner.os }}" = "Windows" ] && ext=".exe"
+          echo "version=$v"                                >> "$GITHUB_OUTPUT"
+          echo "ext=$ext"                                  >> "$GITHUB_OUTPUT"
+          echo "pkg=MRMhub-$v-${{ matrix.target }}"        >> "$GITHUB_OUTPUT"
+          echo "demo=MRMhub-demo-$v-${{ matrix.target }}"  >> "$GITHUB_OUTPUT"
+
+      - name: Stage binary package
+        shell: bash
+        run: |
+          set -euo pipefail
+          pkg="${{ steps.vars.outputs.pkg }}"
+          mkdir -p "dist/$pkg" out
+          cp "integrator/target/${{ matrix.target }}/release/MRMhub${{ steps.vars.outputs.ext }}" "dist/$pkg/"
+          cp integrator/MRMhub_plot.r "dist/$pkg/"
+          cp -R integrator/example/. "dist/$pkg/"
+
+      # --- macOS signing --------------------------------------------------------
+      - name: Detect signing secrets
+        id: sign
+        if: runner.os == 'macOS'
+        shell: bash
+        env:
+          CERT: ${{ secrets.MACOS_CERT_P12_BASE64 }}
+        run: |
+          if [ -n "${CERT:-}" ]; then
+            echo "have_signing=true"  >> "$GITHUB_OUTPUT"
+          else
+            echo "have_signing=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::macOS signing secrets absent — using an ad-hoc signature. Users must clear Gatekeeper manually."
+          fi
+
+      - name: Import Developer ID certificate
+        if: runner.os == 'macOS' && steps.sign.outputs.have_signing == 'true'
+        env:
+          CERT_P12_BASE64:   ${{ secrets.MACOS_CERT_P12_BASE64 }}
+          CERT_PASSWORD:     ${{ secrets.MACOS_CERT_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.MACOS_KEYCHAIN_PASSWORD }}
+        run: |
+          set -euo pipefail
+          kc="$RUNNER_TEMP/build.keychain-db"
+          cert="$RUNNER_TEMP/cert.p12"
+          echo "$CERT_P12_BASE64" | base64 -D -o "$cert"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$kc"
+          security set-keychain-settings -lut 21600 "$kc"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$kc"
+          security import "$cert" -k "$kc" -P "$CERT_PASSWORD" -T /usr/bin/codesign -T /usr/bin/security
+          security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" "$kc"
+          security list-keychains -d user -s "$kc" login.keychain-db
+          rm -f "$cert"
+
+      - name: Codesign binary
+        if: runner.os == 'macOS'
+        shell: bash
+        env:
+          SIGN_IDENTITY: ${{ secrets.MACOS_SIGN_IDENTITY }}
+        run: |
+          set -euo pipefail
+          bin="dist/${{ steps.vars.outputs.pkg }}/MRMhub"
+          if [ "${{ steps.sign.outputs.have_signing }}" = "true" ]; then
+            codesign --force --options runtime --timestamp --sign "$SIGN_IDENTITY" "$bin"
+            codesign --verify --strict --verbose=2 "$bin"
+          else
+            codesign --force --sign - "$bin"
+          fi
+
+      - name: Notarize
+        if: runner.os == 'macOS' && steps.sign.outputs.have_signing == 'true'
+        env:
+          ASC_KEY_ID:        ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID:     ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8_BASE64: ${{ secrets.ASC_KEY_P8_BASE64 }}
+        run: |
+          set -euo pipefail
+          p8="$RUNNER_TEMP/asc.p8"
+          echo "$ASC_KEY_P8_BASE64" | base64 -D -o "$p8"
+          zip="$RUNNER_TEMP/notarize.zip"
+          ditto -c -k --keepParent "dist/${{ steps.vars.outputs.pkg }}" "$zip"
+          xcrun notarytool submit "$zip" --key "$p8" --key-id "$ASC_KEY_ID" --issuer "$ASC_ISSUER_ID" --wait
+          rm -f "$p8"
+          # A bare Mach-O in a .zip cannot be stapled; Gatekeeper checks notarization online at first launch.
+
+      # --- demo package (binary package + Zenodo mzML) --------------------------
+      - name: Stage demo package
+        if: env.DEMO_DATA_URL != ''
+        shell: bash
+        run: |
+          set -euo pipefail
+          pkg="${{ steps.vars.outputs.pkg }}"; demo="${{ steps.vars.outputs.demo }}"
+          cp -R "dist/$pkg" "dist/$demo"
+          curl -fSL "$DEMO_DATA_URL" -o "$RUNNER_TEMP/mzML.zip"
+          unzip -q "$RUNNER_TEMP/mzML.zip" -d "dist/$demo"
+
+      # --- zip (ditto on unix, Compress-Archive on Windows) ---------------------
+      - name: Zip packages (unix)
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          set -euo pipefail
+          ditto -c -k --keepParent "dist/${{ steps.vars.outputs.pkg }}"  "out/${{ steps.vars.outputs.pkg }}.zip" 2>/dev/null \
+            || (cd dist && zip -r -q "../out/${{ steps.vars.outputs.pkg }}.zip" "${{ steps.vars.outputs.pkg }}")
+          if [ -d "dist/${{ steps.vars.outputs.demo }}" ]; then
+            ditto -c -k --keepParent "dist/${{ steps.vars.outputs.demo }}" "out/${{ steps.vars.outputs.demo }}.zip" 2>/dev/null \
+              || (cd dist && zip -r -q "../out/${{ steps.vars.outputs.demo }}.zip" "${{ steps.vars.outputs.demo }}")
+          fi
+
+      - name: Zip packages (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          Compress-Archive -Path "dist/${{ steps.vars.outputs.pkg }}" -DestinationPath "out/${{ steps.vars.outputs.pkg }}.zip"
+          if (Test-Path "dist/${{ steps.vars.outputs.demo }}") {
+            Compress-Archive -Path "dist/${{ steps.vars.outputs.demo }}" -DestinationPath "out/${{ steps.vars.outputs.demo }}.zip"
+          }
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.vars.outputs.pkg }}
+          path: out/*.zip
+
+      - name: Attach to release
+        if: github.event_name == 'release'
         uses: softprops/action-gh-release@v2
         with:
-          files: |
-            integrator/target/${{ matrix.target }}/release/MRMhub
-            integrator/target/${{ matrix.target }}/release/MRMhub.exe
-          fail_on_unmatched_files: false
+          files: out/*.zip
+          fail_on_unmatched_files: true
