@@ -8,9 +8,9 @@ template:
     # Shared MRMhub brand (pkgdown 2.2.0 cannot read _brand.yml, so the palette
     # is mirrored here from docs-site/_brand.yml + integrator/docs/_brand.yml).
     primary: "#5B8FA8"   # steel-blue accent: links, buttons
-    dark: "#2C3E50"      # brand navy: drives the navbar via navbar.bg below
+    dark: "#2d5c80"      # header/menu bar colour: drives the navbar via navbar.bg below
 navbar:
-  bg: dark    # navy title bar, shared across all three sites
+  bg: dark    # header/menu bar, shared across all three sites
   type: dark  # light text on the dark navbar
   structure:
     left:

@@ -1,0 +1,55 @@
+---
+title: "Run the demo"
+subtitle: "Run the complete MRMhub pipeline on bundled demo data"
+---
+
+The MRMhub release ships with a self-contained demonstration project — example raw data,
+INTEGRATOR parameters, and a ready-to-run QUANT R script, so the full pipeline can be run
+end-to-end without preparing any data. The two modules run in sequence:
+**MRMhub-INTEGRATOR** produces integrated peaks, and **MRMhub-QUANT** turns them into a
+quality-controlled, quantified report.
+
+## Before you start
+
+1. **Download** the latest release from the
+   [MRMhub releases page ↗](https://github.com/SLINGhub/MRMhub/releases) and unzip it.
+2. **Clear the first-launch security prompt.** MRMhub-INTEGRATOR is distributed as a portable
+   executable, so on first launch macOS Gatekeeper or Windows SmartScreen may block it. This
+   is a one-time step — follow the *First launch* instructions in
+   [MRMhub-INTEGRATOR — Download & Project Setup ↗](https://slinghub.github.io/MRMhub/integrator/setup.html);
+   afterwards the application opens normally.
+3. **Set up an IDE for the QUANT step.** The QUANT script is a Quarto document run in R.
+   Install R and an IDE that runs Quarto — RStudio or Positron — then the `mrmhub` package,
+   as described in
+   [MRMhub-QUANT installation ↗](https://slinghub.github.io/MRMhub/quant/articles/manual-00-installation.html).
+
+::: {.callout-note}
+The steps below use only the bundled demo project. To run your own data afterwards, see the
+[MRMhub-INTEGRATOR Quick Start ↗](https://slinghub.github.io/MRMhub/integrator/quickstart.html)
+and the [MRMhub-QUANT tutorials ↗](https://slinghub.github.io/MRMhub/quant/articles/).
+:::
+
+## Step 1 — Peak integration (MRMhub-INTEGRATOR)
+
+Double-click **MRMhub** in the unzipped demo folder and run **steps 1 to 4** in order. When
+they complete, open the `transitions` folder and inspect the per-transition PDFs to review
+the integrated peaks. The integrated results are written for the QUANT step that follows.
+
+For a description of each stage, see the
+[MRMhub-INTEGRATOR Quick Start ↗](https://slinghub.github.io/MRMhub/integrator/quickstart.html).
+
+## Step 2 — Quantitation & quality control (MRMhub-QUANT)
+
+Open **`quant.qmd`** in the `QUANT` folder in RStudio or Positron and render it. The script
+imports the integrated peaks, normalises to internal standards, applies drift and batch
+correction, quantifies, computes QC metrics, filters features, and writes a QC report — the
+complete post-acquisition workflow in a single document.
+
+The same analysis is walked through, step by step, in
+[Your first analysis ↗](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.html).
+
+## Next steps
+
+- [MRMhub-INTEGRATOR manual ↗](https://slinghub.github.io/MRMhub/integrator/) — peak detection, parameters, review, and visualisation.
+- [MRMhub-QUANT articles ↗](https://slinghub.github.io/MRMhub/quant/articles/) — importers, corrections, quantitation, QC, and reporting.
+- [Example workflows ↗](https://slinghub.github.io/mrmhub-workflows/) — annotated, end-to-end example pipelines.

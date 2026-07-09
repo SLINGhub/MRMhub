@@ -5,11 +5,13 @@ project:
 website:
   title: "MRMhub"
   navbar:
-    background: "#2C3E50"   # brand navy title bar (shared across all three sites)
+    background: "#2d5c80"   # header/menu bar colour (shared across all three sites)
     foreground: "#ffffff"
     left:
       - text: Home
         href: index.qmd
+      - text: Demo
+        href: get-started.qmd
       - text: "INTEGRATOR ↗"
         href: https://slinghub.github.io/MRMhub/integrator/
       - text: "QUANT (R package) ↗"
@@ -26,4 +28,5 @@ format:
     theme:
       - cosmo
       - brand
+    css: styles.css
     toc: true
