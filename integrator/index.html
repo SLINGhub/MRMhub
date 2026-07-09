@@ -6,9 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="INTEGRATOR is the stand-alone peak-integration application of the MRMhub pipeline. It reads mzML files, finds and integrates MRM peaks, and exports long.csv / quant_raw.csv for downstream quantitation in the QUANT R package.">
 
-<title>INTEGRATOR – MRMhub · INTEGRATOR</title>
+<title>MRMhub-INTEGRATOR</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -24,41 +23,6 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
 </style>
 
 
@@ -69,7 +33,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./quickstart.html" rel="next">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -81,9 +44,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-011108973cccfa058b9d53d4b7eb11ad.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-b0172729d9e3827b305e14eb5a71532e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-011108973cccfa058b9d53d4b7eb11ad.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-84f283207f31920b1c7482bf206eb6dc.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-1c25e16c2966f308f7ba715fcbca78fb.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-84f283207f31920b1c7482bf206eb6dc.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -116,7 +79,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link rel="stylesheet" href="styles.css">
 </head>
 
-<body class="nav-sidebar floating nav-fixed fullcontent quarto-light">
+<body class="nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -124,7 +87,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="./index.html">
-    <span class="navbar-title">MRMhub · INTEGRATOR</span>
+    <span class="navbar-title">MRMhub-INTEGRATOR</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -148,7 +111,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <ul class="dropdown-menu" aria-labelledby="nav-menu-manual">    
         <li>
     <a class="dropdown-item" href="./setup.html">
- <span class="dropdown-text">Download &amp; Setup</span></a>
+ <span class="dropdown-text">Installation</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="./input-files.html">
@@ -177,6 +140,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>  
     </ul>
   </li>
+  <li class="nav-item">
+    <a class="nav-link" href="https://github.com/SLINGhub/MRMhub/releases"> 
+<span class="menu-text">Changelog</span></a>
+  </li>  
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
@@ -198,124 +165,30 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
       </div> <!-- /container-fluid -->
     </nav>
-  <nav class="quarto-secondary-nav">
-    <div class="container-fluid d-flex">
-      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
-        <i class="bi bi-layout-text-sidebar-reverse"></i>
-      </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Overview</a></li></ol></nav>
-        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
-        </a>
-    </div>
-  </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
-    <div class="sidebar-menu-container"> 
-    <ul class="list-unstyled mt-1">
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Overview</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./quickstart.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Quick Start</span></a>
-  </div>
-</li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
- <span class="menu-text">Manual</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./setup.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Download &amp; Setup</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./input-files.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Input Files</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./running.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Running INTEGRATOR</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./algorithm.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Algorithm</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./viz.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">MRMhub-viz Visualizer</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./sharing.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Sharing Results</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./msconvert.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Vendor → mzML (MSConvert)</span></a>
-  </div>
-</li>
-      </ul>
-  </li>
-    </ul>
-    </div>
-</nav>
-<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     
 <!-- main -->
-<main class="content" id="quarto-document-content">
+<main class="content column-page" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
 
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">INTEGRATOR</h1>
-<p class="subtitle lead">Peak detection, picking, and integration for targeted MRM mass spectrometry</p>
+
+
+
+<div class="grid landing-grid">
+<div class="g-col-12 g-col-lg-9">
+<p><img src="images/logo.svg" class="hex-logo" alt="MRMhub hex logo"></p>
+<section id="integrator" class="level1">
+<h1>INTEGRATOR</h1>
+<div class="lead">
+<p>Robust, reproducible peak detection and integration for large-scale targeted LC-MS-MRM analyses</p>
 </div>
+<div class="title-sep">
 
-<div>
-  <div class="description">
-    <p>INTEGRATOR is the stand-alone peak-integration application of the MRMhub pipeline. It reads mzML files, finds and integrates MRM peaks, and exports long.csv / quant_raw.csv for downstream quantitation in the QUANT R package.</p>
-  </div>
 </div>
-
-
-<div class="quarto-title-meta">
-
-    
-  
-    
-  </div>
-  
-
-
-</header>
-
-
-<p><strong>INTEGRATOR</strong> is the stand-alone peak-integration module of the MRMhub pipeline. It reads converted mzML files, detects and integrates MRM peaks across all samples, supports interactive review and refinement of the results, and exports tables for quantitation.</p>
-<p>It is distributed as a self-contained executable for macOS and Windows and requires no installation and no separate runtime. Retaining one copy in each analysis project folder keeps the project reproducible.</p>
+<p>INTEGRATOR is the stand-alone peak-integration module of the <a href="https://slinghub.github.io/MRMhub/">MRMhub framework</a>. MS raw data are imported as mzML files, MRMhub is the run as console application in different steps: (1) import and conversion of mzML files, (2) cross-sample peak detection, (3) peak integration, and (4) plotting of chromatograms with integrated peaks as PDFs. Peak area data is saved as long and wide-format CSV files.</p>
 <section id="the-workflow" class="level2">
 <h2 class="anchored" data-anchor-id="the-workflow">The workflow</h2>
 <div style="text-align: center; margin: 1.5em 0;">
@@ -325,80 +198,87 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     .wf-label { font-size: 13px; font-weight: 600; fill: #1a1a1a; pointer-events: none; }
     .wf-arrow { fill: #666; }
   </style>
-<rect class="wf-box" x="0" y="10" width="160" height="70" fill="#e8e8ec" stroke="#2c3e50"></rect> <text class="wf-label" x="80" y="50" text-anchor="middle">Raw vendor files</text> <polygon class="wf-arrow" points="170,45 180,38 180,52"></polygon> <a href="msconvert.html"><rect class="wf-box" x="190" y="10" width="160" height="70" fill="#f5e0c8" stroke="#c87f3b"></rect><text class="wf-label" x="270" y="50" text-anchor="middle">mzML (msconvert)</text></a> <polygon class="wf-arrow" points="360,45 370,38 370,52"></polygon> <a href="running.html"><rect class="wf-box" x="380" y="10" width="160" height="70" fill="#d4e8d4" stroke="#5a9a5a"></rect><text class="wf-label" x="460" y="50" text-anchor="middle">INTEGRATOR</text></a> <polygon class="wf-arrow" points="550,45 560,38 560,52"></polygon> <rect class="wf-box" x="570" y="10" width="160" height="70" fill="#f5f2fa" stroke="#7a6ba4"></rect> <text class="wf-label" x="650" y="50" text-anchor="middle">long.csv</text> <polygon class="wf-arrow" points="740,45 750,38 750,52"></polygon> <a href="https://slinghub.github.io/MRMhub/quant/"><rect class="wf-box" x="760" y="10" width="180" height="70" fill="#d6e8f0" stroke="#4a90a4"></rect><text class="wf-label" x="850" y="50" text-anchor="middle">QUANT ↗</text></a>
+<polygon class="wf-box" points="18,10 160,10 142,80 0,80" fill="#e8e8ec" stroke="#2c3e50"></polygon> <text class="wf-label" x="80" y="50" text-anchor="middle">Raw MRM files</text> <polygon class="wf-arrow" points="170,38 180,45 170,52"></polygon> <a href="msconvert.html"><rect class="wf-box" x="190" y="10" width="160" height="70" fill="#f5e0c8" stroke="#c87f3b"></rect><text class="wf-label" x="270" y="50" text-anchor="middle">mzML (msconvert)</text></a> <polygon class="wf-arrow" points="360,38 370,45 360,52"></polygon> <a href="running.html"><rect class="wf-box" x="380" y="10" width="160" height="70" fill="#d4e8d4" stroke="#5a9a5a"></rect><text class="wf-label" x="460" y="50" text-anchor="middle">INTEGRATOR</text></a> <polygon class="wf-arrow" points="550,38 560,45 550,52"></polygon> <polygon class="wf-box" points="588,10 730,10 712,80 570,80" fill="#f5f2fa" stroke="#7a6ba4"></polygon> <text class="wf-label" x="650" y="43" text-anchor="middle">Peak areas</text> <text x="650" y="60" text-anchor="middle" style="font-size: 10px; fill: #5a5a5a;">long.csv</text> <polygon class="wf-arrow" points="740,38 750,45 740,52"></polygon> <a href="https://slinghub.github.io/MRMhub/quant/"><rect class="wf-box" x="760" y="10" width="180" height="70" fill="#eef4f8" stroke="#4a90a4" stroke-dasharray="4 3"></rect><text class="wf-label" x="850" y="50" text-anchor="middle">QUANT ↗</text></a>
 </svg>
-</div>
-<div class="text-center">
-<p><a href="./quickstart.html" class="btn btn-primary" role="button">Get started — Quick Start →</a></p>
-</div>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>INTEGRATOR is not required to use QUANT (the <code>mrmhub</code> R package); QUANT also imports directly from vendor outputs (MassHunter, Skyline). See the <a href="https://slinghub.github.io/MRMhub/quant/">QUANT documentation ↗</a>.</p>
-</div>
+<p style="font-size: 0.85rem; color: #6c757d; margin-top: 0.25rem;">
+INTEGRATOR performs the peak integration; QUANT (dashed) is a separate MRMhub module.
+</p>
 </div>
 </section>
-<section id="where-to-start" class="level2">
-<h2 class="anchored" data-anchor-id="where-to-start">Where to start</h2>
-<div class="grid">
-<section id="quick-start" class="level3 g-col-12 g-col-md-6">
-<h3 class="anchored" data-anchor-id="quick-start">🚀 <a href="./quickstart.html">Quick Start</a></h3>
-<p>A condensed path from raw files to integrated peaks in a handful of steps.</p>
+<section id="download-and-setup" class="level2">
+<h2 class="anchored" data-anchor-id="download-and-setup">Download and setup</h2>
+<p>INTEGRATOR is distributed as a self-contained executable for macOS and Windows via the <a href="https://github.com/SLINGhub/MRMhub/releases">GitHub releases page</a>; no installation and no separate runtimes are required. A copy of the executable is included in an analysis project, which ensured reproducibility. On first launch, typically a one-time OS security prompt must be cleared. Detailed instructions are given in <a href="setup.html">Installing MRMhub-INTEGRATOR</a>.</p>
 </section>
-<section id="download-project-setup" class="level3 g-col-12 g-col-md-6">
-<h3 class="anchored" data-anchor-id="download-project-setup">📦 <a href="./setup.html">Download &amp; Project Setup</a></h3>
-<p>Download the standalone executable, clear the first-launch security prompt, and set up one reproducible copy per project.</p>
-</section>
-<section id="input-files" class="level3 g-col-12 g-col-md-6">
-<h3 class="anchored" data-anchor-id="input-files">📄 <a href="./input-files.html">Input Files</a></h3>
-<p>Reference for <code>param.txt</code>, <code>run_order.csv</code>, and the transition list, including how to tune peak integration.</p>
-</section>
-<section id="running-integrator" class="level3 g-col-12 g-col-md-6">
-<h3 class="anchored" data-anchor-id="running-integrator">▶️ <a href="./running.html">Running INTEGRATOR</a></h3>
-<p>The four processing steps: validation, peak finding, integration, and PDF output.</p>
-</section>
-<section id="algorithm" class="level3 g-col-12 g-col-md-6">
-<h3 class="anchored" data-anchor-id="algorithm">⚙️ <a href="./algorithm.html">Algorithm</a></h3>
-<p>How INTEGRATOR detects, picks, and integrates peaks: RT-shift correction, CWT feature detection, and integration-border determination.</p>
-</section>
-<section id="mrmhub-viz-visualizer" class="level3 g-col-12 g-col-md-6">
-<h3 class="anchored" data-anchor-id="mrmhub-viz-visualizer">🔍 <a href="./viz.html">MRMhub-viz Visualizer</a></h3>
-<p>Review and refine integration results interactively.</p>
-</section>
-<section id="sharing-results" class="level3 g-col-12 g-col-md-6">
-<h3 class="anchored" data-anchor-id="sharing-results">🤝 <a href="./sharing.html">Sharing Results</a></h3>
-<p>Bundle raw data, parameters, and results for fully reproducible peak integration.</p>
-</section>
-</div>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Tip
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>The <a href="https://slinghub.github.io/mrmhub-workflows/Dataset3.html">Dataset 3 workflow ↗</a> presents a complete analysis, from raw-file conversion and INTEGRATOR settings through QUANT post-processing, with all input files shown. Additional end-to-end examples are available at <a href="https://slinghub.github.io/mrmhub-workflows/">mrmhub-workflows ↗</a>.</p>
-</div>
+<section id="getting-started" class="level2">
+<h2 class="anchored" data-anchor-id="getting-started">Getting started</h2>
+<div class="arrow-list">
+<ul>
+<li><strong><a href="demo.html">Run the demo</a></strong> — the bundled dataset with all required files can be processed end-to-end with INTEGRATOR. It ships within the <a href="https://github.com/SLINGhub/MRMhub/releases">latest release</a> and is documented in <code>readme.txt</code>.</li>
+<li><strong><a href="quickstart.html">Quick Start</a></strong> — a short tutorial for running a new peak integration project.</li>
+<li><strong><a href="https://slinghub.github.io/mrmhub-workflows/">Browse real analyses</a></strong> — Read details on peak integration of two large-scale lipidomics studies.</li>
+<li><strong>Manual</strong> — detailed instructions and tool reference is available from the <strong>Manual</strong> menu above.</li>
+</ul>
 </div>
 </section>
-<section id="next-step-in-the-pipeline" class="level2">
-<h2 class="anchored" data-anchor-id="next-step-in-the-pipeline">Next step in the pipeline</h2>
-<p>Once INTEGRATOR produces <code>long.csv</code>, pass it to the QUANT R package for ISTD normalisation, drift/batch correction, calibration, QC, and reporting:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">import_data_mrmhub</span>(<span class="at">path =</span> <span class="st">"path/to/long.csv"</span>, <span class="at">import_metadata =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>See the <a href="https://slinghub.github.io/MRMhub/quant/">QUANT documentation ↗</a> to continue.</p>
+<section id="post-processing-of-integration-results" class="level2">
+<h2 class="anchored" data-anchor-id="post-processing-of-integration-results">Post-processing of integration results</h2>
+<p>The results produced by INTEGRATOR can be used directly by the QUANT R package (<code>mrmhub</code>) for post-processing — normalisation, drift/batch correction, calibration, quality control, and reporting. See the <a href="https://slinghub.github.io/MRMhub/quant/">QUANT manual ↗</a> and the corresponding <a href="demo.html">Demo</a>.</p>
+</section>
+</section>
+</div>
+<div class="g-col-12 g-col-lg-3 info-panel">
+<section id="links" class="level3">
+<h3 class="anchored" data-anchor-id="links">Links</h3>
+<ul>
+<li><a href="https://github.com/SLINGhub/MRMhub/tree/main/integrator">Browse source code</a></li>
+<li><a href="https://github.com/SLINGhub/MRMhub/issues">Report a bug</a></li>
+<li><a href="https://github.com/SLINGhub/MRMhub/releases">Download</a></li>
+</ul>
+</section>
+<section id="license" class="level3">
+<h3 class="anchored" data-anchor-id="license">License</h3>
+<ul>
+<li><a href="https://www.gnu.org/licenses/gpl-3.0">GPL-3</a> (non-commercial use)</li>
+<li>Commercial licensing — contact <a href="mailto:jonathan_tan@nus.edu.sg">Jonathan Tan</a></li>
+</ul>
+</section>
+<section id="community" class="level3">
+<h3 class="anchored" data-anchor-id="community">Community</h3>
+<ul>
+<li><a href="https://github.com/SLINGhub/MRMhub/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+<li><a href="https://github.com/SLINGhub/MRMhub/blob/main/.github/CONTRIBUTING.md">Contributing</a></li>
+</ul>
+</section>
+<section id="citation" class="level3">
+<h3 class="anchored" data-anchor-id="citation">Citation</h3>
+<ul>
+<li><a href="https://doi.org/10.64898/2025.12.20.695370">Citing MRMhub</a></li>
+</ul>
+<!--
+### Funding & Acknowledgements
+
+TODO (to be completed): funders, grant numbers, and institutional support.
+Uncomment this section once the details are filled in.
+-->
+</section>
+<section id="developers" class="level3">
+<h3 class="anchored" data-anchor-id="developers">Developers</h3>
+<ul class="developer-list">
+<li>
+<span class="dev-name">Guo Shou Teo</span> <a class="orcid" href="https://orcid.org/0000-0003-3891-1494" aria-label="ORCID iD"><svg viewbox="0 0 256 256" width="14" height="14"><circle cx="128" cy="128" r="128" fill="#A6CE39"></circle><path fill="#fff" d="M86.3 186.2H70.9V79.1h15.4v107.1zM78.6 66.9c-5.5 0-10-4.5-10-10s4.5-9.9 10-9.9 10 4.4 10 9.9-4.5 10-10 10zM124.3 79.1h41.6c39.6 0 57 28.3 57 53.6 0 27.5-21.5 53.6-56.8 53.6h-41.8V79.1zm15.4 93.3h24.5c34.9 0 42.9-26.5 42.9-39.7 0-21.5-13.7-39.7-43.7-39.7h-23.7v79.4z"></path></svg></a><br><span class="dev-role">Author, maintainer</span>
+</li>
+<li>
+<span class="dev-name">Bo Burla</span> <a class="orcid" href="https://orcid.org/0000-0002-5918-3249" aria-label="ORCID iD"><svg viewbox="0 0 256 256" width="14" height="14"><circle cx="128" cy="128" r="128" fill="#A6CE39"></circle><path fill="#fff" d="M86.3 186.2H70.9V79.1h15.4v107.1zM78.6 66.9c-5.5 0-10-4.5-10-10s4.5-9.9 10-9.9 10 4.4 10 9.9-4.5 10-10 10zM124.3 79.1h41.6c39.6 0 57 28.3 57 53.6 0 27.5-21.5 53.6-56.8 53.6h-41.8V79.1zm15.4 93.3h24.5c34.9 0 42.9-26.5 42.9-39.7 0-21.5-13.7-39.7-43.7-39.7h-23.7v79.4z"></path></svg></a><br><span class="dev-role">Author</span>
+</li>
+<li>
+<span class="dev-name">Hyungwon Choi</span> <a class="orcid" href="https://orcid.org/0000-0002-6687-3088" aria-label="ORCID iD"><svg viewbox="0 0 256 256" width="14" height="14"><circle cx="128" cy="128" r="128" fill="#A6CE39"></circle><path fill="#fff" d="M86.3 186.2H70.9V79.1h15.4v107.1zM78.6 66.9c-5.5 0-10-4.5-10-10s4.5-9.9 10-9.9 10 4.4 10 9.9-4.5 10-10 10zM124.3 79.1h41.6c39.6 0 57 28.3 57 53.6 0 27.5-21.5 53.6-56.8 53.6h-41.8V79.1zm15.4 93.3h24.5c34.9 0 42.9-26.5 42.9-39.7 0-21.5-13.7-39.7-43.7-39.7h-23.7v79.4z"></path></svg></a><br><span class="dev-role">Author</span>
+</li>
+</ul>
+</section>
+</div>
+</div>
 
 
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -801,15 +681,6 @@ Tip
     }
   });
   </script>
-<nav class="page-navigation">
-  <div class="nav-page nav-page-previous">
-  </div>
-  <div class="nav-page nav-page-next">
-      <a href="./quickstart.html" class="pagination-link" aria-label="Quick Start">
-        <span class="nav-page-text">Quick Start</span> <i class="bi bi-arrow-right-short"></i>
-      </a>
-  </div>
-</nav>
 </div> <!-- /content -->
 
 

@@ -1,39 +1,304 @@
-.workflow-diagram {
-  display: flex;
-  align-items: center;
-  gap: 0;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin: 2em 0;
+/* Landing typography system — kept in sync with docs-site/styles.css so the
+   INTEGRATOR home reads as the same brand family as the MRMhub landing page.
+   Steel-blue #5B8FA8 primary + navy #2C3E50 headings come from cosmo +
+   _brand.yml; no new fonts are introduced. */
+
+/* Cap + centre the full-width home content so the prose column matches the
+   landing page's width (the home sets `page-layout: full`; manual pages keep
+   the default cosmo width). */
+#quarto-content.page-layout-full {
+  max-width: 1340px;
+  margin-left: auto;
+  margin-right: auto;
 }
-.workflow-step {
-  display: flex;
-  align-items: center;
-  text-decoration: none;
-  color: #1a1a1a;
-  padding: 1em 1.5em;
-  border-radius: 8px;
-  border-left: 4px solid;
+
+/* Wider gutter between the content column and the info-panel sidebar. */
+.landing-grid {
+  column-gap: 3rem;
+}
+
+/* Page title (navy) + a hairline rule separating the title block from the body,
+   mirroring the underline beneath "MRMhub" on the landing page. */
+.landing-grid h1 {
+  font-size: 2.7rem;
+  font-weight: 700;
+  color: #2C3E50;
+  letter-spacing: -0.01em;
+  margin-bottom: 1rem;
+}
+.title-sep {
+  clear: right;
+  border: 0;
+  border-top: 1px solid #dee2e6;
+  margin: 1.25rem 0 1.75rem;
+}
+
+/* Lead sub-title font — one definition shared by the landing page (`.lead`) and
+   the manual pages' native title block (`.description`), so both subtitles use
+   the exact same font, weight, and colour. Per-context spacing is set below. */
+.landing-grid .lead,
+#title-block-header .description {
+  font-size: 1.3rem;
+  font-weight: 400;
+  color: #52606d;
+}
+.landing-grid .lead {
+  margin-bottom: 1.25rem;
+}
+
+/* Smaller, quieter section headers. No underline — only the page title carries
+   a separating rule (.title-sep). */
+.landing-grid h2,
+.landing-grid h3 {
   font-weight: 600;
-  font-size: 0.95rem;
-  transition: transform 0.15s, box-shadow 0.15s;
-  background: #fff;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  color: #2C3E50;
+  border-bottom: 0;
+  padding-bottom: 0;
 }
-.workflow-step:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-  text-decoration: none;
-  color: #1a1a1a;
-}
-.workflow-step.step-raw { border-left-color: #4a90a4; background: #f0f7fa; }
-.workflow-step.step-convert { border-left-color: #c87f3b; background: #fdf6ee; }
-.workflow-step.step-integrate { border-left-color: #5a9a5a; background: #f2f9f2; }
-.workflow-step.step-export { border-left-color: #7a6ba4; background: #f5f2fa; }
-.workflow-step.step-quant { border-left-color: #a45a8a; background: #faf2f7; }
-.workflow-arrow {
+.landing-grid h2 {
   font-size: 1.4rem;
-  color: #999;
-  margin: 0 0.4em;
-  user-select: none;
+  margin-top: 2.6rem;
+  margin-bottom: 0.85rem;
+}
+
+/* Manual / article pages — with the left sidebar removed, these pages use
+   Quarto's native title block (`title:` + `description:`). Style it to match the
+   landing page's title treatment: navy H1, muted lead sub-title, and a hairline
+   rule separating the header from the body (mirrors `.landing-grid h1` +
+   `.lead` + `.title-sep`). index.qmd builds its own `.landing-grid` header and
+   is unaffected (it carries no `title:`, so emits no title block). */
+#title-block-header .title {
+  font-size: 2.7rem;
+  font-weight: 700;
+  color: #2C3E50;
+  letter-spacing: -0.01em;
+}
+/* Quarto's theme forces `.quarto-title .title { margin-bottom: 0 }` at a higher
+   specificity, which collapses the title→subtitle gap. Re-assert the 1rem gap
+   with a matching selector (styles.css loads after the theme, so it wins) to
+   mirror the landing page's title→subtitle spacing. */
+#title-block-header.quarto-title-block.default .quarto-title .title {
+  margin-bottom: 1rem;
+}
+#title-block-header .description,
+#title-block-header .description p {
+  margin-bottom: 0;
+}
+#title-block-header {
+  border-bottom: 1px solid #dee2e6;
+  padding-bottom: 1.25rem;
+  margin-bottom: 1.75rem;
+}
+
+/* Section headers on the article body, matched to the landing page's quieter
+   header style (navy, semi-bold, no underline). Values mirror `.landing-grid
+   h2/h3` so the landing page is visually identical under both selectors. */
+main.content h2,
+main.content h3 {
+  font-weight: 600;
+  color: #2C3E50;
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+main.content h2 {
+  font-size: 1.4rem;
+  margin-top: 2.6rem;
+  margin-bottom: 0.85rem;
+}
+
+/* Spaced callout — wrap a callout in `::: {.callout-spaced}` to add breathing
+   room above and below it. Text stays at the body font size; only the vertical
+   margin is increased. (Quarto strips extra classes off the callout itself, so
+   the wrapper div carries the class.) */
+.callout-lg,
+.callout-spaced {
+  margin: 2rem 0;
+}
+.callout-lg .callout-title-container,
+.callout-spaced .callout-title-container {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+/* File-tree code block — wrap a plain code block in `::: {.filetree}` to render
+   the directory layout in a smaller, tighter monospace than normal code, and
+   centre the block on the page while keeping its ASCII left-aligned inside. */
+.filetree {
+  text-align: center;
+}
+.filetree pre {
+  display: inline-block;
+  text-align: left;
+  margin-bottom: 0;
+}
+.filetree pre,
+.filetree pre code {
+  font-size: 0.8rem;
+  line-height: 1.35;
+}
+.tree-caption {
+  display: block;
+  font-size: 0.8rem;
+  color: #6c757d;
+  margin-top: 0;
+}
+
+/* Centre figure captions under the (centre-aligned) figures. */
+figure figcaption,
+.figure-caption {
+  text-align: center;
+}
+
+/* Compact table — wrap a Markdown table in `::: {.compact-table}` to shrink the
+   font a little and keep the first column (e.g. file names) on one line so it
+   sizes to its content instead of wrapping. */
+.compact-table table {
+  font-size: 0.9rem;
+}
+.compact-table th:first-child,
+.compact-table td:first-child {
+  white-space: nowrap;
+  width: 10rem;
+  padding-right: 1rem;
+}
+
+/* Give hero/overview figures room to breathe. */
+.hero-fig {
+  text-align: center;
+  margin-top: 1.25rem;
+  margin-bottom: 2.25rem;
+}
+
+/* Steel-blue arrow markers for "getting started"-style lists. */
+.arrow-list ul {
+  list-style: none;
+  padding-left: 1.5em;
+}
+.arrow-list li {
+  position: relative;
+}
+.arrow-list li + li {
+  margin-top: 0.6rem;
+}
+.arrow-list li::before {
+  content: "→";
+  position: absolute;
+  left: -1.5em;
+  color: #5B8FA8;
+  font-weight: 700;
+}
+
+/* "See also" footer — a light, de-emphasised related-links block that closes a
+   manual page (replaces the heavier "Next" H2 sections). Small muted label +
+   compact link list, set off from the body by a hairline rule. */
+.see-also {
+  margin-top: 2.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid #dee2e6;
+  font-size: 0.9rem;
+}
+.see-also-label {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #2C3E50;
+  margin-bottom: 0.4rem;
+}
+.see-also ul {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 0;
+}
+.see-also li {
+  margin: 0.2rem 0;
+  line-height: 1.45;
+}
+
+/* Module list — a numbered marker in the link colour per module. */
+.module-list ul {
+  list-style: none;
+  padding-left: 1.8em;
+  counter-reset: mod;
+}
+.module-list li {
+  position: relative;
+  counter-increment: mod;
+}
+.module-list li + li {
+  margin-top: 1rem;
+}
+.module-list li::before {
+  content: counter(mod) ".";
+  position: absolute;
+  left: -1.8em;
+  top: 0;
+  font-weight: 700;
+  color: var(--bs-link-color, #5B8FA8);
+}
+.module-list a {
+  font-weight: 700;
+}
+
+/* Home page — QUANT-style hex sticker + right-hand info panel. Typography is
+   inherited from cosmo + _brand.yml (steel-blue #5B8FA8, navy #2C3E50); no new
+   fonts are introduced. Mirrors docs-site/styles.css. */
+.hex-logo {
+  float: right;
+  width: 130px;
+  height: auto;
+  margin: 0.25rem 0 1rem 1.5rem;
+}
+.info-panel {
+  font-size: 0.9rem;
+}
+.info-panel h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2C3E50;
+  margin: 1.5rem 0 0.35rem;
+  border-bottom: none;
+}
+.info-panel h3:first-child {
+  margin-top: 0;
+}
+.info-panel ul {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 0;
+}
+.info-panel li {
+  margin: 0.15rem 0;
+  line-height: 1.4;
+}
+.developer-list {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 0;
+}
+.developer-list li {
+  margin: 0 0 0.6rem;
+  line-height: 1.35;
+}
+.developer-list .dev-name {
+  font-weight: 500;
+}
+.developer-list .dev-role {
+  color: #6c757d;
+  font-size: 0.82rem;
+}
+.developer-list .orcid {
+  vertical-align: text-bottom;
+}
+.developer-list .orcid svg {
+  display: inline-block;
+}
+@media (max-width: 991.98px) {
+  .info-panel {
+    border-top: 1px solid #dee2e6;
+    padding-top: 1rem;
+    margin-top: 1.5rem;
+  }
+  .hex-logo {
+    width: 100px;
+  }
 }

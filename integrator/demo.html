@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="The four INTEGRATOR processing steps: data validation, peak finding and RT-shift estimation, peak integration, and optional PDF generation.">
+<meta name="description" content="Process the bundled demonstration dataset end-to-end in INTEGRATOR, without preparing any input files.">
 
-<title>Running INTEGRATOR – MRMhub-INTEGRATOR</title>
+<title>Demo – MRMhub-INTEGRATOR</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -23,6 +23,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -80,7 +115,7 @@ ul.task-list li input[type="checkbox"] {
 <link rel="stylesheet" href="styles.css">
 </head>
 
-<body class="nav-fixed quarto-light">
+<body class="nav-fixed fullcontent quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -171,29 +206,18 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">On this page</h2>
-   
-  <ul>
-  <li><a href="#step-1-data-validation" id="toc-step-1-data-validation" class="nav-link active" data-scroll-target="#step-1-data-validation">Step 1 — Data Validation</a></li>
-  <li><a href="#step-2-peak-finding-and-rt-shift-estimation" id="toc-step-2-peak-finding-and-rt-shift-estimation" class="nav-link" data-scroll-target="#step-2-peak-finding-and-rt-shift-estimation">Step 2 — Peak Finding and RT-shift estimation</a></li>
-  <li><a href="#step-3-peak-integration" id="toc-step-3-peak-integration" class="nav-link" data-scroll-target="#step-3-peak-integration">Step 3 — Peak Integration</a></li>
-  <li><a href="#step-4-generate-pdf-results-optional" id="toc-step-4-generate-pdf-results-optional" class="nav-link" data-scroll-target="#step-4-generate-pdf-results-optional">Step 4 — Generate PDF results (optional)</a></li>
-  </ul>
-</nav>
-    </div>
+    
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Running INTEGRATOR</h1>
+<h1 class="title">Demo</h1>
 </div>
 
 <div>
   <div class="description">
-    <p>The four INTEGRATOR processing steps: data validation, peak finding and RT-shift estimation, peak integration, and optional PDF generation.</p>
+    <p>Process the bundled demonstration dataset end-to-end in INTEGRATOR, without preparing any input files.</p>
   </div>
 </div>
 
@@ -210,57 +234,33 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/workflow.png" class="img-fluid figure-img"></p>
-<figcaption>flow chart for MRMhub INTEGRATOR</figcaption>
-</figure>
-</div>
-<p>Upon execution, the software launches a terminal user interface with four menu options. For new datasets, steps 1 and 2 are applied sequentially. The final step 4 is optional and used only when integration results as PDF files are required.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/MRMhub-Main.png" class="img-fluid quarto-figure quarto-figure-center figure-img" alt="Screenshot of the INTEGRATOR terminal interface, showing the MRMHUB banner and its four-item menu: 1 Validate data; 2 RT-shift estimation and feature detection; 3 update integration bounds and areas using RT_matrix.csv; and 4 generate chromatogram PDFs (optional)." width="622"></p>
-</figure>
-</div>
-<section id="step-1-data-validation" class="level2">
-<h2 class="anchored" data-anchor-id="step-1-data-validation">Step 1 — Data Validation</h2>
-<p>The first step verifies the files and information provided in the input files. Inconsistencies are reported in text files saved to the same directory as the <strong>MRMhub</strong> application. These files are generated only when issues are identified.</p>
-<ul>
-<li><strong><code>missing_files.txt</code></strong> lists mzML files that are present in the data folder but not listed in the Sample List, as well as files listed in the Sample List but absent from the data folder.</li>
-<li><strong><code>missing_compounds.txt</code></strong> reports transitions defined in the Transition List but not found in all mzML files. <em>Note:</em> Transitions present only in a subset of the mzML files are currently not processed.</li>
-<li><strong><code>missing_details.txt</code></strong> details the missing transitions and identifies exactly which samples lack them. This is useful when a transition appears in some samples but not others.</li>
-</ul>
+<p>A complete demonstration project is bundled with every INTEGRATOR release. It contains example converted mzML files together with prepared input files (<code>param.txt</code>, <code>run_order.csv</code>, and a transition list), so peak integration can be run immediately — no input-file preparation is required. The demonstration is therefore the fastest way to verify the installation and to observe the outputs INTEGRATOR produces.</p>
+<p>For a new analysis with user-supplied data, see the <a href="quickstart.html">Quick Start</a>.</p>
+<section id="download-the-release" class="level2">
+<h2 class="anchored" data-anchor-id="download-the-release">1. Download the release</h2>
+<p>The latest release is downloaded and unzipped from the <a href="https://github.com/SLINGhub/MRMhub/releases">Releases</a> page. The demonstration project is included in the archive; its contents and layout are documented in the accompanying <code>readme.txt</code>, which serves as the authoritative reference.</p>
 </section>
-<section id="step-2-peak-finding-and-rt-shift-estimation" class="level2">
-<h2 class="anchored" data-anchor-id="step-2-peak-finding-and-rt-shift-estimation">Step 2 — Peak Finding and RT-shift estimation</h2>
-<p>The second step runs the peak finding and picking algorithm (see <a href="./algorithm.html">Peak Detection and Integration Algorithm</a> for how it works). The result of this step is a table of identified peaks (features) with their left and right peak borders in each sample. This table is saved as the CSV file <code>RT_matrix.csv</code> in the same folder as the application and is required for step 3.</p>
-<p>These integration bounds may be refined further on a per-transition and per-sample basis before peak integration is performed in step 3. For a new dataset, the recommended approach is to proceed directly to peak integration, followed by visualization of the results in steps 3 (and 4), and to adjust specific integration borders manually only afterward. Manual adjustment is generally discouraged unless certain integrations can only be achieved through it.</p>
-<p>At this point, the integration visualizer application <strong>MRMhub-viz</strong> (see <a href="./viz.html">MRMhub-viz Visualizer</a>) can be launched to inspect the integration results. Global and per-feature integration parameters can then be revised (via param.txt and the Transition List), and peak integration re-attempted via steps 1 and 2.</p>
-<p>Once automated integration is considered optimal, final manual adjustments to individual peaks can be made in <code>RT_matrix.csv</code> (see Step 2). After these optional manual adjustments, the final peak integration is performed by (re-)running step 3.</p>
-<p><strong>Warning</strong>: Each time step 2 is executed, <code>RT_matrix.csv</code> is <strong>overwritten</strong> and any manual modifications are lost.</p>
+<section id="clear-the-first-launch-security-prompt" class="level2">
+<h2 class="anchored" data-anchor-id="clear-the-first-launch-security-prompt">2. Clear the first-launch security prompt</h2>
+<p>INTEGRATOR is a portable executable and is not installed. On first launch, the one-time operating system security prompt is cleared (macOS Gatekeeper / Windows “Unblock”). → <a href="setup.html">Installation</a></p>
 </section>
-<section id="step-3-peak-integration" class="level2">
-<h2 class="anchored" data-anchor-id="step-3-peak-integration">Step 3 — Peak Integration</h2>
-<p>In the third step, the peaks identified in step 2 are integrated and the corresponding results saved to the following default output files:</p>
-<ul>
-<li><strong><code>quant_raw.csv</code></strong> A wide-format table of peak areas. The top three rows additionally contain the precursor and product m/z and peak apex retention time values.</li>
-<li><strong><code>long.csv</code></strong> A long-format table containing peak area, height, peak apex retention time, FWHM (Full Width at Half Maximum) and integration borders. The corresponding precursor and product m/z values, the analysis time stamp (extracted from the mzML files) and the metadata from the input files (sample type, ISTD, batch identifier) are also included.</li>
-<li><strong><code>misc</code></strong> A folder containing the peak integration results in a binary format, used by the visualizer application MRMhub-viz and in step 4.</li>
-</ul>
-<p>All output tables are plain comma-separated CSV files. <code>long.csv</code> is the canonical hand-off to QUANT (one row per <em>sample × feature</em>); <code>quant_raw.csv</code> is a wide-format export of peak areas and is <strong>not</strong> read by the QUANT module.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span><code>long.csv</code> columns
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-1" class="callout-1-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<p>These are the columns QUANT’s <code>import_data_mrmhub()</code> reads from <code>long.csv</code>. Only <code>feature_name</code> and <code>raw_data_filename</code> are strictly required (plus at least one intensity column); the rest are metadata and measurements carried through to the <code>MRMhubExperiment</code>.</p>
+<section id="run-integrator-on-the-demo-data" class="level2">
+<h2 class="anchored" data-anchor-id="run-integrator-on-the-demo-data">3. Run INTEGRATOR on the demo data</h2>
+<p>MRMhub is launched from the demonstration folder and the four steps are executed in order:</p>
+<ol type="1">
+<li><strong>Data Validation</strong> — the bundled input files are checked for consistency.</li>
+<li><strong>Peak Finding &amp; RT-shift estimation</strong> — <code>RT_matrix.csv</code> is produced.</li>
+<li><strong>Peak Integration</strong> — <code>long.csv</code> and <code>quant_raw.csv</code> are produced.</li>
+<li><strong>Generate PDF results</strong> <em>(optional)</em> — per-transition / per-sample chromatogram PDFs are written.</li>
+</ol>
+<p>→ <a href="running.html">Running INTEGRATOR</a></p>
+</section>
+<section id="review-the-results" class="level2">
+<h2 class="anchored" data-anchor-id="review-the-results">4. Review the results</h2>
+<p>The integration is inspected in MRMhub-viz, where chromatograms and peak boundaries are examined. → <a href="viz.html">MRMhub-viz</a></p>
+</section>
+<section id="expected-outputs" class="level2">
+<h2 class="anchored" data-anchor-id="expected-outputs">Expected outputs</h2>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 50%">
@@ -268,117 +268,31 @@ ul.task-list li input[type="checkbox"] {
 </colgroup>
 <thead>
 <tr class="header">
-<th><code>long.csv</code> column</th>
-<th>Meaning</th>
+<th>File</th>
+<th>Content</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>raw_data_filename</code></td>
-<td>Source mzML file name (becomes the analysis identifier)</td>
+<td><code>RT_matrix.csv</code></td>
+<td>Estimated retention-time shifts across the sequence</td>
 </tr>
 <tr class="even">
-<td><code>time_stamp</code></td>
-<td>Acquisition timestamp, read from the mzML</td>
+<td><code>long.csv</code></td>
+<td>Integrated peak areas in long format (one row per analysis × feature)</td>
 </tr>
 <tr class="odd">
-<td><code>sample_type</code></td>
-<td>Sample / QC type, from <code>run_order.csv</code></td>
-</tr>
-<tr class="even">
-<td><code>batch</code></td>
-<td>Batch identifier, from <code>run_order.csv</code></td>
-</tr>
-<tr class="odd">
-<td><code>feature_name</code></td>
-<td>Feature (analyte) identifier, from the transition list</td>
-</tr>
-<tr class="even">
-<td><code>internal_standard</code></td>
-<td>Assigned ISTD feature, from the transition list</td>
-</tr>
-<tr class="odd">
-<td><code>rt_apex</code></td>
-<td>Retention time at the peak apex (min)</td>
-</tr>
-<tr class="even">
-<td><code>area</code></td>
-<td>Integrated peak area</td>
-</tr>
-<tr class="odd">
-<td><code>height</code></td>
-<td>Peak height</td>
-</tr>
-<tr class="even">
-<td><code>FWHM</code></td>
-<td>Full width at half maximum</td>
-</tr>
-<tr class="odd">
-<td><code>rt_int_start</code> / <code>rt_int_end</code></td>
-<td>Left / right integration borders (min)</td>
-</tr>
-<tr class="even">
-<td><code>polarity</code></td>
-<td>Ionisation polarity</td>
-</tr>
-<tr class="odd">
-<td><code>precursor_mz</code> / <code>product_mz</code></td>
-<td>Transition <em>m/z</em> values</td>
-</tr>
-<tr class="even">
-<td><code>collision_energy</code></td>
-<td>Collision energy</td>
+<td><code>quant_raw.csv</code></td>
+<td>Wide-format peak areas</td>
 </tr>
 </tbody>
 </table>
-<p><code>quant_raw.csv</code> is a wide table of peak areas (features × samples); its top rows additionally carry the precursor and product <em>m/z</em> and the apex retention time per transition.</p>
-</div>
-</div>
-</div>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Tip
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><strong>Continue post-processing in QUANT.</strong> The <code>long.csv</code> file is the canonical hand-off into the QUANT R package: <code>import_data_mrmhub(path = "path/to/long.csv", import_metadata = TRUE)</code> loads the file and its embedded metadata into an <code>MRMhubExperiment</code> for ISTD normalisation, drift/batch correction, QC, and reporting. See the <a href="https://slinghub.github.io/MRMhub/quant/">QUANT documentation ↗</a>.</p>
-</div>
-</div>
 </section>
-<section id="step-4-generate-pdf-results-optional" class="level2">
-<h2 class="anchored" data-anchor-id="step-4-generate-pdf-results-optional">Step 4 — Generate PDF results (optional)</h2>
-<p>The fourth step, which is optional, produces integration results as PDF files. It creates three folders with different types of results:</p>
-<ul>
-<li><code>by_transition</code>: Contains one PDF per transition, with chromatograms plotted for each sample. Only transitions with at least one feature (peak) exceeding the <em>minimum intensity</em> threshold value are included here (see <code>by_transition_low</code>).</li>
-<li><code>by_transition_low</code>: Contains PDFs of transitions where none of the integrated features (peaks) had an area exceeding the <em>minimum intensity</em> threshold defined by the constant <code>low_intensity_threshold</code> in the provided <code>MRMhub_plot.r</code> R script.</li>
-<li><code>by_sample</code>: Provides a PDF for each reference sample; all of the sample’s transitions are plotted within the same file.</li>
-</ul>
-<p>For efficient viewing of PDFs on macOS, open the PDF folder, press <em>Space</em> to start Quick Look, then use the <em>up/down</em> arrow keys to move between transitions (files). Use the scroll wheel or trackpad to scroll through each PDF.</p>
-<p><strong>Note</strong>: In large-scale projects, generating many large PDF files can take considerable time, depending on computer performance and the number of cores used. The number of cores used to generate the PDFs can be adjusted via the constant <code>ncores</code> in the provided <code>MRMhub_plot.r</code> script.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><strong>Reviewing retention-time stability at scale.</strong> The per-transition PDFs provide an efficient means of confirming that RT-shift correction has tracked the peaks across the entire analytical sequence. In a published 4,591-sample lipidomics analysis, for example, RT shifts remained below 0.04 min across the whole run, with the exception of approximately 20 samples at the start of one batch near the end of the sequence, which were readily identified by scanning the <code>by_transition</code> PDFs. See the <a href="https://slinghub.github.io/mrmhub-workflows/Dataset3.html">Dataset 3 workflow ↗</a>.</p>
-</div>
-</div>
-<div class="see-also">
-<p><span class="see-also-label">See also</span></p>
-<ul>
-<li><a href="./viz.html">Review results in MRMhub-viz</a> — inspect peaks and refine the integration.</li>
-<li><a href="./sharing.html">Share results</a> — bundle data and parameters for reproducibility.</li>
-</ul>
-</div>
+<section id="next-step-in-the-pipeline" class="level2">
+<h2 class="anchored" data-anchor-id="next-step-in-the-pipeline">Next step in the pipeline</h2>
+<p>The exported <code>long.csv</code> can be post-processed with the separate <strong>MRMhub-QUANT</strong> module for ISTD normalisation, drift/batch correction, calibration, quality control, and reporting:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">import_data_mrmhub</span>(<span class="at">path =</span> <span class="st">"path/to/long.csv"</span>, <span class="at">import_metadata =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>→ <a href="https://slinghub.github.io/MRMhub/quant/">QUANT documentation ↗</a></p>
 
 
 </section>

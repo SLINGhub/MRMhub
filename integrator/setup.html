@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="INTEGRATOR is a standalone executable and requires no installation. Download it, clear the one-time macOS or Windows security prompt, and retain one copy per analysis project so the project remains reproducible.">
+<meta name="description" content="Obtaining INTEGRATOR and organising a reproducible analysis project.">
 
-<title>Download &amp; Project Setup – MRMhub · INTEGRATOR</title>
+<title>Installation – MRMhub-INTEGRATOR</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -34,8 +34,6 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./input-files.html" rel="next">
-<link href="./quickstart.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -47,9 +45,9 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-011108973cccfa058b9d53d4b7eb11ad.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-b0172729d9e3827b305e14eb5a71532e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-011108973cccfa058b9d53d4b7eb11ad.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-84f283207f31920b1c7482bf206eb6dc.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-1c25e16c2966f308f7ba715fcbca78fb.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-84f283207f31920b1c7482bf206eb6dc.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -82,7 +80,7 @@ ul.task-list li input[type="checkbox"] {
 <link rel="stylesheet" href="styles.css">
 </head>
 
-<body class="nav-sidebar floating nav-fixed quarto-light">
+<body class="nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -90,7 +88,7 @@ ul.task-list li input[type="checkbox"] {
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="./index.html">
-    <span class="navbar-title">MRMhub · INTEGRATOR</span>
+    <span class="navbar-title">MRMhub-INTEGRATOR</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -100,7 +98,7 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> 
+    <a class="nav-link" href="./index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
@@ -114,7 +112,7 @@ ul.task-list li input[type="checkbox"] {
     <ul class="dropdown-menu" aria-labelledby="nav-menu-manual">    
         <li>
     <a class="dropdown-item" href="./setup.html">
- <span class="dropdown-text">Download &amp; Setup</span></a>
+ <span class="dropdown-text">Installation</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="./input-files.html">
@@ -143,6 +141,10 @@ ul.task-list li input[type="checkbox"] {
   </li>  
     </ul>
   </li>
+  <li class="nav-item">
+    <a class="nav-link" href="https://github.com/SLINGhub/MRMhub/releases"> 
+<span class="menu-text">Changelog</span></a>
+  </li>  
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
@@ -164,117 +166,36 @@ ul.task-list li input[type="checkbox"] {
 </div>
       </div> <!-- /container-fluid -->
     </nav>
-  <nav class="quarto-secondary-nav">
-    <div class="container-fluid d-flex">
-      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
-        <i class="bi bi-layout-text-sidebar-reverse"></i>
-      </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./setup.html">Manual</a></li><li class="breadcrumb-item"><a href="./setup.html">Download &amp; Setup</a></li></ol></nav>
-        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
-        </a>
-    </div>
-  </nav>
 </header>
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
-    <div class="sidebar-menu-container"> 
-    <ul class="list-unstyled mt-1">
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Overview</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./quickstart.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Quick Start</span></a>
-  </div>
-</li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
- <span class="menu-text">Manual</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./setup.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Download &amp; Setup</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./input-files.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Input Files</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./running.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Running INTEGRATOR</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./algorithm.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Algorithm</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./viz.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">MRMhub-viz Visualizer</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./sharing.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Sharing Results</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./msconvert.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Vendor → mzML (MSConvert)</span></a>
-  </div>
-</li>
-      </ul>
-  </li>
-    </ul>
-    </div>
-</nav>
-<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#one-copy-per-project" id="toc-one-copy-per-project" class="nav-link active" data-scroll-target="#one-copy-per-project">One copy per project</a></li>
-  <li><a href="#get-the-application" id="toc-get-the-application" class="nav-link" data-scroll-target="#get-the-application">Get the application</a></li>
-  <li><a href="#first-launch-clear-the-security-prompt" id="toc-first-launch-clear-the-security-prompt" class="nav-link" data-scroll-target="#first-launch-clear-the-security-prompt">First launch (clear the security prompt)</a></li>
-  <li><a href="#folder-layout" id="toc-folder-layout" class="nav-link" data-scroll-target="#folder-layout">Folder layout</a></li>
-  <li><a href="#next" id="toc-next" class="nav-link" data-scroll-target="#next">Next</a></li>
+  <li><a href="#system-requirements" id="toc-system-requirements" class="nav-link active" data-scroll-target="#system-requirements">System requirements</a></li>
+  <li><a href="#download" id="toc-download" class="nav-link" data-scroll-target="#download">Download</a></li>
+  <li><a href="#clearing-the-first-launch-security-prompt" id="toc-clearing-the-first-launch-security-prompt" class="nav-link" data-scroll-target="#clearing-the-first-launch-security-prompt">Clearing the first-launch security prompt</a></li>
+  <li><a href="#verify-the-installation" id="toc-verify-the-installation" class="nav-link" data-scroll-target="#verify-the-installation">Verify the installation</a></li>
+  <li><a href="#setting-up-a-peak-integration-project" id="toc-setting-up-a-peak-integration-project" class="nav-link" data-scroll-target="#setting-up-a-peak-integration-project">Setting up a peak integration project</a></li>
+  <li><a href="#updating-integrator" id="toc-updating-integrator" class="nav-link" data-scroll-target="#updating-integrator">Updating INTEGRATOR</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./setup.html">Manual</a></li><li class="breadcrumb-item"><a href="./setup.html">Download &amp; Setup</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Download &amp; Project Setup</h1>
+<h1 class="title">Installation</h1>
 </div>
 
 <div>
   <div class="description">
-    <p>INTEGRATOR is a standalone executable and requires no installation. Download it, clear the one-time macOS or Windows security prompt, and retain one copy per analysis project so the project remains reproducible.</p>
+    Obtaining INTEGRATOR and organising a reproducible analysis project.
   </div>
 </div>
 
@@ -291,6 +212,27 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<p>INTEGRATOR is a self-contained, portable executable and requires no installer: the application is downloaded, unzipped, and run from a folder, with one copy kept per analysis project (see <a href="#setting-up-a-peak-integration-project">below</a>).</p>
+<section id="system-requirements" class="level2">
+<h2 class="anchored" data-anchor-id="system-requirements">System requirements</h2>
+<p>Pre-compiled binaries are provided for <strong>macOS</strong> (Apple silicon), <strong>Windows 11</strong> (x86-64), and <strong>Linux</strong> (x86-64). A multi-core CPU is recommended, as the integration is parallelised. Memory requirements are <strong>8 GB minimum, 16 GB recommended</strong> for large projects. The application itself occupies minimal disk space, but the integration outputs — internal files (the <code>misc/</code> folder), result tables, and generated PDFs — can require considerable space depending on dataset size.</p>
+<p>INTEGRATOR itself has no runtime dependencies. The following external tools may be required:</p>
+<ul>
+<li><strong>mzML conversion</strong> — ProteoWizard MSConvert (Windows only), see <a href="./msconvert.html">mzML conversion</a>.</li>
+<li><strong>PDF chromatogram plotting</strong> — an <a href="https://www.r-project.org">R</a> installation. Download the installer from <a href="https://cran.r-project.org">CRAN</a>; no additional R packages are required.</li>
+</ul>
+</section>
+<section id="download" class="level2">
+<h2 class="anchored" data-anchor-id="download">Download</h2>
+<p>Pre-compiled executables for macOS, Windows, and Linux are available from the <a href="https://github.com/SLINGhub/MRMhub/releases">GitHub releases page</a>. The archive contains the executables — <strong>MRMhub</strong> (MRMhub-INTEGRATOR) and <strong>MRMhub-viz</strong> (integration viewer app), the <code>MRMhub_plot.r</code> R script, template input files (<code>param.txt</code>, <code>run_order.csv</code>, <code>feature_list.csv</code>), and a complete test dataset.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/paste-3.png" class="img-fluid quarto-figure quarto-figure-center figure-img" alt="Screenshot of a macOS Finder window for the MRMhub-INTEGRATOR project folder. It contains the _testdata and mzML folders, the MRMhub (1.4 MB) and MRMhub-viz (9.3 MB) executables, the MRMhub_plot.r plotting script, param.txt, README.txt, manual.pdf, and two input CSV files, feature_list.csv and run_order.csv." width="420"></p>
+</figure>
+</div>
+</section>
+<section id="clearing-the-first-launch-security-prompt" class="level2">
+<h2 class="anchored" data-anchor-id="clearing-the-first-launch-security-prompt">Clearing the first-launch security prompt</h2>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -301,67 +243,69 @@ Important
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>INTEGRATOR is not installed. It is a self-contained, portable executable: there is no installer, and nothing is added to the system. It is downloaded, unzipped, and run from a folder.</p>
+<p>The executables are unsigned, so a security prompt appears on first launch — on <strong>macOS</strong> the developer “cannot be verified”, on <strong>Windows</strong> the file is “blocked”. This does not indicate an issue with the software.</p>
 </div>
 </div>
-<section id="one-copy-per-project" class="level2">
-<h2 class="anchored" data-anchor-id="one-copy-per-project">One copy per project</h2>
-<p>The recommended approach is to keep one copy of the INTEGRATOR folder inside each data-analysis project, alongside that project’s raw data and input files. Because the executable, the parameters (<code>param.txt</code>), the input files, and the results reside together in one self-contained folder, the entire analysis remains reproducible: the folder can be re-opened months later, a parameter adjusted, and the integration re-run exactly as before. Different projects can also use different versions of INTEGRATOR without interfering with each other.</p>
-<div class="callout callout-style-default callout-note callout-titled">
+<p>To clear the security block, the following must be done for each downloaded executable:</p>
+<ul>
+<li><strong>macOS</strong> (left) — <strong>System Settings</strong> → <strong>Privacy &amp; Security</strong> → click <strong>Open Anyway</strong>.</li>
+<li><strong>Windows</strong> (right) — right-click executable → <strong>Properties</strong> → tick <strong>Unblock</strong> (if present) → <strong>OK</strong>.</li>
+</ul>
+<div class="quarto-layout-panel" data-layout="[65,35]">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 65.0%;justify-content: center;">
+<p><img src="images/security_setting.png" class="img-fluid" alt="Screenshot of the macOS System Settings Privacy and Security pane. Under Security, 'Allow applications from' reads App Store and Known Developers, and a row states that MRMhub was blocked to protect your Mac, beside an Open Anyway button that permits the app to run."></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 35.0%;justify-content: center;">
+<p><img src="images/unblock.png" class="img-fluid" alt="Screenshot of the Windows MRMhub Properties dialog on the General tab. It identifies the file as an Application (.exe) of 1.33 MB and, near the bottom, shows a Security note that the file came from another computer and might be blocked, beside an Unblock checkbox that must be ticked to allow the app to run."></p>
+</div>
+</div>
+</div>
+</section>
+<section id="verify-the-installation" class="level2">
+<h2 class="anchored" data-anchor-id="verify-the-installation">Verify the installation</h2>
+<p>Every release bundles a demonstration dataset with input files that runs end-to-end without further preparation — the quickest confirmation that the installation works. See <strong><a href="./demo.html">Demo</a></strong>.</p>
+</section>
+<section id="setting-up-a-peak-integration-project" class="level2">
+<h2 class="anchored" data-anchor-id="setting-up-a-peak-integration-project">Setting up a peak integration project</h2>
+<p>The unzipped folder can serve directly as a peak-integration project — a self-contained folder holding the executables, the input files, and the raw data. The mzML files are placed in a subfolder (e.g.&nbsp;<code>mzML/</code>, as specified in <code>param.txt</code>). The three input files (<code>param.txt</code>, <code>run_order.csv</code>, <code>feature_list.csv</code>) must be edited to the specific dataset — its samples, features, and integration settings — as described in <a href="./input-files.html">Input Files</a>. The integration is then run within this folder — see <a href="./running.html">Running INTEGRATOR</a> for the processing steps.</p>
+<div class="filetree">
+<pre><code>my-project/
+├── MRMhub.exe / .app      ← peak-integration executable
+├── MRMhub-viz.exe / .app  ← results visualiser (optional)
+├── MRMhub_plot.r          ← R script for chromatogram PDFs (optional step 4)
+├── param.txt          ┐
+├── run_order.csv      ├  input files (see Input Files)
+├── feature_list.csv   ┘
+└── mzML/                  ← the converted .mzML data files</code></pre>
+<p><span class="tree-caption">A project folder assembled and ready to run. Files added by a run are documented in Running INTEGRATOR.</span></p>
+</div>
+<div class="callout-spaced">
+<div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Note
+<span class="screen-reader-only">Tip</span>Keep one INTEGRATOR copy per project
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>INTEGRATOR is not required to use the QUANT R package; QUANT imports directly from vendor outputs (MassHunter, Skyline) as well. See the <a href="https://slinghub.github.io/MRMhub/quant/">QUANT documentation ↗</a>.</p>
+<p>A separate copy of INTEGRATOR is kept in each project, with its data and input files, so the analysis stays reproducible and transferable. As parameters and input-file formats may change between versions, keeping the executable with the project also ensures the input files match the version that produced the results.</p>
 </div>
 </div>
-</section>
-<section id="get-the-application" class="level2">
-<h2 class="anchored" data-anchor-id="get-the-application">Get the application</h2>
-<p>INTEGRATOR is distributed as pre-compiled executables for Windows and macOS, available from <a href="https://github.com/SLINGhub/MRMhub/releases" class="uri">https://github.com/SLINGhub/MRMhub/releases</a>. Unzip the downloaded file and copy the folder into the project location. The folder comprises the following files and subfolders: <strong>MRMhub</strong> is the main application, and <strong>MRMhub-viz</strong> is an application for reviewing peak integration results.</p>
-</section>
-<section id="first-launch-clear-the-security-prompt" class="level2">
-<h2 class="anchored" data-anchor-id="first-launch-clear-the-security-prompt">First launch (clear the security prompt)</h2>
-<p>The executable is unsigned, so the operating system displays a one-time security warning on first launch. Clear it as follows.</p>
-<p>On <strong>macOS</strong>, the following error is shown:</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/macOS_warning.png" class="img-fluid quarto-figure quarto-figure-center figure-img" alt="Screenshot of a macOS security dialog headed 'MRMhub Not Opened', warning that Apple could not verify the app is free of malware, with Done and Move to Bin buttons. This one-time block appears on first launch because the executable is unsigned."></p>
-</figure>
-</div>
-<p>To resolve this, go to “<strong>Systems Settings</strong>”, “<strong>Privacy &amp; Security</strong>” tab, and click “<strong>Open Anyway</strong>” button to enable the software.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/security_setting.png" class="img-fluid quarto-figure quarto-figure-center figure-img" alt="Screenshot of the macOS System Settings Privacy and Security pane. Under Security, 'Allow applications from' reads App Store and Known Developers, and a row states that MRMhub was blocked to protect your Mac, beside an Open Anyway button that permits the app to run."></p>
-</figure>
-</div>
-<p>On <strong>Windows</strong>, right-click on the executable, select “<strong>Properties</strong>”, and on the “<strong>General</strong>” tab, check the “<strong>Unblock</strong>” box near the bottom if available, then click OK or Apply.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/unblock.png" class="img-fluid quarto-figure quarto-figure-center figure-img" alt="Screenshot of the Windows MRMhub Properties dialog on the General tab. It identifies the file as an Application (.exe) of 1.33 MB and, near the bottom, shows a Security note that the file came from another computer and might be blocked, beside an Unblock checkbox that must be ticked to allow the app to run."></p>
-</figure>
 </div>
 </section>
-<section id="folder-layout" class="level2">
-<h2 class="anchored" data-anchor-id="folder-layout">Folder layout</h2>
-<p>The input files required by the <strong>MRMhub</strong> application are <code>feature_list.csv</code>, <code>run_order.csv</code>, and <code>param.txt</code>. The mzML folder is used to store the mzML data files. All of these are explained in <a href="./input-files.html">Input Files</a>. Furthermore, this distribution contains a test dataset, with a complete set of input and raw data files, which can be used as templates for future analysis. The <code>MRMhub_plot.r</code> is an R script used to generate the PDFs. It can be modified to tailor for specific layouts and design features of the plots.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/paste-3.png" class="img-fluid quarto-figure quarto-figure-center figure-img" alt="Screenshot of a macOS Finder window for the MRMhub-INTEGRATOR project folder. It contains the _testdata and mzML folders, the MRMhub (1.4 MB) and MRMhub-viz (9.3 MB) executables, the MRMhub_plot.r plotting script, param.txt, README.txt, manual.pdf, and two input CSV files, feature_list.csv and run_order.csv." width="526"></p>
-</figure>
-</div>
-</section>
-<section id="next" class="level2">
-<h2 class="anchored" data-anchor-id="next">Next</h2>
+<section id="updating-integrator" class="level2">
+<h2 class="anchored" data-anchor-id="updating-integrator">Updating INTEGRATOR</h2>
+<p>To update INTEGRATOR, replace the executables in the project folder with a newer <a href="https://github.com/SLINGhub/MRMhub/releases">release</a>. New versions are mostly backward-compatible, but may occasionally require adapting the input files, as new functionality may add or change parameters.</p>
+<div class="see-also">
+<p><span class="see-also-label">See also</span></p>
 <ul>
-<li><a href="./input-files.html">Input Files</a> — set up <code>param.txt</code>, <code>run_order.csv</code>, and the transition list.</li>
-<li><a href="./running.html">Running INTEGRATOR</a> — the four processing steps.</li>
+<li><a href="./input-files.html">Edit the input files</a> — <code>param.txt</code>, <code>run_order.csv</code>, and <code>feature_list.csv</code>.</li>
+<li><a href="./running.html">Run INTEGRATOR</a> — the four processing steps.</li>
 </ul>
+</div>
 
 
 </section>
@@ -767,18 +711,6 @@ Note
     }
   });
   </script>
-<nav class="page-navigation">
-  <div class="nav-page nav-page-previous">
-      <a href="./quickstart.html" class="pagination-link" aria-label="Quick Start">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Quick Start</span>
-      </a>          
-  </div>
-  <div class="nav-page nav-page-next">
-      <a href="./input-files.html" class="pagination-link" aria-label="Input Files">
-        <span class="nav-page-text">Input Files</span> <i class="bi bi-arrow-right-short"></i>
-      </a>
-  </div>
-</nav>
 </div> <!-- /content -->
 
 

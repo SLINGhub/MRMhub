@@ -8,7 +8,7 @@
 
 <meta name="description" content="The algorithm behind INTEGRATOR — memory-efficient design, input validation, RT-shift correction, CWT feature detection, integration-border determination, and baseline modes.">
 
-<title>Peak Detection and Integration Algorithm – MRMhub · INTEGRATOR</title>
+<title>Peak Detection and Integration Algorithm – MRMhub-INTEGRATOR</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -34,8 +34,6 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./viz.html" rel="next">
-<link href="./running.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -47,9 +45,9 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-011108973cccfa058b9d53d4b7eb11ad.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-b0172729d9e3827b305e14eb5a71532e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-011108973cccfa058b9d53d4b7eb11ad.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-84f283207f31920b1c7482bf206eb6dc.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-1c25e16c2966f308f7ba715fcbca78fb.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-84f283207f31920b1c7482bf206eb6dc.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -82,7 +80,7 @@ ul.task-list li input[type="checkbox"] {
 <link rel="stylesheet" href="styles.css">
 </head>
 
-<body class="nav-sidebar floating nav-fixed quarto-light">
+<body class="nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -90,7 +88,7 @@ ul.task-list li input[type="checkbox"] {
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="./index.html">
-    <span class="navbar-title">MRMhub · INTEGRATOR</span>
+    <span class="navbar-title">MRMhub-INTEGRATOR</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -100,7 +98,7 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> 
+    <a class="nav-link" href="./index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
@@ -114,7 +112,7 @@ ul.task-list li input[type="checkbox"] {
     <ul class="dropdown-menu" aria-labelledby="nav-menu-manual">    
         <li>
     <a class="dropdown-item" href="./setup.html">
- <span class="dropdown-text">Download &amp; Setup</span></a>
+ <span class="dropdown-text">Installation</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="./input-files.html">
@@ -143,6 +141,10 @@ ul.task-list li input[type="checkbox"] {
   </li>  
     </ul>
   </li>
+  <li class="nav-item">
+    <a class="nav-link" href="https://github.com/SLINGhub/MRMhub/releases"> 
+<span class="menu-text">Changelog</span></a>
+  </li>  
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
@@ -164,92 +166,10 @@ ul.task-list li input[type="checkbox"] {
 </div>
       </div> <!-- /container-fluid -->
     </nav>
-  <nav class="quarto-secondary-nav">
-    <div class="container-fluid d-flex">
-      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
-        <i class="bi bi-layout-text-sidebar-reverse"></i>
-      </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./setup.html">Manual</a></li><li class="breadcrumb-item"><a href="./algorithm.html">Algorithm</a></li></ol></nav>
-        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
-        </a>
-    </div>
-  </nav>
 </header>
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
-    <div class="sidebar-menu-container"> 
-    <ul class="list-unstyled mt-1">
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Overview</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./quickstart.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Quick Start</span></a>
-  </div>
-</li>
-        <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
- <span class="menu-text">Manual</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./setup.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Download &amp; Setup</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./input-files.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Input Files</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./running.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Running INTEGRATOR</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./algorithm.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Algorithm</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./viz.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">MRMhub-viz Visualizer</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./sharing.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Sharing Results</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./msconvert.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Vendor → mzML (MSConvert)</span></a>
-  </div>
-</li>
-      </ul>
-  </li>
-    </ul>
-    </div>
-</nav>
-<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         <nav id="TOC" role="doc-toc" class="toc-active">
@@ -262,14 +182,13 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#feature-detection" id="toc-feature-detection" class="nav-link" data-scroll-target="#feature-detection">Feature detection</a></li>
   <li><a href="#determination-of-peak-integration-borders" id="toc-determination-of-peak-integration-borders" class="nav-link" data-scroll-target="#determination-of-peak-integration-borders">Determination of peak integration borders</a></li>
   <li><a href="#baseline-determination" id="toc-baseline-determination" class="nav-link" data-scroll-target="#baseline-determination">Baseline determination</a></li>
-  <li><a href="#next" id="toc-next" class="nav-link" data-scroll-target="#next">Next</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./setup.html">Manual</a></li><li class="breadcrumb-item"><a href="./algorithm.html">Algorithm</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
 <h1 class="title">Peak Detection and Integration Algorithm</h1>
 </div>
@@ -343,14 +262,13 @@ Note
 <p><strong>Where to set these parameters.</strong> <code>RT_shift</code>, <code>RT_shift_bound</code>, <code>RT_tol</code>, <code>peak_width</code>, <code>uniform_width</code>, and the fixed integration bounds are all configured in <code>param.txt</code> and the transition list — see <a href="./input-files.html">Input Files</a> for the syntax, defaults, and tuning recommendations. To see the algorithm in action across the four processing steps, see <a href="./running.html">Running INTEGRATOR</a>.</p>
 </div>
 </div>
-</section>
-<section id="next" class="level2">
-<h2 class="anchored" data-anchor-id="next">Next</h2>
+<div class="see-also">
+<p><span class="see-also-label">See also</span></p>
 <ul>
-<li><a href="./input-files.html">Input Files</a> — set <code>param.txt</code> and the transition list that drive the steps above.</li>
-<li><a href="./running.html">Running INTEGRATOR</a> — the four processing steps that execute this algorithm.</li>
-<li><a href="./viz.html">MRMhub-viz Visualizer</a> — review the detected features and integration borders.</li>
+<li><a href="./input-files.html">Edit the input files</a> — <code>param.txt</code> and the transition list that drive the steps.</li>
+<li><a href="./running.html">Run INTEGRATOR</a> — the four processing steps that execute this algorithm.</li>
 </ul>
+</div>
 
 
 </section>
@@ -756,18 +674,6 @@ Note
     }
   });
   </script>
-<nav class="page-navigation">
-  <div class="nav-page nav-page-previous">
-      <a href="./running.html" class="pagination-link" aria-label="Running INTEGRATOR">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Running INTEGRATOR</span>
-      </a>          
-  </div>
-  <div class="nav-page nav-page-next">
-      <a href="./viz.html" class="pagination-link" aria-label="MRMhub-viz Visualizer">
-        <span class="nav-page-text">MRMhub-viz Visualizer</span> <i class="bi bi-arrow-right-short"></i>
-      </a>
-  </div>
-</nav>
 </div> <!-- /content -->
 
 
