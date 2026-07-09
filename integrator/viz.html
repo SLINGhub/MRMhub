@@ -116,7 +116,11 @@ ul.task-list li input[type="checkbox"] {
   </li>  
         <li>
     <a class="dropdown-item" href="./input-files.html">
- <span class="dropdown-text">Input Files</span></a>
+ <span class="dropdown-text">Prepare Input Files</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./tuning.html">
+ <span class="dropdown-text">Tuning Peak Integration</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="./running.html">
@@ -141,6 +145,10 @@ ul.task-list li input[type="checkbox"] {
   </li>  
     </ul>
   </li>
+  <li class="nav-item">
+    <a class="nav-link" href="./faq.html"> 
+<span class="menu-text">FAQ</span></a>
+  </li>  
   <li class="nav-item">
     <a class="nav-link" href="https://github.com/SLINGhub/MRMhub/releases"> 
 <span class="menu-text">Changelog</span></a>
@@ -178,6 +186,7 @@ ul.task-list li input[type="checkbox"] {
   <ul>
   <li><a href="#what-it-displays" id="toc-what-it-displays" class="nav-link active" data-scroll-target="#what-it-displays">What it displays</a></li>
   <li><a href="#the-review-refine-loop" id="toc-the-review-refine-loop" class="nav-link" data-scroll-target="#the-review-refine-loop">The review → refine loop</a></li>
+  <li><a href="#see-also" id="toc-see-also" class="nav-link" data-scroll-target="#see-also">See also</a></li>
   </ul>
 </nav>
     </div>
@@ -219,7 +228,7 @@ ul.task-list li input[type="checkbox"] {
 <p>MRMhub-viz is the inspection half of an iterative loop between visual review and parameter adjustment. Automated integration is rarely optimal for every feature on the first pass; the visualizer identifies where it fails, and the input files are adjusted to correct it. A typical cycle proceeds as follows.</p>
 <ol type="1">
 <li><strong>Inspect.</strong> Step through the transitions and confirm that the intended peak is detected and correctly bounded, both in the reference samples and across the sequence. Look for missed peaks, co-integrated neighbours, truncated tails, and failures of retention-time tracking.</li>
-<li><strong>Diagnose.</strong> Relate each problem to the setting responsible for it — a missed peak to <code>RT_tol</code> or <code>RT_shift</code>, a co-integrated neighbour to <code>peak_width</code>, an untracked retention-time jump to <code>RT_shift_bound</code> (see <a href="./input-files.html#effects-of-the-key-settings">Effects of the key settings</a>).</li>
+<li><strong>Diagnose.</strong> Relate each problem to the setting responsible for it — a missed peak to <code>RT_tol</code> or <code>RT_shift</code>, a co-integrated neighbour to <code>peak_width</code>, an untracked retention-time jump to <code>RT_shift_bound</code> (see <a href="./tuning.html#effects-of-the-key-settings">Effects of the key settings</a>).</li>
 <li><strong>Refine.</strong> Adjust the global parameters in <code>param.txt</code>, or add per-feature overrides in the transition list (<code>peak width</code>, <code>uniform_width</code>, fixed integration bounds) for the problematic minority. Individual peaks that resist automated integration can also have their borders edited directly in <code>RT_matrix.csv</code>.</li>
 <li><strong>Re-integrate.</strong> After a change to <code>param.txt</code> or the transition list, re-run peak finding (Steps 1–2) followed by integration (Step 3); when only <code>RT_matrix.csv</code> has been edited, re-run Step 3 alone. Reload the dataset in MRMhub-viz and repeat until the integration is satisfactory.</li>
 </ol>
@@ -233,7 +242,7 @@ Tip
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><strong>Refine globally first, then per-feature.</strong> Tune <code>param.txt</code> so that the majority of peaks integrate correctly, and reserve transition-list overrides and fixed borders for the remaining difficult peaks. Confirm every change in MRMhub-viz before re-integrating the whole dataset — see the <a href="./input-files.html#recommendations-for-setting-peak-integration-parameters">peak-width recommendations</a>.</p>
+<p><strong>Refine globally first, then per-feature.</strong> Tune <code>param.txt</code> so that the majority of peaks integrate correctly, and reserve transition-list overrides and fixed borders for the remaining difficult peaks. Confirm every change in MRMhub-viz before re-integrating the whole dataset — see the <a href="./tuning.html#setting-the-peak-width-and-integration-bounds">Tuning Peak Integration</a>.</p>
 </div>
 </div>
 <div class="callout callout-style-default callout-warning callout-titled">
@@ -249,16 +258,16 @@ Warning
 <p><strong>Re-running Step 2 overwrites <code>RT_matrix.csv</code>.</strong> Any manual edits to the integration borders are lost when peak finding is re-run. Make manual <code>RT_matrix.csv</code> adjustments only once the automated integration is otherwise final, then run Step 3 (see <a href="./running.html">Running INTEGRATOR — Step 2</a>).</p>
 </div>
 </div>
-<div class="see-also">
-<p><span class="see-also-label">See also</span></p>
+</section>
+<section id="see-also" class="level2 see-also">
+<h2 class="anchored" data-anchor-id="see-also">See also</h2>
 <ul>
 <li><a href="./input-files.html">Edit the input files</a> — adjust global and per-feature parameters.</li>
 <li><a href="./running.html">Run INTEGRATOR</a> — re-run peak finding and integration after each change.</li>
 </ul>
-</div>
-
-
 </section>
+
+
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="The four INTEGRATOR processing steps: data validation, peak finding and RT-shift estimation, peak integration, and optional PDF generation.">
+<meta name="description" content="Common problems when preparing input files and running INTEGRATOR, and how to resolve them.">
 
-<title>Running INTEGRATOR – MRMhub-INTEGRATOR</title>
+<title>FAQ &amp; Troubleshooting – MRMhub-INTEGRATOR</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -146,7 +146,7 @@ ul.task-list li input[type="checkbox"] {
     </ul>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="./faq.html"> 
+    <a class="nav-link active" href="./faq.html" aria-current="page"> 
 <span class="menu-text">FAQ</span></a>
   </li>  
   <li class="nav-item">
@@ -184,10 +184,29 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#step-1-data-validation" id="toc-step-1-data-validation" class="nav-link active" data-scroll-target="#step-1-data-validation">Step 1 — Data Validation</a></li>
-  <li><a href="#step-2-peak-finding-and-rt-shift-estimation" id="toc-step-2-peak-finding-and-rt-shift-estimation" class="nav-link" data-scroll-target="#step-2-peak-finding-and-rt-shift-estimation">Step 2 — Peak Finding and RT-shift estimation</a></li>
-  <li><a href="#step-3-peak-integration" id="toc-step-3-peak-integration" class="nav-link" data-scroll-target="#step-3-peak-integration">Step 3 — Peak Integration</a></li>
-  <li><a href="#step-4-generate-pdf-results-optional" id="toc-step-4-generate-pdf-results-optional" class="nav-link" data-scroll-target="#step-4-generate-pdf-results-optional">Step 4 — Generate PDF results (optional)</a></li>
+  <li><a href="#preparing-the-input-files" id="toc-preparing-the-input-files" class="nav-link active" data-scroll-target="#preparing-the-input-files">Preparing the input files</a>
+  <ul class="collapse">
+  <li><a href="#a-csv-file-is-misread-columns-look-shifted-or-values-are-wrong" id="toc-a-csv-file-is-misread-columns-look-shifted-or-values-are-wrong" class="nav-link" data-scroll-target="#a-csv-file-is-misread-columns-look-shifted-or-values-are-wrong">A CSV file is misread — columns look shifted or values are wrong</a></li>
+  <li><a href="#which-input-files-are-required-and-can-they-be-renamed" id="toc-which-input-files-are-required-and-can-they-be-renamed" class="nav-link" data-scroll-target="#which-input-files-are-required-and-can-they-be-renamed">Which input files are required, and can they be renamed?</a></li>
+  </ul></li>
+  <li><a href="#validation-and-matching-step-1" id="toc-validation-and-matching-step-1" class="nav-link" data-scroll-target="#validation-and-matching-step-1">Validation and matching (Step 1)</a>
+  <ul class="collapse">
+  <li><a href="#what-do-missing_files.txt-missing_compounds.txt-and-missing_details.txt-mean" id="toc-what-do-missing_files.txt-missing_compounds.txt-and-missing_details.txt-mean" class="nav-link" data-scroll-target="#what-do-missing_files.txt-missing_compounds.txt-and-missing_details.txt-mean">What do <code>missing_files.txt</code>, <code>missing_compounds.txt</code>, and <code>missing_details.txt</code> mean?</a></li>
+  <li><a href="#a-transition-is-not-matched" id="toc-a-transition-is-not-matched" class="nav-link" data-scroll-target="#a-transition-is-not-matched">A transition is not matched</a></li>
+  <li><a href="#why-was-a-transition-dropped-from-every-sample" id="toc-why-was-a-transition-dropped-from-every-sample" class="nav-link" data-scroll-target="#why-was-a-transition-dropped-from-every-sample">Why was a transition dropped from every sample?</a></li>
+  <li><a href="#the-same-transition-appears-more-than-once-in-an-mzml-file" id="toc-the-same-transition-appears-more-than-once-in-an-mzml-file" class="nav-link" data-scroll-target="#the-same-transition-appears-more-than-once-in-an-mzml-file">The same transition appears more than once in an mzML file</a></li>
+  </ul></li>
+  <li><a href="#peak-detection-and-integration" id="toc-peak-detection-and-integration" class="nav-link" data-scroll-target="#peak-detection-and-integration">Peak detection and integration</a>
+  <ul class="collapse">
+  <li><a href="#a-features-area-is-reported-as-zero" id="toc-a-features-area-is-reported-as-zero" class="nav-link" data-scroll-target="#a-features-area-is-reported-as-zero">A feature’s area is reported as zero</a></li>
+  <li><a href="#a-wrong-co-eluting-or-adjacent-peak-is-integrated" id="toc-a-wrong-co-eluting-or-adjacent-peak-is-integrated" class="nav-link" data-scroll-target="#a-wrong-co-eluting-or-adjacent-peak-is-integrated">A wrong, co-eluting, or adjacent peak is integrated</a></li>
+  <li><a href="#retention-time-drift-is-not-tracked-across-the-sequence" id="toc-retention-time-drift-is-not-tracked-across-the-sequence" class="nav-link" data-scroll-target="#retention-time-drift-is-not-tracked-across-the-sequence">Retention-time drift is not tracked across the sequence</a></li>
+  <li><a href="#i-edited-an-input-file-what-must-be-re-run" id="toc-i-edited-an-input-file-what-must-be-re-run" class="nav-link" data-scroll-target="#i-edited-an-input-file-what-must-be-re-run">I edited an input file — what must be re-run?</a></li>
+  </ul></li>
+  <li><a href="#running-the-application" id="toc-running-the-application" class="nav-link" data-scroll-target="#running-the-application">Running the application</a>
+  <ul class="collapse">
+  <li><a href="#the-application-will-not-open-macos-cannot-be-verified-windows-blocked" id="toc-the-application-will-not-open-macos-cannot-be-verified-windows-blocked" class="nav-link" data-scroll-target="#the-application-will-not-open-macos-cannot-be-verified-windows-blocked">The application will not open (macOS “cannot be verified” / Windows “blocked”)</a></li>
+  </ul></li>
   <li><a href="#see-also" id="toc-see-also" class="nav-link" data-scroll-target="#see-also">See also</a></li>
   </ul>
 </nav>
@@ -197,12 +216,12 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Running INTEGRATOR</h1>
+<h1 class="title">FAQ &amp; Troubleshooting</h1>
 </div>
 
 <div>
   <div class="description">
-    <p>The four INTEGRATOR processing steps: data validation, peak finding and RT-shift estimation, peak integration, and optional PDF generation.</p>
+    Common problems when preparing input files and running INTEGRATOR, and how to resolve them.
   </div>
 </div>
 
@@ -219,208 +238,82 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/workflow.png" class="img-fluid figure-img"></p>
-<figcaption>flow chart for MRMhub INTEGRATOR</figcaption>
-</figure>
-</div>
-<p>Upon execution, the software launches a terminal user interface with four menu options. For new datasets, steps 1 and 2 are applied sequentially. The final step 4 is optional and used only when integration results as PDF files are required.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/MRMhub-Main.png" class="img-fluid quarto-figure quarto-figure-center figure-img" alt="Screenshot of the INTEGRATOR terminal interface, showing the MRMHUB banner and its four-item menu: 1 Validate data; 2 RT-shift estimation and feature detection; 3 update integration bounds and areas using RT_matrix.csv; and 4 generate chromatogram PDFs (optional)." width="622"></p>
-</figure>
-</div>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Pre-flight checklist
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Before launching, confirm the <a href="./input-files.html">input files</a> are ready:</p>
+<p>This page collects frequent questions and failure modes. For the input-file reference see <a href="./input-files.html">Input Files</a>, for choosing parameter values see <a href="./tuning.html">Tuning Peak Integration</a>, and for the processing steps see <a href="./running.html">Running INTEGRATOR</a>.</p>
+<section id="preparing-the-input-files" class="level2">
+<h2 class="anchored" data-anchor-id="preparing-the-input-files">Preparing the input files</h2>
+<section id="a-csv-file-is-misread-columns-look-shifted-or-values-are-wrong" class="level3">
+<h3 class="anchored" data-anchor-id="a-csv-file-is-misread-columns-look-shifted-or-values-are-wrong">A CSV file is misread — columns look shifted or values are wrong</h3>
+<p><code>run_order.csv</code> and <code>feature_list.csv</code> are read <strong>by column position, not by header name</strong>, so a reordered, deleted, or inserted column is silently misinterpreted. Restore the template column order (see <a href="./input-files.html#column-order-warning">Input Files</a>). Beyond column order, <code>run_order.csv</code> and <code>feature_list.csv</code> are plain, comma-separated, UTF-8 files that spreadsheet editors corrupt silently:</p>
 <ul>
-<li>Every mzML file to process is listed in the sample list, named exactly (<code>.mzML</code>, exact case).</li>
-<li><code>reference</code> samples are chosen from <strong>early</strong> in the sequence and are mutually well aligned.</li>
-<li>Blanks are labelled with text containing <code>BLK</code>.</li>
-<li>All required (<strong>bold</strong>) columns are filled, in the template column order.</li>
-<li>Precursor/product <em>m/z</em> fall within <code>mz_tol</code> of the mzML values; RT is given in <strong>minutes</strong>.</li>
+<li><strong>Auto-conversion</strong> — leading zeros are dropped and values such as <code>16:0</code> or <code>1-2</code> are coerced to dates or times. Format the affected cells as text, or edit in a plain-text editor.</li>
+<li><strong>Delimiter / locale</strong> — the separator must be a comma. Locales that default to a semicolon (<code>;</code>) produce a single-column file that is misread.</li>
+<li><strong>Encoding</strong> — save as UTF-8 without a byte-order mark (BOM); a BOM corrupts the first header.</li>
+<li><strong>Stray whitespace and blank rows</strong> — trailing spaces in identifiers and empty trailing rows are read as data.</li>
+<li><strong>File names</strong> — the <code>file name</code> entries must match the mzML files exactly, including the <code>.mzML</code> extension and case.</li>
 </ul>
-<p>Step 1 checks these against the data folder and reports any problems.</p>
-</div>
-</div>
-<section id="step-1-data-validation" class="level2">
-<h2 class="anchored" data-anchor-id="step-1-data-validation">Step 1 — Data Validation</h2>
-<p>The first step verifies the files and information provided in the input files. Inconsistencies are reported in text files saved to the same directory as the <strong>MRMhub</strong> application. These files are generated only when issues are identified.</p>
-<ul>
-<li><strong><code>missing_files.txt</code></strong> lists mzML files that are present in the data folder but not listed in the Sample List, as well as files listed in the Sample List but absent from the data folder.</li>
-<li><strong><code>missing_compounds.txt</code></strong> reports transitions defined in the Transition List but not found in all mzML files. <em>Note:</em> Transitions present only in a subset of the mzML files are currently not processed.</li>
-<li><strong><code>missing_details.txt</code></strong> details the missing transitions and identifies exactly which samples lack them. This is useful when a transition appears in some samples but not others.</li>
-</ul>
-<div class="callout callout-style-default callout-important callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Important</span>Current limitation — transitions must be present in every mzML file
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>INTEGRATOR integrates only the transitions <strong>common to all mzML files</strong> (their intersection) <em>and</em> listed in the transition/feature file. A transition missing from even one mzML file is dropped for the <strong>whole</strong> dataset, not only for the files that lack it — it is reported in <code>missing_compounds.txt</code> / <code>missing_details.txt</code>. Transitions present in the mzML files but not listed in the feature file are likewise ignored.</p>
-</div>
-</div>
 </section>
-<section id="step-2-peak-finding-and-rt-shift-estimation" class="level2">
-<h2 class="anchored" data-anchor-id="step-2-peak-finding-and-rt-shift-estimation">Step 2 — Peak Finding and RT-shift estimation</h2>
-<p>The second step runs the peak finding and picking algorithm (see <a href="./algorithm.html">Peak Detection and Integration Algorithm</a> for how it works). The result of this step is a table of identified peaks (features) with their left and right peak borders in each sample. This table is saved as the CSV file <code>RT_matrix.csv</code> in the same folder as the application and is required for step 3.</p>
-<p>These integration bounds may be refined further on a per-transition and per-sample basis before peak integration is performed in step 3. For a new dataset, the recommended approach is to proceed directly to peak integration, followed by visualization of the results in steps 3 (and 4), and to adjust specific integration borders manually only afterward. Manual adjustment is generally discouraged unless certain integrations can only be achieved through it.</p>
-<p>At this point, the integration visualizer application <strong>MRMhub-viz</strong> (see <a href="./viz.html">MRMhub-viz Visualizer</a>) can be launched to inspect the integration results. Global and per-feature integration parameters can then be revised (via param.txt and the Transition List), and peak integration re-attempted via steps 1 and 2.</p>
-<p>Once automated integration is considered optimal, final manual adjustments to individual peaks can be made in <code>RT_matrix.csv</code> (see Step 2). After these optional manual adjustments, the final peak integration is performed by (re-)running step 3.</p>
-<p><strong>Warning</strong>: Each time step 2 is executed, <code>RT_matrix.csv</code> is <strong>overwritten</strong> and any manual modifications are lost.</p>
+<section id="which-input-files-are-required-and-can-they-be-renamed" class="level3">
+<h3 class="anchored" data-anchor-id="which-input-files-are-required-and-can-they-be-renamed">Which input files are required, and can they be renamed?</h3>
+<p><code>param.txt</code> must be named <code>param.txt</code> and reside in the same folder as the executable. The sample list and transition/feature list may take any name, set by <code>batch_info</code> and <code>transition_list</code> in <code>param.txt</code> (defaults <code>run_order.csv</code> and <code>feature_list.csv</code>). See <a href="./input-files.html">Input Files</a>.</p>
 </section>
-<section id="step-3-peak-integration" class="level2">
-<h2 class="anchored" data-anchor-id="step-3-peak-integration">Step 3 — Peak Integration</h2>
-<p>In the third step, the peaks identified in step 2 are integrated and the corresponding results saved to the following default output files:</p>
-<ul>
-<li><strong><code>quant_raw.csv</code></strong> A wide-format table of peak areas. The top three rows additionally contain the precursor and product m/z and peak apex retention time values.</li>
-<li><strong><code>long.csv</code></strong> A long-format table containing peak area, height, peak apex retention time, FWHM (Full Width at Half Maximum) and integration borders. The corresponding precursor and product m/z values, the analysis time stamp (extracted from the mzML files) and the metadata from the input files (sample type, ISTD, batch identifier) are also included.</li>
-<li><strong><code>misc</code></strong> A folder containing the peak integration results in a binary format, used by the visualizer application MRMhub-viz and in step 4.</li>
-</ul>
-<p>All output tables are plain comma-separated CSV files. <code>long.csv</code> is the canonical hand-off to QUANT (one row per <em>sample × feature</em>); <code>quant_raw.csv</code> is a wide-format export of peak areas and is <strong>not</strong> read by the QUANT module.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span><code>long.csv</code> columns
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-3" class="callout-3-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<p>These are the columns QUANT’s <code>import_data_mrmhub()</code> reads from <code>long.csv</code>. Only <code>feature_name</code> and <code>raw_data_filename</code> are strictly required (plus at least one intensity column); the rest are metadata and measurements carried through to the <code>MRMhubExperiment</code>.</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 50%">
-<col style="width: 50%">
-</colgroup>
-<thead>
-<tr class="header">
-<th><code>long.csv</code> column</th>
-<th>Meaning</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><code>raw_data_filename</code></td>
-<td>Source mzML file name (becomes the analysis identifier)</td>
-</tr>
-<tr class="even">
-<td><code>time_stamp</code></td>
-<td>Acquisition timestamp, read from the mzML</td>
-</tr>
-<tr class="odd">
-<td><code>sample_type</code></td>
-<td>Sample / QC type, from <code>run_order.csv</code></td>
-</tr>
-<tr class="even">
-<td><code>batch</code></td>
-<td>Batch identifier, from <code>run_order.csv</code></td>
-</tr>
-<tr class="odd">
-<td><code>feature_name</code></td>
-<td>Feature (analyte) identifier, from the transition list</td>
-</tr>
-<tr class="even">
-<td><code>internal_standard</code></td>
-<td>Assigned ISTD feature, from the transition list</td>
-</tr>
-<tr class="odd">
-<td><code>rt_apex</code></td>
-<td>Retention time at the peak apex (min)</td>
-</tr>
-<tr class="even">
-<td><code>area</code></td>
-<td>Integrated peak area</td>
-</tr>
-<tr class="odd">
-<td><code>height</code></td>
-<td>Peak height</td>
-</tr>
-<tr class="even">
-<td><code>FWHM</code></td>
-<td>Full width at half maximum</td>
-</tr>
-<tr class="odd">
-<td><code>rt_int_start</code> / <code>rt_int_end</code></td>
-<td>Left / right integration borders (min)</td>
-</tr>
-<tr class="even">
-<td><code>polarity</code></td>
-<td>Ionisation polarity</td>
-</tr>
-<tr class="odd">
-<td><code>precursor_mz</code> / <code>product_mz</code></td>
-<td>Transition <em>m/z</em> values</td>
-</tr>
-<tr class="even">
-<td><code>collision_energy</code></td>
-<td>Collision energy</td>
-</tr>
-</tbody>
-</table>
-<p><code>quant_raw.csv</code> is a wide table of peak areas (features × samples); its top rows additionally carry the precursor and product <em>m/z</em> and the apex retention time per transition.</p>
-</div>
-</div>
-</div>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Tip
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><strong>Continue post-processing in QUANT.</strong> The <code>long.csv</code> file is the canonical hand-off into the QUANT R package: <code>import_data_mrmhub(path = "path/to/long.csv", import_metadata = TRUE)</code> loads the file and its embedded metadata into an <code>MRMhubExperiment</code> for ISTD normalisation, drift/batch correction, QC, and reporting. See the <a href="https://slinghub.github.io/MRMhub/quant/">QUANT documentation ↗</a>.</p>
-</div>
-</div>
 </section>
-<section id="step-4-generate-pdf-results-optional" class="level2">
-<h2 class="anchored" data-anchor-id="step-4-generate-pdf-results-optional">Step 4 — Generate PDF results (optional)</h2>
-<p>The fourth step, which is optional, produces integration results as PDF files. It creates three folders with different types of results:</p>
+<section id="validation-and-matching-step-1" class="level2">
+<h2 class="anchored" data-anchor-id="validation-and-matching-step-1">Validation and matching (Step 1)</h2>
+<section id="what-do-missing_files.txt-missing_compounds.txt-and-missing_details.txt-mean" class="level3">
+<h3 class="anchored" data-anchor-id="what-do-missing_files.txt-missing_compounds.txt-and-missing_details.txt-mean">What do <code>missing_files.txt</code>, <code>missing_compounds.txt</code>, and <code>missing_details.txt</code> mean?</h3>
+<p>These are written by <strong>Step 1 (Data Validation)</strong> only when problems are found:</p>
 <ul>
-<li><code>by_transition</code>: Contains one PDF per transition, with chromatograms plotted for each sample. Only transitions with at least one feature (peak) exceeding the <em>minimum intensity</em> threshold value are included here (see <code>by_transition_low</code>).</li>
-<li><code>by_transition_low</code>: Contains PDFs of transitions where none of the integrated features (peaks) had an area exceeding the <em>minimum intensity</em> threshold defined by the constant <code>low_intensity_threshold</code> in the provided <code>MRMhub_plot.r</code> R script.</li>
-<li><code>by_sample</code>: Provides a PDF for each reference sample; all of the sample’s transitions are plotted within the same file.</li>
+<li><strong><code>missing_files.txt</code></strong> — mzML files listed in the sample list but absent from the data folder, or present in the folder but not listed.</li>
+<li><strong><code>missing_compounds.txt</code></strong> — transitions defined in the transition list but not matched in the mzML files.</li>
+<li><strong><code>missing_details.txt</code></strong> — which samples lack a given transition (useful when a transition is present in only some files).</li>
 </ul>
-<p>For efficient viewing of PDFs on macOS, open the PDF folder, press <em>Space</em> to start Quick Look, then use the <em>up/down</em> arrow keys to move between transitions (files). Use the scroll wheel or trackpad to scroll through each PDF.</p>
-<p><strong>Note</strong>: In large-scale projects, generating many large PDF files can take considerable time, depending on computer performance and the number of cores used. The number of cores used to generate the PDFs can be adjusted via the constant <code>ncores</code> in the provided <code>MRMhub_plot.r</code> script.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><strong>Reviewing retention-time stability at scale.</strong> The per-transition PDFs provide an efficient means of confirming that RT-shift correction has tracked the peaks across the entire analytical sequence. In a published 4,591-sample lipidomics analysis, for example, RT shifts remained below 0.04 min across the whole run, with the exception of approximately 20 samples at the start of one batch near the end of the sequence, which were readily identified by scanning the <code>by_transition</code> PDFs. See the <a href="https://slinghub.github.io/mrmhub-workflows/Dataset3.html">Dataset 3 workflow ↗</a>.</p>
-</div>
-</div>
+<p>The analysis may proceed with items missing. See <a href="./running.html#step-1-data-validation">Running INTEGRATOR — Step 1</a>.</p>
+</section>
+<section id="a-transition-is-not-matched" class="level3">
+<h3 class="anchored" data-anchor-id="a-transition-is-not-matched">A transition is not matched</h3>
+<p>Matching is by precursor <em>m/z</em>, product <em>m/z</em>, and RT, within <code>mz_tol</code> and <code>RT_tol</code>. Confirm the transition-list values against the mzML, and widen <code>mz_tol</code> if the instrument’s <em>m/z</em> calibration is slightly off.</p>
+</section>
+<section id="why-was-a-transition-dropped-from-every-sample" class="level3">
+<h3 class="anchored" data-anchor-id="why-was-a-transition-dropped-from-every-sample">Why was a transition dropped from every sample?</h3>
+<p><strong>Current limitation.</strong> INTEGRATOR integrates only the transitions <strong>common to all mzML files</strong> (their intersection) <em>and</em> listed in the transition/feature file. A transition missing from even one mzML file is dropped for the <strong>whole</strong> dataset — not only for the files that lack it — and reported in <code>missing_compounds.txt</code> / <code>missing_details.txt</code>. Ensure the transition is acquired in every sample, or exclude the files/features that do not share it. See <a href="./running.html#step-1-data-validation">Running INTEGRATOR — Step 1</a>.</p>
+</section>
+<section id="the-same-transition-appears-more-than-once-in-an-mzml-file" class="level3">
+<h3 class="anchored" data-anchor-id="the-same-transition-appears-more-than-once-in-an-mzml-file">The same transition appears more than once in an mzML file</h3>
+<p>Where a transition with identical (or near-identical) Q1/Q3 and MRM windows occurs multiple times, INTEGRATOR prompts for which MRM index to map to the feature; the <code>chromatogram index</code> column in the transition list can also fix the assignment.</p>
+</section>
+</section>
+<section id="peak-detection-and-integration" class="level2">
+<h2 class="anchored" data-anchor-id="peak-detection-and-integration">Peak detection and integration</h2>
+<section id="a-features-area-is-reported-as-zero" class="level3">
+<h3 class="anchored" data-anchor-id="a-features-area-is-reported-as-zero">A feature’s area is reported as zero</h3>
+<p>No peak was detected within <code>RT_tol</code> of the expected RT. Check the expected <code>RT</code> in the transition list, confirm the precursor/product <em>m/z</em> match within <code>mz_tol</code>, and, for genuinely drifting peaks, widen <code>RT_tol</code>. See <a href="./tuning.html">Tuning Peak Integration</a>.</p>
+</section>
+<section id="a-wrong-co-eluting-or-adjacent-peak-is-integrated" class="level3">
+<h3 class="anchored" data-anchor-id="a-wrong-co-eluting-or-adjacent-peak-is-integrated">A wrong, co-eluting, or adjacent peak is integrated</h3>
+<p>Usually <code>RT_tol</code> or <code>peak_width</code> is too wide, or the expected RT is off. Narrow the window, or set a per-feature <code>peak width</code> or fixed integration bounds for the affected feature. Confirm every change in <a href="./viz.html">MRMhub-viz</a> before re-integrating. See <a href="./tuning.html">Tuning Peak Integration</a>.</p>
+</section>
+<section id="retention-time-drift-is-not-tracked-across-the-sequence" class="level3">
+<h3 class="anchored" data-anchor-id="retention-time-drift-is-not-tracked-across-the-sequence">Retention-time drift is not tracked across the sequence</h3>
+<p>Reference samples must be chosen from <strong>early</strong> in the sequence and be mutually well aligned, and <code>RT_shift</code> / <code>RT_shift_bound</code> must accommodate the real drift. See <a href="./algorithm.html">Peak-detection algorithm</a> and <a href="./tuning.html">Tuning Peak Integration</a>.</p>
+</section>
+<section id="i-edited-an-input-file-what-must-be-re-run" class="level3">
+<h3 class="anchored" data-anchor-id="i-edited-an-input-file-what-must-be-re-run">I edited an input file — what must be re-run?</h3>
+<p>Editing any input file requires restarting from <strong>Step 1</strong>. Editing only <code>RT_matrix.csv</code> (manual border adjustments) requires re-running <strong>Step 3</strong> alone — re-running Step 2 overwrites <code>RT_matrix.csv</code>. See <a href="./running.html">Running INTEGRATOR</a>.</p>
+</section>
+</section>
+<section id="running-the-application" class="level2">
+<h2 class="anchored" data-anchor-id="running-the-application">Running the application</h2>
+<section id="the-application-will-not-open-macos-cannot-be-verified-windows-blocked" class="level3">
+<h3 class="anchored" data-anchor-id="the-application-will-not-open-macos-cannot-be-verified-windows-blocked">The application will not open (macOS “cannot be verified” / Windows “blocked”)</h3>
+<p>The executables are unsigned, so the operating system shows a one-time security prompt on first launch. See <a href="./setup.html#clearing-the-first-launch-security-prompt">clearing the first-launch security prompt</a>.</p>
+</section>
 </section>
 <section id="see-also" class="level2 see-also">
 <h2 class="anchored" data-anchor-id="see-also">See also</h2>
 <ul>
-<li><a href="./viz.html">Review results in MRMhub-viz</a> — inspect peaks and refine the integration.</li>
-<li><a href="./sharing.html">Share results</a> — bundle data and parameters for reproducibility.</li>
+<li><a href="./input-files.html">Input Files</a> — the field-by-field reference for the three input files.</li>
+<li><a href="./tuning.html">Tuning Peak Integration</a> — choosing <code>peak_width</code> and the integration bounds.</li>
+<li><a href="./running.html">Run INTEGRATOR</a> — the four processing steps.</li>
 </ul>
 </section>
 
