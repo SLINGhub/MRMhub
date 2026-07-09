@@ -57,8 +57,9 @@ lost when peak finding is re-run. Make manual `RT_matrix.csv` adjustments only o
 integration is otherwise final, then run Step 3 (see [Running INTEGRATOR — Step 2](running.qmd)).
 :::
 
-## Next
+::: {.see-also}
+[See also]{.see-also-label}
 
-- [Input Files](input-files.qmd) — adjust global and per-feature integration parameters.
-- [Running INTEGRATOR](running.qmd) — re-run peak finding and integration after each change.
-- [Sharing Results](sharing.qmd) — bundle the visualizer with the dataset for review by others.
+- [Edit the input files](input-files.qmd) — adjust global and per-feature parameters.
+- [Run INTEGRATOR](running.qmd) — re-run peak finding and integration after each change.
+:::

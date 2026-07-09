@@ -5,7 +5,7 @@
 # (website.navbar.background); `primary` drives links / buttons. Keep in sync
 # with docs-site/_brand.yml and _pkgdown.yml (QUANT).
 meta:
-  name: MRMhub · INTEGRATOR
+  name: MRMhub-INTEGRATOR
   link: https://slinghub.github.io/MRMhub/integrator/
 
 color:

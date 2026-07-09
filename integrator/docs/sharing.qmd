@@ -50,9 +50,9 @@ reproducible and self-documenting: a recipient can open MRMhub-viz to inspect ev
 INTEGRATOR to reproduce or adjust the integration, without any installation.
 :::
 
-## Next
+::: {.see-also}
+[See also]{.see-also-label}
 
-- [MRMhub-viz Visualizer](viz.qmd) — the interactive tool bundled with the dataset for review.
-- [Running INTEGRATOR](running.qmd) — the processing steps that generate these results.
-- [QUANT documentation ↗](https://slinghub.github.io/MRMhub/quant/) — continue with the
-  post-processing pipeline once `long.csv` is produced.
+- [Review results in MRMhub-viz](viz.qmd) — the interactive tool bundled with the dataset.
+- [Continue with QUANT ↗](https://slinghub.github.io/MRMhub/quant/) — post-process `long.csv`.
+:::

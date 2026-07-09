@@ -7,10 +7,10 @@ project:
     - "*.qmd"
 
 website:
-  title: "MRMhub · INTEGRATOR"
+  title: "MRMhub-INTEGRATOR"
   page-navigation: true
   navbar:
-    background: "#2C3E50"   # brand navy title bar (shared across all three sites)
+    background: "#2d5c80"   # header/menu bar colour (shared across all three sites)
     foreground: "#ffffff"
     left:
       - text: Home
@@ -19,7 +19,7 @@ website:
         href: quickstart.qmd
       - text: Manual
         menu:
-          - text: Download & Setup
+          - text: Installation
             href: setup.qmd
           - text: Input Files
             href: input-files.qmd
@@ -34,6 +34,8 @@ website:
           - text: "---"
           - text: Vendor → mzML (MSConvert)
             href: msconvert.qmd
+      - text: "Changelog"
+        href: https://github.com/SLINGhub/MRMhub/releases
     right:
       - text: "← MRMhub home"
         href: https://slinghub.github.io/MRMhub/
@@ -42,30 +44,6 @@ website:
       - icon: github
         href: https://github.com/SLINGhub/MRMhub
         aria-label: GitHub
-  sidebar:
-    style: floating
-    collapse-level: 1
-    contents:
-      - text: Overview
-        href: index.qmd
-      - text: Quick Start
-        href: quickstart.qmd
-      - section: Manual
-        contents:
-          - text: Download & Setup
-            href: setup.qmd
-          - text: Input Files
-            href: input-files.qmd
-          - text: Running INTEGRATOR
-            href: running.qmd
-          - text: Algorithm
-            href: algorithm.qmd
-          - text: MRMhub-viz Visualizer
-            href: viz.qmd
-          - text: Sharing Results
-            href: sharing.qmd
-          - text: Vendor → mzML (MSConvert)
-            href: msconvert.qmd
 
 format:
   html:

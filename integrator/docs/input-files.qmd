@@ -143,8 +143,9 @@ settings are recommended only as a last resort, since fixed borders may require
 re-adjustment when the same analytical method is applied to other datasets.
 ***Note**:* These defined borders are still adjusted for retention-time shifts.
 
-## Next
+::: {.see-also}
+[See also]{.see-also-label}
 
-- [Peak Detection and Integration Algorithm](algorithm.qmd) — how these settings drive peak detection and integration.
-- [Running INTEGRATOR](running.qmd) — run the four processing steps.
-- [MRMhub-viz Visualizer](viz.qmd) — review results and fine-tune these parameters.
+- [Run INTEGRATOR](running.qmd) — the four processing steps with these settings.
+- [Peak-detection algorithm](algorithm.qmd) — how these settings drive detection and integration.
+:::

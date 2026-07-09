@@ -158,7 +158,9 @@ the end of the sequence, which were readily identified by scanning the `by_trans
 [Dataset 3 workflow ↗](https://slinghub.github.io/mrmhub-workflows/Dataset3.html).
 :::
 
-## Next
+::: {.see-also}
+[See also]{.see-also-label}
 
-- [MRMhub-viz Visualizer](viz.qmd) — review and refine the integration results.
-- [Sharing Results](sharing.qmd) — bundle data and parameters for reproducibility.
+- [Review results in MRMhub-viz](viz.qmd) — inspect peaks and refine the integration.
+- [Share results](sharing.qmd) — bundle data and parameters for reproducibility.
+:::

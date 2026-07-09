@@ -115,8 +115,9 @@ recommendations. To see the algorithm in action across the four processing steps
 [Running INTEGRATOR](running.qmd).
 :::
 
-## Next
+::: {.see-also}
+[See also]{.see-also-label}
 
-- [Input Files](input-files.qmd) — set `param.txt` and the transition list that drive the steps above.
-- [Running INTEGRATOR](running.qmd) — the four processing steps that execute this algorithm.
-- [MRMhub-viz Visualizer](viz.qmd) — review the detected features and integration borders.
+- [Edit the input files](input-files.qmd) — `param.txt` and the transition list that drive the steps.
+- [Run INTEGRATOR](running.qmd) — the four processing steps that execute this algorithm.
+:::
