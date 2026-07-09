@@ -174,6 +174,8 @@ fn write_trans(
     let median_rt = calc_med_rt(&trans_feats);
     let file_path = Path::new(crate::MISCDIR).join(["tp_", &t_i.cqq].concat());
     let mut bufw = BufWriter::new(File::create(file_path)?);
+    let baseline_path = Path::new(crate::MISCDIR).join(["tb_", &t_i.cqq].concat());
+    let _ = std::fs::remove_file(baseline_path);
     let iso_range = isomer_range(t_i, &median_rt, &mut bufw, param_t.rt_tol)?;
     let peak_wid = peak_w.0 + peak_w.3;
     let isolen = iso_range.iter().map(std::vec::Vec::len).sum();
@@ -295,7 +297,7 @@ fn write_trans(
     write_tp(&rt_i_all, &start_end_rt, &rt_sh, &mut bufw, isolen)?;
     Ok((start_end_rt, isolen))
 }
-// writes peak positions and placeholder baselines to a binary file
+// writes legacy compatible peak positions to a binary file
 fn write_tp(
     rt_i_all: &[Vec<(f32, f32)>],
     start_end_rt: &[(f32, f32)],
@@ -316,10 +318,6 @@ fn write_tp(
             pos += rt_i_l[pos..].partition_point(|x| x.0 < rt1);
             pos = 1 + crate::common::find_closest(rt_i_l, rt1, pos);
             bufw.write_all(&u16::try_from(pos).unwrap().to_le_bytes())?;
-        }
-        for _ in se {
-            bufw.write_all(&f32::NAN.to_le_bytes())?;
-            bufw.write_all(&f32::NAN.to_le_bytes())?;
         }
     }
     Ok(())
@@ -391,61 +389,72 @@ fn calc_shift(
         a: f32,
         b: f32,
     }
+    // stores a chromatogram and its baseline adjusted intensities
+    type AdjustedEic<'a> = (&'a [(f32, f32)], Vec<f32>);
     // interpolates intensity at a requested retention time
     fn pred_i(rti0: (f32, f32), rti1: (f32, f32), rt: f32) -> f32 {
         rti0.1 + (rt - rti0.0) * (rti1.1 - rti0.1) / (rti1.0 - rti0.0)
     }
-    let rt_i_ref_l: Vec<Vec<(f32, f32)>> = rt_i_all
+    let rt_i_ref_l: Vec<AdjustedEic<'_>> = rt_i_all
         .iter()
         .zip(dec_l)
         .zip(mzml_fs)
         .filter(|(_, x)| x.is_ref)
         .map(|((rt_i_ref, first_dec), _)| {
-            let mut rt_i_ref = rt_i_ref.clone();
-            for x in &mut rt_i_ref {
-                x.1 = 0f32.max(x.1 - first_dec);
-            }
-            rt_i_ref
+            (
+                rt_i_ref.as_slice(),
+                rt_i_ref.iter().map(|x| 0f32.max(x.1 - first_dec)).collect(),
+            )
         })
         .collect();
     let sh_grid: Vec<f32> = (0..401)
         .map(|x| (x as f32).mul_add(0.01, rt_shift.0))
         .take_while(|sh| *sh < rt_shift.1 + 0.0001)
         .collect();
-    let mut a_b = Vec::<RtAB>::new();
-    let calc_dotp = |a_b: &mut Vec<RtAB>, rt_i: &[(f32, f32)], rt_i_ref: &[(f32, f32)]| {
+    let calc_dotp = |rt_i: &[(f32, f32)], i_l: &[f32], rt_i_ref: &[(f32, f32)], i_ref_l: &[f32]| {
         sh_grid
             .iter()
             .filter_map(|&sh| {
                 let mut pos = 0;
-                a_b.clear();
-                a_b.extend(rt_i.iter().filter_map(|(rt0, i0)| {
+                let mut count = 0;
+                let mut prev: Option<RtAB> = None;
+                let mut a_dot_b = 0.;
+                let mut a_mag = 0.;
+                let mut b_mag = 0.;
+                for (&(rt0, _), &a) in rt_i.iter().zip(i_l) {
                     let rt = rt0 - sh;
                     pos = (pos..rt_i_ref.len())
                         .find(|x| rt_i_ref[*x].0 >= rt)
                         .unwrap_or(rt_i_ref.len());
-                    (0 < pos && pos < rt_i_ref.len()).then(|| RtAB {
+                    if pos == 0 || pos == rt_i_ref.len() {
+                        continue;
+                    }
+                    let ref0 = (rt_i_ref[pos - 1].0, i_ref_l[pos - 1]);
+                    let ref1 = (rt_i_ref[pos].0, i_ref_l[pos]);
+                    let current = RtAB {
                         rt,
-                        a: *i0,
-                        b: pred_i(rt_i_ref[pos - 1], rt_i_ref[pos], rt).max(0.),
-                    })
-                }));
-                if a_b.len() < 40 {
-                    return None;
+                        a,
+                        b: pred_i(ref0, ref1, rt).max(0.),
+                    };
+                    if let Some(previous) = prev {
+                        let d = current.rt - previous.rt;
+                        a_dot_b = ((previous.a * previous.b).sqrt()
+                            + (current.a * current.b).sqrt())
+                        .mul_add(d, a_dot_b);
+                        a_mag = (previous.a + current.a).mul_add(d, a_mag);
+                        b_mag = (previous.b + current.b).mul_add(d, b_mag);
+                    }
+                    prev = Some(current);
+                    count += 1;
                 }
-                let mut a_dot_b = 0.;
-                let mut a_mag = 0.;
-                let mut b_mag = 0.;
-                for (x0, x1) in a_b.iter().zip(&a_b[1..]) {
-                    let d = x1.rt - x0.rt;
-                    a_dot_b = ((x0.a * x0.b).sqrt() + (x1.a * x1.b).sqrt()).mul_add(d, a_dot_b);
-                    a_mag = (x0.a + x1.a).mul_add(d, a_mag);
-                    b_mag = (x0.b + x1.b).mul_add(d, b_mag);
+                if count < 40 {
+                    return None;
                 }
                 (a_dot_b > 0.).then(|| (sh, a_dot_b / (a_mag * b_mag).sqrt()))
             })
             .max_by(|x, y| x.1.partial_cmp(&y.1).unwrap())
     };
+    let mut i_l = Vec::new();
     rt_i_all
         .iter()
         .zip(dec_l)
@@ -454,13 +463,11 @@ fn calc_shift(
             if mzml.is_ref {
                 return Some((0., 1.));
             }
-            let mut rt_i = rt_i_l.clone();
-            for x in &mut rt_i {
-                x.1 = 0f32.max(x.1 - first_dec);
-            }
+            i_l.clear();
+            i_l.extend(rt_i_l.iter().map(|x| 0f32.max(x.1 - first_dec)));
             rt_i_ref_l
                 .iter()
-                .filter_map(|rt_i_ref| calc_dotp(&mut a_b, &rt_i, rt_i_ref))
+                .filter_map(|(rt_i_ref, i_ref_l)| calc_dotp(rt_i_l, &i_l, rt_i_ref, i_ref_l))
                 .map(|x| (x, x.0.abs()))
                 .min_by(|x, y| x.1.partial_cmp(&y.1).unwrap())
                 .map(|x| x.0)
