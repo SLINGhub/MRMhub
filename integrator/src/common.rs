@@ -4,6 +4,7 @@ use std::io;
 use std::io::{BufRead, BufReader, BufWriter, Read, Write};
 use std::path::{Path, PathBuf};
 
+// reads and validates the project parameters
 pub fn read_param() -> Result<crate::Param, Box<dyn Error>> {
     let param = std::fs::read_to_string("param.txt")?;
     let value = param.parse::<toml::Table>()?;
@@ -46,12 +47,14 @@ pub fn read_param() -> Result<crate::Param, Box<dyn Error>> {
         rt_shift_bd: value["RT_shift_bound"].as_float().unwrap() as f32,
     })
 }
+// reads a null terminated string from a binary file
 fn unpack_string(file: &mut BufReader<File>) -> Result<String, Box<dyn Error>> {
     let mut str_buf = Vec::new();
     file.read_until(b'\0', &mut str_buf)?;
     str_buf.pop().ok_or("unpack_string")?;
     Ok(String::from_utf8(str_buf)?)
 }
+// reads two little endian floating point values
 pub fn unpack_f32_2(file: &mut BufReader<File>) -> io::Result<(f32, f32)> {
     let mut buffer = [0; std::mem::size_of::<f32>()];
     file.read_exact(&mut buffer)?;
@@ -60,6 +63,7 @@ pub fn unpack_f32_2(file: &mut BufReader<File>) -> io::Result<(f32, f32)> {
     Ok((a, f32::from_le_bytes(buffer)))
 }
 
+// creates binary readers for little endian numeric values
 macro_rules! unpack {
     ($sn:ident, $sn1:ident) => {
         pub fn $sn1(file: &mut BufReader<File>) -> io::Result<$sn> {
@@ -72,12 +76,14 @@ macro_rules! unpack {
 unpack!(f32, unpack_f32);
 unpack!(u16, unpack_u16);
 unpack!(u8, unpack_u8);
+// reads one extracted ion chromatogram from a binary file
 pub fn get_eic(bufr: &mut BufReader<File>) -> io::Result<Vec<(f32, f32)>> {
     bufr.seek_relative(5)?;
     Ok((0..unpack_u16(bufr)?)
         .map(|_| unpack_f32_2(bufr).unwrap())
         .collect())
 }
+// stores the metadata for one mzml sample
 pub struct FileA {
     pub mzml_f: String,
     pub ftype: String,
@@ -86,16 +92,19 @@ pub struct FileA {
     pub is_ref: bool,
     pub is_learn: bool,
 }
+// stores the expected retention time and range for one isomer
 pub struct ValidI {
     pub rt: f32,
     pub name: String,
     pub range: (f32, f32),
 }
+// identifies the baseline calculation method
 pub enum Bl {
     VDrop,
     V2v,
     P,
 }
+// stores one validated transition and its integration settings
 pub struct ValidT {
     pub cqq: String,
     pub iqq: String,
@@ -107,6 +116,7 @@ pub struct ValidT {
     pub peak_w: Option<(f32, f32, f32, f32)>,
     pub baseline: Bl,
 }
+// reads the validated transitions and internal standard mappings
 pub fn get_trans_istd() -> Result<Vec<ValidT>, Box<dyn Error>> {
     let file_path = Path::new(crate::MISCDIR).join(crate::TRANS_L);
     let bufr = &mut BufReader::new(File::open(file_path)?);
@@ -145,6 +155,7 @@ pub fn get_trans_istd() -> Result<Vec<ValidT>, Box<dyn Error>> {
         })
         .collect::<Result<_, _>>()
 }
+// reads the validated mzml sample metadata
 pub fn get_mzml() -> io::Result<Vec<FileA>> {
     let file_path = Path::new(crate::MISCDIR).join(crate::MZML_L);
     let rdr = csv::ReaderBuilder::new()
@@ -166,6 +177,7 @@ pub fn get_mzml() -> io::Result<Vec<FileA>> {
         })
         .collect::<Result<_, _>>()?)
 }
+// writes reference sample chromatograms and peak boundaries
 pub fn write_by_sample(t_to_istd: &[ValidT], mzml_fs: &[FileA]) -> Result<(), Box<dyn Error>> {
     let count_s = mzml_fs.iter().filter(|x| x.is_ref).count();
     let se_pos = t_to_istd
@@ -239,6 +251,7 @@ pub fn write_by_sample(t_to_istd: &[ValidT], mzml_fs: &[FileA]) -> Result<(), Bo
     Ok(())
 }
 #[must_use]
+// finds the nearest point at or before a proposed position
 pub fn find_closest(vec: &[(f32, f32)], pt: f32, pos: usize) -> usize {
     if pos == vec.len() || (pos > 0 && pt - vec[pos - 1].0 <= vec[pos].0 - pt) {
         pos - 1
