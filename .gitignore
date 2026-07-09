@@ -11,6 +11,7 @@
 skills-lock.json
 
 # R package build artifacts / stray outputs
+Rplots.pdf
 tests/testthat/Rplots.pdf
 vignettes/articles/*_files/
 vignettes/articles/output/
