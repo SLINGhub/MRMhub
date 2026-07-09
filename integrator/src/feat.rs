@@ -5,10 +5,12 @@ use std::io::{self, BufReader, BufWriter, Write};
 use std::path::Path;
 
 #[derive(Clone, Copy)]
+// stores a detected peak position score and area
 struct RtScCA {
     rt: f32,
     auc: f32,
 }
+// detects peaks and writes the initial integration boundaries
 pub fn detect(param_t: &crate::Param) -> Result<(), Box<dyn Error>> {
     let mzml_fs = crate::common::get_mzml()?;
     let t_to_istd = crate::common::get_trans_istd()?;
@@ -27,7 +29,9 @@ pub fn detect(param_t: &crate::Param) -> Result<(), Box<dyn Error>> {
     write_rtmat(&t_to_istd, &start_end_d, &mzml_fs)?;
     Ok(())
 }
+// stores integration boundaries and the number of isomers
 type Fff32 = (Vec<(f32, f32)>, usize);
+// writes the retention time matrix for manual review
 fn write_rtmat(
     t_to_istd: &[crate::common::ValidT],
     start_end_d: &[Fff32],
@@ -84,6 +88,7 @@ fn write_rtmat(
     }
     Ok(())
 }
+// maps detected peaks to the expected isomer ranges
 fn isomer_range(
     t_i: &crate::common::ValidT,
     median_rt: &[f32],
@@ -124,12 +129,14 @@ fn isomer_range(
             .collect()
     })
 }
+// finds the lowest point inside a left boundary window
 fn lowest_left(p0_: usize, p1: f32, rt_i_l: &[(f32, f32)]) -> usize {
     (p0_..)
         .zip(rt_i_l[p0_..].iter().take_while(|x| x.0 < p1))
         .min_by(|x, y| x.1.1.partial_cmp(&y.1.1).unwrap())
         .map_or(p0_, |x| x.0)
 }
+// detects and writes integration boundaries for one transition
 fn write_trans(
     t_i: &crate::common::ValidT,
     param_t: &crate::Param,
@@ -288,6 +295,7 @@ fn write_trans(
     write_tp(&rt_i_all, &start_end_rt, &rt_sh, &mut bufw, isolen)?;
     Ok((start_end_rt, isolen))
 }
+// writes peak positions and placeholder baselines to a binary file
 fn write_tp(
     rt_i_all: &[Vec<(f32, f32)>],
     start_end_rt: &[(f32, f32)],
@@ -316,6 +324,7 @@ fn write_tp(
     }
     Ok(())
 }
+// calculates consensus retention times from the learning samples
 fn calc_med_rt(trans_feats: &[Vec<RtScCA>]) -> Vec<f32> {
     let med_npeaks = {
         let mut npeaks_l: Vec<_> = trans_feats.iter().map(std::vec::Vec::len).collect();
@@ -369,17 +378,20 @@ fn calc_med_rt(trans_feats: &[Vec<RtScCA>]) -> Vec<f32> {
     }
     median_rt
 }
+// estimates retention time shifts against the reference samples
 fn calc_shift(
     rt_i_all: &[Vec<(f32, f32)>],
     dec_l: &[f32],
     mzml_fs: &[crate::common::FileA],
     &crate::Param { rt_shift, .. }: &crate::Param,
 ) -> Vec<Option<(f32, f32)>> {
+    // stores paired intensities for shift scoring
     struct RtAB {
         rt: f32,
         a: f32,
         b: f32,
     }
+    // interpolates intensity at a requested retention time
     fn pred_i(rti0: (f32, f32), rti1: (f32, f32), rt: f32) -> f32 {
         rti0.1 + (rt - rti0.0) * (rti1.1 - rti0.1) / (rti1.0 - rti0.0)
     }
@@ -455,6 +467,7 @@ fn calc_shift(
         })
         .collect()
 }
+// smooths unreliable retention time shifts with neighboring samples
 fn final_shift(
     rt_sh_l: &[Option<(f32, f32)>],
     &crate::Param { rt_shift_bd, .. }: &crate::Param,
@@ -531,6 +544,7 @@ fn final_shift(
         })
         .collect()
 }
+// detects chromatographic peaks with continuous wavelet ridges
 fn findridge(
     rt_i_l: &[(f32, f32)],
     first_dec: f32,
@@ -538,6 +552,7 @@ fn findridge(
     wave_sqrt: &[f32],
     sh: f32,
 ) -> Vec<RtScCA> {
+    // stores one wavelet ridge point and its coefficient
     struct RtScC {
         rt: f32,
         sc: f32,

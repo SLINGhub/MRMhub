@@ -4,6 +4,7 @@ use std::io;
 use std::io::{BufReader, BufWriter, Write};
 use std::path::Path;
 
+// recalculates peak areas from the retention time matrix
 pub fn calc_auc() -> Result<(), Box<dyn Error>> {
     let (s_trans, rt_vec_d) = read_rtmat()?;
     let t_to_istd = crate::common::get_trans_istd()?;
@@ -13,6 +14,7 @@ pub fn calc_auc() -> Result<(), Box<dyn Error>> {
     write_area(&s_trans, &area_all, &t_to_istd, &mzml_fs)?;
     crate::common::write_by_sample(&t_to_istd, &mzml_fs)
 }
+// calculates feature measurements for every transition
 fn areas(
     s_trans: &[(String, String)],
     rt_vec_d: &[(f32, f32)],
@@ -42,7 +44,9 @@ fn areas(
         })
         .collect::<Vec<_>>()
 }
+// stores one chromatogram with its peak positions and instrument settings
 type EicPos = (Vec<(f32, f32)>, Vec<(usize, usize)>, f32, bool);
+// updates the binary peak positions for one transition
 fn write_trans(
     trans: &str,
     rt_vec_d: &[(f32, f32)],
@@ -110,6 +114,7 @@ fn write_trans(
         })
         .collect()
 }
+// writes the long format feature measurements
 fn write_long(
     s_trans: &[(String, String)],
     area_all: &[Vec<RowDat>],
@@ -196,6 +201,7 @@ fn write_long(
     }
     Ok(())
 }
+// writes the wide format raw area table
 fn write_area(
     s_trans: &[(String, String)],
     area_all: &[Vec<RowDat>],
@@ -238,6 +244,7 @@ fn write_area(
     Ok(())
 }
 
+// stores the calculated measurements for one feature
 struct RowDat {
     auc: f32,
     height: f32,
@@ -248,6 +255,7 @@ struct RowDat {
     ce: f32,
     polarity: bool,
 }
+// calculates the trapezoidal area above a flat baseline
 fn auc_flat(rt_i_l: &[(f32, f32)], bl: f32) -> f32 {
     rt_i_l
         .windows(2)
@@ -255,18 +263,22 @@ fn auc_flat(rt_i_l: &[(f32, f32)], bl: f32) -> f32 {
         .sum::<f32>()
         * 30.
 }
+// estimates a constant baseline from the lower intensity distribution
 fn p_bl(rt_i_l: &[(f32, f32)]) -> f32 {
     let mut i_l: Vec<_> = rt_i_l.iter().map(|x| x.1).collect();
     let i = i_l.len() / 20;
     i_l.select_nth_unstable_by(i, |a, b| a.partial_cmp(b).unwrap());
     i_l[i]
 }
+// finds the lowest intensity for a vertical drop baseline
 fn v_drop_bl(rt_i_l: &[(f32, f32)]) -> Option<f32> {
     rt_i_l.iter().map(|x| x.1).reduce(f32::min)
 }
+// identifies the endpoints for a valley to valley baseline
 fn v2v_bl(rt_i_l: &[(f32, f32)]) -> Option<((f32, f32), (f32, f32))> {
     rt_i_l.first().map(|ep0| (*ep0, rt_i_l[rt_i_l.len() - 1]))
 }
+// calculates the area above a valley to valley baseline
 fn v2v_auc(rt_i_l: &[(f32, f32)]) -> f32 {
     v2v_bl(rt_i_l).map_or(0., |(ep0, ep1)| {
         let bl: Vec<f32> = rt_i_l
@@ -283,6 +295,7 @@ fn v2v_auc(rt_i_l: &[(f32, f32)]) -> f32 {
             * 30.
     })
 }
+// calculates the area height apex and width for one feature
 fn feat_data(
     i: usize,
     rt_i_all: &[EicPos],
@@ -290,6 +303,7 @@ fn feat_data(
     tlen: usize,
     k: &crate::common::ValidT,
 ) -> io::Result<Vec<RowDat>> {
+    // interpolates the retention time at a target intensity
     fn pred_rt(rti: &[(f32, f32)], hm: f32) -> f32 {
         rti[0].0 + (hm - rti[0].1) * (rti[1].0 - rti[0].0) / (rti[1].1 - rti[0].1)
     }
@@ -347,7 +361,9 @@ fn feat_data(
         })
         .collect()
 }
+// stores the transition labels and integration boundaries from the matrix
 type RtMat = (Vec<(String, String)>, Vec<(f32, f32)>);
+// reads and validates the retention time matrix
 fn read_rtmat() -> Result<RtMat, Box<dyn Error>> {
     let mut rdr = csv::ReaderBuilder::new()
         .has_headers(false)
