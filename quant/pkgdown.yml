@@ -1,5 +1,5 @@
 pandoc: 3.8.3
-pkgdown: 2.2.0
+pkgdown: 2.2.1
 pkgdown_sha: ~
 articles:
   articles/manual-00-design-overview: manual-00-design-overview.html
@@ -37,7 +37,7 @@ articles:
   articles/tutorial-09-pca-exploration: tutorial-09-pca-exploration.html
   articles/tutorial-10-metadata-validation: tutorial-10-metadata-validation.html
   articles/tutorial-11-interference-correction: tutorial-11-interference-correction.html
-last_built: 2026-07-07T15:09Z
+last_built: 2026-07-09T06:20Z
 urls:
   reference: https://slinghub.github.io/MRMhub/quant/reference
   article: https://slinghub.github.io/MRMhub/quant/articles
