@@ -1,0 +1,112 @@
+---
+title: "FAQ & Troubleshooting"
+description: "Common problems when preparing input files and running INTEGRATOR, and how to resolve them."
+---
+
+This page collects frequent questions and failure modes. For the input-file reference see
+[Input Files](input-files.qmd), for choosing parameter values see
+[Tuning Peak Integration](tuning.qmd), and for the processing steps see
+[Running INTEGRATOR](running.qmd).
+
+## Preparing the input files
+
+### A CSV file is misread — columns look shifted or values are wrong
+
+`run_order.csv` and `feature_list.csv` are read **by column position, not by header name**, so a
+reordered, deleted, or inserted column is silently misinterpreted. Restore the template column order
+(see [Input Files](input-files.qmd#column-order-warning)). Beyond column order, `run_order.csv` and
+`feature_list.csv` are plain, comma-separated, UTF-8 files that spreadsheet editors corrupt silently:
+
+- **Auto-conversion** — leading zeros are dropped and values such as `16:0` or `1-2` are coerced to
+  dates or times. Format the affected cells as text, or edit in a plain-text editor.
+- **Delimiter / locale** — the separator must be a comma. Locales that default to a semicolon (`;`)
+  produce a single-column file that is misread.
+- **Encoding** — save as UTF-8 without a byte-order mark (BOM); a BOM corrupts the first header.
+- **Stray whitespace and blank rows** — trailing spaces in identifiers and empty trailing rows are
+  read as data.
+- **File names** — the `file name` entries must match the mzML files exactly, including the `.mzML`
+  extension and case.
+
+### Which input files are required, and can they be renamed?
+
+`param.txt` must be named `param.txt` and reside in the same folder as the executable. The sample list
+and transition/feature list may take any name, set by `batch_info` and `transition_list` in
+`param.txt` (defaults `run_order.csv` and `feature_list.csv`). See [Input Files](input-files.qmd).
+
+## Validation and matching (Step 1)
+
+### What do `missing_files.txt`, `missing_compounds.txt`, and `missing_details.txt` mean?
+
+These are written by **Step 1 (Data Validation)** only when problems are found:
+
+- **`missing_files.txt`** — mzML files listed in the sample list but absent from the data folder, or
+  present in the folder but not listed.
+- **`missing_compounds.txt`** — transitions defined in the transition list but not matched in the
+  mzML files.
+- **`missing_details.txt`** — which samples lack a given transition (useful when a transition is
+  present in only some files).
+
+The analysis may proceed with items missing. See
+[Running INTEGRATOR — Step 1](running.qmd#step-1-data-validation).
+
+### A transition is not matched
+
+Matching is by precursor *m/z*, product *m/z*, and RT, within `mz_tol` and `RT_tol`. Confirm the
+transition-list values against the mzML, and widen `mz_tol` if the instrument's *m/z* calibration is
+slightly off.
+
+### Why was a transition dropped from every sample?
+
+**Current limitation.** INTEGRATOR integrates only the transitions **common to all mzML files** (their
+intersection) *and* listed in the transition/feature file. A transition missing from even one mzML file
+is dropped for the **whole** dataset — not only for the files that lack it — and reported in
+`missing_compounds.txt` / `missing_details.txt`. Ensure the transition is acquired in every sample, or
+exclude the files/features that do not share it. See
+[Running INTEGRATOR — Step 1](running.qmd#step-1-data-validation).
+
+### The same transition appears more than once in an mzML file
+
+Where a transition with identical (or near-identical) Q1/Q3 and MRM windows occurs multiple times,
+INTEGRATOR prompts for which MRM index to map to the feature; the `chromatogram index` column in the
+transition list can also fix the assignment.
+
+## Peak detection and integration
+
+### A feature's area is reported as zero
+
+No peak was detected within `RT_tol` of the expected RT. Check the expected `RT` in the transition
+list, confirm the precursor/product *m/z* match within `mz_tol`, and, for genuinely drifting peaks,
+widen `RT_tol`. See [Tuning Peak Integration](tuning.qmd).
+
+### A wrong, co-eluting, or adjacent peak is integrated
+
+Usually `RT_tol` or `peak_width` is too wide, or the expected RT is off. Narrow the window, or set a
+per-feature `peak width` or fixed integration bounds for the affected feature. Confirm every change in
+[MRMhub-viz](viz.qmd) before re-integrating. See [Tuning Peak Integration](tuning.qmd).
+
+### Retention-time drift is not tracked across the sequence
+
+Reference samples must be chosen from **early** in the sequence and be mutually well aligned, and
+`RT_shift` / `RT_shift_bound` must accommodate the real drift. See
+[Peak-detection algorithm](algorithm.qmd) and [Tuning Peak Integration](tuning.qmd).
+
+### I edited an input file — what must be re-run?
+
+Editing any input file requires restarting from **Step 1**. Editing only `RT_matrix.csv` (manual
+border adjustments) requires re-running **Step 3** alone — re-running Step 2 overwrites `RT_matrix.csv`.
+See [Running INTEGRATOR](running.qmd).
+
+## Running the application
+
+### The application will not open (macOS "cannot be verified" / Windows "blocked")
+
+The executables are unsigned, so the operating system shows a one-time security prompt on first
+launch. See [clearing the first-launch security prompt](setup.qmd#clearing-the-first-launch-security-prompt).
+
+::: {.see-also}
+## See also
+
+- [Input Files](input-files.qmd) — the field-by-field reference for the three input files.
+- [Tuning Peak Integration](tuning.qmd) — choosing `peak_width` and the integration bounds.
+- [Run INTEGRATOR](running.qmd) — the four processing steps.
+:::

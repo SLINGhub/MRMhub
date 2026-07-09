@@ -35,7 +35,7 @@ cycle proceeds as follows.
    co-integrated neighbours, truncated tails, and failures of retention-time tracking.
 2. **Diagnose.** Relate each problem to the setting responsible for it — a missed peak to `RT_tol`
    or `RT_shift`, a co-integrated neighbour to `peak_width`, an untracked retention-time jump to
-   `RT_shift_bound` (see [Effects of the key settings](input-files.qmd#effects-of-the-key-settings)).
+   `RT_shift_bound` (see [Effects of the key settings](tuning.qmd#effects-of-the-key-settings)).
 3. **Refine.** Adjust the global parameters in `param.txt`, or add per-feature overrides in the
    transition list (`peak width`, `uniform_width`, fixed integration bounds) for the problematic
    minority. Individual peaks that resist automated integration can also have their borders edited
@@ -48,7 +48,7 @@ cycle proceeds as follows.
 **Refine globally first, then per-feature.** Tune `param.txt` so that the majority of peaks
 integrate correctly, and reserve transition-list overrides and fixed borders for the remaining
 difficult peaks. Confirm every change in MRMhub-viz before re-integrating the whole dataset — see the
-[peak-width recommendations](input-files.qmd#recommendations-for-setting-peak-integration-parameters).
+[Tuning Peak Integration](tuning.qmd#setting-the-peak-width-and-integration-bounds).
 :::
 
 ::: {.callout-warning}
@@ -58,7 +58,7 @@ integration is otherwise final, then run Step 3 (see [Running INTEGRATOR — Ste
 :::
 
 ::: {.see-also}
-[See also]{.see-also-label}
+## See also
 
 - [Edit the input files](input-files.qmd) — adjust global and per-feature parameters.
 - [Run INTEGRATOR](running.qmd) — re-run peak finding and integration after each change.

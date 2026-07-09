@@ -15,6 +15,20 @@ integration results as PDF files are required.
 
 ![](images/MRMhub-Main.png){fig-align="center" width="622" fig-alt="Screenshot of the INTEGRATOR terminal interface, showing the MRMHUB banner and its four-item menu: 1 Validate data; 2 RT-shift estimation and feature detection; 3 update integration bounds and areas using RT_matrix.csv; and 4 generate chromatogram PDFs (optional)."}
 
+::: {.callout-note}
+## Pre-flight checklist
+
+Before launching, confirm the [input files](input-files.qmd) are ready:
+
+- Every mzML file to process is listed in the sample list, named exactly (`.mzML`, exact case).
+- `reference` samples are chosen from **early** in the sequence and are mutually well aligned.
+- Blanks are labelled with text containing `BLK`.
+- All required (**bold**) columns are filled, in the template column order.
+- Precursor/product *m/z* fall within `mz_tol` of the mzML values; RT is given in **minutes**.
+
+Step 1 checks these against the data folder and reports any problems.
+:::
+
 ## Step 1 — Data Validation
 
 The first step verifies the files and information provided in the input
@@ -32,6 +46,16 @@ when issues are identified.
 -   **`missing_details.txt`** details the missing transitions and
     identifies exactly which samples lack them. This is useful when a
     transition appears in some samples but not others.
+
+::: {.callout-important}
+## Current limitation — transitions must be present in every mzML file
+
+INTEGRATOR integrates only the transitions **common to all mzML files** (their intersection) *and*
+listed in the transition/feature file. A transition missing from even one mzML file is dropped for the
+**whole** dataset, not only for the files that lack it — it is reported in `missing_compounds.txt` /
+`missing_details.txt`. Transitions present in the mzML files but not listed in the feature file are
+likewise ignored.
+:::
 
 ## Step 2 — Peak Finding and RT-shift estimation
 
@@ -159,7 +183,7 @@ the end of the sequence, which were readily identified by scanning the `by_trans
 :::
 
 ::: {.see-also}
-[See also]{.see-also-label}
+## See also
 
 - [Review results in MRMhub-viz](viz.qmd) — inspect peaks and refine the integration.
 - [Share results](sharing.qmd) — bundle data and parameters for reproducibility.

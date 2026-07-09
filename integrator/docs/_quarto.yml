@@ -21,8 +21,10 @@ website:
         menu:
           - text: Installation
             href: setup.qmd
-          - text: Input Files
+          - text: Prepare Input Files
             href: input-files.qmd
+          - text: Tuning Peak Integration
+            href: tuning.qmd
           - text: Running INTEGRATOR
             href: running.qmd
           - text: Algorithm
@@ -34,6 +36,8 @@ website:
           - text: "---"
           - text: Vendor → mzML (MSConvert)
             href: msconvert.qmd
+      - text: FAQ
+        href: faq.qmd
       - text: "Changelog"
         href: https://github.com/SLINGhub/MRMhub/releases
     right:

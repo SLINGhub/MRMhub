@@ -105,6 +105,18 @@ main.content h2 {
   margin-top: 2.6rem;
   margin-bottom: 0.85rem;
 }
+/* H3 must stay smaller than H2 — without this it falls back to cosmo's default
+   (~1.75rem), which is larger than the shrunk 1.4rem H2. */
+main.content h3 {
+  font-size: 1.15rem;
+  margin-top: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+/* Tighten the gap below callouts (e.g. the column-order note sitting directly
+   above an H3). Adjacent margins collapse to the larger of the two. */
+main.content .callout {
+  margin-bottom: 0.6rem;
+}
 
 /* Spaced callout — wrap a callout in `::: {.callout-spaced}` to add breathing
    room above and below it. Text stays at the body font size; only the vertical
@@ -213,6 +225,17 @@ figure figcaption,
   margin: 0.2rem 0;
   line-height: 1.45;
 }
+/* The See-also heading is a real `## See also` so it appears in the page TOC,
+   but is rendered at the small label size. `main.content` prefix outranks the
+   `main.content h2` size rule. */
+main.content .see-also h2 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #2C3E50;
+  margin: 0 0 0.4rem;
+  border-bottom: 0;
+  padding-bottom: 0;
+}
 
 /* Module list — a numbered marker in the link colour per module. */
 .module-list ul {
@@ -251,14 +274,16 @@ figure figcaption,
 .info-panel {
   font-size: 0.9rem;
 }
-.info-panel h3 {
+/* `.landing-grid` prefix keeps these above `main.content h3` in specificity, so
+   the sidebar headings stay 1rem and are unaffected by the article H3 rule. */
+.landing-grid .info-panel h3 {
   font-size: 1rem;
   font-weight: 600;
   color: #2C3E50;
   margin: 1.5rem 0 0.35rem;
   border-bottom: none;
 }
-.info-panel h3:first-child {
+.landing-grid .info-panel h3:first-child {
   margin-top: 0;
 }
 .info-panel ul {

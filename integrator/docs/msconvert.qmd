@@ -36,7 +36,7 @@ for Agilent, etc.) into mzML format. This step can only be performed on a Window
 ![](images/paste-13.png){fig-align="center" fig-alt="Screenshot of the MSConvertGUI window configured to output mzML. In the Options panel, Output format is set to mzML with 32-bit binary encoding, and Write index and Use zlib compression are enabled; the Start button at the bottom right runs the conversion."}
 
 ::: {.see-also}
-[See also]{.see-also-label}
+## See also
 
 - [Install INTEGRATOR](setup.qmd) — download the standalone executable.
 - [Run INTEGRATOR](running.qmd) — process your mzML files.

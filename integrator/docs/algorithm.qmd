@@ -34,6 +34,11 @@ reported in a text file (`missing_compounds.txt`). Chromatograms in mzML files w
 assignment are also excluded from the analysis. The user may proceed with the analysis even if some
 files or compounds are missing.
 
+A transition is therefore integrated only if it is present in **every** mzML file *and* listed in the
+transition input file: the processed set is the intersection of the transitions common to all files
+with those defined in the feature list. A transition absent from any single file is currently dropped
+for the whole dataset, not only for the files that lack it.
+
 Where the same transition (same Q1/Q3 values) with identical or nearly identical MRM start and end
 windows appears two or more times in an mzML file, the user is alerted and can choose which
 transition/MRM index to map to which feature in the transition input file.
@@ -102,22 +107,22 @@ modes are available:
 
 - **5th percentile (default)** — a horizontal baseline set at the 5th percentile of the intensities
   within the integration window.
-- **`v_drop`** — a horizontal baseline set at the minimum of the left and right border *y* values of
-  the curve.
+- **`v_drop`** — a horizontal baseline set at the lowest intensity of the integrated region.
 - **Valley-to-valley** — a sloped baseline fitted between the points where the left and right
   integration borders intersect the ion trace.
 
 ::: {.callout-note}
 **Where to set these parameters.** `RT_shift`, `RT_shift_bound`, `RT_tol`, `peak_width`,
 `uniform_width`, and the fixed integration bounds are all configured in `param.txt` and the
-transition list — see [Input Files](input-files.qmd) for the syntax, defaults, and tuning
-recommendations. To see the algorithm in action across the four processing steps, see
-[Running INTEGRATOR](running.qmd).
+transition list — see [Input Files](input-files.qmd) for the syntax and defaults, and
+[Tuning Peak Integration](tuning.qmd) for choosing values. To see the algorithm in action across the
+four processing steps, see [Running INTEGRATOR](running.qmd).
 :::
 
 ::: {.see-also}
-[See also]{.see-also-label}
+## See also
 
 - [Edit the input files](input-files.qmd) — `param.txt` and the transition list that drive the steps.
+- [Tuning Peak Integration](tuning.qmd) — choosing `peak_width` and the integration bounds.
 - [Run INTEGRATOR](running.qmd) — the four processing steps that execute this algorithm.
 :::

@@ -62,6 +62,7 @@ runtimes are required. A copy of the executable is included in an analysis proje
 - **[Browse real analyses](https://slinghub.github.io/mrmhub-workflows/)** — Read details on peak integration
   of two large-scale lipidomics studies.
 - **Manual** — detailed instructions and tool reference is available from the **Manual** menu above.
+- **[FAQ & Troubleshooting](faq.html)** — common problems preparing input files and running INTEGRATOR, and how to resolve them.
 
 :::
 

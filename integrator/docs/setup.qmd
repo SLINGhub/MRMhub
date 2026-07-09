@@ -99,7 +99,7 @@ To update INTEGRATOR, replace the executables in the project folder with a newer
 but may occasionally require adapting the input files, as new functionality may add or change parameters.
 
 ::: {.see-also}
-[See also]{.see-also-label}
+## See also
 
 - [Edit the input files](input-files.qmd) — `param.txt`, `run_order.csv`, and `feature_list.csv`.
 - [Run INTEGRATOR](running.qmd) — the four processing steps.

@@ -51,7 +51,7 @@ INTEGRATOR to reproduce or adjust the integration, without any installation.
 :::
 
 ::: {.see-also}
-[See also]{.see-also-label}
+## See also
 
 - [Review results in MRMhub-viz](viz.qmd) — the interactive tool bundled with the dataset.
 - [Continue with QUANT ↗](https://slinghub.github.io/MRMhub/quant/) — post-process `long.csv`.
