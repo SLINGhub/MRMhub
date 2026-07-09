@@ -1,0 +1,184 @@
+/* Landing page — QUANT-style two-column layout with a hex sticker and a
+   right-hand info panel. Typography is inherited from cosmo + _brand.yml
+   (steel-blue #5B8FA8 primary, navy #2C3E50); no new fonts are introduced. */
+
+/* Match QUANT's content width. pkgdown widens its container to ~1340px; the
+   Quarto `page-layout: full` here removes the reserved margin columns, and this
+   caps + centres the result so the prose column is as wide as QUANT's rather
+   than cosmo's default ~1140px. */
+#quarto-content.page-layout-full {
+  max-width: 1340px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Hex sticker floated top-right of the content column, mirroring the pkgdown
+   `<img align="right" height="139">` on the QUANT home page. */
+.hex-logo {
+  float: right;
+  width: 130px;
+  height: auto;
+  margin: 0.25rem 0 1rem 1.5rem;
+}
+
+/* Give the overview hero figure room to breathe. */
+.hero-fig {
+  text-align: center;
+  margin-top: 1.25rem;
+  margin-bottom: 2.25rem;
+}
+
+
+/* Wider gutter between the content column and the info-panel sidebar. */
+.landing-grid {
+  column-gap: 3rem;
+}
+
+/* Distinct page title + a rule that separates the title block from the body,
+   mirroring the underline beneath "MRMhub-QUANT" on the pkgdown home page. */
+.landing-grid h1 {
+  font-size: 2.7rem;
+  font-weight: 700;
+  color: #2C3E50;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.4rem;
+}
+.title-sep {
+  clear: right;
+  border: 0;
+  border-top: 1px solid #dee2e6;
+  margin: 1.25rem 0 1.75rem;
+}
+
+/* Smaller, quieter section headers (e.g. "The MRMhub modules"). No underline —
+   only the page title carries a separating rule (.title-sep). */
+.landing-grid h2,
+.landing-grid h3 {
+  font-weight: 600;
+  color: #2C3E50;
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+.landing-grid h2 {
+  font-size: 1.4rem;
+  margin-top: 2.6rem;
+  margin-bottom: 0.85rem;
+}
+
+/* Roomier spacing between the two module bullets. */
+.module-list li + li {
+  margin-top: 1rem;
+}
+
+/* Steel-blue arrow markers for the Getting started list. */
+.arrow-list ul {
+  list-style: none;
+  padding-left: 1.5em;
+}
+.arrow-list li {
+  position: relative;
+}
+.arrow-list li + li {
+  margin-top: 0.6rem;
+}
+.arrow-list li::before {
+  content: "→";
+  position: absolute;
+  left: -1.5em;
+  color: #5B8FA8;
+  font-weight: 700;
+}
+
+/* Module list — a filled square per module in its figure colour
+   (INTEGRATOR steel-blue, QUANT green) to tie the list to the diagrams. */
+.module-list ul {
+  list-style: none;
+  padding-left: 1.8em;
+  counter-reset: mod;
+}
+.module-list li {
+  position: relative;
+  counter-increment: mod;
+}
+.module-list li::before {
+  content: counter(mod) ".";
+  position: absolute;
+  left: -1.8em;
+  top: 0;
+  font-weight: 700;
+  color: var(--bs-link-color, #5B8FA8);
+}
+.module-list a {
+  font-weight: 700;
+}
+
+/* Lead sub-title under the H1. */
+.landing-grid .lead {
+  font-size: 1.15rem;
+  font-weight: 400;
+  color: #52606d;
+  margin-bottom: 1.25rem;
+}
+
+/* Right-hand info panel — muted section headings + tight, bullet-free lists,
+   matching the pkgdown sidebar aesthetic. */
+.info-panel {
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+.info-panel h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #2C3E50;
+  margin: 2.4rem 0 0.6rem;
+  border-bottom: none;
+}
+.info-panel h3:first-child {
+  margin-top: 0;
+}
+.info-panel ul {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 0;
+}
+.info-panel li {
+  margin: 0.4rem 0;
+  line-height: 1.5;
+}
+
+/* Developers list — name + ORCID mark, muted role beneath (pkgdown aside). */
+.developer-list {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 0;
+}
+.developer-list li {
+  margin: 0 0 0.95rem;
+  line-height: 1.4;
+}
+.developer-list .dev-name {
+  font-weight: 500;
+}
+.developer-list .dev-role {
+  color: #6c757d;
+  font-size: 0.82rem;
+}
+.developer-list .orcid {
+  vertical-align: text-bottom;
+}
+.developer-list .orcid svg {
+  display: inline-block;
+}
+
+/* When the panel stacks below the content on narrow screens, separate it with
+   a rule instead of the desktop whitespace gap. */
+@media (max-width: 991.98px) {
+  .info-panel {
+    border-top: 1px solid #dee2e6;
+    padding-top: 1rem;
+    margin-top: 1.5rem;
+  }
+  .hex-logo {
+    width: 100px;
+  }
+}

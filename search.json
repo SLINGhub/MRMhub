@@ -4,20 +4,55 @@
     "href": "index.html",
     "title": "MRMhub",
     "section": "",
-    "text": "MRMhub takes targeted Multiple Reaction Monitoring (MRM) mass spectrometry — the assay behind quantitative lipidomics and metabolomics — from instrument data to a clean, quantitative report: peak integration, QC, normalisation, drift and batch correction, calibration, and reporting."
+    "text": "Reproducible, automated and scalable processing of targeted metabolomics and lipidomics data\n\n\n\n\nMRMhub is an automated, scalable framework for processing targeted metabolomics and lipidomics data acquired by liquid chromatography–mass spectrometry (LC-MS) in multiple reaction monitoring (MRM) mode. It provides a reproducible, end-to-end workflow — from raw instrument data to quality-controlled quantitative results — at population scale on standard hardware. Its two modules, MRMhub-INTEGRATOR and MRMhub-QUANT, cover peak integration, quantification, quality control, and reporting, recording a full digital footprint of every step for reproducibility and traceability. Modular functions and defined data structures adapt to diverse study designs and data formats, and support collaboration between analytical and bioinformatics scientists.\n\n\n\n\n\nOpen MRMhub-INTEGRATOR\n\n Peak Integration  INTEGRATOR  \n\nOpen MRMhub-QUANT\n\n   Quantitation Quality Control Reporting  QUANT     Retention time alignment Peak identification / selection Peak border refinement Integration Reporting ISTD normalization Interference correction Calibration curves Quantification Drift and batch correction Data integrity Feature annotation Outlier detection Runtime effects Processing efficacy Feature filtering Dataset export QC reporting Process reporting FAIR data sharing\n\n\n\n\nBoth are customizable and can be used together or independently:\n\n\nINTEGRATOR ↗ — a consensus-based peak integrator that accurately and consistently determines peak boundaries in complex chromatograms across an analysis sequence. Fully supervised and customizable for large datasets.\nQUANT ↗ — a programmatic R library (mrmhub) for analysis post-processing and quality control: data validation, quantification, correction of analytical artifacts, outlier detection, feature filtering, dataset export, and QC reporting. It also imports intensity data from Skyline, generic CSV, and mzTab-M files.\n\n\n\n\n\n\n\nRun the demo — download the latest MRMhub release and follow the readme.txt, or the demo walkthrough, to process the bundled demo project end-to-end with both modules - no data of your own required.\nBrowse real analyses — mrmhub-workflows ↗ showcases annotated, end-to-end data-processing reports from large-scale lipidomics studies.\nRead the module docs — tutorials and detailed instructions for each module: INTEGRATOR ↗ and QUANT ↗.\n\n\n\n Citation: Burla B. et al. (2025). MRMhub: one-stop solution for automated processing of large-scale targeted metabolomics data. bioRxiv. doi:10.64898/2025.12.20.695370  |  Source: github.com/SLINGhub/MRMhub \n\n\n\n\n\n\n\nBrowse source code\nReport a bug\n\n\n\n\n\nGPL-3 (non-commercial use)\nCommercial licensing — contact Jonathan Tan\n\n\n\n\n\nCiting MRMhub\n\n\n\n\n\n\nBo Burla Author, maintainer\n\n\nGuo Shou Teo Author\n\n\nHyungwon Choi Author"
   },
   {
-    "objectID": "index.html#what-you-get",
-    "href": "index.html#what-you-get",
+    "objectID": "index.html#the-mrmhub-modules",
+    "href": "index.html#the-mrmhub-modules",
     "title": "MRMhub",
-    "section": "What you get",
-    "text": "What you get\n\nQuality-controlled. Per-feature QC metrics with RunScatter, PCA, and RLA diagnostics, plus rule-based filtering that flags unreliable results before they reach your report.\nQuantified. Absolute or relative concentrations by internal standard or by external calibration curve.\nReproducible. Every step is code — INTEGRATOR parameter files and QUANT R scripts — so an analysis can be re-run, audited, and shared without a click-trail."
+    "section": "",
+    "text": "Both are customizable and can be used together or independently:\n\n\nINTEGRATOR ↗ — a consensus-based peak integrator that accurately and consistently determines peak boundaries in complex chromatograms across an analysis sequence. Fully supervised and customizable for large datasets.\nQUANT ↗ — a programmatic R library (mrmhub) for analysis post-processing and quality control: data validation, quantification, correction of analytical artifacts, outlier detection, feature filtering, dataset export, and QC reporting. It also imports intensity data from Skyline, generic CSV, and mzTab-M files."
   },
   {
-    "objectID": "index.html#the-two-tools",
-    "href": "index.html#the-two-tools",
+    "objectID": "index.html#getting-started",
+    "href": "index.html#getting-started",
     "title": "MRMhub",
-    "section": "The two tools",
-    "text": "The two tools\nMost analyses start from integrated peaks, so QUANT is the usual starting point; INTEGRATOR is only needed when you begin from raw instrument files.\n\nQUANT (the mrmhub R package) ↗ — the post-processing pipeline. Start here if you already have integrated peaks — from INTEGRATOR, Agilent MassHunter, Skyline, or a CSV / mzTab export.\nINTEGRATOR ↗ — the stand-alone peak-detection and integration app. Start here first only when you have raw vendor files.\n\n\n\n\n Raw data  msconvert  INTEGRATOR   long.csv  QUANT ↗\n\n\n\nStarting from raw vendor files?\nIf you have .raw, .d, or .wiff files and need integrated peaks, run INTEGRATOR first, then continue in QUANT. For a fuller comparison, see INTEGRATOR vs QUANT ↗.\n\n\n\nAvailable input\nWhere to start\n\n\n\n\nIntegrated peaks (INTEGRATOR, MassHunter, Skyline, mzTab/CSV)\nQUANT install ↗ — the usual path\n\n\nRaw vendor files (.raw, .d, .wiff)\nINTEGRATOR Manual ↗ → then QUANT ↗\n\n\nPeak picking only\nINTEGRATOR Manual ↗\n\n\n\n\n Citation: Teo et al. (2020). MRMhub: Automated Data Processing for Large-Scale Targeted Metabolomics Analysis. Anal. Chem. 92, 13677–13682. doi:10.1021/acs.analchem.0c03060  |  Source: github.com/SLINGhub/MRMhub  |  Example workflows: mrmhub-workflows ↗"
+    "section": "",
+    "text": "Run the demo — download the latest MRMhub release and follow the readme.txt, or the demo walkthrough, to process the bundled demo project end-to-end with both modules - no data of your own required.\nBrowse real analyses — mrmhub-workflows ↗ showcases annotated, end-to-end data-processing reports from large-scale lipidomics studies.\nRead the module docs — tutorials and detailed instructions for each module: INTEGRATOR ↗ and QUANT ↗.\n\n\n\n Citation: Burla B. et al. (2025). MRMhub: one-stop solution for automated processing of large-scale targeted metabolomics data. bioRxiv. doi:10.64898/2025.12.20.695370  |  Source: github.com/SLINGhub/MRMhub"
+  },
+  {
+    "objectID": "get-started.html",
+    "href": "get-started.html",
+    "title": "Run the demo",
+    "section": "",
+    "text": "The MRMhub release ships with a self-contained demonstration project — example raw data, INTEGRATOR parameters, and a ready-to-run QUANT R script, so the full pipeline can be run end-to-end without preparing any data. The two modules run in sequence: MRMhub-INTEGRATOR produces integrated peaks, and MRMhub-QUANT turns them into a quality-controlled, quantified report."
+  },
+  {
+    "objectID": "get-started.html#before-you-start",
+    "href": "get-started.html#before-you-start",
+    "title": "Run the demo",
+    "section": "Before you start",
+    "text": "Before you start\n\nDownload the latest release from the MRMhub releases page ↗ and unzip it.\nClear the first-launch security prompt. MRMhub-INTEGRATOR is distributed as a portable executable, so on first launch macOS Gatekeeper or Windows SmartScreen may block it. This is a one-time step — follow the First launch instructions in MRMhub-INTEGRATOR — Download & Project Setup ↗; afterwards the application opens normally.\nSet up an IDE for the QUANT step. The QUANT script is a Quarto document run in R. Install R and an IDE that runs Quarto — RStudio or Positron — then the mrmhub package, as described in MRMhub-QUANT installation ↗.\n\n\n\n\n\n\n\nNote\n\n\n\nThe steps below use only the bundled demo project. To run your own data afterwards, see the MRMhub-INTEGRATOR Quick Start ↗ and the MRMhub-QUANT tutorials ↗."
+  },
+  {
+    "objectID": "get-started.html#step-1-peak-integration-mrmhub-integrator",
+    "href": "get-started.html#step-1-peak-integration-mrmhub-integrator",
+    "title": "Run the demo",
+    "section": "Step 1 — Peak integration (MRMhub-INTEGRATOR)",
+    "text": "Step 1 — Peak integration (MRMhub-INTEGRATOR)\nDouble-click MRMhub in the unzipped demo folder and run steps 1 to 4 in order. When they complete, open the transitions folder and inspect the per-transition PDFs to review the integrated peaks. The integrated results are written for the QUANT step that follows.\nFor a description of each stage, see the MRMhub-INTEGRATOR Quick Start ↗."
+  },
+  {
+    "objectID": "get-started.html#step-2-quantitation-quality-control-mrmhub-quant",
+    "href": "get-started.html#step-2-quantitation-quality-control-mrmhub-quant",
+    "title": "Run the demo",
+    "section": "Step 2 — Quantitation & quality control (MRMhub-QUANT)",
+    "text": "Step 2 — Quantitation & quality control (MRMhub-QUANT)\nOpen quant.qmd in the QUANT folder in RStudio or Positron and render it. The script imports the integrated peaks, normalises to internal standards, applies drift and batch correction, quantifies, computes QC metrics, filters features, and writes a QC report — the complete post-acquisition workflow in a single document.\nThe same analysis is walked through, step by step, in Your first analysis ↗."
+  },
+  {
+    "objectID": "get-started.html#next-steps",
+    "href": "get-started.html#next-steps",
+    "title": "Run the demo",
+    "section": "Next steps",
+    "text": "Next steps\n\nMRMhub-INTEGRATOR manual ↗ — peak detection, parameters, review, and visualisation.\nMRMhub-QUANT articles ↗ — importers, corrections, quantitation, QC, and reporting.\nExample workflows ↗ — annotated, end-to-end example pipelines."
   }
 ]
