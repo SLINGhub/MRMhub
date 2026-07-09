@@ -3,7 +3,9 @@ use std::error::Error;
 use std::fs::File;
 use std::io::{BufReader, BufWriter, Write};
 use std::path::Path;
+// declares the low level mzml parser
 mod parse;
+// validates the inputs and extracts every requested chromatogram
 pub fn read(param_t: &crate::Param) -> Result<(), Box<dyn Error>> {
     let t_list = read_assay(&param_t.t_list)?;
     let mut prev: &str = "";
@@ -73,6 +75,7 @@ pub fn read(param_t: &crate::Param) -> Result<(), Box<dyn Error>> {
     write_mzml_list(&mzml_fs, &time_stamp)?;
     write_miss_cpd(&t_list, &mzml_fs, &trans_f)
 }
+// stores one transition from the assay definition
 struct QQ {
     name: String,
     rt_iso: Vec<(f32, String, f32, f32)>,
@@ -85,6 +88,7 @@ struct QQ {
     baseline: String,
     index: Option<u16>,
 }
+// reads and validates the transition assay
 fn read_assay(assay_f: &Path) -> Result<Vec<QQ>, Box<dyn Error>> {
     let rdr = csv::ReaderBuilder::new()
         .comment(Some(b'#'))
@@ -161,7 +165,9 @@ fn read_assay(assay_f: &Path) -> Result<Vec<QQ>, Box<dyn Error>> {
         })
         .collect::<Result<_, Box<dyn Error>>>()
 }
+// describes one ordered mzml sample and its processing roles
 type FileD<'a, 'b> = (&'a Path, &'b str, &'b str, bool, bool);
+// removes incomplete transitions and writes the validated transition files
 fn write_miss_cpd(
     t_list: &[QQ],
     mzml_fs: &[FileD],
@@ -262,6 +268,7 @@ fn write_miss_cpd(
     }
     Ok(())
 }
+// writes the ordered mzml sample metadata list
 fn write_mzml_list(mzml_fs: &[FileD], time_stamp: &[String]) -> std::io::Result<()> {
     let file_path = Path::new(crate::MISCDIR).join(crate::MZML_L);
     let mut wtr = csv::WriterBuilder::new()
@@ -279,6 +286,7 @@ fn write_mzml_list(mzml_fs: &[FileD], time_stamp: &[String]) -> std::io::Result<
     }
     Ok(())
 }
+// extracts and writes one transition block for a group of samples
 fn write_block(
     q1q3eics: &[Vec<parse::Q1Q3RtI>],
     mzml_fs: &[FileD],
@@ -349,6 +357,7 @@ fn write_block(
     Ok(())
 }
 
+// creates an empty binary file for every assay transition
 fn create_t_files(t_list: &[QQ]) -> std::io::Result<Vec<String>> {
     (0..t_list.len())
         .map(|i| {
@@ -359,6 +368,7 @@ fn create_t_files(t_list: &[QQ]) -> std::io::Result<Vec<String>> {
         })
         .collect()
 }
+// matches available mzml files to the batch information
 fn filter_mzml<'a, 'b>(
     param_t: &'a crate::Param,
     file_ord: &'b [FileO],
@@ -408,7 +418,9 @@ fn filter_mzml<'a, 'b>(
     mzml_fs_ord.sort_unstable_by_key(|x| x.1);
     Ok(mzml_fs_ord.into_iter().map(|x| x.0).collect())
 }
+// describes one row of ordered batch information
 type FileO = (String, String, String, bool, bool, usize);
+// reads and sorts the batch information by filename
 fn read_file_ord(batch_i_file: &Path) -> std::io::Result<Vec<FileO>> {
     let mut rdr = csv::ReaderBuilder::new()
         .comment(Some(b'#'))

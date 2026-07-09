@@ -2,6 +2,7 @@ use quick_xml::events::Event;
 use quick_xml::reader::Reader;
 use std::io::Read;
 use std::str;
+// stores one parsed transition chromatogram
 pub struct Q1Q3RtI {
     pub ord: u16,
     pub q1: f32,
@@ -11,6 +12,7 @@ pub struct Q1Q3RtI {
     pub ce: f32,
 }
 #[must_use]
+// parses the timestamp and transition chromatograms from an mzml file
 pub fn mzml(mzml_f: &std::path::Path) -> (String, Vec<Q1Q3RtI>) {
     let mut reader = Reader::from_file(mzml_f).unwrap();
     reader.config_mut().trim_text(true);
@@ -146,6 +148,7 @@ pub fn mzml(mzml_f: &std::path::Path) -> (String, Vec<Q1Q3RtI>) {
     q1q3eics.sort_unstable_by(|x, y| x.q1.partial_cmp(&y.q1).unwrap());
     (ts, q1q3eics)
 }
+// decodes a compressed or uncompressed binary mzml array
 fn decode_bin(
     bin: &str,
     zlibc: bool,
