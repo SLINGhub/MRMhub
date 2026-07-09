@@ -120,8 +120,21 @@ pub struct ValidT {
 pub fn get_trans_istd() -> Result<Vec<ValidT>, Box<dyn Error>> {
     let file_path = Path::new(crate::MISCDIR).join(crate::TRANS_L);
     let bufr = &mut BufReader::new(File::open(file_path)?);
-    (0..unpack_u16(bufr)?)
+    let trans_count = unpack_u16(bufr)?;
+    let baseline_path = Path::new(crate::MISCDIR).join(crate::TRANS_BL);
+    let mut baseline_bufr = File::open(baseline_path).ok().map(BufReader::new);
+    if let Some(reader) = baseline_bufr.as_mut()
+        && unpack_u16(reader)? != trans_count
+    {
+        return Err("transition baseline count does not match transition count".into());
+    }
+    (0..trans_count)
         .map(|_| {
+            let baseline = baseline_bufr
+                .as_mut()
+                .map(unpack_string)
+                .transpose()?
+                .unwrap_or_default();
             Ok(ValidT {
                 cqq: unpack_string(bufr)?,
                 cpd: unpack_string(bufr)?,
@@ -146,7 +159,7 @@ pub fn get_trans_istd() -> Result<Vec<ValidT>, Box<dyn Error>> {
                         unpack_f32(bufr).unwrap(),
                     )
                 }),
-                baseline: match unpack_string(bufr)?.to_lowercase().as_str() {
+                baseline: match baseline.to_lowercase().as_str() {
                     "v_drop" | "v drop" => Bl::VDrop,
                     "v2v" => Bl::V2v,
                     _ => Bl::P,
@@ -186,8 +199,21 @@ pub fn write_by_sample(t_to_istd: &[ValidT], mzml_fs: &[FileA]) -> Result<(), Bo
             let file_path = Path::new(crate::MISCDIR).join(["tp_", &valid_t.cqq].concat());
             let mut bufr = BufReader::new(File::open(file_path).unwrap());
             let len0 = unpack_u8(&mut bufr).unwrap();
+            let baseline_path = Path::new(crate::MISCDIR).join(["tb_", &valid_t.cqq].concat());
+            let mut baseline_bufr = File::open(baseline_path).ok().map(BufReader::new);
+            if let Some(reader) = baseline_bufr.as_mut() {
+                assert_eq!(unpack_u8(reader).unwrap(), len0);
+            }
             (0..)
                 .map(move |_| {
+                    let baselines = baseline_bufr.as_mut().map_or_else(
+                        || vec![(f32::NAN, f32::NAN); usize::from(len0)],
+                        |reader| {
+                            (0..len0)
+                                .map(|_| unpack_f32_2(reader).unwrap())
+                                .collect::<Vec<(f32, f32)>>()
+                        },
+                    );
                     (
                         unpack_f32(&mut bufr).unwrap(),
                         (0..len0)
@@ -198,9 +224,7 @@ pub fn write_by_sample(t_to_istd: &[ValidT], mzml_fs: &[FileA]) -> Result<(), Bo
                                 )
                             })
                             .collect(),
-                        (0..len0)
-                            .map(|_| unpack_f32_2(&mut bufr).unwrap())
-                            .collect::<Vec<(f32, f32)>>(),
+                        baselines,
                     )
                 })
                 .zip(mzml_fs)
@@ -226,6 +250,8 @@ pub fn write_by_sample(t_to_istd: &[ValidT], mzml_fs: &[FileA]) -> Result<(), Bo
     for (i, FileA { mzml_f, .. }) in mzml_fs.iter().filter(|x| x.is_ref).enumerate() {
         let file_path = Path::new(crate::MISCDIR).join(["se_", mzml_f].concat());
         let mut bufw = BufWriter::new(File::create(file_path)?);
+        let baseline_path = Path::new(crate::MISCDIR).join(["sb_", mzml_f].concat());
+        let mut baseline_bufw = BufWriter::new(File::create(baseline_path)?);
         for (rt_i_l, (sh, se_vec, bl_vec)) in eics[i..]
             .iter()
             .step_by(count_s)
@@ -242,9 +268,10 @@ pub fn write_by_sample(t_to_istd: &[ValidT], mzml_fs: &[FileA]) -> Result<(), Bo
                 bufw.write_all(&sta_.to_le_bytes())?;
                 bufw.write_all(&end_.to_le_bytes())?;
             }
+            baseline_bufw.write_all(&u8::try_from(bl_vec.len())?.to_le_bytes())?;
             for bl in bl_vec {
-                bufw.write_all(&bl.0.to_le_bytes())?;
-                bufw.write_all(&bl.1.to_le_bytes())?;
+                baseline_bufw.write_all(&bl.0.to_le_bytes())?;
+                baseline_bufw.write_all(&bl.1.to_le_bytes())?;
             }
         }
     }

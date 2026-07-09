@@ -61,17 +61,20 @@ fn write_trans(
         (0..rt_vec_d.len() / tlen)
             .map(|_| {
                 let sh = unpack_f32(bufr)?;
-                bufr.seek_relative(i64::from(len0) * 12)?;
+                bufr.seek_relative(i64::from(len0) * 4)?;
                 Ok(sh)
             })
             .collect::<io::Result<_>>()?
     };
     let mut bufw = BufWriter::new(File::create(file_path)?);
+    let baseline_path = Path::new(crate::MISCDIR).join(["tb_", trans].concat());
+    let mut baseline_bufw = BufWriter::new(File::create(baseline_path)?);
 
     let file_path = Path::new(crate::MISCDIR).join(["te_", trans].concat());
     let bufre = &mut BufReader::new(File::open(file_path)?);
 
     bufw.write_all(&u8::try_from(pos1 - pos0)?.to_le_bytes())?;
+    baseline_bufw.write_all(&u8::try_from(pos1 - pos0)?.to_le_bytes())?;
     sh_l.iter()
         .enumerate()
         .map(|(i, sh)| {
@@ -107,8 +110,8 @@ fn write_trans(
                     Bl::V2v => v2v_bl(&rt_i_l[pos0..pos1]).map(|(x, y)| (x.1, y.1)),
                 }
                 .unwrap_or((0., 0.));
-                bufw.write_all(&bl.0.to_le_bytes())?;
-                bufw.write_all(&bl.1.to_le_bytes())?;
+                baseline_bufw.write_all(&bl.0.to_le_bytes())?;
+                baseline_bufw.write_all(&bl.1.to_le_bytes())?;
             }
             Ok((rt_i_l, rt_pos, ce, polarity))
         })

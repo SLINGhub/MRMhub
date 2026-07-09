@@ -13,6 +13,8 @@ const MISCDIR: &str = "misc";
 const RTM: &str = "RT_matrix.csv";
 // names the validated transition list file
 const TRANS_L: &str = "trans_list.bin";
+// names the transition baseline sidecar file
+const TRANS_BL: &str = "trans_baseline.bin";
 // names the mzml sample list file
 const MZML_L: &str = "mzML_list.txt";
 use std::error::Error;
