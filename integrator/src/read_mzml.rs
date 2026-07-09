@@ -5,6 +5,10 @@ use std::io::{BufReader, BufWriter, Write};
 use std::path::Path;
 // declares the low level mzml parser
 mod parse;
+
+// limits the source mzml data held in one parsing batch
+const MAX_MZML_BATCH_BYTES: u64 = 256 * 1024 * 1024;
+
 // validates the inputs and extracts every requested chromatogram
 pub fn read(param_t: &crate::Param) -> Result<(), Box<dyn Error>> {
     let t_list = read_assay(&param_t.t_list)?;
@@ -32,7 +36,6 @@ pub fn read(param_t: &crate::Param) -> Result<(), Box<dyn Error>> {
     let _ = std::fs::remove_dir_all(crate::MISCDIR);
     std::fs::create_dir(crate::MISCDIR)?;
     let trans_f = create_t_files(&t_list)?;
-    let nfile = (mzml_fs.len() as f32 / (mzml_fs.len() as f32 / 600.).ceil()).ceil() as usize;
     let mut time_stamp = Vec::with_capacity(mzml_fs.len());
     {
         let mut wtr = csv::WriterBuilder::new().from_path("ambiguous_assignment.csv")?;
@@ -63,14 +66,18 @@ pub fn read(param_t: &crate::Param) -> Result<(), Box<dyn Error>> {
             }
         }
     }
-    for (i, mzml_fs_) in (1..).zip(mzml_fs.chunks(nfile)) {
+    let mut batch_start = 0;
+    while batch_start < mzml_fs.len() {
+        let batch_end = mzml_batch_end(&mzml_fs, batch_start)?;
+        let mzml_fs_ = &mzml_fs[batch_start..batch_end];
         let (mut ts, q1q3eics): (Vec<String>, Vec<Vec<parse::Q1Q3RtI>>) =
             mzml_fs_.par_iter().map(|(bn, ..)| parse::mzml(bn)).unzip();
         time_stamp.append(&mut ts);
         trans_f.iter().zip(&t_list).for_each(|(trans_f_i, trans)| {
             write_block(&q1q3eics, mzml_fs_, trans, trans_f_i, param_t).unwrap();
         });
-        println!("{}/{}", i * nfile, mzml_fs.len());
+        batch_start = batch_end;
+        println!("{batch_start}/{}", mzml_fs.len());
     }
     write_mzml_list(&mzml_fs, &time_stamp)?;
     write_miss_cpd(&t_list, &mzml_fs, &trans_f)
@@ -90,11 +97,20 @@ struct QQ {
 }
 // reads and validates the transition assay
 fn read_assay(assay_f: &Path) -> Result<Vec<QQ>, Box<dyn Error>> {
-    let rdr = csv::ReaderBuilder::new()
+    let mut rdr = csv::ReaderBuilder::new()
         .comment(Some(b'#'))
         .has_headers(true)
         .trim(csv::Trim::All)
         .from_path(assay_f)?;
+    let headers = rdr.headers()?.clone();
+    let find_column = |name: &str| {
+        headers
+            .iter()
+            .position(|header| header.eq_ignore_ascii_case(name))
+    };
+    let peak_width_col = find_column("peak width").or_else(|| find_column("peak_width"));
+    let baseline_col = find_column("baseline");
+    let index_col = find_column("chromatogram index");
     let mut records: Vec<csv::StringRecord> = rdr.into_records().collect::<Result<_, _>>()?;
     records.sort_unstable_by(|x, y| x[1].cmp(&y[1]));
     let mut t_name: Vec<&str> = records.iter().map(|x| &x[1]).collect();
@@ -147,26 +163,45 @@ fn read_assay(assay_f: &Path) -> Result<Vec<QQ>, Box<dyn Error>> {
                 rt: rt_iso.iter().map(|x| x.0).sum::<f32>() / (rt_iso.len() as f32),
                 rt_iso,
                 u_rt: rec_p[6].eq_ignore_ascii_case("y"),
-                peak_w: {
-                    let mut iter = rec_p[9].split(',');
-                    let p0 = |x: &str| x.trim().parse().ok();
-                    (|| {
+                peak_w: peak_width_col
+                    .and_then(|column| rec_p.get(column))
+                    .and_then(|value| {
+                        let mut iter = value.split(',');
+                        let parse = |x: &str| x.trim().parse().ok();
                         Some((
-                            p0(iter.next()?)?,
-                            p0(iter.next()?)?,
-                            p0(iter.next()?)?,
-                            p0(iter.next()?)?,
+                            parse(iter.next()?)?,
+                            parse(iter.next()?)?,
+                            parse(iter.next()?)?,
+                            parse(iter.next()?)?,
                         ))
-                    })()
-                },
-                baseline: rec_p[10].to_string(),
-                index: rec_p[11].parse().ok(),
+                    }),
+                baseline: baseline_col
+                    .and_then(|column| rec_p.get(column))
+                    .unwrap_or("default")
+                    .to_string(),
+                index: index_col
+                    .and_then(|column| rec_p.get(column))
+                    .and_then(|value| value.parse().ok()),
             })
         })
         .collect::<Result<_, Box<dyn Error>>>()
 }
 // describes one ordered mzml sample and its processing roles
 type FileD<'a, 'b> = (&'a Path, &'b str, &'b str, bool, bool);
+// finds the largest source file batch within the memory budget
+fn mzml_batch_end(mzml_fs: &[FileD], start: usize) -> std::io::Result<usize> {
+    let mut batch_bytes: u64 = 0;
+    let mut end = start;
+    while end < mzml_fs.len() {
+        let file_bytes = std::fs::metadata(mzml_fs[end].0)?.len();
+        if end > start && batch_bytes.saturating_add(file_bytes) > MAX_MZML_BATCH_BYTES {
+            break;
+        }
+        batch_bytes = batch_bytes.saturating_add(file_bytes);
+        end += 1;
+    }
+    Ok(end)
+}
 // removes incomplete transitions and writes the validated transition files
 fn write_miss_cpd(
     t_list: &[QQ],
@@ -210,8 +245,11 @@ fn write_miss_cpd(
     }
     let file_path = Path::new(crate::MISCDIR).join(crate::TRANS_L);
     let mut bufw = BufWriter::new(File::create(file_path)?);
+    let baseline_path = Path::new(crate::MISCDIR).join(crate::TRANS_BL);
+    let mut baseline_bufw = BufWriter::new(File::create(baseline_path)?);
     v_trans_w_is.sort_unstable_by_key(|x| x.1);
     bufw.write_all(&u16::try_from(v_trans_w_is.len())?.to_le_bytes())?;
+    baseline_bufw.write_all(&u16::try_from(v_trans_w_is.len())?.to_le_bytes())?;
     for &(trans, trans_f_i, pos) in &v_trans_w_is {
         bufw.write_all(trans_f_i.split_once('_').unwrap().1.as_bytes())?;
         bufw.write_all(b"\0")?;
@@ -239,12 +277,23 @@ fn write_miss_cpd(
         } else {
             bufw.write_all(&0u8.to_le_bytes())?;
         }
-        bufw.write_all(trans.baseline.as_bytes())?;
-        bufw.write_all(b"\0")?;
+        baseline_bufw.write_all(trans.baseline.as_bytes())?;
+        baseline_bufw.write_all(b"\0")?;
     }
-    let mut wtr =
+    let mut legacy_wtr =
         csv::WriterBuilder::new().from_path(Path::new(crate::MISCDIR).join("trans_R.csv"))?;
-    wtr.write_record([
+    legacy_wtr.write_record([
+        "numeric ID",
+        "transition name",
+        "precursor",
+        "product",
+        "uniform",
+        "left view bound",
+        "right view bound",
+    ])?;
+    let mut extended_wtr =
+        csv::WriterBuilder::new().from_path(Path::new(crate::MISCDIR).join("trans_R_v2.csv"))?;
+    extended_wtr.write_record([
         "numeric ID",
         "transition name",
         "precursor",
@@ -255,7 +304,16 @@ fn write_miss_cpd(
         "right view bound",
     ])?;
     for (trans, trans_f_i, _) in &v_trans_w_is {
-        wtr.write_record([
+        legacy_wtr.write_record([
+            &trans_f_i[2..],
+            &trans.name,
+            &format!("{:.3}", trans.q1),
+            &format!("{:.3}", trans.q3),
+            if trans.u_rt { "1" } else { "0" },
+            "",
+            "",
+        ])?;
+        extended_wtr.write_record([
             &trans_f_i[2..],
             &trans.name,
             &format!("{:.3}", trans.q1),
