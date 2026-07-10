@@ -2,7 +2,7 @@
 title: "Demo"
 description: |
   Process the bundled demonstration dataset end-to-end in INTEGRATOR, without preparing any input
-  files.
+  files
 toc: false
 sidebar: false
 ---
@@ -37,7 +37,7 @@ MRMhub is launched from the demonstration folder and the four steps are executed
 3. **Peak Integration** — `long.csv` and `quant_raw.csv` are produced.
 4. **Generate PDF results** *(optional)* — per-transition / per-sample chromatogram PDFs are written.
 
-→ [Running INTEGRATOR](running.html)
+→ [Processing Workflow](running.html)
 
 ## 4. Review the results
 
@@ -48,7 +48,7 @@ The integration is inspected in MRMhub-viz, where chromatograms and peak boundar
 
 | File | Content |
 |---|---|
-| `RT_matrix.csv` | Estimated retention-time shifts across the sequence |
+| `RT_matrix.csv` | Per-sample integration borders (left/right) for each feature |
 | `long.csv` | Integrated peak areas in long format (one row per analysis × feature) |
 | `quant_raw.csv` | Wide-format peak areas |
 

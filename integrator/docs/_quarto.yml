@@ -19,22 +19,28 @@ website:
         href: quickstart.qmd
       - text: Manual
         menu:
+          - text: Manual Contents
+            href: manual.qmd
+          - text: "---"
           - text: Installation
             href: setup.qmd
           - text: Prepare Input Files
             href: input-files.qmd
           - text: Tuning Peak Integration
             href: tuning.qmd
-          - text: Running INTEGRATOR
+          - text: Processing Workflow
             href: running.qmd
-          - text: Algorithm
-            href: algorithm.qmd
-          - text: MRMhub-viz Visualizer
+          - text: Output Files
+            href: output-files.qmd
+          - text: MRMhub-viz Visualiser
             href: viz.qmd
-          - text: Sharing Results
+          - text: Sharing & Archiving
             href: sharing.qmd
           - text: "---"
-          - text: Vendor → mzML (MSConvert)
+          - text: Algorithm
+            href: algorithm.qmd
+          - text: "---"
+          - text: mzML Conversion (MSConvert)
             href: msconvert.qmd
       - text: FAQ
         href: faq.qmd

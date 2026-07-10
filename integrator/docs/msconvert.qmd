@@ -1,37 +1,34 @@
 ---
-title: "MSConvert Instructions"
-description: |
-  Convert vendor raw files (.raw, .wiff, .d) to mzML using ProteoWizard MSConvert,
-  the input format expected by INTEGRATOR.
+title: "mzML Conversion"
+description: "Convert vendor raw files (.wiff, .raw, .d) to open mzML with ProteoWizard MSConvert — the input INTEGRATOR expects"
 editor_options:
   markdown:
     wrap: 72
 ---
 
-INTEGRATOR uses mzML files as input. The MSConvert tool, part of the
-ProteoWizard software, converts proprietary raw data files (.wiff for
-SCIEX, .raw folders for Waters, .raw files for Thermo Fisher, .d folders
-for Agilent, etc.) into mzML format. This step can only be performed on a Windows PC.
+INTEGRATOR reads MS data in the open **mzML** format. MSConvert, part of
+the ProteoWizard suite, converts vendor raw files — SCIEX `.wiff`, Waters
+`.raw` folders, Thermo Fisher `.raw` files, Agilent `.d` folders — to
+mzML. Conversion runs on Windows only.
 
-1.  Download or upgrade to a recent version of ProteoWizard
-    (<https://proteowizard.sourceforge.io>) on a Windows computer. A
-    recent version ensures successful conversion of current
-    vendor-specific formats.
+1.  Install or upgrade to a **recent** version of
+    [ProteoWizard](https://proteowizard.sourceforge.io) on a Windows
+    computer. A recent version ensures support for current vendor
+    formats.
 
-2.  Start “MSConvert” via the START menu, or by right-clicking on the
-    raw files to be converted and selecting MSConvertGUI.
+2.  Launch **MSConvertGUI** from the Start menu, or by right-clicking the
+    raw files and selecting *MSConvertGUI*.
 
-3.  In the MSConvert window, use the “Browse” button to select the raw
-    files to be converted. Note: .wiff and .wiff.scan files need to be
-    located in the same folder.
+3.  Click **Browse** to select the raw files to convert. For SCIEX data,
+    keep the `.wiff` and `.wiff.scan` files together in the same folder.
 
-4.  Set the following options: “*mzML*” for “*Output format”*, “*32-bit*”
-    for “*Binary encoding precision*”, check “*Write index*" and to
-    improve performance, increase "Files to convert in parallel" to the
-    number of available CPU cores.
+4.  Set the options: *Output format* → **mzML**, *Binary encoding
+    precision* → **32-bit**, and enable **Write index**. To speed up
+    large batches, raise *Files to convert in parallel* to the number of
+    available CPU cores.
 
-5.  Run the conversion by clicking "Start", and copy the mzML files to the
-    MRMhub subfolder mzML
+5.  Click **Start**, then copy the resulting mzML files into the `mzML`
+    subfolder of your MRMhub project.
 
 ![](images/paste-13.png){fig-align="center" fig-alt="Screenshot of the MSConvertGUI window configured to output mzML. In the Options panel, Output format is set to mzML with 32-bit binary encoding, and Write index and Use zlib compression are enabled; the Start button at the bottom right runs the conversion."}
 
@@ -39,5 +36,5 @@ for Agilent, etc.) into mzML format. This step can only be performed on a Window
 ## See also
 
 - [Install INTEGRATOR](setup.qmd) — download the standalone executable.
-- [Run INTEGRATOR](running.qmd) — process your mzML files.
+- [Processing Workflow](running.qmd) — process your mzML files.
 :::

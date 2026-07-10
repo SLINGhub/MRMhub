@@ -20,10 +20,11 @@ Robust, reproducible peak detection and integration for large-scale targeted LC-
 :::
 
 INTEGRATOR is the stand-alone peak-integration module of the
-[MRMhub framework](https://slinghub.github.io/MRMhub/). MS raw data are imported as mzML files, MRMhub is the run as console application in different steps: (1) import and conversion of mzML files, (2) cross-sample peak detection, (3) peak integration, and (4) plotting of chromatograms with integrated peaks as PDFs. Peak area data is saved as long and wide-format CSV files. 
+[MRMhub framework](https://slinghub.github.io/MRMhub/). MS raw data are imported as mzML files, and MRMhub is then run as a console application in four steps: (1) import and conversion of mzML files, (2) cross-sample peak detection, (3) peak integration, and (4) plotting of chromatograms with integrated peaks as PDFs. Peak-area data are saved as long- and wide-format CSV files.
 
 ## The workflow
 
+```{=html}
 <div style="text-align: center; margin: 1.5em 0;">
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 90" style="max-width: 940px; width: 100%; height: auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
   <style>
@@ -46,12 +47,13 @@ INTEGRATOR is the stand-alone peak-integration module of the
 </svg>
 <p style="font-size: 0.85rem; color: #6c757d; margin-top: 0.25rem;">INTEGRATOR performs the peak integration; QUANT (dashed) is a separate MRMhub module.</p>
 </div>
+```
 
 ## Download and setup
 
 INTEGRATOR is distributed as a self-contained executable for macOS and Windows via the
 [GitHub releases page](https://github.com/SLINGhub/MRMhub/releases); no installation and no separate
-runtimes are required. A copy of the executable is included in an analysis project, which ensured reproducibility. On first launch, typically a one-time OS security prompt must be cleared. Detailed instructions are given in [Installing MRMhub-INTEGRATOR](setup.html).
+runtimes are required. A copy of the executable is kept with each analysis project, which ensures reproducibility. On first launch, typically a one-time OS security prompt must be cleared. Detailed instructions are given in [Installing MRMhub-INTEGRATOR](setup.html).
 
 ## Getting started
 
@@ -61,7 +63,7 @@ runtimes are required. A copy of the executable is included in an analysis proje
 - **[Quick Start](quickstart.html)** — a short tutorial for running a new peak integration project.
 - **[Browse real analyses](https://slinghub.github.io/mrmhub-workflows/)** — Read details on peak integration
   of two large-scale lipidomics studies.
-- **Manual** — detailed instructions and tool reference is available from the **Manual** menu above.
+- **[Manual](manual.html)** — detailed instructions and tool reference for every stage; also available from the **Manual** menu above.
 - **[FAQ & Troubleshooting](faq.html)** — common problems preparing input files and running INTEGRATOR, and how to resolve them.
 
 :::

@@ -1,6 +1,6 @@
 ---
 title: "Tuning Peak Integration"
-description: "Choosing the peak-detection and integration parameters for reliable automated integration of complex chromatograms."
+description: "Choosing the peak-detection and integration parameters for reliable automated integration of complex chromatograms"
 ---
 
 The parameters defined in [`param.txt`](input-files.qmd#global-parameters-param.txt) and the
@@ -11,6 +11,13 @@ values for difficult chromatograms. For the field-by-field syntax and defaults s
 the effect of any change visually in [MRMhub-viz](viz.qmd) before re-integrating the whole dataset.
 
 ## Effects of the key settings
+
+Settings apply at two levels: **global** parameters in `param.txt`, and **per-feature** overrides in the
+transition list (`feature_list.csv`). A single global configuration should suit the majority of peaks;
+per-feature overrides then correct the problematic minority, and a well-chosen global `peak_width`
+minimises how many are needed.
+
+### Global parameters (`param.txt`)
 
 Most settings trade **sensitivity** (finding and fully capturing the intended peak) against
 **specificity** (not grabbing a neighbouring transition, an adjacent peak, or noise). The table
@@ -27,38 +34,54 @@ chromatograms, is detailed [below](#setting-the-peak-width-and-integration-bound
 | `num_threads` | CPU threads used for integration | Slower processing only — no effect on results | Faster, bounded by available cores — no effect on results |
 
 ::: {.callout-tip}
-Set the parameters **globally** in `param.txt` to suit the majority of peaks, then apply **per-feature**
-overrides in the transition list (`peak width`, `uniform_width`, fixed integration bounds) to the
-problematic minority only.
+## Keep RT alignment enabled
+A non-zero `RT_shift` window is recommended even for methods with negligible drift. RT alignment
+improves consistent border finding and the resolution of overlapping peaks, whether or not a visible
+retention-time shift is present. `[0, 0]` disables it; a small window such as `[-0.1, 0.1]` is
+sufficient.
 :::
 
-::: {.callout-tip}
-**Worked example.** A published lipidomics dataset (Agilent triple-quadrupole) used
-`mz_tol = 0.06`, `RT_tol = 0.04`, and `peak_width = [0.15, 0.08, 0.08, 0.18]` globally, with
-per-feature overrides for broad or convoluted peaks, an RT-shift window of `(-0.1, 0.4)`, and a
-maximum sample-to-sample RT shift (`RT_shift_bound`) of `0.05`. These are reasonable starting points
-for a fast, well-resolved method. See the full
-[Dataset 3 workflow ↗](https://slinghub.github.io/mrmhub-workflows/Dataset3.html) for the complete
-input files and the resulting integration.
-:::
+### Per-feature settings (`feature_list.csv`)
+
+Overrides in the transition list correct individual features that the global parameters integrate
+poorly; see [Transition / Feature list](input-files.qmd#transition-feature-list-feature_list.csv) for
+the exact columns and defaults.
+
+| Setting | What it controls | When to apply |
+|---|---|---|
+| `peak width` | Per-feature `[w, x, y, z]`, overriding the global `peak_width` | Broad, tailing, or interference-prone peaks needing bounds different from the global value |
+| `uniform_width` | Holds the integration width constant across samples | Features integrated correctly in most samples but erratically in a few |
+| `left integration bound` / `right integration bound` | Fixed peak borders for all samples, defined relative to the reference sample and tracked per sample by RT correction | Peaks no `peak_width` value integrates consistently — a last resort |
+| `baseline` | Baseline mode: `default`, `v_drop`, or `v2v` | Peaks on a sloping or elevated baseline |
+| `chromatogram index` | Overrides the automatic chromatogram-to-transition assignment | Transitions matched to the wrong chromatogram |
 
 ## Setting the peak-width and integration bounds
 
-The `peak_width` parameter — global in `param.txt`, optionally overridden per feature in the transition
-list — is the key setting for automated integration of complex chromatograms. It is specified as
-`[w, x, y, z]`, where the ranges *w–x* and *y–z* define the allowed windows for the left and right peak
-borders, respectively. The algorithm constrains the peak start and end points to these ranges, even
-where automatic boundary detection would otherwise extend beyond them.
-
-Ranges that are too narrow yield incomplete integration, particularly for tailing peaks or peaks of
-unstable width; ranges that are too wide cause smaller adjacent peaks to be co-integrated. A global
-setting suited to the majority of peaks is defined in `param.txt`, with per-feature settings applied to
-convoluted, asymmetric, or broadened peaks. Narrower per-feature ranges are also used where nearby
-interferences are not recognised as separate peaks and are consequently co-integrated.
+The `peak_width` parameter is the **most powerful control over peak boundaries** in INTEGRATOR, and the
+single most important setting for reliable automated integration of complex chromatograms. Defined
+globally in `param.txt` and optionally overridden per feature in the transition list, it is specified as
+`[w, x, y, z]`: the range *w–x* is the allowed window for the left border and *y–z* the window for the
+right border, both measured from the apex (schematic below). The algorithm constrains the peak start
+and end points to these windows, even where automatic boundary detection would otherwise extend beyond
+them.
 
 ![](images/paste-11.png){#peak-width-schematic fig-align="center" width="570" fig-alt="Schematic of a chromatographic peak illustrating the peak_width [w, x, y, z] parameter. Intensity is on the y-axis and retention time on the x-axis, with the apex marked by a vertical line. Short arrows x and y span the inner windows just left and right of the apex, while wider arrows w and z span the outer windows; the shaded bands mark the allowed ranges for the left border (w to x) and the right border (y to z) relative to the apex."}
 
-![Examples of manually set peak boundaries in INTEGRATOR. (a, b) Effect of the `peak_width` parameter on a peak with clear tailing (PC 36:6): (a) the global setting, suitable for the majority of peaks, and (b) a feature-specific `peak width` overriding the global value for improved integration. (c, d) Effect on a peak with nearby interferences (PC O-38:4): (c) the global setting, and (d) an excessively wide `peak_width` that causes incorrect integration, underscoring the importance of an appropriate global value. (e, f) A complex chromatogram of three overlapping LPC 17:0 isomers: (e) the global setting yields only partial integration, with the first peak unrecognised, whereas (f) fixed boundaries defined for the first peak enable correct picking and integration of all three isomers.](images/paste-9.png){fig-align="center" width="100%" fig-alt="Six chromatogram panels labelled a to f comparing global peak_width settings, per-feature overrides, and fixed integration boundaries for a tailing peak, a peak with nearby interferences, and three overlapping isomers."}
+The inner offsets *x* and *y* set the minimum distance of each border from the apex and are typically
+left near their defaults (0.05–0.10 min). The outer bounds *w* and *z* are the primary adjustment: they
+cap how far the left and right borders may travel, and so decide whether a tail is fully captured or an
+adjacent peak is excluded. A tailing peak requires a wide right bound whereas a later-eluting
+interference requires a narrow one — the same bound pulled in opposite directions — so no single global
+value serves both, and per-feature overrides are used for the exceptions.
+
+| Chromatogram | Symptom under the global setting | Adjustment |
+|---|---|---|
+| Tailing peak | The right border is cut short of the tail | Increase the far-right bound *z* |
+| Later-eluting interference | A smaller neighbour is co-integrated on the right | Decrease *z* so the border stops before it |
+| Earlier-eluting interference | Material ahead of the peak is captured on the left | Decrease the far-left bound *w* |
+| Overlapping isomers | The leading isomer is unrecognised; no `peak_width` value resolves it | Define fixed integration bounds per feature |
+
+![Effect of `peak_width` (shown in red) on three integration problems. **(a, b)** A tailing peak (PC 32:2): the global setting truncates the tail (a), whereas widening the far-right bound *z* to 0.40 captures it (b). **(c, d)** A later-eluting interference (PC O-38:4): a wide *z* co-integrates the smaller neighbour (c), whereas constraining *z* to 0.15 excludes it (d) — the same bound a tailing peak needs widened. **(e–h)** Three overlapping LPC 17:0 isomers: no `peak_width` setting recovers the leading isomer (e–g), whereas fixed integration bounds defined for it integrate all three correctly (h).](images/paste-9.png){#fig-peakwidth fig-align="center" width="100%" fig-alt="Eight chromatogram panels labelled a to h comparing peak_width settings and fixed integration bounds for a tailing peak, a peak with a later-eluting interference, and three overlapping isomers."}
 
 Set `uniform_width` to `y` for features whose integration is correct in most samples but inaccurate in
 a minority: the integration width is then held constant across samples for that transition.
@@ -68,10 +91,34 @@ Use **fixed left/right integration bounds** where automated integration, even af
 Fixed borders are a last resort, since they may require re-adjustment when the same method is applied
 to other datasets. These borders are still adjusted for retention-time shifts.
 
+::: {.callout-caution}
+## Use RT and borders from a reference sample
+The expected `RT` and fixed `left`/`right integration bound`s are interpreted in the retention-time
+frame of the reference sample(s) and tracked from there into every sample — essential when the sequence
+drifts. Read these values from a sample marked `reference` in `run_order.csv`: a value taken from a
+drifted non-reference sample carries that offset into the whole sequence, shifting the integration in
+every sample.
+:::
+
+## The review → refine loop {#review-refine-loop}
+
+Refine iteratively against visual review — in [MRMhub-viz](viz.qmd) or the Step 4 chromatogram PDFs:
+
+| Symptom | Adjust | Re-run |
+|---|---|---|
+| Missed peak | `RT_tol` or `RT_shift` (`param.txt`) | Steps 1–3 |
+| Co-integrated neighbour | `peak_width` (`param.txt`, or per-feature in the transition list) | Steps 1–3 |
+| Untracked RT jump | `RT_shift_bound` (`param.txt`) | Steps 1–3 |
+| Individual stubborn peak | integration borders (`RT_matrix.csv`) | Step 3 only |
+
+A missed peak may also stem from over-tight settings, a typo in `feature_list.csv` (*m/z* or RT), or
+excessive noise or interference — not from `RT_tol` / `RT_shift` alone.
+
 ::: {.see-also}
 ## See also
 
 - [Input Files](input-files.qmd) — the syntax and defaults of every setting above.
 - [Peak-detection algorithm](algorithm.qmd) — how these settings drive detection and integration.
-- [Run INTEGRATOR](running.qmd) — the four processing steps.
+- [MRMhub-viz](viz.qmd) — inspect integration to guide the review → refine loop.
+- [Processing Workflow](running.qmd) — the four processing steps.
 :::

@@ -1,6 +1,6 @@
 ---
 title: "Input Files and Parameters"
-description: "Preparing the input files that configure a peak-integration run."
+description: "Preparing the input files that configure a peak-integration run"
 ---
 
 INTEGRATOR is configured through the following three input files, which specify the data to process, the features to integrate, and how peaks are detected and integrated. They form a complete, self-contained specification of a reproducible integration run.
@@ -21,7 +21,7 @@ Each file is specified in detail below. See the [Algorithm](algorithm.qmd) for h
 ## Do not change the column order of the template input tables
 
 INTEGRATOR reads `run_order.csv` and `feature_list.csv` **by column position**, not by header name. Reordering, deleting, or inserting columns will therefore be **misinterpreted**, potentially **without any
-warning or error**. Keep the template column order! The `param.txt` is, however, order-independent. Use the release [templates](https://github.com/SLINGhub/MRMhub/releases) as a starting point to ensure the correct column order.
+warning or error**. The `param.txt` is, however, order-independent. Use the [templates](https://github.com/SLINGhub/MRMhub/releases) as a starting point to ensure the correct column order.
 :::
 
 ### Global parameters (`param.txt`)
@@ -85,20 +85,29 @@ images/feature_list.png and enable:
 | 3 | ISTD | Internal standard assigned to the feature. No function inside INTEGRATOR; carried to the result and read by QUANT. If set, must match a defined Compound Name; may be empty. |
 | 4 | **Precursor Ion** | Precursor-ion *m/z*. Must match the mzML value within `mz_tol`. |
 | 5 | **Product Ion** | Product-ion *m/z*. Must match the mzML value within `mz_tol`. |
-| 6 | **RT** | Expected retention time of the feature, in minutes. |
+| 6 | **RT** | Expected retention time of the feature, in minutes, read from a sample marked as a `reference` (see the [caution](#reference-frame-caution) below). |
 | 7 | uniform_width | If `y`, the integration width is held constant across samples (set to the median of the automatically determined borders); if `n`, borders are found per sample. Default: `n`. |
-| 8 | left integration bound | Fixed left peak border for all samples, in minutes (relative to the reference sample). Empty = determined automatically. |
-| 9 | right integration bound | Fixed right peak border for all samples, in minutes (relative to the reference sample). Empty = determined automatically. |
+| 8 | left integration bound | Fixed left peak border for all samples, in minutes, read from and tracked relative to the reference sample (see the [caution](#reference-frame-caution) below). Empty = determined automatically. |
+| 9 | right integration bound | Fixed right peak border for all samples, in minutes, read from and tracked relative to the reference sample (see the [caution](#reference-frame-caution) below). Empty = determined automatically. |
 | 10 | peak width | Per-feature override of the global `peak_width`, entered **without the brackets** as [`w, x, y, z`](tuning.qmd#peak-width-schematic) (see [Tuning Peak Integration](tuning.qmd)). Empty = use the global value. |
 | 11 | baseline | `default`: horizontal line at the 5th percentile of intensities within the window; `v_drop`: horizontal line at the lowest intensity of the integrated region; `v2v`: straight line connecting the left and right bounds. Default: `default`. |
 | 12 | chromatogram index | Overrides the automatic assignment of chromatograms to transitions. Empty = assigned automatically. |
 | 13 | Remarks | Free-text documentation of integration settings; no function. |
+
+::: {#reference-frame-caution .callout-caution}
+## Use RT and borders from a reference sample
+The `RT` and any fixed `left`/`right integration bound` are interpreted in the retention-time frame of
+the reference sample(s) (`run_order.csv`, `reference = x`) and tracked from there into every sample.
+Read these values from a reference sample: a value taken from a non-reference sample that has drifted
+relative to the reference carries that offset into the whole sequence, shifting the integration
+throughout.
+:::
 
 ::: {.see-also}
 ## See also
 
 - [FAQ & Troubleshooting](faq.qmd) — spreadsheet pitfalls, validation errors, and common integration problems.
 - [Tuning Peak Integration](tuning.qmd) — choosing `peak_width` and integration bounds for difficult peaks.
-- [Run INTEGRATOR](running.qmd) — the four processing steps that consume these files.
+- [Processing Workflow](running.qmd) — the four processing steps that consume these files.
 - [Peak-detection algorithm](algorithm.qmd) — how these settings drive detection and integration.
 :::

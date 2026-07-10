@@ -33,8 +33,8 @@ security prompt, and the full project layout.
 1. **Create the project folder** and move the `.mzML` files into a subfolder (e.g., `mzML/`).
 2. **Add the INTEGRATOR tools** — the executables and the plotting script, from a
    [release](https://github.com/SLINGhub/MRMhub/releases) or an existing project.
-3. **Add the input templates** — from a release or the
-   [templates folder](https://github.com/SLINGhub/MRMhub/tree/development/integrator/templates).
+3. **Add the input templates** — the template `param.txt`, `run_order.csv`, and `feature_list.csv`
+   bundled in a [release](https://github.com/SLINGhub/MRMhub/releases), or copied from an existing project.
 
 ::: {.filetree}
 ```
@@ -54,7 +54,7 @@ my-project/
 
 ## 3. Prepare the input files
 
-Edit and review the input files that configure the peak integration run,  one global, and two defining the samples and the features. See the [Input Files reference](input-files.html) for description of all parameters.
+Edit and review the input files that configure the peak integration run — one global, and two defining the samples and the features. See the [Input Files reference](input-files.html) for a description of all parameters.
 
 ::: {.compact-table}
 | File | Configuration |
@@ -68,7 +68,7 @@ Edit and review the input files that configure the peak integration run,  one gl
 
 ## 4. Run INTEGRATOR
 INTEGRATOR is launched from the project folder and its terminal menu is worked through in order; see
-[Running INTEGRATOR](running.html) for the full reference. It is started by double-clicking `MRMhub`
+[Processing Workflow](running.html) for the full reference. It is started by double-clicking `MRMhub`
 (macOS) or `MRMhub.exe` (Windows), or from a terminal opened in the project folder.
 
 ![The INTEGRATOR terminal menu.](images/MRMhub-Main.png){fig-align="center" width="70%" fig-alt="Screenshot of the INTEGRATOR terminal interface, showing the MRMHUB banner and its four-item menu: 1 Validate data; 2 RT-shift estimation and feature detection; 3 update integration bounds and areas using RT_matrix.csv; and 4 generate chromatogram PDFs (optional)."}
@@ -129,23 +129,26 @@ until the integration is satisfactory across the sequence. Individual peak bound
 corrected per sample by editing `RT_matrix.csv` and re-running **only step 3** — re-running step 2
 overwrites these manual edits.
 
+**Hit a problem?** The [FAQ & Troubleshooting](faq.html) page covers the most frequent failure
+modes — a misread CSV, an unmatched transition, a zero area, or MRMhub-viz not loading.
+
 ## 6. Integration results
 
 INTEGRATOR writes the integration results as different tables to the project folder:
 
 - **`quant_raw.csv`** (wide format) — a features × samples matrix of **peak areas** only, with the
-  precursor and product *m/z* and the median apex RT carried in the top rows.
+  precursor and product *m/z* and the expected RT (from `feature_list.csv`) carried in the top rows.
 - **`long.csv`** (long format) — one row per *sample × feature*, with  **area, height, FWHM,
   and apex RT** , and transition *m/z*, acquisition timestamp, and metadata from the input files.
 - **`RT_matrix.csv`** — the **peak boundaries** per feature and sample, produced in step 2. These can be edited to adjust individual peaks
 (see [Review the results](#review-the-results)).
 
-See [Running INTEGRATOR](running.html#step-3-peak-integration) for the full definition of these file formats.
+See [Processing Workflow](running.html#step-3-peak-integration) for the full definition of these file formats.
 
 ## 7. Post-processing
 
 One recommended route is **MRMhub QUANT**, the
-postprocessing module of MRMhub. An R package offering functions, which imports INTEGRATOR's `long.csv` directly for normalisation, drift and batch correction, calibration, quality control, and
+post-processing module of MRMhub. This R package imports INTEGRATOR's `long.csv` directly for normalisation, drift and batch correction, calibration, quality control, and
 reporting:
 
 ```r

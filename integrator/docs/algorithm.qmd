@@ -1,27 +1,30 @@
 ---
-title: "Peak Detection and Integration Algorithm"
-description: |
-  The algorithm behind INTEGRATOR — memory-efficient design, input validation, RT-shift
-  correction, CWT feature detection, integration-border determination, and baseline modes.
+title: "Detection and Integration Algorithm"
+description: "A technical description of how INTEGRATOR is implemented"
 ---
-
-This page is a reference for the algorithm that detects, picks, and integrates MRM peaks inside
-INTEGRATOR. It describes *what the software does internally*; for the operational menu steps see
-[Running INTEGRATOR](running.qmd), and for how to set each parameter mentioned below see
-[Input Files](input-files.qmd).
 
 ## Implementation
 
-INTEGRATOR and its viewer app are implemented as a self-contained, light-weight application for
-macOS (Apple Silicon) and Windows 11 (x64) that requires no installation. It provides a terminal
-user interface, while its viewer (**MRMhub-viz**) comes with a graphical interface.
+INTEGRATOR and its viewer are implemented as self-contained, lightweight applications for
+macOS (Apple silicon) and Windows 11 (x86-64) that require no installation. INTEGRATOR provides a
+terminal user interface, while its viewer (**MRMhub-viz**) comes with a graphical interface. The core is
+written in **Rust** and compiled to a single native executable per platform, which reads and decodes
+mzML data directly and parallelises the integration across the available CPU cores for speed.
 
-Considering the scalability to large-scale projects (e.g. > 10,000 samples), INTEGRATOR avoids
-loading the data from all mzML files into memory simultaneously. Instead, it first surveys peak features across
-all samples and writes the information to the file system as binary files, which are reloaded as
-needed in subsequent steps. This design significantly reduces the memory footprint and processing
-time for large-scale datasets, making it executable on relatively modest hardware — such as a
-standard laptop.
+## Memory management and lazy loading
+
+INTEGRATOR is designed to scale to large projects — on the order of 10,000 samples or more — without
+holding every raw file in memory at once. During the first step, each mzML file is decoded once and
+rewritten to the project folder as compact **per-transition binary files**: the extracted ion
+chromatogram of every transition is stored separately, so any single transition can later be read
+back without touching the rest of the file.
+
+The subsequent steps then load these binaries **lazily**, reading only the transitions currently
+being processed and releasing them once done, rather than keeping the full dataset resident in
+memory. Combined with the survey-and-cache approach — peak features are surveyed across all samples
+once and their positions written to disk for reuse — this keeps the memory footprint roughly
+independent of the number of samples and the processing time manageable, making even very large
+datasets tractable on relatively modest hardware such as a standard laptop.
 
 ## Sample and transition-list validation
 
@@ -53,10 +56,11 @@ in all samples are then aligned to those of the reference samples within individ
 yielding estimates of the RT shifts.
 
 The user can set a maximum allowance of RT drift (in minutes) in the parameter file (`param.txt`)
-using the `RT_shift` parameter. The syntax is `RT_shift = [x, y]`, where *x* and *y* are the forward
-and backward drift allowances: the algorithm interprets that the RT drift is no more than *x*
-minutes earlier and no more than *y* minutes later than the expected RT in the reference samples. In
-addition, the `RT_shift_bound` parameter restricts the RT shift between adjacent sample injections.
+using the `RT_shift` parameter. The syntax is `RT_shift = [x, y]`, where *x* is the lower bound
+(negative — drift earlier than expected) and *y* the upper bound (positive — drift later): the
+algorithm allows the RT to move up to |*x*| minutes earlier and up to *y* minutes later than the
+expected RT in the reference samples. In addition, the `RT_shift_bound` parameter restricts the RT
+shift between adjacent sample injections.
 
 RT-shift correction can be disabled by setting `RT_shift = [0, 0]`, which can help for datasets with
 strong variability of features and/or interferences in the chromatograms, where the
@@ -68,6 +72,22 @@ When the user chooses to process only a specific part of the chromatograms — b
 RT window relative to the expected RT — RT-shift correction is performed only on the corresponding
 RT window.
 
+In outline, the shift for each sample is estimated and then smoothed against its neighbours in the
+analytical sequence:
+
+```{.python .pseudocode}
+for each non-reference sample:
+    for offset in RT_shift grid (RT_shift[0] .. RT_shift[1]):
+        shift the sample trace by offset, interpolate the reference at those RTs
+        score = similarity(shifted sample, reference)          # spectral-angle / cosine
+    keep the offset with the best score (smallest |offset| when references tie)
+
+for each sample:                                               # neighbour smoothing
+    if neighbouring samples agree with its shift:  keep it
+    elif it deviates beyond RT_shift_bound:        snap to the neighbour median
+    elif blank (no peak):                          interpolate from adjacent samples
+```
+
 ## Feature detection
 
 INTEGRATOR performs a first-round search of peak features in all files using continuous wavelet
@@ -76,23 +96,50 @@ the algorithm determines the **target number of features per transition** as the
 features detected in the initial survey, and treats it as the upper limit for the number of stable,
 consistent features to report in the second-round survey.
 
-In the second round, the algorithm maps all peak features across the samples, connecting each peak
-in one sample to the corresponding peak in the next sample so that every reported feature is stable
-(i.e. can be detected as a feature) and consistent. The key part of this mapping is that peaks are
-matched while accounting for the RT drift estimated above. The user sets the `RT_tol` parameter to
-indicate the maximum deviation of RT from the value given in the method table. If no feature can be
-detected within this bound, the integrated area is reported as zero.
+In the second round, the algorithm maps peak features across the samples so that every reported
+feature is stable (reliably detected across samples) and consistent. Rather than chaining each peak
+to the one in the next sample, it ranks the peaks in each sample by intensity, aligns them by rank,
+and takes the median retention time at each rank position across all samples — retaining a position
+only when a majority of samples show a peak there within a small RT tolerance. This yields a consensus
+set of feature retention times that is robust to individual missed or spurious peaks. The matching
+accounts for the RT drift estimated above. The user sets the `RT_tol` parameter to indicate the
+maximum deviation of RT from the value given in the method table; if no feature can be detected within
+this bound, the integrated area is reported as zero.
+
+In outline, the consensus retention times are surveyed as follows:
+
+```{.python .pseudocode}
+peaks_per_sample = detect_peaks(sample) for each survey sample
+N = min(median(peak count per sample), 12)                     # target features per transition
+for k from N down to 1:
+    keep the top-k peaks by intensity in each sample, sorted by RT
+    for rank position i in 0 .. k:
+        median_rt[i] = median RT at rank i across samples
+        keep median_rt[i] only if >= half the samples have a peak within ~0.025 min
+    stop at the largest self-consistent set
+map each declared isomer to the nearest consensus RT, accepted only within RT_tol
+```
 
 ## Determination of peak integration borders
 
-In the final step, the algorithm goes through the transitions to finalize the integration borders.
+In the final step, the algorithm goes through the transitions to finalise the integration borders.
 
 For the simple case of unimodal ion traces, the user can set the `peak_width` parameter quartet
-`[w, x, y, z]` to define the default start and end integration points. This can be customized for
+`[w, x, y, z]` to define the default start and end integration points. This can be customised for
 individual analytes with a `peak width` column in the transition-list table. The user can also set
 the `uniform_width` option (its own column in the transition table) so that the integration width
 remains the same between samples for a given transition, and can set fixed **left/right integration
 bounds** to fix the integration points with respect to the reference samples.
+
+The expected `RT` and any fixed left/right integration bounds are interpreted in the retention-time
+frame of the reference sample(s) and drift-tracked from there into every sample.
+
+::: {.callout-caution}
+## Manually entered RT and borders are referenced to the reference sample
+Values read from a non-reference sample that has shifted relative to the reference are offset by that
+shift in every sample, systematically misplacing the peak or its borders. Read the `RT` and any fixed
+borders from a sample designated `reference` in `run_order.csv`.
+:::
 
 In complex cases — ion traces showing multiple peaks with or without baseline separation — the
 algorithm searches for valleys between features to cut the integration in the drift-corrected RT
@@ -102,21 +149,22 @@ calculated.
 
 ## Baseline determination
 
-The baseline is determined on the *x* axis from the integration borders. On the *y* axis, three
-modes are available:
+The baseline is determined on the *x* axis from the integration borders, while three modes are
+available for its position on the *y* axis.
 
-- **5th percentile (default)** — a horizontal baseline set at the 5th percentile of the intensities
-  within the integration window.
-- **`v_drop`** — a horizontal baseline set at the lowest intensity of the integrated region.
-- **Valley-to-valley** — a sloped baseline fitted between the points where the left and right
-  integration borders intersect the ion trace.
+The default mode sets a horizontal baseline at the 5th percentile of the ion-trace intensities,
+which provides a stable estimate of the chromatographic background that is insensitive to the height
+of the peak itself. The `v_drop` mode instead places a horizontal baseline at the lowest intensity
+of the integrated region, dropping the baseline to the trace minimum. The valley-to-valley mode fits
+a sloped baseline between the points where the left and right integration borders intersect the ion
+trace, which is appropriate where the background rises or falls across the peak.
 
 ::: {.callout-note}
 **Where to set these parameters.** `RT_shift`, `RT_shift_bound`, `RT_tol`, `peak_width`,
 `uniform_width`, and the fixed integration bounds are all configured in `param.txt` and the
 transition list — see [Input Files](input-files.qmd) for the syntax and defaults, and
 [Tuning Peak Integration](tuning.qmd) for choosing values. To see the algorithm in action across the
-four processing steps, see [Running INTEGRATOR](running.qmd).
+four processing steps, see [Processing Workflow](running.qmd).
 :::
 
 ::: {.see-also}
@@ -124,5 +172,5 @@ four processing steps, see [Running INTEGRATOR](running.qmd).
 
 - [Edit the input files](input-files.qmd) — `param.txt` and the transition list that drive the steps.
 - [Tuning Peak Integration](tuning.qmd) — choosing `peak_width` and the integration bounds.
-- [Run INTEGRATOR](running.qmd) — the four processing steps that execute this algorithm.
+- [Processing Workflow](running.qmd) — the four processing steps that execute this algorithm.
 :::

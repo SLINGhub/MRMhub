@@ -4,5 +4,6 @@
         "mkdir": true,
         "touch": true,
         "uniq": true
-    }
+    },
+    "quarto.render.previewType": "internal"
 }
