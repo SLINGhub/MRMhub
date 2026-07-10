@@ -146,6 +146,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-manual">    
         <li>
+    <a class="dropdown-item" href="./manual.html">
+ <span class="dropdown-text">Manual Contents</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
     <a class="dropdown-item" href="./setup.html">
  <span class="dropdown-text">Installation</span></a>
   </li>  
@@ -159,24 +164,29 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>  
         <li>
     <a class="dropdown-item" href="./running.html">
- <span class="dropdown-text">Running INTEGRATOR</span></a>
+ <span class="dropdown-text">Processing Workflow</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="./output-files.html">
+ <span class="dropdown-text">Output Files</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./viz.html">
+ <span class="dropdown-text">MRMhub-viz Visualiser</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./sharing.html">
+ <span class="dropdown-text">Sharing &amp; Archiving</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
         <li>
     <a class="dropdown-item" href="./algorithm.html">
  <span class="dropdown-text">Algorithm</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="./viz.html">
- <span class="dropdown-text">MRMhub-viz Visualizer</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="./sharing.html">
- <span class="dropdown-text">Sharing Results</span></a>
-  </li>  
         <li><hr class="dropdown-divider"></li>
         <li>
     <a class="dropdown-item" href="./msconvert.html">
- <span class="dropdown-text">Vendor → mzML (MSConvert)</span></a>
+ <span class="dropdown-text">mzML Conversion (MSConvert)</span></a>
   </li>  
     </ul>
   </li>
@@ -282,7 +292,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ol type="1">
 <li><strong>Create the project folder</strong> and move the <code>.mzML</code> files into a subfolder (e.g., <code>mzML/</code>).</li>
 <li><strong>Add the INTEGRATOR tools</strong> — the executables and the plotting script, from a <a href="https://github.com/SLINGhub/MRMhub/releases">release</a> or an existing project.</li>
-<li><strong>Add the input templates</strong> — from a release or the <a href="https://github.com/SLINGhub/MRMhub/tree/development/integrator/templates">templates folder</a>.</li>
+<li><strong>Add the input templates</strong> — the template <code>param.txt</code>, <code>run_order.csv</code>, and <code>feature_list.csv</code> bundled in a <a href="https://github.com/SLINGhub/MRMhub/releases">release</a>, or copied from an existing project.</li>
 </ol>
 <div class="filetree">
 <pre><code>my-project/
@@ -298,7 +308,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="prepare-the-input-files" class="level2">
 <h2 class="anchored" data-anchor-id="prepare-the-input-files">3. Prepare the input files</h2>
-<p>Edit and review the input files that configure the peak integration run, one global, and two defining the samples and the features. See the <a href="input-files.html">Input Files reference</a> for description of all parameters.</p>
+<p>Edit and review the input files that configure the peak integration run — one global, and two defining the samples and the features. See the <a href="input-files.html">Input Files reference</a> for a description of all parameters.</p>
 <div class="compact-table">
 <table class="caption-top table">
 <thead>
@@ -326,7 +336,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="run-integrator" class="level2">
 <h2 class="anchored" data-anchor-id="run-integrator">4. Run INTEGRATOR</h2>
-<p>INTEGRATOR is launched from the project folder and its terminal menu is worked through in order; see <a href="running.html">Running INTEGRATOR</a> for the full reference. It is started by double-clicking <code>MRMhub</code> (macOS) or <code>MRMhub.exe</code> (Windows), or from a terminal opened in the project folder.</p>
+<p>INTEGRATOR is launched from the project folder and its terminal menu is worked through in order; see <a href="running.html">Processing Workflow</a> for the full reference. It is started by double-clicking <code>MRMhub</code> (macOS) or <code>MRMhub.exe</code> (Windows), or from a terminal opened in the project folder.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="images/MRMhub-Main.png" class="img-fluid figure-img" style="width:70.0%" alt="Screenshot of the INTEGRATOR terminal interface, showing the MRMHUB banner and its four-item menu: 1 Validate data; 2 RT-shift estimation and feature detection; 3 update integration bounds and areas using RT_matrix.csv; and 4 generate chromatogram PDFs (optional)."></p>
@@ -377,20 +387,21 @@ Important
 <li><strong>Interactively in the MRMhub-viz app</strong> — results are examined feature by feature. → <a href="viz.html">MRMhub-viz</a></li>
 </ul>
 <p>Guided by the review, the global and per-feature settings can be refined and INTEGRATOR re-run, until the integration is satisfactory across the sequence. Individual peak boundaries can also be corrected per sample by editing <code>RT_matrix.csv</code> and re-running <strong>only step 3</strong> — re-running step 2 overwrites these manual edits.</p>
+<p><strong>Hit a problem?</strong> The <a href="faq.html">FAQ &amp; Troubleshooting</a> page covers the most frequent failure modes — a misread CSV, an unmatched transition, a zero area, or MRMhub-viz not loading.</p>
 </section>
 <section id="integration-results" class="level2">
 <h2 class="anchored" data-anchor-id="integration-results">6. Integration results</h2>
 <p>INTEGRATOR writes the integration results as different tables to the project folder:</p>
 <ul>
-<li><strong><code>quant_raw.csv</code></strong> (wide format) — a features × samples matrix of <strong>peak areas</strong> only, with the precursor and product <em>m/z</em> and the median apex RT carried in the top rows.</li>
+<li><strong><code>quant_raw.csv</code></strong> (wide format) — a features × samples matrix of <strong>peak areas</strong> only, with the precursor and product <em>m/z</em> and the expected RT (from <code>feature_list.csv</code>) carried in the top rows.</li>
 <li><strong><code>long.csv</code></strong> (long format) — one row per <em>sample × feature</em>, with <strong>area, height, FWHM, and apex RT</strong> , and transition <em>m/z</em>, acquisition timestamp, and metadata from the input files.</li>
 <li><strong><code>RT_matrix.csv</code></strong> — the <strong>peak boundaries</strong> per feature and sample, produced in step 2. These can be edited to adjust individual peaks (see <a href="#review-the-results">Review the results</a>).</li>
 </ul>
-<p>See <a href="running.html#step-3-peak-integration">Running INTEGRATOR</a> for the full definition of these file formats.</p>
+<p>See <a href="running.html#step-3-peak-integration">Processing Workflow</a> for the full definition of these file formats.</p>
 </section>
 <section id="post-processing" class="level2">
 <h2 class="anchored" data-anchor-id="post-processing">7. Post-processing</h2>
-<p>One recommended route is <strong>MRMhub QUANT</strong>, the postprocessing module of MRMhub. An R package offering functions, which imports INTEGRATOR’s <code>long.csv</code> directly for normalisation, drift and batch correction, calibration, quality control, and reporting:</p>
+<p>One recommended route is <strong>MRMhub QUANT</strong>, the post-processing module of MRMhub. This R package imports INTEGRATOR’s <code>long.csv</code> directly for normalisation, drift and batch correction, calibration, quality control, and reporting:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>mrmhub<span class="sc">::</span><span class="fu">import_data_mrmhub</span>(<span class="at">path =</span> <span class="st">"path/to/long.csv"</span>, <span class="at">import_metadata =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>→ <a href="https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.html">QUANT Quick Start ↗</a> · <a href="https://slinghub.github.io/MRMhub/quant/">QUANT documentation ↗</a></p>
 

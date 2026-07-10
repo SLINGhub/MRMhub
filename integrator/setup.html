@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Obtaining INTEGRATOR and organising a reproducible analysis project.">
+<meta name="description" content="Obtaining INTEGRATOR and organising a reproducible analysis project">
 
 <title>Installation – MRMhub-INTEGRATOR</title>
 <style>
@@ -111,6 +111,11 @@ ul.task-list li input[type="checkbox"] {
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-manual">    
         <li>
+    <a class="dropdown-item" href="./manual.html">
+ <span class="dropdown-text">Manual Contents</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
     <a class="dropdown-item" href="./setup.html">
  <span class="dropdown-text">Installation</span></a>
   </li>  
@@ -124,24 +129,29 @@ ul.task-list li input[type="checkbox"] {
   </li>  
         <li>
     <a class="dropdown-item" href="./running.html">
- <span class="dropdown-text">Running INTEGRATOR</span></a>
+ <span class="dropdown-text">Processing Workflow</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="./output-files.html">
+ <span class="dropdown-text">Output Files</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./viz.html">
+ <span class="dropdown-text">MRMhub-viz Visualiser</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./sharing.html">
+ <span class="dropdown-text">Sharing &amp; Archiving</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
         <li>
     <a class="dropdown-item" href="./algorithm.html">
  <span class="dropdown-text">Algorithm</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="./viz.html">
- <span class="dropdown-text">MRMhub-viz Visualizer</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="./sharing.html">
- <span class="dropdown-text">Sharing Results</span></a>
-  </li>  
         <li><hr class="dropdown-divider"></li>
         <li>
     <a class="dropdown-item" href="./msconvert.html">
- <span class="dropdown-text">Vendor → mzML (MSConvert)</span></a>
+ <span class="dropdown-text">mzML Conversion (MSConvert)</span></a>
   </li>  
     </ul>
   </li>
@@ -204,7 +214,7 @@ ul.task-list li input[type="checkbox"] {
 
 <div>
   <div class="description">
-    Obtaining INTEGRATOR and organising a reproducible analysis project.
+    Obtaining INTEGRATOR and organising a reproducible analysis project
   </div>
 </div>
 
@@ -224,7 +234,7 @@ ul.task-list li input[type="checkbox"] {
 <p>INTEGRATOR is a self-contained, portable executable and requires no installer: the application is downloaded, unzipped, and run from a folder, with one copy kept per analysis project (see <a href="#setting-up-a-peak-integration-project">below</a>).</p>
 <section id="system-requirements" class="level2">
 <h2 class="anchored" data-anchor-id="system-requirements">System requirements</h2>
-<p>Pre-compiled binaries are provided for <strong>macOS</strong> (Apple silicon), <strong>Windows 11</strong> (x86-64), and <strong>Linux</strong> (x86-64). A multi-core CPU is recommended, as the integration is parallelised. Memory requirements are <strong>8 GB minimum, 16 GB recommended</strong> for large projects. The application itself occupies minimal disk space, but the integration outputs — internal files (the <code>misc/</code> folder), result tables, and generated PDFs — can require considerable space depending on dataset size.</p>
+<p>Pre-compiled binaries are provided for <strong>macOS</strong> (Apple silicon) and <strong>Windows 11</strong> (x86-64). A multi-core CPU is recommended, as the integration is parallelised. Memory requirements are <strong>8 GB minimum, 16 GB recommended</strong> for large projects. The application itself occupies minimal disk space, but the integration outputs — internal files (the <code>misc/</code> folder), result tables, and generated PDFs — can require considerable space depending on dataset size.</p>
 <p>INTEGRATOR itself has no runtime dependencies. The following external tools may be required:</p>
 <ul>
 <li><strong>mzML conversion</strong> — ProteoWizard MSConvert (Windows only), see <a href="./msconvert.html">mzML conversion</a>.</li>
@@ -233,7 +243,7 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="download" class="level2">
 <h2 class="anchored" data-anchor-id="download">Download</h2>
-<p>Pre-compiled executables for macOS, Windows, and Linux are available from the <a href="https://github.com/SLINGhub/MRMhub/releases">GitHub releases page</a>. The archive contains the executables — <strong>MRMhub</strong> (MRMhub-INTEGRATOR) and <strong>MRMhub-viz</strong> (integration viewer app), the <code>MRMhub_plot.r</code> R script, template input files (<code>param.txt</code>, <code>run_order.csv</code>, <code>feature_list.csv</code>), and a complete test dataset.</p>
+<p>Pre-compiled executables for macOS and Windows are available from the <a href="https://github.com/SLINGhub/MRMhub/releases">GitHub releases page</a>. The archive contains the executables — <strong>MRMhub</strong> (MRMhub-INTEGRATOR) and <strong>MRMhub-viz</strong> (integration viewer app), the <code>MRMhub_plot.r</code> R script, template input files (<code>param.txt</code>, <code>run_order.csv</code>, <code>feature_list.csv</code>), and a complete test dataset.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="images/paste-3.png" class="img-fluid quarto-figure quarto-figure-center figure-img" alt="Screenshot of a macOS Finder window for the MRMhub-INTEGRATOR project folder. It contains the _testdata and mzML folders, the MRMhub (1.4 MB) and MRMhub-viz (9.3 MB) executables, the MRMhub_plot.r plotting script, param.txt, README.txt, manual.pdf, and two input CSV files, feature_list.csv and run_order.csv." width="420"></p>
@@ -277,7 +287,7 @@ Important
 </section>
 <section id="setting-up-a-peak-integration-project" class="level2">
 <h2 class="anchored" data-anchor-id="setting-up-a-peak-integration-project">Setting up a peak integration project</h2>
-<p>The unzipped folder can serve directly as a peak-integration project — a self-contained folder holding the executables, the input files, and the raw data. The mzML files are placed in a subfolder (e.g.&nbsp;<code>mzML/</code>, as specified in <code>param.txt</code>). The three input files (<code>param.txt</code>, <code>run_order.csv</code>, <code>feature_list.csv</code>) must be edited to the specific dataset — its samples, features, and integration settings — as described in <a href="./input-files.html">Input Files</a>. The integration is then run within this folder — see <a href="./running.html">Running INTEGRATOR</a> for the processing steps.</p>
+<p>The unzipped folder can serve directly as a peak-integration project — a self-contained folder holding the executables, the input files, and the raw data. The mzML files are placed in a subfolder (e.g.&nbsp;<code>mzML/</code>, as specified in <code>param.txt</code>). The three input files (<code>param.txt</code>, <code>run_order.csv</code>, <code>feature_list.csv</code>) must be edited to the specific dataset — its samples, features, and integration settings — as described in <a href="./input-files.html">Input Files</a>. The integration is then run within this folder — see <a href="./running.html">Processing Workflow</a> for the processing steps.</p>
 <div class="filetree">
 <pre><code>my-project/
 ├── MRMhub.exe / .app      ← peak-integration executable
@@ -287,7 +297,7 @@ Important
 ├── run_order.csv      ├  input files (see Input Files)
 ├── feature_list.csv   ┘
 └── mzML/                  ← the converted .mzML data files</code></pre>
-<p><span class="tree-caption">A project folder assembled and ready to run. Files added by a run are documented in Running INTEGRATOR.</span></p>
+<p><span class="tree-caption">A project folder assembled and ready to run. Files added by a run are documented in Processing Workflow.</span></p>
 </div>
 <div class="callout-spaced">
 <div class="callout callout-style-default callout-tip callout-titled">
@@ -313,7 +323,7 @@ Important
 <h2 class="anchored" data-anchor-id="see-also">See also</h2>
 <ul>
 <li><a href="./input-files.html">Edit the input files</a> — <code>param.txt</code>, <code>run_order.csv</code>, and <code>feature_list.csv</code>.</li>
-<li><a href="./running.html">Run INTEGRATOR</a> — the four processing steps.</li>
+<li><a href="./running.html">Processing Workflow</a> — the four processing steps.</li>
 </ul>
 </section>
 

@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Convert vendor raw files (.raw, .wiff, .d) to mzML using ProteoWizard MSConvert, the input format expected by INTEGRATOR.">
+<meta name="description" content="Convert vendor raw files (.wiff, .raw, .d) to open mzML with ProteoWizard MSConvert — the input INTEGRATOR expects">
 
-<title>MSConvert Instructions – MRMhub-INTEGRATOR</title>
+<title>mzML Conversion – MRMhub-INTEGRATOR</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -111,6 +111,11 @@ ul.task-list li input[type="checkbox"] {
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-manual">    
         <li>
+    <a class="dropdown-item" href="./manual.html">
+ <span class="dropdown-text">Manual Contents</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
     <a class="dropdown-item" href="./setup.html">
  <span class="dropdown-text">Installation</span></a>
   </li>  
@@ -124,24 +129,29 @@ ul.task-list li input[type="checkbox"] {
   </li>  
         <li>
     <a class="dropdown-item" href="./running.html">
- <span class="dropdown-text">Running INTEGRATOR</span></a>
+ <span class="dropdown-text">Processing Workflow</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="./output-files.html">
+ <span class="dropdown-text">Output Files</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./viz.html">
+ <span class="dropdown-text">MRMhub-viz Visualiser</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./sharing.html">
+ <span class="dropdown-text">Sharing &amp; Archiving</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
         <li>
     <a class="dropdown-item" href="./algorithm.html">
  <span class="dropdown-text">Algorithm</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="./viz.html">
- <span class="dropdown-text">MRMhub-viz Visualizer</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="./sharing.html">
- <span class="dropdown-text">Sharing Results</span></a>
-  </li>  
         <li><hr class="dropdown-divider"></li>
         <li>
     <a class="dropdown-item" href="./msconvert.html">
- <span class="dropdown-text">Vendor → mzML (MSConvert)</span></a>
+ <span class="dropdown-text">mzML Conversion (MSConvert)</span></a>
   </li>  
     </ul>
   </li>
@@ -193,12 +203,12 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">MSConvert Instructions</h1>
+<h1 class="title">mzML Conversion</h1>
 </div>
 
 <div>
   <div class="description">
-    <p>Convert vendor raw files (.raw, .wiff, .d) to mzML using ProteoWizard MSConvert, the input format expected by INTEGRATOR.</p>
+    Convert vendor raw files (.wiff, .raw, .d) to open mzML with ProteoWizard MSConvert — the input INTEGRATOR expects
   </div>
 </div>
 
@@ -215,13 +225,13 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>INTEGRATOR uses mzML files as input. The MSConvert tool, part of the ProteoWizard software, converts proprietary raw data files (.wiff for SCIEX, .raw folders for Waters, .raw files for Thermo Fisher, .d folders for Agilent, etc.) into mzML format. This step can only be performed on a Windows PC.</p>
+<p>INTEGRATOR reads MS data in the open <strong>mzML</strong> format. MSConvert, part of the ProteoWizard suite, converts vendor raw files — SCIEX <code>.wiff</code>, Waters <code>.raw</code> folders, Thermo Fisher <code>.raw</code> files, Agilent <code>.d</code> folders — to mzML. Conversion runs on Windows only.</p>
 <ol type="1">
-<li><p>Download or upgrade to a recent version of ProteoWizard (<a href="https://proteowizard.sourceforge.io" class="uri">https://proteowizard.sourceforge.io</a>) on a Windows computer. A recent version ensures successful conversion of current vendor-specific formats.</p></li>
-<li><p>Start “MSConvert” via the START menu, or by right-clicking on the raw files to be converted and selecting MSConvertGUI.</p></li>
-<li><p>In the MSConvert window, use the “Browse” button to select the raw files to be converted. Note: .wiff and .wiff.scan files need to be located in the same folder.</p></li>
-<li><p>Set the following options: “<em>mzML</em>” for “<em>Output format”</em>, “<em>32-bit</em>” for “<em>Binary encoding precision</em>”, check “<em>Write index</em>” and to improve performance, increase “Files to convert in parallel” to the number of available CPU cores.</p></li>
-<li><p>Run the conversion by clicking “Start”, and copy the mzML files to the MRMhub subfolder mzML</p></li>
+<li><p>Install or upgrade to a <strong>recent</strong> version of <a href="https://proteowizard.sourceforge.io">ProteoWizard</a> on a Windows computer. A recent version ensures support for current vendor formats.</p></li>
+<li><p>Launch <strong>MSConvertGUI</strong> from the Start menu, or by right-clicking the raw files and selecting <em>MSConvertGUI</em>.</p></li>
+<li><p>Click <strong>Browse</strong> to select the raw files to convert. For SCIEX data, keep the <code>.wiff</code> and <code>.wiff.scan</code> files together in the same folder.</p></li>
+<li><p>Set the options: <em>Output format</em> → <strong>mzML</strong>, <em>Binary encoding precision</em> → <strong>32-bit</strong>, and enable <strong>Write index</strong>. To speed up large batches, raise <em>Files to convert in parallel</em> to the number of available CPU cores.</p></li>
+<li><p>Click <strong>Start</strong>, then copy the resulting mzML files into the <code>mzML</code> subfolder of your MRMhub project.</p></li>
 </ol>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -232,7 +242,7 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="see-also">See also</h2>
 <ul>
 <li><a href="./setup.html">Install INTEGRATOR</a> — download the standalone executable.</li>
-<li><a href="./running.html">Run INTEGRATOR</a> — process your mzML files.</li>
+<li><a href="./running.html">Processing Workflow</a> — process your mzML files.</li>
 </ul>
 </section>
 

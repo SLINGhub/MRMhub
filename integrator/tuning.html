@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Choosing the peak-detection and integration parameters for reliable automated integration of complex chromatograms.">
+<meta name="description" content="Choosing the peak-detection and integration parameters for reliable automated integration of complex chromatograms">
 
 <title>Tuning Peak Integration – MRMhub-INTEGRATOR</title>
 <style>
@@ -111,6 +111,11 @@ ul.task-list li input[type="checkbox"] {
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-manual">    
         <li>
+    <a class="dropdown-item" href="./manual.html">
+ <span class="dropdown-text">Manual Contents</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
     <a class="dropdown-item" href="./setup.html">
  <span class="dropdown-text">Installation</span></a>
   </li>  
@@ -124,24 +129,29 @@ ul.task-list li input[type="checkbox"] {
   </li>  
         <li>
     <a class="dropdown-item" href="./running.html">
- <span class="dropdown-text">Running INTEGRATOR</span></a>
+ <span class="dropdown-text">Processing Workflow</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="./output-files.html">
+ <span class="dropdown-text">Output Files</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./viz.html">
+ <span class="dropdown-text">MRMhub-viz Visualiser</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./sharing.html">
+ <span class="dropdown-text">Sharing &amp; Archiving</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
         <li>
     <a class="dropdown-item" href="./algorithm.html">
  <span class="dropdown-text">Algorithm</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="./viz.html">
- <span class="dropdown-text">MRMhub-viz Visualizer</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="./sharing.html">
- <span class="dropdown-text">Sharing Results</span></a>
-  </li>  
         <li><hr class="dropdown-divider"></li>
         <li>
     <a class="dropdown-item" href="./msconvert.html">
- <span class="dropdown-text">Vendor → mzML (MSConvert)</span></a>
+ <span class="dropdown-text">mzML Conversion (MSConvert)</span></a>
   </li>  
     </ul>
   </li>
@@ -184,8 +194,13 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#effects-of-the-key-settings" id="toc-effects-of-the-key-settings" class="nav-link active" data-scroll-target="#effects-of-the-key-settings">Effects of the key settings</a></li>
+  <li><a href="#effects-of-the-key-settings" id="toc-effects-of-the-key-settings" class="nav-link active" data-scroll-target="#effects-of-the-key-settings">Effects of the key settings</a>
+  <ul class="collapse">
+  <li><a href="#global-parameters-param.txt" id="toc-global-parameters-param.txt" class="nav-link" data-scroll-target="#global-parameters-param.txt">Global parameters (<code>param.txt</code>)</a></li>
+  <li><a href="#per-feature-settings-feature_list.csv" id="toc-per-feature-settings-feature_list.csv" class="nav-link" data-scroll-target="#per-feature-settings-feature_list.csv">Per-feature settings (<code>feature_list.csv</code>)</a></li>
+  </ul></li>
   <li><a href="#setting-the-peak-width-and-integration-bounds" id="toc-setting-the-peak-width-and-integration-bounds" class="nav-link" data-scroll-target="#setting-the-peak-width-and-integration-bounds">Setting the peak-width and integration bounds</a></li>
+  <li><a href="#review-refine-loop" id="toc-review-refine-loop" class="nav-link" data-scroll-target="#review-refine-loop">The review → refine loop</a></li>
   <li><a href="#see-also" id="toc-see-also" class="nav-link" data-scroll-target="#see-also">See also</a></li>
   </ul>
 </nav>
@@ -200,7 +215,7 @@ ul.task-list li input[type="checkbox"] {
 
 <div>
   <div class="description">
-    Choosing the peak-detection and integration parameters for reliable automated integration of complex chromatograms.
+    Choosing the peak-detection and integration parameters for reliable automated integration of complex chromatograms
   </div>
 </div>
 
@@ -220,6 +235,9 @@ ul.task-list li input[type="checkbox"] {
 <p>The parameters defined in <a href="./input-files.html#global-parameters-param.txt"><code>param.txt</code></a> and the <a href="./input-files.html#transition-feature-list-feature_list.csv">transition/feature list</a> govern how INTEGRATOR detects and bounds peaks. This page describes how each setting behaves and how to choose values for difficult chromatograms. For the field-by-field syntax and defaults see <a href="./input-files.html">Input Files</a>; for the underlying method see the <a href="./algorithm.html">Algorithm</a>. Confirm the effect of any change visually in <a href="./viz.html">MRMhub-viz</a> before re-integrating the whole dataset.</p>
 <section id="effects-of-the-key-settings" class="level2">
 <h2 class="anchored" data-anchor-id="effects-of-the-key-settings">Effects of the key settings</h2>
+<p>Settings apply at two levels: <strong>global</strong> parameters in <code>param.txt</code>, and <strong>per-feature</strong> overrides in the transition list (<code>feature_list.csv</code>). A single global configuration should suit the majority of peaks; per-feature overrides then correct the problematic minority, and a well-chosen global <code>peak_width</code> minimises how many are needed.</p>
+<section id="global-parameters-param.txt" class="level3">
+<h3 class="anchored" data-anchor-id="global-parameters-param.txt">Global parameters (<code>param.txt</code>)</h3>
 <p>Most settings trade <strong>sensitivity</strong> (finding and fully capturing the intended peak) against <strong>specificity</strong> (not grabbing a neighbouring transition, an adjacent peak, or noise). The table summarises the behaviour at each extreme; <code>peak_width</code>, the most influential setting for difficult chromatograms, is detailed <a href="#setting-the-peak-width-and-integration-bounds">below</a>.</p>
 <table class="caption-top table">
 <colgroup>
@@ -281,51 +299,179 @@ ul.task-list li input[type="checkbox"] {
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Tip
+<span class="screen-reader-only">Tip</span>Keep RT alignment enabled
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Set the parameters <strong>globally</strong> in <code>param.txt</code> to suit the majority of peaks, then apply <strong>per-feature</strong> overrides in the transition list (<code>peak width</code>, <code>uniform_width</code>, fixed integration bounds) to the problematic minority only.</p>
-</div>
-</div>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Tip
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><strong>Worked example.</strong> A published lipidomics dataset (Agilent triple-quadrupole) used <code>mz_tol = 0.06</code>, <code>RT_tol = 0.04</code>, and <code>peak_width = [0.15, 0.08, 0.08, 0.18]</code> globally, with per-feature overrides for broad or convoluted peaks, an RT-shift window of <code>(-0.1, 0.4)</code>, and a maximum sample-to-sample RT shift (<code>RT_shift_bound</code>) of <code>0.05</code>. These are reasonable starting points for a fast, well-resolved method. See the full <a href="https://slinghub.github.io/mrmhub-workflows/Dataset3.html">Dataset 3 workflow ↗</a> for the complete input files and the resulting integration.</p>
+<p>A non-zero <code>RT_shift</code> window is recommended even for methods with negligible drift. RT alignment improves consistent border finding and the resolution of overlapping peaks, whether or not a visible retention-time shift is present. <code>[0, 0]</code> disables it; a small window such as <code>[-0.1, 0.1]</code> is sufficient.</p>
 </div>
 </div>
 </section>
+<section id="per-feature-settings-feature_list.csv" class="level3">
+<h3 class="anchored" data-anchor-id="per-feature-settings-feature_list.csv">Per-feature settings (<code>feature_list.csv</code>)</h3>
+<p>Overrides in the transition list correct individual features that the global parameters integrate poorly; see <a href="./input-files.html#transition-feature-list-feature_list.csv">Transition / Feature list</a> for the exact columns and defaults.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Setting</th>
+<th>What it controls</th>
+<th>When to apply</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>peak width</code></td>
+<td>Per-feature <code>[w, x, y, z]</code>, overriding the global <code>peak_width</code></td>
+<td>Broad, tailing, or interference-prone peaks needing bounds different from the global value</td>
+</tr>
+<tr class="even">
+<td><code>uniform_width</code></td>
+<td>Holds the integration width constant across samples</td>
+<td>Features integrated correctly in most samples but erratically in a few</td>
+</tr>
+<tr class="odd">
+<td><code>left integration bound</code> / <code>right integration bound</code></td>
+<td>Fixed peak borders for all samples, defined relative to the reference sample and tracked per sample by RT correction</td>
+<td>Peaks no <code>peak_width</code> value integrates consistently — a last resort</td>
+</tr>
+<tr class="even">
+<td><code>baseline</code></td>
+<td>Baseline mode: <code>default</code>, <code>v_drop</code>, or <code>v2v</code></td>
+<td>Peaks on a sloping or elevated baseline</td>
+</tr>
+<tr class="odd">
+<td><code>chromatogram index</code></td>
+<td>Overrides the automatic chromatogram-to-transition assignment</td>
+<td>Transitions matched to the wrong chromatogram</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
 <section id="setting-the-peak-width-and-integration-bounds" class="level2">
 <h2 class="anchored" data-anchor-id="setting-the-peak-width-and-integration-bounds">Setting the peak-width and integration bounds</h2>
-<p>The <code>peak_width</code> parameter — global in <code>param.txt</code>, optionally overridden per feature in the transition list — is the key setting for automated integration of complex chromatograms. It is specified as <code>[w, x, y, z]</code>, where the ranges <em>w–x</em> and <em>y–z</em> define the allowed windows for the left and right peak borders, respectively. The algorithm constrains the peak start and end points to these ranges, even where automatic boundary detection would otherwise extend beyond them.</p>
-<p>Ranges that are too narrow yield incomplete integration, particularly for tailing peaks or peaks of unstable width; ranges that are too wide cause smaller adjacent peaks to be co-integrated. A global setting suited to the majority of peaks is defined in <code>param.txt</code>, with per-feature settings applied to convoluted, asymmetric, or broadened peaks. Narrower per-feature ranges are also used where nearby interferences are not recognised as separate peaks and are consequently co-integrated.</p>
+<p>The <code>peak_width</code> parameter is the <strong>most powerful control over peak boundaries</strong> in INTEGRATOR, and the single most important setting for reliable automated integration of complex chromatograms. Defined globally in <code>param.txt</code> and optionally overridden per feature in the transition list, it is specified as <code>[w, x, y, z]</code>: the range <em>w–x</em> is the allowed window for the left border and <em>y–z</em> the window for the right border, both measured from the apex (schematic below). The algorithm constrains the peak start and end points to these windows, even where automatic boundary detection would otherwise extend beyond them.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="images/paste-11.png" id="peak-width-schematic" class="img-fluid quarto-figure quarto-figure-center anchored figure-img" alt="Schematic of a chromatographic peak illustrating the peak_width [w, x, y, z] parameter. Intensity is on the y-axis and retention time on the x-axis, with the apex marked by a vertical line. Short arrows x and y span the inner windows just left and right of the apex, while wider arrows w and z span the outer windows; the shaded bands mark the allowed ranges for the left border (w to x) and the right border (y to z) relative to the apex." width="570"></p>
 </figure>
 </div>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/paste-9.png" class="img-fluid figure-img" style="width:100.0%" alt="Six chromatogram panels labelled a to f comparing global peak_width settings, per-feature overrides, and fixed integration boundaries for a tailing peak, a peak with nearby interferences, and three overlapping isomers."></p>
-<figcaption>Examples of manually set peak boundaries in INTEGRATOR. (a, b) Effect of the <code>peak_width</code> parameter on a peak with clear tailing (PC 36:6): (a) the global setting, suitable for the majority of peaks, and (b) a feature-specific <code>peak width</code> overriding the global value for improved integration. (c, d) Effect on a peak with nearby interferences (PC O-38:4): (c) the global setting, and (d) an excessively wide <code>peak_width</code> that causes incorrect integration, underscoring the importance of an appropriate global value. (e, f) A complex chromatogram of three overlapping LPC 17:0 isomers: (e) the global setting yields only partial integration, with the first peak unrecognised, whereas (f) fixed boundaries defined for the first peak enable correct picking and integration of all three isomers.</figcaption>
+<p>The inner offsets <em>x</em> and <em>y</em> set the minimum distance of each border from the apex and are typically left near their defaults (0.05–0.10 min). The outer bounds <em>w</em> and <em>z</em> are the primary adjustment: they cap how far the left and right borders may travel, and so decide whether a tail is fully captured or an adjacent peak is excluded. A tailing peak requires a wide right bound whereas a later-eluting interference requires a narrow one — the same bound pulled in opposite directions — so no single global value serves both, and per-feature overrides are used for the exceptions.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Chromatogram</th>
+<th>Symptom under the global setting</th>
+<th>Adjustment</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Tailing peak</td>
+<td>The right border is cut short of the tail</td>
+<td>Increase the far-right bound <em>z</em></td>
+</tr>
+<tr class="even">
+<td>Later-eluting interference</td>
+<td>A smaller neighbour is co-integrated on the right</td>
+<td>Decrease <em>z</em> so the border stops before it</td>
+</tr>
+<tr class="odd">
+<td>Earlier-eluting interference</td>
+<td>Material ahead of the peak is captured on the left</td>
+<td>Decrease the far-left bound <em>w</em></td>
+</tr>
+<tr class="even">
+<td>Overlapping isomers</td>
+<td>The leading isomer is unrecognised; no <code>peak_width</code> value resolves it</td>
+<td>Define fixed integration bounds per feature</td>
+</tr>
+</tbody>
+</table>
+<div id="fig-peakwidth" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Eight chromatogram panels labelled a to h comparing peak_width settings and fixed integration bounds for a tailing peak, a peak with a later-eluting interference, and three overlapping isomers." data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-peakwidth-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/paste-9.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%" alt="Eight chromatogram panels labelled a to h comparing peak_width settings and fixed integration bounds for a tailing peak, a peak with a later-eluting interference, and three overlapping isomers.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-peakwidth-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Effect of <code>peak_width</code> (shown in red) on three integration problems. <strong>(a, b)</strong> A tailing peak (PC 32:2): the global setting truncates the tail (a), whereas widening the far-right bound <em>z</em> to 0.40 captures it (b). <strong>(c, d)</strong> A later-eluting interference (PC O-38:4): a wide <em>z</em> co-integrates the smaller neighbour (c), whereas constraining <em>z</em> to 0.15 excludes it (d) — the same bound a tailing peak needs widened. <strong>(e–h)</strong> Three overlapping LPC 17:0 isomers: no <code>peak_width</code> setting recovers the leading isomer (e–g), whereas fixed integration bounds defined for it integrate all three correctly (h).
+</figcaption>
 </figure>
 </div>
 <p>Set <code>uniform_width</code> to <code>y</code> for features whose integration is correct in most samples but inaccurate in a minority: the integration width is then held constant across samples for that transition.</p>
 <p>Use <strong>fixed left/right integration bounds</strong> where automated integration, even after tuning <code>peak_width</code>, does not consistently integrate convoluted peaks or peaks with nearby interferences. Fixed borders are a last resort, since they may require re-adjustment when the same method is applied to other datasets. These borders are still adjusted for retention-time shifts.</p>
+<div class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Caution</span>Use RT and borders from a reference sample
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The expected <code>RT</code> and fixed <code>left</code>/<code>right integration bound</code>s are interpreted in the retention-time frame of the reference sample(s) and tracked from there into every sample — essential when the sequence drifts. Read these values from a sample marked <code>reference</code> in <code>run_order.csv</code>: a value taken from a drifted non-reference sample carries that offset into the whole sequence, shifting the integration in every sample.</p>
+</div>
+</div>
+</section>
+<section id="review-refine-loop" class="level2">
+<h2 class="anchored" data-anchor-id="review-refine-loop">The review → refine loop</h2>
+<p>Refine iteratively against visual review — in <a href="./viz.html">MRMhub-viz</a> or the Step 4 chromatogram PDFs:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Symptom</th>
+<th>Adjust</th>
+<th>Re-run</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Missed peak</td>
+<td><code>RT_tol</code> or <code>RT_shift</code> (<code>param.txt</code>)</td>
+<td>Steps 1–3</td>
+</tr>
+<tr class="even">
+<td>Co-integrated neighbour</td>
+<td><code>peak_width</code> (<code>param.txt</code>, or per-feature in the transition list)</td>
+<td>Steps 1–3</td>
+</tr>
+<tr class="odd">
+<td>Untracked RT jump</td>
+<td><code>RT_shift_bound</code> (<code>param.txt</code>)</td>
+<td>Steps 1–3</td>
+</tr>
+<tr class="even">
+<td>Individual stubborn peak</td>
+<td>integration borders (<code>RT_matrix.csv</code>)</td>
+<td>Step 3 only</td>
+</tr>
+</tbody>
+</table>
+<p>A missed peak may also stem from over-tight settings, a typo in <code>feature_list.csv</code> (<em>m/z</em> or RT), or excessive noise or interference — not from <code>RT_tol</code> / <code>RT_shift</code> alone.</p>
 </section>
 <section id="see-also" class="level2 see-also">
 <h2 class="anchored" data-anchor-id="see-also">See also</h2>
 <ul>
 <li><a href="./input-files.html">Input Files</a> — the syntax and defaults of every setting above.</li>
 <li><a href="./algorithm.html">Peak-detection algorithm</a> — how these settings drive detection and integration.</li>
-<li><a href="./running.html">Run INTEGRATOR</a> — the four processing steps.</li>
+<li><a href="./viz.html">MRMhub-viz</a> — inspect integration to guide the review → refine loop.</li>
+<li><a href="./running.html">Processing Workflow</a> — the four processing steps.</li>
 </ul>
 </section>
 

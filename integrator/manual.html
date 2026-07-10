@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Sharing a complete, reproducible INTEGRATOR project as a single self-contained folder">
+<meta name="description" content="Complete contents of the MRMhub-INTEGRATOR manual">
 
-<title>Sharing &amp; Archiving Results – MRMhub-INTEGRATOR</title>
+<title>Manual – MRMhub-INTEGRATOR</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -194,9 +194,10 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#a-shareable-project-folder" id="toc-a-shareable-project-folder" class="nav-link active" data-scroll-target="#a-shareable-project-folder">A shareable project folder</a></li>
-  <li><a href="#reproducibility-and-fair-data" id="toc-reproducibility-and-fair-data" class="nav-link" data-scroll-target="#reproducibility-and-fair-data">Reproducibility and FAIR data</a></li>
-  <li><a href="#see-also" id="toc-see-also" class="nav-link" data-scroll-target="#see-also">See also</a></li>
+  <li><a href="#getting-started" id="toc-getting-started" class="nav-link active" data-scroll-target="#getting-started">Getting started</a></li>
+  <li><a href="#preparing-and-running" id="toc-preparing-and-running" class="nav-link" data-scroll-target="#preparing-and-running">Preparing and running</a></li>
+  <li><a href="#results-and-downstream-use" id="toc-results-and-downstream-use" class="nav-link" data-scroll-target="#results-and-downstream-use">Results and downstream use</a></li>
+  <li><a href="#reference" id="toc-reference" class="nav-link" data-scroll-target="#reference">Reference</a></li>
   </ul>
 </nav>
     </div>
@@ -205,12 +206,12 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Sharing &amp; Archiving Results</h1>
+<h1 class="title">Manual</h1>
 </div>
 
 <div>
   <div class="description">
-    Sharing a complete, reproducible INTEGRATOR project as a single self-contained folder
+    <p>Complete contents of the MRMhub-INTEGRATOR manual</p>
   </div>
 </div>
 
@@ -227,61 +228,48 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>Because INTEGRATOR and MRMhub-viz are portable executables that require no installation, a peak-integration analysis is already self-contained: the project folder holds the raw data, the input files with every parameter, the results, and the applications that produced them. The project folder is itself the shareable artefact: a recipient can inspect the outcome, or re-run and adjust the integration, from the folder alone, with no additional material to assemble.</p>
-<section id="a-shareable-project-folder" class="level2">
-<h2 class="anchored" data-anchor-id="a-shareable-project-folder">A shareable project folder</h2>
-<p>A complete project combines the files documented on the <a href="./setup.html">Installation</a> and <a href="./output-files.html">Output Files</a> pages. Kept together, they let a recipient do either of two things: <strong>re-run</strong> the processing (raw data + input files + applications) or <strong>inspect</strong> the result without re-running (result tables + <code>misc/</code> + optional PDFs).</p>
-<div class="filetree">
-<pre><code>shared-project/
-├── MRMhub.exe / .app      ┐
-├── MRMhub-viz.exe / .app  ├ applications — re-run, or review in MRMhub-viz
-├── MRMhub_plot.r          ┘ (no installation required)
-├── param.txt          ┐
-├── run_order.csv      ├  input files — every integration parameter
-├── feature_list.csv   ┘
-├── mzML/                  ← the converted raw data
-├── long.csv           ┐
-├── quant_raw.csv      ├  results — the peak tables (long.csv hands off to QUANT)
-├── RT_matrix.csv      ┘  RT_matrix.csv carries the exact integration borders
-├── misc/                 ← binary results read by MRMhub-viz
-└── by_transition/ …      ← chromatogram PDFs (optional)</code></pre>
-<p><span class="tree-caption">A complete project. See <a href="./output-files.html">Output Files</a> for the result formats and <a href="./setup.html">Installation</a> for the applications and input files.</span></p>
-</div>
-<p>A short <code>README</code> may be added before sharing, recording the study, the INTEGRATOR version used, and any manual <code>RT_matrix.csv</code> adjustments; the release provides a <code>readme.txt</code> template as a starting point.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Keep the applications in the project folder
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Retaining one copy of the applications in each project folder is the recommended default. It makes the folder self-documenting and reproducible: the recipient opens MRMhub-viz to inspect every peak, or re-runs INTEGRATOR to reproduce or adjust the integration, without installing anything or matching software versions by hand.</p>
-</div>
-</div>
-</section>
-<section id="reproducibility-and-fair-data" class="level2">
-<h2 class="anchored" data-anchor-id="reproducibility-and-fair-data">Reproducibility and FAIR data</h2>
-<p>An INTEGRATOR project folder aligns with the <a href="https://www.go-fair.org/fair-principles/">FAIR principles</a> for research data and is well suited to long-term archiving:</p>
+<p>Every manual page, grouped by steps of a peak-integration project.</p>
+<section id="getting-started" class="level2">
+<h2 class="anchored" data-anchor-id="getting-started">Getting started</h2>
 <ul>
-<li><strong>Interoperable</strong> — the raw data, results, and parameters are all in open, non-proprietary formats: <code>mzML</code> for the raw data, plain CSV for the result and configuration tables, and plain-text <code>param.txt</code> for the parameters, none of which require INTEGRATOR to be read. Only the auxiliary <code>misc/</code> binaries are application-specific, and they are not needed to access the results.</li>
-<li><strong>Reusable</strong> — the bundled executables make the integration <strong>end-to-end reproducible with no external software</strong>: because INTEGRATOR is self-contained and no runtime, library, or vendor tool is involved, a recipient re-runs the entire integration from the folder alone (only the optional PDF plotting depends on an R installation). With the complete parameter record (<code>param.txt</code> plus the finalised <code>RT_matrix.csv</code>) travelling alongside the data, the result is reproduced exactly rather than approximately.</li>
-<li><strong>Findable &amp; Accessible</strong> — because the folder consists only of standard files, it can be deposited as-is in a general-purpose research-data repository (for example <a href="https://zenodo.org">Zenodo</a>) to obtain a persistent, citable DOI alongside the associated publication.</li>
+<li><strong><a href="quickstart.html">Quick Start</a></strong> — setting up and running a new project, end to end.</li>
+<li><strong><a href="setup.html">Installation</a></strong> — obtaining the executable and clearing the first-launch security prompt.</li>
+<li><strong><a href="demo.html">Demo dataset</a></strong> — the raw data and input files bundled with every release.</li>
 </ul>
 </section>
-<section id="see-also" class="level2 see-also">
-<h2 class="anchored" data-anchor-id="see-also">See also</h2>
+<section id="preparing-and-running" class="level2">
+<h2 class="anchored" data-anchor-id="preparing-and-running">Preparing and running</h2>
 <ul>
-<li><a href="./output-files.html">Output Files</a> — the formats of the result tables in a shared project.</li>
-<li><a href="./setup.html">Installation</a> — the applications and input files bundled with the data.</li>
-<li><a href="./viz.html">Review results in MRMhub-viz</a> — the interactive tool included in the folder.</li>
-<li><a href="https://slinghub.github.io/MRMhub/quant/">Continue with QUANT ↗</a> — post-process <code>long.csv</code>.</li>
+<li><strong><a href="input-files.html">Prepare Input Files</a></strong> — <code>param.txt</code>, <code>run_order.csv</code>, <code>feature_list.csv</code>, and every parameter.</li>
+<li><strong><a href="tuning.html">Tuning Peak Integration</a></strong> — refining detection and integration across the sequence.</li>
+<li><strong><a href="running.html">Processing Workflow</a></strong> — the four-step terminal workflow and the files each step produces.</li>
 </ul>
 </section>
+<section id="results-and-downstream-use" class="level2">
+<h2 class="anchored" data-anchor-id="results-and-downstream-use">Results and downstream use</h2>
+<ul>
+<li><strong><a href="output-files.html">Output Files</a></strong> — <code>long.csv</code>, <code>quant_raw.csv</code>, <code>RT_matrix.csv</code>, and their formats.</li>
+<li><strong><a href="viz.html">MRMhub-viz Visualiser</a></strong> — reviewing integrated chromatograms feature by feature.</li>
+<li><strong><a href="sharing.html">Sharing &amp; Archiving</a></strong> — packaging a completed project for transfer or archiving.</li>
+</ul>
+</section>
+<section id="reference" class="level2">
+<h2 class="anchored" data-anchor-id="reference">Reference</h2>
+<ul>
+<li><strong><a href="algorithm.html">Algorithm</a></strong> — the peak-detection and integration method.</li>
+<li><strong><a href="msconvert.html">mzML Conversion (MSConvert)</a></strong> — converting vendor raw files to mzML.</li>
+<li><strong><a href="faq.html">FAQ &amp; Troubleshooting</a></strong> — frequent failure modes and how to resolve them.</li>
+</ul>
+<div class="see-also">
+<p><span class="see-also-label">See also</span></p>
+<ul>
+<li><a href="index.html">Home</a> — overview of INTEGRATOR and the MRMhub framework</li>
+<li><a href="https://slinghub.github.io/MRMhub/quant/">QUANT documentation ↗</a> — downstream post-processing in the <code>mrmhub</code> R package</li>
+</ul>
+</div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

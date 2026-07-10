@@ -118,6 +118,13 @@ main.content .callout {
   margin-bottom: 0.6rem;
 }
 
+/* A little more separation between items in plain body lists. The :where()
+   wrapper keeps specificity at zero, so the custom lists (.see-also, .arrow-list,
+   .module-list, .info-panel) keep their own tighter spacing. */
+:where(main.content) li {
+  margin-bottom: 0.4rem;
+}
+
 /* Spaced callout — wrap a callout in `::: {.callout-spaced}` to add breathing
    room above and below it. Text stays at the body font size; only the vertical
    margin is increased. (Quarto strips extra classes off the callout itself, so
@@ -153,6 +160,31 @@ main.content .callout {
   font-size: 0.8rem;
   color: #6c757d;
   margin-top: 0;
+}
+
+/* Pseudo-code block — mark an algorithm outline with `{.python .pseudocode}` to
+   render it a little smaller and quieter than a normal code block, while keeping
+   the theme's syntax colours (keywords, comments, numbers). The class lands on
+   the `<pre>`; the `.pseudocode` descendant selectors also cover a wrapping div. */
+pre.pseudocode,
+pre.pseudocode code,
+.pseudocode pre,
+.pseudocode pre code {
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+/* Tame the string/built-in green — the theme's dark highlight paints these a
+   vivid lime (#abe338) that glares on the grey code background. Remap the whole
+   green token family to the brand's muted green. Selector specificity (0,2,2)
+   outranks the theme's `code span.bu` (0,1,2), so it wins in light and dark. */
+.pseudocode code span.st,
+.pseudocode code span.ss,
+.pseudocode code span.ch,
+.pseudocode code span.vs,
+.pseudocode code span.sc,
+.pseudocode code span.im,
+.pseudocode code span.bu {
+  color: #6B9E5E;
 }
 
 /* Centre figure captions under the (centre-aligned) figures. */

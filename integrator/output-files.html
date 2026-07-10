@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Sharing a complete, reproducible INTEGRATOR project as a single self-contained folder">
+<meta name="description" content="The formats of the INTEGRATOR result files written to the project folder">
 
-<title>Sharing &amp; Archiving Results – MRMhub-INTEGRATOR</title>
+<title>Output Files – MRMhub-INTEGRATOR</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -194,8 +194,11 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#a-shareable-project-folder" id="toc-a-shareable-project-folder" class="nav-link active" data-scroll-target="#a-shareable-project-folder">A shareable project folder</a></li>
-  <li><a href="#reproducibility-and-fair-data" id="toc-reproducibility-and-fair-data" class="nav-link" data-scroll-target="#reproducibility-and-fair-data">Reproducibility and FAIR data</a></li>
+  <li><a href="#long.csv" id="toc-long.csv" class="nav-link active" data-scroll-target="#long.csv">long.csv</a></li>
+  <li><a href="#quant_raw.csv" id="toc-quant_raw.csv" class="nav-link" data-scroll-target="#quant_raw.csv">quant_raw.csv</a></li>
+  <li><a href="#rt_matrix.csv" id="toc-rt_matrix.csv" class="nav-link" data-scroll-target="#rt_matrix.csv">RT_matrix.csv</a></li>
+  <li><a href="#misc" id="toc-misc" class="nav-link" data-scroll-target="#misc">Folder ‘misc/’</a></li>
+  <li><a href="#chromatogram-pdfs" id="toc-chromatogram-pdfs" class="nav-link" data-scroll-target="#chromatogram-pdfs">Chromatogram PDFs</a></li>
   <li><a href="#see-also" id="toc-see-also" class="nav-link" data-scroll-target="#see-also">See also</a></li>
   </ul>
 </nav>
@@ -205,12 +208,12 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Sharing &amp; Archiving Results</h1>
+<h1 class="title">Output Files</h1>
 </div>
 
 <div>
   <div class="description">
-    Sharing a complete, reproducible INTEGRATOR project as a single self-contained folder
+    The formats of the INTEGRATOR result files written to the project folder
   </div>
 </div>
 
@@ -227,57 +230,245 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>Because INTEGRATOR and MRMhub-viz are portable executables that require no installation, a peak-integration analysis is already self-contained: the project folder holds the raw data, the input files with every parameter, the results, and the applications that produced them. The project folder is itself the shareable artefact: a recipient can inspect the outcome, or re-run and adjust the integration, from the folder alone, with no additional material to assemble.</p>
-<section id="a-shareable-project-folder" class="level2">
-<h2 class="anchored" data-anchor-id="a-shareable-project-folder">A shareable project folder</h2>
-<p>A complete project combines the files documented on the <a href="./setup.html">Installation</a> and <a href="./output-files.html">Output Files</a> pages. Kept together, they let a recipient do either of two things: <strong>re-run</strong> the processing (raw data + input files + applications) or <strong>inspect</strong> the result without re-running (result tables + <code>misc/</code> + optional PDFs).</p>
-<div class="filetree">
-<pre><code>shared-project/
-├── MRMhub.exe / .app      ┐
-├── MRMhub-viz.exe / .app  ├ applications — re-run, or review in MRMhub-viz
-├── MRMhub_plot.r          ┘ (no installation required)
-├── param.txt          ┐
-├── run_order.csv      ├  input files — every integration parameter
-├── feature_list.csv   ┘
-├── mzML/                  ← the converted raw data
-├── long.csv           ┐
-├── quant_raw.csv      ├  results — the peak tables (long.csv hands off to QUANT)
-├── RT_matrix.csv      ┘  RT_matrix.csv carries the exact integration borders
-├── misc/                 ← binary results read by MRMhub-viz
-└── by_transition/ …      ← chromatogram PDFs (optional)</code></pre>
-<p><span class="tree-caption">A complete project. See <a href="./output-files.html">Output Files</a> for the result formats and <a href="./setup.html">Installation</a> for the applications and input files.</span></p>
+<p>INTEGRATOR writes its results to the project folder as plain CSV tables, a binary results folder, and — optionally — chromatogram PDFs. The CSV files are the interface to downstream tools.</p>
+<div class="compact-table">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>File</th>
+<th>Written by</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#long.csv"><code>long.csv</code></a></td>
+<td>Step 3</td>
+<td>Long-format peak table, one row per <em>sample × feature</em>.</td>
+</tr>
+<tr class="even">
+<td><a href="#quant_raw.csv"><code>quant_raw.csv</code></a></td>
+<td>Step 3</td>
+<td>Wide-format peak-area matrix (samples × features).</td>
+</tr>
+<tr class="odd">
+<td><a href="#rt_matrix.csv"><code>RT_matrix.csv</code></a></td>
+<td>Step 2</td>
+<td>Per-sample integration borders; editable for manual per-peak adjustment.</td>
+</tr>
+<tr class="even">
+<td><a href="#misc"><code>misc/</code></a></td>
+<td>Step 3</td>
+<td>Binary results, read by MRMhub-viz and step 4.</td>
+</tr>
+<tr class="odd">
+<td><a href="#chromatogram-pdfs">PDF folders</a></td>
+<td>Step 4</td>
+<td>Chromatogram PDFs (optional).</td>
+</tr>
+</tbody>
+</table>
 </div>
-<p>A short <code>README</code> may be added before sharing, recording the study, the INTEGRATOR version used, and any manual <code>RT_matrix.csv</code> adjustments; the release provides a <code>readme.txt</code> template as a starting point.</p>
-<div class="callout callout-style-default callout-note callout-titled">
+<p>All CSV tables are plain comma-separated files. See the <a href="./running.html">Processing Workflow</a> for the steps that produce them.</p>
+<section id="long.csv" class="level2">
+<h2 class="anchored" data-anchor-id="long.csv">long.csv</h2>
+<p>Long format: one row per <em>sample × feature</em>, for every integrated peak. Only <code>feature_name</code> and <code>raw_data_filename</code> (plus at least one intensity column) are essential; the remaining columns are metadata and measurements carried through for downstream processing. Columns, in file order:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Column</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>feature_name</code></td>
+<td>Feature (analyte) identifier — the feature name from the feature list, or the compound name where no feature name is given.</td>
+</tr>
+<tr class="even">
+<td><code>internal_standard</code></td>
+<td>Assigned ISTD feature, from the feature list.</td>
+</tr>
+<tr class="odd">
+<td><code>raw_data_filename</code></td>
+<td>Source mzML file name; becomes the analysis identifier.</td>
+</tr>
+<tr class="even">
+<td><code>time_stamp</code></td>
+<td>Acquisition timestamp, read from the mzML.</td>
+</tr>
+<tr class="odd">
+<td><code>batch</code></td>
+<td>Batch identifier, from <code>run_order.csv</code>.</td>
+</tr>
+<tr class="even">
+<td><code>sample_type</code></td>
+<td>Sample / QC type, from <code>run_order.csv</code>.</td>
+</tr>
+<tr class="odd">
+<td><code>precursor_mz</code></td>
+<td>Precursor-ion <em>m/z</em>.</td>
+</tr>
+<tr class="even">
+<td><code>product_mz</code></td>
+<td>Product-ion <em>m/z</em>.</td>
+</tr>
+<tr class="odd">
+<td><code>collision_energy</code></td>
+<td>Collision energy.</td>
+</tr>
+<tr class="even">
+<td><code>polarity</code></td>
+<td>Ionisation polarity (<code>+</code> / <code>−</code>).</td>
+</tr>
+<tr class="odd">
+<td><code>rt_apex</code></td>
+<td>Retention time at the peak apex (min).</td>
+</tr>
+<tr class="even">
+<td><code>area</code></td>
+<td>Integrated peak area.</td>
+</tr>
+<tr class="odd">
+<td><code>height</code></td>
+<td>Peak height.</td>
+</tr>
+<tr class="even">
+<td><code>FWHM</code></td>
+<td>Full width at half maximum (min).</td>
+</tr>
+<tr class="odd">
+<td><code>rt_int_start</code></td>
+<td>Left integration border (min).</td>
+</tr>
+<tr class="even">
+<td><code>rt_int_end</code></td>
+<td>Right integration border (min).</td>
+</tr>
+</tbody>
+</table>
+<p>Where no peak was found for a <em>sample × feature</em>, the measurement fields (<code>rt_apex</code>…<code>rt_int_end</code>) are left empty.</p>
+</section>
+<section id="quant_raw.csv" class="level2">
+<h2 class="anchored" data-anchor-id="quant_raw.csv">quant_raw.csv</h2>
+<p>A wide matrix of peak areas: one column per feature, one row per sample, preceded by header rows. It carries areas only. The first column holds the row labels:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th></th>
+<th><em>feature 1</em></th>
+<th><em>feature 2</em></th>
+<th>…</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>name</code></td>
+<td>LPC 20:4</td>
+<td>PC 34:1</td>
+<td>…</td>
+</tr>
+<tr class="even">
+<td><code>precursor</code></td>
+<td>544.3</td>
+<td>760.6</td>
+<td>…</td>
+</tr>
+<tr class="odd">
+<td><code>product</code></td>
+<td>184.1</td>
+<td>184.1</td>
+<td>…</td>
+</tr>
+<tr class="even">
+<td><code>RT</code></td>
+<td>4.21</td>
+<td>6.05</td>
+<td>…</td>
+</tr>
+<tr class="odd">
+<td><em>sample01.mzML</em></td>
+<td>15234.0</td>
+<td>88213.0</td>
+<td>…</td>
+</tr>
+<tr class="even">
+<td><em>sample02.mzML</em></td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>RT</code> row is the <strong>expected</strong> retention time from the feature list (not the peak apex); each sample row holds that sample’s integrated peak area per feature.</p>
+</section>
+<section id="rt_matrix.csv" class="level2">
+<h2 class="anchored" data-anchor-id="rt_matrix.csv">RT_matrix.csv</h2>
+<p>Produced in step 2: a wide matrix of the per-sample integration borders. It can be edited to adjust individual peaks by hand; re-running <strong>step 3 only</strong> re-integrates with the edited bounds (see <a href="./running.html#step-2-peak-detection-and-rt-shift-estimation">Processing Workflow — step 2</a>).</p>
+<p>Layout: each sample is a row, and each feature occupies <strong>two adjacent columns</strong> — its left and right integration border, as an absolute retention time in that sample (min). Two header rows identify the columns, and a blank spacer column separates the transition groups:</p>
+<ul>
+<li>Header row 1 — the transition (<code>compound / transition</code>), repeated over each feature’s border pair.</li>
+<li>Header row 2 — <code>compound name</code>, then each feature’s name over its border pair.</li>
+<li>One row per mzML file — the file name, then the left and right border for each feature.</li>
+</ul>
+<div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Note</span>Keep the applications in the project folder
+<span class="screen-reader-only">Important</span>Step 2 overwrites <code>RT_matrix.csv</code>
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Retaining one copy of the applications in each project folder is the recommended default. It makes the folder self-documenting and reproducible: the recipient opens MRMhub-viz to inspect every peak, or re-runs INTEGRATOR to reproduce or adjust the integration, without installing anything or matching software versions by hand.</p>
+<p>Make a backup of <code>RT_matrix.csv</code> before re-running Step 2 in case you manually edited <code>RT_matrix.csv</code>, as step 2 <strong>overwrites all manual edits!</strong></p>
 </div>
 </div>
 </section>
-<section id="reproducibility-and-fair-data" class="level2">
-<h2 class="anchored" data-anchor-id="reproducibility-and-fair-data">Reproducibility and FAIR data</h2>
-<p>An INTEGRATOR project folder aligns with the <a href="https://www.go-fair.org/fair-principles/">FAIR principles</a> for research data and is well suited to long-term archiving:</p>
-<ul>
-<li><strong>Interoperable</strong> — the raw data, results, and parameters are all in open, non-proprietary formats: <code>mzML</code> for the raw data, plain CSV for the result and configuration tables, and plain-text <code>param.txt</code> for the parameters, none of which require INTEGRATOR to be read. Only the auxiliary <code>misc/</code> binaries are application-specific, and they are not needed to access the results.</li>
-<li><strong>Reusable</strong> — the bundled executables make the integration <strong>end-to-end reproducible with no external software</strong>: because INTEGRATOR is self-contained and no runtime, library, or vendor tool is involved, a recipient re-runs the entire integration from the folder alone (only the optional PDF plotting depends on an R installation). With the complete parameter record (<code>param.txt</code> plus the finalised <code>RT_matrix.csv</code>) travelling alongside the data, the result is reproduced exactly rather than approximately.</li>
-<li><strong>Findable &amp; Accessible</strong> — because the folder consists only of standard files, it can be deposited as-is in a general-purpose research-data repository (for example <a href="https://zenodo.org">Zenodo</a>) to obtain a persistent, citable DOI alongside the associated publication.</li>
-</ul>
+<section id="misc" class="level2">
+<h2 class="anchored" data-anchor-id="misc">Folder ‘misc/’</h2>
+<p>A folder of binary result files written during step 3. It is consumed by the <a href="./viz.html">MRMhub-viz</a> visualiser and by step-4 PDF generation, and is not intended for direct reading. If the folder is removed, MRMhub-viz and step 4 cannot run until step 3 is repeated.</p>
+</section>
+<section id="chromatogram-pdfs" class="level2">
+<h2 class="anchored" data-anchor-id="chromatogram-pdfs">Chromatogram PDFs</h2>
+<p>Optional, written by step 4 into three folders:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Folder</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>by_transition/</code></td>
+<td>One PDF per transition, over all samples with a peak above the minimum-intensity threshold.</td>
+</tr>
+<tr class="even">
+<td><code>by_transition_low/</code></td>
+<td>Transitions with no peak above the threshold (<code>low_intensity_threshold</code> in <code>MRMhub_plot.r</code>).</td>
+</tr>
+<tr class="odd">
+<td><code>by_sample/</code></td>
+<td>One PDF per reference sample, with all its transitions.</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="see-also" class="level2 see-also">
 <h2 class="anchored" data-anchor-id="see-also">See also</h2>
 <ul>
-<li><a href="./output-files.html">Output Files</a> — the formats of the result tables in a shared project.</li>
-<li><a href="./setup.html">Installation</a> — the applications and input files bundled with the data.</li>
-<li><a href="./viz.html">Review results in MRMhub-viz</a> — the interactive tool included in the folder.</li>
-<li><a href="https://slinghub.github.io/MRMhub/quant/">Continue with QUANT ↗</a> — post-process <code>long.csv</code>.</li>
+<li><a href="./running.html">Processing Workflow</a> — the steps that produce these files.</li>
+<li><a href="./viz.html">MRMhub-viz</a> — reads the <code>misc/</code> binaries for interactive review.</li>
+<li><a href="./sharing.html">Sharing &amp; Archiving</a> — bundling outputs for reproducibility.</li>
 </ul>
 </section>
 

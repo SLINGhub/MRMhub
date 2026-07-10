@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Process the bundled demonstration dataset end-to-end in INTEGRATOR, without preparing any input files.">
+<meta name="description" content="Process the bundled demonstration dataset end-to-end in INTEGRATOR, without preparing any input files">
 
 <title>Demo – MRMhub-INTEGRATOR</title>
 <style>
@@ -146,6 +146,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-manual">    
         <li>
+    <a class="dropdown-item" href="./manual.html">
+ <span class="dropdown-text">Manual Contents</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
     <a class="dropdown-item" href="./setup.html">
  <span class="dropdown-text">Installation</span></a>
   </li>  
@@ -159,24 +164,29 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>  
         <li>
     <a class="dropdown-item" href="./running.html">
- <span class="dropdown-text">Running INTEGRATOR</span></a>
+ <span class="dropdown-text">Processing Workflow</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="./output-files.html">
+ <span class="dropdown-text">Output Files</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./viz.html">
+ <span class="dropdown-text">MRMhub-viz Visualiser</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./sharing.html">
+ <span class="dropdown-text">Sharing &amp; Archiving</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
         <li>
     <a class="dropdown-item" href="./algorithm.html">
  <span class="dropdown-text">Algorithm</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="./viz.html">
- <span class="dropdown-text">MRMhub-viz Visualizer</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="./sharing.html">
- <span class="dropdown-text">Sharing Results</span></a>
-  </li>  
         <li><hr class="dropdown-divider"></li>
         <li>
     <a class="dropdown-item" href="./msconvert.html">
- <span class="dropdown-text">Vendor → mzML (MSConvert)</span></a>
+ <span class="dropdown-text">mzML Conversion (MSConvert)</span></a>
   </li>  
     </ul>
   </li>
@@ -225,7 +235,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <div>
   <div class="description">
-    <p>Process the bundled demonstration dataset end-to-end in INTEGRATOR, without preparing any input files.</p>
+    <p>Process the bundled demonstration dataset end-to-end in INTEGRATOR, without preparing any input files</p>
   </div>
 </div>
 
@@ -261,7 +271,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><strong>Peak Integration</strong> — <code>long.csv</code> and <code>quant_raw.csv</code> are produced.</li>
 <li><strong>Generate PDF results</strong> <em>(optional)</em> — per-transition / per-sample chromatogram PDFs are written.</li>
 </ol>
-<p>→ <a href="running.html">Running INTEGRATOR</a></p>
+<p>→ <a href="running.html">Processing Workflow</a></p>
 </section>
 <section id="review-the-results" class="level2">
 <h2 class="anchored" data-anchor-id="review-the-results">4. Review the results</h2>
@@ -283,7 +293,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td><code>RT_matrix.csv</code></td>
-<td>Estimated retention-time shifts across the sequence</td>
+<td>Per-sample integration borders (left/right) for each feature</td>
 </tr>
 <tr class="even">
 <td><code>long.csv</code></td>

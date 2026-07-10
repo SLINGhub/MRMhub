@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="The algorithm behind INTEGRATOR — memory-efficient design, input validation, RT-shift correction, CWT feature detection, integration-border determination, and baseline modes.">
+<meta name="description" content="A technical description of how INTEGRATOR is implemented">
 
-<title>Peak Detection and Integration Algorithm – MRMhub-INTEGRATOR</title>
+<title>Detection and Integration Algorithm – MRMhub-INTEGRATOR</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -23,6 +23,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -111,6 +146,11 @@ ul.task-list li input[type="checkbox"] {
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-manual">    
         <li>
+    <a class="dropdown-item" href="./manual.html">
+ <span class="dropdown-text">Manual Contents</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
     <a class="dropdown-item" href="./setup.html">
  <span class="dropdown-text">Installation</span></a>
   </li>  
@@ -124,24 +164,29 @@ ul.task-list li input[type="checkbox"] {
   </li>  
         <li>
     <a class="dropdown-item" href="./running.html">
- <span class="dropdown-text">Running INTEGRATOR</span></a>
+ <span class="dropdown-text">Processing Workflow</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="./output-files.html">
+ <span class="dropdown-text">Output Files</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./viz.html">
+ <span class="dropdown-text">MRMhub-viz Visualiser</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./sharing.html">
+ <span class="dropdown-text">Sharing &amp; Archiving</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
         <li>
     <a class="dropdown-item" href="./algorithm.html">
  <span class="dropdown-text">Algorithm</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="./viz.html">
- <span class="dropdown-text">MRMhub-viz Visualizer</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="./sharing.html">
- <span class="dropdown-text">Sharing Results</span></a>
-  </li>  
         <li><hr class="dropdown-divider"></li>
         <li>
     <a class="dropdown-item" href="./msconvert.html">
- <span class="dropdown-text">Vendor → mzML (MSConvert)</span></a>
+ <span class="dropdown-text">mzML Conversion (MSConvert)</span></a>
   </li>  
     </ul>
   </li>
@@ -185,6 +230,7 @@ ul.task-list li input[type="checkbox"] {
    
   <ul>
   <li><a href="#implementation" id="toc-implementation" class="nav-link active" data-scroll-target="#implementation">Implementation</a></li>
+  <li><a href="#memory-management-and-lazy-loading" id="toc-memory-management-and-lazy-loading" class="nav-link" data-scroll-target="#memory-management-and-lazy-loading">Memory management and lazy loading</a></li>
   <li><a href="#sample-and-transition-list-validation" id="toc-sample-and-transition-list-validation" class="nav-link" data-scroll-target="#sample-and-transition-list-validation">Sample and transition-list validation</a></li>
   <li><a href="#retention-time-shift-correction" id="toc-retention-time-shift-correction" class="nav-link" data-scroll-target="#retention-time-shift-correction">Retention-time shift correction</a></li>
   <li><a href="#feature-detection" id="toc-feature-detection" class="nav-link" data-scroll-target="#feature-detection">Feature detection</a></li>
@@ -199,12 +245,12 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Peak Detection and Integration Algorithm</h1>
+<h1 class="title">Detection and Integration Algorithm</h1>
 </div>
 
 <div>
   <div class="description">
-    <p>The algorithm behind INTEGRATOR — memory-efficient design, input validation, RT-shift correction, CWT feature detection, integration-border determination, and baseline modes.</p>
+    A technical description of how INTEGRATOR is implemented
   </div>
 </div>
 
@@ -221,11 +267,14 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>This page is a reference for the algorithm that detects, picks, and integrates MRM peaks inside INTEGRATOR. It describes <em>what the software does internally</em>; for the operational menu steps see <a href="./running.html">Running INTEGRATOR</a>, and for how to set each parameter mentioned below see <a href="./input-files.html">Input Files</a>.</p>
 <section id="implementation" class="level2">
 <h2 class="anchored" data-anchor-id="implementation">Implementation</h2>
-<p>INTEGRATOR and its viewer app are implemented as a self-contained, light-weight application for macOS (Apple Silicon) and Windows 11 (x64) that requires no installation. It provides a terminal user interface, while its viewer (<strong>MRMhub-viz</strong>) comes with a graphical interface.</p>
-<p>Considering the scalability to large-scale projects (e.g.&nbsp;&gt; 10,000 samples), INTEGRATOR avoids loading the data from all mzML files into memory simultaneously. Instead, it first surveys peak features across all samples and writes the information to the file system as binary files, which are reloaded as needed in subsequent steps. This design significantly reduces the memory footprint and processing time for large-scale datasets, making it executable on relatively modest hardware — such as a standard laptop.</p>
+<p>INTEGRATOR and its viewer are implemented as self-contained, lightweight applications for macOS (Apple silicon) and Windows 11 (x86-64) that require no installation. INTEGRATOR provides a terminal user interface, while its viewer (<strong>MRMhub-viz</strong>) comes with a graphical interface. The core is written in <strong>Rust</strong> and compiled to a single native executable per platform, which reads and decodes mzML data directly and parallelises the integration across the available CPU cores for speed.</p>
+</section>
+<section id="memory-management-and-lazy-loading" class="level2">
+<h2 class="anchored" data-anchor-id="memory-management-and-lazy-loading">Memory management and lazy loading</h2>
+<p>INTEGRATOR is designed to scale to large projects — on the order of 10,000 samples or more — without holding every raw file in memory at once. During the first step, each mzML file is decoded once and rewritten to the project folder as compact <strong>per-transition binary files</strong>: the extracted ion chromatogram of every transition is stored separately, so any single transition can later be read back without touching the rest of the file.</p>
+<p>The subsequent steps then load these binaries <strong>lazily</strong>, reading only the transitions currently being processed and releasing them once done, rather than keeping the full dataset resident in memory. Combined with the survey-and-cache approach — peak features are surveyed across all samples once and their positions written to disk for reuse — this keeps the memory footprint roughly independent of the number of samples and the processing time manageable, making even very large datasets tractable on relatively modest hardware such as a standard laptop.</p>
 </section>
 <section id="sample-and-transition-list-validation" class="level2">
 <h2 class="anchored" data-anchor-id="sample-and-transition-list-validation">Sample and transition-list validation</h2>
@@ -236,29 +285,60 @@ ul.task-list li input[type="checkbox"] {
 <section id="retention-time-shift-correction" class="level2">
 <h2 class="anchored" data-anchor-id="retention-time-shift-correction">Retention-time shift correction</h2>
 <p>The algorithm begins with an initial RT-drift estimation. For each transition, it treats the ion trace in the user-designated <strong>reference sample(s)</strong> as the reference pattern and uses it to track potential RT drift in all samples. The reference samples are expected to be selected from an early part of the analysis sequence, and not dispersed throughout the entire sequence. The chromatograms in all samples are then aligned to those of the reference samples within individual MRM windows, yielding estimates of the RT shifts.</p>
-<p>The user can set a maximum allowance of RT drift (in minutes) in the parameter file (<code>param.txt</code>) using the <code>RT_shift</code> parameter. The syntax is <code>RT_shift = [x, y]</code>, where <em>x</em> and <em>y</em> are the forward and backward drift allowances: the algorithm interprets that the RT drift is no more than <em>x</em> minutes earlier and no more than <em>y</em> minutes later than the expected RT in the reference samples. In addition, the <code>RT_shift_bound</code> parameter restricts the RT shift between adjacent sample injections.</p>
+<p>The user can set a maximum allowance of RT drift (in minutes) in the parameter file (<code>param.txt</code>) using the <code>RT_shift</code> parameter. The syntax is <code>RT_shift = [x, y]</code>, where <em>x</em> is the lower bound (negative — drift earlier than expected) and <em>y</em> the upper bound (positive — drift later): the algorithm allows the RT to move up to |<em>x</em>| minutes earlier and up to <em>y</em> minutes later than the expected RT in the reference samples. In addition, the <code>RT_shift_bound</code> parameter restricts the RT shift between adjacent sample injections.</p>
 <p>RT-shift correction can be disabled by setting <code>RT_shift = [0, 0]</code>, which can help for datasets with strong variability of features and/or interferences in the chromatograms, where the cross-correlation approach may yield inaccurate results. In the absence of chromatographic peaks for blank samples, their RT shifts are determined by interpolation from the shifts observed in adjacent samples of the analytical sequence.</p>
 <p>When the user chooses to process only a specific part of the chromatograms — by globally setting an RT window relative to the expected RT — RT-shift correction is performed only on the corresponding RT window.</p>
+<p>In outline, the shift for each sample is estimated and then smoothed against its neighbours in the analytical sequence:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python pseudocode code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> each non<span class="op">-</span>reference sample:</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> offset <span class="kw">in</span> RT_shift grid (RT_shift[<span class="dv">0</span>] .. RT_shift[<span class="dv">1</span>]):</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>        shift the sample trace by offset, interpolate the reference at those RTs</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>        score <span class="op">=</span> similarity(shifted sample, reference)          <span class="co"># spectral-angle / cosine</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    keep the offset <span class="cf">with</span> the best score (smallest <span class="op">|</span>offset<span class="op">|</span> when references tie)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> each sample:                                               <span class="co"># neighbour smoothing</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> neighbouring samples agree <span class="cf">with</span> its shift:  keep it</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> it deviates beyond RT_shift_bound:        snap to the neighbour median</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> blank (no peak):                          interpolate <span class="im">from</span> adjacent samples</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="feature-detection" class="level2">
 <h2 class="anchored" data-anchor-id="feature-detection">Feature detection</h2>
 <p>INTEGRATOR performs a first-round search of peak features in all files using continuous wavelet transform (CWT)–based pattern matching. For each MRM window, using the resulting survey of features, the algorithm determines the <strong>target number of features per transition</strong> as the median number of features detected in the initial survey, and treats it as the upper limit for the number of stable, consistent features to report in the second-round survey.</p>
-<p>In the second round, the algorithm maps all peak features across the samples, connecting each peak in one sample to the corresponding peak in the next sample so that every reported feature is stable (i.e.&nbsp;can be detected as a feature) and consistent. The key part of this mapping is that peaks are matched while accounting for the RT drift estimated above. The user sets the <code>RT_tol</code> parameter to indicate the maximum deviation of RT from the value given in the method table. If no feature can be detected within this bound, the integrated area is reported as zero.</p>
+<p>In the second round, the algorithm maps peak features across the samples so that every reported feature is stable (reliably detected across samples) and consistent. Rather than chaining each peak to the one in the next sample, it ranks the peaks in each sample by intensity, aligns them by rank, and takes the median retention time at each rank position across all samples — retaining a position only when a majority of samples show a peak there within a small RT tolerance. This yields a consensus set of feature retention times that is robust to individual missed or spurious peaks. The matching accounts for the RT drift estimated above. The user sets the <code>RT_tol</code> parameter to indicate the maximum deviation of RT from the value given in the method table; if no feature can be detected within this bound, the integrated area is reported as zero.</p>
+<p>In outline, the consensus retention times are surveyed as follows:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python pseudocode code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>peaks_per_sample <span class="op">=</span> detect_peaks(sample) <span class="cf">for</span> each survey sample</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="bu">min</span>(median(peak count per sample), <span class="dv">12</span>)                     <span class="co"># target features per transition</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k <span class="im">from</span> N down to <span class="dv">1</span>:</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    keep the top<span class="op">-</span>k peaks by intensity <span class="kw">in</span> each sample, <span class="bu">sorted</span> by RT</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> rank position i <span class="kw">in</span> <span class="dv">0</span> .. k:</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>        median_rt[i] <span class="op">=</span> median RT at rank i across samples</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>        keep median_rt[i] only <span class="cf">if</span> <span class="op">&gt;=</span> half the samples have a peak within <span class="op">~</span><span class="fl">0.025</span> <span class="bu">min</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    stop at the largest <span class="va">self</span><span class="op">-</span>consistent <span class="bu">set</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="bu">map</span> each declared isomer to the nearest consensus RT, accepted only within RT_tol</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="determination-of-peak-integration-borders" class="level2">
 <h2 class="anchored" data-anchor-id="determination-of-peak-integration-borders">Determination of peak integration borders</h2>
-<p>In the final step, the algorithm goes through the transitions to finalize the integration borders.</p>
-<p>For the simple case of unimodal ion traces, the user can set the <code>peak_width</code> parameter quartet <code>[w, x, y, z]</code> to define the default start and end integration points. This can be customized for individual analytes with a <code>peak width</code> column in the transition-list table. The user can also set the <code>uniform_width</code> option (its own column in the transition table) so that the integration width remains the same between samples for a given transition, and can set fixed <strong>left/right integration bounds</strong> to fix the integration points with respect to the reference samples.</p>
+<p>In the final step, the algorithm goes through the transitions to finalise the integration borders.</p>
+<p>For the simple case of unimodal ion traces, the user can set the <code>peak_width</code> parameter quartet <code>[w, x, y, z]</code> to define the default start and end integration points. This can be customised for individual analytes with a <code>peak width</code> column in the transition-list table. The user can also set the <code>uniform_width</code> option (its own column in the transition table) so that the integration width remains the same between samples for a given transition, and can set fixed <strong>left/right integration bounds</strong> to fix the integration points with respect to the reference samples.</p>
+<p>The expected <code>RT</code> and any fixed left/right integration bounds are interpreted in the retention-time frame of the reference sample(s) and drift-tracked from there into every sample.</p>
+<div class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Caution</span>Manually entered RT and borders are referenced to the reference sample
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Values read from a non-reference sample that has shifted relative to the reference are offset by that shift in every sample, systematically misplacing the peak or its borders. Read the <code>RT</code> and any fixed borders from a sample designated <code>reference</code> in <code>run_order.csv</code>.</p>
+</div>
+</div>
 <p>In complex cases — ion traces showing multiple peaks with or without baseline separation — the algorithm searches for valleys between features to cut the integration in the drift-corrected RT space, reconverts the border positions to the original RT space, and writes all RT borders to a CSV file (<code>RT_matrix.csv</code>) for user inspection and optional manual adjustment before peak areas are calculated.</p>
 </section>
 <section id="baseline-determination" class="level2">
 <h2 class="anchored" data-anchor-id="baseline-determination">Baseline determination</h2>
-<p>The baseline is determined on the <em>x</em> axis from the integration borders. On the <em>y</em> axis, three modes are available:</p>
-<ul>
-<li><strong>5th percentile (default)</strong> — a horizontal baseline set at the 5th percentile of the intensities within the integration window.</li>
-<li><strong><code>v_drop</code></strong> — a horizontal baseline set at the lowest intensity of the integrated region.</li>
-<li><strong>Valley-to-valley</strong> — a sloped baseline fitted between the points where the left and right integration borders intersect the ion trace.</li>
-</ul>
+<p>The baseline is determined on the <em>x</em> axis from the integration borders, while three modes are available for its position on the <em>y</em> axis.</p>
+<p>The default mode sets a horizontal baseline at the 5th percentile of the ion-trace intensities, which provides a stable estimate of the chromatographic background that is insensitive to the height of the peak itself. The <code>v_drop</code> mode instead places a horizontal baseline at the lowest intensity of the integrated region, dropping the baseline to the trace minimum. The valley-to-valley mode fits a sloped baseline between the points where the left and right integration borders intersect the ion trace, which is appropriate where the background rises or falls across the peak.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -269,7 +349,7 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><strong>Where to set these parameters.</strong> <code>RT_shift</code>, <code>RT_shift_bound</code>, <code>RT_tol</code>, <code>peak_width</code>, <code>uniform_width</code>, and the fixed integration bounds are all configured in <code>param.txt</code> and the transition list — see <a href="./input-files.html">Input Files</a> for the syntax and defaults, and <a href="./tuning.html">Tuning Peak Integration</a> for choosing values. To see the algorithm in action across the four processing steps, see <a href="./running.html">Running INTEGRATOR</a>.</p>
+<p><strong>Where to set these parameters.</strong> <code>RT_shift</code>, <code>RT_shift_bound</code>, <code>RT_tol</code>, <code>peak_width</code>, <code>uniform_width</code>, and the fixed integration bounds are all configured in <code>param.txt</code> and the transition list — see <a href="./input-files.html">Input Files</a> for the syntax and defaults, and <a href="./tuning.html">Tuning Peak Integration</a> for choosing values. To see the algorithm in action across the four processing steps, see <a href="./running.html">Processing Workflow</a>.</p>
 </div>
 </div>
 </section>
@@ -278,7 +358,7 @@ Note
 <ul>
 <li><a href="./input-files.html">Edit the input files</a> — <code>param.txt</code> and the transition list that drive the steps.</li>
 <li><a href="./tuning.html">Tuning Peak Integration</a> — choosing <code>peak_width</code> and the integration bounds.</li>
-<li><a href="./running.html">Run INTEGRATOR</a> — the four processing steps that execute this algorithm.</li>
+<li><a href="./running.html">Processing Workflow</a> — the four processing steps that execute this algorithm.</li>
 </ul>
 </section>
 

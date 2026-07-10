@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Preparing the input files that configure a peak-integration run.">
+<meta name="description" content="Preparing the input files that configure a peak-integration run">
 
 <title>Input Files and Parameters – MRMhub-INTEGRATOR</title>
 <style>
@@ -111,6 +111,11 @@ ul.task-list li input[type="checkbox"] {
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-manual">    
         <li>
+    <a class="dropdown-item" href="./manual.html">
+ <span class="dropdown-text">Manual Contents</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
     <a class="dropdown-item" href="./setup.html">
  <span class="dropdown-text">Installation</span></a>
   </li>  
@@ -124,24 +129,29 @@ ul.task-list li input[type="checkbox"] {
   </li>  
         <li>
     <a class="dropdown-item" href="./running.html">
- <span class="dropdown-text">Running INTEGRATOR</span></a>
+ <span class="dropdown-text">Processing Workflow</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="./output-files.html">
+ <span class="dropdown-text">Output Files</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./viz.html">
+ <span class="dropdown-text">MRMhub-viz Visualiser</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./sharing.html">
+ <span class="dropdown-text">Sharing &amp; Archiving</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
         <li>
     <a class="dropdown-item" href="./algorithm.html">
  <span class="dropdown-text">Algorithm</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="./viz.html">
- <span class="dropdown-text">MRMhub-viz Visualizer</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="./sharing.html">
- <span class="dropdown-text">Sharing Results</span></a>
-  </li>  
         <li><hr class="dropdown-divider"></li>
         <li>
     <a class="dropdown-item" href="./msconvert.html">
- <span class="dropdown-text">Vendor → mzML (MSConvert)</span></a>
+ <span class="dropdown-text">mzML Conversion (MSConvert)</span></a>
   </li>  
     </ul>
   </li>
@@ -201,7 +211,7 @@ ul.task-list li input[type="checkbox"] {
 
 <div>
   <div class="description">
-    Preparing the input files that configure a peak-integration run.
+    Preparing the input files that configure a peak-integration run
   </div>
 </div>
 
@@ -254,7 +264,7 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>INTEGRATOR reads <code>run_order.csv</code> and <code>feature_list.csv</code> <strong>by column position</strong>, not by header name. Reordering, deleting, or inserting columns will therefore be <strong>misinterpreted</strong>, potentially <strong>without any warning or error</strong>. Keep the template column order! The <code>param.txt</code> is, however, order-independent. Use the release <a href="https://github.com/SLINGhub/MRMhub/releases">templates</a> as a starting point to ensure the correct column order.</p>
+<p>INTEGRATOR reads <code>run_order.csv</code> and <code>feature_list.csv</code> <strong>by column position</strong>, not by header name. Reordering, deleting, or inserting columns will therefore be <strong>misinterpreted</strong>, potentially <strong>without any warning or error</strong>. The <code>param.txt</code> is, however, order-independent. Use the <a href="https://github.com/SLINGhub/MRMhub/releases">templates</a> as a starting point to ensure the correct column order.</p>
 </div>
 </div>
 <section id="global-parameters-param.txt" class="level3">
@@ -414,7 +424,7 @@ images/feature_list.png and enable:
 <tr class="even">
 <td>6</td>
 <td><strong>RT</strong></td>
-<td>Expected retention time of the feature, in minutes.</td>
+<td>Expected retention time of the feature, in minutes, read from a sample marked as a <code>reference</code> (see the <a href="#reference-frame-caution">caution</a> below).</td>
 </tr>
 <tr class="odd">
 <td>7</td>
@@ -424,12 +434,12 @@ images/feature_list.png and enable:
 <tr class="even">
 <td>8</td>
 <td>left integration bound</td>
-<td>Fixed left peak border for all samples, in minutes (relative to the reference sample). Empty = determined automatically.</td>
+<td>Fixed left peak border for all samples, in minutes, read from and tracked relative to the reference sample (see the <a href="#reference-frame-caution">caution</a> below). Empty = determined automatically.</td>
 </tr>
 <tr class="odd">
 <td>9</td>
 <td>right integration bound</td>
-<td>Fixed right peak border for all samples, in minutes (relative to the reference sample). Empty = determined automatically.</td>
+<td>Fixed right peak border for all samples, in minutes, read from and tracked relative to the reference sample (see the <a href="#reference-frame-caution">caution</a> below). Empty = determined automatically.</td>
 </tr>
 <tr class="even">
 <td>10</td>
@@ -453,13 +463,26 @@ images/feature_list.png and enable:
 </tr>
 </tbody>
 </table>
+<div id="reference-frame-caution" class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Caution</span>Use RT and borders from a reference sample
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The <code>RT</code> and any fixed <code>left</code>/<code>right integration bound</code> are interpreted in the retention-time frame of the reference sample(s) (<code>run_order.csv</code>, <code>reference = x</code>) and tracked from there into every sample. Read these values from a reference sample: a value taken from a non-reference sample that has drifted relative to the reference carries that offset into the whole sequence, shifting the integration throughout.</p>
+</div>
+</div>
 </section>
 <section id="see-also" class="level2 see-also">
 <h2 class="anchored" data-anchor-id="see-also">See also</h2>
 <ul>
 <li><a href="./faq.html">FAQ &amp; Troubleshooting</a> — spreadsheet pitfalls, validation errors, and common integration problems.</li>
 <li><a href="./tuning.html">Tuning Peak Integration</a> — choosing <code>peak_width</code> and integration bounds for difficult peaks.</li>
-<li><a href="./running.html">Run INTEGRATOR</a> — the four processing steps that consume these files.</li>
+<li><a href="./running.html">Processing Workflow</a> — the four processing steps that consume these files.</li>
 <li><a href="./algorithm.html">Peak-detection algorithm</a> — how these settings drive detection and integration.</li>
 </ul>
 </section>
