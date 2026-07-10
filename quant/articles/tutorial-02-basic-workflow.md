@@ -180,8 +180,8 @@ myexp <- correct_drift_gaussiankernel(
 )
 #> ℹ Applying `conc` drift correction...
 #> ℹ 2 feature(s) contain one or more zero or negative `conc` values. Verify your data or use `log_transform_internal = FALSE`.
-#>  ■■■■■■■■■■■■■                     39% |  ETA:  5s
-#>  ■■■■■■■■■■■■■■■■■■■■■■■■          76% |  ETA:  2s
+#>  ■■■■■■■■■■■                       33% |  ETA:  5s
+#>  ■■■■■■■■■■■■■■■■■■■■■■            69% |  ETA:  3s
 #> ! 1 features showed no variation in the study sample's original values across analyses. 
 #> ! 1 features have invalid values after smoothing. NA will be be returned for all values of these faetures. Set `use_original_if_fail = FALSE to return orginal values..
 #> ✔ Drift correction was applied to 459 of 460 features (batch-wise).
@@ -266,7 +266,7 @@ for the full list of plotting functions grouped by workflow stage.
 # Detailed Excel report with multiple sheets
 save_report_xlsx(myexp, path = tempfile(fileext = ".xlsx"))
 #> Saving report to disk - please wait...
-#> ✔ The data processing report has been saved to '/tmp/Rtmpl9iqjo/file30cb5be68104.xlsx'.
+#> ✔ The data processing report has been saved to '/tmp/RtmpuV8sQf/file308f535bec3f.xlsx'.
 
 # Flat CSV with concentration values that passed QC
 save_dataset_csv(
@@ -277,7 +277,7 @@ save_dataset_csv(
   include_qualifier = FALSE,
   filter_data = TRUE
 )
-#> ✔ Concentration values for 378 analyses and 181 features have been exported to '/tmp/Rtmpl9iqjo/file30cb613f4c5f.csv'.
+#> ✔ Concentration values for 378 analyses and 181 features have been exported to '/tmp/RtmpuV8sQf/file308f3e13b507.csv'.
 
 # Save the complete object for reproducibility or sharing
 saveRDS(myexp, file = tempfile(fileext = ".rds"), compress = TRUE)
