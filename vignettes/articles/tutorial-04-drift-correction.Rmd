@@ -1,11 +1,11 @@
 ---
-title: "Drift Correction (Smoothing)"
-output: 
+title: "Drift and Batch Correction"
+output:
   rmarkdown::html_vignette:
     fig_width: 6
     fig_height: 2
 vignette: >
-  %\VignetteIndexEntry{Drift Correction (Smoothing)}
+  %\VignetteIndexEntry{Drift and Batch Correction}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 editor_options: 
@@ -21,18 +21,20 @@ knitr::opts_chunk$set(
 
 ```
 
-MRMhub provides different functions for run-order drift correction, differing by the employed
-smoothing algorithm. These functions can be categorized into functions that are either more suited
-for QC or study sample-based drift correction.
+<p class="page-kind page-kind-tutorial">Tutorial</p>
 
-The data must be provided via a MRMhubExperiment object, whereby raw data that was imported or
-processed data can be corrected, such as `intensity` or `conc` values.
-
-These drift correction functions have various options for customization, please refer the manual
-page on [Drift and Batch Correction](manual-07-drift-batch-correction.html) for more details.
+MRMhub provides functions for run-order drift correction, differing by the employed
+smoothing algorithm and suited to either QC- or study-sample-based correction, and
+for batch-effect correction by median centering. The data must be provided via an
+MRMhubExperiment object; raw data that was imported or processed data can be
+corrected, such as `intensity` or `conc` values. These functions have various
+options for customization; please refer to the manual page on
+[Drift and Batch Correction](manual-07-corrections.html) for more details. This
+tutorial first demonstrates the drift-correction methods, then batch-effect
+correction and how the two are combined.
 
 ::: {.callout .callout-note}
-**Time:** ~15 min &nbsp;|&nbsp; **Level:** Intermediate &nbsp;|&nbsp; **Prerequisites:** [Basic workflow](tutorial-02-basic-workflow.html)
+**Time** ~20 min &nbsp;·&nbsp; **Level** Intermediate &nbsp;·&nbsp; **Prerequisites** [Basic workflow](tutorial-02-basic-workflow.html)
 :::
 
 ## Import data
@@ -188,13 +190,80 @@ plot_runscatter(mexp_drift, variable = "conc", qc_types = c("BQC", "SPL"),
                 rows_page = 1, cols_page = 3, show_trend = TRUE)
 ```
 
+## Batch-effect correction
+
+Batch effects — systematic differences between analytical batches — are corrected
+by median centering with `correct_batch_centering()`. The following example uses a
+separate dataset of seven batches to show the effect clearly.
+
+```{r}
+#| results: false
+#| message: false
+myexp_batch <- mrmhub::MRMhubExperiment()
+myexp_batch <- import_data_csv_wide(
+  myexp_batch,
+  path = "simdata-u1000-sd100_7batches.csv",
+  variable_name = "conc",
+  import_metadata = TRUE)
+```
+
+The concentration values of each batch are centered on a reference QC type, here the
+study samples (`ref_qc_types = "SPL"`). The `correct_scale` parameter controls
+whether the batch-to-batch differences in variance (scale) are also corrected; with
+`correct_scale = FALSE` only the median (location) of each batch is aligned.
+
+```{r}
+#| results: false
+#| code-overflow: 'wrap'
+myexp_batch <- correct_batch_centering(
+  data = myexp_batch,
+  variable = "conc",
+  ref_qc_types = "SPL",
+  correct_scale = FALSE
+)
+```
+
+The data before and after batch correction are compared below; the batches are now
+aligned. If the study samples or other QC types do not follow the reference samples,
+they may not be corrected appropriately.
+
+```{r}
+#| fig.alt: >
+#|   RunScatter plots before and after batch correction
+#| results: false
+#| message: false
+plot_runscatter(myexp_batch, variable = "conc_before", rows_page = 1, cols_page = 1)
+plot_runscatter(myexp_batch, variable = "conc", rows_page = 1, cols_page = 1)
+```
+
+### Correcting variance as well as location
+
+Although the batches are aligned, the spread (variance) of the points still varies
+considerably between batches. This is corrected by scaling the variance with
+`correct_scale = TRUE`, after which the spread is fairly consistent across batches.
+
+```{r}
+#| fig.alt: >
+#|   RunScatter plot after batch correction with variance scaling
+#| results: false
+#| message: false
+myexp_batch <- mrmhub::correct_batch_centering(
+  myexp_batch,
+  ref_qc_types = "SPL",
+  variable = "conc",
+  correct_scale = TRUE
+)
+
+plot_runscatter(myexp_batch, variable = "conc", rows_page = 1, cols_page = 1)
+```
+
 ## Method comparison
 
 `MRMhub` provides four drift correction methods. Loess and cubic spline are typically used with
 QC samples as the reference, gaussian kernel smoothing with study samples; a fourth method,
 generalized additive model (GAM) smoothing via `correct_drift_gam()`, is also available. The method
 comparison below summarises the typical use cases of the three most common — see the
-[Drift and Batch Correction (reference)](manual-07-drift-batch-correction.html) for the full
+[Drift and Batch Correction (reference)](manual-07-corrections.html) for the full
 parameter description of all four.
 
 | Method | Function | Reference samples | Typical use |
@@ -235,8 +304,8 @@ save_dataset_csv(
   )
 ```
 
-## Next Steps
+## Next steps
 
-- [RunScatter Plot](tutorial-05-run-scatter.html) — visualise run order effects
-- [Batch Correction](tutorial-06-batch-correction.html) — correct inter-batch variability
-- [Drift & Batch Correction (reference)](manual-07-drift-batch-correction.html) — full method documentation
+- [RunScatter and PCA QC exploration](tutorial-05-run-scatter.html) — visualise run-order and batch effects
+- [Drift and Batch Correction (reference)](manual-07-corrections.html) — full method documentation
+- [Calibration by Reference Sample](tutorial-07-calibration-reference.html) — normalise to a reference material

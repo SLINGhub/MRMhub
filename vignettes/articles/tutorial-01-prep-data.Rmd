@@ -24,18 +24,13 @@ if (fs::file_exists("metadata_template.xlsx")) fs::file_delete("metadata_templat
 if (fs::file_exists("metadata_msorganiser_template.xlsx")) fs::file_delete("metadata_msorganiser_template.xlsx")
 ```
 
-::: {.callout .callout-note}
-**Time:** ~10 min &nbsp;|&nbsp; **Level:** Beginner &nbsp;|&nbsp; **Prerequisites:** [Your First Analysis](tutorial-00-first-analysis.html)
-:::
+<p class="page-kind page-kind-tutorial">Tutorial</p>
 
 ::: {.callout .callout-note}
-**See also:**
-[Import and prepare data files](manual-05a-which-importer.html) (decision guide) |
-[Validating Metadata](tutorial-10-metadata-validation.html) (error checking) |
-[Data Import Reference](manual-05-data-import.html) (full API)
+**Time** ~10 min &nbsp;·&nbsp; **Level** Beginner &nbsp;·&nbsp; **Prerequisites** [Your First Analysis](tutorial-00-first-analysis.html)
 :::
 
-# Analytical Data
+## Analytical Data
 
 Analytical data, such as pre-processed measurement data (e.g., peak areas), can be
 imported from various software platforms. `MRMhub` currently supports data import from
@@ -64,9 +59,9 @@ mexp2 <- import_data_csv_wide(mexp2,
                         import_metadata = TRUE)
 ```
 
-See [Importing analytical data](manual-05-data-import.html) for more details on importing analysis data.
+See [Importing analytical data](manual-04-data-import.html) for more details on importing analysis data.
 
-# Metadata
+## Metadata
 
 Metadata, referring to analysis metadata, i.e., data that describe/annotates the 
 analytical data at analysis/sample and feature level, are essential data in the MRMhub workflow.
@@ -74,7 +69,7 @@ analytical data at analysis/sample and feature level, are essential data in the 
 Metadata can be retrieved from the imported analysis data file as far as available. 
 More commonly, additional or all required metadata needs to be imported from other sources. 
 Which metadata tables are required depends on the intended processing workflow, see 
-[Data and Metadata in MRMhub](manual-01-data-structure.html) for an overview of metadata categories.
+[Data and Metadata in MRMhub](manual-02-data-object.html) for an overview of metadata categories.
 
 Integrity of metadata and data is key for accurate and reproducible data processing. 
 MRMhub therefore inspects imported data and metadata
@@ -82,7 +77,7 @@ for completeness and for consistency of IDs used across different
 metadata tables. A summary of identified errors,
 warnings and notes is reported after import.
 
-## Preparing metadata
+### Preparing metadata
 
 Metadata can be imported from Excel Sheets, CSV files, or R data frames. Furthermore, a specific 
 metadata template file can be used to prepare metadata in a structured way.
@@ -97,7 +92,7 @@ the required information. Templates for all metadata types supported by MRMhub c
 mrmhub::save_metadata_templates()
 ```
 
-## Importing metadata 
+### Importing metadata
 
 Specific metadata can be imported table by table, from CSV files:
 ```{r}
@@ -131,14 +126,15 @@ df_qcinfo <- readr::read_table(file = "datasets/qc_metadata.txt")
 mexp <- import_metadata_qcconcentrations(mexp, table = df_qcinfo)
 ```
 
-# Preparing and Importing metadata using the MSOrganiser file template
+## Metadata from the MSOrganiser template
 
 Another option to import metadata is via the 'MRMhub MSOrganiser' template,
-an Excel file (`.xlsx`). See [Metadata import](manual-06-metadata-import.html).
+an Excel file (`.xlsx`). See [Metadata import](manual-05-metadata.html).
 
-## Next Steps
+## Next steps
 
-- [Import and prepare data files](manual-05a-which-importer.html) — decision guide for choosing the right import function
+- [Importing Analytical Data](manual-04-data-import.html) — decision guide and full documentation of every importer
+- [Importing Metadata](manual-05-metadata.html) — metadata tables, templates and validation
+- [Validating Metadata](tutorial-10-metadata-validation.html) — checking metadata for common errors
 - [Basic MRMhub Workflow](tutorial-02-basic-workflow.html) — complete walkthrough from import to export
-- [Data Import (reference)](manual-05-data-import.html) — full documentation of all importers
 

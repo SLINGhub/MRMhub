@@ -77,6 +77,7 @@ Roxygen: list(markdown = TRUE)
 LazyData: true
 LazyDataCompression: xz
 Collate: 
+    'build-workflow.R'
     'calc-calibrations.R'
     'calc-eda.R'
     'calc-istd-normalization.R'
@@ -117,7 +118,6 @@ Collate:
     'plots-qc-responsecurves.R'
     'plots-qc-runorder.R'
     'qc-filtering.R'
-    'run-walkthrough.R'
     'tibble-classes.R'
     'utils.R'
 Config/roxygen2/version: 8.0.0

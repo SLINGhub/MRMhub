@@ -5,7 +5,7 @@
 #' @param qc_type_column_name Column name in the imported raw data representing
 #'   the `qc_type`
 #' @return An updated `MRMhubExperiment` object
-#'
+#' @export
 
 import_metadata_from_data <- function(
   data = NULL,
@@ -530,6 +530,7 @@ print_assertion_summary <- function(
 #' @param excl_unmatched_analyses Exclude analyses (samples) that have no matching metadata
 #' @param ignore_warnings Ignore data validation warnings and proceed with adding metadata
 #' @return metadata list
+#' @keywords internal
 #'
 #'
 # Verify/assert metadata consistency with analysis data

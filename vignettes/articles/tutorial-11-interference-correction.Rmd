@@ -22,6 +22,8 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>", eval = FALSE,
                       fig.width = 7, fig.height = 4, out.width = "100%")
 ```
 
+<p class="page-kind page-kind-tutorial">Tutorial</p>
+
 In targeted MRM assays, the signal of one transition can be perturbed by contributions from a
 co-eluting compound. The most common cause in lipidomics is overlap of natural-abundance isotopologues
 (M+1, M+2 from ¹³C, ²H, ¹⁵N) with the precursor or product window of an adjacent species. MRMhub
@@ -33,7 +35,7 @@ This tutorial covers when to apply interference correction, how to define interf
 in the feature annotation, and how to apply both batch and manual corrections.
 
 ::: {.callout .callout-note}
-**Time:** ~15 min &nbsp;|&nbsp; **Level:** Advanced &nbsp;|&nbsp; **Prerequisites:** [Basic workflow](tutorial-02-basic-workflow.html)
+**Time** ~15 min &nbsp;·&nbsp; **Level** Advanced &nbsp;·&nbsp; **Prerequisites** [Basic workflow](tutorial-02-basic-workflow.html)
 :::
 
 ## 1. When is correction needed?
@@ -214,11 +216,11 @@ of the two species. Validate against blank or pure-standard injections before ap
   removed bias; document the relationship but consider leaving it uncorrected.
 - After correction, verify blank residual signal approaches zero.
 
-## Next Steps
+## Next steps
 
-- [Drift Correction](tutorial-04-drift-correction.html) — apply after interference correction
-- [The MRMhub Workflow](tutorial-02-basic-workflow.html) — full processing pipeline
-- [Design Decisions](manual-10-design-decisions.html) — rationale for the processing order
-- [Feature Variables](manual-03-feature-variables.html) — how `_orig` postfixes preserve raw values
+- [Drift and Batch Correction](tutorial-04-drift-correction.html) — apply after interference correction
+- [Basic MRMhub Workflow](tutorial-02-basic-workflow.html) — full processing pipeline
+- [Design Decisions](manual-03-design-decisions.html) — rationale for the processing order
+- [The MRMhubExperiment Data Object](manual-02-data-object.html#feature-variables) — how `_orig` postfixes preserve raw values
 
 ## References

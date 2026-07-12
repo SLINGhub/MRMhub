@@ -1,0 +1,174 @@
+---
+title: "Sample Types & QC Roles"
+output:
+  rmarkdown::html_vignette:
+    fig_width: 6
+    fig_height: 2
+description: |
+  Reference for the QC-type labels used in MRMhub and their roles in quality
+  control and data processing.
+vignette: >
+  %\VignetteIndexEntry{Sample Types & QC Roles}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: references.bib
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", eval = FALSE)
+```
+
+<p class="page-kind page-kind-manual">Manual</p>
+
+MRMhub uses the `qc_type` column in the analysis annotation to categorize samples
+by their analytical purpose. This label determines which samples are used for
+drift correction, batch correction, QC-metric calculation and calibration, and
+which are excluded from the reported study results. Assigning the wrong label
+therefore causes MRMhub to use the wrong samples for corrections, so the
+`qc_type` column should be checked before processing.
+
+## QC types (sample types)
+
+The classification combines nomenclature from several sources: the standardized
+terms SPL, BQC, TQC, LTR and RQC were introduced by
+@broadhurst2018GuidelinesConsiderationsUse for the use of system-suitability and
+quality-control samples in mass spectrometry assays, while the others (LQC, MQC,
+HQC, CAL, NIST, SST and the blank types) derive from traditional terminology in
+analytical and clinical chemistry.
+
+| QC type | Group | Description |
+|---------|-------|-------------|
+| `SPL` | Unknowns | Study sample ("unknowns") |
+| `BQC` | QC | Batch / Process QC |
+| `TQC` | QC | Technical QC |
+| `LQC` | QC | Low QC |
+| `MQC` | QC | Mid QC |
+| `HQC` | QC | High QC |
+| `CAL` | Calibration | Calibration sample |
+| `RQC` | QC | Response QC (dilution series) |
+| `LTR` | Reference material | Long-Term Reference |
+| `NIST` | Reference material | NIST Standard Reference Material |
+| `SST` | QA | System Suitability Test sample |
+| `PBLK` | Process blank | No matrix, processed with ISTD as all other samples |
+| `UBLK` | Blank | Unextracted Blank — no matrix, with ISTD, without undergoing sample processing |
+| `SBLK` | Blank | Solvent / double blank — no matrix, no ISTD, just solvents |
+| `IBLK` | Blank | Instrument Blank, with or without injection |
+| `MBLK` | Blank | Matrix Blank — matrix processed as samples but without ISTDs |
+
+## Which samples are used where
+
+The reference QC types for drift and batch correction are user-selected
+(`ref_qc_types`), typically the QC pool (`BQC`). The table below summarises the
+usual roles.
+
+| Processing step | Uses | Typical sample types |
+|-----------------|------|----------------------|
+| Drift correction (QC-based models) | Signal anchors | `BQC` (or the selected `ref_qc_types`) |
+| Batch correction (centering) | Cross-batch alignment | `BQC` (or the selected `ref_qc_types`) |
+| QC metrics (CV, bias) | Precision monitoring | `BQC`, `TQC`, `PBLK` |
+| Calibration curves | Quantification | `CAL` |
+| Excluded from study results | Not reported | all blanks, `CAL`, `RQC`, `SST` |
+
+## Setting the sample type in the annotation
+
+The analysis annotation must have a column called `sample_type` or `qc_type`.
+Labels are case-sensitive and must be given in uppercase exactly as listed above,
+every analysis must carry a label, and QC samples used as drift/batch anchors
+should be evenly distributed across the run (at least five per batch for reliable
+drift correction).
+
+```
+analysis_id,sample_type,batch_id,analysis_order
+Inj_001,SBLK,Batch_1,1
+Inj_002,BQC,Batch_1,2
+Inj_003,SPL,Batch_1,3
+Inj_004,SPL,Batch_1,4
+...
+Inj_010,BQC,Batch_1,10
+Inj_080,BQC,Batch_1,80
+Inj_081,SBLK,Batch_1,81
+```
+
+## Typical batch layout
+
+<div style="text-align: center; margin: 1.5em 0;">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 90" style="max-width: 700px; width: 100%; height: auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+  <style>
+    .bl-box { rx: 4; ry: 4; stroke-width: 1.2; }
+    .bl-txt { font-size: 10px; font-weight: 600; fill: #fff; text-anchor: middle; }
+    .bl-ann { font-size: 9px; fill: #555; text-anchor: middle; }
+  </style>
+  <!-- SBLK -->
+  <rect class="bl-box" x="5" y="20" width="50" height="35" fill="#1854f9" stroke="#0f3ab5"/>
+  <text class="bl-txt" x="30" y="42">SBLK</text>
+  <text class="bl-ann" x="30" y="72">blank</text>
+  <!-- TQC -->
+  <rect class="bl-box" x="65" y="20" width="50" height="35" fill="#1854f9" stroke="#0f3ab5"/>
+  <text class="bl-txt" x="90" y="42">TQC</text>
+  <text class="bl-ann" x="90" y="72">tech</text>
+  <!-- BQC -->
+  <rect class="bl-box" x="125" y="20" width="45" height="35" fill="#f27507" stroke="#b35700"/>
+  <text class="bl-txt" x="147" y="42">BQC</text>
+  <text class="bl-ann" x="147" y="72">anchor</text>
+  <!-- SPL block -->
+  <rect class="bl-box" x="180" y="20" width="180" height="35" fill="#8e9b9e" stroke="#6f7c7f"/>
+  <text class="bl-txt" x="270" y="42">SPL  SPL  SPL  SPL  SPL  SPL</text>
+  <text class="bl-ann" x="270" y="72">study samples</text>
+  <!-- BQC mid -->
+  <rect class="bl-box" x="370" y="20" width="45" height="35" fill="#f27507" stroke="#b35700"/>
+  <text class="bl-txt" x="392" y="42">BQC</text>
+  <text class="bl-ann" x="392" y="72">anchor</text>
+  <!-- SPL block 2 -->
+  <rect class="bl-box" x="425" y="20" width="120" height="35" fill="#8e9b9e" stroke="#6f7c7f"/>
+  <text class="bl-txt" x="485" y="42">SPL  SPL  SPL  SPL</text>
+  <!-- BQC end -->
+  <rect class="bl-box" x="555" y="20" width="45" height="35" fill="#f27507" stroke="#b35700"/>
+  <text class="bl-txt" x="577" y="42">BQC</text>
+  <text class="bl-ann" x="577" y="72">anchor</text>
+  <!-- SBLK end -->
+  <rect class="bl-box" x="610" y="20" width="50" height="35" fill="#1854f9" stroke="#0f3ab5"/>
+  <text class="bl-txt" x="635" y="42">SBLK</text>
+  <text class="bl-ann" x="635" y="72">blank</text>
+  <!-- Arrows -->
+  <line x1="55" y1="37" x2="65" y2="37" stroke="#999" stroke-width="1"/>
+  <line x1="115" y1="37" x2="125" y2="37" stroke="#999" stroke-width="1"/>
+  <line x1="170" y1="37" x2="180" y2="37" stroke="#999" stroke-width="1"/>
+  <line x1="360" y1="37" x2="370" y2="37" stroke="#999" stroke-width="1"/>
+  <line x1="415" y1="37" x2="425" y2="37" stroke="#999" stroke-width="1"/>
+  <line x1="545" y1="37" x2="555" y2="37" stroke="#999" stroke-width="1"/>
+  <line x1="600" y1="37" x2="610" y2="37" stroke="#999" stroke-width="1"/>
+</svg>
+</div>
+
+## Colour coding
+
+Each `qc_type` is drawn with a consistent line colour and point shape in every
+plot MRMhub produces. The swatches below are the exact line colours defined in the
+package (`qc_type_col`).
+
+| Type | Colour | |
+|------|--------|---|
+| `SPL` | grey | <span style="display:inline-block; width:40px; height:14px; background:#8e9b9e; border-radius:3px;"></span> |
+| `SST` | yellow-green | <span style="display:inline-block; width:40px; height:14px; background:#bafc03; border-radius:3px;"></span> |
+| `BQC` | red | <span style="display:inline-block; width:40px; height:14px; background:#db0202; border-radius:3px;"></span> |
+| `TQC` | blue | <span style="display:inline-block; width:40px; height:14px; background:#1854f9; border-radius:3px;"></span> |
+| `PQC` | orange | <span style="display:inline-block; width:40px; height:14px; background:#f99f18; border-radius:3px;"></span> |
+| `QC` / `HQC` / `MQC` / `LQC` | dark orange | <span style="display:inline-block; width:40px; height:14px; background:#f27507; border-radius:3px;"></span> |
+| `RQC` | periwinkle | <span style="display:inline-block; width:40px; height:14px; background:#96a4ff; border-radius:3px;"></span> |
+| `CAL` | blue | <span style="display:inline-block; width:40px; height:14px; background:#4575b4; border-radius:3px;"></span> |
+| `NIST` | navy | <span style="display:inline-block; width:40px; height:14px; background:#002e6b; border-radius:3px;"></span> |
+| `LTR` / `EQA` | purple | <span style="display:inline-block; width:40px; height:14px; background:#880391; border-radius:3px;"></span> |
+| `EQC` | brown | <span style="display:inline-block; width:40px; height:14px; background:#513c3c; border-radius:3px;"></span> |
+| `SBLK` | blue | <span style="display:inline-block; width:40px; height:14px; background:#1854f9; border-radius:3px;"></span> |
+| `TBLK` | red | <span style="display:inline-block; width:40px; height:14px; background:#db0202; border-radius:3px;"></span> |
+| `UBLK` | magenta | <span style="display:inline-block; width:40px; height:14px; background:#de21de; border-radius:3px;"></span> |
+| `PBLK` | green | <span style="display:inline-block; width:40px; height:14px; background:#216651; border-radius:3px;"></span> |
+| `MBLK` | black | <span style="display:inline-block; width:40px; height:14px; background:#000000; border-radius:3px;"></span> |
+
+## Next steps
+
+- [Key Concepts & Glossary](manual-01-key-concepts.html) — broader terminology
+- [Importing Metadata](manual-05-metadata.html) — preparing the annotation files
+- [Drift and Batch Correction](manual-07-corrections.html) — where the QC types are used
+
+## References

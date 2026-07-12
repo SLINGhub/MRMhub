@@ -22,27 +22,22 @@ set.seed(1041)
 options(dplyr.print_max = 10)
 ```
 
+<p class="page-kind page-kind-tutorial">Tutorial</p>
+
 ::: {.callout .callout-note}
-**Time:** ~15 min &nbsp;|&nbsp; **Level:** Beginner–Intermediate &nbsp;|&nbsp; **Prerequisites:** [Your First Analysis](tutorial-00-first-analysis.html)
+**Time** ~15 min &nbsp;·&nbsp; **Level** Beginner–Intermediate &nbsp;·&nbsp; **Prerequisites** [Your First Analysis](tutorial-00-first-analysis.html)
 :::
 
-::: {.callout .callout-caution}
-**How this differs from "Your First Analysis":** That tutorial uses
-bundled demo data and covers only import, normalize, and export in 5 minutes.
-This tutorial uses real file paths, imports metadata via MSOrganiser, applies
-drift and batch correction, runs QC filtering, and exports a full report —
-a realistic end-to-end workflow.
-:::
+This tutorial outlines the key steps in a MRMhub workflow, based on a lipidomics
+dataset; see the [Lipidomics Data Processing](tutorial-03-lipidomics-workflow.html)
+tutorial for a more detailed example. Where [Your First Analysis](tutorial-00-first-analysis.html)
+uses bundled demo data and covers only import, normalize and export, this tutorial
+uses real file paths, imports metadata via an MSOrganiser template, applies drift
+and batch correction, runs QC filtering, and exports a full report. The examples
+are simplified and may not apply to every dataset and experimental setup, so
+consult the other tutorials and recipes for additional workflows and data types.
 
-This tutorial outlines the key steps in a MRMhub workflow, based on a
-lipidomics dataset. See the [Lipidomics Data Processing](tutorial-03-lipidomics-workflow.html) 
-tutorial for an even more detailed example.
-
-These examples are simplified and may not apply to every dataset and
-experimental setup. See other tutorials and recipes for additional
-workflows and data types.
-
-# Step 1: Set Up a Project
+## Step 1: Set Up a Project
 
 To start a new MRMhub data analysis, create an RStudio or Positron
 project. (See [Using RStudio Projects](https://support.posit.co/hc/en-us/articles/200526207-Using-RStudio-Projects)
@@ -67,10 +62,10 @@ Start with a new notebook or R script and load the `mrmhub` package:
 library(mrmhub)
 ```
 
-# Step 2: Create a MRMhubExperiment
+## Step 2: Create a MRMhubExperiment
 
 The `MRMhubExperiment` object is the main **data container** in the
-MRMhub workflow. See [The MRMhubExperiment Object](manual-04-mrmhub-experiment.html) 
+MRMhub workflow. See [The MRMhubExperiment Object](manual-02-data-object.html) 
 for details.
 
 Create a new empty object:
@@ -79,7 +74,7 @@ Create a new empty object:
 myexp <- MRMhubExperiment()
 ```
 
-# Step 3: Import Analysis Data
+## Step 3: Import Analysis Data
 
 Import peak area data from an INTEGRATOR output file. This file also
 contains some metadata (e.g., `qc_type`, `batch_id`) which we import
@@ -96,20 +91,20 @@ myexp <- import_data_mrmhub(
 <details>
 <summary><strong>Using a different data source?</strong></summary>
 
-See [Import and prepare data files](manual-05a-which-importer.html) for a
-decision flowchart, or [Data Import](manual-05-data-import.html) for
+See [Import and prepare data files](manual-04-data-import.html) for a
+decision flowchart, or [Data Import](manual-04-data-import.html) for
 the full API reference.
 
 </details>
 
-# Step 4: Add Metadata
+## Step 4: Add Metadata
 
 Processing steps require additional information not available in the
 data file: internal standard assignments, concentrations, sample
 amounts, etc.
 
 Metadata can be imported from separate CSV/Excel files or R data frames
-(see [Metadata Import](manual-06-metadata-import.html)), or from an
+(see [Metadata Import](manual-05-metadata.html)), or from an
 MSOrganiser template:
 
 ```{r import-metadata}
@@ -120,36 +115,14 @@ myexp <- import_metadata_msorganiser(
 )
 ```
 
-::: {.callout .callout-note}
-The validation checks may produce warnings. Setting
-`ignore_warnings = TRUE` allows the import to proceed, but
-warnings are still displayed in the console (marked with `*`).
-Review them to ensure nothing critical is missed.
-:::
+The validation checks may produce warnings, which by default cause the import to
+fail. Setting `ignore_warnings = TRUE` allows it to proceed; the warnings are still
+shown in the console table, marked with an asterisk (`*`) in the `status` column,
+and should be reviewed to ensure nothing critical is missed. See
+[Validating and Fixing Metadata](tutorial-10-metadata-validation.html) for how to
+inspect and resolve them.
 
-<details>
-<summary><strong>Validating metadata before import</strong></summary>
-
-Use `assert_metadata()` to check annotation tables before linking. The function takes the metadata
-as a named list and returns the validated list, which is then passed to `add_metadata()`:
-
-```{r, eval = FALSE}
-validated <- assert_metadata(
-  myexp,
-  metadata = list(annot_analyses = annot_analyses,
-                  annot_features = annot_features),
-  ignore_warnings = FALSE,
-  excl_unmatched_analyses = FALSE
-)
-
-myexp <- add_metadata(myexp, metadata = validated)
-```
-
-See [Validating and Fixing Metadata](tutorial-10-metadata-validation.html) for a full walkthrough.
-
-</details>
-
-# Step 5: Process the Data
+## Step 5: Process the Data
 
 Apply normalization, quantification, drift correction, batch correction,
 and QC filtering:
@@ -201,11 +174,11 @@ The recommended order is:
 4. Batch correction
 5. QC filtering
 
-See [Design Overview](manual-00-design-overview.html) for the full pipeline diagram.
+See [Design Decisions](manual-03-design-decisions.html) for the rationale behind this order.
 
 </details>
 
-# Step 6: Visualize Results
+## Step 6: Visualize Results
 
 Create a run scatter plot to check signal trends and correction quality:
 
@@ -227,7 +200,7 @@ See [Visualisation Functions](manual-08-visualization.html) for the full
 list of plotting functions grouped by workflow stage.
 
 
-# Step 7: Export and Share
+## Step 7: Export and Share
 
 ```{r save-report}
 # Detailed Excel report with multiple sheets
@@ -247,17 +220,14 @@ save_dataset_csv(
 saveRDS(myexp, file = tempfile(fileext = ".rds"), compress = TRUE)
 ```
 
-::: {.callout .callout-tip}
-The `.rds` file preserves the entire `MRMhubExperiment`
-object. A colleague can open it in R and run their own processing, plots,
-and QC checks; no code is needed to reproduce the data state.
-:::
+The `.rds` file preserves the entire `MRMhubExperiment` object, so a colleague can
+open it in R and run their own processing, plots and QC checks — no code is needed
+to reproduce the data state.
 
-## Next Steps
+## Next steps
 
-- [Lipidomics Workflow](tutorial-03-lipidomics-workflow.html) — more detailed lipidomics example
-- [Drift Correction](tutorial-04-drift-correction.html) — drift correction methods
-- [Batch Correction](tutorial-06-batch-correction.html) — batch correction options
-- [PCA Exploration](tutorial-09-pca-exploration.html) — QC exploration with PCA
-- [External Calibration & QC](recipe-01-ext-calibration-qc.html) — external calibration
+- [Lipidomics Data Processing](tutorial-03-lipidomics-workflow.html) — a more detailed lipidomics example
+- [Drift and Batch Correction](tutorial-04-drift-correction.html) — correction methods and diagnostics
+- [Exploring QC: RunScatter and PCA](tutorial-05-run-scatter.html) — QC visualisation and outlier screening
+- [External Calibration & QC](recipe-01-ext-calibration-qc.html) — quantitation with calibration curves
 

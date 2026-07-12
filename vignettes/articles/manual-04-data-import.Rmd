@@ -1,0 +1,272 @@
+---
+title: "Importing Analytical Data"
+output:
+  rmarkdown::html_vignette:
+    fig_width: 6
+    fig_height: 2
+description: |
+  Importing analytical data from different sources into an MRMhubExperiment.
+vignette: >
+  %\VignetteIndexEntry{Importing Analytical Data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+editor_options:
+  markdown:
+    wrap: 80
+bibliography: references.bib
+---
+
+```{r, include = FALSE, echo = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, results = FALSE, message = FALSE,
+                      comment = "#>")
+set.seed(1041)
+options(dplyr.print_max = 10)
+library(mrmhub)
+
+# Compact "screenshot" of the first rows of a bundled example file.
+show_head <- function(file, delim = ",", n = 3, cols = NULL) {
+  path <- system.file("extdata", file, package = "mrmhub")
+  df <- readr::read_delim(
+    path,
+    delim = delim,
+    n_max = n,
+    show_col_types = FALSE,
+    name_repair = "minimal"
+  )
+  total <- ncol(df)
+  if (!is.null(cols)) df <- df[, cols, drop = FALSE]
+  cap <- if (!is.null(cols) && length(cols) < total) {
+    sprintf("First %d rows of `%s` (showing %d of %d columns)", n, file, length(cols), total)
+  } else {
+    sprintf("First %d rows of `%s`", n, file)
+  }
+  knitr::kable(df, caption = cap)
+}
+```
+
+<p class="page-kind page-kind-manual">Manual</p>
+
+Analytical data, i.e. preprocessed data from mass spectrometry experiments, can be
+imported from different sources. Data files present in a folder can also be
+imported and merged, which is useful when the raw data processing is broken down
+into batches that produce separate result files. The following formats are
+currently supported; each importer reads a CSV or TSV file and returns an
+`MRMhubExperiment`, and the exact file layout and all arguments are documented on
+the linked reference pages.
+
+| Source | Function |
+|---|---|
+| MRMhub / INTEGRATOR *(recommended)* | [`import_data_mrmhub()`](../reference/import_data_mrmhub.html) |
+| Agilent MassHunter Quant | [`import_data_masshunter()`](../reference/import_data_masshunter.html) |
+| Skyline (small molecule) | [`import_data_skyline()`](../reference/import_data_skyline.html) |
+| Generic wide CSV | [`import_data_csv_wide()`](../reference/import_data_csv_wide.html) |
+| Generic long CSV | [`import_data_csv_long()`](../reference/import_data_csv_long.html) |
+
+When the analytical results contain metadata, such as sample and feature
+annotations, these can be imported into the `MRMhubExperiment` object as well. The
+imported metadata is checked for integrity and consistency and then added to the
+annotation tables; to include it, set the argument `import_metadata = TRUE` (see
+[Importing Metadata](manual-05-metadata.html)).
+
+## MRMhub / INTEGRATOR
+
+Long-format output files produced by MRMhub-INTEGRATOR, the peak-integration
+component of the project, can be imported directly. Specific metadata present in
+the data file is imported as well when `import_metadata = TRUE`:
+
+```{r}
+filepath <- system.file("extdata/MRMhub_demo.tsv", package = "mrmhub")
+mexp <- MRMhubExperiment()
+mexp <- import_data_mrmhub(mexp, filepath, import_metadata = TRUE)
+```
+
+## Agilent MassHunter Quant
+
+Peak integration results exported from Agilent MassHunter Quant in CSV format can
+be imported, with samples in rows and features in columns. Import of qualifier
+results is supported, and sample, method and result metadata present in the file
+can also be imported (`import_metadata = TRUE`):
+
+```{r}
+filepath <- system.file("extdata/MHQuant_demo.csv", package = "mrmhub")
+mexp <- MRMhubExperiment()
+mexp <- import_data_masshunter(mexp, filepath, import_metadata = TRUE)
+```
+
+## Skyline
+
+Small-molecule peak integration results from [Skyline](https://skyline.ms/) can be
+imported from long-format CSV reports. The `analysis_id` is mapped from the
+`Replicate Name` column, and unique `feature_id`s are generated from the
+`Molecule Name` together with the precursor/product names or *m/z* values, unless
+the `Molecule Name` alone already identifies the feature (controlled by
+`transition_id_columns`):
+
+```{r}
+filepath <- system.file("extdata/Skyline_MoleculeTransitionResults.csv", package = "mrmhub")
+mexp <- MRMhubExperiment()
+mexp <- import_data_skyline(mexp, filepath,
+                            import_metadata = TRUE,
+                            transition_id_columns = "mz")
+```
+
+<details>
+<summary><strong>Exporting the report from Skyline</strong></summary>
+
+Navigate to *File → Export* and select the *Molecule Transition Results* format.
+Ensure the export includes `Replicate Name`, `Molecule Name`, and either
+`Precursor Mz` and `Product Mz` or `Precursor Name` and `Product Name`, plus at
+least one feature variable such as `Area` or `Retention Time`. Further options are
+described in [`import_data_skyline()`](../reference/import_data_skyline.html).
+</details>
+
+## Generic wide-format CSV
+
+Analysis results, whether raw intensities (e.g. peak areas) or preprocessed data
+(e.g. concentrations), can be provided as plain wide-format CSV tables with
+analyses in rows and features in columns. The data type held in the table is
+declared with the `variable_name` argument:
+
+```{r}
+filepath <- system.file("extdata/plain_wide_dataset.csv", package = "mrmhub")
+mexp <- MRMhubExperiment()
+mexp <- import_data_csv_wide(mexp, path = filepath,
+                             variable_name = "area",
+                             import_metadata = TRUE)
+```
+
+## Generic long-format CSV
+
+Analysis results containing various feature variables can be provided as generic
+long-format CSV tables, where each row is a feature–value observation for a sample
+and additional columns capture feature variables and sample- or method-related
+metadata. By default the file must include `analysis_id`, `feature_id`, and at
+least one feature-value column such as `area`; if the file uses different column
+names, a `column_mapping` associates the MRMhub column names with those in the
+file. The full column list and mapping rules are given in
+[`import_data_csv_long()`](../reference/import_data_csv_long.html):
+
+```{r}
+filepath <- system.file("extdata/plain_long_dataset.csv", package = "mrmhub")
+mexp <- MRMhubExperiment()
+mexp <- import_data_csv_long(mexp, path = filepath, import_metadata = TRUE,
+  column_mapping = c(
+    "analysis_id"     = "raw_data_filename",
+    "qc_type"         = "qc_type",
+    "feature_id"      = "feature_id",
+    "feature_class"   = "feature_class",
+    "istd_feature_id" = "istd_feature_id",
+    "feature_rt"      = "rt",
+    "feature_area"    = "area"))
+```
+
+## File formats
+
+The previews below show the first rows of the example files bundled with the
+package, so that an input file can be recognised and prepared before importing.
+Vendor and tool exports (MRMhub/INTEGRATOR, MassHunter, Skyline) are produced by
+the software and are not edited by hand, whereas the generic wide and long CSV
+tables are prepared manually. The full column reference for each format is given
+on its linked function reference page.
+
+### MRMhub / INTEGRATOR — long CSV/TSV {#str-mrmhub}
+
+The long output has one row per analysis × feature, tab- or comma-separated.
+Besides the columns shown it also carries `internal_standard`, `time_stamp`,
+transition columns (`precursor_mz`, `product_mz`, `collision_energy`, `polarity`),
+and integration columns (`height`, `FWHM`, `rt_int_start`, `rt_int_end`). The file
+is produced by INTEGRATOR and is not prepared by hand.
+
+```{r, results = "asis"}
+show_head(
+  "MRMhub_demo.tsv",
+  delim = "\t",
+  cols = c("feature_name", "raw_data_filename", "sample_type", "batch", "rt_apex", "area")
+)
+```
+
+### Agilent MassHunter Quant — wide CSV {#str-masshunter}
+
+A MassHunter Quant export is wide with a two-row header. The first header row
+groups columns by compound (`<Compound> Method` and `<Compound> Results` blocks)
+after a leading `Sample` block; the second row holds the actual sub-headers. The
+`Method`/`Results` blocks repeat for every compound (quantifiers and qualifiers).
+
+<table class="table" style="font-size: 0.85em;">
+<thead>
+<tr>
+  <th colspan="4" style="text-align:center; border-bottom:2px solid #5B8FA8;">Sample</th>
+  <th colspan="4" style="text-align:center; border-bottom:2px solid #D4914E;">CE 18:1 — Method</th>
+  <th colspan="3" style="text-align:center; border-bottom:2px solid #6B9E5E;">CE 18:1 — Results</th>
+  <th rowspan="2" style="vertical-align:bottom;">…</th>
+</tr>
+<tr>
+  <th>Data File</th><th>Name</th><th>Type</th><th>Acq. Date-Time</th>
+  <th>Precursor Ion</th><th>Product Ion</th><th>Collision Energy</th><th>RT</th>
+  <th>RT</th><th>Area</th><th>FWHM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>001_…01.d</td><td>001_…01</td><td>Sample</td><td>4/12/18 18:28</td>
+  <td>668.6</td><td>369.3</td><td>10</td><td>7.16</td>
+  <td>7.16</td><td>5152996</td><td>0.081</td>
+</tr>
+<tr>
+  <td>002_…02.d</td><td>002_…02</td><td>Sample</td><td>4/12/18 18:39</td>
+  <td>668.6</td><td>369.3</td><td>10</td><td>7.16</td>
+  <td>7.16</td><td>4789505</td><td>0.080</td>
+</tr>
+</tbody>
+</table>
+
+### Skyline (small molecule) — long CSV {#str-skyline}
+
+The *Molecule Transition Results* export has one row per transition result;
+`Replicate Name` becomes `analysis_id`, `Molecule Name` becomes `feature_id`, and
+transitions are identified by precursor/product name or *m/z*.
+
+```{r, results = "asis"}
+show_head(
+  "Skyline_MoleculeTransitionResults.csv",
+  cols = c("Molecule Name", "Replicate Name", "Precursor Mz", "Product Mz", "Retention Time", "Area")
+)
+```
+
+### Generic wide CSV {#str-csv-wide}
+
+One row per sample, one column per feature; the column name is the `feature_id`
+and the values are of the type declared by `variable_name`.
+
+```{r, results = "asis"}
+show_head("plain_wide_dataset.csv")
+```
+
+### Generic long CSV {#str-csv-long}
+
+One row per `(sample, feature)` measurement. Columns are auto-detected by name
+(case-insensitive); the bundled example uses INTEGRATOR-style headers such as
+`raw_data_filename` and `rt_apex`, so it is imported with a `column_mapping`.
+
+```{r, results = "asis"}
+show_head(
+  "plain_long_dataset.csv",
+  cols = c("feature_id", "raw_data_filename", "sample_type", "batch", "rt_apex", "area")
+)
+```
+
+## Multiple files: import and merging
+
+Multiple data files can be imported and merged by passing either a list of file
+paths or a folder path, in which case all data files in the directory are
+imported. This is useful when raw data processing is divided into batches that
+produce separate result files. The merged data is checked for consistency, so that
+each `analysis_id`–`feature_id` pair is unique and the same feature cannot be
+reported more than once within an analysis.
+
+## Next steps
+
+- [Importing Metadata](manual-05-metadata.html) — attach and validate sample and feature annotations
+- [The MRMhubExperiment Data Object](manual-02-data-object.html) — the object the data is loaded into
+- [Basic MRMhub Workflow](tutorial-02-basic-workflow.html) — start processing the imported data
+- [Function reference](../reference/index.html) — full arguments for every importer

@@ -197,7 +197,7 @@ setdiff(annot_features, data_features)
 <details>
 <summary><strong>Which importer should I use?</strong></summary>
 
-See [Import and prepare data files](manual-05a-which-importer.html) for a visual decision flowchart.
+See [Import and prepare data files](manual-04-data-import.html) for a visual decision flowchart.
 
 </details>
 
@@ -357,7 +357,7 @@ Consider:
 ```{r}
 # Inspect calibration metrics
 get_calibration_metrics(mexp) |>
-  dplyr::filter(r_squared < 0.9)
+  dplyr::filter(r2 < 0.9)
 ```
 
 </details>
@@ -401,5 +401,5 @@ correction. Consider processing batches separately and merging.
 
 ## Next Steps
 
-- [Design Overview](manual-00-design-overview.html) — understand the full pipeline
+- [Design Overview](manual-03-design-decisions.html) — understand the full pipeline
 - [Installation](manual-00-installation.html) — verify your setup with `check_setup()`

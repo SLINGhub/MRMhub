@@ -22,6 +22,8 @@ set.seed(1041)
 options(dplyr.print_max = 10)
 ```
 
+<p class="page-kind page-kind-recipe">Recipe</p>
+
 This vignette demonstrates a simple workflow for a quantitative targeted
 assay with external calibration and quality control samples, as used
 e.g., in clinical chemistry or environmental analysis.
@@ -134,7 +136,7 @@ tbl <- get_qc_bias_variability(mexp, qc_types = c("HQC", "LQC"))
  print(tbl)
 ```
 
-## Next Steps
+## Next steps
 
 - [Calibration by a Reference Sample](tutorial-07-calibration-reference.html) — an alternative to external calibration curves
 - [Custom QC Report](recipe-02-custom-qc-report.html) — build a formatted QC report from processed data

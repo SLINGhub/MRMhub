@@ -22,6 +22,8 @@ set.seed(1041)
 options(dplyr.print_max = 10)
 ```
 
+<p class="page-kind page-kind-manual">Manual</p>
+
 `MRMhub` provides functions for run-order drift and batch correction. The
 correction is based on user-selected reference sample types (`ref_qc_types`),
 relative to which all other samples are adjusted. The corrections can be
@@ -31,7 +33,7 @@ applied to `intensity`, `norm_intensity`, or `conc` data.
 **Caution.** Drift and batch corrections must be fitted on dedicated *reference* samples (typically QC pools), never on study samples [@broadhurst2018GuidelinesConsiderationsUse]. The `correct_drift_gaussiankernel()` option that fits on study samples is the sole exception and is only safe for large, well-randomised cohorts.
 :::
 
-# Drift correction (smoothing)
+## Drift correction (smoothing)
 
 The following drift correction methods are available in `MRMhub`, two of
 which are typically used for QC samples and one (gaussian kernel-based) for
@@ -75,7 +77,7 @@ previously described QC-based drift correction methods, such as **QC-RSC
 See the tutorial [Drift and Batch Correction](tutorial-04-drift-correction.html) for more information
 on how to use these functions and plot the results.
 
-# Batch-effect correction (centering)
+## Batch-effect correction (centering)
 
 `MRMhub` currently supports median centering-based batch correction
 `correct_batch_centering()`, whereby the scale of the batches can
@@ -85,10 +87,9 @@ other samples.
 
 See the tutorial [Drift and Batch Correction](tutorial-04-drift-correction.html) for more information.
 
-## Next Steps
+## Next steps
 
-- [Drift Correction Tutorial](tutorial-04-drift-correction.html)
-- [Batch Correction Tutorial](tutorial-06-batch-correction.html)
-- [RunScatter Plot](tutorial-05-run-scatter.html) — visualise run order effects
+- [Drift and Batch Correction (tutorial)](tutorial-04-drift-correction.html) — worked examples of both corrections
+- [Exploring QC: RunScatter and PCA](tutorial-05-run-scatter.html) — visualise run-order and batch effects
 
-# References
+## References

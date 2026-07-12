@@ -149,7 +149,7 @@ plot_normalization_qc(mexp,
 ## `plot_pca()` — score plot
 
 Two-dimensional PCA score plot with confidence ellipses grouped by `qc_type`, `batch_id`, or
-`"none"`. See [QC Exploration with PCA](tutorial-09-pca-exploration.html) for an interpretation
+`"none"`. See [QC Exploration with PCA](tutorial-05-run-scatter.html) for an interpretation
 walk-through.
 
 ```{r}
@@ -324,10 +324,9 @@ p_rla  <- plot_rla_boxplot(mexp, variable = "norm_intensity",
 p_seq / (p_pca | p_rla)
 ```
 
-## Next Steps
+## Next steps
 
-- [Run-Scatter Plot (tutorial)](tutorial-05-run-scatter.html) — detailed `plot_runscatter()` usage
-- [QC Exploration with PCA](tutorial-09-pca-exploration.html) — PCA interpretation
-- [Drift Correction (tutorial)](tutorial-04-drift-correction.html) — `plot_runscatter()` in context
+- [Exploring QC: RunScatter and PCA](tutorial-05-run-scatter.html) — `plot_runscatter()`, `plot_pca()` and outlier screening
+- [Drift and Batch Correction (tutorial)](tutorial-04-drift-correction.html) — `plot_runscatter()` in context
 - [External Calibration & QC (recipe)](recipe-01-ext-calibration-qc.html) — calibration plots in workflow
 - [Custom QC Report (recipe)](recipe-02-custom-qc-report.html) — combine plots in a report

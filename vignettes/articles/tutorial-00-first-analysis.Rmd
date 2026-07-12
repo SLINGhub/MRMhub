@@ -22,11 +22,13 @@ knitr::opts_chunk$set(
 )
 ```
 
+<p class="page-kind page-kind-tutorial">Tutorial</p>
+
 This walkthrough produces a normalized dataset in under 5 minutes using
 bundled demo data; no external files are needed.
 
 ::: {.callout .callout-note}
-**Time:** ~5 min &nbsp;|&nbsp; **Level:** Beginner &nbsp;|&nbsp; **Prerequisites:** MRMhub installed (`check_setup()` passes)
+**Time** ~5 min &nbsp;·&nbsp; **Level** Beginner &nbsp;·&nbsp; **Prerequisites** MRMhub installed (`check_setup()` passes)
 :::
 
 ## The complete workflow in one script
@@ -50,93 +52,38 @@ mexp <- normalize_by_istd(mexp)
 plot_runscatter(mexp, variable = "norm_intensity")
 ```
 
-To save the processed data to an Excel report (or a tidy CSV), add one line:
+`build_workflow()` offers an interactive alternative — a point-and-click
+application that validates your data and metadata, warns about any pipeline
+mismatches, and generates an equivalent Quarto (`.qmd`) workflow to download —
+while the code-first workflow above remains the reproducible path. What each line
+does is described below.
 
-```{r eval=FALSE}
+## What the script does
+
+The imported object is an `MRMhubExperiment`, a structured container holding the peak
+area data, sample annotations, and feature metadata. A few helpers summarise what was
+imported, and `normalize_by_istd()` corrects for extraction and injection variability;
+its result is recorded in `mexp@is_istd_normalized`, and the original data is always
+preserved in `mexp@dataset_orig`.
+
+```{r}
+get_analysis_count(mexp)   # number of analyses
+get_feature_count(mexp)    # number of features
+get_featurelist(mexp)      # the feature list
+```
+
+## Exporting
+
+Export the processed data to an Excel report (multiple sheets) or a tidy CSV:
+
+```{r}
 save_report_xlsx(mexp, path = "my_first_results.xlsx")
-```
-
-::: {.callout .callout-tip}
-**Interactive alternative.** `run_walkthrough()` opens a point-and-click application that validates
-the data, generates the equivalent workflow script, and displays the results. The code-first
-workflow above remains the reproducible path.
-:::
-
-## Step by step
-
-The rest of this page explains each step of the script above.
-
-### Step 1: Load MRMhub
-
-```{r}
-library(mrmhub)
-```
-
-### Step 2: Import Demo Data
-
-MRMhub ships with a demo dataset produced by INTEGRATOR.
-Import it with `import_data_mrmhub()`:
-
-```{r}
-demo_file <- system.file("extdata", "MRMhub_demo.tsv", package = "mrmhub")
-mexp <- MRMhubExperiment()
-mexp <- import_data_mrmhub(mexp, path = demo_file, import_metadata = TRUE)
-mexp
-```
-
-The result is an `MRMhubExperiment` object, a structured container
-holding the peak area data, sample annotations, and feature metadata.
-
-### Step 3: Explore the Data
-
-```{r}
-# Dimensions: samples × features
-get_analysis_count(mexp)
-get_feature_count(mexp)
-
-# First few sample annotations
-head(mexp@annot_analyses)
-
-# Feature list
-get_featurelist(mexp)
-```
-
-### Step 4: Normalize by Internal Standard
-
-Apply ISTD normalization to correct for extraction and injection variability:
-
-```{r}
-mexp <- normalize_by_istd(mexp)
-```
-
-::: {.callout .callout-tip}
-After this step, `mexp@is_istd_normalized` is `TRUE`.
-The original data is preserved in `dataset_orig`.
-:::
-
-### Step 5: Visualise
-
-Check the run sequence for signal drift:
-
-```{r, fig.height=4}
-plot_runscatter(mexp, variable = "norm_intensity")
-```
-
-### Step 6: Export
-
-Export the processed data to Excel or CSV:
-
-```{r}
-# Excel report (multiple sheets)
-save_report_xlsx(mexp, path = "my_first_results.xlsx")
-
-# Or as tidy CSV
 save_dataset_csv(mexp, path = "my_first_results.csv")
 ```
 
-## Next Steps
+## Next steps
 
-- [Key Concepts](manual-00-key-concepts.html) — understand the data model
-- [Lipidomics Workflow](tutorial-03-lipidomics-workflow.html) — full lipidomics workflow
-- [Drift Correction](tutorial-04-drift-correction.html) — drift & batch correction
-- [External Calibration](recipe-01-ext-calibration-qc.html) — quantitative assay with calibration
+- [Key Concepts & Glossary](manual-01-key-concepts.html) — understand the data model
+- [Preparing and importing data](tutorial-01-prep-data.html) — import your own data and metadata
+- [Basic MRMhub Workflow](tutorial-02-basic-workflow.html) — the full end-to-end pipeline
+- [Lipidomics Data Processing](tutorial-03-lipidomics-workflow.html) — a detailed real-world workflow

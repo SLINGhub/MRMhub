@@ -17,10 +17,12 @@ vignette: >
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>", eval = FALSE)
 ```
 
+<p class="page-kind page-kind-recipe">Recipe</p>
+
 ::: {.callout .callout-note}
-**Level:** Intermediate &nbsp;|&nbsp;
-**Output:** Self-contained HTML report &nbsp;|&nbsp;
-**Requires:** `gt`, `ggplot2`, `patchwork` (optional), `quarto` (for template rendering)
+**Level** Intermediate &nbsp;·&nbsp;
+**Output** Self-contained HTML report &nbsp;·&nbsp;
+**Requires** `gt`, `ggplot2`, `patchwork` (optional), `quarto` (for template rendering)
 :::
 
 ## Goal
@@ -77,7 +79,7 @@ cv_data <- mexp@metrics_qc |>
   filter(!is.na(cv))
 
 ggplot(cv_data, aes(x = cv)) +
-  geom_histogram(binwidth = 5, fill = "#4a90a4", colour = "white") +
+  geom_histogram(binwidth = 5, fill = "#5B8FA8", colour = "white") +
   geom_vline(xintercept = 30, linetype = "dashed", colour = "red") +
   labs(
     title = "QC CV Distribution",
@@ -142,12 +144,12 @@ qc_table |>
 ```{r}
 if (nrow(mexp@metrics_calibration) > 0) {
   cal_summary <- get_calibration_metrics(mexp) |>
-    select(feature_id, r_squared, slope, intercept, n_points, weighting) |>
-    arrange(r_squared)
+    select(feature_id, r2, fit_model, fit_weighting, lowest_cal, highest_cal) |>
+    arrange(r2)
 
   cal_summary |>
     gt::gt() |>
-    gt::fmt_number(columns = c(r_squared, slope, intercept), decimals = 4) |>
+    gt::fmt_number(columns = c(r2, lowest_cal, highest_cal), decimals = 4) |>
     gt::tab_header(title = "Calibration Curve Metrics")
 }
 ```
@@ -209,17 +211,13 @@ quarto::quarto_render(
 
 ## Tips
 
-::: {.callout .callout-tip}
+- **Self-contained HTML** — a single file that can be emailed or archived.
+- **Parameterize** the RDS path so the same template works for any study.
+- **Date stamp** (`date: today`) for an audit trail.
+- **Session info** at the end for reproducibility.
 
-- **Self-contained HTML** — a single file that can be emailed or archived
-- **Parameterize** the RDS path so the same template works for any study
-- **Date stamp** (`date: today`) for audit trail
-- **Session info** at the end for reproducibility
+## Next steps
 
-:::
-
-## Next Steps
-
-- [Multi-Batch Tutorial](tutorial-08-multi-batch.html) — full processing before reporting
-- [External Calibration and QC](recipe-01-ext-calibration-qc.html) — calibration workflow
-- [Troubleshooting](manual-09-troubleshooting.html) — common issues
+- [Basic MRMhub Workflow](tutorial-02-basic-workflow.html) — full processing before reporting
+- [External Calibration & QC](recipe-01-ext-calibration-qc.html) — calibration workflow
+- [Troubleshooting & FAQ](manual-10-troubleshooting.html) — common issues

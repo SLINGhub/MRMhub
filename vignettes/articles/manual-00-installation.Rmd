@@ -21,12 +21,26 @@ set.seed(1041)
 options(dplyr.print_max = 10)
 ```
 
+<p class="page-kind page-kind-manual">Manual</p>
+
 ## Requirements
 
 - **R ≥ 4.2** — install from [CRAN](https://cran.r-project.org)
 - **An IDE** — [Positron](https://positron.posit.co), [RStudio](https://posit.co/download/rstudio-desktop/), or [VS Code](https://code.visualstudio.com)
 
-## Installation
+MRMhub's core functionality requires no R coding skills, but basic familiarity with R and an IDE is needed to run and adapt the workflows.
+
+<details>
+<summary><strong>New to R?</strong></summary>
+
+Try online tutorials such as
+[An opinionated tour of RStudio](https://rladiessydney.org/courses/ryouwithme/01-basicbasics-1/)
+and the [RStudio User Guide](https://docs.posit.co/ide/user/ide/get-started/). Having a
+colleague who is familiar with the IDE can also help you get started smoothly and stay
+motivated.
+</details>
+
+## Installing MRMhub
 
 ::: {.callout .callout-tip}
 **Tip.** Quit and reopen the IDE first; most install failures come from packages already loaded in memory.
@@ -62,13 +76,11 @@ This checks the R version and dependencies and reports what is missing if a chec
 | `clang: error: ...` (macOS) | Compiler tools missing | Run `xcode-select --install` in Terminal, retry |
 | `cannot find -lcurl` (Linux) | System libraries missing | `sudo apt install libcurl4-openssl-dev libxml2-dev libssl-dev libfontconfig1-dev` |
 
-A longer list, covering proxies, mixed R installations on macOS, and INTEGRATOR security warnings, is given in [Troubleshooting & FAQ](manual-09-troubleshooting.html).
+A longer list, covering proxies, mixed R installations on macOS, and INTEGRATOR security warnings, is given in [Troubleshooting & FAQ](manual-10-troubleshooting.html).
 
+## Next steps
 
-## Next Steps
-
-- [Key Concepts & Glossary](manual-00-key-concepts.html) — core vocabulary and the MRMhubExperiment object
+- [Key Concepts & Glossary](manual-01-key-concepts.html) — core vocabulary and the MRMhubExperiment object
 - [Your First Analysis](tutorial-00-first-analysis.html) — a short end-to-end walkthrough
 - Questions or bug reports? File an issue on [GitHub](https://github.com/SLINGhub/MRMhub/issues), or contact the authors directly.
-
 

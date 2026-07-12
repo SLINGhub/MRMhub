@@ -18,10 +18,12 @@ vignette: >
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>", eval = FALSE)
 ```
 
+<p class="page-kind page-kind-recipe">Recipe</p>
+
 ::: {.callout .callout-note}
-**Level:** Intermediate &nbsp;|&nbsp;
-**Output:** `.mzTab` file (mzTab-M 2.0.0-M) &nbsp;|&nbsp;
-**Requires:** a processed `MRMhubExperiment`
+**Level** Intermediate &nbsp;·&nbsp;
+**Output** `.mzTab` file (mzTab-M 2.0.0-M) &nbsp;·&nbsp;
+**Requires** a processed `MRMhubExperiment`
 :::
 
 ## Goal
@@ -94,15 +96,12 @@ save_dataset_mztab(
 )
 ```
 
-::: {.callout .callout-caution}
 **mzTab-M is a quantification report, not a full processing record.**
-Internal-standard relationships, QC and calibration metrics,
-drift/batch-correction state, and the QC-type / batch structure are not part of
-the mzTab-M model and are therefore *not* reproduced on round-trip. The
-file captures identities, the chosen abundance matrix, and the study-variable
-grouping. Keep the `MRMhubExperiment` (or the Excel report from
-`save_report_xlsx()`) as the authoritative processing record.
-:::
+Internal-standard relationships, QC and calibration metrics, drift/batch-correction
+state, and the QC-type / batch structure are not part of the mzTab-M model and are
+therefore *not* reproduced on round-trip; the file captures identities, the chosen
+abundance matrix, and the study-variable grouping. Keep the `MRMhubExperiment` (or
+the Excel report from `save_report_xlsx()`) as the authoritative processing record.
 
 ## Validating the file
 
@@ -139,19 +138,14 @@ from the `SMF`/`SML` sections. Where one analyte is reported as several
 features (e.g. different adducts), the adduct is appended to keep `feature_id`
 unique (`Cer d18:1/16:0 | [M-H]-`).
 
-::: {.callout .callout-caution}
-**Import is partial by nature.** mzTab-M carries a single
-abundance per feature, so internal-standard relationships, QC-type assignments,
-and calibration metadata are *not* present and must be supplied with
-`add_metadata()`. `study_variable` groups are imported
-best-effort as `batch_id` (mzTab-M has no analytical-batch concept).
-:::
+**Import is partial by nature.** mzTab-M carries a single abundance per feature, so
+internal-standard relationships, QC-type assignments, and calibration metadata are
+*not* present and must be supplied with `add_metadata()`. `study_variable` groups
+are imported best-effort as `batch_id` (mzTab-M has no analytical-batch concept).
 
-## Next Steps
+## Next steps
 
 - [Custom QC Report](recipe-02-custom-qc-report.html) &mdash; a richer
   human-readable report.
-- [Feature Variables](manual-03-feature-variables.html) &mdash; what `conc`,
-  `intensity`, `area` and friends mean.
-- [The MRMhubExperiment Object](manual-04-mrmhub-experiment.html) &mdash; the
-  slots behind the export.
+- [The MRMhubExperiment Data Object](manual-02-data-object.html#feature-variables) &mdash; what
+  `conc`, `intensity`, `area` and friends mean, and the slots behind the export.

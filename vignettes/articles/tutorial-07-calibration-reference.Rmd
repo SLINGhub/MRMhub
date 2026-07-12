@@ -20,6 +20,8 @@ knitr::opts_chunk$set(
 
 ```
 
+<p class="page-kind page-kind-tutorial">Tutorial</p>
+
 Feature abundances in samples can also be calibrated to corresponding abundances in a specified
 reference sample. MRMhub supports absolute (re-)calibration and normalization (relative calibration).
 
@@ -268,7 +270,7 @@ gt::gt(tbl) |> gt::fmt_number(decimals = 3)
 
 ```
 
-## Next Steps
+## Next steps
 
 - [External Calibration & QC](recipe-01-ext-calibration-qc.html) — full calibration workflow with QC
 - [Basic MRMhub Workflow](tutorial-02-basic-workflow.html) — revisit the full pipeline

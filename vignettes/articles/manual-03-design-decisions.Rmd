@@ -17,6 +17,8 @@ vignette: >
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>", eval = FALSE)
 ```
 
+<p class="page-kind page-kind-manual">Manual</p>
+
 ## Audience
 
 This article is for:
@@ -25,7 +27,7 @@ This article is for:
 - Contributors who want to extend the package
 - Developers building tools on top of MRMhub
 
-To process data directly, see the [Design Overview](manual-00-design-overview.html) instead.
+To start processing data directly, see [Your First Analysis](tutorial-00-first-analysis.html) instead.
 
 ## Decision 1: S4 Class (MRMhubExperiment) vs Tidy Tibbles
 
@@ -103,24 +105,28 @@ feature per sample.
 # | Sample_002  | LPC_18:1   | 11234  | 2.30 |
 ```
 
-## Decision 3: Feature Identifiers are Compound-Level
+## Decision 3: Feature and analyte are distinct identifiers
 
-**Choice:** `feature_id` represents a unique compound (or compound + adduct),
-not a transition.
+**Choice:** `feature_id` identifies a distinct signal extracted from the MS data,
+while `analyte_id` identifies the compound that signal measures. The two are kept
+separate because they are not one-to-one.
 
 <details>
 <summary><strong>Alternatives considered</strong></summary>
 
 | Alternative | Why not |
 |-------------|---------|
-| Transition-level IDs | Creates many-to-one mapping for quantification; complicates normalization and reporting |
-| Compound + transition as composite key | Over-complex for downstream stats; INTEGRATOR already selects best quantifier |
+| A single ID equating feature and compound | Cannot express one analyte measured by several features, nor one feature shared by isobaric analytes |
+| Transition-level IDs only | Loses the compound-level grouping needed for QC concentrations and reporting |
 
 </details>
 
-**Rationale:** In MRM, a compound may have multiple transitions (quantifier + qualifiers).
-Peak integration (in INTEGRATOR) selects the best quantifier. By the time data reaches QUANT,
-each feature is one number per sample.
+**Rationale:** A feature is a distinct signal extracted from the MS data. Feature
+and analyte are not one-to-one: one analyte can give several features (isotopes,
+adducts, transitions), and one feature can carry several analytes when they are
+isobaric or isomeric (e.g. SM/PC). INTEGRATOR selects the quantifier signal for
+each feature, so by the time data reaches QUANT each `feature_id` is one value per
+sample, while `analyte_id` links the features that measure the same compound.
 
 ## Decision 4: Immutable Original Data
 
@@ -208,6 +214,17 @@ via status flags rather than enforcing with hard errors.
 The interface is a CSV file. Either tool can be replaced
 independently, and data can be inspected at the handoff point.
 
+## Why QUANT is an R package
+
+QUANT is implemented in R rather than Python because the bulk of its work is
+statistical and visual: smoothing, robust regression, multivariate QC, and
+ggplot2-driven inspection plots. R provides established, audit-friendly
+implementations of these primitives (loess, cubic splines, `prcomp`, kernel
+smoothers) and a large neighbouring ecosystem (`tidyverse`, Bioconductor,
+`shiny`) familiar to most academic mass spectrometry and bioinformatics groups.
+Literate `.Rmd` / `.qmd` notebooks make the final analysis self-documenting: the
+same file produces the figures, the report, and the audit trail.
+
 ## Extending MRMhub
 
 <details>
@@ -235,8 +252,8 @@ All functions should:
   system suitability and quality control samples in mass spectrometry assays.
   *Metabolomics*, 14, 72.
 
-## Next Steps
+## Next steps
 
-- [Design Overview](manual-00-design-overview.html) — the pipeline at a high level
-- [Data Structures](manual-01-data-structure.html) — detailed slot documentation
-- [MRMhubExperiment Object](manual-04-mrmhub-experiment.html) — creating and using the object
+- [The MRMhubExperiment Data Object](manual-02-data-object.html) — the object and its slots in detail
+- [Key Concepts & Glossary](manual-01-key-concepts.html) — the vocabulary used throughout
+- [Drift and Batch Correction](manual-07-corrections.html) — the QC-centric correction in practice

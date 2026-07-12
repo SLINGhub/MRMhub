@@ -13,56 +13,59 @@
 - **Flexible workflows.** Metabolomics and lipidomics data post-processing using dedicated customizable functions. 
 - **A single data object.** Data, metadata, and processing details are stored in single sharable data object (`MRMhubExperiment`).
 
-![A RunSequence overview of a 499-injection MRM batch: quality-control samples (TQC, BQC, blanks, LTR) mapped across the analysis order alongside the study samples, with batch boundaries and a run-time summary — one of the QC views produced from a single command.](man/figures/hero-runsequence.png)
+<div style="margin: 1.5em 0 0.5em;">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 182" role="img" aria-label="MRMhub-QUANT workflow in five stages, each with its key actions. Import and Validate: import data, add metadata, validate IDs, set run order. Quantify: ISTD normalisation, quantify by ISTD, calibration curves, reference calibration. Correct: drift correction, batch effects, interferences. QC and Filter: QC metrics, PCA and run-scatter, outlier detection, feature filtering. Report: Excel and CSV, mzTab-M, QC reports, shareable object." style="width: 100%; height: auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+  <style>
+    .q-arrow { cursor: pointer; transition: opacity 0.2s; }
+    .q-link:hover .q-arrow { opacity: 0.82; }
+    .q-link:hover .q-name { text-decoration: underline; text-underline-offset: 2px; }
+    .q-name { font-size: 20px; font-weight: 700; fill: #2C3E50; pointer-events: none; }
+    .q-item { font-size: 16px; fill: #46535f; pointer-events: none; }
+    .q-div { stroke: #dfe4e8; stroke-width: 1; }
+  </style>
+  <line class="q-div" x1="234" y1="70" x2="234" y2="176"/>
+  <line class="q-div" x1="433" y1="70" x2="433" y2="176"/>
+  <line class="q-div" x1="596" y1="70" x2="596" y2="176"/>
+  <line class="q-div" x1="766" y1="70" x2="766" y2="176"/>
+  <a class="q-link" href="articles/manual-04-data-import.html"><polygon class="q-arrow" points="4,4 231,4 255,30 231,56 4,56" fill="#d6e4eb"/><text class="q-name" x="118" y="37" text-anchor="middle">Import &amp; Validate</text></a>
+  <text class="q-item" x="20" y="88">Import data</text>
+  <text class="q-item" x="20" y="112">Add metadata</text>
+  <text class="q-item" x="20" y="136">Validate IDs</text>
+  <text class="q-item" x="20" y="160">Set run order</text>
+  <a class="q-link" href="articles/tutorial-02-basic-workflow.html"><polygon class="q-arrow" points="237,4 430,4 454,30 430,56 237,56 261,30" fill="#d8e6d4"/><text class="q-name" x="334" y="37" text-anchor="middle">Quantify</text></a>
+  <text class="q-item" x="253" y="88">ISTD normalisation</text>
+  <text class="q-item" x="253" y="112">Quantify by ISTD</text>
+  <text class="q-item" x="253" y="136">Calibration curves</text>
+  <text class="q-item" x="253" y="160">Reference calibration</text>
+  <a class="q-link" href="articles/manual-07-corrections.html"><polygon class="q-arrow" points="436,4 593,4 617,30 593,56 436,56 460,30" fill="#ecd2d2"/><text class="q-name" x="515" y="37" text-anchor="middle">Correct</text></a>
+  <text class="q-item" x="452" y="88">Drift correction</text>
+  <text class="q-item" x="452" y="112">Batch effects</text>
+  <text class="q-item" x="452" y="136">Interferences</text>
+  <a class="q-link" href="articles/tutorial-05-run-scatter.html"><polygon class="q-arrow" points="599,4 763,4 787,30 763,56 599,56 623,30" fill="#d6e4eb"/><text class="q-name" x="681" y="37" text-anchor="middle">QC &amp; Filter</text></a>
+  <text class="q-item" x="615" y="88">QC metrics</text>
+  <text class="q-item" x="615" y="112">PCA &amp; run-scatter</text>
+  <text class="q-item" x="615" y="136">Outlier detection</text>
+  <text class="q-item" x="615" y="160">Feature filtering</text>
+  <a class="q-link" href="articles/recipe-02-custom-qc-report.html"><polygon class="q-arrow" points="769,4 926,4 950,30 926,56 769,56 793,30" fill="#c8cfd6"/><text class="q-name" x="848" y="37" text-anchor="middle">Report</text></a>
+  <text class="q-item" x="785" y="88">Excel &amp; CSV</text>
+  <text class="q-item" x="785" y="112">mzTab-M</text>
+  <text class="q-item" x="785" y="136">QC reports</text>
+  <text class="q-item" x="785" y="160">Shareable object</text>
+</svg>
+<p style="font-size: 0.85rem; color: #6c757d; margin-top: 0.25rem;">Visualise at each step with <a href="articles/manual-08-visualization.html">QC plots</a> — RunScatter, PCA, run-sequence, normalization QC.</p>
+</div>
 
 <p style="margin: 1em 0;">
 <a href="articles/tutorial-00-first-analysis.html" class="btn btn-primary" role="button">Run your first analysis (5 min) →</a>
 </p>
 
-Prefer point-and-click? `run_walkthrough()` opens a guided app that validates your data and generates the workflow script (one-time `install.packages(c("shiny", "bslib"))`).
-
-<div style="text-align: center; margin: 1.5em 0 0.5em;">
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 130" style="max-width: 840px; width: 100%; height: auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
-  <style>
-    .wf-box { rx: 8; ry: 8; stroke-width: 1.5; cursor: pointer; transition: opacity 0.2s; }
-    .wf-box:hover { opacity: 0.85; }
-    .wf-label { font-size: 12px; font-weight: 600; fill: #1a1a1a; pointer-events: none; text-decoration: underline; text-underline-offset: 2px; }
-    .wf-arrow { fill: #2C3E50; }
-    .wf-box-dashed { fill: transparent; stroke-dasharray: 4,3; }
-    .wf-box-dashed:hover { fill: rgba(91,143,168,0.08); }
-    .wf-detail { font-size: 9.5px; fill: #555; pointer-events: none; }
-  </style>
-  <a href="articles/manual-05a-which-importer.html"><rect class="wf-box wf-box-dashed" x="35" y="10" width="110" height="70" stroke="#5B8FA8"/><text class="wf-label" x="90" y="50" text-anchor="middle">Data Import</text></a>
-  <text class="wf-detail" x="90" y="98" text-anchor="middle">MRMhub-INTEGRATOR</text>
-  <text class="wf-detail" x="90" y="112" text-anchor="middle">Other formats</text>
-  <polygon class="wf-arrow" points="148,38 148,52 164,45"/>
-  <a href="articles/manual-06-metadata-import.html"><rect class="wf-box" x="167" y="10" width="110" height="70" fill="#f5e0c8" stroke="#D4914E"/><text class="wf-label" x="222" y="50" text-anchor="middle">Metadata</text></a>
-  <text class="wf-detail" x="222" y="98" text-anchor="middle">import CSV/XLS</text>
-  <text class="wf-detail" x="222" y="112" text-anchor="middle">Integrity validation</text>
-  <polygon class="wf-arrow" points="280,38 280,52 296,45"/>
-  <a href="articles/recipe-01-ext-calibration-qc.html"><rect class="wf-box" x="299" y="10" width="110" height="70" fill="#d8e6d4" stroke="#6B9E5E"/><text class="wf-label" x="354" y="42" text-anchor="middle"><tspan x="354" dy="0">Normalize /</tspan><tspan x="354" dy="16">Quantify</tspan></text></a>
-  <text class="wf-detail" x="354" y="98" text-anchor="middle">ISTD</text>
-  <text class="wf-detail" x="354" y="112" text-anchor="middle">Calibration curve</text>
-  <polygon class="wf-arrow" points="412,38 412,52 428,45"/>
-  <a href="articles/manual-07-drift-batch-correction.html"><rect class="wf-box" x="431" y="10" width="110" height="70" fill="#ecd2d2" stroke="#C27171"/><text class="wf-label" x="486" y="50" text-anchor="middle">Corrections</text></a>
-  <text class="wf-detail" x="486" y="98" text-anchor="middle">Drift</text>
-  <text class="wf-detail" x="486" y="112" text-anchor="middle">Batch</text>
-  <polygon class="wf-arrow" points="544,38 544,52 560,45"/>
-  <a href="articles/tutorial-09-pca-exploration.html"><rect class="wf-box" x="563" y="10" width="110" height="70" fill="#d6e4eb" stroke="#5B8FA8"/><text class="wf-label" x="618" y="50" text-anchor="middle">QC</text></a>
-  <text class="wf-detail" x="618" y="98" text-anchor="middle">Metrics</text>
-  <text class="wf-detail" x="618" y="112" text-anchor="middle">Plots</text>
-  <polygon class="wf-arrow" points="676,38 676,52 692,45"/>
-  <a href="articles/recipe-02-custom-qc-report.html"><rect class="wf-box" x="695" y="10" width="110" height="70" fill="#c8cfd6" stroke="#2C3E50"/><text class="wf-label" x="750" y="50" text-anchor="middle">Reporting</text></a>
-  <text class="wf-detail" x="750" y="98" text-anchor="middle">Plain tables</text>
-  <text class="wf-detail" x="750" y="112" text-anchor="middle">QC reports</text>
-</svg>
-</div>
+Prefer point-and-click? `build_workflow()` opens a guided app that validates your data and metadata, warns about pipeline mismatches, and generates a downloadable Quarto (`.qmd`) workflow (one-time `install.packages(c("shiny", "bslib"))`).
 
 ## Quick Start and Demos
  
 - **[Installation](articles/manual-00-installation.html)** — install and verify your setup
 - **[Your First Analysis](articles/tutorial-00-first-analysis.html)** — a 5-minute run on bundled data
-- **[Prepare your data](articles/manual-05a-which-importer.html)** — file formats and importers
+- **[Prepare your data](articles/manual-04-data-import.html)** — file formats and importers
 - **[Example: targeted lipidomics](articles/tutorial-03-lipidomics-workflow.html)** — a full lipidomics workflow
 - **[Example: external calibration](articles/recipe-01-ext-calibration-qc.html)** — a quantitative assay with calibration curves
 
@@ -77,7 +80,7 @@ pak::pak("SLINGhub/MRMhub")
 library(mrmhub); mrmhub::check_setup()
 ```
 
-`pak` resolves locked packages and parallelises downloads; `remotes::install_github("SLINGhub/MRMhub")` is an equivalent fallback. For more details and troubleshooting see [Installation](articles/manual-00-installation.html) and [Troubleshooting & FAQ](articles/manual-09-troubleshooting.html).
+`pak` resolves locked packages and parallelises downloads; `remotes::install_github("SLINGhub/MRMhub")` is an equivalent fallback. For more details and troubleshooting see [Installation](articles/manual-00-installation.html) and [Troubleshooting & FAQ](articles/manual-10-troubleshooting.html).
 
 
 

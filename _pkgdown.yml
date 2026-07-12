@@ -21,6 +21,7 @@ navbar:
     - news
     right:
     - mrmhub
+    - integrator
     - search
     - github
     - lightswitch
@@ -29,6 +30,9 @@ navbar:
     mrmhub:                       # link back to the landing hub (parity with INTEGRATOR)
       text: "← MRMhub home"
       href: https://slinghub.github.io/MRMhub/
+    integrator:                   # cross-link to the INTEGRATOR manual (bidirectional with its QUANT link)
+      text: "INTEGRATOR ↗"
+      href: https://slinghub.github.io/MRMhub/integrator/
     get_started:
       text: Get Started
       menu:
@@ -37,34 +41,35 @@ navbar:
       - text: Your First Analysis (5 min)
         href: articles/tutorial-00-first-analysis.html
       - text: Key Concepts & Glossary
-        href: articles/manual-00-key-concepts.html
+        href: articles/manual-01-key-concepts.html
       - text: Troubleshooting & FAQ
-        href: articles/manual-09-troubleshooting.html
+        href: articles/manual-10-troubleshooting.html
     tutorials:
       text: Tutorials
       menu:
+      - text: Start here
+      - text: Your First Analysis (5 min)
+        href: articles/tutorial-00-first-analysis.html
       - text: Preparing & importing data
         href: articles/tutorial-01-prep-data.html
       - text: Basic MRMhub workflow
         href: articles/tutorial-02-basic-workflow.html
       - text: Lipidomics (full workflow)
         href: articles/tutorial-03-lipidomics-workflow.html
-      - text: Drift correction
+      - text: '-------'
+      - text: Techniques
+      - text: Drift and batch correction
         href: articles/tutorial-04-drift-correction.html
-      - text: RunScatter plots
-        href: articles/tutorial-05-run-scatter.html
-      - text: Batch correction
-        href: articles/tutorial-06-batch-correction.html
       - text: Calibration by reference sample
         href: articles/tutorial-07-calibration-reference.html
-      - text: Multi-batch study
-        href: articles/tutorial-08-multi-batch.html
-      - text: QC exploration with PCA
-        href: articles/tutorial-09-pca-exploration.html
       - text: Validating metadata
         href: articles/tutorial-10-metadata-validation.html
       - text: Interference correction
         href: articles/tutorial-11-interference-correction.html
+      - text: '-------'
+      - text: QC & exploration
+      - text: RunScatter and PCA
+        href: articles/tutorial-05-run-scatter.html
       - text: '-------'
       - text: Recipes
       - text: External calibration & QC
@@ -76,54 +81,70 @@ navbar:
     manual:
       text: Manual
       menu:
-      - text: Concepts & Design
-      - text: Design Overview
-        href: articles/manual-00-design-overview.html
-      - text: INTEGRATOR vs QUANT
-        href: articles/manual-00-integrator-vs-quant.html
-      - text: Sample Types & QC Roles
-        href: articles/manual-00-sample-types.html
+      - text: Manual (all pages)
+        href: articles/manual-index.html
       - text: '-------'
-      - text: Data Model
-      - text: Data Structures
-        href: articles/manual-01-data-structure.html
-      - text: Data Identifiers
-        href: articles/manual-02-data-identifiers.html
-      - text: Feature Variables
-        href: articles/manual-03-feature-variables.html
-      - text: MRMhubExperiment Object
-        href: articles/manual-04-mrmhub-experiment.html
+      - text: Getting started
+      - text: Installation
+        href: articles/manual-00-installation.html
+      - text: Key Concepts & Glossary
+        href: articles/manual-01-key-concepts.html
       - text: '-------'
-      - text: Import & Metadata
-      - text: Import & prepare data files
-        href: articles/manual-05a-which-importer.html
-      - text: Data Import
-        href: articles/manual-05-data-import.html
-      - text: Data File Structures
-        href: articles/manual-05b-data-file-structures.html
-      - text: Metadata Import
-        href: articles/manual-06-metadata-import.html
-      - text: Metadata Table Structures
-        href: articles/manual-06a-metadata-table-structures.html
+      - text: Preparing and running
+      - text: Importing Analytical Data
+        href: articles/manual-04-data-import.html
+      - text: Importing Metadata
+        href: articles/manual-05-metadata.html
+      - text: Drift and Batch Correction
+        href: articles/manual-07-corrections.html
       - text: '-------'
-      - text: Corrections
-      - text: Drift & Batch Correction
-        href: articles/manual-07-drift-batch-correction.html
-      - text: '-------'
-      - text: Reference
-      - text: Function Cheatsheet
-        href: articles/manual-11-cheatsheet.html
+      - text: Results and downstream use
       - text: Visualisation Functions
         href: articles/manual-08-visualization.html
+      - text: '-------'
+      - text: Reference
+      - text: The MRMhubExperiment Data Object
+        href: articles/manual-02-data-object.html
       - text: Design Decisions
-        href: articles/manual-10-design-decisions.html
+        href: articles/manual-03-design-decisions.html
+      - text: Sample Types & QC Roles
+        href: articles/manual-06-sample-types.html
+      - text: Troubleshooting & FAQ
+        href: articles/manual-10-troubleshooting.html
     news:
       text: News
       href: news/index.html
 redirects:
-  # Slug renames — keep old published URLs alive (pkgdown emits meta-refresh stubs).
+  # Slug renames + consolidations — keep old published URLs alive (meta-refresh stubs).
   - ["articles/manual-00-get-started.html", "articles/manual-00-installation.html"]
-  - ["articles/manual-00-architecture.html", "articles/manual-00-design-overview.html"]
+  - ["articles/manual-00-architecture.html", "articles/manual-03-design-decisions.html"]
+  # renamed pages
+  - ["articles/manual-00-key-concepts.html", "articles/manual-01-key-concepts.html"]
+  - ["articles/manual-10-design-decisions.html", "articles/manual-03-design-decisions.html"]
+  - ["articles/manual-06-metadata-import.html", "articles/manual-05-metadata.html"]
+  - ["articles/manual-00-sample-types.html", "articles/manual-06-sample-types.html"]
+  - ["articles/manual-07-drift-batch-correction.html", "articles/manual-07-corrections.html"]
+  - ["articles/manual-09-troubleshooting.html", "articles/manual-10-troubleshooting.html"]
+  # data-model 4 -> data-object
+  - ["articles/manual-01-data-structure.html", "articles/manual-02-data-object.html"]
+  - ["articles/manual-02-data-identifiers.html", "articles/manual-02-data-object.html"]
+  - ["articles/manual-03-feature-variables.html", "articles/manual-02-data-object.html"]
+  - ["articles/manual-04-mrmhub-experiment.html", "articles/manual-02-data-object.html"]
+  # import trio -> data-import (file-format previews ported into data-import)
+  - ["articles/manual-05-data-import.html", "articles/manual-04-data-import.html"]
+  - ["articles/manual-05a-which-importer.html", "articles/manual-04-data-import.html"]
+  - ["articles/manual-05b-data-file-structures.html", "articles/manual-04-data-import.html"]
+  # metadata table structures -> metadata (previews ported into metadata)
+  - ["articles/manual-06a-metadata-table-structures.html", "articles/manual-05-metadata.html"]
+  # cut pages -> absorbing page
+  - ["articles/manual-00-design-overview.html", "articles/manual-03-design-decisions.html"]
+  - ["articles/manual-00-integrator-vs-quant.html", "articles/manual-03-design-decisions.html"]
+  - ["articles/manual-11-cheatsheet.html", "articles/manual-01-key-concepts.html"]
+  # drift + batch tutorials merged into tutorial-04-drift-correction
+  - ["articles/tutorial-06-batch-correction.html", "articles/tutorial-04-drift-correction.html"]
+  - ["articles/tutorial-08-multi-batch.html", "articles/tutorial-04-drift-correction.html"]
+  # run-scatter + PCA merged into tutorial-05-run-scatter
+  - ["articles/tutorial-09-pca-exploration.html", "articles/tutorial-05-run-scatter.html"]
 reference:
 - text: QUANT Reference
 - title: Getting started
@@ -131,7 +152,8 @@ reference:
     Functions to validate your R environment and explore the MRMhub workflow interactively.
   contents:
   - check_setup
-  - run_walkthrough
+  - build_workflow
+  - generate_workflow_qmd
 - title: QUANT R package reference
   description: |
     Functions to create, access and query MRMhubExperiment objects, which are the central data object in the MRMhub workflow.
@@ -165,6 +187,7 @@ reference:
   - import_data_skyline
   - import_data_csv_wide
   - import_data_csv_long
+  - import_data_mztab
   - parse_mrmhub_result
   - parse_masshunter_csv
   - parse_skyline_result
@@ -186,7 +209,6 @@ reference:
   - save_metadata_templates
   - save_metadata_msorganiser_template
   - add_metadata
-  - assert_metadata
 - title: Isotope correction
   description: |
     Functions to perform type II isotopic correction

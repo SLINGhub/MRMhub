@@ -1,0 +1,51 @@
+---
+title: "Manual"
+output:
+  rmarkdown::html_vignette:
+    fig_width: 6
+    fig_height: 2
+description: |
+  Complete contents of the MRMhub-QUANT manual.
+vignette: >
+  %\VignetteIndexEntry{Manual}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+editor_options:
+  markdown:
+    wrap: 80
+---
+
+<p class="page-kind page-kind-manual">Manual</p>
+
+Every manual page, grouped by stage of a post-processing project. Step-by-step
+worked examples are in the [Tutorials](tutorial-00-first-analysis.html), and the
+full argument reference for every function is in the
+[function reference](../reference/index.html).
+
+## Getting started
+
+- **[Installation](manual-00-installation.html)** — install `mrmhub` and verify the setup with `check_setup()`.
+- **[Key Concepts & Glossary](manual-01-key-concepts.html)** — the data model, core terminology, and where QUANT fits in the MRMhub workflow.
+
+## Preparing and running
+
+- **[Importing Analytical Data](manual-04-data-import.html)** — choosing an importer and the file layout each one expects.
+- **[Importing Metadata](manual-05-metadata.html)** — attaching sample, feature, and internal-standard annotations.
+- **[Drift and Batch Correction](manual-07-corrections.html)** — correcting signal drift within runs and offsets between batches.
+
+## Results and downstream use
+
+- **[Visualisation Functions](manual-08-visualization.html)** — RunScatter, PCA, run-sequence, and normalization-QC plots.
+
+## Reference
+
+- **[The MRMhubExperiment Data Object](manual-02-data-object.html)** — the tables, identifiers, and feature variables of the central object.
+- **[Design Decisions](manual-03-design-decisions.html)** — why the package is built the way it is.
+- **[Sample Types & QC Roles](manual-06-sample-types.html)** — every sample-type (`qc_type`) label and its role in QC.
+- **[Troubleshooting & FAQ](manual-10-troubleshooting.html)** — frequent problems and how to resolve them.
+
+## See also
+
+- [Tutorials](tutorial-00-first-analysis.html) — worked, end-to-end examples
+- [Function reference](../reference/index.html) — full arguments for every function
+- [INTEGRATOR documentation](https://slinghub.github.io/MRMhub/integrator/) — upstream peak integration

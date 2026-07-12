@@ -21,8 +21,10 @@ set.seed(1041)
 options(dplyr.print_max = 10)
 ```
 
+<p class="page-kind page-kind-tutorial">Tutorial</p>
+
 This tutorial illustrates a postprocessing and quality control workflow
-starting from a preprocessing data from a lipidomics analysis. Starting
+starting from the preprocessed data of a lipidomics analysis. Starting
 from peak areas, the aim is to produce a curated dataset with lipid
 species concentrations that is ready for subsequent statistical
 analysis. This post-processing will include an assessment of the
@@ -31,7 +33,7 @@ normalisation/quantification, feature filtering and reporting of the
 dataset.
 
 ::: {.callout .callout-note}
-**Time:** ~45 min &nbsp;|&nbsp; **Level:** Advanced &nbsp;|&nbsp; **Prerequisites:** [Basic workflow](tutorial-02-basic-workflow.html)
+**Time** ~45 min &nbsp;·&nbsp; **Level** Advanced &nbsp;·&nbsp; **Prerequisites** [Basic workflow](tutorial-02-basic-workflow.html)
 :::
 
 ```{r, results = FALSE, message = FALSE}
@@ -790,8 +792,10 @@ my_saved_exp <- readRDS(file = path)
 print(myexp)
 ```
 
-## Next Steps
+## Next steps
 
-- [Drift Correction](tutorial-04-drift-correction.html) — drift correction methods and diagnostics
-- [Batch Correction](tutorial-06-batch-correction.html) — inter-batch correction options
+- [Drift and Batch Correction](tutorial-04-drift-correction.html) — correction methods and diagnostics
+- [Exploring QC: RunScatter and PCA](tutorial-05-run-scatter.html) — QC visualisation in depth
+- [Interference Correction](tutorial-11-interference-correction.html) — correcting isotopic/isobaric overlap
+- [External Calibration & QC](recipe-01-ext-calibration-qc.html) — quantitation with calibration curves
 - [External Calibration & QC](recipe-01-ext-calibration-qc.html) — quantify with external calibration curves

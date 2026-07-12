@@ -21,6 +21,8 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>", eval = FALSE,
                       out.width = "100%")
 ```
 
+<p class="page-kind page-kind-tutorial">Tutorial</p>
+
 Most processing errors in MRMhub trace back to defects in the annotation tables rather than the
 analytical data itself. The most frequent offenders are mismatched `analysis_id` between data and
 annotation, missing required columns (`qc_type`, `batch_id`, `analysis_order`), and `qc_type`
@@ -28,11 +30,11 @@ labels that do not match the canonical vocabulary used internally for QC selecti
 covers generating a template, validating annotations against imported data, and resolving
 the typical defects.
 
-See [Sample Types and QC Roles](manual-00-sample-types.html) for the canonical `qc_type` vocabulary
-and [Metadata Import](manual-06-metadata-import.html) for the per-table importer reference.
+See [Sample Types and QC Roles](manual-06-sample-types.html) for the canonical `qc_type` vocabulary
+and [Metadata Import](manual-05-metadata.html) for the per-table importer reference.
 
 ::: {.callout .callout-note}
-**Time:** ~10 min &nbsp;|&nbsp; **Level:** Beginner &nbsp;|&nbsp; **Prerequisites:** [Your first analysis](tutorial-00-first-analysis.html)
+**Time** ~10 min &nbsp;·&nbsp; **Level** Beginner &nbsp;·&nbsp; **Prerequisites** [Your first analysis](tutorial-00-first-analysis.html)
 :::
 
 ## 1. Generate a metadata template
@@ -76,7 +78,7 @@ fill in the XLSX template from Step 1 and use the per-table importers in Step 3.
 
 The per-table importers (`import_metadata_analyses()`, `import_metadata_features()`,
 `import_metadata_istds()`, `import_metadata_responsecurves()`, `import_metadata_qcconcentrations()`)
-read a CSV or Excel file, call `assert_metadata()` internally, and link the validated table to the
+read a CSV or Excel file, validate it against the imported data, and link the validated table to the
 experiment. Defects are reported via `cli` warnings and aborts; on success the table is attached.
 
 ```{r}
@@ -95,40 +97,20 @@ myexp <- import_metadata_istds(myexp,
                                sheet = "annot_istds")
 ```
 
-`assert_metadata()` checks for:
+The import validates:
 
 - presence of required columns (`analysis_id`, `qc_type` for analyses; `feature_id` for features;
   `istd_feature_id` and an `istd_conc_*` column for ISTDs);
 - uniqueness of identifiers (`analysis_id`, `feature_id`);
 - consistency between annotation IDs and IDs present in `dataset_orig`;
-- canonical `qc_type` labels (see [Sample Types](manual-00-sample-types.html)).
+- canonical `qc_type` labels (see [Sample Types](manual-06-sample-types.html)).
 
-Defects are reported using `cli` messages that name the offending table, column, and IDs.
+Defects are reported using `cli` messages that name the offending table, column, and IDs. When
+annotation tables are assembled programmatically rather than read from a file, pass them to
+[`add_metadata()`](../reference/add_metadata.html) as a named list; the same validation is applied
+before the tables are linked.
 
-## 4. Manual validation without auto-linking
-
-For full control — for instance, when assembling annotation tables programmatically — call
-`assert_metadata()` directly. It accepts a named list of tibbles and returns the validated list,
-which is then passed to `add_metadata()` to attach it to the experiment.
-
-```{r}
-annot_analyses <- readr::read_csv("metadata/analyses.csv")
-annot_features <- readr::read_csv("metadata/features.csv")
-
-validated <- assert_metadata(
-  myexp,
-  metadata = list(annot_analyses = annot_analyses,
-                  annot_features = annot_features),
-  ignore_warnings = FALSE,
-  excl_unmatched_analyses = FALSE
-)
-
-myexp <- add_metadata(myexp,
-                      metadata = validated,
-                      excl_unmatched_analyses = FALSE)
-```
-
-## 5. Common defects and resolutions
+## 4. Common defects and resolutions
 
 <details>
 <summary><strong>Column <code>qc_type</code> missing from <code>annot_analyses</code></strong></summary>
@@ -225,7 +207,7 @@ between the integration software output and a hand-edited Excel file.
 
 </details>
 
-## 6. Practical recommendations
+## 5. Practical recommendations
 
 - Re-import annotations after every edit. Saved Excel files held open in a separate process can be
   silently locked and read partially.
@@ -235,9 +217,9 @@ between the integration software output and a hand-edited Excel file.
   survive R but complicate downstream column references. Letters, digits, underscores, hyphens.
 - Keep the annotation file under version control alongside the data file.
 
-## Next Steps
+## Next steps
 
-- [Sample Types and QC Roles](manual-00-sample-types.html) — canonical `qc_type` vocabulary
-- [Metadata Import](manual-06-metadata-import.html) — per-table importer reference
-- [Data Import](manual-05-data-import.html) — importing peak area / concentration data
+- [Sample Types & QC Roles](manual-06-sample-types.html) — canonical `qc_type` vocabulary
+- [Importing Metadata](manual-05-metadata.html) — per-table importer reference
+- [Importing Analytical Data](manual-04-data-import.html) — importing peak area / concentration data
 - [Your First Analysis](tutorial-00-first-analysis.html) — minimal end-to-end workflow
