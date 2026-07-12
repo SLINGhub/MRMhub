@@ -26,6 +26,11 @@ inst/doc
 
 # Rust INTEGRATOR build output
 integrator/target/
+integrator/gui/src-tauri/target/
+integrator/gui/src-tauri/gen/
+integrator/gui/src-tauri/icons/
+integrator/gui/src-tauri/binaries/
+integrator/gui/dist/
 
 # Excel temp/lock files (created when a workbook is open)
 ~$*

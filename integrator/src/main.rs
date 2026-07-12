@@ -37,7 +37,10 @@ struct Param {
 fn main() -> Result<(), Box<dyn Error>> {
     let mut args = std::env::args();
     args.next();
-    std::env::set_current_dir(std::env::current_exe()?.parent().unwrap())?;
+    let project_dir = std::env::var_os("MRMHUB_PROJECT_DIR")
+        .map(PathBuf::from)
+        .unwrap_or(std::env::current_exe()?.parent().unwrap().to_path_buf());
+    std::env::set_current_dir(project_dir)?;
     let param_t = common::read_param()?;
     rayon::ThreadPoolBuilder::new()
         .num_threads(param_t.num_t)
