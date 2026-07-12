@@ -5,7 +5,7 @@ set -Eeuo pipefail
 # resolves the repository paths from this script's location
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "$script_dir/../.." && pwd)"
-integrator_dir="$repo_root/integrator"
+integrator_dir="$repo_root/integrator_w_gui"
 tauri_dir="$script_dir/src-tauri"
 
 # stops early when the script is not running on macos

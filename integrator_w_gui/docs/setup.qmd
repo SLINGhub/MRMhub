@@ -1,0 +1,106 @@
+---
+title: "Installation"
+description: "Obtaining INTEGRATOR and organising a reproducible analysis project"
+---
+
+INTEGRATOR is a self-contained, portable executable and requires no installer: the application is
+downloaded, unzipped, and run from a folder, with one copy kept per analysis project
+(see [below](#setting-up-a-peak-integration-project)).
+
+## System requirements
+
+Pre-compiled binaries are provided for **macOS** (Apple silicon) and **Windows 11** (x86-64).
+A multi-core CPU is recommended, as the integration is parallelised. Memory
+requirements are **8 GB minimum, 16 GB recommended** for large projects. The application itself
+occupies minimal disk space, but the integration outputs — internal files (the `misc/` folder),
+result tables, and generated PDFs — can require considerable space depending on dataset size.
+
+INTEGRATOR itself has no runtime dependencies. The following external tools may be required:
+
+- **mzML conversion** — ProteoWizard MSConvert (Windows only), see [mzML conversion](msconvert.qmd).
+- **PDF chromatogram plotting** — an [R](https://www.r-project.org) installation. Download
+  the installer from
+  [CRAN](https://cran.r-project.org); no additional R packages are required.
+
+## Download
+
+Pre-compiled executables for macOS and Windows are available from the
+[GitHub releases page](https://github.com/SLINGhub/MRMhub/releases). The archive contains the executables — **MRMhub** (MRMhub-INTEGRATOR) and **MRMhub-viz** (integration viewer app), the `MRMhub_plot.r` R script, template input files (`param.txt`, `run_order.csv`, `feature_list.csv`), and a complete test dataset.
+
+![](images/paste-3.png){fig-align="center" width="420" fig-alt="Screenshot of a macOS Finder window for the MRMhub-INTEGRATOR project folder. It contains the _testdata and mzML folders, the MRMhub (1.4 MB) and MRMhub-viz (9.3 MB) executables, the MRMhub_plot.r plotting script, param.txt, README.txt, manual.pdf, and two input CSV files, feature_list.csv and run_order.csv."}
+
+
+## Clearing the first-launch security prompt
+
+::: {.callout-important}
+The executables are unsigned, so a security prompt appears on first launch — on **macOS** the
+developer "cannot be verified", on **Windows** the file is "blocked". This does not indicate an issue
+with the software.
+:::
+
+To clear the security block, the following must be done for each downloaded executable:
+
+- **macOS** (left) — **System Settings** → **Privacy & Security** → click **Open Anyway**.
+- **Windows** (right) — right-click executable → **Properties** → tick
+  **Unblock** (if present) → **OK**.
+
+::: {layout="[65,35]"}
+![](images/security_setting.png){fig-alt="Screenshot of the macOS System Settings Privacy and Security pane. Under Security, 'Allow applications from' reads App Store and Known Developers, and a row states that MRMhub was blocked to protect your Mac, beside an Open Anyway button that permits the app to run."}
+
+![](images/unblock.png){fig-alt="Screenshot of the Windows MRMhub Properties dialog on the General tab. It identifies the file as an Application (.exe) of 1.33 MB and, near the bottom, shows a Security note that the file came from another computer and might be blocked, beside an Unblock checkbox that must be ticked to allow the app to run."}
+:::
+
+
+## Verify the installation
+
+Every release bundles a demonstration dataset with input files that runs end-to-end without further
+preparation — the quickest confirmation that the installation works. See **[Demo](demo.qmd)**.
+
+
+## Setting up a peak integration project
+
+The unzipped folder can serve directly as a peak-integration project — a self-contained folder
+holding the executables, the input files, and the raw data. The mzML files are placed in a subfolder
+(e.g. `mzML/`, as specified in `param.txt`). The three input files (`param.txt`, `run_order.csv`,
+`feature_list.csv`) must be edited to the specific dataset — its samples, features, and integration
+settings — as described in [Input Files](input-files.qmd). The integration is then run within this
+folder — see [Processing Workflow](running.qmd) for the processing steps.
+
+::: {.filetree}
+```
+my-project/
+├── MRMhub.exe / .app      ← peak-integration executable
+├── MRMhub-viz.exe / .app  ← results visualiser (optional)
+├── MRMhub_plot.r          ← R script for chromatogram PDFs (optional step 4)
+├── param.txt          ┐
+├── run_order.csv      ├  input files (see Input Files)
+├── feature_list.csv   ┘
+└── mzML/                  ← the converted .mzML data files
+```
+
+[A project folder assembled and ready to run. Files added by a run are documented in Processing Workflow.]{.tree-caption}
+:::
+
+::: {.callout-spaced}
+::: {.callout-tip}
+## Keep one INTEGRATOR copy per project
+
+A separate copy of INTEGRATOR is kept in each project, with its data and input files, so the analysis
+stays reproducible and transferable. As parameters and input-file formats may change between
+versions, keeping the executable with the project also ensures the input files match the version that
+produced the results.
+:::
+:::
+
+## Updating INTEGRATOR
+
+To update INTEGRATOR, replace the executables in the project folder with a newer
+[release](https://github.com/SLINGhub/MRMhub/releases). New versions are mostly backward-compatible,
+but may occasionally require adapting the input files, as new functionality may add or change parameters.
+
+::: {.see-also}
+## See also
+
+- [Edit the input files](input-files.qmd) — `param.txt`, `run_order.csv`, and `feature_list.csv`.
+- [Processing Workflow](running.qmd) — the four processing steps.
+:::

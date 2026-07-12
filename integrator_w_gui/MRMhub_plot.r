@@ -20,17 +20,18 @@ cat("This may take a few minutes... Check output folders for progress.\n")
 
 misc_dir <- "misc"
 
+transition_metadata_file <- file.path(misc_dir, "trans_R_v2.csv")
+if (!file.exists(transition_metadata_file)) {
+  transition_metadata_file <- file.path(misc_dir, "trans_R.csv")
+}
 cqq_list <- read.csv(
-  file.path(misc_dir, "trans_R.csv"),
+  transition_metadata_file,
   header = TRUE,
-  colClasses = c(
-    "character", "character", "character", "character",
-    "integer", "character", "numeric", "numeric"
-  )
+  stringsAsFactors = FALSE
 )
 
-v0_list <- cqq_list[, 7]
-v1_list <- cqq_list[, 8]
+v0_list <- cqq_list$left.view.bound
+v1_list <- cqq_list$right.view.bound
 v0_list[is.na(v0_list)] <- 0
 v1_list[is.na(v1_list)] <- 999
 
@@ -38,7 +39,11 @@ cpd_list <- cqq_list[, 2]
 q1_list <- cqq_list[, 3]
 q3_list <- cqq_list[, 4]
 use_rt_list <- cqq_list[, 5] == 1
-bl_list <- cqq_list[, 6]
+bl_list <- if ("baseline" %in% names(cqq_list)) {
+  cqq_list$baseline
+} else {
+  rep("default", nrow(cqq_list))
+}
 cqq_list <- substr(cqq_list[, 1], 2, 9)
 
 color_palette <- c(
@@ -104,6 +109,15 @@ PlotIonChromatogram <- function(eic_file) {
   #   NULL, invisibly. Called for the side effect of writing a PDF.
   data_connection <- file(eic_file, "rb")
   on.exit(close(data_connection), add = TRUE)
+  baseline_file <- file.path(
+    dirname(eic_file),
+    sub("^se_", "sb_", basename(eic_file))
+  )
+  baseline_connection <- NULL
+  if (file.exists(baseline_file)) {
+    baseline_connection <- file(baseline_file, "rb")
+    on.exit(close(baseline_connection), add = TRUE)
+  }
 
   first_underscore_position <- unlist(gregexpr("_", eic_file))[1] + 1
   filename <- paste0(
@@ -167,13 +181,26 @@ PlotIonChromatogram <- function(eic_file) {
       signed = FALSE,
       endian = "little"
     )
-    baseline <- readBin(
-      data_connection,
-      numeric(),
-      size = 4,
-      n = n_peaks * 2,
-      endian = "little"
-    )
+    baseline <- rep(NaN, n_peaks * 2)
+    if (!is.null(baseline_connection)) {
+      baseline_peak_count <- readBin(
+        baseline_connection,
+        integer(),
+        size = 1,
+        signed = FALSE,
+        endian = "little"
+      )
+      if (baseline_peak_count != n_peaks) {
+        stop("baseline sidecar does not match sample peak data")
+      }
+      baseline <- readBin(
+        baseline_connection,
+        numeric(),
+        size = 4,
+        n = n_peaks * 2,
+        endian = "little"
+      )
+    }
 
     max_selected_intensity <- max(
       intensity[peak_bounds[1]:peak_bounds[n_peaks * 2]]
@@ -271,13 +298,6 @@ PlotTransitionChromatogram <- function(cpd_index) {
         signed = FALSE,
         endian = "little"
       )
-      readBin(
-        peak_connection,
-        numeric(),
-        size = 4,
-        n = n_peaks * 2,
-        endian = "little"
-      )
       readBin(data_connection, numeric(), size = 4, endian = "little")
       readBin(data_connection, integer(), size = 1, endian = "little")
 
@@ -311,6 +331,12 @@ PlotTransitionChromatogram <- function(cpd_index) {
 
   peak_connection <- file(file.path(misc_dir, paste0("tp_", cqq)), "rb")
   on.exit(close(peak_connection), add = TRUE)
+  baseline_file <- file.path(misc_dir, paste0("tb_", cqq))
+  baseline_connection <- NULL
+  if (file.exists(baseline_file)) {
+    baseline_connection <- file(baseline_file, "rb")
+    on.exit(close(baseline_connection), add = TRUE)
+  }
 
   n_peaks <- readBin(
     peak_connection,
@@ -319,6 +345,18 @@ PlotTransitionChromatogram <- function(cpd_index) {
     signed = FALSE,
     endian = "little"
   )
+  if (!is.null(baseline_connection)) {
+    baseline_peak_count <- readBin(
+      baseline_connection,
+      integer(),
+      size = 1,
+      signed = FALSE,
+      endian = "little"
+    )
+    if (baseline_peak_count != n_peaks) {
+      stop("baseline sidecar does not match transition peak data")
+    }
+  }
   filename <- paste0(gsub("[^-_.()a-zA-Z0-9]", "_", cpd), "_", cqq, ".pdf")
   output_dir <- ifelse(
     max_intensity > low_intensity_threshold,
@@ -384,13 +422,17 @@ PlotTransitionChromatogram <- function(cpd_index) {
       signed = FALSE,
       endian = "little"
     )
-    baseline <- readBin(
-      peak_connection,
-      numeric(),
-      size = 4,
-      n = n_peaks * 2,
-      endian = "little"
-    )
+    baseline <- if (is.null(baseline_connection)) {
+      rep(NaN, n_peaks * 2)
+    } else {
+      readBin(
+        baseline_connection,
+        numeric(),
+        size = 4,
+        n = n_peaks * 2,
+        endian = "little"
+      )
+    }
 
     max_selected_intensity <- max(
       intensity[peak_bounds[1]:peak_bounds[n_peaks * 2]]

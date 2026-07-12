@@ -1,0 +1,111 @@
+---
+title: "Output Files"
+description: "The formats of the INTEGRATOR result files written to the project folder"
+---
+
+INTEGRATOR writes its results to the project folder as plain CSV tables, a binary results
+folder, and — optionally — chromatogram PDFs. The CSV files are the interface to downstream
+tools.
+
+::: {.compact-table}
+| File | Written by | Contents |
+|---|---|---|
+| [`long.csv`](#long.csv) | Step 3 | Long-format peak table, one row per *sample × feature*. |
+| [`quant_raw.csv`](#quant_raw.csv) | Step 3 | Wide-format peak-area matrix (samples × features). |
+| [`RT_matrix.csv`](#rt_matrix.csv) | Step 2 | Per-sample integration borders; editable for manual per-peak adjustment. |
+| [`misc/`](#misc) | Step 3 | Binary results, read by MRMhub-viz and step 4. |
+| [PDF folders](#chromatogram-pdfs) | Step 4 | Chromatogram PDFs (optional). |
+:::
+
+All CSV tables are plain comma-separated files. See the
+[Processing Workflow](running.qmd) for the steps that produce them.
+
+## long.csv
+
+Long format: one row per *sample × feature*, for every integrated peak. Only `feature_name`
+and `raw_data_filename` (plus at least one intensity column) are essential; the remaining
+columns are metadata and measurements carried through for downstream processing. Columns, in
+file order:
+
+| Column | Meaning |
+|---|---|
+| `feature_name` | Feature (analyte) identifier — the feature name from the feature list, or the compound name where no feature name is given. |
+| `internal_standard` | Assigned ISTD feature, from the feature list. |
+| `raw_data_filename` | Source mzML file name; becomes the analysis identifier. |
+| `time_stamp` | Acquisition timestamp, read from the mzML. |
+| `batch` | Batch identifier, from `run_order.csv`. |
+| `sample_type` | Sample / QC type, from `run_order.csv`. |
+| `precursor_mz` | Precursor-ion *m/z*. |
+| `product_mz` | Product-ion *m/z*. |
+| `collision_energy` | Collision energy. |
+| `polarity` | Ionisation polarity (`+` / `−`). |
+| `rt_apex` | Retention time at the peak apex (min). |
+| `area` | Integrated peak area. |
+| `height` | Peak height. |
+| `FWHM` | Full width at half maximum (min). |
+| `rt_int_start` | Left integration border (min). |
+| `rt_int_end` | Right integration border (min). |
+
+Where no peak was found for a *sample × feature*, the measurement fields
+(`rt_apex`…`rt_int_end`) are left empty.
+
+## quant_raw.csv
+
+A wide matrix of peak areas: one column per feature, one row per sample, preceded by header
+rows. It carries areas only. The first column holds the row labels:
+
+| | *feature 1* | *feature 2* | … |
+|---|---|---|---|
+| `name` | LPC 20:4 | PC 34:1 | … |
+| `precursor` | 544.3 | 760.6 | … |
+| `product` | 184.1 | 184.1 | … |
+| `RT` | 4.21 | 6.05 | … |
+| *sample01.mzML* | 15234.0 | 88213.0 | … |
+| *sample02.mzML* | … | … | … |
+
+The `RT` row is the **expected** retention time from the feature list (not the peak apex);
+each sample row holds that sample's integrated peak area per feature.
+
+## RT_matrix.csv
+
+Produced in step 2: a wide matrix of the per-sample integration borders. It can be edited to
+adjust individual peaks by hand; re-running **step 3 only** re-integrates with the edited
+bounds (see [Processing Workflow — step 2](running.qmd#step-2-peak-detection-and-rt-shift-estimation)).
+
+Layout: each sample is a row, and each feature occupies **two adjacent columns** — its left
+and right integration border, as an absolute retention time in that sample (min). Two header
+rows identify the columns, and a blank spacer column separates the transition groups:
+
+- Header row 1 — the transition (`compound / transition`), repeated over each feature's
+  border pair.
+- Header row 2 — `compound name`, then each feature's name over its border pair.
+- One row per mzML file — the file name, then the left and right border for each feature.
+
+::: {.callout-important}
+## Step 2 overwrites `RT_matrix.csv`
+Make a backup of `RT_matrix.csv` before re-running Step 2 in case you manually edited `RT_matrix.csv`, as step 2 **overwrites all manual edits!**
+:::
+
+## Folder 'misc/' {#misc}
+
+A folder of binary result files written during step 3. It is consumed by the
+[MRMhub-viz](viz.qmd) visualiser and by step-4 PDF generation, and is not intended for direct
+reading. If the folder is removed, MRMhub-viz and step 4 cannot run until step 3 is repeated.
+
+## Chromatogram PDFs
+
+Optional, written by step 4 into three folders:
+
+| Folder | Contents |
+|---|---|
+| `by_transition/` | One PDF per transition, over all samples with a peak above the minimum-intensity threshold. |
+| `by_transition_low/` | Transitions with no peak above the threshold (`low_intensity_threshold` in `MRMhub_plot.r`). |
+| `by_sample/` | One PDF per reference sample, with all its transitions. |
+
+::: {.see-also}
+## See also
+
+- [Processing Workflow](running.qmd) — the steps that produce these files.
+- [MRMhub-viz](viz.qmd) — reads the `misc/` binaries for interactive review.
+- [Sharing & Archiving](sharing.qmd) — bundling outputs for reproducibility.
+:::

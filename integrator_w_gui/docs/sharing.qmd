@@ -1,0 +1,79 @@
+---
+title: "Sharing & Archiving Results"
+description: "Sharing a complete, reproducible INTEGRATOR project as a single self-contained folder"
+---
+
+Because INTEGRATOR and MRMhub-viz are portable executables that require no installation, a
+peak-integration analysis is already self-contained: the project folder holds the raw data, the
+input files with every parameter, the results, and the applications that produced them. The project
+folder is itself the shareable artefact: a recipient can inspect the outcome, or re-run and adjust the
+integration, from the folder alone, with no additional material to assemble.
+
+## A shareable project folder
+
+A complete project combines the files documented on the [Installation](setup.qmd) and
+[Output Files](output-files.qmd) pages. Kept together, they let a recipient do either of two things:
+**re-run** the processing (raw data + input files + applications) or **inspect** the result without
+re-running (result tables + `misc/` + optional PDFs).
+
+::: {.filetree}
+```
+shared-project/
+├── MRMhub.exe / .app      ┐
+├── MRMhub-viz.exe / .app  ├ applications — re-run, or review in MRMhub-viz
+├── MRMhub_plot.r          ┘ (no installation required)
+├── param.txt          ┐
+├── run_order.csv      ├  input files — every integration parameter
+├── feature_list.csv   ┘
+├── mzML/                  ← the converted raw data
+├── long.csv           ┐
+├── quant_raw.csv      ├  results — the peak tables (long.csv hands off to QUANT)
+├── RT_matrix.csv      ┘  RT_matrix.csv carries the exact integration borders
+├── misc/                 ← binary results read by MRMhub-viz
+└── by_transition/ …      ← chromatogram PDFs (optional)
+```
+
+[A complete project. See [Output Files](output-files.qmd) for the result formats and
+[Installation](setup.qmd) for the applications and input files.]{.tree-caption}
+:::
+
+A short `README` may be added before sharing, recording the study, the INTEGRATOR version used, and
+any manual `RT_matrix.csv` adjustments; the release provides a `readme.txt` template as a starting
+point.
+
+::: {.callout-note}
+## Keep the applications in the project folder
+
+Retaining one copy of the applications in each project folder is the recommended default. It makes
+the folder self-documenting and reproducible: the recipient opens MRMhub-viz to inspect every peak,
+or re-runs INTEGRATOR to reproduce or adjust the integration, without installing anything or matching
+software versions by hand.
+:::
+
+## Reproducibility and FAIR data
+
+An INTEGRATOR project folder aligns with the [FAIR principles](https://www.go-fair.org/fair-principles/)
+for research data and is well suited to long-term archiving:
+
+- **Interoperable** — the raw data, results, and parameters are all in open, non-proprietary formats:
+  `mzML` for the raw data, plain CSV for the result and configuration tables, and plain-text
+  `param.txt` for the parameters, none of which require INTEGRATOR to be read. Only the auxiliary
+  `misc/` binaries are application-specific, and they are not needed to access the results.
+- **Reusable** — the bundled executables make the integration **end-to-end reproducible with no
+  external software**: because INTEGRATOR is self-contained and no runtime, library, or vendor tool
+  is involved, a recipient re-runs the entire integration from the folder alone (only the optional
+  PDF plotting depends on an R installation). With the complete
+  parameter record (`param.txt` plus the finalised `RT_matrix.csv`) travelling alongside the data,
+  the result is reproduced exactly rather than approximately.
+- **Findable & Accessible** — because the folder consists only of standard files, it can be deposited as-is in a
+  general-purpose research-data repository (for example [Zenodo](https://zenodo.org)) to obtain a
+  persistent, citable DOI alongside the associated publication.
+
+::: {.see-also}
+## See also
+
+- [Output Files](output-files.qmd) — the formats of the result tables in a shared project.
+- [Installation](setup.qmd) — the applications and input files bundled with the data.
+- [Review results in MRMhub-viz](viz.qmd) — the interactive tool included in the folder.
+- [Continue with QUANT ↗](https://slinghub.github.io/MRMhub/quant/) — post-process `long.csv`.
+:::

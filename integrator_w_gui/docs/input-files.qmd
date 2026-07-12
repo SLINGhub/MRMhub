@@ -1,0 +1,113 @@
+---
+title: "Input Files and Parameters"
+description: "Preparing the input files that configure a peak-integration run"
+---
+
+INTEGRATOR is configured through the following three input files, which specify the data to process, the features to integrate, and how peaks are detected and integrated. They form a complete, self-contained specification of a reproducible integration run.
+
+::: {.compact-table}
+| File | Configuration |
+|---|---|
+| [`param.txt`](#global-parameters-param.txt) | Names and locations of the input and mzML files, the global peak-detection and border-finding settings, and the RT-shift correction parameters. Must be in the same folder as the MRMhub executable. |
+| [`run_order.csv`](#sample-list-run_order.csv) | The mzML files to process, in run order, and optionally the reference sample(s) for RT-shift estimation. `sample_type` is optional; only blanks (`BLK`) are treated specially. |
+| [`feature_list.csv`](#transition-feature-list-feature_list.csv) | Transition precursor and product *m/z*, transition and feature identifiers, the expected RT, and optional per-feature integration settings. |
+:::
+
+
+
+Each file is specified in detail below. See the [Algorithm](algorithm.qmd) for how these settings drive detection and integration.
+
+::: {#column-order-warning .callout-important}
+## Do not change the column order of the template input tables
+
+INTEGRATOR reads `run_order.csv` and `feature_list.csv` **by column position**, not by header name. Reordering, deleting, or inserting columns will therefore be **misinterpreted**, potentially **without any
+warning or error**. The `param.txt` is, however, order-independent. Use the [templates](https://github.com/SLINGhub/MRMhub/releases) as a starting point to ensure the correct column order.
+:::
+
+### Global parameters (`param.txt`)
+
+`param.txt` (the name is fixed) holds the global parameters that direct INTEGRATOR to the input and data files and control
+peak detection and integration. It must reside in the same folder as the MRMhub executable.
+
+![The `param.txt` file from [an example lipidomics dataset](https://slinghub.github.io/mrmhub-workflows/Dataset3.html)](images/paste-7.png){fig-align="center" width="70%" fig-alt="Screenshot of a param.txt file listing key = value parameter lines: mzML_files, batch_info, transition_list, peak_width, num_threads, mz_tol, RT_tol, RT_shift, RT_shift_bound, and crop_window, each with an assigned value."}
+
+| Parameter | Description |
+|---|---|
+| `mzML_files` | Folder containing the mzML files to integrate. Default: `mzML`. |
+| `batch_info` | Sample-list file (see [Sample list](#sample-list-run_order.csv)). Default: `run_order.csv`. |
+| `transition_list` | Transition/feature-list file (see [Transition / Feature list](#transition-feature-list-feature_list.csv)). Default: `feature_list.csv`. |
+| `peak_width` | [`[w, x, y, z]`](tuning.qmd#peak-width-schematic) set the allowed integration bounds: the left border falls *w–x* min and the right border *y–z* min from the apex. The most influential setting for difficult chromatograms — see [Tuning Peak Integration](tuning.qmd). Default: `[0.17, 0.05, 0.1, 0.35]`. |
+| `num_threads` | Number of CPU threads used for integration; affects speed only, not results. Default: `2`. |
+| `mz_tol` | Allowed deviation between the listed and detected *m/z*, in *m/z* units. Default: `0.06`. |
+| `RT_tol` | Allowed deviation between the listed and detected RT, in minutes; a key setting for complex chromatograms. Default: `0.1`. |
+| `RT_shift` | `[x, y]` bound the RT drift relative to the reference samples: at most *x* min earlier and *y* min later than expected. The lower bound is **negative** (earlier), the upper positive (later). **`[0, 0]` disables RT-shift correction** — but a small non-zero window is recommended even for stable methods, as it improves consistent border finding. Default: `[-0.2, 0.2]`. |
+| `RT_shift_bound` | Maximum RT drift allowed between adjacent samples, in minutes. Default: `0.1`. |
+| `crop_window` | `[y, z]` crops the chromatogram to a window from *y* min before to *z* min after the listed RT. Default: `[1.5, 2.0]`. |
+
+::: {.callout-tip}
+## How to choose and adjust these settings
+
+Start from the template defaults, then refine the global parameters above — and the per-feature
+overrides in `feature_list.csv` (below) — for individual difficult peaks. See
+**[Tuning Peak Integration](tuning.qmd)** for how each setting behaves and how to set it.
+:::
+
+### Sample list (`run_order.csv`)
+
+The sample list defines the data files to process, in processing order (top to bottom). mzML files
+present in the data folder but not listed here are ignored. Required columns are shown in **bold**; the
+**#** column is the fixed column position (see the [warning above](#column-order-warning)).
+
+![A portion of the sample list from [an example lipidomics dataset](https://slinghub.github.io/mrmhub-workflows/Dataset3.html)](images/paste-8.png){fig-align="center" width="50%" fig-alt="Screenshot of a run_order.csv sample list with columns file name, batch, sample_type, and reference. Two early BQC rows carry an x in the reference column marking them as retention-time anchors."}
+
+| # | Column | Description |
+|---|---|---|
+| 1 | **file name** | mzML file to process, located in the folder set by `mzML_files`. Must include the `.mzML` extension (exact case). |
+| 2 | batch | Analysis batch identifier. No effect inside INTEGRATOR; carried through to the result. |
+| 3 | sample_type | Sample/QC type. Blanks **must** be labelled with text containing `BLK` — the only label INTEGRATOR treats specially (during peak finding). Every other label has no effect inside INTEGRATOR, may be left empty, and is carried through to `long.csv` for the QUANT module. Using the standard [MRMhub QC types](https://slinghub.github.io/MRMhub/quant/articles/manual-00-sample-types.html) here lets QUANT assign the QC roles automatically. |
+| 4 | reference | Marks a sample as a retention-time reference for RT-shift estimation; label with `x`, otherwise leave empty. Multiple references must exhibit negligible RT shifts relative to one another. |
+
+### Transition / Feature list (`feature_list.csv`)
+
+The transition/feature list specifies the transitions to process and the features to integrate for
+each. Transitions present in the mzML files but not listed here are ignored. Multiple features may be
+defined for one transition. Required columns are shown in **bold**; the **#** column is the fixed
+column position (see the [warning above](#column-order-warning)).
+
+<!-- TODO: add feature_list.csv screenshot leading this section (none available yet). Drop the image at
+images/feature_list.png and enable:
+![A portion of the feature list from [an example lipidomics dataset](https://slinghub.github.io/mrmhub-workflows/Dataset3.html).](images/feature_list.png){fig-align="center" width="70%" fig-alt="Screenshot of a feature_list.csv with columns Compound Name, Transition Name, ISTD, Precursor Ion, Product Ion, RT, and the optional per-feature integration columns."} -->
+
+| # | Column | Description |
+|---|---|---|
+| 1 | **Compound Name** | Feature (analyte) identifier. Unique, typically identifying a single peak. |
+| 2 | **Transition Name** | Transition identifier. May be repeated across features sharing one transition. |
+| 3 | ISTD | Internal standard assigned to the feature. No function inside INTEGRATOR; carried to the result and read by QUANT. If set, must match a defined Compound Name; may be empty. |
+| 4 | **Precursor Ion** | Precursor-ion *m/z*. Must match the mzML value within `mz_tol`. |
+| 5 | **Product Ion** | Product-ion *m/z*. Must match the mzML value within `mz_tol`. |
+| 6 | **RT** | Expected retention time of the feature, in minutes, read from a sample marked as a `reference` (see the [caution](#reference-frame-caution) below). |
+| 7 | uniform_width | If `y`, the integration width is held constant across samples (set to the median of the automatically determined borders); if `n`, borders are found per sample. Default: `n`. |
+| 8 | left integration bound | Fixed left peak border for all samples, in minutes, read from and tracked relative to the reference sample (see the [caution](#reference-frame-caution) below). Empty = determined automatically. |
+| 9 | right integration bound | Fixed right peak border for all samples, in minutes, read from and tracked relative to the reference sample (see the [caution](#reference-frame-caution) below). Empty = determined automatically. |
+| 10 | peak width | Per-feature override of the global `peak_width`, entered **without the brackets** as [`w, x, y, z`](tuning.qmd#peak-width-schematic) (see [Tuning Peak Integration](tuning.qmd)). Empty = use the global value. |
+| 11 | baseline | `default`: horizontal line at the 5th percentile of intensities within the window; `v_drop`: horizontal line at the lowest intensity of the integrated region; `v2v`: straight line connecting the left and right bounds. Default: `default`. |
+| 12 | chromatogram index | Overrides the automatic assignment of chromatograms to transitions. Empty = assigned automatically. |
+| 13 | Remarks | Free-text documentation of integration settings; no function. |
+
+::: {#reference-frame-caution .callout-caution}
+## Use RT and borders from a reference sample
+The `RT` and any fixed `left`/`right integration bound` are interpreted in the retention-time frame of
+the reference sample(s) (`run_order.csv`, `reference = x`) and tracked from there into every sample.
+Read these values from a reference sample: a value taken from a non-reference sample that has drifted
+relative to the reference carries that offset into the whole sequence, shifting the integration
+throughout.
+:::
+
+::: {.see-also}
+## See also
+
+- [FAQ & Troubleshooting](faq.qmd) — spreadsheet pitfalls, validation errors, and common integration problems.
+- [Tuning Peak Integration](tuning.qmd) — choosing `peak_width` and integration bounds for difficult peaks.
+- [Processing Workflow](running.qmd) — the four processing steps that consume these files.
+- [Peak-detection algorithm](algorithm.qmd) — how these settings drive detection and integration.
+:::

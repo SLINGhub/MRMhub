@@ -4,6 +4,7 @@ use std::io;
 use std::io::{BufRead, BufReader, BufWriter, Read, Write};
 use std::path::{Path, PathBuf};
 
+// reads and validates the project parameters
 pub fn read_param() -> Result<crate::Param, Box<dyn Error>> {
     let param = std::fs::read_to_string("param.txt")?;
     let value = param.parse::<toml::Table>()?;
@@ -46,12 +47,14 @@ pub fn read_param() -> Result<crate::Param, Box<dyn Error>> {
         rt_shift_bd: value["RT_shift_bound"].as_float().unwrap() as f32,
     })
 }
+// reads a null terminated string from a binary file
 fn unpack_string(file: &mut BufReader<File>) -> Result<String, Box<dyn Error>> {
     let mut str_buf = Vec::new();
     file.read_until(b'\0', &mut str_buf)?;
     str_buf.pop().ok_or("unpack_string")?;
     Ok(String::from_utf8(str_buf)?)
 }
+// reads two little endian floating point values
 pub fn unpack_f32_2(file: &mut BufReader<File>) -> io::Result<(f32, f32)> {
     let mut buffer = [0; std::mem::size_of::<f32>()];
     file.read_exact(&mut buffer)?;
@@ -60,6 +63,7 @@ pub fn unpack_f32_2(file: &mut BufReader<File>) -> io::Result<(f32, f32)> {
     Ok((a, f32::from_le_bytes(buffer)))
 }
 
+// creates binary readers for little endian numeric values
 macro_rules! unpack {
     ($sn:ident, $sn1:ident) => {
         pub fn $sn1(file: &mut BufReader<File>) -> io::Result<$sn> {
@@ -72,12 +76,14 @@ macro_rules! unpack {
 unpack!(f32, unpack_f32);
 unpack!(u16, unpack_u16);
 unpack!(u8, unpack_u8);
+// reads one extracted ion chromatogram from a binary file
 pub fn get_eic(bufr: &mut BufReader<File>) -> io::Result<Vec<(f32, f32)>> {
     bufr.seek_relative(5)?;
     Ok((0..unpack_u16(bufr)?)
         .map(|_| unpack_f32_2(bufr).unwrap())
         .collect())
 }
+// stores the metadata for one mzml sample
 pub struct FileA {
     pub mzml_f: String,
     pub ftype: String,
@@ -86,16 +92,19 @@ pub struct FileA {
     pub is_ref: bool,
     pub is_learn: bool,
 }
+// stores the expected retention time and range for one isomer
 pub struct ValidI {
     pub rt: f32,
     pub name: String,
     pub range: (f32, f32),
 }
+// identifies the baseline calculation method
 pub enum Bl {
     VDrop,
     V2v,
     P,
 }
+// stores one validated transition and its integration settings
 pub struct ValidT {
     pub cqq: String,
     pub iqq: String,
@@ -107,11 +116,25 @@ pub struct ValidT {
     pub peak_w: Option<(f32, f32, f32, f32)>,
     pub baseline: Bl,
 }
+// reads the validated transitions and internal standard mappings
 pub fn get_trans_istd() -> Result<Vec<ValidT>, Box<dyn Error>> {
     let file_path = Path::new(crate::MISCDIR).join(crate::TRANS_L);
     let bufr = &mut BufReader::new(File::open(file_path)?);
-    (0..unpack_u16(bufr)?)
+    let trans_count = unpack_u16(bufr)?;
+    let baseline_path = Path::new(crate::MISCDIR).join(crate::TRANS_BL);
+    let mut baseline_bufr = File::open(baseline_path).ok().map(BufReader::new);
+    if let Some(reader) = baseline_bufr.as_mut()
+        && unpack_u16(reader)? != trans_count
+    {
+        return Err("transition baseline count does not match transition count".into());
+    }
+    (0..trans_count)
         .map(|_| {
+            let baseline = baseline_bufr
+                .as_mut()
+                .map(unpack_string)
+                .transpose()?
+                .unwrap_or_default();
             Ok(ValidT {
                 cqq: unpack_string(bufr)?,
                 cpd: unpack_string(bufr)?,
@@ -136,7 +159,7 @@ pub fn get_trans_istd() -> Result<Vec<ValidT>, Box<dyn Error>> {
                         unpack_f32(bufr).unwrap(),
                     )
                 }),
-                baseline: match unpack_string(bufr)?.to_lowercase().as_str() {
+                baseline: match baseline.to_lowercase().as_str() {
                     "v_drop" | "v drop" => Bl::VDrop,
                     "v2v" => Bl::V2v,
                     _ => Bl::P,
@@ -145,6 +168,7 @@ pub fn get_trans_istd() -> Result<Vec<ValidT>, Box<dyn Error>> {
         })
         .collect::<Result<_, _>>()
 }
+// reads the validated mzml sample metadata
 pub fn get_mzml() -> io::Result<Vec<FileA>> {
     let file_path = Path::new(crate::MISCDIR).join(crate::MZML_L);
     let rdr = csv::ReaderBuilder::new()
@@ -166,6 +190,7 @@ pub fn get_mzml() -> io::Result<Vec<FileA>> {
         })
         .collect::<Result<_, _>>()?)
 }
+// writes reference sample chromatograms and peak boundaries
 pub fn write_by_sample(t_to_istd: &[ValidT], mzml_fs: &[FileA]) -> Result<(), Box<dyn Error>> {
     let count_s = mzml_fs.iter().filter(|x| x.is_ref).count();
     let se_pos = t_to_istd
@@ -174,8 +199,21 @@ pub fn write_by_sample(t_to_istd: &[ValidT], mzml_fs: &[FileA]) -> Result<(), Bo
             let file_path = Path::new(crate::MISCDIR).join(["tp_", &valid_t.cqq].concat());
             let mut bufr = BufReader::new(File::open(file_path).unwrap());
             let len0 = unpack_u8(&mut bufr).unwrap();
+            let baseline_path = Path::new(crate::MISCDIR).join(["tb_", &valid_t.cqq].concat());
+            let mut baseline_bufr = File::open(baseline_path).ok().map(BufReader::new);
+            if let Some(reader) = baseline_bufr.as_mut() {
+                assert_eq!(unpack_u8(reader).unwrap(), len0);
+            }
             (0..)
                 .map(move |_| {
+                    let baselines = baseline_bufr.as_mut().map_or_else(
+                        || vec![(f32::NAN, f32::NAN); usize::from(len0)],
+                        |reader| {
+                            (0..len0)
+                                .map(|_| unpack_f32_2(reader).unwrap())
+                                .collect::<Vec<(f32, f32)>>()
+                        },
+                    );
                     (
                         unpack_f32(&mut bufr).unwrap(),
                         (0..len0)
@@ -186,9 +224,7 @@ pub fn write_by_sample(t_to_istd: &[ValidT], mzml_fs: &[FileA]) -> Result<(), Bo
                                 )
                             })
                             .collect(),
-                        (0..len0)
-                            .map(|_| unpack_f32_2(&mut bufr).unwrap())
-                            .collect::<Vec<(f32, f32)>>(),
+                        baselines,
                     )
                 })
                 .zip(mzml_fs)
@@ -214,6 +250,8 @@ pub fn write_by_sample(t_to_istd: &[ValidT], mzml_fs: &[FileA]) -> Result<(), Bo
     for (i, FileA { mzml_f, .. }) in mzml_fs.iter().filter(|x| x.is_ref).enumerate() {
         let file_path = Path::new(crate::MISCDIR).join(["se_", mzml_f].concat());
         let mut bufw = BufWriter::new(File::create(file_path)?);
+        let baseline_path = Path::new(crate::MISCDIR).join(["sb_", mzml_f].concat());
+        let mut baseline_bufw = BufWriter::new(File::create(baseline_path)?);
         for (rt_i_l, (sh, se_vec, bl_vec)) in eics[i..]
             .iter()
             .step_by(count_s)
@@ -230,15 +268,17 @@ pub fn write_by_sample(t_to_istd: &[ValidT], mzml_fs: &[FileA]) -> Result<(), Bo
                 bufw.write_all(&sta_.to_le_bytes())?;
                 bufw.write_all(&end_.to_le_bytes())?;
             }
+            baseline_bufw.write_all(&u8::try_from(bl_vec.len())?.to_le_bytes())?;
             for bl in bl_vec {
-                bufw.write_all(&bl.0.to_le_bytes())?;
-                bufw.write_all(&bl.1.to_le_bytes())?;
+                baseline_bufw.write_all(&bl.0.to_le_bytes())?;
+                baseline_bufw.write_all(&bl.1.to_le_bytes())?;
             }
         }
     }
     Ok(())
 }
 #[must_use]
+// finds the nearest point at or before a proposed position
 pub fn find_closest(vec: &[(f32, f32)], pt: f32, pos: usize) -> usize {
     if pos == vec.len() || (pos > 0 && pt - vec[pos - 1].0 <= vec[pos].0 - pt) {
         pos - 1
