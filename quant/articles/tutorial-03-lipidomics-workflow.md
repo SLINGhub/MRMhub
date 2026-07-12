@@ -186,12 +186,12 @@ plot_runscatter(
 ```
 
 ![RunScatter
-plot](tutorial-03-lipidomics-workflow_files/figure-html/runscatter-1.png)![RunScatter
-plot](tutorial-03-lipidomics-workflow_files/figure-html/runscatter-2.png)
+plot](tutorial-03-lipidomics-workflow_files/figure-html/runscatter-1.png)
 
-    #>  ■■■■■■■■■■■■■■■■■■■■■             67% |  ETA:  1s
+    #>  ■■■■■■■■■■■                       33% |  ETA:  2s
 
 ![RunScatter
+plot](tutorial-03-lipidomics-workflow_files/figure-html/runscatter-2.png)![RunScatter
 plot](tutorial-03-lipidomics-workflow_files/figure-html/runscatter-3.png)
 
 ## 7. Adding detailed metadata
@@ -307,7 +307,7 @@ plot_pca(
   include_istd = FALSE)
 #> ! 2 features contained missing or non-numeric values and were exluded.
 #> ℹ The PCA was calculated based on `feature_intensity` values of 423 features.
-#> ggrepel: 10000 iterations in 0.010899s, 3 overlaps. Consider increasing 'max.iter'.
+#> ggrepel: 10000 iterations in 0.010871s, 3 overlaps. Consider increasing 'max.iter'.
 ```
 
 ![PCA
@@ -344,7 +344,7 @@ plot_pca(
   shared_labeltext_hide = NA)
 #> ! 2 features contained missing or non-numeric values and were exluded.
 #> ℹ The PCA was calculated based on `feature_intensity` values of 423 features.
-#> ggrepel: 10000 iterations in 0.022843s, 7 overlaps. Consider increasing 'max.iter'.
+#> ggrepel: 10000 iterations in 0.022535s, 7 overlaps. Consider increasing 'max.iter'.
 ```
 
 ![PCA
@@ -802,7 +802,7 @@ Exercises
 
 mrmhub::save_report_xlsx(myexp, path = tempfile(fileext = ".xlsx"))
 #> Saving report to disk - please wait...
-#> ✔ The data processing report of experiment 'sPerfect' has been saved to '/tmp/RtmpC4qY04/file389b6570a88a.xlsx'.
+#> ✔ The data processing report of experiment 'sPerfect' has been saved to '/tmp/RtmpEGnMXq/file330a7f2bd620.xlsx'.
 ```
 
 Specific data subsets can also be saved as a clean flat, wide CSV file.
@@ -823,7 +823,7 @@ mrmhub::save_dataset_csv(
   qc_types = "SPL", 
   include_qualifier = FALSE,
   filter_data = TRUE)
-#> ✔ Concentration values for 377 analyses and 324 features have been exported to '/tmp/RtmpC4qY04/file389b463f765f.csv'.
+#> ✔ Concentration values for 377 analyses and 324 features have been exported to '/tmp/RtmpEGnMXq/file330a5cdc9e89.csv'.
 ```
 
 ## 22. Sharing the `MRMhubExperiment` dataset
