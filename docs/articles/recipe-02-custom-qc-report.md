@@ -1,7 +1,9 @@
 # Custom QC Report
 
-**Level:** Intermediate  \|  **Output:** Self-contained HTML report  \| 
-**Requires:** `gt`, `ggplot2`, `patchwork` (optional), `quarto` (for
+Recipe
+
+**Level** Intermediate  ·  **Output** Self-contained HTML report  · 
+**Requires** `gt`, `ggplot2`, `patchwork` (optional), `quarto` (for
 template rendering)
 
 ## Goal
@@ -61,7 +63,7 @@ cv_data <- mexp@metrics_qc |>
   filter(!is.na(cv))
 
 ggplot(cv_data, aes(x = cv)) +
-  geom_histogram(binwidth = 5, fill = "#4a90a4", colour = "white") +
+  geom_histogram(binwidth = 5, fill = "#5B8FA8", colour = "white") +
   geom_vline(xintercept = 30, linetype = "dashed", colour = "red") +
   labs(
     title = "QC CV Distribution",
@@ -129,12 +131,12 @@ qc_table |>
 
 if (nrow(mexp@metrics_calibration) > 0) {
   cal_summary <- get_calibration_metrics(mexp) |>
-    select(feature_id, r_squared, slope, intercept, n_points, weighting) |>
-    arrange(r_squared)
+    select(feature_id, r2, fit_model, fit_weighting, lowest_cal, highest_cal) |>
+    arrange(r2)
 
   cal_summary |>
     gt::gt() |>
-    gt::fmt_number(columns = c(r_squared, slope, intercept), decimals = 4) |>
+    gt::fmt_number(columns = c(r2, lowest_cal, highest_cal), decimals = 4) |>
     gt::tab_header(title = "Calibration Curve Metrics")
 }
 ```
@@ -183,18 +185,20 @@ quarto::quarto_render(
 ## Tips
 
 - **Self-contained HTML** — a single file that can be emailed or
-  archived
-- **Parameterize** the RDS path so the same template works for any study
-- **Date stamp** (`date: today`) for audit trail
-- **Session info** at the end for reproducibility
+  archived.
+- **Parameterize** the RDS path so the same template works for any
+  study.
+- **Date stamp** (`date: today`) for an audit trail.
+- **Session info** at the end for reproducibility.
 
-## Next Steps
+## Next steps
 
-- [Multi-Batch
-  Tutorial](https://slinghub.github.io/MRMhub/quant/articles/tutorial-08-multi-batch.md)
+- [Basic MRMhub
+  Workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md)
   — full processing before reporting
-- [External Calibration and
+- [External Calibration &
   QC](https://slinghub.github.io/MRMhub/quant/articles/recipe-01-ext-calibration-qc.md)
   — calibration workflow
-- [Troubleshooting](https://slinghub.github.io/MRMhub/quant/articles/manual-09-troubleshooting.md)
+- [Troubleshooting &
+  FAQ](https://slinghub.github.io/MRMhub/quant/articles/manual-10-troubleshooting.md)
   — common issues

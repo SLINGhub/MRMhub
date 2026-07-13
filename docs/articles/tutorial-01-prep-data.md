@@ -1,16 +1,10 @@
 # Preparing and importing data
 
-**Time:** ~10 min  \|  **Level:** Beginner  \|  **Prerequisites:** [Your
+Tutorial
+
+**Time** ~10 min  ·  **Level** Beginner  ·  **Prerequisites** [Your
 First
 Analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md)
-
-**See also:** [Import and prepare data
-files](https://slinghub.github.io/MRMhub/quant/articles/manual-05a-which-importer.md)
-(decision guide) \| [Validating
-Metadata](https://slinghub.github.io/MRMhub/quant/articles/tutorial-10-metadata-validation.md)
-(error checking) \| [Data Import
-Reference](https://slinghub.github.io/MRMhub/quant/articles/manual-05-data-import.md)
-(full API)
 
 ## Analytical Data
 
@@ -46,7 +40,7 @@ mexp2 <- import_data_csv_wide(mexp2,
 ```
 
 See [Importing analytical
-data](https://slinghub.github.io/MRMhub/quant/articles/manual-05-data-import.md)
+data](https://slinghub.github.io/MRMhub/quant/articles/manual-04-data-import.md)
 for more details on importing analysis data.
 
 ## Metadata
@@ -59,7 +53,7 @@ Metadata can be retrieved from the imported analysis data file as far as
 available. More commonly, additional or all required metadata needs to
 be imported from other sources. Which metadata tables are required
 depends on the intended processing workflow, see [Data and Metadata in
-MRMhub](https://slinghub.github.io/MRMhub/quant/articles/manual-01-data-structure.md)
+MRMhub](https://slinghub.github.io/MRMhub/quant/articles/manual-02-data-object.md)
 for an overview of metadata categories.
 
 Integrity of metadata and data is key for accurate and reproducible data
@@ -127,20 +121,23 @@ df_qcinfo <- readr::read_table(file = "datasets/qc_metadata.txt")
 mexp <- import_metadata_qcconcentrations(mexp, table = df_qcinfo)
 ```
 
-## Preparing and Importing metadata using the MSOrganiser file template
+## Metadata from the MSOrganiser template
 
 Another option to import metadata is via the ‘MRMhub MSOrganiser’
 template, an Excel file (`.xlsx`). See [Metadata
-import](https://slinghub.github.io/MRMhub/quant/articles/manual-06-metadata-import.md).
+import](https://slinghub.github.io/MRMhub/quant/articles/manual-05-metadata.md).
 
-### Next Steps
+## Next steps
 
-- [Import and prepare data
-  files](https://slinghub.github.io/MRMhub/quant/articles/manual-05a-which-importer.md)
-  — decision guide for choosing the right import function
+- [Importing Analytical
+  Data](https://slinghub.github.io/MRMhub/quant/articles/manual-04-data-import.md)
+  — decision guide and full documentation of every importer
+- [Importing
+  Metadata](https://slinghub.github.io/MRMhub/quant/articles/manual-05-metadata.md)
+  — metadata tables, templates and validation
+- [Validating
+  Metadata](https://slinghub.github.io/MRMhub/quant/articles/tutorial-10-metadata-validation.md)
+  — checking metadata for common errors
 - [Basic MRMhub
   Workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md)
   — complete walkthrough from import to export
-- [Data Import
-  (reference)](https://slinghub.github.io/MRMhub/quant/articles/manual-05-data-import.md)
-  — full documentation of all importers

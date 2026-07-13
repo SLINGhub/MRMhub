@@ -1,5 +1,7 @@
 # Interference Correction
 
+Tutorial
+
 In targeted MRM assays, the signal of one transition can be perturbed by
 contributions from a co-eluting compound. The most common cause in
 lipidomics is overlap of natural-abundance isotopologues (M+1, M+2 from
@@ -13,8 +15,7 @@ This tutorial covers when to apply interference correction, how to
 define interference relationships in the feature annotation, and how to
 apply both batch and manual corrections.
 
-**Time:** ~15 min  \|  **Level:** Advanced  \|  **Prerequisites:**
-[Basic
+**Time** ~15 min  ·  **Level** Advanced  ·  **Prerequisites** [Basic
 workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md)
 
 ## 1. When is correction needed?
@@ -220,19 +221,19 @@ applying broadly.
   but consider leaving it uncorrected.
 - After correction, verify blank residual signal approaches zero.
 
-## Next Steps
+## Next steps
 
-- [Drift
+- [Drift and Batch
   Correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.md)
   — apply after interference correction
-- [The MRMhub
+- [Basic MRMhub
   Workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md)
   — full processing pipeline
 - [Design
-  Decisions](https://slinghub.github.io/MRMhub/quant/articles/manual-10-design-decisions.md)
+  Decisions](https://slinghub.github.io/MRMhub/quant/articles/manual-03-design-decisions.md)
   — rationale for the processing order
-- [Feature
-  Variables](https://slinghub.github.io/MRMhub/quant/articles/manual-03-feature-variables.md)
+- [The MRMhubExperiment Data
+  Object](https://slinghub.github.io/MRMhub/quant/articles/manual-02-data-object.html#feature-variables)
   — how `_orig` postfixes preserve raw values
 
 ## References

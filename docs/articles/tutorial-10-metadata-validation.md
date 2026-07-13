@@ -1,5 +1,7 @@
 # Validating and Fixing Metadata
 
+Tutorial
+
 Most processing errors in MRMhub trace back to defects in the annotation
 tables rather than the analytical data itself. The most frequent
 offenders are mismatched `analysis_id` between data and annotation,
@@ -10,12 +12,12 @@ validating annotations against imported data, and resolving the typical
 defects.
 
 See [Sample Types and QC
-Roles](https://slinghub.github.io/MRMhub/quant/articles/manual-00-sample-types.md)
+Roles](https://slinghub.github.io/MRMhub/quant/articles/manual-06-sample-types.md)
 for the canonical `qc_type` vocabulary and [Metadata
-Import](https://slinghub.github.io/MRMhub/quant/articles/manual-06-metadata-import.md)
+Import](https://slinghub.github.io/MRMhub/quant/articles/manual-05-metadata.md)
 for the per-table importer reference.
 
-**Time:** ~10 min  \|  **Level:** Beginner  \|  **Prerequisites:** [Your
+**Time** ~10 min  ·  **Level** Beginner  ·  **Prerequisites** [Your
 first
 analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md)
 
@@ -74,11 +76,9 @@ The per-table importers
 [`import_metadata_istds()`](https://slinghub.github.io/MRMhub/quant/reference/import_metadata_istds.md),
 [`import_metadata_responsecurves()`](https://slinghub.github.io/MRMhub/quant/reference/import_metadata_responsecurves.md),
 [`import_metadata_qcconcentrations()`](https://slinghub.github.io/MRMhub/quant/reference/import_metadata_qcconcentrations.md))
-read a CSV or Excel file, call
-[`assert_metadata()`](https://slinghub.github.io/MRMhub/quant/reference/assert_metadata.md)
-internally, and link the validated table to the experiment. Defects are
-reported via `cli` warnings and aborts; on success the table is
-attached.
+read a CSV or Excel file, validate it against the imported data, and
+link the validated table to the experiment. Defects are reported via
+`cli` warnings and aborts; on success the table is attached.
 
 ``` r
 
@@ -97,8 +97,7 @@ myexp <- import_metadata_istds(myexp,
                                sheet = "annot_istds")
 ```
 
-[`assert_metadata()`](https://slinghub.github.io/MRMhub/quant/reference/assert_metadata.md)
-checks for:
+The import validates:
 
 - presence of required columns (`analysis_id`, `qc_type` for analyses;
   `feature_id` for features; `istd_feature_id` and an `istd_conc_*`
@@ -106,40 +105,16 @@ checks for:
 - uniqueness of identifiers (`analysis_id`, `feature_id`);
 - consistency between annotation IDs and IDs present in `dataset_orig`;
 - canonical `qc_type` labels (see [Sample
-  Types](https://slinghub.github.io/MRMhub/quant/articles/manual-00-sample-types.md)).
+  Types](https://slinghub.github.io/MRMhub/quant/articles/manual-06-sample-types.md)).
 
 Defects are reported using `cli` messages that name the offending table,
-column, and IDs.
-
-## 4. Manual validation without auto-linking
-
-For full control — for instance, when assembling annotation tables
-programmatically — call
-[`assert_metadata()`](https://slinghub.github.io/MRMhub/quant/reference/assert_metadata.md)
-directly. It accepts a named list of tibbles and returns the validated
-list, which is then passed to
+column, and IDs. When annotation tables are assembled programmatically
+rather than read from a file, pass them to
 [`add_metadata()`](https://slinghub.github.io/MRMhub/quant/reference/add_metadata.md)
-to attach it to the experiment.
+as a named list; the same validation is applied before the tables are
+linked.
 
-``` r
-
-annot_analyses <- readr::read_csv("metadata/analyses.csv")
-annot_features <- readr::read_csv("metadata/features.csv")
-
-validated <- assert_metadata(
-  myexp,
-  metadata = list(annot_analyses = annot_analyses,
-                  annot_features = annot_features),
-  ignore_warnings = FALSE,
-  excl_unmatched_analyses = FALSE
-)
-
-myexp <- add_metadata(myexp,
-                      metadata = validated,
-                      excl_unmatched_analyses = FALSE)
-```
-
-## 5. Common defects and resolutions
+## 4. Common defects and resolutions
 
 **Column `qc_type` missing from `annot_analyses`**
 
@@ -231,7 +206,7 @@ A common cause is differing encoding of special characters (parentheses,
 slashes, unicode escapes) between the integration software output and a
 hand-edited Excel file.
 
-## 6. Practical recommendations
+## 5. Practical recommendations
 
 - Re-import annotations after every edit. Saved Excel files held open in
   a separate process can be silently locked and read partially.
@@ -243,16 +218,16 @@ hand-edited Excel file.
 - Keep the annotation file under version control alongside the data
   file.
 
-## Next Steps
+## Next steps
 
-- [Sample Types and QC
-  Roles](https://slinghub.github.io/MRMhub/quant/articles/manual-00-sample-types.md)
+- [Sample Types & QC
+  Roles](https://slinghub.github.io/MRMhub/quant/articles/manual-06-sample-types.md)
   — canonical `qc_type` vocabulary
-- [Metadata
-  Import](https://slinghub.github.io/MRMhub/quant/articles/manual-06-metadata-import.md)
+- [Importing
+  Metadata](https://slinghub.github.io/MRMhub/quant/articles/manual-05-metadata.md)
   — per-table importer reference
-- [Data
-  Import](https://slinghub.github.io/MRMhub/quant/articles/manual-05-data-import.md)
+- [Importing Analytical
+  Data](https://slinghub.github.io/MRMhub/quant/articles/manual-04-data-import.md)
   — importing peak area / concentration data
 - [Your First
   Analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md)

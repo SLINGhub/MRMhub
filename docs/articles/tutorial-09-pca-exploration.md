@@ -227,7 +227,7 @@ if (!is.null(outliers)) {
 ## Next Steps
 
 - [Drift and Batch Correction
-  (reference)](https://slinghub.github.io/MRMhub/quant/articles/manual-07-drift-batch-correction.md)
+  (reference)](https://slinghub.github.io/MRMhub/quant/articles/manual-07-corrections.md)
   — methods used before this PCA check
 - [Drift Correction
   (tutorial)](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.md)

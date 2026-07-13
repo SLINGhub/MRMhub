@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>RunScatter Plot • mrmhub</title>
+<title>Exploring QC: RunScatter and PCA • mrmhub</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
@@ -16,7 +16,7 @@
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
-<meta property="og:title" content="RunScatter Plot">
+<meta property="og:title" content="Exploring QC: RunScatter and PCA">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -40,24 +40,27 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-get-started">
 <li><a class="dropdown-item" href="../articles/manual-00-installation.html">Installation</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-00-key-concepts.html">Key Concepts &amp; Glossary</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-09-troubleshooting.html">Troubleshooting &amp; FAQ</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-01-key-concepts.html">Key Concepts &amp; Glossary</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-10-troubleshooting.html">Troubleshooting &amp; FAQ</a></li>
   </ul>
 </li>
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-tutorials" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Tutorials</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-tutorials">
-<li><a class="dropdown-item" href="../articles/tutorial-01-prep-data.html">Preparing &amp; importing data</a></li>
+<li><h6 class="dropdown-header" data-toc-skip>Start here</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-01-prep-data.html">Preparing &amp; importing data</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-02-basic-workflow.html">Basic MRMhub workflow</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-03-lipidomics-workflow.html">Lipidomics (full workflow)</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-04-drift-correction.html">Drift correction</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-05-run-scatter.html">RunScatter plots</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-06-batch-correction.html">Batch correction</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Techniques</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-04-drift-correction.html">Drift and batch correction</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-07-calibration-reference.html">Calibration by reference sample</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-08-multi-batch.html">Multi-batch study</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-09-pca-exploration.html">QC exploration with PCA</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-10-metadata-validation.html">Validating metadata</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-11-interference-correction.html">Interference correction</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-05-run-scatter.html">RunScatter and PCA</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Recipes</h6></li>
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
@@ -68,31 +71,25 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-manual" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Manual</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-manual">
-<li><h6 class="dropdown-header" data-toc-skip>Concepts &amp; Design</h6></li>
-    <li><a class="dropdown-item" href="../articles/manual-00-design-overview.html">Design Overview</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-00-integrator-vs-quant.html">INTEGRATOR vs QUANT</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-00-sample-types.html">Sample Types &amp; QC Roles</a></li>
+<li><a class="dropdown-item" href="../articles/manual-index.html">Manual (all pages)</a></li>
     <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Data Model</h6></li>
-    <li><a class="dropdown-item" href="../articles/manual-01-data-structure.html">Data Structures</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-02-data-identifiers.html">Data Identifiers</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-03-feature-variables.html">Feature Variables</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-04-mrmhub-experiment.html">MRMhubExperiment Object</a></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Getting started</h6></li>
+    <li><a class="dropdown-item" href="../articles/manual-00-installation.html">Installation</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-01-key-concepts.html">Key Concepts &amp; Glossary</a></li>
     <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Import &amp; Metadata</h6></li>
-    <li><a class="dropdown-item" href="../articles/manual-05a-which-importer.html">Import &amp; prepare data files</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-05-data-import.html">Data Import</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-05b-data-file-structures.html">Data File Structures</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-06-metadata-import.html">Metadata Import</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-06a-metadata-table-structures.html">Metadata Table Structures</a></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Preparing and running</h6></li>
+    <li><a class="dropdown-item" href="../articles/manual-04-data-import.html">Importing Analytical Data</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-05-metadata.html">Importing Metadata</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-07-corrections.html">Drift and Batch Correction</a></li>
     <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Corrections</h6></li>
-    <li><a class="dropdown-item" href="../articles/manual-07-drift-batch-correction.html">Drift &amp; Batch Correction</a></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
+    <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
-    <li><a class="dropdown-item" href="../articles/manual-11-cheatsheet.html">Function Cheatsheet</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-10-design-decisions.html">Design Decisions</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-02-data-object.html">The MRMhubExperiment Data Object</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-03-design-decisions.html">Design Decisions</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-06-sample-types.html">Sample Types &amp; QC Roles</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-10-troubleshooting.html">Troubleshooting &amp; FAQ</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
@@ -100,6 +97,7 @@
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><a class="external-link nav-link" href="https://slinghub.github.io/MRMhub/">← MRMhub home</a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://slinghub.github.io/MRMhub/integrator/">INTEGRATOR ↗</a></li>
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
@@ -116,7 +114,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.svg" class="logo" alt=""><h1>RunScatter Plot</h1>
+      <img src="../logo.svg" class="logo" alt=""><h1>Exploring QC: RunScatter and PCA</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/HEAD/vignettes/articles/tutorial-05-run-scatter.Rmd" class="external-link"><code>vignettes/articles/tutorial-05-run-scatter.Rmd</code></a></small>
@@ -125,14 +123,21 @@
 
     
     
-<p><code><a href="../reference/plot_runscatter.html">plot_runscatter()</a></code> visualises feature signals across the
-analysis sequence, helping to identify trends, detect outliers, and
-assess analytical performance. This tutorial demonstrates the main
-parameters using a single feature (<code>TG 48:2 [-18:1]</code>) from
-the built-in lipidomics dataset.</p>
+<p class="page-kind page-kind-tutorial">
+Tutorial
+</p>
+<p>This tutorial covers two complementary QC-exploration views on the
+built-in lipidomics dataset. <code><a href="../reference/plot_runscatter.html">plot_runscatter()</a></code> visualises a
+feature’s signal across the analysis sequence — helping to identify
+trends, detect outliers, and assess analytical performance — while
+Principal Component Analysis (<code><a href="../reference/plot_pca.html">plot_pca()</a></code>,
+<code><a href="../reference/plot_pca_loading.html">plot_pca_loading()</a></code>, <code><a href="../reference/detect_outlier_pca.html">detect_outlier_pca()</a></code>)
+provides a multivariate view for spotting injection outliers and
+residual batch effects. The RunScatter examples use a single feature
+(<code>TG 48:2 [-18:1]</code>).</p>
 <div class="callout callout-note">
-<p><strong>Time:</strong> ~10 min  |  <strong>Level:</strong>
-Intermediate  |  <strong>Prerequisites:</strong> <a href="tutorial-02-basic-workflow.html">Basic workflow</a></p>
+<p><strong>Time</strong> ~20 min  ·  <strong>Level</strong> Intermediate
+ ·  <strong>Prerequisites</strong> <a href="tutorial-02-basic-workflow.html">Basic workflow</a></p>
 </div>
 <div class="section level2">
 <h2 id="setup">Setup<a class="anchor" aria-label="anchor" href="#setup"></a>
@@ -341,15 +346,184 @@ uncorrected values use <code>_raw</code>
 Correction</a> tutorial for a worked example.</p>
 </div>
 <div class="section level2">
-<h2 id="next-steps">Next Steps<a class="anchor" aria-label="anchor" href="#next-steps"></a>
+<h2 id="principal-component-analysis-pca">Principal component analysis (PCA)<a class="anchor" aria-label="anchor" href="#principal-component-analysis-pca"></a>
+</h2>
+<p>PCA is a routine multivariate check in targeted MS workflows: it
+helps spot injection outliers, visualise residual batch effects, and
+confirm that drift or batch corrections reduced unwanted variance. The
+plots below reuse the <code>mexp</code> prepared in Setup.</p>
+<div class="section level3">
+<h3 id="score-plot-by-qc-type">Score plot by QC type<a class="anchor" aria-label="anchor" href="#score-plot-by-qc-type"></a>
+</h3>
+<p>The score plot summarises sample variance in two dimensions.
+Biological QCs (BQC) should cluster tightly near the centre if
+normalisation and any corrections succeeded, while study samples (SPL)
+typically show wider biological spread. The
+<code>ellipse_variable</code> controls the grouping of the confidence
+ellipses (<code>qc_type</code>, <code>batch_id</code>, or
+<code>"none"</code>); a markedly dispersed QC cluster suggests
+insufficient normalisation or remaining instrument drift.</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_pca.html">plot_pca</a></span><span class="op">(</span><span class="va">mexp</span>,</span>
+<span>         variable <span class="op">=</span> <span class="st">"norm_intensity"</span>,</span>
+<span>         qc_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BQC"</span>, <span class="st">"SPL"</span><span class="op">)</span>,</span>
+<span>         ellipse_variable <span class="op">=</span> <span class="st">"qc_type"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="tutorial-05-run-scatter_files/figure-html/unnamed-chunk-13-1.png" class="r-plt" alt="PCA score plot coloured by QC type
+" width="700"></p>
+</div>
+<div class="section level3">
+<h3 id="score-plot-by-batch">Score plot by batch<a class="anchor" aria-label="anchor" href="#score-plot-by-batch"></a>
+</h3>
+<p>If samples separate along PC1 or PC2 by <code>batch_id</code>, batch
+effects persist and a centering-based correction is likely warranted.
+Running the same plot before and after
+<code><a href="../reference/correct_batch_centering.html">correct_batch_centering()</a></code> confirms that the batch ellipses
+overlap after correction.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_pca.html">plot_pca</a></span><span class="op">(</span><span class="va">mexp</span>,</span>
+<span>         variable <span class="op">=</span> <span class="st">"norm_intensity"</span>,</span>
+<span>         qc_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BQC"</span>, <span class="st">"SPL"</span><span class="op">)</span>,</span>
+<span>         ellipse_variable <span class="op">=</span> <span class="st">"batch_id"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="tutorial-05-run-scatter_files/figure-html/unnamed-chunk-14-1.png" class="r-plt" alt="PCA score plot coloured by batch
+" width="700"></p>
+</div>
+<div class="section level3">
+<h3 id="loadings">Loadings<a class="anchor" aria-label="anchor" href="#loadings"></a>
+</h3>
+<p>The loading plot identifies the features driving the principal
+components; features at the extremes contribute most to sample
+separation. A single feature dominating PC1 should be inspected — it is
+often a saturated or contaminated transition rather than a biological
+signal.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_pca_loading.html">plot_pca_loading</a></span><span class="op">(</span><span class="va">mexp</span>,</span>
+<span>                 variable <span class="op">=</span> <span class="st">"norm_intensity"</span>,</span>
+<span>                 qc_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BQC"</span>, <span class="st">"SPL"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="tutorial-05-run-scatter_files/figure-html/unnamed-chunk-15-1.png" class="r-plt" alt="PCA loadings plot
+" width="700"></p>
+</div>
+<div class="section level3">
+<h3 id="detecting-outlier-injections">Detecting outlier injections<a class="anchor" aria-label="anchor" href="#detecting-outlier-injections"></a>
+</h3>
+<p><code><a href="../reference/detect_outlier_pca.html">detect_outlier_pca()</a></code> flags analyses whose score on a
+chosen principal component lies outside a fence, defined as either
+<code>mean ± k·SD</code> (<code>outlier_detection = "sd"</code>) or
+<code>median ± k·MAD</code> (<code>outlier_detection = "mad"</code>),
+with <code>fence_multiplicator</code> setting <em>k</em>. It returns the
+<code>analysis_id</code> values that exceed the fence on the selected
+component, or <code>NULL</code> if none are flagged.</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">outlier_ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detect_outlier_pca.html">detect_outlier_pca</a></span><span class="op">(</span></span>
+<span>  <span class="va">mexp</span>,</span>
+<span>  variable <span class="op">=</span> <span class="st">"intensity"</span>,</span>
+<span>  filter_data <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  pca_component <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  qc_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BQC"</span>, <span class="st">"SPL"</span><span class="op">)</span>,</span>
+<span>  outlier_detection <span class="op">=</span> <span class="st">"mad"</span>,</span>
+<span>  fence_multiplicator <span class="op">=</span> <span class="fl">4</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">outlier_ids</span></span>
+<span><span class="co">#&gt; [1] "Longit_batch6_51"</span></span></code></pre></div>
+<details><summary><strong>Choice of fence method</strong>
+</summary>
+The SD-based fence is sensitive to the very outliers it tries to detect:
+a single extreme observation inflates the SD estimate. The MAD-based
+fence is robust to a few large deviations and is generally preferable
+for QC screening. A typical multiplier is
+<code>fence_multiplicator = 3</code> (≈99.7% under normality) or
+<code>4</code> for a more permissive screen. The function evaluates one
+principal component at a time — re-run with
+<code>pca_component = 2</code> to screen PC2.
+</details><p>A sample flagged by PCA is a candidate for investigation, not a
+verdict. Outlier patterns frequently reflect genuine biology (e.g. a
+disease group or a sex difference), so an injection should be excluded
+only where a documented technical cause is identified — a failed
+injection, contamination, instrument fault, or sample-handling
+error.</p>
+</div>
+<div class="section level3">
+<h3 id="excluding-analyses-and-features">Excluding analyses and features<a class="anchor" aria-label="anchor" href="#excluding-analyses-and-features"></a>
+</h3>
+<p>After visual and documented confirmation, remove the offending
+injections or features. <code><a href="../reference/exclude_analyses.html">exclude_analyses()</a></code> /
+<code><a href="../reference/exclude_features.html">exclude_features()</a></code> set the affected rows aside for
+downstream steps while the original data remain in
+<code>mexp@dataset_orig</code>; setting
+<code>clear_existing = TRUE</code> replaces any previous exclusion list
+rather than appending.</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Review candidates before excluding</span></span>
+<span><span class="va">mexp</span><span class="op">@</span><span class="va">annot_analyses</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">analysis_id</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">outlier_ids</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">analysis_id</span>, <span class="va">qc_type</span>, <span class="va">batch_id</span>, <span class="va">analysis_order</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Exclude after technical confirmation</span></span>
+<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/exclude_analyses.html">exclude_analyses</a></span><span class="op">(</span><span class="va">mexp</span>, analyses <span class="op">=</span> <span class="va">outlier_ids</span>, clear_existing <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Exclude a known-problematic feature (e.g. a saturated transition)</span></span>
+<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/exclude_features.html">exclude_features</a></span><span class="op">(</span><span class="va">mexp</span>, features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PC 32:0"</span><span class="op">)</span>, clear_existing <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="interpretation-guide">Interpretation guide<a class="anchor" aria-label="anchor" href="#interpretation-guide"></a>
+</h3>
+<table class="table">
+<colgroup>
+<col width="37%">
+<col width="40%">
+<col width="22%">
+</colgroup>
+<thead><tr class="header">
+<th>PCA pattern</th>
+<th>Likely cause</th>
+<th>Action</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>BQC samples dispersed across the score plot</td>
+<td>Poor precision; ISTD assignment problem</td>
+<td>Inspect <code><a href="../reference/plot_normalization_qc.html">plot_normalization_qc()</a></code>; verify ISTD
+pairing</td>
+</tr>
+<tr class="even">
+<td>Clear separation by <code>batch_id</code> on PC1 or PC2</td>
+<td>Uncorrected batch effect</td>
+<td>Apply <code><a href="../reference/correct_batch_centering.html">correct_batch_centering()</a></code>
+</td>
+</tr>
+<tr class="odd">
+<td>Single injection isolated from all groups</td>
+<td>Technical outlier</td>
+<td>Investigate cause; exclude only with documented reason</td>
+</tr>
+<tr class="even">
+<td>One feature dominates loadings on PC1</td>
+<td>Saturation, contamination, or single-transition artefact</td>
+<td>Inspect with <code><a href="../reference/plot_runscatter.html">plot_runscatter()</a></code>; exclude feature if
+confirmed</td>
+</tr>
+<tr class="odd">
+<td>BQC tight, SPL spread</td>
+<td>Genuine biological variability</td>
+<td>Proceed</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section level2">
+<h2 id="next-steps">Next steps<a class="anchor" aria-label="anchor" href="#next-steps"></a>
 </h2>
 <ul>
 <li>
-<a href="tutorial-04-drift-correction.html">Drift Correction</a> —
-apply signal drift correction</li>
+<a href="tutorial-04-drift-correction.html">Drift and Batch
+Correction</a> — apply and inspect corrections</li>
 <li>
-<a href="tutorial-06-batch-correction.html">Batch Correction</a> —
-apply inter-batch correction</li>
+<a href="manual-08-visualization.html">Visualisation Functions</a> —
+the full list of plotting functions</li>
+<li>
+<a href="tutorial-02-basic-workflow.html">Basic MRMhub Workflow</a>
+— where these checks fit in the pipeline</li>
 </ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

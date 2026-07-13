@@ -1,7 +1,9 @@
 # Import & Export mzTab-M
 
-**Level:** Intermediate  \|  **Output:** `.mzTab` file (mzTab-M 2.0.0-M)
- \|  **Requires:** a processed `MRMhubExperiment`
+Recipe
+
+**Level** Intermediate  ·  **Output** `.mzTab` file (mzTab-M 2.0.0-M)
+ ·  **Requires** a processed `MRMhubExperiment`
 
 ## Goal
 
@@ -81,7 +83,7 @@ save_dataset_mztab(
 Internal-standard relationships, QC and calibration metrics,
 drift/batch-correction state, and the QC-type / batch structure are not
 part of the mzTab-M model and are therefore *not* reproduced on
-round-trip. The file captures identities, the chosen abundance matrix,
+round-trip; the file captures identities, the chosen abundance matrix,
 and the study-variable grouping. Keep the `MRMhubExperiment` (or the
 Excel report from
 [`save_report_xlsx()`](https://slinghub.github.io/MRMhub/quant/reference/save_report_xlsx.md))
@@ -107,9 +109,10 @@ is self-contained.
 
 ## Importing mzTab-M
 
-`import_data_mztab()` ingests mzTab-M produced by other tools — for
-example [Lipid Data Analyzer](http://genome.tugraz.at/lda2/), MS-DIAL or
-MZmine — into an `MRMhubExperiment`:
+[`import_data_mztab()`](https://slinghub.github.io/MRMhub/quant/reference/import_data_mztab.md)
+ingests mzTab-M produced by other tools — for example [Lipid Data
+Analyzer](http://genome.tugraz.at/lda2/), MS-DIAL or MZmine — into an
+`MRMhubExperiment`:
 
 ``` r
 
@@ -132,14 +135,12 @@ calibration metadata are *not* present and must be supplied with
 `study_variable` groups are imported best-effort as `batch_id` (mzTab-M
 has no analytical-batch concept).
 
-## Next Steps
+## Next steps
 
 - [Custom QC
   Report](https://slinghub.github.io/MRMhub/quant/articles/recipe-02-custom-qc-report.md)
   — a richer human-readable report.
-- [Feature
-  Variables](https://slinghub.github.io/MRMhub/quant/articles/manual-03-feature-variables.md)
-  — what `conc`, `intensity`, `area` and friends mean.
-- [The MRMhubExperiment
-  Object](https://slinghub.github.io/MRMhub/quant/articles/manual-04-mrmhub-experiment.md)
-  — the slots behind the export.
+- [The MRMhubExperiment Data
+  Object](https://slinghub.github.io/MRMhub/quant/articles/manual-02-data-object.html#feature-variables)
+  — what `conc`, `intensity`, `area` and friends mean, and the slots
+  behind the export.

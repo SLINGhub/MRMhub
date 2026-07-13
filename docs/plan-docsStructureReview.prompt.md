@@ -53,7 +53,7 @@ source of the “overwhelming and confusing” feeling.
 
 | Persona | Verdict | Where they bounce |
 |----|----|----|
-| Analytical scientist, little/no R | Underserved | Module-choice + `long.csv`/`msconvert` jargon before value; then “install the R package / run R scripts.” Their lifeline [`run_walkthrough()`](https://slinghub.github.io/MRMhub/quant/reference/run_walkthrough.md) (GUI) is a footnote in one tutorial. |
+| Analytical scientist, little/no R | Underserved | Module-choice + `long.csv`/`msconvert` jargon before value; then “install the R package / run R scripts.” Their lifeline `run_walkthrough()` (GUI) is a footnote in one tutorial. |
 | Analytical scientist, some R | Reachable but slow | The 5-min first-analysis tutorial is right for them but sits 3 clicks deep, behind the module split. |
 | Student, new to MS/metabolomics | Underserved | Landing assumes BQC/TQC/ISTD/drift vocabulary; the Key Concepts glossary is buried in a menu, not offered as “new to the field, start here.” ~20-item Manual menu intimidates. |
 | Bioinformatician | Well served (arguably over-served) | Module split, importer decision tree, function reference, reproducibility story — all present and prominent. The site is tuned for this persona, which is why the other three feel lost. |
@@ -71,10 +71,8 @@ altitude as “import your data.”
   weight, and INTEGRATOR appears first in the workflow diagram and in 2
   of 3 table rows. The lede is buried.
 - **“Runs scripts, doesn’t write code”** ⇒ the copy-paste 5-min tutorial
-  and
-  [`run_walkthrough()`](https://slinghub.github.io/MRMhub/quant/reference/run_walkthrough.md)
-  are the product for them; they should be the hero, not the module
-  taxonomy.
+  and `run_walkthrough()` are the product for them; they should be the
+  hero, not the module taxonomy.
 - They don’t need “INTEGRATOR vs QUANT” as the first question. They need
   “here’s what you’ll get, here’s the 3 lines to get it.”
 
@@ -92,9 +90,8 @@ altitude as “import your data.”
 3.  **De-weight the Manual for newcomers.** Introduce tiers: *Start here
     (3 pages) → How-to → Reference.* Keep reference material accessible
     but not at top altitude.
-4.  **Promote the two low/no-code on-ramps**
-    ([`run_walkthrough()`](https://slinghub.github.io/MRMhub/quant/reference/run_walkthrough.md)
-    GUI + 5-min tutorial) to the front door.
+4.  **Promote the two low/no-code on-ramps** (`run_walkthrough()` GUI +
+    5-min tutorial) to the front door.
 5.  **Single-source the routing table** — one block, reused, not three
     hand-maintained copies.
 

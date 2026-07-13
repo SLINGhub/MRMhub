@@ -17,26 +17,20 @@ features:
 - **A single data object.** Data, metadata, and processing details are
   stored in single sharable data object (`MRMhubExperiment`).
 
-![A RunSequence overview of a 499-injection MRM batch: quality-control
-samples (TQC, BQC, blanks, LTR) mapped across the analysis order
-alongside the study samples, with batch boundaries and a run-time
-summary — one of the QC views produced from a single
-command.](reference/figures/hero-runsequence.png)
+![](data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdib3g9IjAgMCA5NjAgMTgyIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9Ik1STWh1Yi1RVUFOVCB3b3JrZmxvdyBpbiBmaXZlIHN0YWdlcywgZWFjaCB3aXRoIGl0cyBrZXkgYWN0aW9ucy4gSW1wb3J0IGFuZCBWYWxpZGF0ZTogaW1wb3J0IGRhdGEsIGFkZCBtZXRhZGF0YSwgdmFsaWRhdGUgSURzLCBzZXQgcnVuIG9yZGVyLiBRdWFudGlmeTogSVNURCBub3JtYWxpc2F0aW9uLCBxdWFudGlmeSBieSBJU1RELCBjYWxpYnJhdGlvbiBjdXJ2ZXMsIHJlZmVyZW5jZSBjYWxpYnJhdGlvbi4gQ29ycmVjdDogZHJpZnQgY29ycmVjdGlvbiwgYmF0Y2ggZWZmZWN0cywgaW50ZXJmZXJlbmNlcy4gUUMgYW5kIEZpbHRlcjogUUMgbWV0cmljcywgUENBIGFuZCBydW4tc2NhdHRlciwgb3V0bGllciBkZXRlY3Rpb24sIGZlYXR1cmUgZmlsdGVyaW5nLiBSZXBvcnQ6IEV4Y2VsIGFuZCBDU1YsIG16VGFiLU0sIFFDIHJlcG9ydHMsIHNoYXJlYWJsZSBvYmplY3QuIiBzdHlsZT0id2lkdGg6IDEwMCU7IGhlaWdodDogYXV0bzsgZm9udC1mYW1pbHk6IC1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJiMzOTtTZWdvZSBVSSYjMzk7LCBSb2JvdG8sIHNhbnMtc2VyaWY7Ij48c3R5bGU+CiAgICAucS1hcnJvdyB7IGN1cnNvcjogcG9pbnRlcjsgdHJhbnNpdGlvbjogb3BhY2l0eSAwLjJzOyB9CiAgICAucS1saW5rOmhvdmVyIC5xLWFycm93IHsgb3BhY2l0eTogMC44MjsgfQogICAgLnEtbGluazpob3ZlciAucS1uYW1lIHsgdGV4dC1kZWNvcmF0aW9uOiB1bmRlcmxpbmU7IHRleHQtdW5kZXJsaW5lLW9mZnNldDogMnB4OyB9CiAgICAucS1uYW1lIHsgZm9udC1zaXplOiAyMHB4OyBmb250LXdlaWdodDogNzAwOyBmaWxsOiAjMkMzRTUwOyBwb2ludGVyLWV2ZW50czogbm9uZTsgfQogICAgLnEtaXRlbSB7IGZvbnQtc2l6ZTogMTZweDsgZmlsbDogIzQ2NTM1ZjsgcG9pbnRlci1ldmVudHM6IG5vbmU7IH0KICAgIC5xLWRpdiB7IHN0cm9rZTogI2RmZTRlODsgc3Ryb2tlLXdpZHRoOiAxOyB9CiAgPC9zdHlsZT4KPGxpbmUgY2xhc3M9InEtZGl2IiB4MT0iMjM0IiB5MT0iNzAiIHgyPSIyMzQiIHkyPSIxNzYiPjwvbGluZT48bGluZSBjbGFzcz0icS1kaXYiIHgxPSI0MzMiIHkxPSI3MCIgeDI9IjQzMyIgeTI9IjE3NiI+PC9saW5lPjxsaW5lIGNsYXNzPSJxLWRpdiIgeDE9IjU5NiIgeTE9IjcwIiB4Mj0iNTk2IiB5Mj0iMTc2Ij48L2xpbmU+PGxpbmUgY2xhc3M9InEtZGl2IiB4MT0iNzY2IiB5MT0iNzAiIHgyPSI3NjYiIHkyPSIxNzYiPjwvbGluZT48YSBocmVmPSJodHRwczovL3NsaW5naHViLmdpdGh1Yi5pby9NUk1odWIvcXVhbnQvYXJ0aWNsZXMvbWFudWFsLTA0LWRhdGEtaW1wb3J0Lm1kIj48cG9seWdvbiBjbGFzcz0icS1hcnJvdyIgcG9pbnRzPSI0LDQgMjMxLDQgMjU1LDMwIDIzMSw1NiA0LDU2IiBmaWxsPSIjZDZlNGViIj48L3BvbHlnb24+PHRleHQgY2xhc3M9InEtbmFtZSIgeD0iMTE4IiB5PSIzNyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+SW1wb3J0ICZhbXA7IFZhbGlkYXRlPC90ZXh0PjwvYT4gPHRleHQgY2xhc3M9InEtaXRlbSIgeD0iMjAiIHk9Ijg4Ij5JbXBvcnQgZGF0YTwvdGV4dD48dGV4dCBjbGFzcz0icS1pdGVtIiB4PSIyMCIgeT0iMTEyIj5BZGQgbWV0YWRhdGE8L3RleHQ+PHRleHQgY2xhc3M9InEtaXRlbSIgeD0iMjAiIHk9IjEzNiI+VmFsaWRhdGUgSURzPC90ZXh0Pjx0ZXh0IGNsYXNzPSJxLWl0ZW0iIHg9IjIwIiB5PSIxNjAiPlNldCBydW4gb3JkZXI8L3RleHQ+PGEgaHJlZj0iaHR0cHM6Ly9zbGluZ2h1Yi5naXRodWIuaW8vTVJNaHViL3F1YW50L2FydGljbGVzL3R1dG9yaWFsLTAyLWJhc2ljLXdvcmtmbG93Lm1kIj48cG9seWdvbiBjbGFzcz0icS1hcnJvdyIgcG9pbnRzPSIyMzcsNCA0MzAsNCA0NTQsMzAgNDMwLDU2IDIzNyw1NiAyNjEsMzAiIGZpbGw9IiNkOGU2ZDQiPjwvcG9seWdvbj48dGV4dCBjbGFzcz0icS1uYW1lIiB4PSIzMzQiIHk9IjM3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5RdWFudGlmeTwvdGV4dD48L2E+IDx0ZXh0IGNsYXNzPSJxLWl0ZW0iIHg9IjI1MyIgeT0iODgiPklTVEQgbm9ybWFsaXNhdGlvbjwvdGV4dD48dGV4dCBjbGFzcz0icS1pdGVtIiB4PSIyNTMiIHk9IjExMiI+UXVhbnRpZnkgYnkgSVNURDwvdGV4dD48dGV4dCBjbGFzcz0icS1pdGVtIiB4PSIyNTMiIHk9IjEzNiI+Q2FsaWJyYXRpb24gY3VydmVzPC90ZXh0Pjx0ZXh0IGNsYXNzPSJxLWl0ZW0iIHg9IjI1MyIgeT0iMTYwIj5SZWZlcmVuY2UgY2FsaWJyYXRpb248L3RleHQ+PGEgaHJlZj0iaHR0cHM6Ly9zbGluZ2h1Yi5naXRodWIuaW8vTVJNaHViL3F1YW50L2FydGljbGVzL21hbnVhbC0wNy1jb3JyZWN0aW9ucy5tZCI+PHBvbHlnb24gY2xhc3M9InEtYXJyb3ciIHBvaW50cz0iNDM2LDQgNTkzLDQgNjE3LDMwIDU5Myw1NiA0MzYsNTYgNDYwLDMwIiBmaWxsPSIjZWNkMmQyIj48L3BvbHlnb24+PHRleHQgY2xhc3M9InEtbmFtZSIgeD0iNTE1IiB5PSIzNyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+Q29ycmVjdDwvdGV4dD48L2E+IDx0ZXh0IGNsYXNzPSJxLWl0ZW0iIHg9IjQ1MiIgeT0iODgiPkRyaWZ0IGNvcnJlY3Rpb248L3RleHQ+PHRleHQgY2xhc3M9InEtaXRlbSIgeD0iNDUyIiB5PSIxMTIiPkJhdGNoIGVmZmVjdHM8L3RleHQ+PHRleHQgY2xhc3M9InEtaXRlbSIgeD0iNDUyIiB5PSIxMzYiPkludGVyZmVyZW5jZXM8L3RleHQ+PGEgaHJlZj0iaHR0cHM6Ly9zbGluZ2h1Yi5naXRodWIuaW8vTVJNaHViL3F1YW50L2FydGljbGVzL3R1dG9yaWFsLTA1LXJ1bi1zY2F0dGVyLm1kIj48cG9seWdvbiBjbGFzcz0icS1hcnJvdyIgcG9pbnRzPSI1OTksNCA3NjMsNCA3ODcsMzAgNzYzLDU2IDU5OSw1NiA2MjMsMzAiIGZpbGw9IiNkNmU0ZWIiPjwvcG9seWdvbj48dGV4dCBjbGFzcz0icS1uYW1lIiB4PSI2ODEiIHk9IjM3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5RQyAmYW1wOyBGaWx0ZXI8L3RleHQ+PC9hPiA8dGV4dCBjbGFzcz0icS1pdGVtIiB4PSI2MTUiIHk9Ijg4Ij5RQyBtZXRyaWNzPC90ZXh0Pjx0ZXh0IGNsYXNzPSJxLWl0ZW0iIHg9IjYxNSIgeT0iMTEyIj5QQ0EgJmFtcDsgcnVuLXNjYXR0ZXI8L3RleHQ+PHRleHQgY2xhc3M9InEtaXRlbSIgeD0iNjE1IiB5PSIxMzYiPk91dGxpZXIgZGV0ZWN0aW9uPC90ZXh0Pjx0ZXh0IGNsYXNzPSJxLWl0ZW0iIHg9IjYxNSIgeT0iMTYwIj5GZWF0dXJlIGZpbHRlcmluZzwvdGV4dD48YSBocmVmPSJodHRwczovL3NsaW5naHViLmdpdGh1Yi5pby9NUk1odWIvcXVhbnQvYXJ0aWNsZXMvcmVjaXBlLTAyLWN1c3RvbS1xYy1yZXBvcnQubWQiPjxwb2x5Z29uIGNsYXNzPSJxLWFycm93IiBwb2ludHM9Ijc2OSw0IDkyNiw0IDk1MCwzMCA5MjYsNTYgNzY5LDU2IDc5MywzMCIgZmlsbD0iI2M4Y2ZkNiI+PC9wb2x5Z29uPjx0ZXh0IGNsYXNzPSJxLW5hbWUiIHg9Ijg0OCIgeT0iMzciIHRleHQtYW5jaG9yPSJtaWRkbGUiPlJlcG9ydDwvdGV4dD48L2E+IDx0ZXh0IGNsYXNzPSJxLWl0ZW0iIHg9Ijc4NSIgeT0iODgiPkV4Y2VsICZhbXA7IENTVjwvdGV4dD48dGV4dCBjbGFzcz0icS1pdGVtIiB4PSI3ODUiIHk9IjExMiI+bXpUYWItTTwvdGV4dD48dGV4dCBjbGFzcz0icS1pdGVtIiB4PSI3ODUiIHk9IjEzNiI+UUMgcmVwb3J0czwvdGV4dD48dGV4dCBjbGFzcz0icS1pdGVtIiB4PSI3ODUiIHk9IjE2MCI+U2hhcmVhYmxlIG9iamVjdDwvdGV4dD48L3N2Zz4=)
 
-A RunSequence overview of a 499-injection MRM batch: quality-control
-samples (TQC, BQC, blanks, LTR) mapped across the analysis order
-alongside the study samples, with batch boundaries and a run-time
-summary — one of the QC views produced from a single command.
+Visualise at each step with [QC
+plots](https://slinghub.github.io/MRMhub/quant/articles/manual-08-visualization.md)
+— RunScatter, PCA, run-sequence, normalization QC.
 
 [Run your first analysis (5 min)
 →](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md)
 
 Prefer point-and-click?
-[`run_walkthrough()`](https://slinghub.github.io/MRMhub/quant/reference/run_walkthrough.md)
-opens a guided app that validates your data and generates the workflow
-script (one-time `install.packages(c("shiny", "bslib"))`).
-
-![](data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdib3g9IjAgMCA4NDAgMTMwIiBzdHlsZT0ibWF4LXdpZHRoOiA4NDBweDsgd2lkdGg6IDEwMCU7IGhlaWdodDogYXV0bzsgZm9udC1mYW1pbHk6IC1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJiMzOTtTZWdvZSBVSSYjMzk7LCBzYW5zLXNlcmlmOyI+PHN0eWxlPgogICAgLndmLWJveCB7IHJ4OiA4OyByeTogODsgc3Ryb2tlLXdpZHRoOiAxLjU7IGN1cnNvcjogcG9pbnRlcjsgdHJhbnNpdGlvbjogb3BhY2l0eSAwLjJzOyB9CiAgICAud2YtYm94OmhvdmVyIHsgb3BhY2l0eTogMC44NTsgfQogICAgLndmLWxhYmVsIHsgZm9udC1zaXplOiAxMnB4OyBmb250LXdlaWdodDogNjAwOyBmaWxsOiAjMWExYTFhOyBwb2ludGVyLWV2ZW50czogbm9uZTsgdGV4dC1kZWNvcmF0aW9uOiB1bmRlcmxpbmU7IHRleHQtdW5kZXJsaW5lLW9mZnNldDogMnB4OyB9CiAgICAud2YtYXJyb3cgeyBmaWxsOiAjMkMzRTUwOyB9CiAgICAud2YtYm94LWRhc2hlZCB7IGZpbGw6IHRyYW5zcGFyZW50OyBzdHJva2UtZGFzaGFycmF5OiA0LDM7IH0KICAgIC53Zi1ib3gtZGFzaGVkOmhvdmVyIHsgZmlsbDogcmdiYSg5MSwxNDMsMTY4LDAuMDgpOyB9CiAgICAud2YtZGV0YWlsIHsgZm9udC1zaXplOiA5LjVweDsgZmlsbDogIzU1NTsgcG9pbnRlci1ldmVudHM6IG5vbmU7IH0KICA8L3N0eWxlPgo8YSBocmVmPSJodHRwczovL3NsaW5naHViLmdpdGh1Yi5pby9NUk1odWIvcXVhbnQvYXJ0aWNsZXMvbWFudWFsLTA1YS13aGljaC1pbXBvcnRlci5tZCI+PHJlY3QgY2xhc3M9IndmLWJveCB3Zi1ib3gtZGFzaGVkIiB4PSIzNSIgeT0iMTAiIHdpZHRoPSIxMTAiIGhlaWdodD0iNzAiIHN0cm9rZT0iIzVCOEZBOCIgLz48dGV4dCBjbGFzcz0id2YtbGFiZWwiIHg9IjkwIiB5PSI1MCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+RGF0YSBJbXBvcnQ8L3RleHQ+PC9hPiA8dGV4dCBjbGFzcz0id2YtZGV0YWlsIiB4PSI5MCIgeT0iOTgiIHRleHQtYW5jaG9yPSJtaWRkbGUiPk1STWh1Yi1JTlRFR1JBVE9SPC90ZXh0Pjx0ZXh0IGNsYXNzPSJ3Zi1kZXRhaWwiIHg9IjkwIiB5PSIxMTIiIHRleHQtYW5jaG9yPSJtaWRkbGUiPk90aGVyIGZvcm1hdHM8L3RleHQ+PHBvbHlnb24gY2xhc3M9IndmLWFycm93IiBwb2ludHM9IjE0OCwzOCAxNDgsNTIgMTY0LDQ1Ij48L3BvbHlnb24+PGEgaHJlZj0iaHR0cHM6Ly9zbGluZ2h1Yi5naXRodWIuaW8vTVJNaHViL3F1YW50L2FydGljbGVzL21hbnVhbC0wNi1tZXRhZGF0YS1pbXBvcnQubWQiPjxyZWN0IGNsYXNzPSJ3Zi1ib3giIHg9IjE2NyIgeT0iMTAiIHdpZHRoPSIxMTAiIGhlaWdodD0iNzAiIGZpbGw9IiNmNWUwYzgiIHN0cm9rZT0iI0Q0OTE0RSIgLz48dGV4dCBjbGFzcz0id2YtbGFiZWwiIHg9IjIyMiIgeT0iNTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiPk1ldGFkYXRhPC90ZXh0PjwvYT4gPHRleHQgY2xhc3M9IndmLWRldGFpbCIgeD0iMjIyIiB5PSI5OCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+aW1wb3J0IENTVi9YTFM8L3RleHQ+PHRleHQgY2xhc3M9IndmLWRldGFpbCIgeD0iMjIyIiB5PSIxMTIiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkludGVncml0eSB2YWxpZGF0aW9uPC90ZXh0Pjxwb2x5Z29uIGNsYXNzPSJ3Zi1hcnJvdyIgcG9pbnRzPSIyODAsMzggMjgwLDUyIDI5Niw0NSI+PC9wb2x5Z29uPjxhIGhyZWY9Imh0dHBzOi8vc2xpbmdodWIuZ2l0aHViLmlvL01STWh1Yi9xdWFudC9hcnRpY2xlcy9yZWNpcGUtMDEtZXh0LWNhbGlicmF0aW9uLXFjLm1kIj48cmVjdCBjbGFzcz0id2YtYm94IiB4PSIyOTkiIHk9IjEwIiB3aWR0aD0iMTEwIiBoZWlnaHQ9IjcwIiBmaWxsPSIjZDhlNmQ0IiBzdHJva2U9IiM2QjlFNUUiIC8+PHRleHQgY2xhc3M9IndmLWxhYmVsIiB4PSIzNTQiIHk9IjQyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj48dHNwYW4geD0iMzU0IiBkeT0iMCI+Tm9ybWFsaXplIC88L3RzcGFuPjx0c3BhbiB4PSIzNTQiIGR5PSIxNiI+UXVhbnRpZnk8L3RzcGFuPjwvdGV4dD48L2E+IDx0ZXh0IGNsYXNzPSJ3Zi1kZXRhaWwiIHg9IjM1NCIgeT0iOTgiIHRleHQtYW5jaG9yPSJtaWRkbGUiPklTVEQ8L3RleHQ+PHRleHQgY2xhc3M9IndmLWRldGFpbCIgeD0iMzU0IiB5PSIxMTIiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkNhbGlicmF0aW9uIGN1cnZlPC90ZXh0Pjxwb2x5Z29uIGNsYXNzPSJ3Zi1hcnJvdyIgcG9pbnRzPSI0MTIsMzggNDEyLDUyIDQyOCw0NSI+PC9wb2x5Z29uPjxhIGhyZWY9Imh0dHBzOi8vc2xpbmdodWIuZ2l0aHViLmlvL01STWh1Yi9xdWFudC9hcnRpY2xlcy9tYW51YWwtMDctZHJpZnQtYmF0Y2gtY29ycmVjdGlvbi5tZCI+PHJlY3QgY2xhc3M9IndmLWJveCIgeD0iNDMxIiB5PSIxMCIgd2lkdGg9IjExMCIgaGVpZ2h0PSI3MCIgZmlsbD0iI2VjZDJkMiIgc3Ryb2tlPSIjQzI3MTcxIiAvPjx0ZXh0IGNsYXNzPSJ3Zi1sYWJlbCIgeD0iNDg2IiB5PSI1MCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+Q29ycmVjdGlvbnM8L3RleHQ+PC9hPiA8dGV4dCBjbGFzcz0id2YtZGV0YWlsIiB4PSI0ODYiIHk9Ijk4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5EcmlmdDwvdGV4dD48dGV4dCBjbGFzcz0id2YtZGV0YWlsIiB4PSI0ODYiIHk9IjExMiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+QmF0Y2g8L3RleHQ+PHBvbHlnb24gY2xhc3M9IndmLWFycm93IiBwb2ludHM9IjU0NCwzOCA1NDQsNTIgNTYwLDQ1Ij48L3BvbHlnb24+PGEgaHJlZj0iaHR0cHM6Ly9zbGluZ2h1Yi5naXRodWIuaW8vTVJNaHViL3F1YW50L2FydGljbGVzL3R1dG9yaWFsLTA5LXBjYS1leHBsb3JhdGlvbi5tZCI+PHJlY3QgY2xhc3M9IndmLWJveCIgeD0iNTYzIiB5PSIxMCIgd2lkdGg9IjExMCIgaGVpZ2h0PSI3MCIgZmlsbD0iI2Q2ZTRlYiIgc3Ryb2tlPSIjNUI4RkE4IiAvPjx0ZXh0IGNsYXNzPSJ3Zi1sYWJlbCIgeD0iNjE4IiB5PSI1MCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+UUM8L3RleHQ+PC9hPiA8dGV4dCBjbGFzcz0id2YtZGV0YWlsIiB4PSI2MTgiIHk9Ijk4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5NZXRyaWNzPC90ZXh0Pjx0ZXh0IGNsYXNzPSJ3Zi1kZXRhaWwiIHg9IjYxOCIgeT0iMTEyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5QbG90czwvdGV4dD48cG9seWdvbiBjbGFzcz0id2YtYXJyb3ciIHBvaW50cz0iNjc2LDM4IDY3Niw1MiA2OTIsNDUiPjwvcG9seWdvbj48YSBocmVmPSJodHRwczovL3NsaW5naHViLmdpdGh1Yi5pby9NUk1odWIvcXVhbnQvYXJ0aWNsZXMvcmVjaXBlLTAyLWN1c3RvbS1xYy1yZXBvcnQubWQiPjxyZWN0IGNsYXNzPSJ3Zi1ib3giIHg9IjY5NSIgeT0iMTAiIHdpZHRoPSIxMTAiIGhlaWdodD0iNzAiIGZpbGw9IiNjOGNmZDYiIHN0cm9rZT0iIzJDM0U1MCIgLz48dGV4dCBjbGFzcz0id2YtbGFiZWwiIHg9Ijc1MCIgeT0iNTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlJlcG9ydGluZzwvdGV4dD48L2E+IDx0ZXh0IGNsYXNzPSJ3Zi1kZXRhaWwiIHg9Ijc1MCIgeT0iOTgiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlBsYWluIHRhYmxlczwvdGV4dD48dGV4dCBjbGFzcz0id2YtZGV0YWlsIiB4PSI3NTAiIHk9IjExMiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+UUMgcmVwb3J0czwvdGV4dD48L3N2Zz4=)
+[`build_workflow()`](https://slinghub.github.io/MRMhub/quant/reference/build_workflow.md)
+opens a guided app that validates your data and metadata, warns about
+pipeline mismatches, and generates a downloadable Quarto (`.qmd`)
+workflow (one-time `install.packages(c("shiny", "bslib"))`).
 
 ## Quick Start and Demos
 
@@ -46,7 +40,7 @@ script (one-time `install.packages(c("shiny", "bslib"))`).
   Analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md)**
   — a 5-minute run on bundled data
 - **[Prepare your
-  data](https://slinghub.github.io/MRMhub/quant/articles/manual-05a-which-importer.md)**
+  data](https://slinghub.github.io/MRMhub/quant/articles/manual-04-data-import.md)**
   — file formats and importers
 - **[Example: targeted
   lipidomics](https://slinghub.github.io/MRMhub/quant/articles/tutorial-03-lipidomics-workflow.md)**
@@ -72,7 +66,7 @@ library(mrmhub); mrmhub::check_setup()
 For more details and troubleshooting see
 [Installation](https://slinghub.github.io/MRMhub/quant/articles/manual-00-installation.md)
 and [Troubleshooting &
-FAQ](https://slinghub.github.io/MRMhub/quant/articles/manual-09-troubleshooting.md).
+FAQ](https://slinghub.github.io/MRMhub/quant/articles/manual-10-troubleshooting.md).
 
 ## Contributing
 
@@ -97,8 +91,10 @@ interactively.
 
 - [`check_setup()`](https://slinghub.github.io/MRMhub/quant/reference/check_setup.md)
   : Check MRMhub Setup
-- [`run_walkthrough()`](https://slinghub.github.io/MRMhub/quant/reference/run_walkthrough.md)
-  : Launch the MRMhub Walkthrough App
+- [`build_workflow()`](https://slinghub.github.io/MRMhub/quant/reference/build_workflow.md)
+  : Launch the MRMhub Workflow Builder
+- [`generate_workflow_qmd()`](https://slinghub.github.io/MRMhub/quant/reference/generate_workflow_qmd.md)
+  : Generate a runnable Quarto (.qmd) mrmhub workflow
 
 ## QUANT R package reference
 
@@ -159,6 +155,8 @@ i.e. to import different analytical data into data frames.
   : Import Analysis Results from Plain Wide-Format CSV Files
 - [`import_data_csv_long()`](https://slinghub.github.io/MRMhub/quant/reference/import_data_csv_long.md)
   : Import Analysis Results from Long Format CSV Files
+- [`import_data_mztab()`](https://slinghub.github.io/MRMhub/quant/reference/import_data_mztab.md)
+  : Import data from an mzTab-M file
 - [`parse_mrmhub_result()`](https://slinghub.github.io/MRMhub/quant/reference/parse_mrmhub_result.md)
   : Parses MRMhub peak integration results into a tibble
 - [`parse_masshunter_csv()`](https://slinghub.github.io/MRMhub/quant/reference/parse_masshunter_csv.md)
@@ -197,8 +195,6 @@ MRMhub Excel template or CSV files.
 - [`save_metadata_msorganiser_template()`](https://slinghub.github.io/MRMhub/quant/reference/save_metadata_msorganiser_template.md)
   : Saves a MRMhub Metadata Organizer template
 - [`add_metadata()`](https://slinghub.github.io/MRMhub/quant/reference/add_metadata.md)
-  : Add metadata an MRMhubExperiment object
-- [`assert_metadata()`](https://slinghub.github.io/MRMhub/quant/reference/assert_metadata.md)
   : Add metadata an MRMhubExperiment object
 
 ## Isotope correction
@@ -374,89 +370,49 @@ spectrometry is also available.
 
 ### All vignettes
 
-- [Design Overview: How Data Flows Through
-  MRMhub](https://slinghub.github.io/MRMhub/quant/articles/manual-00-design-overview.md):
-
-  A bird’s-eye view of the MRMhub data pipeline from raw instrument
-  files to final quantitative results.
-
 - [Installation](https://slinghub.github.io/MRMhub/quant/articles/manual-00-installation.md):
 
   Install mrmhub, verify your setup, and fix common install errors.
 
-- [INTEGRATOR vs QUANT: Which Tool Do I
-  Need?](https://slinghub.github.io/MRMhub/quant/articles/manual-00-integrator-vs-quant.md):
-
-  Understand the relationship between INTEGRATOR and QUANT (the R
-  package mrmhub).
-
 - [Key Concepts &
-  Glossary](https://slinghub.github.io/MRMhub/quant/articles/manual-00-key-concepts.md):
+  Glossary](https://slinghub.github.io/MRMhub/quant/articles/manual-01-key-concepts.md):
 
-  Plain-language overview of MRMhub’s data model, terminology, and
-  architecture.
-
-- [Definitions: Sample Types and QC
-  Roles](https://slinghub.github.io/MRMhub/quant/articles/manual-00-sample-types.md):
-
-  Reference for all sample type labels used in MRMhub and their roles in
-  quality control and data processing.
-
-- [Data and Metadata in
-  MRMhub](https://slinghub.github.io/MRMhub/quant/articles/manual-01-data-structure.md):
-
-  Overview of how MRMhub organizes analytical data and metadata within
-  the MRMhubExperiment object.
-
-- [Data Identifiers in
-  MRMhub](https://slinghub.github.io/MRMhub/quant/articles/manual-02-data-identifiers.md):
-
-  Explanation of the key identifier columns used to organize data in
-  MRMhub.
-
-- [Feature Variables in
-  MRMhub](https://slinghub.github.io/MRMhub/quant/articles/manual-03-feature-variables.md):
-
-  Reference for all feature variables (measurement columns) available in
-  MRMhub.
+  Core vocabulary of MRMhub — the data model, terminology, and the
+  function-naming convention.
 
 - [The MRMhubExperiment Data
-  Object](https://slinghub.github.io/MRMhub/quant/articles/manual-04-mrmhub-experiment.md):
+  Object](https://slinghub.github.io/MRMhub/quant/articles/manual-02-data-object.md):
 
-  How to create, use, and access data in MRMhubExperiment objects.
+  The primary data container of the MRMhub workflow: its data and
+  metadata tables, the identifiers that link them, and the feature
+  variables it stores.
 
-- [Importing Analytical Data and
-  Metadata](https://slinghub.github.io/MRMhub/quant/articles/manual-05-data-import.md):
+- [Design Decisions: Why This
+  Architecture?](https://slinghub.github.io/MRMhub/quant/articles/manual-03-design-decisions.md):
 
-  How to import analytical data and metadata into MRMhub from various
-  sources.
+  Explains the key design decisions behind MRMhub QUANT – for power
+  users and contributors who want to understand or extend the package.
 
-- [Import and prepare data
-  files](https://slinghub.github.io/MRMhub/quant/articles/manual-05a-which-importer.md):
+- [Importing Analytical
+  Data](https://slinghub.github.io/MRMhub/quant/articles/manual-04-data-import.md):
 
-  A decision guide for choosing the right data and metadata import
-  functions in MRMhub.
+  Importing analytical data from different sources into an
+  MRMhubExperiment.
 
-- [Data file
-  structures](https://slinghub.github.io/MRMhub/quant/articles/manual-05b-data-file-structures.md):
+- [Importing
+  Metadata](https://slinghub.github.io/MRMhub/quant/articles/manual-05-metadata.md):
 
-  Reference for the file layout and columns expected by each MRMhub data
-  importer.
+  Attaching and validating sample, feature, ISTD and QC metadata on an
+  MRMhubExperiment.
 
-- [Metadata
-  import](https://slinghub.github.io/MRMhub/quant/articles/manual-06-metadata-import.md):
+- [Sample Types & QC
+  Roles](https://slinghub.github.io/MRMhub/quant/articles/manual-06-sample-types.md):
 
-  MRMhub: postprocessing and quality control of small molecule mass
-  spectrometry data
-
-- [Metadata table
-  structures](https://slinghub.github.io/MRMhub/quant/articles/manual-06a-metadata-table-structures.md):
-
-  Reference for the columns of each MRMhub metadata table and what they
-  are used for.
+  Reference for the QC-type labels used in MRMhub and their roles in
+  quality control and data processing.
 
 - [Drift and Batch
-  Correction](https://slinghub.github.io/MRMhub/quant/articles/manual-07-drift-batch-correction.md):
+  Correction](https://slinghub.github.io/MRMhub/quant/articles/manual-07-corrections.md):
 
   MRMhub: postprocessing and quality control of small molecule mass
   spectrometry data
@@ -468,22 +424,14 @@ spectrometry is also available.
   stage, with the canonical argument forms and customisation guidance.
 
 - [Troubleshooting and
-  FAQ](https://slinghub.github.io/MRMhub/quant/articles/manual-09-troubleshooting.md):
+  FAQ](https://slinghub.github.io/MRMhub/quant/articles/manual-10-troubleshooting.md):
 
   Solutions to the most common errors and questions when using MRMhub
   QUANT.
 
-- [Design Decisions: Why This
-  Architecture?](https://slinghub.github.io/MRMhub/quant/articles/manual-10-design-decisions.md):
+- [Manual](https://slinghub.github.io/MRMhub/quant/articles/manual-index.md):
 
-  Explains the key design decisions behind MRMhub QUANT – for power
-  users and contributors who want to understand or extend the package.
-
-- [Function
-  Cheatsheet](https://slinghub.github.io/MRMhub/quant/articles/manual-11-cheatsheet.md):
-
-  The core functions used in a typical MRMhub workflow, in order, with
-  one-line descriptions and links to the full reference.
+  Complete contents of the MRMhub-QUANT manual.
 
 - [MRMhub](https://slinghub.github.io/MRMhub/quant/articles/mrmhub.md):
 
@@ -531,31 +479,14 @@ spectrometry is also available.
   MRMhub: Postprocessing and Quality Control of Small-Molecule Mass
   Spectrometry Data
 
-- [Drift Correction
-  (Smoothing)](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.md):
+- [Drift and Batch
+  Correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.md):
 
-- [RunScatter
-  Plot](https://slinghub.github.io/MRMhub/quant/articles/tutorial-05-run-scatter.md):
-
-- [Batch-effect
-  correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-06-batch-correction.md):
+- [Exploring QC: RunScatter and
+  PCA](https://slinghub.github.io/MRMhub/quant/articles/tutorial-05-run-scatter.md):
 
 - [Calibration by a Reference
   Sample](https://slinghub.github.io/MRMhub/quant/articles/tutorial-07-calibration-reference.md):
-
-- [Multi-Batch
-  Study](https://slinghub.github.io/MRMhub/quant/articles/tutorial-08-multi-batch.md):
-
-  End-to-end workflow for a realistic multi-batch targeted metabolomics
-  study with drift correction, batch correction, QC monitoring, and
-  final merge.
-
-- [QC Exploration with
-  PCA](https://slinghub.github.io/MRMhub/quant/articles/tutorial-09-pca-exploration.md):
-
-  Use Principal Component Analysis to identify outlier injections,
-  assess batch effects, and verify the result of drift and batch
-  corrections.
 
 - [Validating and Fixing
   Metadata](https://slinghub.github.io/MRMhub/quant/articles/tutorial-10-metadata-validation.md):

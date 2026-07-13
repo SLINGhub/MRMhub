@@ -202,9 +202,8 @@ wrong output, file format issues
 Data format validator (upload CSV → check columns → report issues) - Tab
 2: Interactive workflow guide (step-by-step with code generation) - Tab
 3: Results explorer (upload/connect to MRMhubExperiment → visualize) -
-Launch via
-[`mrmhub::run_walkthrough()`](https://slinghub.github.io/MRMhub/quant/reference/run_walkthrough.md) -
-Also deploy to shinyapps.io for zero-install access
+Launch via `mrmhub::run_walkthrough()` - Also deploy to shinyapps.io for
+zero-install access
 
 ### Phase 4: Multimedia & Interactive Learning
 
@@ -249,9 +248,7 @@ sections to all articles
 - **Site builds:**
   [`pkgdown::build_site()`](https://pkgdown.r-lib.org/reference/build_site.html)
   and `quarto render` both succeed cleanly
-- **Shiny app:**
-  [`mrmhub::run_walkthrough()`](https://slinghub.github.io/MRMhub/quant/reference/run_walkthrough.md)
-  launches without error
+- **Shiny app:** `mrmhub::run_walkthrough()` launches without error
 - **CI:** GitHub Actions R-CMD-check passes on matrix of R versions/OS
 - **User test:** Ask 2-3 target users (academic + core facility) to
   follow “Your First Analysis” cold — observe friction points

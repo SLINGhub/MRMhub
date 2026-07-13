@@ -1,5 +1,7 @@
 # Quantitative assay with Ext. calibration and QC
 
+Recipe
+
 This vignette demonstrates a simple workflow for a quantitative targeted
 assay with external calibration and quality control samples, as used
 e.g., in clinical chemistry or environmental analysis.
@@ -141,7 +143,7 @@ tbl <- get_qc_bias_variability(mexp, qc_types = c("HQC", "LQC"))
 #> # ℹ 1 more variable: bias <dbl>
 ```
 
-## Next Steps
+## Next steps
 
 - [Calibration by a Reference
   Sample](https://slinghub.github.io/MRMhub/quant/articles/tutorial-07-calibration-reference.md)

@@ -1,13 +1,21 @@
-# RunScatter Plot
+# Exploring QC: RunScatter and PCA
 
+Tutorial
+
+This tutorial covers two complementary QC-exploration views on the
+built-in lipidomics dataset.
 [`plot_runscatter()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.md)
-visualises feature signals across the analysis sequence, helping to
-identify trends, detect outliers, and assess analytical performance.
-This tutorial demonstrates the main parameters using a single feature
-(`TG 48:2 [-18:1]`) from the built-in lipidomics dataset.
+visualises a feature’s signal across the analysis sequence — helping to
+identify trends, detect outliers, and assess analytical performance —
+while Principal Component Analysis
+([`plot_pca()`](https://slinghub.github.io/MRMhub/quant/reference/plot_pca.md),
+[`plot_pca_loading()`](https://slinghub.github.io/MRMhub/quant/reference/plot_pca_loading.md),
+[`detect_outlier_pca()`](https://slinghub.github.io/MRMhub/quant/reference/detect_outlier_pca.md))
+provides a multivariate view for spotting injection outliers and
+residual batch effects. The RunScatter examples use a single feature
+(`TG 48:2 [-18:1]`).
 
-**Time:** ~10 min  \|  **Level:** Intermediate  \|  **Prerequisites:**
-[Basic
+**Time** ~20 min  ·  **Level** Intermediate  ·  **Prerequisites** [Basic
 workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md)
 
 ## Setup
@@ -242,11 +250,156 @@ See the [Drift
 Correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.md)
 tutorial for a worked example.
 
-## Next Steps
+## Principal component analysis (PCA)
 
-- [Drift
+PCA is a routine multivariate check in targeted MS workflows: it helps
+spot injection outliers, visualise residual batch effects, and confirm
+that drift or batch corrections reduced unwanted variance. The plots
+below reuse the `mexp` prepared in Setup.
+
+### Score plot by QC type
+
+The score plot summarises sample variance in two dimensions. Biological
+QCs (BQC) should cluster tightly near the centre if normalisation and
+any corrections succeeded, while study samples (SPL) typically show
+wider biological spread. The `ellipse_variable` controls the grouping of
+the confidence ellipses (`qc_type`, `batch_id`, or `"none"`); a markedly
+dispersed QC cluster suggests insufficient normalisation or remaining
+instrument drift.
+
+``` r
+
+plot_pca(mexp,
+         variable = "norm_intensity",
+         qc_types = c("BQC", "SPL"),
+         ellipse_variable = "qc_type")
+```
+
+![PCA score plot coloured by QC type
+](tutorial-05-run-scatter_files/figure-html/unnamed-chunk-13-1.png)
+
+### Score plot by batch
+
+If samples separate along PC1 or PC2 by `batch_id`, batch effects
+persist and a centering-based correction is likely warranted. Running
+the same plot before and after
+[`correct_batch_centering()`](https://slinghub.github.io/MRMhub/quant/reference/correct_batch_centering.md)
+confirms that the batch ellipses overlap after correction.
+
+``` r
+
+plot_pca(mexp,
+         variable = "norm_intensity",
+         qc_types = c("BQC", "SPL"),
+         ellipse_variable = "batch_id")
+```
+
+![PCA score plot coloured by batch
+](tutorial-05-run-scatter_files/figure-html/unnamed-chunk-14-1.png)
+
+### Loadings
+
+The loading plot identifies the features driving the principal
+components; features at the extremes contribute most to sample
+separation. A single feature dominating PC1 should be inspected — it is
+often a saturated or contaminated transition rather than a biological
+signal.
+
+``` r
+
+plot_pca_loading(mexp,
+                 variable = "norm_intensity",
+                 qc_types = c("BQC", "SPL"))
+```
+
+![PCA loadings plot
+](tutorial-05-run-scatter_files/figure-html/unnamed-chunk-15-1.png)
+
+### Detecting outlier injections
+
+[`detect_outlier_pca()`](https://slinghub.github.io/MRMhub/quant/reference/detect_outlier_pca.md)
+flags analyses whose score on a chosen principal component lies outside
+a fence, defined as either `mean ± k·SD` (`outlier_detection = "sd"`) or
+`median ± k·MAD` (`outlier_detection = "mad"`), with
+`fence_multiplicator` setting *k*. It returns the `analysis_id` values
+that exceed the fence on the selected component, or `NULL` if none are
+flagged.
+
+``` r
+
+outlier_ids <- detect_outlier_pca(
+  mexp,
+  variable = "intensity",
+  filter_data = FALSE,
+  pca_component = 1,
+  qc_types = c("BQC", "SPL"),
+  outlier_detection = "mad",
+  fence_multiplicator = 4
+)
+
+outlier_ids
+#> [1] "Longit_batch6_51"
+```
+
+**Choice of fence method**
+
+The SD-based fence is sensitive to the very outliers it tries to detect:
+a single extreme observation inflates the SD estimate. The MAD-based
+fence is robust to a few large deviations and is generally preferable
+for QC screening. A typical multiplier is `fence_multiplicator = 3`
+(≈99.7% under normality) or `4` for a more permissive screen. The
+function evaluates one principal component at a time — re-run with
+`pca_component = 2` to screen PC2.
+
+A sample flagged by PCA is a candidate for investigation, not a verdict.
+Outlier patterns frequently reflect genuine biology (e.g. a disease
+group or a sex difference), so an injection should be excluded only
+where a documented technical cause is identified — a failed injection,
+contamination, instrument fault, or sample-handling error.
+
+### Excluding analyses and features
+
+After visual and documented confirmation, remove the offending
+injections or features.
+[`exclude_analyses()`](https://slinghub.github.io/MRMhub/quant/reference/exclude_analyses.md)
+/
+[`exclude_features()`](https://slinghub.github.io/MRMhub/quant/reference/exclude_features.md)
+set the affected rows aside for downstream steps while the original data
+remain in `mexp@dataset_orig`; setting `clear_existing = TRUE` replaces
+any previous exclusion list rather than appending.
+
+``` r
+
+# Review candidates before excluding
+mexp@annot_analyses |>
+  dplyr::filter(analysis_id %in% outlier_ids) |>
+  dplyr::select(analysis_id, qc_type, batch_id, analysis_order)
+
+# Exclude after technical confirmation
+mexp <- exclude_analyses(mexp, analyses = outlier_ids, clear_existing = FALSE)
+
+# Exclude a known-problematic feature (e.g. a saturated transition)
+mexp <- exclude_features(mexp, features = c("PC 32:0"), clear_existing = FALSE)
+```
+
+### Interpretation guide
+
+| PCA pattern | Likely cause | Action |
+|----|----|----|
+| BQC samples dispersed across the score plot | Poor precision; ISTD assignment problem | Inspect [`plot_normalization_qc()`](https://slinghub.github.io/MRMhub/quant/reference/plot_normalization_qc.md); verify ISTD pairing |
+| Clear separation by `batch_id` on PC1 or PC2 | Uncorrected batch effect | Apply [`correct_batch_centering()`](https://slinghub.github.io/MRMhub/quant/reference/correct_batch_centering.md) |
+| Single injection isolated from all groups | Technical outlier | Investigate cause; exclude only with documented reason |
+| One feature dominates loadings on PC1 | Saturation, contamination, or single-transition artefact | Inspect with [`plot_runscatter()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.md); exclude feature if confirmed |
+| BQC tight, SPL spread | Genuine biological variability | Proceed |
+
+## Next steps
+
+- [Drift and Batch
   Correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.md)
-  — apply signal drift correction
-- [Batch
-  Correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-06-batch-correction.md)
-  — apply inter-batch correction
+  — apply and inspect corrections
+- [Visualisation
+  Functions](https://slinghub.github.io/MRMhub/quant/articles/manual-08-visualization.md)
+  — the full list of plotting functions
+- [Basic MRMhub
+  Workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md)
+  — where these checks fit in the pipeline

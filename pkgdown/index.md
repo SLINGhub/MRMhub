@@ -59,7 +59,7 @@
 <a href="articles/tutorial-00-first-analysis.html" class="btn btn-primary" role="button">Run your first analysis (5 min) →</a>
 </p>
 
-Prefer point-and-click? `build_workflow()` opens a guided app that validates your data and metadata, warns about pipeline mismatches, and generates a downloadable Quarto (`.qmd`) workflow (one-time `install.packages(c("shiny", "bslib"))`).
+Prefer point-and-click? `build_workflow()` opens a guided app that validates your data and metadata, warns about pipeline mismatches, and generates a downloadable Quarto (`.qmd`) workflow.
 
 ## Quick Start and Demos
  

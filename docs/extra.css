@@ -15,9 +15,28 @@ main table {
   font-size: 0.9em;
 }
 
+/* Page-type kicker — a small labelled tag at the top of every article so the
+   reader immediately sees whether they are on a Manual, Tutorial, or Recipe
+   page. Markup (first line of the article body):
+     <p class="page-kind page-kind-manual">Manual</p> */
+.page-kind {
+  display: inline-block;
+  margin: 0 0 1.2em;
+  padding: 0.15em 0.6em;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 3px;
+}
+.page-kind-manual   { color: #2C3E50; background: #e7eef2; }  /* steel blue */
+.page-kind-tutorial { color: #3a5f30; background: #e6efe2; }  /* muted green */
+.page-kind-recipe   { color: #8a5a25; background: #f6ebdd; }  /* warm orange */
+.page-kind-reference{ color: #2C3E50; background: #e9ebee; }  /* navy */
+
 /* MRMhub modest callouts — Quarto-aesthetic boxes for pkgdown articles.
    Markup: <div class="callout callout-{note|tip|caution}">...</div>
-   Use sparingly — plain prose by default.
+   Use sparingly — plain prose by default; never stack callouts.
      note    — orientation / "see also" pointer (steel blue)
      tip     — actionable hint (warm orange)
      caution — footgun, load-bearing constraint (dusty rose) */
@@ -45,3 +64,12 @@ main table {
 }
 .callout-getstarted > :first-child { margin-top: 0; }
 .callout-getstarted > :last-child  { margin-bottom: 0; }
+
+/* Navbar dropdown menus: pkgdown's Bootstrap caps every .dropdown-menu at
+   max-height: 280px with an inner scrollbar, which hides items in the longer
+   Tutorials and Manual menus. Let navbar menus grow to the viewport so all
+   entries are visible at once (still scrolls only on very short screens). */
+.navbar .dropdown-menu {
+  max-height: calc(100vh - 4rem);
+  overflow-y: auto;
+}

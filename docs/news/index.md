@@ -19,12 +19,13 @@
   `publication`. Output is validator-passing against the official LIFS
   mzTab-M validator.
 
-- New `import_data_mztab()` imports mzTab-M files produced by other
-  tools (e.g. Lipid Data Analyzer, MS-DIAL, MZmine). Each `SMF` becomes
-  a feature and each assay an analysis; per-assay abundances are
-  imported as `feature_intensity`, with feature identities and
-  `study_variable` grouping (as `batch_id`) carried over where
-  available.
+- New
+  [`import_data_mztab()`](https://slinghub.github.io/MRMhub/quant/reference/import_data_mztab.md)
+  imports mzTab-M files produced by other tools (e.g. Lipid Data
+  Analyzer, MS-DIAL, MZmine). Each `SMF` becomes a feature and each
+  assay an analysis; per-assay abundances are imported as
+  `feature_intensity`, with feature identities and `study_variable`
+  grouping (as `batch_id`) carried over where available.
 
 - Both directions are pure R and add **no runtime dependency**. See the
   *Import & Export mzTab-M* recipe article.

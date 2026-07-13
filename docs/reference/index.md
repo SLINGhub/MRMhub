@@ -7,8 +7,10 @@ interactively.
 
 - [`check_setup()`](https://slinghub.github.io/MRMhub/quant/reference/check_setup.md)
   : Check MRMhub Setup
-- [`run_walkthrough()`](https://slinghub.github.io/MRMhub/quant/reference/run_walkthrough.md)
-  : Launch the MRMhub Walkthrough App
+- [`build_workflow()`](https://slinghub.github.io/MRMhub/quant/reference/build_workflow.md)
+  : Launch the MRMhub Workflow Builder
+- [`generate_workflow_qmd()`](https://slinghub.github.io/MRMhub/quant/reference/generate_workflow_qmd.md)
+  : Generate a runnable Quarto (.qmd) mrmhub workflow
 
 ## QUANT R package reference
 
@@ -69,6 +71,8 @@ i.e. to import different analytical data into data frames.
   : Import Analysis Results from Plain Wide-Format CSV Files
 - [`import_data_csv_long()`](https://slinghub.github.io/MRMhub/quant/reference/import_data_csv_long.md)
   : Import Analysis Results from Long Format CSV Files
+- [`import_data_mztab()`](https://slinghub.github.io/MRMhub/quant/reference/import_data_mztab.md)
+  : Import data from an mzTab-M file
 - [`parse_mrmhub_result()`](https://slinghub.github.io/MRMhub/quant/reference/parse_mrmhub_result.md)
   : Parses MRMhub peak integration results into a tibble
 - [`parse_masshunter_csv()`](https://slinghub.github.io/MRMhub/quant/reference/parse_masshunter_csv.md)
@@ -107,8 +111,6 @@ MRMhub Excel template or CSV files.
 - [`save_metadata_msorganiser_template()`](https://slinghub.github.io/MRMhub/quant/reference/save_metadata_msorganiser_template.md)
   : Saves a MRMhub Metadata Organizer template
 - [`add_metadata()`](https://slinghub.github.io/MRMhub/quant/reference/add_metadata.md)
-  : Add metadata an MRMhubExperiment object
-- [`assert_metadata()`](https://slinghub.github.io/MRMhub/quant/reference/assert_metadata.md)
   : Add metadata an MRMhubExperiment object
 
 ## Isotope correction

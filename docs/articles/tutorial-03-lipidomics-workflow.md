@@ -1,7 +1,9 @@
 # Lipidomics Data Processing
 
+Tutorial
+
 This tutorial illustrates a postprocessing and quality control workflow
-starting from a preprocessing data from a lipidomics analysis. Starting
+starting from the preprocessed data of a lipidomics analysis. Starting
 from peak areas, the aim is to produce a curated dataset with lipid
 species concentrations that is ready for subsequent statistical
 analysis. This post-processing will include an assessment of the
@@ -9,8 +11,7 @@ analytical and data quality of the lipidomics analysis, followed by
 normalisation/quantification, feature filtering and reporting of the
 dataset.
 
-**Time:** ~45 min  \|  **Level:** Advanced  \|  **Prerequisites:**
-[Basic
+**Time** ~45 min  ·  **Level** Advanced  ·  **Prerequisites** [Basic
 workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md)
 
 ``` r
@@ -303,7 +304,7 @@ plot_pca(
   include_istd = FALSE)
 #> ! 2 features contained missing or non-numeric values and were exluded.
 #> ℹ The PCA was calculated based on `feature_intensity` values of 423 features.
-#> ggrepel: 10000 iterations in 0.002768s, 5 overlaps. Consider increasing 'max.iter'.
+#> ggrepel: 10000 iterations in 0.002708s, 5 overlaps. Consider increasing 'max.iter'.
 ```
 
 ![PCA
@@ -340,7 +341,7 @@ plot_pca(
   shared_labeltext_hide = NA)
 #> ! 2 features contained missing or non-numeric values and were exluded.
 #> ℹ The PCA was calculated based on `feature_intensity` values of 423 features.
-#> ggrepel: 10000 iterations in 0.006784s, 7 overlaps. Consider increasing 'max.iter'.
+#> ggrepel: 10000 iterations in 0.006460s, 7 overlaps. Consider increasing 'max.iter'.
 ```
 
 ![PCA
@@ -798,7 +799,7 @@ Exercises
 
 mrmhub::save_report_xlsx(myexp, path = tempfile(fileext = ".xlsx"))
 #> Saving report to disk - please wait...
-#> ✔ The data processing report of experiment 'sPerfect' has been saved to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//Rtmpd9WtW9/file157685b0378e.xlsx'.
+#> ✔ The data processing report of experiment 'sPerfect' has been saved to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpT1xkJr/file17731753a3055.xlsx'.
 ```
 
 Specific data subsets can also be saved as a clean flat, wide CSV file.
@@ -819,7 +820,7 @@ mrmhub::save_dataset_csv(
   qc_types = "SPL", 
   include_qualifier = FALSE,
   filter_data = TRUE)
-#> ✔ Concentration values for 377 analyses and 324 features have been exported to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//Rtmpd9WtW9/file1576838688b3c.csv'.
+#> ✔ Concentration values for 377 analyses and 324 features have been exported to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpT1xkJr/file1773132d2c02e.csv'.
 ```
 
 ## 22. Sharing the `MRMhubExperiment` dataset
@@ -878,14 +879,20 @@ print(myexp)
 #> • Features manually excluded (`feature_id`): ✖
 ```
 
-## Next Steps
+## Next steps
 
-- [Drift
+- [Drift and Batch
   Correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.md)
-  — drift correction methods and diagnostics
-- [Batch
-  Correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-06-batch-correction.md)
-  — inter-batch correction options
+  — correction methods and diagnostics
+- [Exploring QC: RunScatter and
+  PCA](https://slinghub.github.io/MRMhub/quant/articles/tutorial-05-run-scatter.md)
+  — QC visualisation in depth
+- [Interference
+  Correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-11-interference-correction.md)
+  — correcting isotopic/isobaric overlap
+- [External Calibration &
+  QC](https://slinghub.github.io/MRMhub/quant/articles/recipe-01-ext-calibration-qc.md)
+  — quantitation with calibration curves
 - [External Calibration &
   QC](https://slinghub.github.io/MRMhub/quant/articles/recipe-01-ext-calibration-qc.md)
   — quantify with external calibration curves

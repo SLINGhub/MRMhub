@@ -1,5 +1,7 @@
 # Installation
 
+Manual
+
 ## Requirements
 
 - **R ≥ 4.2** — install from [CRAN](https://cran.r-project.org)
@@ -7,7 +9,19 @@
   [RStudio](https://posit.co/download/rstudio-desktop/), or [VS
   Code](https://code.visualstudio.com)
 
-## Installation
+MRMhub’s core functionality requires no R coding skills, but basic
+familiarity with R and an IDE is needed to run and adapt the workflows.
+
+**New to R?**
+
+Try online tutorials such as [An opinionated tour of
+RStudio](https://rladiessydney.org/courses/ryouwithme/01-basicbasics-1/)
+and the [RStudio User
+Guide](https://docs.posit.co/ide/user/ide/get-started/). Having a
+colleague who is familiar with the IDE can also help you get started
+smoothly and stay motivated.
+
+## Installing MRMhub
 
 **Tip.** Quit and reopen the IDE first; most install failures come from
 packages already loaded in memory.
@@ -50,12 +64,12 @@ if a check fails.
 
 A longer list, covering proxies, mixed R installations on macOS, and
 INTEGRATOR security warnings, is given in [Troubleshooting &
-FAQ](https://slinghub.github.io/MRMhub/quant/articles/manual-09-troubleshooting.md).
+FAQ](https://slinghub.github.io/MRMhub/quant/articles/manual-10-troubleshooting.md).
 
-## Next Steps
+## Next steps
 
 - [Key Concepts &
-  Glossary](https://slinghub.github.io/MRMhub/quant/articles/manual-00-key-concepts.md)
+  Glossary](https://slinghub.github.io/MRMhub/quant/articles/manual-01-key-concepts.md)
   — core vocabulary and the MRMhubExperiment object
 - [Your First
   Analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md)
