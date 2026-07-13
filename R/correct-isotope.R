@@ -172,12 +172,12 @@ correct_interference_manual <- function(
 #' The interfering features and their relative contributions must be defined in
 #' the feature metadata.
 #'
-#' By default, sequential series of interferences (e.g., isotopic M+2
-#' interferences of PC 34:2 > PC 34:``1 > PC 34:0) will be corrected in a
-#' sequential manner. This means that the correction will applied iteratively,
-#' starting with the most downstream feature in the series. To disable this
-#' behavior, basing each correction on the raw signal of the interfering feature
-#' set `sequential_correction = FALSE`
+#' By default, a chain of interferences (e.g., isotopic M+2 interferences of
+#' PC 34:2 > PC 34:1 > PC 34:0) is corrected sequentially: each feature is
+#' corrected using the already-corrected signal of its interfering feature, so
+#' the correction propagates along the chain. To disable this and instead correct
+#' each feature independently from the raw (uncorrected) signal of its
+#' interfering feature, set `sequential_correction = FALSE`.
 #'
 #' @details For isotopic interference correction of MRM/PRM data, the relative
 #' isotope abundances needed for the calculation (`interference_contribution`) can
@@ -186,11 +186,12 @@ correct_interference_manual <- function(
 #' @param data MRMhubExperiment object containing lipidomics data.
 #' @param variable Name of the variable to be corrected. Default:
 #'   `feature_intensity`.
-#' @param sequential_correction A logical indicating whether to apply
-#'   corrections sequentially, starting with the most downstream feature.  If
-#'   `FALSE`, corrections are based on the raw signal of the interfering
-#'   features. If `FALSE`, the correction will be based on the raw signal of the
-#'   interfering feature.
+#' @param sequential_correction Logical. If `TRUE` (the default), a chain of
+#'   interferences is corrected sequentially, so that each feature is corrected
+#'   using the already-corrected signal of its interfering feature (the
+#'   correction propagates along the chain). If `FALSE`, each feature is
+#'   corrected independently using the raw (uncorrected) signal of its
+#'   interfering feature, without propagation.
 #' @param neg_to_na If `TRUE`, negative or zero values after correction will be replaced with `NA`. Default: `FALSE`.
 #' @return MRMhubExperiment object with feature intensities corrected for
 #'   interferences.
