@@ -47,7 +47,7 @@ test_that("calc_calibration_results works", {
   expect_equal(unique(res$fit_weighting), "1/x")
   expect_equal(mean(res$r2_cal_1), 0.97955745)
   expect_equal(mean(res$lowest_cal_cal_1), 3.30675)
-  expect_equal(mean(res$loq_cal_1, na.rm = T), 7.898128)
+  expect_equal(mean(res$loq_cal_1, na.rm = T), 7.911120433)
 
   # Missing fit parameter replaced with defauls provided with fit_ args.
   mexp_temp <- mexp_norm
@@ -63,6 +63,23 @@ test_that("calc_calibration_results works", {
   res <- mexp_res@metrics_calibration
   expect_equal(unique(res$fit_model[c(1, 2, 3, 4)]), c("linear"))
   expect_equal(unique(res$fit_weighting[c(1, 2, 3, 4)]), c("none", "1/x"))
+})
+
+test_that("calc_calibration_results LoD/LoQ use the slope at zero (ICH Q2)", {
+  # LoD/LoQ use the slope of the calibration curve at zero concentration, i.e.
+  # the linear coefficient (coef_b), for both linear and quadratic fits. The
+  # quadratic term (coef_c) must not affect the slope used here.
+  res <- calc_calibration_results(
+    mexp_norm,
+    fit_overwrite = TRUE,
+    fit_model = "quadratic",
+    fit_weighting = "none",
+    ignore_missing_annotation = TRUE
+  )@metrics_calibration |>
+    filter(fit_model == "quadratic", !reg_failed_cal_1)
+
+  expect_equal(res$lod_cal_1, 3.3 * res$sigma_cal_1 / res$coef_b_cal_1)
+  expect_equal(res$loq_cal_1, 10 * res$sigma_cal_1 / res$coef_b_cal_1)
 })
 
 test_that("calc_calibration_results error handling works", {

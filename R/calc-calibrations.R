@@ -224,11 +224,12 @@ quantify_by_calibration <- function(
 #' `fit_model` and `fit_weighting` will be used.
 #'
 #' Additionally, the limit of detection (LoD) and limit of quantification (LoQ)
-#' are calculated for each feature based on the calibration curve. LoD is
-#' calculated as 3.3 times the sample standard error of the regression residuals
-#' divided by the regression slope, and LoQ is 10 times the same ratio. In the
-#' case of a quadratic fit, LoD and LoQ are calculated using the slope at
-#' the concentration of the lowest calibration point.
+#' are calculated for each feature based on the calibration curve, following the
+#' ICH Q2(R1/R2) approach (LoD = 3.3 sigma / S, LoQ = 10 sigma / S). Here sigma
+#' is the sample standard error of the regression residuals and S is the slope
+#' of the calibration curve. The slope is taken at zero concentration (the
+#' linear coefficient); for a quadratic fit the quadratic term does not
+#' contribute to this slope.
 #'
 #' The results of the regression and the calculated LoD and LoQ values are
 #' stored in the `metrics_calibration` table of the returned `MRMhubExperiment`
@@ -268,6 +269,11 @@ quantify_by_calibration <- function(
 #'
 #' @seealso [quantify_by_calibration()] for calculating concentrations based on
 #'   external calibration curves.
+#'
+#' @references
+#' ICH Harmonised Tripartite Guideline. Validation of Analytical Procedures:
+#' Text and Methodology Q2(R1) (2005); Q2(R2) (2023). International Council for
+#' Harmonisation of Technical Requirements for Pharmaceuticals for Human Use.
 #'
 #' @export
 
@@ -432,18 +438,13 @@ calc_calibration_results <- function(
     )
   }
 
-  # mult_lowest_calib refert to multiplication factor of the lowest calibration
-  # point used when calculate LoD and LoQ with a quadratic model
-  # TODO: add reference
-  add_quantlimits <- function(data, mult_lowest_calib = 1) {
+  # LoD/LoQ use the slope of the calibration curve at zero concentration, i.e.
+  # the linear coefficient `coef_b` (ICH Q2). For a quadratic fit the slope is
+  # b + 2*c*conc, which reduces to `coef_b` at conc = 0, so the quadratic term
+  # does not contribute to the slope used here.
+  add_quantlimits <- function(data) {
     data <- data |>
-      mutate(
-        slope_at_conc = if_else(
-          .data$fit_model == "quadratic",
-          .data$coef_b + 2 * .data$coef_c * mult_lowest_calib,
-          .data$coef_b
-        )
-      )
+      mutate(slope_at_conc = .data$coef_b)
 
     data <- data |>
       mutate(
@@ -511,7 +512,7 @@ calc_calibration_results <- function(
     dplyr::group_split(.data$feature_id, .data$curve_id)
 
   d_stats <- map(d_calib, function(x) calc_lm(x)) |> bind_rows()
-  d_stats <- add_quantlimits(d_stats, mult_lowest_calib = 2)
+  d_stats <- add_quantlimits(d_stats)
 
   d_stats <- d_stats |>
     dplyr::select(
@@ -831,8 +832,10 @@ get_qc_bias_variability <- function(
 #' - `LoD` = 3.3× the sample standard error of residuals / slope of the regression (see Notes).
 #' - `LoQ` = 10× the sample standard error of residuals / slope of the regression (see Notes).
 #'
-#' **Note:** For LoD/LoQ calculation using **quadratic** fits, the slope used
-#' in the formula is calculated at the lowest nonzero calibration point.
+#' **Note:** LoD/LoQ follow the ICH Q2(R1/R2) approach (3.3 sigma / S and
+#' 10 sigma / S). The slope `S` is the slope of the calibration curve at zero
+#' concentration (the linear coefficient `coef_b`); for a **quadratic** fit the
+#' quadratic term does not contribute to this slope.
 
 #'
 #' @param data A `MRMhubExperiment` object with QC metrics.

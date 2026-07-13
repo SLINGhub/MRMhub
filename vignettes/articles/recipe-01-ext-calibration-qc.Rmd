@@ -104,6 +104,12 @@ tbl_cal <- get_calibration_metrics(mexp)
 tbl_cal
 ```
 
+The summary includes the limit of detection (`lod`) and limit of quantification
+(`loq`) for each feature, calculated following the ICH Q2(R1/R2) approach
+(LoD = 3.3 σ / S, LoQ = 10 σ / S), where σ is the residual standard error of the
+regression and S is the slope of the calibration curve at zero concentration
+(the linear coefficient; the quadratic term does not contribute to this slope).
+
 Once the curves have been inspected and the quality of the analysis is
 satisfactory, the concentrations for all features in samples can be
 calculated using the external calibration curves.
