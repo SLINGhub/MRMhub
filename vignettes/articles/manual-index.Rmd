@@ -24,7 +24,7 @@ full argument reference for every function is in the
 
 ## Getting started
 
-- **[Installation](manual-00-installation.html)** — install `mrmhub` and verify the setup with `check_setup()`.
+- **[Installation](manual-00-installation.html)** — install `mrmhub` and load it.
 - **[Key Concepts & Glossary](manual-01-key-concepts.html)** — the data model, core terminology, and where QUANT fits in the MRMhub workflow.
 
 ## Preparing and running
@@ -36,6 +36,7 @@ full argument reference for every function is in the
 ## Results and downstream use
 
 - **[Visualisation Functions](manual-08-visualization.html)** — RunScatter, PCA, run-sequence, and normalization-QC plots.
+- **[Writing Pipelines with AI Assistants](manual-09-ai-assistants.html)** — grounding LLMs (Claude, ChatGPT, local models) in the real API, and verifying what they produce.
 
 ## Reference
 

@@ -402,4 +402,4 @@ correction. Consider processing batches separately and merging.
 ## Next Steps
 
 - [Design Overview](manual-03-design-decisions.html) — understand the full pipeline
-- [Installation](manual-00-installation.html) — verify your setup with `check_setup()`
+- [Installation](manual-00-installation.html) — diagnose setup problems with `check_setup()`

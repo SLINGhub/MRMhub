@@ -28,7 +28,7 @@ This walkthrough produces a normalized dataset in under 5 minutes using
 bundled demo data; no external files are needed.
 
 ::: {.callout .callout-note}
-**Time** ~5 min &nbsp;·&nbsp; **Level** Beginner &nbsp;·&nbsp; **Prerequisites** MRMhub installed (`check_setup()` passes)
+**Time** ~5 min &nbsp;·&nbsp; **Level** Beginner &nbsp;·&nbsp; **Prerequisites** [MRMhub installed](manual-00-installation.html)
 :::
 
 ## The complete workflow in one script
@@ -54,9 +54,10 @@ plot_runscatter(mexp, variable = "norm_intensity")
 
 `build_workflow()` offers an interactive alternative — a point-and-click
 application that validates your data and metadata, warns about any pipeline
-mismatches, and generates an equivalent Quarto (`.qmd`) workflow to download —
-while the code-first workflow above remains the reproducible path. What each line
-does is described below.
+mismatches, and generates an equivalent Quarto (`.qmd`) workflow to download (see
+[Build a Workflow Without Code](tutorial-12-workflow-builder.html)) — while the
+code-first workflow above remains the reproducible path. What each line does is
+described below.
 
 ## What the script does
 

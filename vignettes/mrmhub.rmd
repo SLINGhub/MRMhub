@@ -19,7 +19,7 @@ editor_options:
 
 <!-- badges: start -->
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html)
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPLv3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 [![R-CMD-check](https://github.com/SLINGhub/MRMhub/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/SLINGhub/MRMhub/actions/workflows/R-CMD-check.yml)
 [![Codecov test coverage](https://codecov.io/gh/SLINGhub/MRMhub/branch/main/graph/badge.svg)](https://app.codecov.io/gh/SLINGhub/MRMhub?branch=main)
 [![Platform](https://img.shields.io/badge/platform-linux%20%7C%20osx%20%7C%20win-lightgrey)](https://github.com/SLINGhub/MRMhub)
@@ -58,7 +58,7 @@ Install the `mrmhub` package from Github using the following command:
 ``` r
 if (!require("pak")) install.packages("pak")
 pak::pak("SLINGhub/MRMhub")
-library(mrmhub); mrmhub::check_setup()
+library(mrmhub)
 ```
 
 `pak` resolves locked packages and parallelises downloads; `remotes::install_github("SLINGhub/MRMhub")` is an equivalent fallback. For detailed usage instructions and examples, refer to the [Documentation](https://slinghub.github.io/MRMhub/quant/).

@@ -1,7 +1,7 @@
 # MRMhub <a href="https://slinghub.github.io/MRMhub/"><img src="man/figures/logo.png" alt="MRMhub logo" align="right" height="139"/></a>
 
 <!-- badges: start -->
-[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html) [![R-CMD-check](https://github.com/SLINGhub/MRMhub/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/SLINGhub/MRMhub/actions/workflows/R-CMD-check.yml) [![Codecov test coverage](https://codecov.io/gh/SLINGhub/MRMhub/graph/badge.svg)](https://app.codecov.io/gh/SLINGhub/MRMhub) [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html) [![R-CMD-check](https://github.com/SLINGhub/MRMhub/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/SLINGhub/MRMhub/actions/workflows/R-CMD-check.yml) [![Codecov test coverage](https://codecov.io/gh/SLINGhub/MRMhub/graph/badge.svg)](https://app.codecov.io/gh/SLINGhub/MRMhub) [![License: AGPL v3](https://img.shields.io/badge/License-AGPLv3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 <!-- badges: end -->
 
 Open-source toolchain for targeted Multiple Reaction Monitoring (MRM) mass spectrometry — from raw vendor files to QC'd quantitative reports. Two modules that work independently or together:
@@ -27,7 +27,7 @@ Open-source toolchain for targeted Multiple Reaction Monitoring (MRM) mass spect
   ```r
   if (!require("pak")) install.packages("pak")
   pak::pak("SLINGhub/MRMhub")
-  library(mrmhub); mrmhub::check_setup()
+  library(mrmhub)
   ```
 
   `pak` resolves locked packages and parallelises downloads; `remotes::install_github("SLINGhub/MRMhub")` is an equivalent fallback. Install failed? See [Troubleshooting](https://slinghub.github.io/MRMhub/quant/articles/manual-09-troubleshooting.html).

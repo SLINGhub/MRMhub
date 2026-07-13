@@ -55,16 +55,21 @@ pak::pak("SLINGhub/MRMhub")
 
 The same command works on Windows, macOS, and Linux. `pak` pulls prebuilt binaries where available, so compilation tools are usually not needed. If `pak` is unavailable, use `remotes::install_github("SLINGhub/MRMhub")`.
 
-## Verify Your Setup
+## Confirm It Loaded
 
 ```{r, eval=FALSE}
 library(mrmhub)
-check_setup()
 ```
 
-This checks the R version and dependencies and reports what is missing if a check fails.
+If this loads without error, you are ready to go — head to [Your First Analysis](tutorial-00-first-analysis.html).
 
 ## Troubleshooting Common Errors
+
+If the install seemed to succeed but something isn't working, run `check_setup()` to report the R version and flag any missing dependencies:
+
+```{r, eval=FALSE}
+check_setup()
+```
 
 | Error | Cause | Fix |
 |-------|-------|-----|
