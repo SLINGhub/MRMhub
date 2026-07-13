@@ -15,9 +15,9 @@
 #' to be adjusted to the specific chromatographic properties. The default value is
 #' \eqn{ecn_k = 1.5}.
 #'
-#' @param data A `MRMhubExperiment` object
+#' @template data_mexp
 #' @param x_var Variable to use for the x-axis. One ofEither "total_c", "total_db" or "ecn".
-#' @param qc_types A character vector of QC types to include in the plot. If `NA`, all
+#' @template qc_types
 #' @param outliers_highlight Whether to highlight potential outliers in the plot. Default is `TRUE`.
 #' @param outlier_residual_min Minimum value for the residuals to be considered an outlier (default is `0.15`). The value corresponds to the RT difference betweem the
 #' fitted line and the median RT of the feature. The value is used to flag outliers.
@@ -31,8 +31,9 @@
 #' @param line_transparency Alpha transparency of the regression lines. Default is 0.9
 #' @param base_font_size Base font size for the plot.
 #'
-#' @return A `ggplot2` object representing faceted scatter plots
+#' @return A `ggplot` object representing faceted scatter plots
 #'
+#' @family QC plots
 #' @export
 
 plot_rt_vs_chain <- function(

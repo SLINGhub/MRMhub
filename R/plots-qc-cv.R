@@ -13,7 +13,7 @@
 #' The resulting visualization helps assess whether normalization improved measurement
 #' precision across different features and sample/QC types.
 #'
-#' @param data A `MRMhubExperiment` object
+#' @template data_mexp
 #' @param before_norm_var A string specifying the variable from the QC metrics
 #'   table to be used for the x-axis (before normalization).
 #' @param after_norm_var A string specifying the variable from the QC metrics
@@ -21,10 +21,7 @@
 #' @param plot_type A character string specifying the type of plot to generate.
 #' Must be one of "scatter", "diff", or "ratio". Selecting "scatter" plots the before and after normalization CV values
 #' as a scatter plot, "diff" plots the difference between the two CV values against the average CV, and "ratio" plots the log2 ratio of the two CV values against the average CV.
-#' @param qc_types A character vector specifying the QC types to plot. It
-#' must contain at least one element. The default is `NA`, which means any
-#' of the non-blank QC types ("SPL", "TQC", "BQC", "HQC", "MQC", "LQC",
-#' "NIST", "LTR") will be plotted if present in the dataset.
+#' @template qc_types
 #' @param facet_by_class If `TRUE`, facets the plot by `feature_class`, as defined
 #'   in the feature metadata.
 #' @param y_shared Logical; if `TRUE`, all facets share the same y-axis scale.
@@ -46,7 +43,7 @@
 #' @param point_alpha Transparency of points (default is `0.5`).
 #' @param font_base_size Base font size in points (default is `8`).
 #'
-#' @return A `ggplot2` object representing the scatter plot comparing CV values
+#' @return A `ggplot` object representing the scatter plot comparing CV values
 #'   before and after normalization.
 #'
 #' @details
@@ -79,6 +76,7 @@
 #'   cv_threshold_value = 25
 #' )
 #'
+#' @family QC plots
 #' @export
 plot_normalization_qc <- function(
   data = NULL,
@@ -227,7 +225,7 @@ plot_normalization_qc <- function(
 #' * Ratio plot: log2(`y_variable` / `x_variable`) vs mean of both values
 #'
 #'
-#' @param data A `MRMhubExperiment` object containing pre-calculated QC metrics.
+#' @template data_mexp
 #' @param plot_type A character string specifying the type of plot to generate.
 #' Must be one of "scatter", "diff", or "ratio". Selecting "scatter" plots the "y_variable" against the "y_variable" values
 #' as a scatter plot, "diff" plots the difference between the two values against the average value, and "ratio" plots the log2 ratio of the two values against the average value.c
@@ -270,7 +268,7 @@ plot_normalization_qc <- function(
 #' @param point_alpha Numeric; transparency of points (default is `0.5`).
 #' @param font_base_size Numeric; base font size in points (default is `8`).
 #'
-#' @return A `ggplot2` object representing the scatter plot.
+#' @return A `ggplot` object representing the scatter plot.
 #'
 #' @details
 #'
@@ -284,6 +282,7 @@ plot_normalization_qc <- function(
 #' @seealso
 #' [calc_qc_metrics()], [filter_features_qc()], [plot_normalization_qc()], [normalize_by_istd()]
 #'
+#' @family QC plots
 #' @export
 plot_qcmetrics_comparison <- function(
   data = NULL,

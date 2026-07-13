@@ -2,7 +2,7 @@
 #'
 #' Creates a profile plot showing the abundance distribution of features across different classes.
 #'
-#' @param data A MRMhubExperiment object.
+#' @template data_mexp
 #' @param variable A character string indicating the variable to plot. For `use_qc_metrics = FALSE`,
 #'   this must be a base name like "area" or "conc". For `use_qc_metrics = TRUE`, this is the
 #'   base name of a metric in the `metrics_qc` table (e.g., "rt" for "rt_mean_SPL").
@@ -49,6 +49,7 @@
 #'
 #' @return A `ggplot` object representing the abundance profile plot.
 #'
+#' @family EDA plots
 #' @export
 plot_abundanceprofile <- function(
   data,

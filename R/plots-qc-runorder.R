@@ -11,7 +11,7 @@
 #' the analysis timeline.
 #'
 #'
-#' @param data MRMhubExperiment object
+#' @template data_mexp
 #' @param qc_types QC types to be plotted. Can be a vector of QC types or a
 #' regular expression pattern. `NA` (default) displays all available QC/Sample
 #' types.
@@ -27,7 +27,8 @@
 #' @param batch_line_color Color of the batch separator lines.
 #' @param batch_fill_color Color of the batch shaded areas.
 #' @param base_font_size Numeric, base font size for the plot.
-#' @return A ggplot object representing the run sequence plot.
+#' @return A `ggplot` object representing the run sequence plot.
+#' @family QC plots
 #' @export
 plot_runsequence <- function(
   data = NULL,
@@ -316,7 +317,7 @@ plot_runsequence <- function(
 #'
 #' This funcion returns a list with the ggplot  object representing the RLA plot and a table with detected outliers (if `outlier_detection = TRUE`).
 #'
-#' @param data MRMhubExperiment
+#' @template data_mexp
 #' @param rla_type_batch Character, must be either "within" or "across", defining whether to use within-batch or across-batch RLA
 #' @param variable Variable to plot, must be one of "intensity", "norm_intensity", "conc", "area", "height", "fwhm", or one of
 #' "intensity_raw", "intensity_before", "norm_intensity_raw", "norm_intensity_before", "conc_raw", "conc_before"
@@ -337,11 +338,7 @@ plot_runsequence <- function(
 
 #' @param include_qualifier Logical, whether to include qualifier features. Default is `TRUE`.
 #' @param include_istd Logical, whether to include internal standard (ISTD) features. Default is `TRUE`.
-#' @param include_feature_filter A regex pattern or a vector of feature names used to filter features by `feature_id`.
-#' If `NA` or an empty string (`""`) is provided, the filter is ignored. When a vector of length > 1 is supplied,
-#' is supplied, only features with exactly these names are selected (applied individually as OR conditions).
-#' @param exclude_feature_filter A regex pattern or a vector of feature names to exclude features by feature_id.
-#' If `NA` or an empty string (`""`) is provided, the filter is ignored. When a vector of length > 1 is supplied.
+#' @template feature_filters_2
 
 #' @param show_timestamp Logical, whether to use the acquisition timestamp as
 #' the x-axis instead of the run sequence number
@@ -368,12 +365,13 @@ plot_runsequence <- function(
 #' @param base_font_size Numeric, base font size for the plot
 #' @param relative_log_abundances Logical, whether to use relative log abundances (RLA) or just log-transformed values
 #' @param show_plot Logical, whether to display the plot. Default is `TRUE`.
-#' @return A list with the ggplot object representing the RLA plot and a table with detected outliers if `outlier_detection = TRUE`.
+#' @return A list with the `ggplot` object representing the RLA plot and a table with detected outliers if `outlier_detection = TRUE`.
 #' @references
 #' De Livera et al. (2012) Normalizing and integrating metabolomics data. Analytical Chemistry 10768-10776
 #' [DOI: 10.1021/ac302748b](https://doi.org/10.1021/ac302748b)
 #' De Livera et al. (2015) Statistical Methods for Handling Unwanted Variation in Metabolomics Data. Analytical Chemistry 87(7):3606-3615
 #' [DOI: 10.1021/ac502439y](https://doi.org/10.1021/ac502439y)
+#' @family QC plots
 #' @export
 
 # TODO: Add minor ticks to x-axis

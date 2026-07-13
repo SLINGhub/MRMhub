@@ -16,18 +16,13 @@
 #' plots can be returned as a list of ggplot2 objects for further manipulation
 #' or integration into other analyses.
 #'
-#' @param data A `MRMhubExperiment` object containing the dataset and metadata.
+#' @template data_mexp
 #' @param variable The variable to plot on the y-axis.
 #' @param filter_data Whether to use all data (default) or only
 #'   QC-filtered data (filtered via [filter_features_qc()]).
 #' @param include_qualifier Logical, whether to include qualifier features. Default is `TRUE`.
 #' @param include_istd Logical, whether to include internal standard (ISTD) features. Default is `TRUE`.
-#' @param include_feature_filter A regex pattern or a vector of feature names used to filter features by `feature_id`.
-#' If `NA` or an empty string (`""`) is provided, the filter is ignored. When a vector of length > 1 is supplied,
-#' is supplied, only features with exactly these names are selected (applied individually as OR conditions).
-#' @param exclude_feature_filter A regex pattern or a vector of feature names to exclude features by feature_id.
-#' If `NA` or an empty string (`""`) is provided, the filter is ignored. When a vector of length > 1 is supplied,
-#' is supplied, only features with exactly these names are excluded (applied individually as OR conditions).
+#' @template feature_filters_2
 #' @param max_regression_value The maximum sample_amount (x) value for fitting
 #' the regression line. If `NA`, regression is based on all data points.
 #' @param output_pdf If `TRUE`, saves the generated plots as a PDF
@@ -35,7 +30,7 @@
 #' @param path The file path for saving the PDF. Must be defined if
 #'   `output_pdf` is `TRUE`.
 #' @param return_plots Logical. If `TRUE`, returns the plots as a list of
-#'   `ggplot2` objects.
+#'   `ggplot` objects.
 #' @param color_curves A vector of colors for the curves. If `NULL` (default),
 #' the colors for each curve are generated automatically. If colors are provided,
 #' the number of colors must match the number of curves.
@@ -73,10 +68,11 @@
 #' @param show_progress Logical. If `TRUE`, displays a progress bar during
 #'   plot creation.
 #'
-#' @return If `return_plots` is `TRUE`, a list of `ggplot2` objects is
+#' @return If `return_plots` is `TRUE`, a list of `ggplot` objects is
 #'   returned. Otherwise, the function saves the plot output or does not return
 #'   anything.
 #'
+#' @family calibration plots
 #' @export
 #'
 #'

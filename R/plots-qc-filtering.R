@@ -8,15 +8,16 @@
 #' This means that a feature is classified as failing a given criterion (e.g., `CV`)
 #' only if it has passed all hierarchically lower filters (e.g., `S/B` ratio and `LOD`).
 #'
-#' @param data MRMhubExperiment object
+#' @template data_mexp
 #' @param font_base_size The base font size for the plot. Default is `8`.
 #'
-#' @return A `ggplot2` object showing the feature QC filtering summary by feature class.
+#' @return A `ggplot` object showing the feature QC filtering summary by feature class.
 #'
 #' @seealso
 #' [plot_qc_summary_overall()] for an overall summary plot
 #' [filter_features_qc()] for comparing QC metrics
 #'
+#' @family QC plots
 #' @export
 
 #'
@@ -260,11 +261,11 @@ plot_qc_summary_byclass <- function(data = NULL, font_base_size = 8) {
 #' It includes a Venn diagram showing the features excluded due to different filtering criteria such as signal-to-blank ratios, CV thresholds, and linearity.
 #' The criteria are applied hierarchically, meaning a feature must pass all lower-tier filters before being considered for failure on higher-tier filters. See [plot_qc_summary_byclass()] for more information.
 #'
-#' @param data MRMhubExperiment object
+#' @template data_mexp
 #' @param with_venn Whether to include a Venn diagram summarizing the features excluded due to different QC criteria. Default is `TRUE`.
 #' @param font_base_size The base font size for the plot. Default is `8`.
 #'
-#' @return A `ggplot2` object showing the feature QC filtering summary with or without a Venn diagram.
+#' @return A `ggplot` object showing the feature QC filtering summary with or without a Venn diagram.
 #'
 #' @details
 #' The QC filtering process follows a hierarchical structure, where features are first evaluated against lower-level filters such as signal-to-blank ratios and limit of detection (LOD).
@@ -274,6 +275,7 @@ plot_qc_summary_byclass <- function(data = NULL, font_base_size = 8) {
 #'
 #' Note: The function currently shows a warning `Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.` which can be ignored.
 #'
+#' @family QC plots
 #' @export
 
 plot_qc_summary_overall <- function(

@@ -18,7 +18,7 @@
 #' plots can be returned as a list of ggplot2 objects for further manipulation
 #' or integration into other analyses.
 #'
-#' @param data A `MRMhubExperiment` object containing the dataset.
+#' @template data_mexp
 #' @param variable Variable to plot on the y-axis, usually intensity. Default
 #'   is `"intensity"`.
 #' @param qc_types A character vector specifying the QC types to plot. It must contain
@@ -64,7 +64,7 @@
 #' @param output_pdf Logical, if `TRUE`, saves plots as a PDF file. Default is
 #'   `FALSE`.
 #' @param path File path for saving the PDF. Default is an empty string.
-#' @param return_plots Logical, if `TRUE`, returns plots as a list of ggplot2
+#' @param return_plots Logical, if `TRUE`, returns plots as a list of `ggplot`
 #'   objects. Default is `FALSE`.
 #' @param point_size Size of points in the plot. Default is 1.5.
 #' @param line_width Width of regression lines. Default is 0.7.
@@ -94,6 +94,9 @@
 #' @param show_progress Logical. If `TRUE`, displays a progress bar during
 #'   plot creation.
 #'
+#' @return A list of `ggplot` objects if `return_plots = TRUE`, otherwise
+#'   `NULL` (the plots are drawn to the active device or written to a PDF).
+#' @family calibration plots
 #' @export
 plot_calibrationcurves <- function(
   data = NULL,

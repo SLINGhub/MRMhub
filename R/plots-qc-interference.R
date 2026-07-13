@@ -3,45 +3,12 @@
 #' This function generates grouped standardized beeswarm plots to visualize the results of interference correction
 #' across different QC types.
 #'
-#' @param data A MRMhubExperiment object
-#'
-#' @param qc_types A character vector specifying the QC types to plot. It
-#' must contain at least one element. The default is `NA`, which means any
-#' of the non-blank QC types ("SPL", "TQC", "BQC", "HQC", "MQC", "LQC",
-#' "NIST", "LTR") will be plotted if present in the dataset.
-#' @param include_qualifier A logical value indicating whether to include
-#' qualifier features. Default is `TRUE`.
+#' @inheritParams plot_qc_matrixeffects
 #' @param include_istd A logical value indicating whether to include internal
 #' standards (ISTD) features.  Default is `TRUE`.
-#' @param include_feature_filter A character or regex pattern used to filter
-#' features by `feature_id`. If `NA` or an empty string (`""`) is provided,
-#' the filter is ignored. When a vector of length > 1 is supplied, only
-#' features with exactly these names are selected (applied individually as
-#' OR conditions).
-#' @param exclude_feature_filter A character or regex pattern used to exclude
-#' features by `feature_id`. If `NA` or an empty string (`""`) is provided,
-#' the filter is ignored. When a vector of length > 1 is supplied, only
-#' features with exactly these names are excluded (applied individually as
-#' OR conditions).
-#' @param min_median_value Minimum median
-#' feature value (as determined by the `variable`) across all samples from
-#' selected QC types that must be met for a feature to be included in the
-#' PCA analysis. `NA` (default) means no filtering will be applied. This
-#' parameter provides an fast way to exclude noisy features from the
-#' analysis. However, it is recommended to use `filter_data` with
-#' [filter_features_qc()].
-#' @param y_lim A numeric vector of length 2 specifying the y-axis limits.
-#' @param point_size A numeric value indicating the size of points in
-#' millimeters. Default is 2.
-#' @param dodge_width Numeric. Width used to dodge overlapping points by `qc_type`. Default is `0.6`.
-#' @param font_base_size A numeric value indicating the base font size for
-#' plot text elements. Default is 8.
-#' @param point_alpha Numeric. Transparency of the plotted points. Default is `0.3`.
-#' @param box_linewidth Numeric. Width of the boxplot lines. Default is `0.5`.
-#' @param box_alpha Numeric. Transparency of the boxplot. Default is `0.3`.
-#' @param angle_x Numeric. Angle of the x-axis text labels. Default is `45`.
 #'
 #' @return A `ggplot` object showing the grouped standardized beeswarm plot.
+#' @family QC plots
 #' @export
 
 plot_qc_interferences <- function(

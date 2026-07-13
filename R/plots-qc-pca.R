@@ -9,15 +9,11 @@
 #'
 #' This function returns a ggplot object. Identified outliers can be printed to the console.
 #'
-#' @param data A MRMhubExperiment object
-#'
+#' @template data_mexp
 #' @param variable A character string indicating the variable to use for PCA
 #' analysis. Must be one of: "area", "height", "intensity", "norm_intensity", "response",
 #' "conc", "conc_raw", "rt", "fwhm".
-#' @param qc_types A character vector specifying the QC types to plot. It
-#' must contain at least one element. The default is `NA`, which means any
-#' of the non-blank QC types ("SPL", "TQC", "BQC", "HQC", "MQC", "LQC",
-#' "NIST", "LTR") will be plotted if present in the dataset.
+#' @template qc_types
 #' @param ellipse_variable String specifying which sample variable to show
 #' as ellipses. Must be one of: "none", "qc_type", "batch_id".
 #' "none" omits ellipses.
@@ -34,23 +30,7 @@
 #' qualifier features. Default is `TRUE`.
 #' @param include_istd A logical value indicating whether to include internal
 #' standard (ISTD) features. Default is `TRUE`.
-#' @param include_feature_filter A character or regex pattern used to filter
-#' features by `feature_id`. If `NA` or an empty string (`""`) is provided,
-#' the filter is ignored. When a vector of length > 1 is supplied, only
-#' features with exactly these names are selected (applied individually as
-#' OR conditions).
-#' @param exclude_feature_filter A character or regex pattern used to exclude
-#' features by `feature_id`. If `NA` or an empty string (`""`) is provided,
-#' the filter is ignored. When a vector of length > 1 is supplied, only
-#' features with exactly these names are excluded (applied individually as
-#' OR conditions).
-#' @param min_median_value Minimum median
-#' feature value (as determined by the `variable`) across all samples from
-#' selected QC types that must be met for a feature to be included in the
-#' PCA analysis. `NA` (default) means no filtering will be applied. This
-#' parameter provides an fast way to exclude noisy features from the
-#' analysis. However, it is recommended to use `filter_data` with
-#' [filter_features_qc()].
+#' @template feature_filters
 #'
 #' @param show_labels A logical value indicating whether to show analysis_id
 #' labels for points outside k * MAD of the selected PCA dimensions. Default
@@ -86,8 +66,9 @@
 #' ellipse fill (0-1). Default is 0.3.
 
 #'
-#' @return A ggplot object with the PCA plot
+#' @return A `ggplot` object with the PCA plot
 #'
+#' @family QC plots
 #' @export
 plot_pca <- function(
   data = NULL,
@@ -499,15 +480,11 @@ plot_pca <- function(
 #' features to each principal component. This function can be used to
 #' investigate which feature (groups) are contributing to the variance seen in the plot and which need further investigation.
 #'
-#' @param data A MRMhubExperiment object
-#'
+#' @template data_mexp
 #' @param variable A character string indicating the variable to use for PCA
 #' analysis. Must be one of: "area", "height", "intensity", "norm_intensity", "response",
 #' "conc", "conc_raw", "rt", "fwhm".
-#' @param qc_types A character vector specifying the QC types to plot. It
-#' must contain at least one element. The default is `NA`, which means any
-#' of the non-blank QC types ("SPL", "TQC", "BQC", "HQC", "MQC", "LQC",
-#' "NIST", "LTR") will be plotted if present in the dataset.
+#' @template qc_types
 #' @param pca_dims A numeric vector indicating for which PCA dimensions
 #' to the loadings should be shown. Default is c(1, 2, 3, 4).
 #' @param log_transform A logical value indicating whether to log-transform
@@ -523,28 +500,13 @@ plot_pca <- function(
 #' qualifier features. Default is `TRUE`.
 #' @param include_istd A logical value indicating whether to include internal
 #' standard (ISTD) features. Default is `TRUE`.
-#' @param include_feature_filter A character or regex pattern used to filter
-#' features by `feature_id`. If `NA` or an empty string (`""`) is provided,
-#' the filter is ignored. When a vector of length > 1 is supplied, only
-#' features with exactly these names are selected (applied individually as
-#' OR conditions).
-#' @param exclude_feature_filter A character or regex pattern used to exclude
-#' features by `feature_id`. If `NA` or an empty string (`""`) is provided,
-#' the filter is ignored. When a vector of length > 1 is supplied, only
-#' features with exactly these names are excluded (applied individually as
-#' OR conditions).
-#' @param min_median_value Minimum median
-#' feature value (as determined by the `variable`) across all samples from
-#' selected QC types that must be met for a feature to be included in the
-#' PCA analysis. `NA` (default) means no filtering will be applied. This
-#' parameter provides an fast way to exclude noisy features from the
-#' analysis. However, it is recommended to use `filter_data` with
-#' [filter_features_qc()].
+#' @template feature_filters
 #' @param font_base_size A numeric value indicating the base font size for
 #' plot text elements. Default is 7.
 #'
-#' @return ggplot object with PCA loadings plot
+#' @return A `ggplot` object with PCA loadings plot
 #'
+#' @family QC plots
 #' @export
 plot_pca_loading <- function(
   data = NULL,

@@ -50,7 +50,7 @@
 #' and set `show_trend = TRUE`.
 #'
 #'
-#' @param data A `MRMhubExperiment` object containing the dataset and metadata.
+#' @template data_mexp
 #' @param variable The variable to plot on the y-axis, one of 'intensity',
 #' 'norm_intensity', 'conc', 'conc', 'rt', 'fwhm', 'area', 'height', response'.
 #' Add `_before` after the variable name to plot the feature values before the last
@@ -61,12 +61,7 @@
 #' @param qc_types QC types to be plotted. Can be a vector of QC types or a regular expression pattern. `NA` (default) displays all available QC/Sample types.
 #' @param include_qualifier Logical, whether to include qualifier features. Default is `TRUE`.
 #' @param include_istd Logical, whether to include internal standard (ISTD) features. Default is `TRUE`.
-#' @param include_feature_filter A regex pattern or a vector of feature names used to filter features by `feature_id`.
-#' If `NA` or an empty string (`""`) is provided, the filter is ignored. When a vector of length > 1 is supplied,
-#' is supplied, only features with exactly these names are selected (applied individually as OR conditions).
-#' @param exclude_feature_filter A regex pattern or a vector of feature names to exclude features by feature_id.
-#' If `NA` or an empty string (`""`) is provided, the filter is ignored. When a vector of length > 1 is supplied,
-#' is supplied, only features with exactly these names are excluded (applied individually as OR conditions).
+#' @template feature_filters_2
 #' @param plot_range Numeric vector of length 2, specifying the start and end indices of the analysis order to be plotted. `NA` plots all samples.
 #'
 #' @param output_pdf Logical, whether to save the plot as a PDF file.
@@ -132,7 +127,9 @@
 #' @param label_wrap_width Integer. Maximum width in characters for wrapped labels when
 #'   `label_wrap = TRUE`. Default is `25`. Ignored when `label_wrap = FALSE`.
 #'
-#' @return A list of ggplot2 plots, or `NULL` if `return
+#' @return A list of `ggplot` objects if `return_plots = TRUE`, otherwise
+#'   `NULL` (the plots are drawn to the active device or written to a PDF).
+#' @family QC plots
 #' @export
 
 plot_runscatter <- function(
