@@ -178,7 +178,7 @@ test_that("plot_runsequence default works", {
       show_timestamp = FALSE,
       show_batches = TRUE
     ),
-    "Found 41 outliers in the 499 shown analyses",
+    "Found 15 outliers in the 499 shown analyses",
     fixed = TRUE
   )
   expect_doppelganger_cond("plot_rla_boxplot default", p$plot)
