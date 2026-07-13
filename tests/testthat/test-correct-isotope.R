@@ -38,6 +38,19 @@ mexp2 <- lipidomics_dataset
 
 mexp2@annot_features$interference_contribution[9] <- 0.5
 
+test_that("correct_interference_manual warns when interference_contribution > 1", {
+  expect_message(
+    correct_interference_manual(
+      mexp_orig,
+      variable = "feature_intensity",
+      feature = "S1P d18:1 [M>60]",
+      interfering_feature = "S1P d18:2 [M>60]",
+      interference_contribution = 1.5
+    ),
+    "greater than 1"
+  )
+})
+
 test_that("correct_interferences corrects overlapping interferences", {
   # d18:2 is interfering with d18:1, which in turn is interfering with d18:0
   # the code does not correct for M+4 isotope interference

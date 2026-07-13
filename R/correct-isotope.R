@@ -10,8 +10,9 @@
 #' @param feature Name of feature to be corrected
 #' @param interfering_feature Name of feature that is interfering, i.e.
 #'   contributing to the signal of `feature`
-#' @param interference_contribution Relative portion of the interfering feature to
-#'   contribute to the feature signal. Must be between 0 and 1.
+#' @param interference_contribution Relative portion of the interfering feature
+#'   contributing to the feature signal. Must be greater than 0; values are
+#'   usually between 0 and 1, and values above 1 trigger a warning.
 #' @param neg_to_na If `TRUE`, negative or zero values after correction will be replaced with `NA`. Default: `FALSE`.
 #' @param updated_feature_id Optional. New name of corrected feature. If empty
 #'   then feature name will not change.
@@ -64,6 +65,11 @@ correct_interference_manual <- function(
   ) {
     cli::cli_abort(col_red(
       "`interference_contribution` must be a number larger than 0"
+    ))
+  }
+  if (interference_contribution > 1) {
+    cli_alert_warning(col_yellow(
+      "`interference_contribution` is {interference_contribution}, i.e. greater than 1. Values above 1 are unusual for a signal-contribution factor; please verify."
     ))
   }
   if (
@@ -268,6 +274,17 @@ correct_interferences <- function(
     cli_abort(
       "Some features have incomplete interference information (i.e., `interference_contribution` or `interference_contribution` missing. Please verify feature metadata."
     )
+  }
+
+  if (any(features_to_correct$interference_contribution <= 0)) {
+    cli_abort(col_red(
+      "`interference_contribution` in the feature metadata must be greater than 0. Please verify feature metadata."
+    ))
+  }
+  if (any(features_to_correct$interference_contribution > 1)) {
+    cli_alert_warning(col_yellow(
+      "{sum(features_to_correct$interference_contribution > 1)} feature(s) have an `interference_contribution` greater than 1. Values above 1 are unusual; please verify feature metadata."
+    ))
   }
 
   has_overlapping_interferences <- any(
