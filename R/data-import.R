@@ -150,7 +150,7 @@ import_data_skyline <- function(
     path = path,
     import_function = "parse_skyline_result",
     file_ext = "*.tsv|*.csv",
-    silent = FALSE,
+    silent = silent,
     transition_id_columns = transition_id_columns
   )
   data <- set_intensity_var(
@@ -213,7 +213,7 @@ import_data_mrmhub <- function(
     path = path,
     import_function = "parse_mrmhub_result",
     file_ext = "*.tsv|*.csv",
-    silent = FALSE
+    silent = silent
   )
   data <- set_intensity_var(
     data,
