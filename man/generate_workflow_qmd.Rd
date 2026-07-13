@@ -22,6 +22,9 @@ in \code{workflow_steps()}).}
 choices used by drift/batch/calibration steps.}
 \item{\code{output_xlsx}}{Path for the exported report. Default
 \code{"results.xlsx"}.}
+\item{\code{formats}}{Character vector of Quarto output formats, any of
+\code{"html"}, \code{"docx"}, \code{"pdf"}. \code{"pdf"} is rendered sans-serif. Default
+\code{"html"}.}
 \item{\code{save_rds}}{Logical; also save the object as \code{.rds}. Default
 \code{FALSE}.}
 \item{\code{title}}{Document title. Default \code{"MRMhub Workflow"}.}

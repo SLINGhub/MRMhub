@@ -25,10 +25,10 @@ standardization. When performing only external standardization, without
 internal standardization, use \code{"feature_intensity"}.}
 
 \item{include_qualifier}{A logical value. If \code{TRUE}, the function will
-include quantifier features in the calibration curve calculations.}
+include qualifier features in the calibration curve calculations.}
 
 \item{fit_overwrite}{If \code{TRUE},
-the function will se the provided \code{fit_model} and \code{fit_weighting} values
+the function will use the provided \code{fit_model} and \code{fit_weighting} values
 for all analytes and ignore any fit method and weighting settings defined in
 the metadata.}
 
@@ -71,7 +71,7 @@ these details are missing in the metadata, the default values provided via
 \details{
 Additionally, the limit of detection (LoD) and limit of quantification (LoQ)
 are calculated for each feature based on the calibration curve. LoD is
-calculated as 3 times the sample standard error of the regression residuals
+calculated as 3.3 times the sample standard error of the regression residuals
 divided by the regression slope, and LoQ is 10 times the same ratio. In the
 case of a quadratic fit, LoD and LoQ are calculated using the slope at
 the concentration of the lowest calibration point.

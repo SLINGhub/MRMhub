@@ -17,7 +17,7 @@ quantify_by_calibration(
 \arguments{
 \item{data}{A \code{MRMhubExperiment} object}
 
-\item{include_qualifier}{A logical value. If \code{TRUE}, the function will include quantifier features in the calibration curve calculations.}
+\item{include_qualifier}{A logical value. If \code{TRUE}, the function will include qualifier features in the calibration curve calculations.}
 
 \item{fit_overwrite}{If \code{TRUE},
 the function will use the provided \code{fit_model} and \code{fit_weighting} values

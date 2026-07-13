@@ -38,8 +38,9 @@ they are always calculated, raising an error if data is missing.}
 are included if the required data is available. If \code{TRUE}, they are always
 calculated, raising an error if data is missing.}
 
-\item{include_calibration_results}{Logical, whether to incorporate external
-calibration results into the QC metrics table if available. Default is TRUE.}
+\item{include_calibration_results}{Logical. If \code{NA} (default), external
+calibration results are incorporated into the QC metrics table if available.
+If \code{TRUE}, they are always incorporated.}
 }
 \value{
 A \code{MRMhubExperiment} object with an updated \code{metrics_qc} table
@@ -149,19 +150,16 @@ in the data:
 \item \code{lowest_cal}: The lowest nonzero calibration concentration.
 \item \code{highest_cal}: The highest calibration concentration.
 \item \code{r.squared}: R-squared value indicating the goodness of fit.
-\item \code{coef_a}:
-\itemize{
-\item For \strong{linear fits}, this represents the slope of the regression line.
-\item For \strong{quadratic fits}, this represents the coefficient of the quadratic term (\verb{x²}).
-}
+\item \code{coef_a}: The intercept of the regression line (both \strong{linear} and
+\strong{quadratic} fits).
 \item \code{coef_b}:
 \itemize{
-\item For \strong{linear fits}, this represents the intercept of the regression line.
-\item For \strong{quadratic fits}, this represents the coefficient of the linear term (\code{x}).
+\item For \strong{linear fits}, the slope of the regression line.
+\item For \strong{quadratic fits}, the coefficient of the linear term (\code{x}).
 }
 \item \code{coef_c}:
 \itemize{
-\item Only present for \strong{quadratic fits}, representing the intercept of the regression equation.
+\item For \strong{quadratic fits}, the coefficient of the quadratic term (\verb{x²}).
 \item Set to \code{NA} for linear fits.
 }
 \item \code{sigma}: The residual standard error of the regression model.

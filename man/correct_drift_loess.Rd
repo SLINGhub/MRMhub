@@ -32,7 +32,7 @@ correct_drift_loess(
 
 \item{span}{Loess span width (default is 0.75)}
 
-\item{degree}{Degree of the polynomial to be used in the loess smoothing, normally 1 (default) or 2}
+\item{degree}{Degree of the polynomial to be used in the loess smoothing, normally 1 or 2. Default is 2.}
 
 \item{batch_wise}{Logical. Apply the correction to each batch separately
 (\code{TRUE}, default) or across all batches (\code{FALSE}).}
@@ -42,8 +42,8 @@ correct_drift_loess(
 \item{replace_previous}{Logical. Replace existing correction (\code{TRUE},
 default) or layer on top of it (\code{FALSE}).}
 
-\item{conditional_correction}{Determines whether drift correction should be applied to all features unconditionally (\code{TRUE}) or
-only when the difference of sample CV before vs after smoothing is below the threshold specified by \code{cv_diff_threshold}.}
+\item{conditional_correction}{Determines whether drift correction is applied to all features unconditionally (\code{FALSE}, the default) or,
+when \code{TRUE}, only to features whose difference of sample CV before vs after smoothing is below the threshold specified by \code{cv_diff_threshold}.}
 
 \item{recalc_trend_after}{Recalculate trend post-drift correction for \code{plot_qc_runscatter()}. This will double calculation time.}
 
@@ -51,7 +51,7 @@ only when the difference of sample CV before vs after smoothing is below the thr
 
 \item{feature_list}{Subset the features for correction whose names matches the specified text using regular expression. Default is \code{NULL} which means all features are selected.}
 
-\item{cv_diff_threshold}{This parameter defines the maximum allowable change (difference) in the coefficient of variation (CV) ratio of samples before and after smoothing for the correction to be applied.
+\item{cv_diff_threshold}{This parameter defines the maximum allowable change (difference) in the coefficient of variation (CV) of samples before and after smoothing for the correction to be applied.
 A value of 0 (the default) requires the CV to improve, while a value above 0 allows the CV to also become worse by a maximum of the defined difference.}
 
 \item{use_original_if_fail}{Determines the action when smoothing fails or results in invalid values for a feature. If \code{FALSE} (default), the result for each feature will \code{NA} for all batches, if \code{TRUE}, the original data is kept.}
@@ -102,7 +102,7 @@ independently for each batch if \code{batch_wise = TRUE}, where the median of
 the CV changes across the batch is compared with the threshold.
 
 \strong{Note}: The function outputs a message indicating the median CV change
-and the mean absolute CV before and after correction for all samples.
+and the median absolute CV before and after correction for all samples.
 However, these metrics are experimental and should not be used as
 definitive criteria for correction (see Details below).
 
@@ -112,8 +112,8 @@ This LOESS method is implemented using the base R function
 \details{
 In the output message, the median CV change is computed as the median of CV changes for all
 features in global correction or for
-features where the correction passed the defined CV difference treshold in
-case of conditional correction  (\code{conditional_correction = FALSE}).
+features where the correction passed the defined CV difference threshold in
+case of conditional correction  (\code{conditional_correction = TRUE}).
 For batch-wise correction, the change is calculated per batch, with the final median CV
 change being the median of these batch medians across features.
 }

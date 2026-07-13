@@ -287,14 +287,15 @@ import_data_csv <- function(
 #'
 #' @description
 #' Imports analysis result data from wide-format `.csv` files, where each row corresponds
-#' to a unique analysis-feature pair and columns contain analysis- or feature-specific variables.
+#' to a single analysis and each feature is stored in its own column. All feature columns
+#' hold the same variable type, given by `variable_name`.
 #'
 #' @details
-#' The dataset must include two identifier columns: `"analysis_id"` and `"feature_id"`,
-#' with each pair of values unique across the table. Additionally, the table must contain
-#' at least one feature variable column, such as `"area"`, `"height"`, `"intensity"`,
-#' `"norm_intensity"`, `"response"`, `"conc"`, `"rt"`, or `"fwhm"`. Some downstream
-#' functions may require specific columns among these to be present.
+#' Each row must be identified by an `"analysis_id"` column (or, if absent, the first
+#' column, provided it holds unique values). Every feature is stored in a separate column;
+#' the feature columns all contain the single variable type specified by `variable_name`.
+#' Use `first_feature_column` to mark where the feature columns begin so that leading
+#' metadata columns are not mistaken for features.
 #'
 #' The `variable_name` argument specifies the data type represented in the table, which
 #' must be one of: `"area"`, `"height"`, `"intensity"`, `"norm_intensity"`, `"response"`,
@@ -327,7 +328,8 @@ import_data_csv <- function(
 #' @param path A file path or vector of file paths, or a directory path. If a directory is
 #'   provided, all `.csv` files within it will be read.
 #' @param variable_name A character string specifying the variable type contained in the
-#'   data. Must be one of `"intensity"`, `"norm_intensity"`, `"conc"`, `"area"`, `"height"`, or `"response"`.
+#'   data. Must be one of `"area"`, `"height"`, `"intensity"`, `"norm_intensity"`,
+#'   `"response"`, `"conc"`, `"conc_raw"`, `"rt"`, or `"fwhm"`.
 #' @param analysis_id_col The column name or index to be used as `analysis_id`. Defaults to `NA`,
 #'   in which case `"analysis_id"` is used if present; otherwise, the first column is used if it contains unique values.
 #' @param import_metadata Logical indicating whether to import additional metadata columns

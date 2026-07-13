@@ -141,8 +141,9 @@ normalize_by_istd <- function(data = NULL, ignore_missing_annotation = FALSE) {
 
 #' Calculate Analyte Concentrations Using Internal Standards
 #'
-#' This function calculates analyte concentrations based on internal standard (ISTD) normalized intensities
-#' and the corresponding spiked-in ISTD amount, normalized by the sample amount.
+#' This function calculates analyte concentrations based on internal standard (ISTD) normalized intensities,
+#' the corresponding spiked-in ISTD amount, and the per-feature response factor
+#' (`response_factor`, from the feature metadata), normalized by the sample amount.
 #'
 #' By default, concentrations are returned in molar units (e.g., µmol/L). To return concentrations in mass units
 #' (e.g., µg/L), set `concentration_unit = "mass"`. This requires either the chemical formula or molecular weight
@@ -158,7 +159,8 @@ normalize_by_istd <- function(data = NULL, ignore_missing_annotation = FALSE) {
 #' and `sample_amount_unit = "uL"`, the calculated concentrations will be in µmol/L. If `concentration_unit = "mass"`, the
 #' concentrations will be in `µg/L`.
 #'
-#' The calculated concentrations are added to the `dataset` table as a new column named `feature_conc`..
+#' The calculated concentrations are added to the `dataset` table as a new column named `feature_conc`,
+#' along with the intermediate total amount per analysis in `feature_pmol_total`.
 #'
 #' @param data A `MRMhubExperiment` object
 #' @param concentration_unit Character string indicating the type of concentration to calculate and export.
@@ -167,7 +169,7 @@ normalize_by_istd <- function(data = NULL, ignore_missing_annotation = FALSE) {
 #' @param ignore_missing_annotation If `FALSE`, an error will be raised if any of the following information is missing: ISTD concentration, ISTD mix volume, and sample amounts for any feature.
 #'   If `TRUE`, missing annotations will be ignored, and resulting feature concentration will be `NA`
 #' @return A `MRMhubExperiment` object with the calculated analyte concentrations added to the
-#'   `dataset` table in the `feature_conc` column.
+#'   `dataset` table in the `feature_conc` column (and the intermediate `feature_pmol_total`).
 #'
 #' @seealso [quantify_by_calibration()] for calculating concentrations based on external calibration curves.
 #'

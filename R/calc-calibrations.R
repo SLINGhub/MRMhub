@@ -10,7 +10,7 @@
 #' The concentrations are added to the `dataset` table as `feature_conc` column. The results of the regression and the calculated LoD and LoQ values are stored in the `metrics_calibration` table of the returned `MRMhubExperiment` object.
 
 #' @param data A `MRMhubExperiment` object
-#' @param include_qualifier A logical value. If `TRUE`, the function will include quantifier features in the calibration curve calculations.
+#' @param include_qualifier A logical value. If `TRUE`, the function will include qualifier features in the calibration curve calculations.
 #' @param fit_overwrite If `TRUE`,
 #'   the function will use the provided `fit_model` and `fit_weighting` values
 #'   for all analytes and ignore any fit method and weighting settings defined in
@@ -225,7 +225,7 @@ quantify_by_calibration <- function(
 #'
 #' Additionally, the limit of detection (LoD) and limit of quantification (LoQ)
 #' are calculated for each feature based on the calibration curve. LoD is
-#' calculated as 3 times the sample standard error of the regression residuals
+#' calculated as 3.3 times the sample standard error of the regression residuals
 #' divided by the regression slope, and LoQ is 10 times the same ratio. In the
 #' case of a quadratic fit, LoD and LoQ are calculated using the slope at
 #' the concentration of the lowest calibration point.
@@ -241,9 +241,9 @@ quantify_by_calibration <- function(
 #'   standardization. When performing only external standardization, without
 #'   internal standardization, use `"feature_intensity"`.
 #' @param include_qualifier A logical value. If `TRUE`, the function will
-#'   include quantifier features in the calibration curve calculations.
+#'   include qualifier features in the calibration curve calculations.
 #' @param fit_overwrite If `TRUE`,
-#'   the function will se the provided `fit_model` and `fit_weighting` values
+#'   the function will use the provided `fit_model` and `fit_weighting` values
 #'   for all analytes and ignore any fit method and weighting settings defined in
 #'   the metadata.
 #' @param fit_model A character string specifying the default regression fit
@@ -637,7 +637,7 @@ calc_calibration_results <- function(
 #' @param with_conc_target Logical. If `TRUE`, includes target (know) concentration of the QC sample in the results. Defaults to `TRUE`.
 #' @param with_bias Logical. If `TRUE`, includes percentage bias in the results. Defaults to `TRUE`.
 #' @param with_bias_abs Logical. If `TRUE`, includes absolute bias in concentration units in the results. Defaults to `FALSE`.
-#' @param with_conc_ratio Logical. If `TRUE`, includes the ratio of measured to target concentration in the results. Defaults to `TRUE`.
+#' @param with_conc_ratio Logical. If `TRUE`, includes the ratio of measured to target concentration in the results. Defaults to `FALSE`.
 #' @param with_cv_intra Logical. If `TRUE`, includes intra-assay coefficient of variation (CV) for the in the results. Defaults to `TRUE`.
 #'
 #' @return A data frame containing the calibration results, including metrics such as bias, percentage bias, and intra-assay CV based on specified parameters.

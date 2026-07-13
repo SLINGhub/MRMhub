@@ -34,7 +34,7 @@ This function corrects lipidomics feature intensities by
 subtracting interference (e.g., isotope overlap or in-source fragments). The
 correction is applied using the following formula: \deqn{value\_corrected =
 value\_raw - value\_raw\_interfering\_feature \times
-proportion\_interference}
+interference\_contribution}
 
 The interfering features and their relative contributions must be defined in
 the feature metadata.
@@ -48,8 +48,8 @@ set \code{sequential_correction = FALSE}
 }
 \details{
 For isotopic interference correction of MRM/PRM data, the relative
-isotope abundances needed for the calculation ('proportion_interference') can
-be calculated using the LICAR application (Gao et al., 2021), see below..
+isotope abundances needed for the calculation (\code{interference_contribution}) can
+be calculated using the LICAR application (Gao et al., 2021), see below.
 }
 \references{
 Gao L., Ji S, Burla B, Wenk MR, Torta F, Wenk MR, &

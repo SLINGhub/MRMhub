@@ -44,13 +44,13 @@ correct_drift_gam(
 
 \item{log_transform_internal}{Log transform the data for correction when \code{TRUE} (the default). Note: log transformation is solely applied internally for smoothing, results will not be log-transformed.}
 
-\item{conditional_correction}{Determines whether drift correction should be applied to all features unconditionally (\code{TRUE}) or conditionally, based on sample CV change.}
+\item{conditional_correction}{Determines whether drift correction is applied to all features unconditionally (\code{FALSE}, the default) or, when \code{TRUE}, only conditionally based on sample CV change.}
 
 \item{recalc_trend_after}{Recalculate trend post-drift correction for \code{plot_qc_runscatter()}. This will double calculation time.}
 
 \item{feature_list}{Subset the features for correction whose names match the specified text using regular expression. Default is \code{NULL}.}
 
-\item{cv_diff_threshold}{Maximum allowable change in CV ratio before and after smoothing for correction to be applied.}
+\item{cv_diff_threshold}{Maximum allowable change (difference) in CV before and after smoothing for correction to be applied.}
 
 \item{use_original_if_fail}{Determines the action when smoothing fails or results in invalid values for a feature. If \code{FALSE} (default), the result for each feature will \code{NA} for all batches, if \code{TRUE}, the original data is kept.}
 
@@ -86,18 +86,18 @@ independently for each batch if \code{batch_wise = TRUE}, where the median of
 the CV changes across the batch is compared with the threshold.
 
 \strong{Note}: The function outputs a message indicating the median CV change
-and the mean absolute CV before and after correction for all samples.
+and the median absolute CV before and after correction for all samples.
 However, these metrics are experimental and should not be used as
 definitive criteria for correction (see Details below).
 
-This cubic spline method is implemented using the base R function
-\code{\link[stats:spline]{stats::spline()}}.
+This method is implemented using penalized splines via the
+\code{\link[mgcv:gam]{mgcv::gam()}} function.
 }
 \details{
 In the output message, the median CV change is computed as the median of CV changes for all
 features in global correction or for
-features where the correction passed the defined CV difference treshold in
-case of conditional correction  (\code{conditional_correction = FALSE}).
+features where the correction passed the defined CV difference threshold in
+case of conditional correction  (\code{conditional_correction = TRUE}).
 For batch-wise correction, the change is calculated per batch, with the final median CV
 change being the median of these batch medians across features.
 

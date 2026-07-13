@@ -394,9 +394,9 @@ fun_gam_smooth <- function(
 #' @param batch_wise Apply to each batch separately if `TRUE` (the default)
 #' @param replace_previous Logical. Replace previous correction (`TRUE`), or adds on top of previous correction (`FALSE`). Default is `TRUE`.
 #' @param log_transform_internal Apply log transformation internally for smoothing if `TRUE` (default). This enhances robustness against outliers but does not affect the final data, which remains untransformed.
-#' @param conditional_correction Determines whether drift correction should be applied to all features unconditionally (`TRUE`) or
-#' only when the difference of sample CV before vs after smoothing is below the threshold specified by `cv_diff_threshold`.
-#' @param cv_diff_threshold This parameter defines the maximum allowable change (difference) in the coefficient of variation (CV) ratio of samples before and after smoothing for the correction to be applied.
+#' @param conditional_correction Determines whether drift correction is applied to all features unconditionally (`FALSE`, the default) or,
+#' when `TRUE`, only to features whose difference of sample CV before vs after smoothing is below the threshold specified by `cv_diff_threshold`.
+#' @param cv_diff_threshold This parameter defines the maximum allowable change (difference) in the coefficient of variation (CV) of samples before and after smoothing for the correction to be applied.
 #' A value of 0 (the default) requires the CV to improve, while a value above 0 allows the CV to also become worse by a maximum of the defined difference.
 #' @param ignore_istd Do not apply corrections to ISTDs
 #' @param feature_list Sets specific features for correction only. Can be character vector or a single string which is then interpreted as regular expression. Default is `NULL` which means all features are selected.
@@ -1089,15 +1089,15 @@ fun_correct_drift <- function(
 #' of [plot_runscatter()]. This will double the processing time.
 #'
 #' **Note**: The function outputs a message indicating the median CV change
-#' and the mean absolute CV before and after correction for all samples.
+#' and the median absolute CV before and after correction for all samples.
 #' However, these metrics are experimental and should not be used as
 #' definitive criteria for correction (see Details below).
 #'
 #' @details
 #' In the output message, the median CV change is computed as the median of CV changes for all
 #' features in global correction or for
-#' features where the correction passed the defined CV difference treshold in
-#' case of conditional correction  (`conditional_correction = FALSE`).
+#' features where the correction passed the defined CV difference threshold in
+#' case of conditional correction  (`conditional_correction = TRUE`).
 #' For batch-wise correction, the change is calculated per batch, with the final median CV
 #' change being the median of these batch medians across features.
 #'
@@ -1126,9 +1126,9 @@ fun_correct_drift <- function(
 #' @param recalc_trend_after Logical. Recalculate trends post-smoothing for
 #' visualization (e.g., `plot_runscatter()`).
 
-#' @param conditional_correction Determines whether drift correction should be applied to all features unconditionally (`TRUE`) or
-#' only when the difference of sample CV before vs after smoothing is below the threshold specified by `cv_diff_threshold`.
-#' @param cv_diff_threshold This parameter defines the maximum allowable change (difference) in the coefficient of variation (CV) ratio of samples before and after smoothing for the correction to be applied.
+#' @param conditional_correction Determines whether drift correction is applied to all features unconditionally (`FALSE`, the default) or,
+#' when `TRUE`, only to features whose difference of sample CV before vs after smoothing is below the threshold specified by `cv_diff_threshold`.
+#' @param cv_diff_threshold This parameter defines the maximum allowable change (difference) in the coefficient of variation (CV) of samples before and after smoothing for the correction to be applied.
 #' A value of 0 (the default) requires the CV to improve, while a value above 0 allows the CV to also become worse by a maximum of the defined difference.
 #' @param feature_list Character vector. Regular expression pattern to select
 #' specific features for correction. Default is `NULL` for all features.
@@ -1242,7 +1242,7 @@ correct_drift_gaussiankernel <- function(
 #' the CV changes across the batch is compared with the threshold.
 #'
 #' **Note**: The function outputs a message indicating the median CV change
-#' and the mean absolute CV before and after correction for all samples.
+#' and the median absolute CV before and after correction for all samples.
 #' However, these metrics are experimental and should not be used as
 #' definitive criteria for correction (see Details below).
 #'
@@ -1252,8 +1252,8 @@ correct_drift_gaussiankernel <- function(
 #' @details
 #' In the output message, the median CV change is computed as the median of CV changes for all
 #' features in global correction or for
-#' features where the correction passed the defined CV difference treshold in
-#' case of conditional correction  (`conditional_correction = FALSE`).
+#' features where the correction passed the defined CV difference threshold in
+#' case of conditional correction  (`conditional_correction = TRUE`).
 #' For batch-wise correction, the change is calculated per batch, with the final median CV
 #' change being the median of these batch medians across features.
 #'
@@ -1267,13 +1267,13 @@ correct_drift_gaussiankernel <- function(
 #' @param replace_previous Logical. Replace existing correction (`TRUE`,
 #' default) or layer on top of it (`FALSE`).
 #' @param span Loess span width (default is 0.75)
-#' @param degree Degree of the polynomial to be used in the loess smoothing, normally 1 (default) or 2
+#' @param degree Degree of the polynomial to be used in the loess smoothing, normally 1 or 2. Default is 2.
 #' @param extrapolate Extrapolate loess smoothing. WARNING: It is generally not recommended to extrapolate outside of the range spanned by the QCs used for smoothing. See details below.
 #' @param log_transform_internal Log transform the data for correction when `TRUE` (the default). Note: log transformation is solely applied internally for smoothing, results will not be be log-transformed. Log transformation may result in more robust smoothing that is less sensitive to outlier.
-#' @param conditional_correction Determines whether drift correction should be applied to all features unconditionally (`TRUE`) or
-#' only when the difference of sample CV before vs after smoothing is below the threshold specified by `cv_diff_threshold`.
+#' @param conditional_correction Determines whether drift correction is applied to all features unconditionally (`FALSE`, the default) or,
+#' when `TRUE`, only to features whose difference of sample CV before vs after smoothing is below the threshold specified by `cv_diff_threshold`.
 #' @param recalc_trend_after Recalculate trend post-drift correction for `plot_qc_runscatter()`. This will double calculation time.
-#' @param cv_diff_threshold This parameter defines the maximum allowable change (difference) in the coefficient of variation (CV) ratio of samples before and after smoothing for the correction to be applied.
+#' @param cv_diff_threshold This parameter defines the maximum allowable change (difference) in the coefficient of variation (CV) of samples before and after smoothing for the correction to be applied.
 #' A value of 0 (the default) requires the CV to improve, while a value above 0 allows the CV to also become worse by a maximum of the defined difference.
 #' @param feature_list Subset the features for correction whose names matches the specified text using regular expression. Default is `NULL` which means all features are selected.
 #' @param ignore_istd Do not apply corrections to ISTDs
@@ -1372,18 +1372,18 @@ correct_drift_loess <- function(
 #' the CV changes across the batch is compared with the threshold.
 #'
 #' **Note**: The function outputs a message indicating the median CV change
-#' and the mean absolute CV before and after correction for all samples.
+#' and the median absolute CV before and after correction for all samples.
 #' However, these metrics are experimental and should not be used as
 #' definitive criteria for correction (see Details below).
 #'
 #' This cubic spline method is implemented using the base R function
-#  \code{\link[stats]{smooth.spline}}
+#' [stats::smooth.spline()].
 #'
 #' @details
 #' In the output message, the median CV change is computed as the median of CV changes for all
 #' features in global correction or for
-#' features where the correction passed the defined CV difference treshold in
-#' case of conditional correction  (`conditional_correction = FALSE`).
+#' features where the correction passed the defined CV difference threshold in
+#' case of conditional correction  (`conditional_correction = TRUE`).
 #' For batch-wise correction, the change is calculated per batch, with the final median CV
 #' change being the median of these batch medians across features.
 #'
@@ -1397,12 +1397,12 @@ correct_drift_loess <- function(
 #' @param replace_previous Logical. Replace existing correction (`TRUE`, default) or layer on top of it (`FALSE`).
 #' @param cv Ordinary leave-one-out (TRUE) or ‘generalized’ cross-validation (GCV) when FALSE; is used for smoothing parameter computation only when spar is not specified
 #' @param spar Smoothing parameter for cubic spline smoothing. If not specified or `NULL`, the smoothing parameter is computed using the specified cv method. Typically (but not necessarily)  (0,1].
-#' @param lambda Regularization parameter for cubic spline smoothing. Default is 0, which means no regularization.
+#' @param lambda Regularization parameter for cubic spline smoothing. Default is `NULL`, which means no regularization.
 #' @param penalty The coefficient of the penalty for degrees of freedom in the GCV criterion.
 #' @param log_transform_internal Log transform the data for correction when `TRUE` (the default). Note: log transformation is solely applied internally for smoothing, results will not be log-transformed.
-#' @param conditional_correction Determines whether drift correction should be applied to all features unconditionally (`TRUE`) or conditionally, based on sample CV change.
+#' @param conditional_correction Determines whether drift correction is applied to all features unconditionally (`FALSE`, the default) or, when `TRUE`, only conditionally based on sample CV change.
 #' @param recalc_trend_after Recalculate trend post-drift correction for `plot_qc_runscatter()`. This will double calculation time.
-#' @param cv_diff_threshold Maximum allowable change in CV ratio before and after smoothing for correction to be applied.
+#' @param cv_diff_threshold Maximum allowable change (difference) in CV before and after smoothing for correction to be applied.
 #' @param feature_list Subset the features for correction whose names match the specified text using regular expression. Default is `NULL`.
 #' @param use_original_if_fail Determines the action when smoothing fails or results in invalid values for a feature. If `FALSE` (default), the result for each feature will `NA` for all batches, if `TRUE`, the original data is kept.
 #' @param show_progress Logical. Display progress bars if `TRUE`; disable for notebook rendering by setting to `FALSE`.
@@ -1501,18 +1501,18 @@ correct_drift_cubicspline <- function(
 #' the CV changes across the batch is compared with the threshold.
 #'
 #' **Note**: The function outputs a message indicating the median CV change
-#' and the mean absolute CV before and after correction for all samples.
+#' and the median absolute CV before and after correction for all samples.
 #' However, these metrics are experimental and should not be used as
 #' definitive criteria for correction (see Details below).
 #'
-#' This cubic spline method is implemented using the base R function
-#' [stats::spline()].
+#' This method is implemented using penalized splines via the
+#' [mgcv::gam()] function.
 #'
 #' @details
 #' In the output message, the median CV change is computed as the median of CV changes for all
 #' features in global correction or for
-#' features where the correction passed the defined CV difference treshold in
-#' case of conditional correction  (`conditional_correction = FALSE`).
+#' features where the correction passed the defined CV difference threshold in
+#' case of conditional correction  (`conditional_correction = TRUE`).
 #' For batch-wise correction, the change is calculated per batch, with the final median CV
 #' change being the median of these batch medians across features.
 #'
@@ -1528,9 +1528,9 @@ correct_drift_cubicspline <- function(
 #' @param k Number of basis functions (default: `-1`, automatically chosen by GAM).
 #' @param sp Smoothing parameter (`NULL` by default, estimated automatically).
 #' @param log_transform_internal Log transform the data for correction when `TRUE` (the default). Note: log transformation is solely applied internally for smoothing, results will not be log-transformed.
-#' @param conditional_correction Determines whether drift correction should be applied to all features unconditionally (`TRUE`) or conditionally, based on sample CV change.
+#' @param conditional_correction Determines whether drift correction is applied to all features unconditionally (`FALSE`, the default) or, when `TRUE`, only conditionally based on sample CV change.
 #' @param recalc_trend_after Recalculate trend post-drift correction for `plot_qc_runscatter()`. This will double calculation time.
-#' @param cv_diff_threshold Maximum allowable change in CV ratio before and after smoothing for correction to be applied.
+#' @param cv_diff_threshold Maximum allowable change (difference) in CV before and after smoothing for correction to be applied.
 #' @param feature_list Subset the features for correction whose names match the specified text using regular expression. Default is `NULL`.
 #' @param use_original_if_fail Determines the action when smoothing fails or results in invalid values for a feature. If `FALSE` (default), the result for each feature will `NA` for all batches, if `TRUE`, the original data is kept.
 #' @param show_progress Logical. Display progress bars if `TRUE`; disable for notebook rendering by setting to `FALSE`.

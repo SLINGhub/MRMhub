@@ -17,8 +17,8 @@ correct_interference_manual(
 \arguments{
 \item{data}{MRMhubExperiment object}
 
-\item{variable}{Default: \code{feature_intensity}. Name of Variable to be
-corrected.}
+\item{variable}{Name of the variable to be corrected, e.g.
+\code{feature_intensity}.}
 
 \item{feature}{Name of feature to be corrected}
 

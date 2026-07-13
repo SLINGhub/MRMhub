@@ -35,13 +35,12 @@ this function is used to summarize the reference sample concentrations across an
 
 \item{store_conc_ratio}{Logical. Whether to store the ratio of measured
 (non-calibrated) compared to the expected (known) concentrations. Only applied if \code{absolute_calibration = TRUE}.
-This ratio is stored under the feature variable \code{feature_conc_ratio}. By default it is \code{TRUE} when \verb{variable = 'conc', otherwise }FALSE`.}
+This ratio is stored under the feature variable \code{feature_conc_ratio}. By default it is \code{TRUE} when \code{variable = 'conc'}, otherwise \code{FALSE}.}
 
 \item{undefined_conc_action}{Character string specifying how to handle features
 without defined concentrations in reference samples when \code{absolute_calibration = TRUE}.
-Must be one of: "original" (keep original values), "na" (set to NA), or "error". Default is "keep".
-
-Default is \code{TRUE}.}
+Must be one of \code{"original"} (keep original values), \code{"na"} (set to \code{NA}), or
+\code{"error"}. Required when \code{absolute_calibration = TRUE} (no default).}
 
 \item{store_normalized}{Logical indicating whether to keep the normalized values in the dataset
 when \code{absolute_calibration = TRUE}. Default is FALSE. These values are then stored
@@ -78,11 +77,11 @@ Metadata requirements:
 \item An error will be raised  if no concentrations are defined for any features
 }
 
-Missing analyte concentrations for the reference sample can be handed via \code{undefined_conc_handling} with following options:
+Missing analyte concentrations for the reference sample can be handled via \code{undefined_conc_action} with following options:
 \itemize{
 \item \code{original}: Keep original feature values, i.e. the non-calibrated values will be returned. \emph{Note}: this is only available when \code{variable = conc}. Use with caution to avoid mixing units.
 \item \code{na}: Set affected features values to \code{NA}
-\item \code{error} (default): The function stops with error in case of any undefined reference sample feature concentration.
+\item \code{error}: The function stops with error in case of any undefined reference sample feature concentration.
 \item In case all feature concentrations are undefined, the function will stop with an error.
 }
 

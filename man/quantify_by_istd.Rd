@@ -24,11 +24,12 @@ If \code{TRUE}, missing annotations will be ignored, and resulting feature conce
 }
 \value{
 A \code{MRMhubExperiment} object with the calculated analyte concentrations added to the
-\code{dataset} table in the \code{feature_conc} column.
+\code{dataset} table in the \code{feature_conc} column (and the intermediate \code{feature_pmol_total}).
 }
 \description{
-This function calculates analyte concentrations based on internal standard (ISTD) normalized intensities
-and the corresponding spiked-in ISTD amount, normalized by the sample amount.
+This function calculates analyte concentrations based on internal standard (ISTD) normalized intensities,
+the corresponding spiked-in ISTD amount, and the per-feature response factor
+(\code{response_factor}, from the feature metadata), normalized by the sample amount.
 }
 \details{
 By default, concentrations are returned in molar units (e.g., µmol/L). To return concentrations in mass units
@@ -45,7 +46,8 @@ to the appropriate unit based on the provided \code{concentration_unit}. For exa
 and \code{sample_amount_unit = "uL"}, the calculated concentrations will be in µmol/L. If \code{concentration_unit = "mass"}, the
 concentrations will be in \code{µg/L}.
 
-The calculated concentrations are added to the \code{dataset} table as a new column named \code{feature_conc}..
+The calculated concentrations are added to the \code{dataset} table as a new column named \code{feature_conc},
+along with the intermediate total amount per analysis in \code{feature_pmol_total}.
 }
 \seealso{
 \code{\link[=quantify_by_calibration]{quantify_by_calibration()}} for calculating concentrations based on external calibration curves.

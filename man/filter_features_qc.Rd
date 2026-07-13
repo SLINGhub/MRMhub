@@ -119,17 +119,17 @@ filter_features_qc(
 
 \item{max.dratio.sd.conc.tqc}{Maximum allowed D-ratio (SD of TQC / SD of SPL) using standard deviation for TQC samples. Default is \code{NA}.}
 
-\item{max.dratio.mad.conc.bqc}{Maximum allowed D-ratio (MAD of BQC / MAD of SPL) using mean absolute deviation for BQC samples. Default is \code{NA}.}
+\item{max.dratio.mad.conc.bqc}{Maximum allowed D-ratio (MAD of BQC / MAD of SPL) using median absolute deviation for BQC samples. Default is \code{NA}.}
 
-\item{max.dratio.mad.conc.tqc}{Maximum allowed D-ratio (MAD of TQC / MAD of SPL) using mean absolute deviation for TQC samples. Default is \code{NA}.}
+\item{max.dratio.mad.conc.tqc}{Maximum allowed D-ratio (MAD of TQC / MAD of SPL) using median absolute deviation for TQC samples. Default is \code{NA}.}
 
 \item{max.dratio.sd.normint.bqc}{Maximum allowed D-ratio (SD of normalized intensity in BQC / SD of SPL) using standard deviation. Default is \code{NA}.}
 
 \item{max.dratio.sd.normint.tqc}{Maximum allowed D-ratio (SD of normalized intensity in TQC / SD of SPL) using standard deviation. Default is \code{NA}.}
 
-\item{max.dratio.mad.normint.bqc}{Maximum allowed D-ratio (MAD of normalized intensity in BQC / MAD of SPL) using mean absolute deviation. Default is \code{NA}.}
+\item{max.dratio.mad.normint.bqc}{Maximum allowed D-ratio (MAD of normalized intensity in BQC / MAD of SPL) using median absolute deviation. Default is \code{NA}.}
 
-\item{max.dratio.mad.normint.tqc}{Maximum allowed D-ratio (MAD of normalized intensity in TQC / MAD of SPL) using mean absolute deviation. Default is \code{NA}.}
+\item{max.dratio.mad.normint.tqc}{Maximum allowed D-ratio (MAD of normalized intensity in TQC / MAD of SPL) using median absolute deviation. Default is \code{NA}.}
 }
 \value{
 The input MRMhubExperiment object with the feature filtering criteria applied.

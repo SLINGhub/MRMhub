@@ -60,10 +60,10 @@ outlier detection.}
 for enhanced outlier robustness if \code{TRUE} (default); does not alter the
 output data.}
 
-\item{conditional_correction}{Determines whether drift correction should be applied to all features unconditionally (\code{TRUE}) or
-only when the difference of sample CV before vs after smoothing is below the threshold specified by \code{cv_diff_threshold}.}
+\item{conditional_correction}{Determines whether drift correction is applied to all features unconditionally (\code{FALSE}, the default) or,
+when \code{TRUE}, only to features whose difference of sample CV before vs after smoothing is below the threshold specified by \code{cv_diff_threshold}.}
 
-\item{cv_diff_threshold}{This parameter defines the maximum allowable change (difference) in the coefficient of variation (CV) ratio of samples before and after smoothing for the correction to be applied.
+\item{cv_diff_threshold}{This parameter defines the maximum allowable change (difference) in the coefficient of variation (CV) of samples before and after smoothing for the correction to be applied.
 A value of 0 (the default) requires the CV to improve, while a value above 0 allows the CV to also become worse by a maximum of the defined difference.}
 
 \item{recalc_trend_after}{Logical. Recalculate trends post-smoothing for
@@ -106,15 +106,15 @@ available for plotting. For further details, refer to the description
 of \code{\link[=plot_runscatter]{plot_runscatter()}}. This will double the processing time.
 
 \strong{Note}: The function outputs a message indicating the median CV change
-and the mean absolute CV before and after correction for all samples.
+and the median absolute CV before and after correction for all samples.
 However, these metrics are experimental and should not be used as
 definitive criteria for correction (see Details below).
 }
 \details{
 In the output message, the median CV change is computed as the median of CV changes for all
 features in global correction or for
-features where the correction passed the defined CV difference treshold in
-case of conditional correction  (\code{conditional_correction = FALSE}).
+features where the correction passed the defined CV difference threshold in
+case of conditional correction  (\code{conditional_correction = TRUE}).
 For batch-wise correction, the change is calculated per batch, with the final median CV
 change being the median of these batch medians across features.
 }

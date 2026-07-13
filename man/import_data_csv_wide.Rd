@@ -21,7 +21,8 @@ import_data_csv_wide(
 provided, all \code{.csv} files within it will be read.}
 
 \item{variable_name}{A character string specifying the variable type contained in the
-data. Must be one of \code{"intensity"}, \code{"norm_intensity"}, \code{"conc"}, \code{"area"}, \code{"height"}, or \code{"response"}.}
+data. Must be one of \code{"area"}, \code{"height"}, \code{"intensity"}, \code{"norm_intensity"},
+\code{"response"}, \code{"conc"}, \code{"conc_raw"}, \code{"rt"}, or \code{"fwhm"}.}
 
 \item{analysis_id_col}{The column name or index to be used as \code{analysis_id}. Defaults to \code{NA},
 in which case \code{"analysis_id"} is used if present; otherwise, the first column is used if it contains unique values.}
@@ -39,14 +40,15 @@ A \code{MRMhubExperiment} object containing the imported dataset.
 }
 \description{
 Imports analysis result data from wide-format \code{.csv} files, where each row corresponds
-to a unique analysis-feature pair and columns contain analysis- or feature-specific variables.
+to a single analysis and each feature is stored in its own column. All feature columns
+hold the same variable type, given by \code{variable_name}.
 }
 \details{
-The dataset must include two identifier columns: \code{"analysis_id"} and \code{"feature_id"},
-with each pair of values unique across the table. Additionally, the table must contain
-at least one feature variable column, such as \code{"area"}, \code{"height"}, \code{"intensity"},
-\code{"norm_intensity"}, \code{"response"}, \code{"conc"}, \code{"rt"}, or \code{"fwhm"}. Some downstream
-functions may require specific columns among these to be present.
+Each row must be identified by an \code{"analysis_id"} column (or, if absent, the first
+column, provided it holds unique values). Every feature is stored in a separate column;
+the feature columns all contain the single variable type specified by \code{variable_name}.
+Use \code{first_feature_column} to mark where the feature columns begin so that leading
+metadata columns are not mistaken for features.
 
 The \code{variable_name} argument specifies the data type represented in the table, which
 must be one of: \code{"area"}, \code{"height"}, \code{"intensity"}, \code{"norm_intensity"}, \code{"response"},

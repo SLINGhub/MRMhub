@@ -99,14 +99,13 @@
 #'   - `lowest_cal`: The lowest nonzero calibration concentration.
 #'   - `highest_cal`: The highest calibration concentration.
 #'   - `r.squared`: R-squared value indicating the goodness of fit.
-#'   - `coef_a`:
-#'     - For **linear fits**, this represents the slope of the regression line.
-#'     - For **quadratic fits**, this represents the coefficient of the quadratic term (`x²`).
+#'   - `coef_a`: The intercept of the regression line (both **linear** and
+#'     **quadratic** fits).
 #'   - `coef_b`:
-#'     - For **linear fits**, this represents the intercept of the regression line.
-#'     - For **quadratic fits**, this represents the coefficient of the linear term (`x`).
+#'     - For **linear fits**, the slope of the regression line.
+#'     - For **quadratic fits**, the coefficient of the linear term (`x`).
 #'   - `coef_c`:
-#'     - Only present for **quadratic fits**, representing the intercept of the regression equation.
+#'     - For **quadratic fits**, the coefficient of the quadratic term (`x²`).
 #'     - Set to `NA` for linear fits.
 #'   - `sigma`: The residual standard error of the regression model.
 #'   - `reg_failed`: Boolean flag indicating if regression fitting failed.
@@ -129,8 +128,9 @@
 #' are included if the required data is available. If `TRUE`, they are always
 #' calculated, raising an error if data is missing.
 
-#' @param include_calibration_results Logical, whether to incorporate external
-#'   calibration results into the QC metrics table if available. Default is TRUE.
+#' @param include_calibration_results Logical. If `NA` (default), external
+#'   calibration results are incorporated into the QC metrics table if available.
+#'   If `TRUE`, they are always incorporated.
 #'
 #' @return A `MRMhubExperiment` object with an updated `metrics_qc` table
 #'   containing computed QC metrics for each feature.
@@ -759,12 +759,12 @@ calc_qc_metrics <- function(
 #' @param max.yintercept.response Maximum y-intercept of the response curve. Default is `NA`.
 #' @param max.dratio.sd.conc.bqc Maximum allowed D-ratio (SD of BQC / SD of SPL) using standard deviation for BQC samples. Default is `NA`.
 #' @param max.dratio.sd.conc.tqc Maximum allowed D-ratio (SD of TQC / SD of SPL) using standard deviation for TQC samples. Default is `NA`.
-#' @param max.dratio.mad.conc.bqc Maximum allowed D-ratio (MAD of BQC / MAD of SPL) using mean absolute deviation for BQC samples. Default is `NA`.
-#' @param max.dratio.mad.conc.tqc Maximum allowed D-ratio (MAD of TQC / MAD of SPL) using mean absolute deviation for TQC samples. Default is `NA`.
+#' @param max.dratio.mad.conc.bqc Maximum allowed D-ratio (MAD of BQC / MAD of SPL) using median absolute deviation for BQC samples. Default is `NA`.
+#' @param max.dratio.mad.conc.tqc Maximum allowed D-ratio (MAD of TQC / MAD of SPL) using median absolute deviation for TQC samples. Default is `NA`.
 #' @param max.dratio.sd.normint.bqc Maximum allowed D-ratio (SD of normalized intensity in BQC / SD of SPL) using standard deviation. Default is `NA`.
 #' @param max.dratio.sd.normint.tqc Maximum allowed D-ratio (SD of normalized intensity in TQC / SD of SPL) using standard deviation. Default is `NA`.
-#' @param max.dratio.mad.normint.bqc Maximum allowed D-ratio (MAD of normalized intensity in BQC / MAD of SPL) using mean absolute deviation. Default is `NA`.
-#' @param max.dratio.mad.normint.tqc Maximum allowed D-ratio (MAD of normalized intensity in TQC / MAD of SPL) using mean absolute deviation. Default is `NA`.
+#' @param max.dratio.mad.normint.bqc Maximum allowed D-ratio (MAD of normalized intensity in BQC / MAD of SPL) using median absolute deviation. Default is `NA`.
+#' @param max.dratio.mad.normint.tqc Maximum allowed D-ratio (MAD of normalized intensity in TQC / MAD of SPL) using median absolute deviation. Default is `NA`.
 #'
 #' @return The input MRMhubExperiment object with the feature filtering criteria applied.
 

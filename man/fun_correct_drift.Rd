@@ -38,10 +38,10 @@ Function needs to return a numerical vector with the length of number of rows in
 
 \item{log_transform_internal}{Apply log transformation internally for smoothing if \code{TRUE} (default). This enhances robustness against outliers but does not affect the final data, which remains untransformed.}
 
-\item{conditional_correction}{Determines whether drift correction should be applied to all features unconditionally (\code{TRUE}) or
-only when the difference of sample CV before vs after smoothing is below the threshold specified by \code{cv_diff_threshold}.}
+\item{conditional_correction}{Determines whether drift correction is applied to all features unconditionally (\code{FALSE}, the default) or,
+when \code{TRUE}, only to features whose difference of sample CV before vs after smoothing is below the threshold specified by \code{cv_diff_threshold}.}
 
-\item{cv_diff_threshold}{This parameter defines the maximum allowable change (difference) in the coefficient of variation (CV) ratio of samples before and after smoothing for the correction to be applied.
+\item{cv_diff_threshold}{This parameter defines the maximum allowable change (difference) in the coefficient of variation (CV) of samples before and after smoothing for the correction to be applied.
 A value of 0 (the default) requires the CV to improve, while a value above 0 allows the CV to also become worse by a maximum of the defined difference.}
 
 \item{use_original_if_fail}{Determines the action when smoothing fails or results in invalid values for a feature. If TRUE (default), the original data is used; if FALSE, the result for each analysis is NA.}

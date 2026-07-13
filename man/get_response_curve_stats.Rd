@@ -17,7 +17,7 @@ get_response_curve_stats(
 \item{with_staturation_stats}{Logical, if TRUE, include additional statistics from the \code{lancer} package.
 Note: The \code{lancer} package must be installed when this argument is set to TRUE.}
 
-\item{limit_to_rqc}{Logical, if TRUE (default), only include rows with \code{qc_type == "RQC"}.}
+\item{limit_to_rqc}{Logical, if \code{TRUE}, only include rows with \code{qc_type == "RQC"}. Default is \code{FALSE}.}
 
 \item{silent_invalid_data}{Logical, if TRUE suppresses raising an error when
 required data or metadata are missing, or there is a mismatch between them.}
@@ -28,6 +28,9 @@ or \code{NULL} if no data matches the criteria.
 }
 \description{
 This function calculates linear regression statistics (R-squared, slope, and intercept)
-for each response curve in the provided \code{MRMhubExperiment} object. Optionally, it can include
+for each response curve in the provided \code{MRMhubExperiment} object. Before fitting, the
+analyzed sample amount (\code{x}) and feature intensity (\code{y}) of each curve are each scaled to their
+maximum (set to 1), so the returned \code{slopenorm} and \code{y0norm} are on this normalized scale.
+Optionally, it can include
 additional statistics from the \code{lancer} package (if installed) when \code{with_staturation_stats} is set to TRUE.
 }

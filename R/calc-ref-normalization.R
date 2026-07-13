@@ -27,10 +27,10 @@
 #'    - Known analyte concentrations must be defined in the `QC concentration` metadata for the for the reference sample
 #'    - An error will be raised  if no concentrations are defined for any features
 #'
-#'    Missing analyte concentrations for the reference sample can be handed via `undefined_conc_handling` with following options:
+#'    Missing analyte concentrations for the reference sample can be handled via `undefined_conc_action` with following options:
 #'    - `original`: Keep original feature values, i.e. the non-calibrated values will be returned. *Note*: this is only available when `variable = conc`. Use with caution to avoid mixing units.
 #'    - `na`: Set affected features values to `NA`
-#'    - `error` (default): The function stops with error in case of any undefined reference sample feature concentration.
+#'    - `error`: The function stops with error in case of any undefined reference sample feature concentration.
 #'    - In case all feature concentrations are undefined, the function will stop with an error.
 #'
 #'    The re-calibrated feature concentrations are stored as `conc`, overwriting existing `conc` values.
@@ -74,15 +74,13 @@
 #' @param batch_wise Logical indicating whether to perform calibration for each batch seperately (TRUE) or for all samples together (FALSE).
 #' @param store_conc_ratio Logical. Whether to store the ratio of measured
 #' (non-calibrated) compared to the expected (known) concentrations. Only applied if `absolute_calibration = TRUE`.
-#' This ratio is stored under the feature variable `feature_conc_ratio`. By default it is `TRUE` when `variable = 'conc', otherwise `FALSE`.
+#' This ratio is stored under the feature variable `feature_conc_ratio`. By default it is `TRUE` when `variable = 'conc'`, otherwise `FALSE`.
 #' @param summarize_fun Either "mean" or "median". If `absolute_calibration = TRUE`,
 #' this function is used to summarize the reference sample concentrations across analyses of specified `reference_sample_id`. Default is "mean".
 #' @param undefined_conc_action Character string specifying how to handle features
 #'   without defined concentrations in reference samples when `absolute_calibration = TRUE`.
-#'   Must be one of: "original" (keep original values), "na" (set to NA), or "error". Default is "keep".
-
-#'
-#' Default is `TRUE`.
+#'   Must be one of `"original"` (keep original values), `"na"` (set to `NA`), or
+#'   `"error"`. Required when `absolute_calibration = TRUE` (no default).
 #' @param store_normalized Logical indicating whether to keep the normalized values in the dataset
 #' when `absolute_calibration = TRUE`. Default is FALSE. These values are then stored
 #' as `[VARIABLE]_normalized`, where `[VARIABLE]` is the input variable, e.g., `conc`.

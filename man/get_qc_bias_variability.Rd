@@ -39,7 +39,7 @@ If \code{"samples"}, the output is in wide format with samples as columns.}
 
 \item{with_bias_abs}{Logical. If \code{TRUE}, includes absolute bias in concentration units in the results. Defaults to \code{FALSE}.}
 
-\item{with_conc_ratio}{Logical. If \code{TRUE}, includes the ratio of measured to target concentration in the results. Defaults to \code{TRUE}.}
+\item{with_conc_ratio}{Logical. If \code{TRUE}, includes the ratio of measured to target concentration in the results. Defaults to \code{FALSE}.}
 
 \item{with_cv_intra}{Logical. If \code{TRUE}, includes intra-assay coefficient of variation (CV) for the in the results. Defaults to \code{TRUE}.}
 }
