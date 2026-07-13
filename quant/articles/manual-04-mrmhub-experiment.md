@@ -61,7 +61,7 @@ myexp <- normalize_by_istd(myexp)
 #> ✔ 20 features normalized with 9 ISTDs in 499 analyses.
 
 save_dataset_csv(myexp, tempfile(fileext = ".csv"), "norm_intensity", FALSE)
-#> ✔ Norm_intensity values for 499 analyses and 20 features have been exported to '/tmp/Rtmp6Q6nJK/file289536de7cd.csv'.
+#> ✔ Norm_intensity values for 499 analyses and 20 features have been exported to '/tmp/RtmpSlHgOb/file284e48dc6cb9.csv'.
 ```
 
 R pipes allow chaining multiple functions together, making the
