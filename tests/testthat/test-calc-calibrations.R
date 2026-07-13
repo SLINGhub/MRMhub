@@ -378,7 +378,6 @@ test_that("get_calibration_metrics returns correct data", {
     mexp_quant_norm,
     with_lod = FALSE,
     with_loq = FALSE,
-    with_bias = FALSE,
     with_coefficients = FALSE,
     with_sigma = FALSE
   )

@@ -841,7 +841,6 @@ get_qc_bias_variability <- function(
 #' @param data A `MRMhubExperiment` object with QC metrics.
 #' @param with_lod Whether to include LoD in output. Default is `TRUE`.
 #' @param with_loq Whether to include LoQ in output. Default is `TRUE`.
-#' @param with_bias Whether to include bias in output. Default is `TRUE`.
 #' @param with_coefficients Whether to include regression coefficients. Default is `TRUE`.
 #' @param with_sigma Whether to include sigma in output. Default is `TRUE`.
 #' @return A tibble with exported calibration metrics.
@@ -851,7 +850,6 @@ get_calibration_metrics <- function(
   data = NULL,
   with_lod = TRUE,
   with_loq = TRUE,
-  with_bias = TRUE,
   with_coefficients = TRUE,
   with_sigma = TRUE
 ) {
