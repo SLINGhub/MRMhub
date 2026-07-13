@@ -958,7 +958,7 @@ html[data-theme="dark"] .sling-link img {
 }
 
 .visualizer-workspace {
-  width: min(1920px, calc(100% - 32px));
+  width: calc(100% - 32px);
   min-height: calc(100vh - 120px);
   overflow: visible;
 }
@@ -1490,6 +1490,7 @@ html[data-theme="dark"] .sling-link img {
   gap: 10px;
   align-items: flex-start;
   justify-content: flex-start;
+  width: 100%;
   margin-top: 12px;
   flex-wrap: wrap;
   overflow: visible;
@@ -1836,8 +1837,8 @@ footer a:hover {
   display: grid;
   grid-template-columns: 230px minmax(0, 1fr);
   gap: 16px;
-  width: min(1180px, calc(100vw - 44px));
-  height: min(760px, calc(100vh - 44px));
+  width: calc(100vw - 28px);
+  height: min(760px, calc(100vh - 72px));
   padding: 16px;
   border: 1px solid rgba(255, 255, 255, 0.7);
   border-radius: 22px;
@@ -1980,6 +1981,8 @@ footer a:hover {
 .data-editor-body {
   min-height: 0;
   overflow: auto;
+  overflow-x: scroll;
+  scrollbar-gutter: stable both-edges;
   border: 1px solid var(--line);
   border-radius: 14px;
   background: var(--surface);
