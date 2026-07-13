@@ -1276,7 +1276,6 @@ correct_drift_gaussiankernel <- function(
 #' @param cv_diff_threshold This parameter defines the maximum allowable change (difference) in the coefficient of variation (CV) of samples before and after smoothing for the correction to be applied.
 #' A value of 0 (the default) requires the CV to improve, while a value above 0 allows the CV to also become worse by a maximum of the defined difference.
 #' @param feature_list Subset the features for correction whose names matches the specified text using regular expression. Default is `NULL` which means all features are selected.
-#' @param ignore_istd Do not apply corrections to ISTDs
 #' @param use_original_if_fail Determines the action when smoothing fails or results in invalid values for a feature. If `FALSE` (default), the result for each feature will `NA` for all batches, if `TRUE`, the original data is kept.
 #' @param show_progress Logical. Display progress bars if `TRUE`; disable for notebook rendering by setting to `FALSE`.
 #' @return MRMhubExperiment object
