@@ -117,8 +117,8 @@ quantify_by_calibration <- function(
     mutate(
       feature_conc = case_when(
         fit_model != "quadratic" ~
-          (.data$feature_norm_intensity - .data$coef_b_cal_1) /
-          .data$coef_a_cal_1,
+          (.data$feature_norm_intensity - .data$coef_a_cal_1) /
+          .data$coef_b_cal_1,
         TRUE ~
           purrr::pmap_dbl(
             list(

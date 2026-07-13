@@ -106,7 +106,10 @@ test_that("quantify_by_calibration works", {
   )
 
   res <- mexp_res@dataset |> filter(analysis_id == "CalE", !is_istd)
-  expect_equal(mean(res$feature_conc, na.rm = TRUE), 42.191117)
+  # Mean over quantifier + qualifier features; qualifiers here use linear fits,
+  # so the linear back-calculation (feature_conc = (norm_int - intercept)/slope)
+  # feeds into this value.
+  expect_equal(mean(res$feature_conc, na.rm = TRUE), 101.4036661)
 
   # below is the original conc from Corticosterone CAL-E as r2 = 1
   expect_equal(res$feature_conc[1], 42.2)
@@ -127,6 +130,43 @@ test_that("quantify_by_calibration works", {
 
   res <- mexp_res@dataset |> filter(analysis_id == "CalE", !is_istd)
   expect_equal(mean(res$feature_conc, na.rm = TRUE), 101.4981448)
+})
+
+test_that("quantify_by_calibration linear back-calculation recovers known concentrations", {
+  # Force an all-linear fit so the linear back-calc branch is exercised. This is a
+  # truth-based guard against a slope/intercept swap in the back-calculation, which
+  # produced negative concentrations for a well-fitting linear calibration.
+  mexp_lin <- quantify_by_calibration(
+    mexp_norm,
+    fit_overwrite = TRUE,
+    include_qualifier = TRUE,
+    fit_model = "linear",
+    fit_weighting = "none",
+    ignore_missing_annotation = TRUE,
+    ignore_failed_calibration = TRUE
+  )
+
+  # A well-fitting linear feature: back-calculating the calibration samples must
+  # recover their known nominal concentrations.
+  rec <- mexp_lin@dataset |>
+    filter(
+      feature_id == "Cortisol [QUAL 363.2 -> 97.1]",
+      qc_type == "CAL",
+      !is_istd
+    ) |>
+    inner_join(
+      mexp_lin@annot_qcconcentrations,
+      by = c("sample_id", "analyte_id")
+    ) |>
+    filter(concentration > 0) |>
+    arrange(desc(concentration))
+
+  nominal <- rec$concentration
+  recovered <- rec$feature_conc
+
+  expect_gt(min(recovered), 0) # never negative (the swap bug)
+  expect_gt(cor(nominal, recovered), 0.99) # tracks the calibration line
+  expect_equal(recovered[1], nominal[1], tolerance = 0.05) # top point within 5%
 })
 
 test_that("quantify_by_calibration handles errors", {
