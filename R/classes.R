@@ -1,4 +1,4 @@
-#' S4 Class Representing the MRMhub Dataset
+#' S4 class representing the MRMhub dataset
 #'
 #' @description
 #'
@@ -107,7 +107,7 @@ setClass(
 )
 
 
-#' Constructor for the MRMhubExperiment object.
+#' Constructor for the MRMhubExperiment object
 #' @importFrom methods new
 #' @param title Title of experiment
 #' @param analysis_type Analysis type, one of "lipidomics", "metabolomics", "externalcalib", "others"
@@ -220,7 +220,7 @@ get_status_flag <- function(x) {
 }
 
 
-#' Access Slots of a MRMhubExperiment Object via $ Syntax
+#' Access slots of a MRMhubExperiment object via $ syntax
 #'
 #' $ syntax can be used to as a shortcut for getting specific variables and results from a MRMhubExperiment object
 #' @return Value with a variable or a tibble

@@ -1,4 +1,4 @@
-#' RunScatter Plot
+#' RunScatter plot
 #'
 #' @description
 #' The `runscatter` function visualizes raw or processed feature signals across

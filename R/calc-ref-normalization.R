@@ -1,4 +1,4 @@
-#' @title Calibrate Features Values Using Reference Sample
+#' Calibrate feature values using a reference sample
 #'
 #' @description
 #' This function calibrates feature abundances based on a specified reference sample.

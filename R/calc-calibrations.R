@@ -617,7 +617,7 @@ calc_calibration_results <- function(
 }
 
 
-#' Retrieve Calibration Regression Results
+#' Retrieve calibration regression results
 #'
 #' This function retrieves calibration curve regression results from a `MRMhubExperiment` object.
 #' It returns a summary of quality control (QC) metrics for specified QC samples.
@@ -809,7 +809,7 @@ get_qc_bias_variability <- function(
   }
 }
 
-#' Get Calibration Metrics
+#' Get calibration metrics
 #'
 #' Extracts calibration fit metrics from a `MRMhubExperiment` object.
 #'

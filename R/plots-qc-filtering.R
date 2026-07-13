@@ -1,4 +1,4 @@
-#' Plot QC Filtering Summary by Feature Class
+#' Plot QC filtering summary by feature class
 #'
 #' This function provides a summary of feature QC filtering based on feature class,
 #' showing the number of features that passed or failed various quality control criteria.
@@ -254,7 +254,7 @@ plot_qc_summary_byclass <- function(data = NULL, font_base_size = 8) {
 }
 
 
-#' Plot Overall QC Filtering Summary
+#' Plot overall QC filtering summary
 #'
 #' This function generates a summary of the feature QC filtering process, visualizing the number of features that passed or failed the various QC criteria.
 #' It includes a Venn diagram showing the features excluded due to different filtering criteria such as signal-to-blank ratios, CV thresholds, and linearity.

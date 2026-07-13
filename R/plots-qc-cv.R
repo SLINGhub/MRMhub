@@ -1,4 +1,4 @@
-#' Compare Feature Variability Before and After Normalization
+#' Compare feature variability before and after normalization
 #'
 #' @description
 #' Evaluates the effectiveness of normalization by comparing feature variability

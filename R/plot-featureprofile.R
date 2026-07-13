@@ -1,4 +1,4 @@
-#' Plot Abundance Profile
+#' Plot abundance profile
 #'
 #' Creates a profile plot showing the abundance distribution of features across different classes.
 #'

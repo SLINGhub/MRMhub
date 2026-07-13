@@ -179,7 +179,7 @@ add_missing_column <- function(
   }
 }
 
-#' Get Concentration Unit Based on Sample Amount Unit
+#' Get concentration unit based on sample amount unit
 #' internall analyte amount is pmol, thus when sample amount unit is uL,
 #' pmol/uL equal to umol/L
 #'
@@ -217,7 +217,7 @@ get_conc_unit <- function(sample_amount_unit, analyte_amount_unit) {
   unique(conc_unit)
 }
 
-#' Reorder Data Frame based on a chain of linked values in two columns.
+#' Reorder a data frame based on a chain of linked values in two columns
 #'
 #' This function orders rows of a data frame based on chained relationships defined by two columns.
 #' It can also handle fully disconnected rows (i.e., rows where both `From` and `To` values

@@ -1,4 +1,4 @@
-#' Linear Regression Statistics of Response Curves
+#' Linear regression statistics of response curves
 #'
 #' This function calculates linear regression statistics (R-squared, slope, and intercept)
 #' for each response curve in the provided `MRMhubExperiment` object. Before fitting, the

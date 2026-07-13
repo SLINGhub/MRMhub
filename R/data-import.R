@@ -1,4 +1,4 @@
-#' @title Import Agilent MassHunter Quantitative Analysis CSV files
+#' Import Agilent MassHunter Quantitative Analysis CSV files
 #' @description Imports .csv files exported from Agilent MassHunter Quantitative
 #' Analysis software, containing peak integration results. The input files must
 #' have anlyses (samples) in rows, features/compounds in columns, and either
@@ -76,7 +76,7 @@ import_data_masshunter <- function(
   data
 }
 
-#' @title Import Skyline Peak Integration Results
+#' Import Skyline peak integration results
 #'
 #' @description
 #' This function imports tabular data files (*.csv) exported from `Skyline`,
@@ -169,7 +169,7 @@ import_data_skyline <- function(
 }
 
 
-#' @title Import MRMhub peak integration results
+#' Import MRMhub peak integration results
 #' @description
 #' Imports tabular data files (*.tsv) generated from `MRMhub` containing peak
 #' integration results. The input files must be in a long format with columns
@@ -230,7 +230,7 @@ import_data_mrmhub <- function(
   data
 }
 
-#' (Depreciated) Import Wide CSV Files
+#' (Deprecated) Import wide CSV files
 #' @details
 #' This function is deprecated. Please use [import_data_csv_wide()] instead.
 
@@ -283,7 +283,7 @@ import_data_csv <- function(
   )
 }
 
-#' Import Analysis Results from Plain Wide-Format CSV Files
+#' Import analysis results from plain wide-format CSV files
 #'
 #' @description
 #' Imports analysis result data from wide-format `.csv` files, where each row corresponds
@@ -395,7 +395,7 @@ import_data_csv_wide <- function(
   data
 }
 
-#' Import Analysis Results from Long Format CSV Files
+#' Import analysis results from long-format CSV files
 #'
 #' @description
 #' This function imports analysis results from CSV files in long table format,

@@ -1,4 +1,4 @@
-#' Plasma Lipidomics Dataset with Metadata
+#' Plasma lipidomics dataset with metadata
 #'
 #' This demo dataset is included for use in function examples and user testing..
 #' It is a small, preprocessed subset of a plasma lipidomics dataset,
@@ -17,7 +17,7 @@
 #' }
 "lipidomics_dataset"
 
-#' LC-MS Dataset with External Calibration Curve and Metadata
+#' LC-MS dataset with external calibration curve and metadata
 #'
 #' This demo dataset is included for use in function examples and user testing.
 #' It is a subset of an LC-MS analysis of plasma steroids, containing an external

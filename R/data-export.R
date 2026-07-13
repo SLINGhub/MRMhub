@@ -1,4 +1,4 @@
-#' Write Data Processing Report (EXCEL)
+#' Write a data-processing report (Excel)
 #'
 #' Generates a data processing report from a `MRMhubExperiment` object and writes it to an Excel file.
 #' The report includes information on the data processing steps, quality control metrics, feature concentrations, and metadata.
@@ -457,7 +457,7 @@ save_report_xlsx <- function(
 }
 
 
-#' Export Data to CSV file
+#' Export data to a CSV file
 #'
 #' This function exports specific unprocessed or pr ocessed feature variable
 #' (e.g. intensities or concentrations) from a `MRMhubExperiment` object to a CSV file.
@@ -594,7 +594,7 @@ save_dataset_csv <- function(
   )))
 }
 
-#' Save Feature QC Metrics to CSV
+#' Save feature QC metrics to CSV
 #'
 #' This function exports the feature information and QC (Quality Control) metrics
 #' from a MRMhubExperiment object to a CSV file.

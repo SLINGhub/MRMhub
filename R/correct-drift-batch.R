@@ -1,4 +1,4 @@
-#' Gaussian Kernel smoothing helper function
+#' Gaussian kernel smoothing helper function
 #' @description
 #' Function for Gaussian kernel-based smoothing, for use by `fun_correct_drift`.
 #' @author Hyung Won Choi
@@ -295,7 +295,7 @@ fun_cspline <- function(tbl, ref_qc_types, log_transform_internal, ...) {
 }
 
 
-#' Generalized Additive Model (GAM) smoothing helper function
+#' Generalized additive model (GAM) smoothing helper function
 #' @description
 #' Function for penalized spline-based smoothing using GAM, for use by `fun_correct_drift`
 #' @param tbl Table (`tibble` or `data.frame`) containing the fields `qc_type`, `x` (run order number), and `y` (variable)
@@ -381,7 +381,7 @@ fun_gam_smooth <- function(
 }
 
 
-#' Drift Correction by Custom Function
+#' Drift correction by custom function
 #' @description
 #' Function to correct for run-order drifts within or across batches via a provided custom function
 #' #' @details
@@ -1060,7 +1060,7 @@ fun_correct_drift <- function(
   data
 }
 
-#' Drift Correction by Gaussian Kernel Smoothing
+#' Drift correction by Gaussian kernel smoothing
 #'
 #' @description
 #' Performs drift correction for run-order effects within or across batches
@@ -1201,7 +1201,7 @@ correct_drift_gaussiankernel <- function(
   )
 }
 
-#' Drift Correction by LOESS Smoothing
+#' Drift correction by LOESS smoothing
 #' @description
 #' This function corrects for run-order drifts within or across batches using
 #' LOESS (Locally Estimated Scatterplot Smoothing). The correction is typically
@@ -1331,7 +1331,7 @@ correct_drift_loess <- function(
   )
 }
 
-#' Drift Correction by Cubic Spline Smoothing
+#' Drift correction by cubic spline smoothing
 #' @description
 #' This function corrects for run-order drifts within or across batches using
 #' cubic spline smoothing. The correction is typically based on QC (Quality
@@ -1471,7 +1471,7 @@ correct_drift_cubicspline <- function(
   )
 }
 
-#' Drift Correction by Generalized Additive Model (GAM) Smoothing
+#' Drift correction by generalized additive model (GAM) smoothing
 #' @description
 #' This function corrects for run-order drifts within or across batches using
 #' Generalized Additive Models (GAMs). The correction uses penalized splines,
@@ -1586,7 +1586,7 @@ correct_drift_gam <- function(
 }
 
 
-#' Batch Centering Correction
+#' Batch centering correction
 #' @description
 #' This function performs batch centering correction on each feature.
 #' Optionally, the scale of the batches can be equalized across batches.

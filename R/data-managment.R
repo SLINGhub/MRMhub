@@ -7,7 +7,7 @@ check_dataset_present <- function(data) {
 }
 
 
-#' Retrieve and Subset/Filter Dataset
+#' Retrieve and subset/filter the dataset
 #'
 #' Filters and subsets the dataset in a `MRMhubExperiment` object based on
 #' specified criteria.
@@ -173,7 +173,7 @@ get_dataset_subset <- function(
 }
 
 
-#' @title Get the annotated or the originally imported analytical data
+#' Get the annotated or the originally imported analytical data
 #' @param data MRMhubExperiment object
 #' @param annotated Boolean indicating whether to return the annotated data
 #' (`FALSE`) or the original imported data (`TRUE`)
@@ -507,7 +507,7 @@ check_var_in_dataset <- function(table, variable) {
   }
 }
 
-#' @title Get the start and end analysis numbers of specified batches
+#' Get the start and end analysis numbers of specified batches
 #' @description
 #' Sets the analysis order (sequence) based on either (i) analysis timestamp, if available, (ii) the order in which analysis appeared in the imported raw data file, or (iii) the order in which analyses were defined in the Analysis metadata.
 #' @param data MRMhubExperiment object
@@ -577,7 +577,7 @@ get_batch_boundaries <- function(data = NULL, batch_indices = NULL) {
 }
 
 
-#' @title Set the analysis order
+#' Set the analysis order
 #' @description
 #' Sets the analysis order (sequence), based on either (i) analysis timestamp if available, (ii) the order in which analysis appeared in the imported raw data file, or (iii) the order in which analyses were defined in the Analysis metadata
 #' @param data MRMhubExperiment object
@@ -700,7 +700,7 @@ set_analysis_order_analysismetadata <- function(
   data
 }
 
-#' Set Analysis Order
+#' Set analysis order
 #' @description
 #' Determines the sequence of analyses using either instrument timestamps,
 #' the order in the imported raw data file, or the order defined in the Analysis metadata.
@@ -857,7 +857,7 @@ link_data_metadata <- function(data = NULL, minimal_info = TRUE) {
   data
 }
 
-#' @title Set default variable to be used as feature raw signal value
+#' Set default variable to be used as feature raw signal value
 #' @description
 #' Sets the raw signal variable used for calculations starting from raw signal
 #' values (i.e., normalization) Note that this set variable must be part of the
@@ -955,7 +955,7 @@ set_intensity_var <- function(
 }
 
 
-#' @title Exclude analyses from the dataset
+#' Exclude analyses from the dataset
 #'
 #' @description
 #' This function excludes specified analyses from a `MRMhubExperiment` object, either by
@@ -1024,7 +1024,7 @@ exclude_analyses <- function(data = NULL, analyses, clear_existing) {
 }
 
 
-#' @title Exclude features from the dataset
+#' Exclude features from the dataset
 #'
 #' @description
 #' This function excludes specified features from a `MRMhubExperiment` object, either by

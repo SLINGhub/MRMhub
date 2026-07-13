@@ -1,4 +1,4 @@
-#' Generate Correlation Matrix in Long Format
+#' Generate correlation matrix in long format
 #'
 #' @description
 #' Creates a correlation matrix and transforms it to long format, filtering by correlation thresholds.
@@ -30,7 +30,7 @@ get_feature_correlations <- function(tbl, cor_min_neg, cor_min) {
     dplyr::filter(.data$value <= cor_min_neg | .data$value >= cor_min)
 }
 
-#' Plot Highly Correlated Feature Pairs
+#' Plot highly correlated feature pairs
 #'
 #' @description
 #' Creates scatter plots for pairs of features that have correlations outside specified thresholds.

@@ -1,4 +1,4 @@
-#' Calculate Quality Control (QC) Metrics for Features
+#' Calculate quality control (QC) metrics for features
 #'
 #' @description
 #' Computes various quality control (QC) metrics for each feature in a
@@ -702,7 +702,7 @@ calc_qc_metrics <- function(
 }
 
 
-#' Feature Filtering Based on QC Criteria
+#' Feature filtering based on QC criteria
 #'
 #' @description
 #' Filters a dataset based on quality control (QC) criteria, including intensity,

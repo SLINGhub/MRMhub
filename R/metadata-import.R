@@ -1,4 +1,4 @@
-#' @title Retrieve Metadata from Imported Analysis Data
+#' Retrieve metadata from imported analysis data
 #' @description Retrieves available metadata from the imported analysis data and
 #'   associates it with the provided MRMhubExperiment object.
 #' @param data A `MRMhubExperiment` object
@@ -93,7 +93,7 @@ get_metadata_batches <- function(annot_analyses) {
 }
 
 
-#' @title Import Metadata from a MRMhub Metadata Organizer file
+#' Import metadata from a MRMhub Metadata Organizer file
 #' @description Imports metadata from a 'MRMhub Metadata Organizer' file (.xlsx) file and associates it with analysis data.
 #' @param data A `MRMhubExperiment` object
 #' @param path File name and path of the 'MRMhub Metadata Organizer' file (.xlsx) file
@@ -142,7 +142,7 @@ import_metadata_msorganiser <- function(
   data
 }
 
-#' @title Import analysis metadata
+#' Import analysis metadata
 #' @description Imports analysis metadata (annotation) from a preloaded data frame or tibble via the `data` argument, or from data from a file (CSV or Excel) via the `path` argument.
 #' The analysis metadata must contain following columns: `analysis_id` and `qc_type`. Additional analysis metadata columns are described under details below.
 #' @param data A `MRMhubExperiment` object
@@ -197,7 +197,7 @@ import_metadata_analyses <- function(
   data
 }
 
-#' @title Import feature metadata
+#' Import feature metadata
 #' @description Imports analysis metadata (annotation) from a preloaded data frame or tibble via the `data` argument,  or from data from a file (CSV or Excel) via the `path` argument.
 #' The analysis metadata must contain following columns: `analysis_id` and `qc_type`. Additional analysis metadata columns are described under details below.
 #' @param data A `MRMhubExperiment` object
@@ -235,7 +235,7 @@ import_metadata_features <- function(
 }
 
 
-#' @title Import Internal Standards (ISTD) metadata
+#' Import internal standards (ISTD) metadata
 #' @description Imports ISTD metadata (annotation) from a preloaded data frame or tibble via the `data` argument, or from data from a file (CSV or Excel) via the `path` argument.
 #' The analysis metadata must contain following columns: `istd_feature_id` and one of `istd_conc_nmolar` or `istd_conc_ngml`.
 #' @param data A `MRMhubExperiment` object
@@ -269,7 +269,7 @@ import_metadata_istds <- function(
 }
 
 
-#' @title Import response curves metadata
+#' Import response curves metadata
 #' @description Imports response curve metadata (annotation) from a preloaded data frame or tibble via the `data` argument, or from data from a file (CSV or Excel) via the `path` argument.
 #' The analysis metadata must contain following columns: `analysis_id`, `curve_id`, `analyzed_amount` and `analyzed_amount_unit`.
 #' @param data A `MRMhubExperiment` object
@@ -301,7 +301,7 @@ import_metadata_responsecurves <- function(
   data
 }
 
-#' @title Import calibration curves metadata
+#' Import calibration curves metadata
 #' @description Imports calibration curve metadata (annotation) from a preloaded data frame or tibble via the `data` argument, or from data from a file (CSV or Excel) via the `path` argument.
 #' The analysis metadata must contain following columns: `analysis_id`, `curve_id`, `feature_id`, `concentration`, and `concentration_unit`.
 #' @param data A `MRMhubExperiment` object
@@ -523,7 +523,7 @@ print_assertion_summary <- function(
 }
 
 
-#' @title Add metadata an MRMhubExperiment object
+#' Add metadata to an MRMhubExperiment object
 #' @description Metadata provided as a list of tibbles will validates for consistency again loaded analysis data of the provided MRMhubExperiment object and then transfered.
 #' @param data MRMhubExperiment object
 #' @param metadata List of tibbles or data.frames containing analysis, feature, istd, response curve tables
@@ -1062,7 +1062,7 @@ assert_metadata <- function(
 }
 
 
-#' @title Add metadata an MRMhubExperiment object
+#' Add metadata to an MRMhubExperiment object
 #' @description Metadata provided as a list of tibbles will validates for consistency again loaded analysis data of the provided MRMhubExperiment object and then transfered.
 #' @param data MRMhubExperiment object
 #' @param metadata List of tibbles or data.frames containing analysis, feature, istd, response curve tables
@@ -1227,7 +1227,7 @@ add_metadata <- function(
 
 # stopifnot(methods::validObject(data, excl_nonannotated_analyses))
 
-#' @title Reads and parses metadata provided by the msorganiser EXCEL  template.
+#' Read and parse metadata from a msorganiser Excel template
 #' @description Requires version 1.9.1 of the template
 #' NOTES
 #' - if no sample_type is defined then SPL will be assigned

@@ -1,4 +1,4 @@
-#' Plot Calibration Curves
+#' Plot calibration curves
 #'
 #' This function plots calibration curves of each feature where defined
 #' and displays QC samples with defined concentrations within the plot.

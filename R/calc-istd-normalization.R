@@ -1,4 +1,4 @@
-#' Normalize Feature Intensities Using Internal Standards
+#' Normalize feature intensities using internal standards
 #'
 #' Normalize feature intensities by dividing them by the intensities
 #' of the corresponding internal standards (ISTDs). Each feature
@@ -139,7 +139,7 @@ normalize_by_istd <- function(data = NULL, ignore_missing_annotation = FALSE) {
 }
 
 
-#' Calculate Analyte Concentrations Using Internal Standards
+#' Calculate analyte concentrations using internal standards
 #'
 #' This function calculates analyte concentrations based on internal standard (ISTD) normalized intensities,
 #' the corresponding spiked-in ISTD amount, and the per-feature response factor

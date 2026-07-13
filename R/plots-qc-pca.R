@@ -1,4 +1,4 @@
-#' PCA Plot for Quality Control
+#' PCA plot for quality control
 #'
 #' @description Generates a Principal Component Analysis (PCA) plot for
 #' visualizing samples including quality control (QC) samples. This function

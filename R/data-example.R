@@ -1,4 +1,4 @@
-#' @title Load an example MRMhubExperiment dataset
+#' Load an example MRMhubExperiment dataset
 #' @description
 #' Load an example MRMhubExperiment dataset. Dataset 1 is a small dataset (Burla et al, 2024, see below) and Dataset 2 a larger dataset (Tan et al, 2022).See Details below.
 #'

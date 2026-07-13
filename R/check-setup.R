@@ -1,4 +1,4 @@
-#' Check MRMhub Setup
+#' Check MRMhub setup
 #'
 #' Validates that the user's R environment is correctly configured to use
 #' mrmhub. Checks R version, key dependencies, and optional packages.

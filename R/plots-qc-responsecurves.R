@@ -1,4 +1,4 @@
-#' Plot Response Curves
+#' Plot response curves
 #'
 #' This function plots response curves for each feature. Multiple response curves,
 #' each with a linear regression line, can be plotted on the same graph.

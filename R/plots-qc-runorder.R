@@ -1,4 +1,4 @@
-#' RunSequence Plot
+#' RunSequence plot
 #'
 #' @description
 #' The RunSequence plot provides an overview of the analysis design and
@@ -299,7 +299,7 @@ plot_runsequence <- function(
 }
 
 
-#' Relative Log Abundance (RLA) Plot
+#' Relative log abundance (RLA) plot
 #'
 #' @description
 #' The Relative Log Abundance (RLA) plot visualizes standardized
