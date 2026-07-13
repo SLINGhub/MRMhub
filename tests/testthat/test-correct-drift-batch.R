@@ -2155,6 +2155,50 @@ test_that("correct_batch correct var name in outputs", {
         variable = "norm_intensity",
         feature_list = c("CE 18:1", "PC 40:8")
       ),
-    "applied to raw normalized intensities of the selected 2 features", 
+    "applied to raw normalized intensities of the selected 2 features",
     fixed = TRUE)
+})
+
+test_that("correct_drift_gaussiankernel rejects log_transform_internal = FALSE", {
+  expect_error(
+    correct_drift_gaussiankernel(
+      mexp,
+      variable = "conc",
+      ref_qc_types = "BQC",
+      log_transform_internal = FALSE
+    ),
+    "log_transform_internal = TRUE",
+    fixed = TRUE
+  )
+})
+
+test_that("correct_batch_centering requires log transform when scaling", {
+  expect_error(
+    correct_batch_centering(
+      mexp,
+      variable = "conc",
+      ref_qc_types = "BQC",
+      correct_scale = TRUE,
+      log_transform_internal = FALSE
+    ),
+    "log-transformed"
+  )
+})
+
+test_that("drift correction reports zero/negative values under log transform", {
+  m0 <- mexp
+  m0@dataset$feature_conc[c(581, 611, 1123)] <- 0
+  expect_message(
+    correct_drift_cubicspline(
+      m0,
+      batch_wise = FALSE,
+      replace_previous = TRUE,
+      variable = "conc",
+      ref_qc_types = "BQC",
+      recalc_trend_after = TRUE,
+      use_original_if_fail = FALSE,
+      ignore_istd = TRUE
+    ),
+    "zero or negative"
+  )
 })
