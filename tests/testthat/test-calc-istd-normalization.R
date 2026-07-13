@@ -8,12 +8,12 @@ test_that("Add metadata table by table, the normalize and quantify based on ISTD
   mexp <- mrmhub::import_data_masshunter(
     mexp,
     path = testthat::test_path(
-      "testdata/MRMhub_TestData_MHQuant_S1P_DefaultSampleInfo_RT-Areas-FWHM.csv"
+      "testdata/masshunter/MRMhub_TestData_MHQuant_S1P_DefaultSampleInfo_RT-Areas-FWHM.csv"
     ),
     import_metadata = FALSE
   )
   path <- testthat::test_path(
-    "testdata/MRMhub_TestData_MHQuant_S1P_metadata_tables.xlsx"
+    "testdata/metadata/MRMhub_TestData_MHQuant_S1P_metadata_tables.xlsx"
   )
   expect_message(
     mexp <- mrmhub:::import_metadata_analyses(
@@ -217,14 +217,14 @@ test_that("quantify_by_istd with mass concentration", {
   mexp <- mrmhub::import_data_masshunter(
     mexp,
     path = testthat::test_path(
-      "23_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq_notimestamp.csv"
+      "testdata/masshunter/23_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq_notimestamp.csv"
     ),
     import_metadata = FALSE
   )
   mexp <- mrmhub::import_metadata_msorganiser(
     mexp,
     path = testthat::test_path(
-      "testdata/Metadata_Template_210_MHQuant_S1P_with-ngml.xlsx"
+      "testdata/metadata/Metadata_Template_210_MHQuant_S1P_with-ngml.xlsx"
     ),
     excl_unmatched_analyses = FALSE
   )
@@ -358,14 +358,14 @@ test_that("quantify_by_istd with mass concentration", {
   mexp <- mrmhub::import_data_masshunter(
     mexp,
     path = testthat::test_path(
-      "23_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq_notimestamp.csv"
+      "testdata/masshunter/23_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq_notimestamp.csv"
     ),
     import_metadata = FALSE
   )
   mexp <- mrmhub::import_metadata_msorganiser(
     mexp,
     path = testthat::test_path(
-      "testdata/Metadata_Template_210_MHQuant_S1P_with-ngml-MW.xlsx"
+      "testdata/metadata/Metadata_Template_210_MHQuant_S1P_with-ngml-MW.xlsx"
     ),
     excl_unmatched_analyses = FALSE
   )
@@ -423,7 +423,7 @@ test_that("quantify_by_istd/normalize_by_istd fail if no istd defined/normalized
 })
 
 # test_that("istd-based quantification is correct and overwites previous if present", {
-#   mexp <- readRDS(file = testthat::test_path("testdata/MHQuant_demo.rds"))
+#   mexp <- readRDS(file = testthat::test_path("testdata/masshunter/MHQuant_demo.rds"))
 #   mexp <- normalize_by_istd(mexp, ignore_missing_annotation = TRUE)
 
 #   testthat::expect_message(
@@ -459,7 +459,7 @@ test_that("quantify_by_istd/normalize_by_istd fail if no istd defined/normalized
 # })
 
 # test_that("istd-based quantification handles missing info correctly", {
-#   mexp <- readRDS(file = testthat::test_path("testdata/MHQuant_demo.rds"))
+#   mexp <- readRDS(file = testthat::test_path("testdata/masshunter/MHQuant_demo.rds"))
 #   mexp <- normalize_by_istd(mexp, ignore_missing_annotation = TRUE)
 
 #   mexp_mod <- mexp

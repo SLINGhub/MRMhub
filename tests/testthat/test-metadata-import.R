@@ -8,14 +8,14 @@ test_that("Imports/associates data and metadata, orders analyses by dataset (tim
   mexp <- mrmhub::import_data_masshunter(
     mexp,
     path = testthat::test_path(
-      "23_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq_notimestamp.csv"
+      "testdata/masshunter/23_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq_notimestamp.csv"
     ),
     import_metadata = FALSE
   )
   mexp <- mrmhub::import_metadata_msorganiser(
     mexp,
     path = testthat::test_path(
-      "testdata/MRMhub_Metadata_Template_191_20240226_MHQuant_S1P_V1.xlsx"
+      "testdata/metadata/MRMhub_Metadata_Template_191_20240226_MHQuant_S1P_V1.xlsx"
     ),
     excl_unmatched_analyses = FALSE
   )
@@ -44,7 +44,7 @@ test_that("import_metadata_msorganiser handles missing / invalid files", {
   mexp <- mrmhub::import_data_masshunter(
     mexp,
     path = testthat::test_path(
-      "22_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq-noalphafeat.csv"
+      "testdata/masshunter/22_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq-noalphafeat.csv"
     ),
     import_metadata = FALSE
   )
@@ -61,7 +61,7 @@ test_that("import_metadata_msorganiser handles missing / invalid files", {
     mexp <- mrmhub::import_metadata_msorganiser(
       mexp,
       path = testthat::test_path(
-        "testdata/MRMhub_TestData_MHQuant_S1P_DefaultSampleInfo_RT-Areas-FWHM.csv"
+        "testdata/masshunter/MRMhub_TestData_MHQuant_S1P_DefaultSampleInfo_RT-Areas-FWHM.csv"
       ),
       excl_unmatched_analyses = FALSE
     ),
@@ -73,7 +73,7 @@ test_that("import_metadata_msorganiser handles missing / invalid files", {
     mexp <- mrmhub::import_metadata_msorganiser(
       mexp,
       path = testthat::test_path(
-        "testdata/MRMhub_Metadata_Template_wrongabout.xlsx"
+        "testdata/metadata/MRMhub_Metadata_Template_wrongabout.xlsx"
       ),
       excl_unmatched_analyses = FALSE
     ),
@@ -85,7 +85,7 @@ test_that("import_metadata_msorganiser handles missing / invalid files", {
     mexp <- mrmhub::import_metadata_msorganiser(
       mexp,
       path = testthat::test_path(
-        "testdata/MRMhub_Metadata_Template_missingabout.xlsx"
+        "testdata/metadata/MRMhub_Metadata_Template_missingabout.xlsx"
       ),
       excl_unmatched_analyses = FALSE
     ),
@@ -97,7 +97,7 @@ test_that("import_metadata_msorganiser handles missing / invalid files", {
     mexp <- mrmhub::import_metadata_msorganiser(
       mexp,
       path = testthat::test_path(
-        "testdata/MRMhub_Metadata_Template_lowerversion.xlsx"
+        "testdata/metadata/MRMhub_Metadata_Template_lowerversion.xlsx"
       ),
       excl_unmatched_analyses = FALSE
     ),
@@ -108,7 +108,7 @@ test_that("import_metadata_msorganiser handles missing / invalid files", {
     mexp <- mrmhub::import_metadata_msorganiser(
       mexp,
       path = testthat::test_path(
-        "testdata/MRMhub_Metadata_Template_higherversion.xlsx"
+        "testdata/metadata/MRMhub_Metadata_Template_higherversion.xlsx"
       ),
       excl_unmatched_analyses = FALSE
     ),
@@ -120,7 +120,7 @@ test_that("import_metadata_msorganiser handles missing / invalid files", {
     mexp <- mrmhub::import_metadata_msorganiser(
       mexp,
       path = testthat::test_path(
-        "testdata/MRMhub_Metadata_Template_invalidversion.xlsx"
+        "testdata/metadata/MRMhub_Metadata_Template_invalidversion.xlsx"
       ),
       excl_unmatched_analyses = FALSE
     ),
@@ -135,14 +135,14 @@ test_that("Imports/associates data and metadata, orders features by default acco
   mexp <- mrmhub::import_data_masshunter(
     mexp,
     path = testthat::test_path(
-      "22_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq-noalphafeat.csv"
+      "testdata/masshunter/22_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq-noalphafeat.csv"
     ),
     import_metadata = FALSE
   )
   mexp <- mrmhub::import_metadata_msorganiser(
     mexp,
     path = testthat::test_path(
-      "testdata/MRMhub_Metadata_Template_191_20240226_MHQuant_S1P_V1.xlsx"
+      "testdata/metadata/MRMhub_Metadata_Template_191_20240226_MHQuant_S1P_V1.xlsx"
     ),
     excl_unmatched_analyses = FALSE
   )
@@ -159,7 +159,7 @@ test_that("Raise data assertion warning and stops with not all analyses defined 
   mexp <- mrmhub::import_data_masshunter(
     mexp,
     path = testthat::test_path(
-      "22_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq-noalphafeat.csv"
+      "testdata/masshunter/22_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq-noalphafeat.csv"
     ),
     import_metadata = FALSE
   )
@@ -167,7 +167,7 @@ test_that("Raise data assertion warning and stops with not all analyses defined 
     mexp <- mrmhub::import_metadata_msorganiser(
       mexp,
       path = testthat::test_path(
-        "MRMhub_Metadata_Template_191_20240226_MHQuant_S1P_analysissubset.xlsx"
+        "testdata/metadata/MRMhub_Metadata_Template_191_20240226_MHQuant_S1P_analysissubset.xlsx"
       ),
       excl_unmatched_analyses = FALSE
     ),
@@ -180,14 +180,14 @@ test_that("Shows analyses defined in metadata but missing in data as Note in ass
   mexp <- mrmhub::import_data_masshunter(
     mexp,
     path = testthat::test_path(
-      "22_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq-noalphafeat.csv"
+      "testdata/masshunter/22_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq-noalphafeat.csv"
     ),
     import_metadata = FALSE
   )
   mexp <- mrmhub::import_metadata_msorganiser(
     mexp,
     path = testthat::test_path(
-      "MRMhub_Metadata_Template_191_20240226_MHQuant_S1P_analysissubset.xlsx"
+      "testdata/metadata/MRMhub_Metadata_Template_191_20240226_MHQuant_S1P_analysissubset.xlsx"
     ),
     excl_unmatched_analyses = TRUE
   )
@@ -204,14 +204,14 @@ test_that("Ignores warnings after metadata import and proceeds", {
   mexp <- mrmhub::import_data_masshunter(
     mexp,
     path = testthat::test_path(
-      "22_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq-noalphafeat.csv"
+      "testdata/masshunter/22_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq-noalphafeat.csv"
     ),
     import_metadata = FALSE
   )
   mexp <- mrmhub::import_metadata_msorganiser(
     mexp,
     path = testthat::test_path(
-      "MRMhub_Metadata_Template_191_20240226_MHQuant_S1P_analysissubset.xlsx"
+      "testdata/metadata/MRMhub_Metadata_Template_191_20240226_MHQuant_S1P_analysissubset.xlsx"
     ),
     ignore_warnings = TRUE
   )
@@ -225,28 +225,28 @@ test_that("Ignores warnings after metadata import and proceeds", {
 
 
 test_that("Reads metadata from csv file", {
-  path <- testthat::test_path("testdata/sperfect_metadata_tables.csv")
+  path <- testthat::test_path("testdata/metadata/sperfect_metadata_tables.csv")
   tbl <- get_metadata_table(path = path)
   expect_equal(tbl[[1, "analysis_id"]], "Longit_BLANK-01 (Eluent A)")
   expect_equal(tbl[[1, "sample_amount"]], 10)
 })
 
 test_that("Reads metadata from XLSX sheet", {
-  path <- testthat::test_path("testdata/sperfect_metadata_tables.xlsx")
+  path <- testthat::test_path("testdata/metadata/sperfect_metadata_tables.xlsx")
   tbl <- get_metadata_table(path = path, sheet = "Analyses")
   expect_equal(tbl[[1, "analysis_id"]], "Longit_BLANK-01 (Eluent A)")
   expect_equal(tbl[[1, "sample_amount"]], 10)
 })
 
 test_that("Reads metadata from XLSX sheet", {
-  path <- testthat::test_path("testdata/sperfect_metadata_tables.xlsx")
+  path <- testthat::test_path("testdata/metadata/sperfect_metadata_tables.xlsx")
   tbl <- get_metadata_table(path = path, sheet = "Features")
   expect_equal(tbl[[1, "feature_id"]], "CE 14:0")
   expect_equal(tbl[[224, "interference_contribution"]], 0.00774513)
 })
 
 test_that("Reads metadata from given data frame", {
-  path <- testthat::test_path("testdata/sperfect_metadata_tables.csv")
+  path <- testthat::test_path("testdata/metadata/sperfect_metadata_tables.csv")
   df <- readr::read_csv(file = path, show_col_types = FALSE)
   tbl <- get_metadata_table(dataset = df)
   expect_equal(tbl[[1, "analysis_id"]], "Longit_BLANK-01 (Eluent A)")
@@ -255,7 +255,7 @@ test_that("Reads metadata from given data frame", {
 
 
 test_that("Reads metadata from given data frame", {
-  path <- testthat::test_path("testdata/sperfect_metadata_tables.csv")
+  path <- testthat::test_path("testdata/metadata/sperfect_metadata_tables.csv")
   df <- readr::read_csv(file = path, show_col_types = FALSE)
   expect_error(
     get_metadata_table(path = path, dataset = df),
@@ -265,7 +265,7 @@ test_that("Reads metadata from given data frame", {
 
 
 test_that("Prepare analysis metadata from given data file", {
-  path <- testthat::test_path("testdata/sperfect_metadata_tables.csv")
+  path <- testthat::test_path("testdata/metadata/sperfect_metadata_tables.csv")
   tbl <- get_metadata_table(path = path) |> dplyr::select(-"batch_id")
   metadata <- clean_analysis_metadata(tbl)
   expect_in(c("batch_id", "replicate_no", "valid_analysis"), names(metadata))
@@ -273,7 +273,7 @@ test_that("Prepare analysis metadata from given data file", {
 })
 
 test_that("Prepare analysis metadata from given data file", {
-  path <- testthat::test_path("testdata/sperfect_metadata_tables.csv")
+  path <- testthat::test_path("testdata/metadata/sperfect_metadata_tables.csv")
   tbl <- get_metadata_table(path = path) |> select(-"batch_id")
   metadata <- clean_analysis_metadata(tbl)
   expect_in(c("batch_id", "replicate_no", "valid_analysis"), names(metadata))
@@ -286,7 +286,7 @@ test_that("Prepare analysis metadata from given data file", {
 })
 
 test_that("Prepare feature metadata from given table imported from an XLSX sheet", {
-  path <- testthat::test_path("testdata/sperfect_metadata_tables.xlsx")
+  path <- testthat::test_path("testdata/metadata/sperfect_metadata_tables.xlsx")
   tbl <- get_metadata_table(path = path, sheet = "Features")
   metadata <- clean_feature_metadata(tbl)
   expect_type(metadata$response_factor, "double")
@@ -301,7 +301,7 @@ test_that("Prepare feature metadata from given table imported from an XLSX sheet
 })
 
 test_that("Prepare istd metadata from given table imported from an XLSX sheet", {
-  path <- testthat::test_path("testdata/sperfect_metadata_tables.xlsx")
+  path <- testthat::test_path("testdata/metadata/sperfect_metadata_tables.xlsx")
   tbl <- get_metadata_table(path = path, sheet = "ISTDs")
   metadata <- clean_istd_metadata(tbl)
   expect_type(metadata$quant_istd_feature_id, "character")
@@ -316,7 +316,7 @@ test_that("Prepare istd metadata from given table imported from an XLSX sheet", 
 })
 
 test_that("Prepare rqc metadata from given table imported from an XLSX sheet", {
-  path <- testthat::test_path("testdata/sperfect_metadata_tables.xlsx")
+  path <- testthat::test_path("testdata/metadata/sperfect_metadata_tables.xlsx")
   tbl <- get_metadata_table(path = path, sheet = "RQCs")
   metadata <- clean_response_metadata(tbl)
   expect_type(metadata$analysis_id, "character")
@@ -332,7 +332,7 @@ test_that("Prepare rqc metadata from given table imported from an XLSX sheet", {
 })
 
 test_that("Prepare qc concentration metadata from given table imported from an XLSX sheet", {
-  path <- testthat::test_path("testdata/sperfect_metadata_tables.xlsx")
+  path <- testthat::test_path("testdata/metadata/sperfect_metadata_tables.xlsx")
   tbl <- get_metadata_table(path = path, sheet = "QCconc")
   metadata <- clean_qcconc_metadata(tbl)
   expect_type(metadata$sample_id, "character")
@@ -356,12 +356,12 @@ test_that("Add indidual metadata types to data, first analyses then features", {
   mexp <- mrmhub::import_data_masshunter(
     mexp,
     path = testthat::test_path(
-      "testdata/MRMhub_TestData_MHQuant_S1P_DefaultSampleInfo_RT-Areas-FWHM.csv"
+      "testdata/masshunter/MRMhub_TestData_MHQuant_S1P_DefaultSampleInfo_RT-Areas-FWHM.csv"
     ),
     import_metadata = FALSE
   )
   path <- testthat::test_path(
-    "testdata/MRMhub_TestData_MHQuant_S1P_metadata_tables.xlsx"
+    "testdata/metadata/MRMhub_TestData_MHQuant_S1P_metadata_tables.xlsx"
   )
   mexp <- mrmhub:::import_metadata_analyses(
     mexp,
@@ -396,12 +396,12 @@ test_that("Add indidual metadata types to data, first features then analyses", {
   mexp <- mrmhub::import_data_masshunter(
     mexp,
     path = testthat::test_path(
-      "testdata/MRMhub_TestData_MHQuant_S1P_DefaultSampleInfo_RT-Areas-FWHM.csv"
+      "testdata/masshunter/MRMhub_TestData_MHQuant_S1P_DefaultSampleInfo_RT-Areas-FWHM.csv"
     ),
     import_metadata = FALSE
   )
   path <- testthat::test_path(
-    "testdata/MRMhub_TestData_MHQuant_S1P_metadata_tables.xlsx"
+    "testdata/metadata/MRMhub_TestData_MHQuant_S1P_metadata_tables.xlsx"
   )
   mexp <- mrmhub:::import_metadata_features(
     mexp,
@@ -434,12 +434,12 @@ test_that("Check import of inconsitent metadata", {
   mexp <- mrmhub::import_data_masshunter(
     mexp,
     path = testthat::test_path(
-      "testdata/MRMhub_TestData_MHQuant_S1P_DefaultSampleInfo_RT-Areas-FWHM.csv"
+      "testdata/masshunter/MRMhub_TestData_MHQuant_S1P_DefaultSampleInfo_RT-Areas-FWHM.csv"
     ),
     import_metadata = FALSE
   )
   path <- testthat::test_path(
-    "testdata/MRMhub_TestData_MHQuant_S1P_metadata_tables.xlsx"
+    "testdata/metadata/MRMhub_TestData_MHQuant_S1P_metadata_tables.xlsx"
   )
   expect_error(
     mexp <- mrmhub:::import_metadata_analyses(
@@ -496,12 +496,12 @@ test_that("Replacing specific undefined metadata", {
   mexp <- mrmhub::import_data_masshunter(
     mexp,
     path = testthat::test_path(
-      "testdata/MRMhub_TestData_MHQuant_S1P_DefaultSampleInfo_RT-Areas-FWHM.csv"
+      "testdata/masshunter/MRMhub_TestData_MHQuant_S1P_DefaultSampleInfo_RT-Areas-FWHM.csv"
     ),
     import_metadata = FALSE
   )
   path <- testthat::test_path(
-    "testdata/MRMhub_TestData_MHQuant_S1P_metadata_tables.xlsx"
+    "testdata/metadata/MRMhub_TestData_MHQuant_S1P_metadata_tables.xlsx"
   )
   mexp <- mrmhub:::import_metadata_analyses(
     mexp,

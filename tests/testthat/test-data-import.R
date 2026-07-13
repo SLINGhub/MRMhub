@@ -2,7 +2,7 @@
 
 test_that("Parses basic Agilent MH-Quant .csv file with only peak areas", {
   d <- parse_masshunter_csv(test_path(
-    "1_Testdata_MHQuant_DefaultSampleInfo_AreaOnly.csv"
+    "testdata/masshunter/1_Testdata_MHQuant_DefaultSampleInfo_AreaOnly.csv"
   ))
 
   expect_contains(
@@ -35,7 +35,7 @@ test_that("Parses basic Agilent MH-Quant .csv file with only peak areas", {
 
 test_that("Parses basic Agilent MH-Quant .csv file without sample_name", {
   d <- parse_masshunter_csv(test_path(
-    "1_Testdata_MHQuant_DefaultSampleInfo_AreaOnly.csv"
+    "testdata/masshunter/1_Testdata_MHQuant_DefaultSampleInfo_AreaOnly.csv"
   ))
 
   expect_contains(
@@ -68,7 +68,7 @@ test_that("Parses basic Agilent MH-Quant .csv file without sample_name", {
 
 test_that("Parses nested Agilent MH-Quant .csv file with diverse peak variables", {
   d <- parse_masshunter_csv(test_path(
-    "3_Testdata_MHQuant_DefaultSampleInfo_DetailedResults.csv"
+    "testdata/masshunter/3_Testdata_MHQuant_DefaultSampleInfo_DetailedResults.csv"
   ))
 
   expect_identical(
@@ -119,7 +119,7 @@ test_that("Parses nested Agilent MH-Quant .csv file with diverse peak variables"
 
 test_that("Parses nested Agilent MH-Quant .csv file with detailed sample info and different peak parameters", {
   d <- parse_masshunter_csv(test_path(
-    "5_Testdata_MHQuant_DetailedSampleInfo-RT-Areas-FWHM.csv"
+    "testdata/masshunter/5_Testdata_MHQuant_DetailedSampleInfo-RT-Areas-FWHM.csv"
   ))
 
   expect_identical(
@@ -182,7 +182,7 @@ test_that("Parses nested Agilent MH-Quant .csv file with detailed sample info an
 
 test_that("Parses nested MH Quant .csv file with detailed method info and different peak parameters", {
   d <- parse_masshunter_csv(test_path(
-    "4_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_DetailedMethods.csv"
+    "testdata/masshunter/4_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_DetailedMethods.csv"
   ))
 
   expect_identical(
@@ -264,7 +264,7 @@ test_that("Parses nested MH Quant .csv file with detailed method info and differ
 
 test_that("Parses nested MH Quant .csv without the 'outlier' column", {
   d <- parse_masshunter_csv(test_path(
-    "6_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM-NoOutlierSum.csv"
+    "testdata/masshunter/6_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM-NoOutlierSum.csv"
   ))
   expect_equal(ncol(d), 12)
   expect_equal(nrow(d), 1040)
@@ -275,7 +275,7 @@ test_that("Parses nested MH Quant .csv without the 'outlier' column", {
 
 test_that("Parses nested MH Quant .csv without the 'outlier' and 'quant message' column", {
   d <- parse_masshunter_csv(test_path(
-    "7_Testdata_MHQuant_NoOutlierSum-noQuantMsgSum.csv"
+    "testdata/masshunter/7_Testdata_MHQuant_NoOutlierSum-noQuantMsgSum.csv"
   ))
   expect_equal(ncol(d), 12)
   expect_equal(nrow(d), 1040)
@@ -287,7 +287,7 @@ test_that("Parses nested MH Quant .csv without the 'outlier' and 'quant message'
 
 test_that("Parsing nested MH Quant .csv without 'outlier'/'quant message' columns and header 'Samples' in first row/col", {
   d <- parse_masshunter_csv(test_path(
-    "8_Testdata_MHQuant_Corrupt_OutlierQuantMsgSumDeleted.csv"
+    "testdata/masshunter/8_Testdata_MHQuant_Corrupt_OutlierQuantMsgSumDeleted.csv"
   ))
   expect_equal(ncol(d), 12)
   expect_equal(nrow(d), 1040)
@@ -300,7 +300,7 @@ test_that("Parsing nested MH Quant .csv without 'outlier'/'quant message' column
 test_that("Parses nested MH Quant .csv file containing QUALIFIER peak info", {
   d <- parse_masshunter_csv(
     test_path(
-      "9_Testdata_MHQuant_withQuantMethods_withQualifierMethResults.csv"
+      "testdata/masshunter/9_Testdata_MHQuant_withQuantMethods_withQualifierMethResults.csv"
     ),
     expand_qualifier_names = TRUE
   )
@@ -317,7 +317,7 @@ test_that("Parses nested MH Quant .csv file containing QUALIFIER peak info", {
 
 test_that("Parses nested MH Quant .csv without Quant Message Summary", {
   d <- parse_masshunter_csv(test_path(
-    "10_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM-NoQuantMsgSum.csv"
+    "testdata/masshunter/10_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM-NoQuantMsgSum.csv"
   ))
   expect_equal(ncol(d), 12)
   expect_equal(nrow(d), 1040)
@@ -328,7 +328,7 @@ test_that("Parses nested MH Quant .csv without Quant Message Summary", {
 
 test_that("Parses nested MH Quant .csv without acquistion time stamp", {
   d <- parse_masshunter_csv(test_path(
-    "11_Testdata_MHQuant_DefaultSampleInfo-noAcqDataTime_RT-Areas-FWHM.csv"
+    "testdata/masshunter/11_Testdata_MHQuant_DefaultSampleInfo-noAcqDataTime_RT-Areas-FWHM.csv"
   ))
   expect_false(c("acquisition_time_stamp") %in% names(d))
   expect_equal(ncol(d), 11)
@@ -340,7 +340,7 @@ test_that("Parses nested MH Quant .csv without acquistion time stamp", {
 test_that("Returns a defined error when reading nested MH Quant .csv containg a 'Quantitation Message' is imported", {
   expect_error(
     parse_masshunter_csv(test_path(
-      "12_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM-withQuantMsg.csv"
+      "testdata/masshunter/12_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM-withQuantMsg.csv"
     )),
     regexp = "Field \\'Quantitation Message\\' currently not supported"
   )
@@ -349,7 +349,7 @@ test_that("Returns a defined error when reading nested MH Quant .csv containg a 
 test_that("Returns a defined error when reading MH Quant .csv with analytes/features as rows (Compound Table) is imported", {
   expect_error(
     parse_masshunter_csv(test_path(
-      "13_Testdata_MHQuant_CompoundTable_DefaultSampleInfo_RT-Areas-FWHM.csv"
+      "testdata/masshunter/13_Testdata_MHQuant_CompoundTable_DefaultSampleInfo_RT-Areas-FWHM.csv"
     )),
     regexp = "Compound table format is currently not supported",
     fixed = TRUE
@@ -359,7 +359,7 @@ test_that("Returns a defined error when reading MH Quant .csv with analytes/feat
 test_that("Returns a defined error when reading MH Quant .csv with analytes/features as rows (Compound Table) is imported", {
   expect_error(
     parse_masshunter_csv(test_path(
-      "24_Testdata_MHQuant_DefaultSampleInfo_noRawdatafilename.csv"
+      "testdata/masshunter/24_Testdata_MHQuant_DefaultSampleInfo_noRawdatafilename.csv"
     )),
     regexp = "'Data File' column is required and used as a unique identifier, but is missing or the file",
     fixed = TRUE
@@ -370,7 +370,7 @@ test_that("Returns a defined error when reading MH Quant .csv with analytes/feat
 test_that("Returns a defined error when reading a corrupted MH Quant .csv", {
   expect_error(
     parse_masshunter_csv(test_path(
-      "14_Testdata_MHQuant_Corrupt_RowAreaDeleted.csv"
+      "testdata/masshunter/14_Testdata_MHQuant_Corrupt_RowAreaDeleted.csv"
     )),
     regexp = "Data file is in an unsupported or corrupted format. Please try re-export your data in MH with compounds as columns",
     fixed = TRUE
@@ -379,7 +379,7 @@ test_that("Returns a defined error when reading a corrupted MH Quant .csv", {
 
 test_that("Parses nested MH Quant .csv file that has am empty first row", {
   d <- parse_masshunter_csv(test_path(
-    "15_Testdata_MHQuant_Corrupt_ExtraTopLine.csv"
+    "testdata/masshunter/15_Testdata_MHQuant_Corrupt_ExtraTopLine.csv"
   ))
   expect_equal(ncol(d), 18)
   expect_equal(nrow(d), 1040)
@@ -391,7 +391,7 @@ test_that("Parses nested MH Quant .csv file that has am empty first row", {
 
 test_that("Parses nested MH Quant .csv file exported from German Windows system with comma as decimal point", {
   d <- parse_masshunter_csv(test_path(
-    "17_Testdata_Lipidomics_GermanSystem.csv"
+    "testdata/lipidomics/17_Testdata_Lipidomics_GermanSystem.csv"
   ))
   expect_equal(d[[1, "feature_rt"]], 9.754)
   expect_equal(d[[1, "feature_fwhm"]], 0.056)
@@ -399,7 +399,7 @@ test_that("Parses nested MH Quant .csv file exported from German Windows system 
 
 test_that("Parses nested MH Quant .csv file in UTF-8 format with different languages/characters", {
   d <- parse_masshunter_csv(test_path(
-    "18_Testdata_Lipidomics_MultiLanguageCharactersSamplenamesFeatures.csv"
+    "testdata/lipidomics/18_Testdata_Lipidomics_MultiLanguageCharactersSamplenamesFeatures.csv"
   ))
   expect_equal(d[[1, "feature_rt"]], 9.754)
   expect_equal(d[[1, "feature_id"]], "谷氨酰胺")
@@ -415,7 +415,7 @@ test_that("Parses nested MH Quant .csv file in UTF-8 format with different langu
 
 test_that("Parses nested MH Quant .csv file with target (expected) RT and peak RT and multiple Qualifier per analyte", {
   d <- parse_masshunter_csv(
-    test_path("19_Testdata_MHQuant_MultipleQUAL_with_expectedRT.csv"),
+    test_path("testdata/masshunter/19_Testdata_MHQuant_MultipleQUAL_with_expectedRT.csv"),
     expand_qualifier_names = TRUE
   )
   expect_equal(d[[1, "feature_rt"]], 6.649)
@@ -424,7 +424,7 @@ test_that("Parses nested MH Quant .csv file with target (expected) RT and peak R
 
 test_that("Parses nested MH Quant .csv file with special characters (e.g. !@#$%^) in feature names", {
   d <- parse_masshunter_csv(
-    test_path("20_Testdata_MHQuant_withSpecialCharsInFeatures.csv"),
+    test_path("testdata/masshunter/20_Testdata_MHQuant_withSpecialCharsInFeatures.csv"),
     expand_qualifier_names = TRUE
   )
   expect_equal(d[[1, "feature_rt"]], 6.649)
@@ -444,7 +444,7 @@ test_that("Parses nested MH Quant .csv file with special characters (e.g. !@#$%^
 
 test_that("Parses nested MH Quant .csv with . \ | in feature names", {
   d <- parse_masshunter_csv(
-    test_path("21_Testdata_MHQuant_with_dots_InFeatures.csv"),
+    test_path("testdata/masshunter/21_Testdata_MHQuant_with_dots_InFeatures.csv"),
     expand_qualifier_names = TRUE
   )
   expect_equal(d[[1, "feature_rt"]], 3.422)
@@ -459,7 +459,7 @@ test_that("Imports nested MH Quant .csv file containing QUALIFIER peak info into
   mexp <- import_data_masshunter(
     mexp,
     test_path(
-      "9_Testdata_MHQuant_withQuantMethods_withQualifierMethResults.csv"
+      "testdata/masshunter/9_Testdata_MHQuant_withQuantMethods_withQualifierMethResults.csv"
     ),
     import_metadata = TRUE,
     expand_qualifier_names = TRUE
@@ -480,7 +480,7 @@ test_that("Imports another MH Quant .csv files into one MRMhubExperiment", {
   mexp <- MRMhubExperiment()
   mexp <- import_data_masshunter(
     mexp,
-    test_path("testdata/MHQuant_demo.csv"),
+    test_path("testdata/masshunter/MHQuant_demo.csv"),
     import_metadata = TRUE,
     expand_qualifier_names = TRUE
   )
@@ -500,7 +500,7 @@ test_that("Imports multiple MH Quant .csv files into one MRMhubExperiment 1", {
   mexp <- MRMhubExperiment()
   mexp <- import_data_masshunter(
     mexp,
-    test_path("testdata/MQquant_multiple/"),
+    test_path("testdata/masshunter/MQquant_multiple/"),
     import_metadata = TRUE,
     expand_qualifier_names = TRUE
   )
@@ -522,7 +522,7 @@ test_that("Error duplicated reporting when import multiple MH Quant .csv files i
   expect_error(
     mexp <- import_data_masshunter(
       mexp,
-      test_path("testdata/MQquant_multiple_duplicates/"),
+      test_path("testdata/masshunter/MQquant_multiple_duplicates/"),
       import_metadata = TRUE,
       expand_qualifier_names = TRUE
     ),
@@ -538,8 +538,8 @@ test_that("Error file not exist", {
     mexp <- import_data_masshunter(
       mexp,
       test_path(c(
-        "testdata/MQquant_multiple_duplicates/MHQuant_demo_Part1.csv",
-        "testdata/MQquant_multiple_duplicates/MHQuant_demo_Part3.csv"
+        "testdata/masshunter/MQquant_multiple_duplicates/MHQuant_demo_Part1.csv",
+        "testdata/masshunter/MQquant_multiple_duplicates/MHQuant_demo_Part3.csv"
       )),
       import_metadata = TRUE,
       expand_qualifier_names = TRUE
@@ -552,8 +552,8 @@ test_that("Error file not exist", {
     mexp <- import_data_masshunter(
       mexp,
       test_path(c(
-        "testdata/MQquant_multiple_duplicates/MHQuant_demo_Part1.csv",
-        "testdata/MQquant_multiple_duplicates/MHQuant_demo_Part1.csv"
+        "testdata/masshunter/MQquant_multiple_duplicates/MHQuant_demo_Part1.csv",
+        "testdata/masshunter/MQquant_multiple_duplicates/MHQuant_demo_Part1.csv"
       )),
       import_metadata = TRUE,
       expand_qualifier_names = TRUE
@@ -571,7 +571,7 @@ test_that("Imports multiple MH Quant .csv files into one MRMhubExperiment", {
   expect_error(
     mexp <- import_data_masshunter(
       mexp,
-      test_path("testdata/MQquant_multiple_duplicates2/"),
+      test_path("testdata/masshunter/MQquant_multiple_duplicates2/"),
       import_metadata = TRUE,
       expand_qualifier_names = TRUE
     ),
@@ -586,7 +586,7 @@ test_that("Imports MH with Calc. Conc or Final Conc. and Exp. Conc missing Name 
   expect_message(
     mexp <- import_data_masshunter(
       mexp,
-      test_path("testdata/QuantLCMS_Example_MassHunter.csv"),
+      test_path("testdata/masshunter/QuantLCMS_Example_MassHunter.csv"),
       expand_qualifier_names = TRUE
     ),
     "Imported 25 analyses with 16 features (8 quantifiers, 8 qualifiers)",
@@ -602,7 +602,7 @@ test_that("Imports MH with Calc. Conc or Final Conc. and Exp. Conc missing Name 
   expect_message(
     mexp <- import_data_masshunter(
       mexp,
-      test_path("testdata/QuantLCMS_Example_MassHunter.csv"),
+      test_path("testdata/masshunter/QuantLCMS_Example_MassHunter.csv"),
       expand_qualifier_names = TRUE,
       conc_column = "conc_calc"
     ),
@@ -619,7 +619,7 @@ test_that("Imports MH with Calc. Conc or Final Conc. and Exp. Conc missing Name 
   expect_message(
     mexp <- import_data_masshunter(
       mexp,
-      test_path("testdata/QuantLCMS_Example_MassHunter_FinalConc.csv"),
+      test_path("testdata/masshunter/QuantLCMS_Example_MassHunter_FinalConc.csv"),
       expand_qualifier_names = TRUE,
       conc_column = "conc_calc"
     ),
@@ -636,7 +636,7 @@ test_that("Imports MH with Calc. Conc or Final Conc. and Exp. Conc missing Name 
   expect_message(
     mexp <- import_data_masshunter(
       mexp,
-      test_path("testdata/QuantLCMS_Example_MassHunter_CalcConc.csv"),
+      test_path("testdata/masshunter/QuantLCMS_Example_MassHunter_CalcConc.csv"),
       expand_qualifier_names = TRUE,
       conc_column = "conc_calc"
     ),
@@ -653,7 +653,7 @@ test_that("Imports MH with Calc. Conc or Final Conc. and Exp. Conc missing Name 
   expect_message(
     mexp <- import_data_masshunter(
       mexp,
-      test_path("testdata/QuantLCMS_Example_MassHunter-NoHdrSampleName.csv"),
+      test_path("testdata/masshunter/QuantLCMS_Example_MassHunter-NoHdrSampleName.csv"),
       expand_qualifier_names = TRUE
     ),
     "Imported 25 analyses with 16 features (8 quantifiers, 8 qualifiers)",
@@ -663,7 +663,7 @@ test_that("Imports MH with Calc. Conc or Final Conc. and Exp. Conc missing Name 
   expect_message(
     mexp <- import_data_masshunter(
       mexp,
-      test_path("testdata/QuantLCMS_Example_MassHunter.csv"),
+      test_path("testdata/masshunter/QuantLCMS_Example_MassHunter.csv"),
       expand_qualifier_names = TRUE
     ),
     "Imported 25 analyses with 16 features (8 quantifiers, 8 qualifiers)",
@@ -675,7 +675,7 @@ test_that("Imports MRMhub result file (long format) into a MRMhubExperiment", {
   mexp <- MRMhubExperiment()
   mexp <- import_data_mrmhub(
     mexp,
-    test_path("testdata/MRMhub_demo.tsv"),
+    test_path("testdata/mrmhub/MRMhub_demo.tsv"),
     import_metadata = TRUE,
   )
   d <- mexp@dataset
@@ -694,7 +694,7 @@ test_that("Handles import_data_mrmhub errors", {
   expect_error(
     mexp <- import_data_mrmhub(
       mexp,
-      test_path("testdata/MRMhub_demo.txt"),
+      test_path("testdata/mrmhub/MRMhub_demo.txt"),
       import_metadata = TRUE,
     ),
     "Data file type/extension not supported",
@@ -711,7 +711,7 @@ test_that("Handles import_data_mrmhub errors", {
 #'   expand_qualifier_names = TRUE)
 
 # test_that("Parses nested MH Quant .csv file with target (expected) RT and peak RT and multiple Qualifier per analyte", {
-#   d <- read_data_table(test_path("001_Generic_Results_1.csv"), value_type = "area")
+#   d <- read_data_table(test_path("testdata/masshunter/001_Generic_Results_1.csv"), value_type = "area")
 #   expect_equal(d[[1, "feature_area"]], 71)
 #   expect_equal(d[[1, "feature_id"]], "S1P d16:1 [M>113]")
 #   expect_equal(d[[1, "analysis_id"]], "006_EBLK_Extracted Blank+ISTD01")
@@ -719,25 +719,25 @@ test_that("Handles import_data_mrmhub errors", {
 #
 #
 # test_that("Parses nested MH Quant .csv file with target (expected) RT and peak RT and multiple Qualifier per analyte", {
-#   d <- read_data_table(test_path("001_Generic_Results_1.xlsx"), value_type = "area", sheet = "Sheet1")
+#   d <- read_data_table(test_path("testdata/masshunter/001_Generic_Results_1.xlsx"), value_type = "area", sheet = "Sheet1")
 #   expect_equal(d[[1, "feature_area"]], 71)
 #   expect_equal(d[[1, "feature_id"]], "S1P d16:1 [M>113]")
 #   expect_equal(d[[1, "analysis_id"]], "006_EBLK_Extracted Blank+ISTD01")
 # })
 #
 # test_that("Parses nested MH Quant .csv file with target (expected) RT and peak RT and multiple Qualifier per analyte", {
-#   expect_error(read_data_table(test_path("001_Generic_Results_1.xlsx"), value_type = "area"), regexp = "Please define sheet name")
+#   expect_error(read_data_table(test_path("testdata/masshunter/001_Generic_Results_1.xlsx"), value_type = "area"), regexp = "Please define sheet name")
 # })
 #
 # test_that("Parses nested MH Quant .csv file with target (expected) RT and peak RT and multiple Qualifier per analyte", {
-#   expect_error(read_data_table(test_path("001_Generic_Results_1.txt"), value_type = "area"), regexp = "Invalid file format")
+#   expect_error(read_data_table(test_path("testdata/masshunter/001_Generic_Results_1.txt"), value_type = "area"), regexp = "Invalid file format")
 # })
 
 # Test parse_plain_csv
 
 test_that("Parses plain csv file with metadata with correct column names and autodetecting analysis_id", {
   d <- parse_plain_wide_csv(
-    test_path("batch_effect-simdata-u1000-sd100_7batches.csv"),
+    test_path("testdata/batch-effect/batch_effect-simdata-u1000-sd100_7batches.csv"),
     variable_name = "conc",
     import_metadata = TRUE
   )
@@ -758,7 +758,7 @@ test_that("Parses plain csv file with metadata with correct column names and aut
   )
 
   d <- parse_plain_wide_csv(
-    test_path("testdata/plain_wide_nometadata.csv"),
+    test_path("testdata/plain-wide/plain_wide_nometadata.csv"),
     variable_name = "conc",
     import_metadata = TRUE
   )
@@ -772,7 +772,7 @@ test_that("Parses plain csv file with metadata with correct column names and aut
 test_that("Returns error when parse_plain_csv imports other than csv", {
   expect_error(
     parse_plain_wide_csv(
-      test_path("testdata/MRMhub_demo.tsv"),
+      test_path("testdata/mrmhub/MRMhub_demo.tsv"),
       variable_name = "conc",
       import_metadata = FALSE
     ),
@@ -784,7 +784,7 @@ test_that("Returns error when parse_plain_csv imports other than csv", {
 test_that("Returns error when plain csv file with columns containing text is read, when import_metadata = FALSE", {
   expect_message(
     parse_plain_wide_csv(
-      test_path("batch_effect-simdata-u1000-sd100_7batches.csv"),
+      test_path("testdata/batch-effect/batch_effect-simdata-u1000-sd100_7batches.csv"),
       variable_name = "conc",
       import_metadata = FALSE
     ),
@@ -796,7 +796,7 @@ test_that("Returns error when plain csv file with columns containing text is rea
 test_that("Returns error when plain csv file with analysis_id_col set that does not exist", {
   expect_error(
     parse_plain_wide_csv(
-      test_path("batch_effect-simdata-u1000-sd100_7batches.csv"),
+      test_path("testdata/batch-effect/batch_effect-simdata-u1000-sd100_7batches.csv"),
       analysis_id_col = "sample_id",
       variable_name = "conc",
       import_metadata = TRUE
@@ -809,7 +809,7 @@ test_that("Returns error when plain csv file with analysis_id_col set that does 
 test_that("Returns error when plain csv file with analysis_id_col  = NA and no analysis_id col present", {
   expect_error(
     parse_plain_wide_csv(
-      test_path("testdata/plain_wide_noanalysisid.csv"),
+      test_path("testdata/plain-wide/plain_wide_noanalysisid.csv"),
       variable_name = "conc",
       import_metadata = TRUE
     ),
@@ -821,7 +821,7 @@ test_that("Returns error when plain csv file with analysis_id_col  = NA and no a
 
 test_that("Parses plain csv file with metadata and defined analysis_id_col, with correct data types", {
   d <- parse_plain_wide_csv(
-    test_path("batch_effect-simdata-diff_firstcol.csv"),
+    test_path("testdata/batch-effect/batch_effect-simdata-diff_firstcol.csv"),
     analysis_id_col = "sample_id",
     variable_name = "conc",
     import_metadata = TRUE
@@ -843,7 +843,7 @@ test_that("Parses plain csv file with metadata and defined analysis_id_col, with
 })
 
 test_that("Imports plain csv file with metadata parsing the numbers to 'analysis_id_col', with correct data types and metadata", {
-  path <- test_path("testdata/plain_wide_dataset.csv")
+  path <- test_path("testdata/plain-wide/plain_wide_dataset.csv")
 
   mexp <- MRMhubExperiment()
   expect_message(
@@ -923,7 +923,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
   expect_message(
     mexp <- import_data_csv(
       data = mexp,
-      path = test_path("testdata/plain_wide_dataset_no_order.csv"),
+      path = test_path("testdata/plain-wide/plain_wide_dataset_no_order.csv"),
       variable_name = "conc",
       analysis_id_col = "analysis_id",
       import_metadata = TRUE
@@ -938,7 +938,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
   expect_message(
     mexp <- import_data_csv(
       data = mexp,
-      path = test_path("testdata/plain_wide_dataset.csv"),
+      path = test_path("testdata/plain-wide/plain_wide_dataset.csv"),
       variable_name = "conc",
       analysis_id_col = "analysis_id",
       import_metadata = TRUE,
@@ -958,7 +958,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
   expect_error(
     mexp <- import_data_csv(
       data = mexp,
-      path = test_path("testdata/plain_wide_dataset.csv"),
+      path = test_path("testdata/plain-wide/plain_wide_dataset.csv"),
       variable_name = "conc",
       analysis_id_col = "analysis_id",
       import_metadata = TRUE,
@@ -972,7 +972,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
   expect_error(
     mexp <- import_data_csv(
       data = mexp,
-      path = test_path("testdata/plain_wide_dataset.csv"),
+      path = test_path("testdata/plain-wide/plain_wide_dataset.csv"),
       variable_name = "conc",
       analysis_id_col = "analysis_id",
       import_metadata = TRUE,
@@ -986,7 +986,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
   expect_message(
     mexp <- import_data_csv(
       data = mexp,
-      path = test_path("testdata/plain_wide_dataset.csv"),
+      path = test_path("testdata/plain-wide/plain_wide_dataset.csv"),
       variable_name = "conc",
       analysis_id_col = "analysis_id",
       import_metadata = TRUE,
@@ -999,7 +999,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
   expect_error(
     mexp <- import_data_csv(
       data = mexp,
-      path = test_path("testdata/plain_wide_dataset_duplicate_analysisid.csv"),
+      path = test_path("testdata/plain-wide/plain_wide_dataset_duplicate_analysisid.csv"),
       variable_name = "conc",
       analysis_id_col = "analysis_id",
       import_metadata = TRUE,
@@ -1012,7 +1012,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
   expect_error(
     mexp <- import_data_csv(
       data = mexp,
-      path = test_path("testdata/plain_wide_dataset_dup_featid.csv"),
+      path = test_path("testdata/plain-wide/plain_wide_dataset_dup_featid.csv"),
       variable_name = "conc",
       analysis_id_col = "analysis_id",
       import_metadata = TRUE
@@ -1024,7 +1024,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
   expect_error(
     mexp <- import_data_csv(
       data = mexp,
-      path = test_path("testdata/plain_wide_dataset_morecol.csv"),
+      path = test_path("testdata/plain-wide/plain_wide_dataset_morecol.csv"),
       variable_name = "conc",
       analysis_id_col = "analysis_id",
       import_metadata = TRUE
@@ -1036,7 +1036,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
   expect_error(
     mexp <- import_data_csv(
       data = mexp,
-      path = test_path("testdata/plain_wide_dataset_morecol.csv"),
+      path = test_path("testdata/plain-wide/plain_wide_dataset_morecol.csv"),
       variable_name = "conc",
       analysis_id_col = "analysis_id",
       import_metadata = FALSE
@@ -1048,7 +1048,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
   expect_message(
     mexp <- import_data_csv(
       data = mexp,
-      path = test_path("testdata/plain_wide_dataset_morecol.csv"),
+      path = test_path("testdata/plain-wide/plain_wide_dataset_morecol.csv"),
       variable_name = "conc",
       analysis_id_col = "analysis_id",
       import_metadata = FALSE,
@@ -1061,7 +1061,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
   expect_error(
     mexp <- import_data_csv(
       data = mexp,
-      path = test_path("testdata/plain_wide_dataset_duplicate_orderid.csv"),
+      path = test_path("testdata/plain-wide/plain_wide_dataset_duplicate_orderid.csv"),
       variable_name = "conc",
       analysis_id_col = "analysis_id",
       import_metadata = TRUE
@@ -1073,7 +1073,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
   expect_error(
     mexp <- import_data_csv(
       data = mexp,
-      path = test_path("testdata/plain_wide_dataset_textorderid.csv"),
+      path = test_path("testdata/plain-wide/plain_wide_dataset_textorderid.csv"),
       variable_name = "conc",
       analysis_id_col = "analysis_id",
       import_metadata = TRUE
@@ -1088,7 +1088,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
   expect_message(
     mexp <- import_data_csv(
       data = mexp,
-      path = test_path("testdata/plain_wide_dataset2_22rows.csv"),
+      path = test_path("testdata/plain-wide/plain_wide_dataset2_22rows.csv"),
       variable_name = "area",
       import_metadata = TRUE
     ),
@@ -1114,7 +1114,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
   expect_message(
     mexp2 <- import_data_csv(
       data = mexp,
-      path = test_path("testdata/plain_wide_dataset2_10rows_orderid.csv"),
+      path = test_path("testdata/plain-wide/plain_wide_dataset2_10rows_orderid.csv"),
       variable_name = "area",
       import_metadata = TRUE
     ),
@@ -1157,7 +1157,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
   expect_error(
     mexp <- import_data_csv(
       data = mexp,
-      path = test_path("testdata/plain_wide_dataset2_10rows_orderidtext.csv"),
+      path = test_path("testdata/plain-wide/plain_wide_dataset2_10rows_orderidtext.csv"),
       variable_name = "conc",
       analysis_id_col = "analysis_id",
       import_metadata = TRUE,
@@ -1170,7 +1170,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
   mexp <- import_data_csv(
     data = mexp,
     path = test_path(
-      "testdata/plain_wide_dataset2_10rows_analysisidnumber.csv"
+      "testdata/plain-wide/plain_wide_dataset2_10rows_analysisidnumber.csv"
     ),
     variable_name = "conc",
     analysis_id_col = "analysis_id",
@@ -1183,7 +1183,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
 
 
 test_that("import_data_csv_long handels errors", {
-  path <- test_path("testdata/data_plain_long_1_no-analysisid.csv")
+  path <- test_path("testdata/plain-long/data_plain_long_1_no-analysisid.csv")
   mexp <- MRMhubExperiment()
   expect_error(
     mexp <- import_data_csv_long(data = mexp, path = path),
@@ -1191,7 +1191,7 @@ test_that("import_data_csv_long handels errors", {
     fixed = TRUE
   )
 
-  path <- test_path("testdata/data_plain_long_1_no-featureid.csv")
+  path <- test_path("testdata/plain-long/data_plain_long_1_no-featureid.csv")
   mexp <- MRMhubExperiment()
   expect_error(
     mexp <- import_data_csv_long(data = mexp, path = path),
@@ -1199,7 +1199,7 @@ test_that("import_data_csv_long handels errors", {
     fixed = TRUE
   )
 
-  path <- test_path("testdata/data_plain_long_2.csv")
+  path <- test_path("testdata/plain-long/data_plain_long_2.csv")
   expect_message(
     mexp <- import_data_csv_long(data = mexp, path = path),
     "Following unrecognized columns present in the data and were ignored",
@@ -1208,7 +1208,7 @@ test_that("import_data_csv_long handels errors", {
 })
 
 test_that("import_data_csv_long works", {
-  path <- test_path("testdata/data_plain_long_1.csv")
+  path <- test_path("testdata/plain-long/data_plain_long_1.csv")
   mexp <- MRMhubExperiment()
   expect_message(
     mexp <- import_data_csv_long(
@@ -1249,7 +1249,7 @@ test_that("import_data_csv_long works", {
 
 
 test_that("Skyline long-format handles errors", {
-  path <- test_path("testdata/Skyline_MoleculeTransitionResults_1.csv")
+  path <- test_path("testdata/skyline/Skyline_MoleculeTransitionResults_1.csv")
   mexp <- MRMhubExperiment()
   expect_error(
     mexp <- import_data_skyline(
@@ -1262,7 +1262,7 @@ test_that("Skyline long-format handles errors", {
   )
 
   path <- test_path(
-    "testdata/Skyline_MoleculeTransitionResults_1_noMoleculeName.csv"
+    "testdata/skyline/Skyline_MoleculeTransitionResults_1_noMoleculeName.csv"
   )
   mexp <- MRMhubExperiment()
   expect_error(
@@ -1276,7 +1276,7 @@ test_that("Skyline long-format handles errors", {
   )
 
   path <- test_path(
-    "testdata/Skyline_MoleculeTransitionResults_1_noReplicateName.csv"
+    "testdata/skyline/Skyline_MoleculeTransitionResults_1_noReplicateName.csv"
   )
   mexp <- MRMhubExperiment()
   expect_error(
@@ -1289,7 +1289,7 @@ test_that("Skyline long-format handles errors", {
     fixed = TRUE
   )
 
-  path <- test_path("testdata/Skyline_MoleculeTransitionResults_1_noMZ.csv")
+  path <- test_path("testdata/skyline/Skyline_MoleculeTransitionResults_1_noMZ.csv")
   mexp <- MRMhubExperiment()
   expect_error(
     mexp <- import_data_skyline(
@@ -1301,7 +1301,7 @@ test_that("Skyline long-format handles errors", {
     fixed = TRUE
   )
 
-  path <- test_path("testdata/Skyline_MoleculeTransitionResults_1_noNames.csv")
+  path <- test_path("testdata/skyline/Skyline_MoleculeTransitionResults_1_noNames.csv")
   mexp <- MRMhubExperiment()
   expect_error(
     mexp <- import_data_skyline(
@@ -1314,7 +1314,7 @@ test_that("Skyline long-format handles errors", {
   )
 
   path <- test_path(
-    "testdata/Skyline_MoleculeTransitionResults_1_duplicateMz.csv"
+    "testdata/skyline/Skyline_MoleculeTransitionResults_1_duplicateMz.csv"
   )
   mexp <- MRMhubExperiment()
   expect_error(
@@ -1327,7 +1327,7 @@ test_that("Skyline long-format handles errors", {
     fixed = TRUE
   )
 
-  path <- test_path("testdata/data_plain_long_1_no-featureid.csv")
+  path <- test_path("testdata/plain-long/data_plain_long_1_no-featureid.csv")
   mexp <- MRMhubExperiment()
   expect_error(
     mexp <- import_data_csv_long(data = mexp, path = path),
@@ -1337,7 +1337,7 @@ test_that("Skyline long-format handles errors", {
 })
 
 test_that("import_data_skyline works", {
-  path <- test_path("testdata/Skyline_MoleculeTransitionResults_1.csv")
+  path <- test_path("testdata/skyline/Skyline_MoleculeTransitionResults_1.csv")
   mexp <- MRMhubExperiment()
   expect_message(
     mexp <- import_data_skyline(
@@ -1353,7 +1353,7 @@ test_that("import_data_skyline works", {
   expect_equal(mexp@dataset[[81, "feature_class"]], "Steroids")
   expect_equal(mexp@dataset[[81, "feature_id"]], "Aldosterone D4_365.2_319.2")
 
-  path <- test_path("testdata/Skyline_MoleculeTransitionResults_1.csv")
+  path <- test_path("testdata/skyline/Skyline_MoleculeTransitionResults_1.csv")
   mexp <- MRMhubExperiment()
   expect_message(
     mexp <- import_data_skyline(

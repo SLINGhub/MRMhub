@@ -2,14 +2,14 @@ mexp_raw <- mrmhub::MRMhubExperiment()
 mexp_raw <- mrmhub::import_data_masshunter(
   mexp_raw,
   path = testthat::test_path(
-    "23_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq_notimestamp.csv"
+    "testdata/masshunter/23_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq_notimestamp.csv"
   ),
   import_metadata = FALSE
 )
 mexp <- mrmhub::import_metadata_msorganiser(
   mexp_raw,
   path = testthat::test_path(
-    "testdata/MRMhub_Metadata_HQuant_S1P_forCalib.xlsx"
+    "testdata/metadata/MRMhub_Metadata_HQuant_S1P_forCalib.xlsx"
   ),
   excl_unmatched_analyses = FALSE
 )

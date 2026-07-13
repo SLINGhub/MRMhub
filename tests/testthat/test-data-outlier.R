@@ -3,12 +3,12 @@ mexp_empty <- MRMhubExperiment()
 mexp <- mrmhub::import_data_masshunter(
   mexp_empty,
   path = testthat::test_path(
-    "testdata/MRMhub_TestData_MHQuant_S1P_DefaultSampleInfo_RT-Areas-FWHM.csv"
+    "testdata/masshunter/MRMhub_TestData_MHQuant_S1P_DefaultSampleInfo_RT-Areas-FWHM.csv"
   ),
   import_metadata = FALSE
 )
 path <- testthat::test_path(
-  "testdata/MRMhub_TestData_MHQuant_S1P_metadata_tables.xlsx"
+  "testdata/metadata/MRMhub_TestData_MHQuant_S1P_metadata_tables.xlsx"
 )
 expect_message(
   mexp <- mrmhub:::import_metadata_analyses(

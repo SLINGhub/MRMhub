@@ -1,6 +1,6 @@
 mexp <- mrmhub::MRMhubExperiment(title = "")
 
-data_path <- test_path("testdata/FullPanelFewSamples_MRMkit_interror.csv")
+data_path <- test_path("testdata/mrmhub/FullPanelFewSamples_MRMkit_interror.csv")
 mexp <- import_data_mrmhub(
   data = mexp,
   path = data_path,

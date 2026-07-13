@@ -1,11 +1,11 @@
 # get RDS for tests
 
 # mexp <- mrmhub::MRMhubExperiment()
-# mexp <- mrmhub::import_data_masshunter(mexp, path = testthat::test_path("4_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_DetailedMethods.csv"), import_metadata = FALSE)
+# mexp <- mrmhub::import_data_masshunter(mexp, path = testthat::test_path("testdata/masshunter/4_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_DetailedMethods.csv"), import_metadata = FALSE)
 # mexp <- mrmhub::import_metadata_msorganiser(mexp,
-#                                         path = testthat::test_path("testdata/MRMhub_Metadata_Template_191_20240226_MHQuant_S1P_V1.xlsx"),
+#                                         path = testthat::test_path("testdata/metadata/MRMhub_Metadata_Template_191_20240226_MHQuant_S1P_V1.xlsx"),
 #                                         excl_unmatched_analyses = FALSE)
-# readr::write_rds(mexp, testthat::test_path("testdata/MHQuant_demo.rds"))
+# readr::write_rds(mexp, testthat::test_path("testdata/masshunter/MHQuant_demo.rds"))
 
 mexp_empty <- MRMhubExperiment()
 mexp <- lipidomics_dataset
@@ -470,14 +470,14 @@ test_that("set_analysis_order orders according to set criteria and absence/prese
   mexp <- mrmhub::import_data_masshunter(
     mexp,
     path = testthat::test_path(
-      "23_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq_notimestamp.csv"
+      "testdata/masshunter/23_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq_notimestamp.csv"
     ),
     import_metadata = FALSE
   )
   mexp <- mrmhub::import_metadata_msorganiser(
     mexp,
     path = testthat::test_path(
-      "MRMhub_Metadata_Template_191_20240226_MHQuant_S1P_V1_reorder.xlsx"
+      "testdata/metadata/MRMhub_Metadata_Template_191_20240226_MHQuant_S1P_V1_reorder.xlsx"
     ),
     excl_unmatched_analyses = FALSE
   )
@@ -494,14 +494,14 @@ test_that("set_analysis_order orders according to set criteria and absence/prese
   mexp <- mrmhub::import_data_masshunter(
     mexp,
     path = testthat::test_path(
-      "22_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq.csv"
+      "testdata/masshunter/22_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq.csv"
     ),
     import_metadata = FALSE
   )
   mexp <- mrmhub::import_metadata_msorganiser(
     mexp,
     path = testthat::test_path(
-      "MRMhub_Metadata_Template_191_20240226_MHQuant_S1P_V1_reorder.xlsx"
+      "testdata/metadata/MRMhub_Metadata_Template_191_20240226_MHQuant_S1P_V1_reorder.xlsx"
     ),
     excl_unmatched_analyses = FALSE
   )
