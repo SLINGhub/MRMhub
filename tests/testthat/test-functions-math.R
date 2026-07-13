@@ -5,6 +5,14 @@ test_that("cv works", {
   expect_equal(cv(1, na.rm = TRUE), NA_real_)
 })
 
+test_that("cv robust uses scaled MAD / median", {
+  # Robust CV = 1.4826 * MAD / median * 100 (scaled MAD, so it is on the same
+  # scale as the standard SD / mean CV).
+  x <- c(5, 6, 3, 4, 5, 10)
+  expect_equal(cv(x, use_robust_cv = TRUE), 29.652)
+  expect_equal(cv(x, use_robust_cv = TRUE), mad(x) / median(x) * 100)
+})
+
 test_that("cv_log works", {
   expect_equal(cv_log(c(5, 6, 3, 4, 5, NA), na.rm = TRUE), 27.0819963)
   expect_equal(cv_log(c(5, 6, 3, 4, 5, NA), na.rm = FALSE), NA_real_)
@@ -88,8 +96,8 @@ test_that("methods 'sd' and 'z_normal' calculate bounds correctly", {
 
 test_that("method 'mad' calculates bounds correctly", {
   x <- c(1, 2, 3, 4, 100)
-  # median=3, mad=1. With k=3, fences are 0 and 6.
-  # Smallest value >= 0 is 1. Largest value <= 6 is 4.
+  # median=3, scaled mad=1.4826. With k=3, fences are approx -1.45 and 7.45.
+  # Smallest value within is 1. Largest value within is 4.
   expect_equal(get_outlier_bounds(x, "mad"), c(1, 4))
 
   # Test with a custom k that includes the outlier

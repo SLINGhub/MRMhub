@@ -16,7 +16,7 @@ test_that("calc_qc_metrics works for all qc groups", {
   mexp_res <- calc_qc_metrics(mexp, use_batch_medians = FALSE)
 
   expect_s4_class(mexp_res, "MRMhubExperiment")
-  expect_equal(dim(mexp_res@metrics_qc), c(29, 80))
+  expect_equal(dim(mexp_res@metrics_qc), c(29, 79))
 
   expect_equal(max(mexp_res@metrics_qc$product_mz), 829.4)
   expect_equal(min(mexp_res@metrics_qc$missing_intensity_prop_spl), 0)
@@ -71,7 +71,7 @@ test_that("calc_qc_metrics batch-wise works for all qc groups", {
   mexp_res <- calc_qc_metrics(mexp, use_batch_medians = TRUE)
 
   expect_s4_class(mexp_res, "MRMhubExperiment")
-  expect_equal(dim(mexp_res@metrics_qc), c(29, 80))
+  expect_equal(dim(mexp_res@metrics_qc), c(29, 79))
 
   expect_equal(max(mexp_res@metrics_qc$product_mz), 829.4)
   expect_equal(min(mexp_res@metrics_qc$missing_intensity_prop_spl), 0)
@@ -188,7 +188,7 @@ test_that("calc_qc_metrics batch-wise works for some incl FALSE ", {
     include_response_stats = TRUE,
     include_calibration_results = FALSE
   )
-  expect_equal(dim(mexp_res@metrics_qc), c(29, 66))
+  expect_equal(dim(mexp_res@metrics_qc), c(29, 65))
 
   expect_true("norm_intensity_cv_spl" %in% colnames(mexp_res@metrics_qc))
   expect_false("conc_cv_spl" %in% colnames(mexp_res@metrics_qc))

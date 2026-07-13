@@ -491,9 +491,9 @@ calc_qc_metrics <- function(
         ),
         norm_intensity_cv_ltr = cv(
           .data$feature_norm_intensity[.data$qc_type == "LTR"],
-          na.rm = TRUE
+          na.rm = TRUE,
+          use_robust_cv
         ),
-        use_robust_cv,
         norm_intensity_cv_nist = cv(
           .data$feature_norm_intensity[.data$qc_type == "NIST"],
           na.rm = TRUE,
@@ -589,7 +589,8 @@ calc_qc_metrics <- function(
         ),
         conc_cv_ltr = cv(
           .data$feature_conc[.data$qc_type == "LTR"],
-          na.rm = TRUE
+          na.rm = TRUE,
+          use_robust_cv
         ),
         conc_dratio_sd_bqc = sd(
           .data$feature_conc[.data$qc_type == "BQC"],

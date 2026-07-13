@@ -6,7 +6,9 @@
 #' @param x a numeric vector with untransformed data
 #' @param na.rm logical, if TRUE then NA values are stripped from x before
 #' computation takes place
-#' @param use_robust_cv logical, if TRUE then the robust coefficient of variation
+#' @param use_robust_cv logical, if TRUE the robust coefficient of variation
+#' (scaled median absolute deviation / median) is computed instead of the
+#' standard CV (SD / mean)
 #'
 #' @return a numeric value. If x contains a zero or is not numeric,
 #' NA_real_ is returned
@@ -18,7 +20,10 @@
 
 cv <- function(x, na.rm = FALSE, use_robust_cv = FALSE) {
   if (use_robust_cv) {
-    mad(x, na.rm = na.rm, constant = 1) / median(x, na.rm = na.rm) * 100
+    # Robust CV: scaled MAD over the median, on the same scale as the standard
+    # SD / mean CV. mad()'s default constant (1.4826) makes MAD a consistent
+    # estimator of SD for normal data.
+    mad(x, na.rm = na.rm) / median(x, na.rm = na.rm) * 100
   } else {
     sd(x, na.rm = na.rm) / mean(x, na.rm = na.rm) * 100
   }
@@ -143,7 +148,9 @@ get_outlier_bounds <- function(
       k <- 3
     }
     med <- median(x)
-    mad_val <- mad(x, constant = 1)
+    # Scaled (consistent) MAD via mad()'s default constant (1.4826) so the fence
+    # is comparable to the "sd" method at the same k.
+    mad_val <- mad(x)
     lower <- med - k * mad_val
     upper <- med + k * mad_val
   } else if (method == "sd") {
