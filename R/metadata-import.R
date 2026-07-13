@@ -97,8 +97,8 @@ get_metadata_batches <- function(annot_analyses) {
 #' @description Imports metadata from a 'MRMhub Metadata Organizer' file (.xlsx) file and associates it with analysis data.
 #' @param data A `MRMhubExperiment` object
 #' @param path File name and path of the 'MRMhub Metadata Organizer' file (.xlsx) file
-#' @param excl_unmatched_analyses Exclude analyses (samples) that have no matching metadata
 #' @param ignore_warnings Ignore warnings from data validation and proceed with importing metadata
+#' @param excl_unmatched_analyses Exclude analyses (samples) that have no matching metadata
 #' @return An updated `MRMhubExperiment` object
 
 #' @examples
@@ -149,8 +149,8 @@ import_metadata_msorganiser <- function(
 #' @param table A data frame or tibble with analysis (sample) metadata. If `path` is also provided, an error will be raised.
 #' @param path A character string specifying the path to a CSV (.csv) or Excel (.xlsx) file. If `table` is also provided, an error will be raised.
 #' @param sheet Defines the sheet name in case an Excel file is provided.
-#' @param excl_unmatched_analyses Exclude analyses (samples) that have no matching metadata
 #' @param ignore_warnings Ignore warnings from data validation and proceed with importing metadata
+#' @param excl_unmatched_analyses Exclude analyses (samples) that have no matching metadata
 #' @return An updated `MRMhubExperiment` object
 #' @examples
 #' mexp <- MRMhubExperiment()
@@ -204,8 +204,8 @@ import_metadata_analyses <- function(
 #' @param table A data frame or tibble with analysis (sample) metadata. If `path` is also provided, an error will be raised.
 #' @param path A character string specifying the path to a CSV (.csv) or Excel (.xlsx) file. If `table` is also provided, an error will be raised.
 #' @param sheet Defines the sheet name in case an Excel file is provided.
-# #' @param excl_unmatched_analyses Exclude analyses (samples) that have no matching metadata
-#' @param ignore_warnings Ignore warnings from data validation and proceed with importing metadata
+# #' @param ignore_warnings Ignore warnings from data validation and proceed with importing metadata
+#' @param excl_unmatched_analyses Exclude analyses (samples) that have no matching metadata
 #' @return An updated `MRMhubExperiment` object
 #' @export
 #'
@@ -242,8 +242,8 @@ import_metadata_features <- function(
 #' @param table A data frame or tibble with analysis (sample) metadata. If `path` is also provided, an error will be raised.
 #' @param path A character string specifying the path to a CSV (.csv) or Excel (.xlsx) file. If `table` is also provided, an error will be raised.
 #' @param sheet Defines the sheet name in case an Excel file is provided.
-# #' @param excl_unmatched_analyses Exclude analyses (samples) that have no matching metadata
-#' @param ignore_warnings Ignore warnings from data validation and proceed with importing metadata
+# #' @param ignore_warnings Ignore warnings from data validation and proceed with importing metadata
+#' @param excl_unmatched_analyses Exclude analyses (samples) that have no matching metadata
 #' @return An updated `MRMhubExperiment` object
 #' @export
 #'
@@ -527,8 +527,8 @@ print_assertion_summary <- function(
 #' @description Metadata provided as a list of tibbles will validates for consistency again loaded analysis data of the provided MRMhubExperiment object and then transfered.
 #' @param data MRMhubExperiment object
 #' @param metadata List of tibbles or data.frames containing analysis, feature, istd, response curve tables
-#' @param excl_unmatched_analyses Exclude analyses (samples) that have no matching metadata
 #' @param ignore_warnings Ignore data validation warnings and proceed with adding metadata
+#' @param excl_unmatched_analyses Exclude analyses (samples) that have no matching metadata
 #' @return metadata list
 #' @keywords internal
 #'

@@ -456,15 +456,15 @@ import_data_csv_wide <- function(
 #'   added.
 #' @param path A single file path, multiple file paths, or a directory path. If
 #'   a directory is provided, all `*.csv` files within will be imported.
-#' @param column_mapping A named character vector mapping internal column names
-#'   to CSV column names. Should include keys such as `"analysis_id"`,
-#'   `"feature_id"`, and feature variable names. If `NULL` (default), the
-#'   function attempts automatic detection.
 #' @param import_metadata Logical indicating whether to import additional
 #'   metadata columns (e.g., batch ID, sample type) into the
 #'   `MRMhubExperiment` object. Supported metadata column names include
 #'   `"qc_type"`, `"batch_id"`, `"is_quantifier"`, `"is_istd"`, and
 #'   `"analysis_order"`.
+#' @param column_mapping A named character vector mapping internal column names
+#'   to CSV column names. Should include keys such as `"analysis_id"`,
+#'   `"feature_id"`, and feature variable names. If `NULL` (default), the
+#'   function attempts automatic detection.
 #' @param na_strings Character vector of strings to interpret as missing values
 #'   (`NA`). Blank fields are always treated as missing.
 #' @param warn_unrecognized_columns Logical indicating whether to issue a

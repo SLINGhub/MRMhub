@@ -72,11 +72,11 @@
 #' @param absolute_calibration Logical indicating whether to perform absolute calibration using
 #'   known concentrations of the reference sample (TRUE) or relative calibration (FALSE).
 #' @param batch_wise Logical indicating whether to perform calibration for each batch seperately (TRUE) or for all samples together (FALSE).
+#' @param summarize_fun Either "mean" or "median". If `absolute_calibration = TRUE`,
+#' this function is used to summarize the reference sample concentrations across analyses of specified `reference_sample_id`. Default is "mean".
 #' @param store_conc_ratio Logical. Whether to store the ratio of measured
 #' (non-calibrated) compared to the expected (known) concentrations. Only applied if `absolute_calibration = TRUE`.
 #' This ratio is stored under the feature variable `feature_conc_ratio`. By default it is `TRUE` when `variable = 'conc'`, otherwise `FALSE`.
-#' @param summarize_fun Either "mean" or "median". If `absolute_calibration = TRUE`,
-#' this function is used to summarize the reference sample concentrations across analyses of specified `reference_sample_id`. Default is "mean".
 #' @param undefined_conc_action Character string specifying how to handle features
 #'   without defined concentrations in reference samples when `absolute_calibration = TRUE`.
 #'   Must be one of `"original"` (keep original values), `"na"` (set to `NA`), or

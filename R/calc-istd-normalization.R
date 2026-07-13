@@ -165,9 +165,9 @@ normalize_by_istd <- function(data = NULL, ignore_missing_annotation = FALSE) {
 #' @param data A `MRMhubExperiment` object
 #' @param concentration_unit Character string indicating the type of concentration to calculate and export.
 #'   Must be either `"molar"` for molar concentrations (e.g., µmol/L) or `"mass"` for mass concentrations (e.g., µg/L).
-#' @param ignore_istds If `TRUE`, ISTD features will be ignored in the concentration calculation and the resulting concentration will be `NA`. Default is `FALSE`.
 #' @param ignore_missing_annotation If `FALSE`, an error will be raised if any of the following information is missing: ISTD concentration, ISTD mix volume, and sample amounts for any feature.
 #'   If `TRUE`, missing annotations will be ignored, and resulting feature concentration will be `NA`
+#' @param ignore_istds If `TRUE`, ISTD features will be ignored in the concentration calculation and the resulting concentration will be `NA`. Default is `FALSE`.
 #' @return A `MRMhubExperiment` object with the calculated analyte concentrations added to the
 #'   `dataset` table in the `feature_conc` column (and the intermediate `feature_pmol_total`).
 #'

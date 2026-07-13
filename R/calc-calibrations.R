@@ -25,9 +25,9 @@
 #'   `"none"`, `"1/x"`, or `"1/x^2"`. This method will be applied if no
 #'   specific weighting method is defined for a feature in the metadata, or
 #'   when `fit_overwrite = TRUE`.
+#'@param ignore_failed_calibration If `FALSE`, raises error if calibration curve fit fails for any feature. If `TRUE`, failed fits will be ignored, and resulting feature concentration will be `NA`.
 #'@param ignore_missing_annotation If `FALSE`, raises error if any of the following information is missing: calibration curve data, ISTD mix volume and sample amounts for any feature.
 #'   If `TRUE`, missing annotations will be ignored, and resulting feature concentration will be `NA`
-#'@param ignore_failed_calibration If `FALSE`, raises error if calibration curve fit fails for any feature. If `TRUE`, failed fits will be ignored, and resulting feature concentration will be `NA`.
 #' @return A modified `MRMhubExperiment` object with updated concentration values.
 #'
 #' @seealso [calc_calibration_results()] for calculating the calibration curve results including LoD and LoQ.

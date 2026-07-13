@@ -10,11 +10,11 @@
 #' @param data MRMhubExperiment object
 #' @param variable Feature variable used for outlier detection
 #' @param filter_data Use all (default) or qc-filtered data
+#' @param pca_component PCA component to be used
 #' @param qc_types QC types included in the outlier detection
+#' @param fence_multiplicator Multiplicator for SD or MAD, respectively.
 #' @param summarize_fun Function used to summarize the features, either "pca" based on PCA, or "rma" based on mean relative abundance (RMA) of all features
 #' @param outlier_detection Outlier detection method, either based on "sd" or "mad"
-#' @param fence_multiplicator Multiplicator for SD or MAD, respectively.
-#' @param pca_component PCA component to be used
 #' @param log_transform Log-transform data for outlier detection
 #' @return MRMhubExperiment object
 #' @export
