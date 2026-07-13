@@ -5,6 +5,8 @@
 #' Value_{Interfering Feature}}
 #'
 #' @param data MRMhubExperiment object
+#' @param variable Name of the variable to be corrected, e.g.
+#'   `feature_intensity`.
 #' @param feature Name of feature to be corrected
 #' @param interfering_feature Name of feature that is interfering, i.e.
 #'   contributing to the signal of `feature`
@@ -13,8 +15,6 @@
 #' @param neg_to_na If `TRUE`, negative or zero values after correction will be replaced with `NA`. Default: `FALSE`.
 #' @param updated_feature_id Optional. New name of corrected feature. If empty
 #'   then feature name will not change.
-#' @param variable Default: `feature_intensity`. Name of Variable to be
-#'   corrected.
 #' @return MRMhubExperiment object
 #' @export
 
@@ -161,7 +161,7 @@ correct_interference_manual <- function(
 #' subtracting interference (e.g., isotope overlap or in-source fragments). The
 #' correction is applied using the following formula: \deqn{value\_corrected =
 #' value\_raw - value\_raw\_interfering\_feature \times
-#' proportion\_interference}
+#' interference\_contribution}
 #'
 #' The interfering features and their relative contributions must be defined in
 #' the feature metadata.
@@ -174,8 +174,8 @@ correct_interference_manual <- function(
 #' set `sequential_correction = FALSE`
 #'
 #' @details For isotopic interference correction of MRM/PRM data, the relative
-#' isotope abundances needed for the calculation ('proportion_interference') can
-#' be calculated using the LICAR application (Gao et al., 2021), see below..
+#' isotope abundances needed for the calculation (`interference_contribution`) can
+#' be calculated using the LICAR application (Gao et al., 2021), see below.
 #'
 #' @param data MRMhubExperiment object containing lipidomics data.
 #' @param variable Name of the variable to be corrected. Default:
