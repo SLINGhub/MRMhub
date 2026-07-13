@@ -1418,7 +1418,7 @@ correct_drift_loess <- function(
 #' batch variation in an automated direct infusion mass spectrometry (DIMS) metabolomics workflow.
 #' Anal Bioanal Chem 405, 5147–5157 (2013). https://doi-org.libproxy1.nus.edu.sg/10.1007/s00216-013-6856-7
 #'
-#' @seealso \code{\link[stats]{smooth.spline}}
+#' @seealso [stats::smooth.spline()]
 correct_drift_cubicspline <- function(
   data = NULL,
   variable,

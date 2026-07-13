@@ -6,8 +6,8 @@
 #'
 #' - Info: General  information including date, author, and MRMhub version, processing status and feature concentration unit.
 #' - Feature_QC_metrics: Quality control metrics of all features.
-#' - QCfilt_x_StudySamples: Feature (QC)-filtered data (variable defiend via `filtered_variable`) in study samples ('SPL'). Filter have to be set via [filter_features_qc()]. The _x_ corresponds to the `filtered_variable` argument.
-#' - QCfilt_x_AllSamples: Feature (QC)-filtered data (variable defiend via `filtered_variable`) in all samples. Filter have to be set via [filter_features_qc()]. The _x_ corresponds to the `filtered_variable` argument.
+#' - QCfilt_x_StudySamples: Feature (QC)-filtered data (variable defined via `filtered_variable`) in study samples ('SPL'). Filter have to be set via [filter_features_qc()]. The _x_ corresponds to the `filtered_variable` argument.
+#' - QCfilt_x_AllSamples: Feature (QC)-filtered data (variable defined via `filtered_variable`) in all samples. Filter have to be set via [filter_features_qc()]. The _x_ corresponds to the `filtered_variable` argument.
 #' - Conc_FullDataset: Final feature concentrations from the full, non-filtered dataset.
 #' - Raw_Intensity_FullDataset: Raw feature intensities from the full, non-filtered dataset.
 #' - Norm_Intensity_FullDataset: Normalized feature intensities from the full, non-filtered dataset.
@@ -28,7 +28,7 @@
 #' @param normalized_variable A character string indicating if and which normalized feature values  (by reference sample) to include in the report.See also `[calibrate_by_reference()]`.
 #' @param overwrite A logical value indicating whether to overwrite the file if it already exists. Default is `TRUE`.
 #' @details
-#' #' If certain data sets are not available, the function includes empty tables for the corresponding dataset.
+#' If certain data sets are not available, the function includes empty tables for the corresponding dataset.
 #'
 #' Concentration corresponds to the final concentration values after applying isotope correction, and drift and batch correction, if applicable.
 #' If any corrections, such as drift or batch correction, were applied to raw or normalized intensities, the exported values will reflect these corrections.

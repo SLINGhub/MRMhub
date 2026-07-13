@@ -8,7 +8,7 @@
 #' * Difference plot: (CV after - CV before) vs mean CV
 #' * Ratio plot: log2 of (CV after / CV before) vs mean CV
 #'
-#' Features can be grouped and visualized by their fature class using facets.
+#' Features can be grouped and visualized by their feature class using facets.
 #'
 #' The resulting visualization helps assess whether normalization improved measurement
 #' precision across different features and sample/QC types.

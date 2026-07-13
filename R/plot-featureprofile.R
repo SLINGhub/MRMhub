@@ -47,7 +47,7 @@
 #' @param grid_minor_color Color for minor grid lines. Default is "grey50".
 #' @param grid_minor_linewidth Linewidth for minor grid lines. Default is 0.1.
 #'
-#' @returns A `ggplot` object representing the abundance profile plot.
+#' @return A `ggplot` object representing the abundance profile plot.
 #'
 #' @export
 plot_abundanceprofile <- function(

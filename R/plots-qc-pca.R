@@ -543,7 +543,7 @@ plot_pca <- function(
 #' @param font_base_size A numeric value indicating the base font size for
 #' plot text elements. Default is 7.
 #'
-#' @returns ggplot object with PCA loadings plot
+#' @return ggplot object with PCA loadings plot
 #'
 #' @export
 plot_pca_loading <- function(

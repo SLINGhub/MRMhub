@@ -38,7 +38,7 @@ get_feature_correlations <- function(tbl, cor_min_neg, cor_min) {
 #'
 #' This plot can be used to visually inspect highly correlated features, that may represent duplicate identifications or represent isomers.
 #'
-#' @param data A data frame containing numeric columns for correlation analysis
+#' @param data A `MRMhubExperiment` object containing the dataset and metadata.
 #'
 #' @param variable A character string indicating the variable to use for PCA
 #' analysis. Must be one of: "area", "height", "intensity", "norm_intensity", "response",

@@ -90,7 +90,7 @@
 #' @param cols_page Number of plot columns. Default is 5.
 #' @param specific_page Show/save a specific page number only. `NA` plots/saves all pages.
 #' @param page_orientation Orientation of PDF, either `"LANDSCAPE"` or
-#'   `"PORTRAIT"`. Default is `"LANDSCAPE
+#'   `"PORTRAIT"`. Default is `"LANDSCAPE"`.
 #' @param show_progress Logical. If `TRUE`, displays a progress bar during
 #'   plot creation.
 #'

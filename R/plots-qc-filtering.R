@@ -14,8 +14,8 @@
 #' @return A `ggplot2` object showing the feature QC filtering summary by feature class.
 #'
 #' @seealso
-#' \code{\link{plot_qc_summary_overall}} for an overall summary plot
-#' \code{\link{filter_features_qc}} for comparing QC metrics
+#' [plot_qc_summary_overall()] for an overall summary plot
+#' [filter_features_qc()] for comparing QC metrics
 #'
 #' @export
 
