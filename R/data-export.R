@@ -1,3 +1,16 @@
+# `values_fn` for wide exports: each (analysis, feature) cell must hold exactly
+# one value. More than one means duplicate rows in the data, which pivot_wider
+# would otherwise silently collapse into a list-column; abort loudly instead.
+check_single_export_value <- function(x) {
+  if (length(x) > 1L) {
+    cli::cli_abort(c(
+      "Cannot build a wide export table: more than one value for a feature in an analysis.",
+      "i" = "This indicates duplicate (analysis, feature) rows in the data."
+    ))
+  }
+  x
+}
+
 #' Write a data-processing report (Excel)
 #'
 #' Generates a data processing report from a `MRMhubExperiment` object and writes it to an Excel file.
@@ -132,7 +145,8 @@ save_report_xlsx <- function(
       ))) |>
       tidyr::pivot_wider(
         names_from = "feature_id",
-        values_from = "feature_intensity"
+        values_from = "feature_intensity",
+        values_fn = check_single_export_value
       )
   } else {
     d_intensity_wide <- tibble(
@@ -153,7 +167,8 @@ save_report_xlsx <- function(
       ))) |>
       tidyr::pivot_wider(
         names_from = "feature_id",
-        values_from = "feature_norm_intensity"
+        values_from = "feature_norm_intensity",
+        values_fn = check_single_export_value
       )
   } else {
     d_norm_intensity_wide <- tibble(
@@ -175,7 +190,8 @@ save_report_xlsx <- function(
       ))) |>
       tidyr::pivot_wider(
         names_from = "feature_id",
-        values_from = "feature_conc"
+        values_from = "feature_conc",
+        values_fn = check_single_export_value
       )
   } else {
     d_conc_wide <- tibble("No concentration data available." = NA) |>
@@ -193,7 +209,8 @@ save_report_xlsx <- function(
       dplyr::filter(!str_detect(.data$feature_id, "\\(IS")) |>
       tidyr::pivot_wider(
         names_from = "feature_id",
-        values_from = any_of(filtered_variable)
+        values_from = any_of(filtered_variable),
+        values_fn = check_single_export_value
       )
 
     d_conc_wide_QC_all <- data@dataset_filtered |>
@@ -206,7 +223,8 @@ save_report_xlsx <- function(
       dplyr::filter(!str_detect(.data$feature_id, "\\(IS")) |>
       tidyr::pivot_wider(
         names_from = "feature_id",
-        values_from = any_of(filtered_variable)
+        values_from = any_of(filtered_variable),
+        values_fn = check_single_export_value
       )
   } else {
     filtered_variable_strip <- ""
@@ -229,7 +247,8 @@ save_report_xlsx <- function(
       dplyr::filter(!str_detect(.data$feature_id, "\\(IS")) |>
       tidyr::pivot_wider(
         names_from = "feature_id",
-        values_from = any_of(normalized_variable)
+        values_from = any_of(normalized_variable),
+        values_fn = check_single_export_value
       )
   } else {
     d_wide_all_normalized <- tibble(
@@ -583,7 +602,11 @@ save_dataset_csv <- function(
 
   ds <- d_filt |>
     dplyr::select(all_of(c(flds, variable))) |>
-    tidyr::pivot_wider(names_from = "feature_id", values_from = !!variable_sym)
+    tidyr::pivot_wider(
+      names_from = "feature_id",
+      values_from = !!variable_sym,
+      values_fn = check_single_export_value
+    )
 
   readr::write_csv(ds, file = path, col_names = TRUE)
   if (variable_strip == "conc") {
