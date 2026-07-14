@@ -1683,9 +1683,11 @@ clean_analysis_metadata <- function(d_analyses) {
         stringr::regex("\\.mzML|\\.d|\\.raw|\\.wiff|\\.lcd", ignore_case = TRUE)
       ),
       sample_id = stringr::str_squish(as.character(.data$sample_id)),
-      replicate_no = as.integer(stringr::str_squish(as.character(
-        .data$replicate_no
-      ))),
+      replicate_no = coerce_checked(
+        .data$replicate_no,
+        "replicate_no",
+        integer = TRUE
+      ),
       specimen = stringr::str_squish(as.character(.data$specimen)),
       valid_analysis = unname(c(
         "yes" = TRUE,
@@ -1944,7 +1946,10 @@ clean_istd_metadata <- function(d_istds) {
       ,
       remarks = as.character(.data$remarks)
     ) |>
-    mutate(across(starts_with("feature_conc_"), ~ as.numeric(.))) |>
+    mutate(across(
+      starts_with("feature_conc_"),
+      \(x) coerce_checked(x, dplyr::cur_column())
+    )) |>
     mutate(across(where(is.character), str_squish)) |>
     dplyr::select(any_of(
       c(
@@ -1996,7 +2001,10 @@ clean_response_metadata <- function(d_rqc) {
       ),
       analysis_id = stringr::str_squish(as.character(.data$analysis_id)),
       curve_id = stringr::str_squish(as.character(.data$curve_id)),
-      analyzed_amount = as.numeric(stringr::str_squish(.data$analyzed_amount)),
+      analyzed_amount = coerce_checked(
+        .data$analyzed_amount,
+        "analyzed_amount"
+      ),
       analyzed_amount_unit = stringr::str_squish(.data$analyzed_amount_unit)
     ) |>
     dplyr::select(

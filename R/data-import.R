@@ -1011,11 +1011,11 @@ parse_masshunter_csv <- function(
     dplyr::mutate(
       dplyr::across(
         .cols = dplyr::any_of(names(new_numeric_colnames)),
-        .fns = \(x) as.numeric(stringr::str_replace(x, ",", "."))
+        .fns = \(x) coerce_checked(x, dplyr::cur_column(), decimal_comma = TRUE)
       ),
       dplyr::across(
         .cols = dplyr::any_of(names(new_int_colnames)),
-        .fns = as.integer
+        .fns = \(x) coerce_checked(x, dplyr::cur_column(), integer = TRUE)
       ),
       dplyr::across(
         .cols = dplyr::any_of(names(new_logical_colnames)),
@@ -1483,11 +1483,17 @@ parse_plain_long_csv <- function(
       dplyr::across(
         dplyr::starts_with("feature_") &
           !dplyr::matches(c("_name", "_id", "_class")),
-        as.numeric
+        \(x) coerce_checked(x, dplyr::cur_column())
       )
     ) |>
-    dplyr::mutate(dplyr::across(ends_with("_mz"), as.numeric)) |>
-    dplyr::mutate(dplyr::across(ends_with("_energy"), as.numeric)) |>
+    dplyr::mutate(dplyr::across(
+      ends_with("_mz"),
+      \(x) coerce_checked(x, dplyr::cur_column())
+    )) |>
+    dplyr::mutate(dplyr::across(
+      ends_with("_energy"),
+      \(x) coerce_checked(x, dplyr::cur_column())
+    )) |>
     dplyr::mutate(integration_qualifier = FALSE) |>
     dplyr::select(
       -any_of(c(
@@ -1649,13 +1655,13 @@ parse_plain_wide_csv <- function(
         mutate(
           across(
             .cols = dplyr::any_of(c("is_quantifier", "is_istd")),
-            .fns = \(x) as.logical(str_squish(as.character(x)))
+            .fns = \(x) coerce_logical_checked(x, dplyr::cur_column())
           )
         ) |>
         mutate(
           across(
             .cols = dplyr::any_of("analysis_order"),
-            .fns = \(x) as.numeric(str_squish(as.character(x)))
+            .fns = \(x) coerce_checked(x, dplyr::cur_column())
           )
         )
 
