@@ -29,7 +29,7 @@
 #' @param point_size Size of the data points. Default is 2
 #' @param point_transparency Alpha transparency of the data point. Default is 0.9
 #' @param line_transparency Alpha transparency of the regression lines. Default is 0.9
-#' @param base_font_size Base font size for the plot.
+#' @param font_base_size Base font size for the plot.
 #'
 #' @return A `ggplot` object representing faceted scatter plots
 #'
@@ -50,7 +50,7 @@ plot_rt_vs_chain <- function(
   point_size = 2,
   point_transparency = 0.9,
   line_transparency = 0.5,
-  base_font_size = 8
+  font_base_size = 8
 ) {
   # -- Data validation --
 
@@ -384,7 +384,7 @@ plot_rt_vs_chain <- function(
     # Show open symbol for non-outlier, filled for outlier in legend
     scale_shape_manual(values = c("No" = 1, "Yes" = 8)) +
     labs(x = x_title, y = "Median Retention Time", shape = "Outlier") +
-    theme_bw(base_size = base_font_size) +
+    theme_bw(base_size = font_base_size) +
     theme(
       panel.grid.minor = element_blank()
     )

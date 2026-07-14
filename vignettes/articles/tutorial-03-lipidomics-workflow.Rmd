@@ -146,7 +146,7 @@ plot_rt_vs_chain(
   myexp, 
   qc_types = "SPL", 
   x_var = "total_c", outlier_residual_min = 0.3,
-  base_font_size = 8, 
+  font_base_size = 8,
   point_size = 1)  
 ```
 
@@ -181,7 +181,7 @@ plot_runscatter(
   exclude_feature_filter = "Hex|282",
   cap_outliers = TRUE,
   log_scale = FALSE, 
-  show_batches = TRUE,base_font_size = 5,
+  show_batches = TRUE,font_base_size = 5,
   output_pdf = FALSE,
   path = "./output/runscatter_istd.pdf",
   cols_page = 4, rows_page = 3

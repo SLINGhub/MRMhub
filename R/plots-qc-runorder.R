@@ -26,7 +26,7 @@
 #' instead of line separators.
 #' @param batch_line_color Color of the batch separator lines.
 #' @param batch_fill_color Color of the batch shaded areas.
-#' @param base_font_size Numeric, base font size for the plot.
+#' @param font_base_size Numeric, base font size for the plot.
 #' @return A `ggplot` object representing the run sequence plot.
 #' @family QC plots
 #' @export
@@ -41,7 +41,7 @@ plot_runsequence <- function(
   batch_zebra_stripe = FALSE,
   batch_line_color = "#b6f0c5",
   batch_fill_color = "grey90",
-  base_font_size = 8
+  font_base_size = 8
 ) {
   # Check if data is valid
   check_data(data)
@@ -106,7 +106,7 @@ plot_runsequence <- function(
       x = if (show_timestamp) "Acquisition Time" else "Analysis Order",
       y = "Sample Type"
     ) +
-    theme_bw(base_size = base_font_size) +
+    theme_bw(base_size = font_base_size) +
     theme(
       panel.grid.major.y = element_blank(),
       panel.grid.major.x = element_line(
@@ -120,15 +120,15 @@ plot_runsequence <- function(
         linewidth = 0.25
       ),
       panel.border = element_rect(linewidth = 1),
-      axis.title = element_text(face = "plain", size = base_font_size),
-      axis.text.x = element_text(face = "plain", size = base_font_size),
-      axis.text.y = element_text(face = "plain", size = base_font_size),
-      axis.text.y.right = element_text(face = "plain", size = base_font_size),
+      axis.title = element_text(face = "plain", size = font_base_size),
+      axis.text.x = element_text(face = "plain", size = font_base_size),
+      axis.text.y = element_text(face = "plain", size = font_base_size),
+      axis.text.y.right = element_text(face = "plain", size = font_base_size),
       axis.ticks.y.right = element_blank(),
       axis.title.y.right = element_text(
         angle = 0,
         vjust = 0.5,
-        size = base_font_size
+        size = font_base_size
       ),
       axis.ticks.x = element_line(
         colour = "grey80",
@@ -362,7 +362,7 @@ plot_runsequence <- function(
 
 #' @param x_gridlines Logical, whether to show major x-axis gridlines
 #' @param linewidth Numeric, line width used for whiskers of the boxplot
-#' @param base_font_size Numeric, base font size for the plot
+#' @param font_base_size Numeric, base font size for the plot
 #' @param relative_log_abundances Logical, whether to use relative log abundances (RLA) or just log-transformed values
 #' @param show_plot Logical, whether to display the plot. Default is `TRUE`.
 #' @return A list with the `ggplot` object representing the RLA plot and a table with detected outliers if `outlier_detection = TRUE`.
@@ -413,7 +413,7 @@ plot_rla_boxplot <- function(
 
   x_gridlines = FALSE,
   linewidth = 0.2,
-  base_font_size = 8,
+  font_base_size = 8,
   relative_log_abundances = TRUE,
   show_plot = TRUE
 ) {
@@ -957,7 +957,7 @@ plot_rla_boxplot <- function(
     ggplot2::guides(
       color = ggplot2::guide_legend(title = NULL, override.aes = list(size = 3))
     ) +
-    theme_bw(base_size = base_font_size) +
+    theme_bw(base_size = font_base_size) +
     ylab(bquote(bold(log[2] ~ .(variable)))) +
     xlab("Analysis Order No.") +
     theme(
@@ -965,20 +965,20 @@ plot_rla_boxplot <- function(
       panel.grid.minor.y = element_blank(),
       panel.grid.major.x = element_blank(), #element_line(colour = "#bdbdbd", linetype = "dotted", size = .5),
       panel.grid.minor.x = element_blank(), #element_line(colour = "grey88", linetype = "dotted", size = .5),
-      axis.text.y = element_text(size = base_font_size),
+      axis.text.y = element_text(size = font_base_size),
       axis.text.x = element_text(
-        size = base_font_size,
+        size = font_base_size,
         angle = x_text_angle,
         vjust = 0.5,
         hjust = x_text_just
       ),
-      axis.title = element_text(size = base_font_size * 1, face = "bold"),
+      axis.title = element_text(size = font_base_size * 1, face = "bold"),
       panel.border = element_rect(linewidth = 1, color = "grey20"),
       legend.position = "inside",
       legend.direction = "horizontal", # vertical layout
-      legend.text = element_text(size = base_font_size * 0.8), # text size
-      legend.title = element_text(size = base_font_size * 0.8),
-      legend.key.size = unit(base_font_size * 0.8, "pt"), # box size
+      legend.text = element_text(size = font_base_size * 0.8), # text size
+      legend.title = element_text(size = font_base_size * 0.8),
+      legend.key.size = unit(font_base_size * 0.8, "pt"), # box size
       legend.position.inside = c(0.6, 0.1)
     )
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/plots-qc-identification.R
 \name{plot_rt_vs_chain}
 \alias{plot_rt_vs_chain}
-\title{Plot Retention Time versus Chain Length and Saturation}
+\title{Plot retention time versus chain length and saturation}
 \usage{
 plot_rt_vs_chain(
   data = NULL,
@@ -18,15 +18,18 @@ plot_rt_vs_chain(
   point_size = 2,
   point_transparency = 0.9,
   line_transparency = 0.5,
-  base_font_size = 8
+  font_base_size = 8
 )
 }
 \arguments{
-\item{data}{A \code{MRMhubExperiment} object}
+\item{data}{A \code{MRMhubExperiment} object.}
 
 \item{x_var}{Variable to use for the x-axis. One ofEither "total_c", "total_db" or "ecn".}
 
-\item{qc_types}{A character vector of QC types to include in the plot. If \code{NA}, all}
+\item{qc_types}{A character vector specifying the QC types to plot. It must
+contain at least one element. The default \code{NA} plots any of the non-blank
+QC types ("SPL", "TQC", "BQC", "HQC", "MQC", "LQC", "NIST", "LTR") present
+in the dataset.}
 
 \item{outliers_highlight}{Whether to highlight potential outliers in the plot. Default is \code{TRUE}.}
 
@@ -49,10 +52,10 @@ fitted line and the median RT of the feature. The value is used to flag outliers
 
 \item{line_transparency}{Alpha transparency of the regression lines. Default is 0.9}
 
-\item{base_font_size}{Base font size for the plot.}
+\item{font_base_size}{Base font size for the plot.}
 }
 \value{
-A \code{ggplot2} object representing faceted scatter plots
+A \code{ggplot} object representing faceted scatter plots
 }
 \description{
 Generates  scatter plots of retention time (RT) versus either chain
@@ -71,3 +74,19 @@ the retention time can be plotted against the ECN, which is calculated as
 to be adjusted to the specific chromatographic properties. The default value is
 \eqn{ecn_k = 1.5}.
 }
+\seealso{
+Other QC plots:
+\code{\link[=plot_feature_correlations]{plot_feature_correlations()}},
+\code{\link[=plot_normalization_qc]{plot_normalization_qc()}},
+\code{\link[=plot_pca]{plot_pca()}},
+\code{\link[=plot_pca_loading]{plot_pca_loading()}},
+\code{\link[=plot_qc_interferences]{plot_qc_interferences()}},
+\code{\link[=plot_qc_matrixeffects]{plot_qc_matrixeffects()}},
+\code{\link[=plot_qc_summary_byclass]{plot_qc_summary_byclass()}},
+\code{\link[=plot_qc_summary_overall]{plot_qc_summary_overall()}},
+\code{\link[=plot_qcmetrics_comparison]{plot_qcmetrics_comparison()}},
+\code{\link[=plot_rla_boxplot]{plot_rla_boxplot()}},
+\code{\link[=plot_runscatter]{plot_runscatter()}},
+\code{\link[=plot_runsequence]{plot_runsequence()}}
+}
+\concept{QC plots}

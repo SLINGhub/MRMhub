@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot-runscatter.R
 \name{plot_runscatter}
 \alias{plot_runscatter}
-\title{RunScatter Plot}
+\title{RunScatter plot}
 \usage{
 plot_runscatter(
   data = NULL,
@@ -44,7 +44,7 @@ plot_runscatter(
   point_size = 1.5,
   point_transparency = 1,
   point_border_width = NA,
-  base_font_size = 10,
+  font_base_size = 10,
   rows_page = 3,
   cols_page = 3,
   specific_page = NA,
@@ -64,7 +64,7 @@ plot_runscatter(
 )
 }
 \arguments{
-\item{data}{A \code{MRMhubExperiment} object containing the dataset and metadata.}
+\item{data}{A \code{MRMhubExperiment} object.}
 
 \item{variable}{The variable to plot on the y-axis, one of 'intensity',
 'norm_intensity', 'conc', 'conc', 'rt', 'fwhm', 'area', 'height', response'.
@@ -80,13 +80,17 @@ variable name to plot the raw uncorrected feature values (e.g., \code{conc_raw})
 
 \item{include_istd}{Logical, whether to include internal standard (ISTD) features. Default is \code{TRUE}.}
 
-\item{include_feature_filter}{A regex pattern or a vector of feature names used to filter features by \code{feature_id}.
-If \code{NA} or an empty string (\code{""}) is provided, the filter is ignored. When a vector of length > 1 is supplied,
-is supplied, only features with exactly these names are selected (applied individually as OR conditions).}
+\item{include_feature_filter}{A regex pattern or a vector of feature names
+used to filter features by \code{feature_id}. If \code{NA} or an empty string (\code{""})
+is provided, the filter is ignored. When a vector of length > 1 is
+supplied, only features with exactly these names are selected (applied
+individually as OR conditions).}
 
-\item{exclude_feature_filter}{A regex pattern or a vector of feature names to exclude features by feature_id.
-If \code{NA} or an empty string (\code{""}) is provided, the filter is ignored. When a vector of length > 1 is supplied,
-is supplied, only features with exactly these names are excluded (applied individually as OR conditions).}
+\item{exclude_feature_filter}{A regex pattern or a vector of feature names
+used to exclude features by \code{feature_id}. If \code{NA} or an empty string
+(\code{""}) is provided, the filter is ignored. When a vector of length > 1 is
+supplied, only features with exactly these names are excluded (applied
+individually as OR conditions).}
 
 \item{plot_range}{Numeric vector of length 2, specifying the start and end indices of the analysis order to be plotted. \code{NA} plots all samples.}
 
@@ -148,7 +152,7 @@ If \code{NA} (default), the color assigned to the qc_type is used.}
 
 \item{point_border_width}{Width of the data point borders.}
 
-\item{base_font_size}{Base font size for the plot.}
+\item{font_base_size}{Base font size for the plot.}
 
 \item{rows_page}{Number of rows per page.}
 
@@ -191,7 +195,8 @@ lines using \code{label_wrap_width}. Default is \code{FALSE}.}
 \code{label_wrap = TRUE}. Default is \code{25}. Ignored when \code{label_wrap = FALSE}.}
 }
 \value{
-A list of ggplot2 plots, or \code{NULL} if `return
+A list of \code{ggplot} objects if \code{return_plots = TRUE}, otherwise
+\code{NULL} (the plots are drawn to the active device or written to a PDF).
 }
 \description{
 The \code{runscatter} function visualizes raw or processed feature signals across
@@ -240,3 +245,19 @@ add "_before" to the variable name, e.g. \code{conc_before} or \code{intensity_b
 and set \code{show_trend = TRUE}.
 }
 }
+\seealso{
+Other QC plots:
+\code{\link[=plot_feature_correlations]{plot_feature_correlations()}},
+\code{\link[=plot_normalization_qc]{plot_normalization_qc()}},
+\code{\link[=plot_pca]{plot_pca()}},
+\code{\link[=plot_pca_loading]{plot_pca_loading()}},
+\code{\link[=plot_qc_interferences]{plot_qc_interferences()}},
+\code{\link[=plot_qc_matrixeffects]{plot_qc_matrixeffects()}},
+\code{\link[=plot_qc_summary_byclass]{plot_qc_summary_byclass()}},
+\code{\link[=plot_qc_summary_overall]{plot_qc_summary_overall()}},
+\code{\link[=plot_qcmetrics_comparison]{plot_qcmetrics_comparison()}},
+\code{\link[=plot_rla_boxplot]{plot_rla_boxplot()}},
+\code{\link[=plot_rt_vs_chain]{plot_rt_vs_chain()}},
+\code{\link[=plot_runsequence]{plot_runsequence()}}
+}
+\concept{QC plots}

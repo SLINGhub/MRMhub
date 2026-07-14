@@ -2,7 +2,7 @@
 % Please edit documentation in R/plots-qc-runorder.R
 \name{plot_rla_boxplot}
 \alias{plot_rla_boxplot}
-\title{Relative Log Abundance (RLA) Plot}
+\title{Relative log abundance (RLA) plot}
 \usage{
 plot_rla_boxplot(
   data = NULL,
@@ -36,13 +36,13 @@ plot_rla_boxplot(
   batch_fill_color = "grey93",
   x_gridlines = FALSE,
   linewidth = 0.2,
-  base_font_size = 8,
+  font_base_size = 8,
   relative_log_abundances = TRUE,
   show_plot = TRUE
 )
 }
 \arguments{
-\item{data}{MRMhubExperiment}
+\item{data}{A \code{MRMhubExperiment} object.}
 
 \item{rla_type_batch}{Character, must be either "within" or "across", defining whether to use within-batch or across-batch RLA}
 
@@ -77,12 +77,17 @@ Default is \code{1}. Increase (e.g. \code{2}) for wider gaps, decrease for narro
 
 \item{include_istd}{Logical, whether to include internal standard (ISTD) features. Default is \code{TRUE}.}
 
-\item{include_feature_filter}{A regex pattern or a vector of feature names used to filter features by \code{feature_id}.
-If \code{NA} or an empty string (\code{""}) is provided, the filter is ignored. When a vector of length > 1 is supplied,
-is supplied, only features with exactly these names are selected (applied individually as OR conditions).}
+\item{include_feature_filter}{A regex pattern or a vector of feature names
+used to filter features by \code{feature_id}. If \code{NA} or an empty string (\code{""})
+is provided, the filter is ignored. When a vector of length > 1 is
+supplied, only features with exactly these names are selected (applied
+individually as OR conditions).}
 
-\item{exclude_feature_filter}{A regex pattern or a vector of feature names to exclude features by feature_id.
-If \code{NA} or an empty string (\code{""}) is provided, the filter is ignored. When a vector of length > 1 is supplied.}
+\item{exclude_feature_filter}{A regex pattern or a vector of feature names
+used to exclude features by \code{feature_id}. If \code{NA} or an empty string
+(\code{""}) is provided, the filter is ignored. When a vector of length > 1 is
+supplied, only features with exactly these names are excluded (applied
+individually as OR conditions).}
 
 \item{show_timestamp}{Logical, whether to use the acquisition timestamp as
 the x-axis instead of the run sequence number}
@@ -115,14 +120,14 @@ See get_outlier_bounds() for details. When using the "fold" method, either singl
 
 \item{linewidth}{Numeric, line width used for whiskers of the boxplot}
 
-\item{base_font_size}{Numeric, base font size for the plot}
+\item{font_base_size}{Numeric, base font size for the plot}
 
 \item{relative_log_abundances}{Logical, whether to use relative log abundances (RLA) or just log-transformed values}
 
 \item{show_plot}{Logical, whether to display the plot. Default is \code{TRUE}.}
 }
 \value{
-A list with the ggplot object representing the RLA plot and a table with detected outliers if \code{outlier_detection = TRUE}.
+A list with the \code{ggplot} object representing the RLA plot and a table with detected outliers if \code{outlier_detection = TRUE}.
 }
 \description{
 The Relative Log Abundance (RLA) plot visualizes standardized
@@ -145,3 +150,19 @@ De Livera et al. (2012) Normalizing and integrating metabolomics data. Analytica
 De Livera et al. (2015) Statistical Methods for Handling Unwanted Variation in Metabolomics Data. Analytical Chemistry 87(7):3606-3615
 \href{https://doi.org/10.1021/ac502439y}{DOI: 10.1021/ac502439y}
 }
+\seealso{
+Other QC plots:
+\code{\link[=plot_feature_correlations]{plot_feature_correlations()}},
+\code{\link[=plot_normalization_qc]{plot_normalization_qc()}},
+\code{\link[=plot_pca]{plot_pca()}},
+\code{\link[=plot_pca_loading]{plot_pca_loading()}},
+\code{\link[=plot_qc_interferences]{plot_qc_interferences()}},
+\code{\link[=plot_qc_matrixeffects]{plot_qc_matrixeffects()}},
+\code{\link[=plot_qc_summary_byclass]{plot_qc_summary_byclass()}},
+\code{\link[=plot_qc_summary_overall]{plot_qc_summary_overall()}},
+\code{\link[=plot_qcmetrics_comparison]{plot_qcmetrics_comparison()}},
+\code{\link[=plot_rt_vs_chain]{plot_rt_vs_chain()}},
+\code{\link[=plot_runscatter]{plot_runscatter()}},
+\code{\link[=plot_runsequence]{plot_runsequence()}}
+}
+\concept{QC plots}

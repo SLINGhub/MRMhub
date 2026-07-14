@@ -2,7 +2,7 @@
 % Please edit documentation in R/plots-qc-runorder.R
 \name{plot_runsequence}
 \alias{plot_runsequence}
-\title{RunSequence Plot}
+\title{RunSequence plot}
 \usage{
 plot_runsequence(
   data = NULL,
@@ -15,11 +15,11 @@ plot_runsequence(
   batch_zebra_stripe = FALSE,
   batch_line_color = "#b6f0c5",
   batch_fill_color = "grey90",
-  base_font_size = 8
+  font_base_size = 8
 )
 }
 \arguments{
-\item{data}{MRMhubExperiment object}
+\item{data}{A \code{MRMhubExperiment} object.}
 
 \item{qc_types}{QC types to be plotted. Can be a vector of QC types or a
 regular expression pattern. \code{NA} (default) displays all available QC/Sample
@@ -44,10 +44,10 @@ instead of line separators.}
 
 \item{batch_fill_color}{Color of the batch shaded areas.}
 
-\item{base_font_size}{Numeric, base font size for the plot.}
+\item{font_base_size}{Numeric, base font size for the plot.}
 }
 \value{
-A ggplot object representing the run sequence plot.
+A \code{ggplot} object representing the run sequence plot.
 }
 \description{
 The RunSequence plot provides an overview of the analysis design and
@@ -59,3 +59,19 @@ date, duration, and run time of the analysis.
 Setting \code{show_timestamp = TRUE} allows you to check for any interruptions in
 the analysis timeline.
 }
+\seealso{
+Other QC plots:
+\code{\link[=plot_feature_correlations]{plot_feature_correlations()}},
+\code{\link[=plot_normalization_qc]{plot_normalization_qc()}},
+\code{\link[=plot_pca]{plot_pca()}},
+\code{\link[=plot_pca_loading]{plot_pca_loading()}},
+\code{\link[=plot_qc_interferences]{plot_qc_interferences()}},
+\code{\link[=plot_qc_matrixeffects]{plot_qc_matrixeffects()}},
+\code{\link[=plot_qc_summary_byclass]{plot_qc_summary_byclass()}},
+\code{\link[=plot_qc_summary_overall]{plot_qc_summary_overall()}},
+\code{\link[=plot_qcmetrics_comparison]{plot_qcmetrics_comparison()}},
+\code{\link[=plot_rla_boxplot]{plot_rla_boxplot()}},
+\code{\link[=plot_rt_vs_chain]{plot_rt_vs_chain()}},
+\code{\link[=plot_runscatter]{plot_runscatter()}}
+}
+\concept{QC plots}

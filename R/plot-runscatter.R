@@ -106,7 +106,7 @@
 #' @param cols_page Number of columns per page.
 #' @param specific_page Show/save a specific page number only. `NA` plots/saves all pages.
 #' @param page_orientation Page orientation, "LANDSCAPE" or "PORTRAIT".
-#' @param base_font_size Base font size for the plot.
+#' @param font_base_size Base font size for the plot.
 #' @param use_dingbats Logical, whether to use Dingbats font in the PDF output for improved plotting speed. Default is `TRUE`. Set to `FALSE` if your PDF viewer does not show points correctly.
 #' @param show_progress Logical, whether to show a progress bar. Default is `TRUE`.
 #'
@@ -199,7 +199,7 @@ plot_runscatter <- function(
   point_size = 1.5,
   point_transparency = 1,
   point_border_width = NA,
-  base_font_size = 10,
+  font_base_size = 10,
 
   # Layout settings
   rows_page = 3,
@@ -590,7 +590,7 @@ plot_runscatter <- function(
     batch_line_color = batch_line_color,
     batch_fill_color = batch_fill_color,
     y_label = y_label,
-    base_font_size = base_font_size,
+    font_base_size = font_base_size,
     point_border_width = point_border_width,
     show_grid = show_gridlines,
     y_min = y_lim[1],
@@ -756,7 +756,7 @@ runscatter_plot_pages <- function(
   batch_line_color,
   batch_fill_color,
   y_label,
-  base_font_size,
+  font_base_size,
   point_border_width,
   show_grid,
   y_min,
@@ -1303,14 +1303,14 @@ runscatter_plot_pages <- function(
     }
 
     p <- p +
-      ggplot2::theme_bw(base_size = base_font_size) +
+      ggplot2::theme_bw(base_size = font_base_size) +
       ggplot2::theme(
         plot.title = ggplot2::element_text(
-          size = base_font_size * 1,
+          size = font_base_size * 1,
           face = "bold"
         ),
         strip.text = ggplot2::element_text(
-          size = base_font_size * 1,
+          size = font_base_size * 1,
           face = "bold"
         ),
         strip.background = ggplot2::element_rect(
@@ -1319,16 +1319,16 @@ runscatter_plot_pages <- function(
         ),
         strip.text.x = ggplot2::element_text(color = "white"),
         axis.text.x = ggplot2::element_text(
-          size = base_font_size * 0.8,
+          size = font_base_size * 0.8,
           ,
           face = NULL
         ),
         axis.text.y = ggplot2::element_text(
-          size = base_font_size * 0.8,
+          size = font_base_size * 0.8,
           face = NULL
         ),
         axis.title = ggplot2::element_text(
-          size = base_font_size,
+          size = font_base_size,
           face = NULL
         ),
         panel.grid.major = ggplot2::element_blank(),
