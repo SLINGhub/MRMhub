@@ -52,4 +52,4 @@ The same analysis is walked through, step by step, in
 
 - [MRMhub-INTEGRATOR manual ↗](https://slinghub.github.io/MRMhub/integrator/) — peak detection, parameters, review, and visualisation.
 - [MRMhub-QUANT articles ↗](https://slinghub.github.io/MRMhub/quant/articles/) — importers, corrections, quantitation, QC, and reporting.
-- [Example workflows ↗](https://slinghub.github.io/mrmhub-workflows/) — annotated, end-to-end example pipelines.
+- [Example workflows ↗](https://slinghub.github.io/MRMhub-workflows/) — annotated, end-to-end example pipelines.

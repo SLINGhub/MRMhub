@@ -61,7 +61,7 @@ runtimes are required. A copy of the executable is kept with each analysis proje
 - **[Run the demo](demo.html)** — the bundled dataset with all required files can be processed end-to-end with INTEGRATOR. It ships within the
   [latest release](https://github.com/SLINGhub/MRMhub/releases) and is documented in `readme.txt`.
 - **[Quick Start](quickstart.html)** — a short tutorial for running a new peak integration project.
-- **[Browse real analyses](https://slinghub.github.io/mrmhub-workflows/)** — Read details on peak integration
+- **[Browse real analyses](https://slinghub.github.io/MRMhub-workflows/)** — Read details on peak integration
   of two large-scale lipidomics studies.
 - **[Manual](manual.html)** — detailed instructions and tool reference for every stage; also available from the **Manual** menu above.
 - **[FAQ & Troubleshooting](faq.html)** — common problems preparing input files and running INTEGRATOR, and how to resolve them.

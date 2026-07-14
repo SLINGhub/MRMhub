@@ -106,7 +106,7 @@ Both are customizable and can be used together or independently:
 
 ::: {.arrow-list}
 - **Run the demo** — download the [latest MRMhub release](https://github.com/SLINGhub/MRMhub/releases) and follow the `readme.txt`, or the [demo walkthrough](get-started.html), to process the bundled demo project end-to-end with both modules - no data of your own required.
-- **Browse real analyses** — [mrmhub-workflows ↗](https://slinghub.github.io/mrmhub-workflows/) showcases annotated, end-to-end data-processing reports from large-scale lipidomics studies.
+- **Browse real analyses** — [mrmhub-workflows ↗](https://slinghub.github.io/MRMhub-workflows/) showcases annotated, end-to-end data-processing reports from large-scale lipidomics studies.
 - **Read the module docs** — tutorials and detailed instructions for each module: [INTEGRATOR ↗](https://slinghub.github.io/MRMhub/integrator/) and [QUANT ↗](https://slinghub.github.io/MRMhub/quant/).
 :::
 

@@ -29,7 +29,7 @@ warning or error**. The `param.txt` is, however, order-independent. Use the [tem
 `param.txt` (the name is fixed) holds the global parameters that direct INTEGRATOR to the input and data files and control
 peak detection and integration. It must reside in the same folder as the MRMhub executable.
 
-![The `param.txt` file from [an example lipidomics dataset](https://slinghub.github.io/mrmhub-workflows/Dataset3.html)](images/paste-7.png){fig-align="center" width="70%" fig-alt="Screenshot of a param.txt file listing key = value parameter lines: mzML_files, batch_info, transition_list, peak_width, num_threads, mz_tol, RT_tol, RT_shift, RT_shift_bound, and crop_window, each with an assigned value."}
+![The `param.txt` file from [an example lipidomics dataset](https://slinghub.github.io/MRMhub-workflows/Dataset3.html)](images/paste-7.png){fig-align="center" width="70%" fig-alt="Screenshot of a param.txt file listing key = value parameter lines: mzML_files, batch_info, transition_list, peak_width, num_threads, mz_tol, RT_tol, RT_shift, RT_shift_bound, and crop_window, each with an assigned value."}
 
 | Parameter | Description |
 |---|---|
@@ -58,7 +58,7 @@ The sample list defines the data files to process, in processing order (top to b
 present in the data folder but not listed here are ignored. Required columns are shown in **bold**; the
 **#** column is the fixed column position (see the [warning above](#column-order-warning)).
 
-![A portion of the sample list from [an example lipidomics dataset](https://slinghub.github.io/mrmhub-workflows/Dataset3.html)](images/paste-8.png){fig-align="center" width="50%" fig-alt="Screenshot of a run_order.csv sample list with columns file name, batch, sample_type, and reference. Two early BQC rows carry an x in the reference column marking them as retention-time anchors."}
+![A portion of the sample list from [an example lipidomics dataset](https://slinghub.github.io/MRMhub-workflows/Dataset3.html)](images/paste-8.png){fig-align="center" width="50%" fig-alt="Screenshot of a run_order.csv sample list with columns file name, batch, sample_type, and reference. Two early BQC rows carry an x in the reference column marking them as retention-time anchors."}
 
 | # | Column | Description |
 |---|---|---|
@@ -76,7 +76,7 @@ column position (see the [warning above](#column-order-warning)).
 
 <!-- TODO: add feature_list.csv screenshot leading this section (none available yet). Drop the image at
 images/feature_list.png and enable:
-![A portion of the feature list from [an example lipidomics dataset](https://slinghub.github.io/mrmhub-workflows/Dataset3.html).](images/feature_list.png){fig-align="center" width="70%" fig-alt="Screenshot of a feature_list.csv with columns Compound Name, Transition Name, ISTD, Precursor Ion, Product Ion, RT, and the optional per-feature integration columns."} -->
+![A portion of the feature list from [an example lipidomics dataset](https://slinghub.github.io/MRMhub-workflows/Dataset3.html).](images/feature_list.png){fig-align="center" width="70%" fig-alt="Screenshot of a feature_list.csv with columns Compound Name, Transition Name, ISTD, Precursor Ion, Product Ion, RT, and the optional per-feature integration columns."} -->
 
 | # | Column | Description |
 |---|---|---|

@@ -37,7 +37,7 @@ Open-source toolchain for targeted Multiple Reaction Monitoring (MRM) mass spect
 **Docs hub:** <https://slinghub.github.io/MRMhub/> — project overview + routing.
 **INTEGRATOR docs:** <https://slinghub.github.io/MRMhub/integrator/> — manual, input files, msconvert.
 **QUANT R package docs:** <https://slinghub.github.io/MRMhub/quant/> — manual, tutorials, function reference.
-**Example workflows:** <https://slinghub.github.io/mrmhub-workflows/> — reproducible end-to-end examples.
+**Example workflows:** <https://slinghub.github.io/MRMhub-workflows/> — reproducible end-to-end examples.
 
 ## Why MRMhub?
 
