@@ -97,7 +97,7 @@ save_report_xlsx <- function(
   normalized_variable <- str_remove(normalized_variable, "feature_")
   normalized_variable <- stringr::str_c("feature_", normalized_variable)
 
-  if (!stringr::str_detect(path, ".xlsx")) {
+  if (!stringr::str_detect(path, "\\.xlsx$")) {
     path <- paste0(path, ".xlsx")
   }
 
