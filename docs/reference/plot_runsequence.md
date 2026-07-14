@@ -1,4 +1,4 @@
-# RunSequence Plot
+# RunSequence plot
 
 The RunSequence plot provides an overview of the analysis design and
 timelines, which can be useful for subsequent processing steps. The plot

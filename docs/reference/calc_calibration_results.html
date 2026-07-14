@@ -44,6 +44,7 @@ fit_model and fit_weighting will be used.'><meta property="og:image" content="ht
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-tutorials" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Tutorials</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-tutorials"><li><h6 class="dropdown-header" data-toc-skip>Start here</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-12-workflow-builder.html">Build a workflow (no code)</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-01-prep-data.html">Preparing &amp; importing data</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-02-basic-workflow.html">Basic MRMhub workflow</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-03-lipidomics-workflow.html">Lipidomics (full workflow)</a></li>
@@ -77,6 +78,7 @@ fit_model and fit_weighting will be used.'><meta property="og:image" content="ht
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Writing Pipelines with AI Assistants</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-02-data-object.html">The MRMhubExperiment Data Object</a></li>
@@ -148,12 +150,12 @@ internal standardization, use <code>"feature_intensity"</code>.</p></dd>
 
 <dt id="arg-include-qualifier">include_qualifier<a class="anchor" aria-label="anchor" href="#arg-include-qualifier"></a></dt>
 <dd><p>A logical value. If <code>TRUE</code>, the function will
-include quantifier features in the calibration curve calculations.</p></dd>
+include qualifier features in the calibration curve calculations.</p></dd>
 
 
 <dt id="arg-fit-overwrite">fit_overwrite<a class="anchor" aria-label="anchor" href="#arg-fit-overwrite"></a></dt>
 <dd><p>If <code>TRUE</code>,
-the function will se the provided <code>fit_model</code> and <code>fit_weighting</code> values
+the function will use the provided <code>fit_model</code> and <code>fit_weighting</code> values
 for all analytes and ignore any fit method and weighting settings defined in
 the metadata.</p></dd>
 
@@ -194,14 +196,21 @@ including concentrations, LoD, and LoQ values for each feature.</p>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Additionally, the limit of detection (LoD) and limit of quantification (LoQ)
-are calculated for each feature based on the calibration curve. LoD is
-calculated as 3 times the sample standard error of the regression residuals
-divided by the regression slope, and LoQ is 10 times the same ratio. In the
-case of a quadratic fit, LoD and LoQ are calculated using the slope at
-the concentration of the lowest calibration point.</p>
+are calculated for each feature based on the calibration curve, following the
+ICH Q2(R1/R2) approach (LoD = 3.3 sigma / S, LoQ = 10 sigma / S). Here sigma
+is the sample standard error of the regression residuals and S is the slope
+of the calibration curve. The slope is taken at zero concentration (the
+linear coefficient); for a quadratic fit the quadratic term does not
+contribute to this slope.</p>
 <p>The results of the regression and the calculated LoD and LoQ values are
 stored in the <code>metrics_calibration</code> table of the returned <code>MRMhubExperiment</code>
 object.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
+    <p>ICH Harmonised Tripartite Guideline. Validation of Analytical Procedures:
+Text and Methodology Q2(R1) (2005); Q2(R2) (2023). International Council for
+Harmonisation of Technical Requirements for Pharmaceuticals for Human Use.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

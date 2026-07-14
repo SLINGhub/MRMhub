@@ -1,6 +1,6 @@
-# (Depreciated) Import Wide CSV Files
+# (Deprecated) Import wide CSV files
 
-(Depreciated) Import Wide CSV Files
+(Deprecated) Import wide CSV files
 
 ## Usage
 

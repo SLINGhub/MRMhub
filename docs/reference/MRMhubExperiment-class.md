@@ -1,4 +1,4 @@
-# S4 Class Representing the MRMhub Dataset
+# S4 class representing the MRMhub dataset
 
 The `MRMhubExperiment` object is the core data structure utilized within
 the MRMhub workflow, encapsulating all relevant experimental data and

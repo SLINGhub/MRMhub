@@ -1,4 +1,4 @@
-# Retrieve Calibration Regression Results
+# Retrieve calibration regression results
 
 This function retrieves calibration curve regression results from a
 `MRMhubExperiment` object. It returns a summary of quality control (QC)
@@ -79,7 +79,7 @@ get_qc_bias_variability(
 - with_conc_ratio:
 
   Logical. If `TRUE`, includes the ratio of measured to target
-  concentration in the results. Defaults to `TRUE`.
+  concentration in the results. Defaults to `FALSE`.
 
 - with_cv_intra:
 

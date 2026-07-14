@@ -55,6 +55,13 @@
   Reference for the MRMhub plotting functions, grouped by workflow
   stage, with the canonical argument forms and customisation guidance.
 
+- [Writing Pipelines with AI
+  Assistants](https://slinghub.github.io/MRMhub/quant/articles/manual-09-ai-assistants.md):
+
+  How to use large language models (Claude, ChatGPT, or local models) to
+  help write MRMhub QUANT pipelines – how to ground them in the real
+  API, and how to verify what they produce.
+
 - [Troubleshooting and
   FAQ](https://slinghub.github.io/MRMhub/quant/articles/manual-10-troubleshooting.md):
 
@@ -132,3 +139,9 @@
 
   Identify and correct isotopic or isobaric interferences between MRM
   transitions using a contribution-based subtraction model.
+
+- [Build a Workflow Without
+  Code](https://slinghub.github.io/MRMhub/quant/articles/tutorial-12-workflow-builder.md):
+
+  Use the point-and-click builder to validate your data and metadata and
+  generate a runnable Quarto workflow.

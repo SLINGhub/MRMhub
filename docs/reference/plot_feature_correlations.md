@@ -1,4 +1,4 @@
-# Plot Highly Correlated Feature Pairs
+# Plot highly correlated feature pairs
 
 Creates scatter plots for pairs of features that have correlations
 outside specified thresholds. Each pair is displayed in a separate facet
@@ -46,7 +46,7 @@ plot_feature_correlations(
 
 - data:
 
-  A data frame containing numeric columns for correlation analysis
+  A `MRMhubExperiment` object containing the dataset and metadata.
 
 - variable:
 

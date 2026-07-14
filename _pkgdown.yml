@@ -50,6 +50,8 @@ navbar:
       - text: Start here
       - text: Your First Analysis (5 min)
         href: articles/tutorial-00-first-analysis.html
+      - text: Build a workflow (no code)
+        href: articles/tutorial-12-workflow-builder.html
       - text: Preparing & importing data
         href: articles/tutorial-01-prep-data.html
       - text: Basic MRMhub workflow
@@ -101,6 +103,8 @@ navbar:
       - text: Results and downstream use
       - text: Visualisation Functions
         href: articles/manual-08-visualization.html
+      - text: Writing Pipelines with AI Assistants
+        href: articles/manual-09-ai-assistants.html
       - text: '-------'
       - text: Reference
       - text: The MRMhubExperiment Data Object

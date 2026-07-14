@@ -1,4 +1,4 @@
-# Add metadata an MRMhubExperiment object
+# Add metadata to an MRMhubExperiment object
 
 Metadata provided as a list of tibbles will validates for consistency
 again loaded analysis data of the provided MRMhubExperiment object and

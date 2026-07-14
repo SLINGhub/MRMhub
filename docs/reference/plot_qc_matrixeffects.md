@@ -104,7 +104,7 @@ plot_qc_matrixeffects(
 
 - point_alpha:
 
-  Numeric. Transparency of the plotted points. Default is `0.7`.
+  Numeric. Transparency of the plotted points. Default is `0.3`.
 
 - box_alpha:
 

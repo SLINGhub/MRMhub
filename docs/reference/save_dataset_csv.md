@@ -1,4 +1,4 @@
-# Export Data to CSV file
+# Export data to a CSV file
 
 This function exports specific unprocessed or pr ocessed feature
 variable (e.g. intensities or concentrations) from a `MRMhubExperiment`

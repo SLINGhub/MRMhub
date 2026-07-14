@@ -3,27 +3,27 @@
 subtracting interference (e.g., isotope overlap or in-source fragments). The
 correction is applied using the following formula: $$value\_corrected =
 value\_raw - value\_raw\_interfering\_feature \times
-proportion\_interference$$
+interference\_contribution$$
 The interfering features and their relative contributions must be defined in
 the feature metadata.
-By default, sequential series of interferences (e.g., isotopic M+2
-interferences of PC 34:2 &amp;gt; PC 34:“1 &amp;gt; PC 34:0) will be corrected in a
-sequential manner. This means that the correction will applied iteratively,
-starting with the most downstream feature in the series. To disable this
-behavior, basing each correction on the raw signal of the interfering feature
-set sequential_correction = FALSE"><meta property="og:description" content="This function corrects lipidomics feature intensities by
+By default, a chain of interferences (e.g., isotopic M+2 interferences of
+PC 34:2 &amp;gt; PC 34:1 &amp;gt; PC 34:0) is corrected sequentially: each feature is
+corrected using the already-corrected signal of its interfering feature, so
+the correction propagates along the chain. To disable this and instead correct
+each feature independently from the raw (uncorrected) signal of its
+interfering feature, set sequential_correction = FALSE."><meta property="og:description" content="This function corrects lipidomics feature intensities by
 subtracting interference (e.g., isotope overlap or in-source fragments). The
 correction is applied using the following formula: $$value\_corrected =
 value\_raw - value\_raw\_interfering\_feature \times
-proportion\_interference$$
+interference\_contribution$$
 The interfering features and their relative contributions must be defined in
 the feature metadata.
-By default, sequential series of interferences (e.g., isotopic M+2
-interferences of PC 34:2 &amp;gt; PC 34:“1 &amp;gt; PC 34:0) will be corrected in a
-sequential manner. This means that the correction will applied iteratively,
-starting with the most downstream feature in the series. To disable this
-behavior, basing each correction on the raw signal of the interfering feature
-set sequential_correction = FALSE"><meta property="og:image" content="https://slinghub.github.io/MRMhub/quant/logo.svg"></head><body>
+By default, a chain of interferences (e.g., isotopic M+2 interferences of
+PC 34:2 &amp;gt; PC 34:1 &amp;gt; PC 34:0) is corrected sequentially: each feature is
+corrected using the already-corrected signal of its interfering feature, so
+the correction propagates along the chain. To disable this and instead correct
+each feature independently from the raw (uncorrected) signal of its
+interfering feature, set sequential_correction = FALSE."><meta property="og:image" content="https://slinghub.github.io/MRMhub/quant/logo.svg"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -50,6 +50,7 @@ set sequential_correction = FALSE"><meta property="og:image" content="https://sl
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-tutorials" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Tutorials</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-tutorials"><li><h6 class="dropdown-header" data-toc-skip>Start here</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-12-workflow-builder.html">Build a workflow (no code)</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-01-prep-data.html">Preparing &amp; importing data</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-02-basic-workflow.html">Basic MRMhub workflow</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-03-lipidomics-workflow.html">Lipidomics (full workflow)</a></li>
@@ -83,6 +84,7 @@ set sequential_correction = FALSE"><meta property="og:image" content="https://sl
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Writing Pipelines with AI Assistants</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-02-data-object.html">The MRMhubExperiment Data Object</a></li>
@@ -114,15 +116,15 @@ set sequential_correction = FALSE"><meta property="og:image" content="https://sl
 subtracting interference (e.g., isotope overlap or in-source fragments). The
 correction is applied using the following formula: $$value\_corrected =
 value\_raw - value\_raw\_interfering\_feature \times
-proportion\_interference$$</p>
+interference\_contribution$$</p>
 <p>The interfering features and their relative contributions must be defined in
 the feature metadata.</p>
-<p>By default, sequential series of interferences (e.g., isotopic M+2
-interferences of PC 34:2 &gt; PC 34:“1 &gt; PC 34:0) will be corrected in a
-sequential manner. This means that the correction will applied iteratively,
-starting with the most downstream feature in the series. To disable this
-behavior, basing each correction on the raw signal of the interfering feature
-set <code>sequential_correction = FALSE</code></p>
+<p>By default, a chain of interferences (e.g., isotopic M+2 interferences of
+PC 34:2 &gt; PC 34:1 &gt; PC 34:0) is corrected sequentially: each feature is
+corrected using the already-corrected signal of its interfering feature, so
+the correction propagates along the chain. To disable this and instead correct
+each feature independently from the raw (uncorrected) signal of its
+interfering feature, set <code>sequential_correction = FALSE</code>.</p>
     </div>
 
     <div class="section level2">
@@ -149,11 +151,12 @@ set <code>sequential_correction = FALSE</code></p>
 
 
 <dt id="arg-sequential-correction">sequential_correction<a class="anchor" aria-label="anchor" href="#arg-sequential-correction"></a></dt>
-<dd><p>A logical indicating whether to apply
-corrections sequentially, starting with the most downstream feature.  If
-<code>FALSE</code>, corrections are based on the raw signal of the interfering
-features. If <code>FALSE</code>, the correction will be based on the raw signal of the
-interfering feature.</p></dd>
+<dd><p>Logical. If <code>TRUE</code> (the default), a chain of
+interferences is corrected sequentially, so that each feature is corrected
+using the already-corrected signal of its interfering feature (the
+correction propagates along the chain). If <code>FALSE</code>, each feature is
+corrected independently using the raw (uncorrected) signal of its
+interfering feature, without propagation.</p></dd>
 
 
 <dt id="arg-neg-to-na">neg_to_na<a class="anchor" aria-label="anchor" href="#arg-neg-to-na"></a></dt>
@@ -168,8 +171,8 @@ interferences.</p>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>For isotopic interference correction of MRM/PRM data, the relative
-isotope abundances needed for the calculation ('proportion_interference') can
-be calculated using the LICAR application (Gao et al., 2021), see below..</p>
+isotope abundances needed for the calculation (<code>interference_contribution</code>) can
+be calculated using the LICAR application (Gao et al., 2021), see below.</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>

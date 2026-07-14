@@ -5,10 +5,8 @@ Tutorial
 This walkthrough produces a normalized dataset in under 5 minutes using
 bundled demo data; no external files are needed.
 
-**Time** ~5 min  ·  **Level** Beginner  ·  **Prerequisites** MRMhub
-installed
-([`check_setup()`](https://slinghub.github.io/MRMhub/quant/reference/check_setup.md)
-passes)
+**Time** ~5 min  ·  **Level** Beginner  ·  **Prerequisites** [MRMhub
+installed](https://slinghub.github.io/MRMhub/quant/articles/manual-00-installation.md)
 
 ## The complete workflow in one script
 
@@ -37,9 +35,11 @@ plot_runscatter(mexp, variable = "norm_intensity")
 [`build_workflow()`](https://slinghub.github.io/MRMhub/quant/reference/build_workflow.md)
 offers an interactive alternative — a point-and-click application that
 validates your data and metadata, warns about any pipeline mismatches,
-and generates an equivalent Quarto (`.qmd`) workflow to download — while
-the code-first workflow above remains the reproducible path. What each
-line does is described below.
+and generates an equivalent Quarto (`.qmd`) workflow to download (see
+[Build a Workflow Without
+Code](https://slinghub.github.io/MRMhub/quant/articles/tutorial-12-workflow-builder.md))
+— while the code-first workflow above remains the reproducible path.
+What each line does is described below.
 
 ## What the script does
 

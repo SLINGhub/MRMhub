@@ -30,6 +30,7 @@ Value_{Interfering Feature}$$"><meta property="og:image" content="https://slingh
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-tutorials" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Tutorials</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-tutorials"><li><h6 class="dropdown-header" data-toc-skip>Start here</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-12-workflow-builder.html">Build a workflow (no code)</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-01-prep-data.html">Preparing &amp; importing data</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-02-basic-workflow.html">Basic MRMhub workflow</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-03-lipidomics-workflow.html">Lipidomics (full workflow)</a></li>
@@ -63,6 +64,7 @@ Value_{Interfering Feature}$$"><meta property="og:image" content="https://slingh
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Writing Pipelines with AI Assistants</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-02-data-object.html">The MRMhubExperiment Data Object</a></li>
@@ -117,8 +119,8 @@ Value_{Interfering Feature}$$</p>
 
 
 <dt id="arg-variable">variable<a class="anchor" aria-label="anchor" href="#arg-variable"></a></dt>
-<dd><p>Default: <code>feature_intensity</code>. Name of Variable to be
-corrected.</p></dd>
+<dd><p>Name of the variable to be corrected, e.g.
+<code>feature_intensity</code>.</p></dd>
 
 
 <dt id="arg-feature">feature<a class="anchor" aria-label="anchor" href="#arg-feature"></a></dt>
@@ -131,8 +133,9 @@ contributing to the signal of <code>feature</code></p></dd>
 
 
 <dt id="arg-interference-contribution">interference_contribution<a class="anchor" aria-label="anchor" href="#arg-interference-contribution"></a></dt>
-<dd><p>Relative portion of the interfering feature to
-contribute to the feature signal. Must be between 0 and 1.</p></dd>
+<dd><p>Relative portion of the interfering feature
+contributing to the feature signal. Must be greater than 0; values are
+usually between 0 and 1, and values above 1 trigger a warning.</p></dd>
 
 
 <dt id="arg-neg-to-na">neg_to_na<a class="anchor" aria-label="anchor" href="#arg-neg-to-na"></a></dt>

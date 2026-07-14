@@ -1,4 +1,4 @@
-# Save Feature QC Metrics to CSV
+# Save feature QC metrics to CSV
 
 This function exports the feature information and QC (Quality Control)
 metrics from a MRMhubExperiment object to a CSV file.

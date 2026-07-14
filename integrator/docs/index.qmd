@@ -87,7 +87,7 @@ reporting. See the [QUANT manual ↗](https://slinghub.github.io/MRMhub/quant/) 
 
 ### License
 
-- [GPL-3](https://www.gnu.org/licenses/gpl-3.0) (non-commercial use)
+- [AGPLv3](https://www.gnu.org/licenses/agpl-3.0.en.html) (non-commercial use)
 - Commercial licensing — contact [Jonathan Tan](mailto:jonathan_tan@nus.edu.sg)
 
 ### Community

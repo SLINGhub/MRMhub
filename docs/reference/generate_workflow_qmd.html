@@ -34,6 +34,7 @@ interactive build_workflow() app calls it to power its live preview."><meta prop
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-tutorials" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Tutorials</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-tutorials"><li><h6 class="dropdown-header" data-toc-skip>Start here</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-12-workflow-builder.html">Build a workflow (no code)</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-01-prep-data.html">Preparing &amp; importing data</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-02-basic-workflow.html">Basic MRMhub workflow</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-03-lipidomics-workflow.html">Lipidomics (full workflow)</a></li>
@@ -67,6 +68,7 @@ interactive build_workflow() app calls it to power its live preview."><meta prop
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Writing Pipelines with AI Assistants</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-02-data-object.html">The MRMhubExperiment Data Object</a></li>
@@ -130,13 +132,33 @@ generated document.</p></dd>
 <dd><p>Character vector of step ids to include (the ids defined
 in <code>workflow_steps()</code>).</p></dd>
 
-<dt><code>variable</code>, <code>ref_qc_types</code>, <code>reference_sample_id</code></dt>
-<dd><p>Optional argument
-choices used by drift/batch/calibration steps.</p></dd>
+<dt><code>drift_method</code></dt>
+<dd><p>Drift model for the drift step: <code>"gaussian"</code>
+(default), <code>"spline"</code>, or <code>"loess"</code>.</p></dd>
+
+<dt><code>ref_qc_types</code>, <code>reference_sample_id</code></dt>
+<dd><p>Optional reference QC type(s)
+and reference sample id for drift/batch/calibration. The corrected
+feature variable is derived automatically as the highest processing
+level reached by the selected steps.</p></dd>
+
+<dt><code>column_mapping</code></dt>
+<dd><p>Named character vector for <code>importer = "csv_long"</code>,
+mapping canonical names to file columns, e.g.
+<code>c(analysis_id = "Sample", feature_id = "Compound", feature_area = "Area")</code>.</p></dd>
+
+<dt><code>variable_name</code>, <code>analysis_id_col</code>, <code>first_feature_column</code></dt>
+<dd><p>Arguments
+for <code>importer = "csv_wide"</code>.</p></dd>
 
 <dt><code>output_xlsx</code></dt>
 <dd><p>Path for the exported report. Default
 <code>"results.xlsx"</code>.</p></dd>
+
+<dt><code>formats</code></dt>
+<dd><p>Character vector of Quarto output formats, any of
+<code>"html"</code>, <code>"docx"</code>, <code>"pdf"</code>. <code>"pdf"</code> is rendered sans-serif. Default
+<code>"html"</code>.</p></dd>
 
 <dt><code>save_rds</code></dt>
 <dd><p>Logical; also save the object as <code>.rds</code>. Default

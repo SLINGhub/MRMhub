@@ -1,4 +1,4 @@
-# Drift Correction by Custom Function
+# Drift correction by custom function
 
 Function to correct for run-order drifts within or across batches via a
 provided custom function \#' @details The drift correction function
@@ -66,15 +66,15 @@ fun_correct_drift(
 
 - conditional_correction:
 
-  Determines whether drift correction should be applied to all features
-  unconditionally (`TRUE`) or only when the difference of sample CV
-  before vs after smoothing is below the threshold specified by
-  `cv_diff_threshold`.
+  Determines whether drift correction is applied to all features
+  unconditionally (`FALSE`, the default) or, when `TRUE`, only to
+  features whose difference of sample CV before vs after smoothing is
+  below the threshold specified by `cv_diff_threshold`.
 
 - cv_diff_threshold:
 
   This parameter defines the maximum allowable change (difference) in
-  the coefficient of variation (CV) ratio of samples before and after
+  the coefficient of variation (CV) of samples before and after
   smoothing for the correction to be applied. A value of 0 (the default)
   requires the CV to improve, while a value above 0 allows the CV to
   also become worse by a maximum of the defined difference.

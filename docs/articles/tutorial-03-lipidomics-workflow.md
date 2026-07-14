@@ -271,7 +271,7 @@ mrmhub::plot_rla_boxplot(
   batch_zebra_stripe = FALSE,
   linewidth = 0.1
 )
-#> ℹ Found 40 outliers in the 487 shown analyses
+#> ℹ Found 9 outliers in the 487 shown analyses
 ```
 
 ![RLA
@@ -304,7 +304,7 @@ plot_pca(
   include_istd = FALSE)
 #> ! 2 features contained missing or non-numeric values and were exluded.
 #> ℹ The PCA was calculated based on `feature_intensity` values of 423 features.
-#> ggrepel: 10000 iterations in 0.002708s, 5 overlaps. Consider increasing 'max.iter'.
+#> ggrepel: 10000 iterations in 0.002800s, 5 overlaps. Consider increasing 'max.iter'.
 ```
 
 ![PCA
@@ -341,7 +341,7 @@ plot_pca(
   shared_labeltext_hide = NA)
 #> ! 2 features contained missing or non-numeric values and were exluded.
 #> ℹ The PCA was calculated based on `feature_intensity` values of 423 features.
-#> ggrepel: 10000 iterations in 0.006460s, 7 overlaps. Consider increasing 'max.iter'.
+#> ggrepel: 10000 iterations in 0.006482s, 7 overlaps. Consider increasing 'max.iter'.
 ```
 
 ![PCA
@@ -637,7 +637,9 @@ limit of detection. The corresponding PDF can be accessed within the
 `output` subfolder. Use `filt_` arguments to include or exclude specific
 analytes. The filter can use regular expressions (regex). A language
 model such as ChatGPT can assist in generating more complex regex-based
-filters.
+filters; see [Writing Pipelines with AI
+Assistants](https://slinghub.github.io/MRMhub/quant/articles/manual-09-ai-assistants.md)
+for how to use LLMs with MRMhub effectively.
 
 Exercises
 
@@ -799,7 +801,7 @@ Exercises
 
 mrmhub::save_report_xlsx(myexp, path = tempfile(fileext = ".xlsx"))
 #> Saving report to disk - please wait...
-#> ✔ The data processing report of experiment 'sPerfect' has been saved to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpT1xkJr/file17731753a3055.xlsx'.
+#> ✔ The data processing report of experiment 'sPerfect' has been saved to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmplBDA0P/file15c38d2c436.xlsx'.
 ```
 
 Specific data subsets can also be saved as a clean flat, wide CSV file.
@@ -820,7 +822,7 @@ mrmhub::save_dataset_csv(
   qc_types = "SPL", 
   include_qualifier = FALSE,
   filter_data = TRUE)
-#> ✔ Concentration values for 377 analyses and 324 features have been exported to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpT1xkJr/file1773132d2c02e.csv'.
+#> ✔ Concentration values for 377 analyses and 324 features have been exported to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmplBDA0P/file15c387c108785.csv'.
 ```
 
 ## 22. Sharing the `MRMhubExperiment` dataset

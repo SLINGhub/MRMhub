@@ -347,5 +347,5 @@ drift correction. Consider processing batches separately and merging.
   Overview](https://slinghub.github.io/MRMhub/quant/articles/manual-03-design-decisions.md)
   — understand the full pipeline
 - [Installation](https://slinghub.github.io/MRMhub/quant/articles/manual-00-installation.md)
-  — verify your setup with
+  — diagnose setup problems with
   [`check_setup()`](https://slinghub.github.io/MRMhub/quant/reference/check_setup.md)

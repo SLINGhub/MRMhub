@@ -1,4 +1,4 @@
-# Import Metadata from a MRMhub Metadata Organizer file
+# Import metadata from a MRMhub Metadata Organizer file
 
 Imports metadata from a 'MRMhub Metadata Organizer' file (.xlsx) file
 and associates it with analysis data.

@@ -49,6 +49,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-tutorials">
 <li><h6 class="dropdown-header" data-toc-skip>Start here</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-12-workflow-builder.html">Build a workflow (no code)</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-01-prep-data.html">Preparing &amp; importing data</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-02-basic-workflow.html">Basic MRMhub workflow</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-03-lipidomics-workflow.html">Lipidomics (full workflow)</a></li>
@@ -84,6 +85,7 @@
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Writing Pipelines with AI Assistants</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-02-data-object.html">The MRMhubExperiment Data Object</a></li>
@@ -117,7 +119,7 @@
       <img src="../logo.svg" class="logo" alt=""><h1>MRMhub</h1>
                         <h4 data-toc-skip class="author">Bo Burla</h4>
             
-            <h4 data-toc-skip class="date">2026-07-12</h4>
+            <h4 data-toc-skip class="date">2026-07-13</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/HEAD/vignettes/mrmhub.rmd" class="external-link"><code>vignettes/mrmhub.rmd</code></a></small>
       <div class="d-none name"><code>mrmhub.rmd</code></div>
@@ -126,7 +128,7 @@
     
     
 <!-- badges: start -->
-<p><a href="https://lifecycle.r-lib.org/articles/stages.html" class="external-link"><img src="https://img.shields.io/badge/lifecycle-stable-brightgreen.svg" alt="Lifecycle: stable"></a> <a href="https://www.gnu.org/licenses/gpl-3.0" class="external-link"><img src="https://img.shields.io/badge/License-GPLv3-blue.svg" alt="License: GPL v3"></a> <a href="https://github.com/SLINGhub/MRMhub/actions/workflows/R-CMD-check.yml" class="external-link"><img src="https://github.com/SLINGhub/MRMhub/actions/workflows/R-CMD-check.yml/badge.svg" alt="R-CMD-check"></a> <a href="https://app.codecov.io/gh/SLINGhub/MRMhub?branch=main" class="external-link"><img src="https://codecov.io/gh/SLINGhub/MRMhub/branch/main/graph/badge.svg" alt="Codecov test coverage"></a> <a href="https://github.com/SLINGhub/MRMhub" class="external-link"><img src="https://img.shields.io/badge/platform-linux%20%7C%20osx%20%7C%20win-lightgrey" alt="Platform"></a> <!-- badges: end --></p>
+<p><a href="https://lifecycle.r-lib.org/articles/stages.html" class="external-link"><img src="https://img.shields.io/badge/lifecycle-stable-brightgreen.svg" alt="Lifecycle: stable"></a> <a href="https://www.gnu.org/licenses/agpl-3.0" class="external-link"><img src="https://img.shields.io/badge/License-AGPLv3-blue.svg" alt="License: AGPL v3"></a> <a href="https://github.com/SLINGhub/MRMhub/actions/workflows/R-CMD-check.yml" class="external-link"><img src="https://github.com/SLINGhub/MRMhub/actions/workflows/R-CMD-check.yml/badge.svg" alt="R-CMD-check"></a> <a href="https://app.codecov.io/gh/SLINGhub/MRMhub?branch=main" class="external-link"><img src="https://codecov.io/gh/SLINGhub/MRMhub/branch/main/graph/badge.svg" alt="Codecov test coverage"></a> <a href="https://github.com/SLINGhub/MRMhub" class="external-link"><img src="https://img.shields.io/badge/platform-linux%20%7C%20osx%20%7C%20win-lightgrey" alt="Platform"></a> <!-- badges: end --></p>
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
@@ -171,7 +173,7 @@ following command:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://pak.r-lib.org/" class="external-link">"pak"</a></span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"pak"</span><span class="op">)</span></span>
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"SLINGhub/MRMhub"</span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/SLINGhub/MRMhub" class="external-link">mrmhub</a></span><span class="op">)</span>; <span class="fu">mrmhub</span><span class="fu">::</span><span class="fu"><a href="../reference/check_setup.html">check_setup</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/SLINGhub/MRMhub" class="external-link">mrmhub</a></span><span class="op">)</span></span></code></pre></div>
 <p><code>pak</code> resolves locked packages and parallelises downloads;
 <code>remotes::install_github("SLINGhub/MRMhub")</code> is an equivalent
 fallback. For detailed usage instructions and examples, refer to the <a href="https://slinghub.github.io/MRMhub/quant/">Documentation</a>.</p>

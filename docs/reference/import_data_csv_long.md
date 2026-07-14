@@ -1,4 +1,4 @@
-# Import Analysis Results from Long Format CSV Files
+# Import analysis results from long-format CSV files
 
 This function imports analysis results from CSV files in long table
 format, where each row represents a unique observation of a

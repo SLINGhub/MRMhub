@@ -1,4 +1,4 @@
-# RunScatter Plot
+# RunScatter plot
 
 The `runscatter` function visualizes raw or processed feature signals
 across different sample/QC types along the analysis sequence. It helps

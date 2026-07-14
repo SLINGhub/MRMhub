@@ -30,7 +30,7 @@ Prefer point-and-click?
 [`build_workflow()`](https://slinghub.github.io/MRMhub/quant/reference/build_workflow.md)
 opens a guided app that validates your data and metadata, warns about
 pipeline mismatches, and generates a downloadable Quarto (`.qmd`)
-workflow (one-time `install.packages(c("shiny", "bslib"))`).
+workflow.
 
 ## Quick Start and Demos
 

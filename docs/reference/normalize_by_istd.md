@@ -1,4 +1,4 @@
-# Normalize Feature Intensities Using Internal Standards
+# Normalize feature intensities using internal standards
 
 Normalize feature intensities by dividing them by the intensities of the
 corresponding internal standards (ISTDs). Each feature must have a

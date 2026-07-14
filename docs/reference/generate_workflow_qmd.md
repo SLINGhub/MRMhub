@@ -44,13 +44,37 @@ generate_workflow_qmd(spec)
   :   Character vector of step ids to include (the ids defined in
       `workflow_steps()`).
 
-  `variable`, `ref_qc_types`, `reference_sample_id`
+  `drift_method`
 
-  :   Optional argument choices used by drift/batch/calibration steps.
+  :   Drift model for the drift step: `"gaussian"` (default),
+      `"spline"`, or `"loess"`.
+
+  `ref_qc_types`, `reference_sample_id`
+
+  :   Optional reference QC type(s) and reference sample id for
+      drift/batch/calibration. The corrected feature variable is derived
+      automatically as the highest processing level reached by the
+      selected steps.
+
+  `column_mapping`
+
+  :   Named character vector for `importer = "csv_long"`, mapping
+      canonical names to file columns, e.g.
+      `c(analysis_id = "Sample", feature_id = "Compound", feature_area = "Area")`.
+
+  `variable_name`, `analysis_id_col`, `first_feature_column`
+
+  :   Arguments for `importer = "csv_wide"`.
 
   `output_xlsx`
 
   :   Path for the exported report. Default `"results.xlsx"`.
+
+  `formats`
+
+  :   Character vector of Quarto output formats, any of `"html"`,
+      `"docx"`, `"pdf"`. `"pdf"` is rendered sans-serif. Default
+      `"html"`.
 
   `save_rds`
 

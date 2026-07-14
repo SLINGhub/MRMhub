@@ -1,4 +1,4 @@
-# Access Slots of a MRMhubExperiment Object via \$ Syntax
+# Access slots of a MRMhubExperiment object via \$ syntax
 
 \$ syntax can be used to as a shortcut for getting specific variables
 and results from a MRMhubExperiment object

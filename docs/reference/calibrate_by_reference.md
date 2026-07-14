@@ -1,4 +1,4 @@
-# Calibrate Features Values Using Reference Sample
+# Calibrate feature values using a reference sample
 
 This function calibrates feature abundances based on a specified
 reference sample. Calibration can be applied to the entire dataset using
@@ -63,16 +63,15 @@ calibrate_by_reference(
   compared to the expected (known) concentrations. Only applied if
   `absolute_calibration = TRUE`. This ratio is stored under the feature
   variable `feature_conc_ratio`. By default it is `TRUE` when
-  `variable = 'conc', otherwise `FALSE\`.
+  `variable = 'conc'`, otherwise `FALSE`.
 
 - undefined_conc_action:
 
   Character string specifying how to handle features without defined
   concentrations in reference samples when
-  `absolute_calibration = TRUE`. Must be one of: "original" (keep
-  original values), "na" (set to NA), or "error". Default is "keep".
-
-  Default is `TRUE`.
+  `absolute_calibration = TRUE`. Must be one of `"original"` (keep
+  original values), `"na"` (set to `NA`), or `"error"`. Required when
+  `absolute_calibration = TRUE` (no default).
 
 - store_normalized:
 
@@ -119,7 +118,7 @@ concentrations, or relative, resulting in ratios:
       features
 
     Missing analyte concentrations for the reference sample can be
-    handed via `undefined_conc_handling` with following options:
+    handled via `undefined_conc_action` with following options:
 
     - `original`: Keep original feature values, i.e. the non-calibrated
       values will be returned. *Note*: this is only available when
@@ -127,8 +126,8 @@ concentrations, or relative, resulting in ratios:
 
     - `na`: Set affected features values to `NA`
 
-    - `error` (default): The function stops with error in case of any
-      undefined reference sample feature concentration.
+    - `error`: The function stops with error in case of any undefined
+      reference sample feature concentration.
 
     - In case all feature concentrations are undefined, the function
       will stop with an error.

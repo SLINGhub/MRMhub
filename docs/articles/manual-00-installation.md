@@ -39,18 +39,26 @@ prebuilt binaries where available, so compilation tools are usually not
 needed. If `pak` is unavailable, use
 `remotes::install_github("SLINGhub/MRMhub")`.
 
-## Verify Your Setup
+## Confirm It Loaded
 
 ``` r
 
 library(mrmhub)
-check_setup()
 ```
 
-This checks the R version and dependencies and reports what is missing
-if a check fails.
+If this loads without error, you are ready to go — head to [Your First
+Analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md).
 
 ## Troubleshooting Common Errors
+
+If the install seemed to succeed but something isn’t working, run
+[`check_setup()`](https://slinghub.github.io/MRMhub/quant/reference/check_setup.md)
+to report the R version and flag any missing dependencies:
+
+``` r
+
+check_setup()
+```
 
 | Error | Cause | Fix |
 |----|----|----|

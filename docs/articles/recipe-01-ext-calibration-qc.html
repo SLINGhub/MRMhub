@@ -54,6 +54,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-tutorials">
 <li><h6 class="dropdown-header" data-toc-skip>Start here</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-12-workflow-builder.html">Build a workflow (no code)</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-01-prep-data.html">Preparing &amp; importing data</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-02-basic-workflow.html">Basic MRMhub workflow</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-03-lipidomics-workflow.html">Lipidomics (full workflow)</a></li>
@@ -89,6 +90,7 @@
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Writing Pipelines with AI Assistants</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-02-data-object.html">The MRMhubExperiment Data Object</a></li>
@@ -214,6 +216,12 @@ curves are then calculated and plotted.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">8</span> Cortisone [… FALSE         quadratic 1/x           FALSE      0.984      1.39 </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 7 more variables: highest_cal &lt;dbl&gt;, coef_a &lt;dbl&gt;, coef_b &lt;dbl&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   coef_c &lt;dbl&gt;, lod &lt;dbl&gt;, loq &lt;dbl&gt;, sigma &lt;dbl&gt;</span></span></span></code></pre></div>
+<p>The summary includes the limit of detection (<code>lod</code>) and
+limit of quantification (<code>loq</code>) for each feature, calculated
+following the ICH Q2(R1/R2) approach (LoD = 3.3 σ / S, LoQ = 10 σ / S),
+where σ is the residual standard error of the regression and S is the
+slope of the calibration curve at zero concentration (the linear
+coefficient; the quadratic term does not contribute to this slope).</p>
 <p>Once the curves have been inspected and the quality of the analysis
 is satisfactory, the concentrations for all features in samples can be
 calculated using the external calibration curves.</p>

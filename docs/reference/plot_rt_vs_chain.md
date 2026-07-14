@@ -1,4 +1,4 @@
-# Plot Retention Time versus Chain Length and Saturation
+# Plot retention time versus chain length and saturation
 
 Generates scatter plots of retention time (RT) versus either chain
 length, degree of saturation (double bonds), or equivalent carbon number

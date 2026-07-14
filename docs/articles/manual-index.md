@@ -11,8 +11,7 @@ reference](https://slinghub.github.io/MRMhub/quant/reference/index.md).
 ## Getting started
 
 - **[Installation](https://slinghub.github.io/MRMhub/quant/articles/manual-00-installation.md)**
-  — install `mrmhub` and verify the setup with
-  [`check_setup()`](https://slinghub.github.io/MRMhub/quant/reference/check_setup.md).
+  — install `mrmhub` and load it.
 - **[Key Concepts &
   Glossary](https://slinghub.github.io/MRMhub/quant/articles/manual-01-key-concepts.md)**
   — the data model, core terminology, and where QUANT fits in the MRMhub
@@ -35,6 +34,10 @@ reference](https://slinghub.github.io/MRMhub/quant/reference/index.md).
 - **[Visualisation
   Functions](https://slinghub.github.io/MRMhub/quant/articles/manual-08-visualization.md)**
   — RunScatter, PCA, run-sequence, and normalization-QC plots.
+- **[Writing Pipelines with AI
+  Assistants](https://slinghub.github.io/MRMhub/quant/articles/manual-09-ai-assistants.md)**
+  — grounding LLMs (Claude, ChatGPT, local models) in the real API, and
+  verifying what they produce.
 
 ## Reference
 

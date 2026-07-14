@@ -1,4 +1,4 @@
-# Plot Calibration Curves
+# Plot calibration curves
 
 This function plots calibration curves of each feature where defined and
 displays QC samples with defined concentrations within the plot. Users
@@ -207,7 +207,7 @@ plot_calibrationcurves(
 - page_orientation:
 
   Orientation of PDF, either `"LANDSCAPE"` or `"PORTRAIT"`. Default is
-  \`"LANDSCAPE
+  `"LANDSCAPE"`.
 
 - show_progress:
 

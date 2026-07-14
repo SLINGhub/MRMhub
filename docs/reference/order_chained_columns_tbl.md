@@ -1,4 +1,4 @@
-# Reorder Data Frame based on a chain of linked values in two columns.
+# Reorder a data frame based on a chain of linked values in two columns
 
 This function orders rows of a data frame based on chained relationships
 defined by two columns. It can also handle fully disconnected rows

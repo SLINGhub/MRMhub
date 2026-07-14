@@ -1,4 +1,4 @@
-# Relative Log Abundance (RLA) Plot
+# Relative log abundance (RLA) plot
 
 The Relative Log Abundance (RLA) plot visualizes standardized feature
 abundances distributions across samples. RLA standardization involves

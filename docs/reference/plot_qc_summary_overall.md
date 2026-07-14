@@ -1,4 +1,4 @@
-# Plot Overall QC Filtering Summary
+# Plot overall QC filtering summary
 
 This function generates a summary of the feature QC filtering process,
 visualizing the number of features that passed or failed the various QC

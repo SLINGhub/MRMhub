@@ -54,6 +54,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-tutorials">
 <li><h6 class="dropdown-header" data-toc-skip>Start here</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-12-workflow-builder.html">Build a workflow (no code)</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-01-prep-data.html">Preparing &amp; importing data</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-02-basic-workflow.html">Basic MRMhub workflow</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-03-lipidomics-workflow.html">Lipidomics (full workflow)</a></li>
@@ -89,6 +90,7 @@
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Writing Pipelines with AI Assistants</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-02-data-object.html">The MRMhubExperiment Data Object</a></li>
@@ -135,8 +137,7 @@ Tutorial
 using bundled demo data; no external files are needed.</p>
 <div class="callout callout-note">
 <p><strong>Time</strong> ~5 min  ·  <strong>Level</strong> Beginner  · 
-<strong>Prerequisites</strong> MRMhub installed
-(<code><a href="../reference/check_setup.html">check_setup()</a></code> passes)</p>
+<strong>Prerequisites</strong> <a href="manual-00-installation.html">MRMhub installed</a></p>
 </div>
 <div class="section level2">
 <h2 id="the-complete-workflow-in-one-script">The complete workflow in one script<a class="anchor" aria-label="anchor" href="#the-complete-workflow-in-one-script"></a>
@@ -161,9 +162,9 @@ printed summary and plot are produced by this code.</p>
 <p><code><a href="../reference/build_workflow.html">build_workflow()</a></code> offers an interactive alternative — a
 point-and-click application that validates your data and metadata, warns
 about any pipeline mismatches, and generates an equivalent Quarto
-(<code>.qmd</code>) workflow to download — while the code-first workflow
-above remains the reproducible path. What each line does is described
-below.</p>
+(<code>.qmd</code>) workflow to download (see <a href="tutorial-12-workflow-builder.html">Build a Workflow Without
+Code</a>) — while the code-first workflow above remains the reproducible
+path. What each line does is described below.</p>
 </div>
 <div class="section level2">
 <h2 id="what-the-script-does">What the script does<a class="anchor" aria-label="anchor" href="#what-the-script-does"></a>

@@ -38,10 +38,9 @@ import_metadata_features(
 
   Defines the sheet name in case an Excel file is provided.
 
-- ignore_warnings:
+- excl_unmatched_analyses:
 
-  Ignore warnings from data validation and proceed with importing
-  metadata
+  Exclude analyses (samples) that have no matching metadata
 
 ## Value
 

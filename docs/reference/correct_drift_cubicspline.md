@@ -1,4 +1,4 @@
-# Drift Correction by Cubic Spline Smoothing
+# Drift correction by cubic spline smoothing
 
 This function corrects for run-order drifts within or across batches
 using cubic spline smoothing. The correction is typically based on QC
@@ -41,11 +41,12 @@ independently for each batch if `batch_wise = TRUE`, where the median of
 the CV changes across the batch is compared with the threshold.
 
 **Note**: The function outputs a message indicating the median CV change
-and the mean absolute CV before and after correction for all samples.
+and the median absolute CV before and after correction for all samples.
 However, these metrics are experimental and should not be used as
 definitive criteria for correction (see Details below).
 
 This cubic spline method is implemented using the base R function
+[`stats::smooth.spline()`](https://rdrr.io/r/stats/smooth.spline.html).
 
 ## Usage
 
@@ -114,8 +115,8 @@ correct_drift_cubicspline(
 
 - lambda:
 
-  Regularization parameter for cubic spline smoothing. Default is 0,
-  which means no regularization.
+  Regularization parameter for cubic spline smoothing. Default is
+  `NULL`, which means no regularization.
 
 - penalty:
 
@@ -124,8 +125,9 @@ correct_drift_cubicspline(
 
 - conditional_correction:
 
-  Determines whether drift correction should be applied to all features
-  unconditionally (`TRUE`) or conditionally, based on sample CV change.
+  Determines whether drift correction is applied to all features
+  unconditionally (`FALSE`, the default) or, when `TRUE`, only
+  conditionally based on sample CV change.
 
 - recalc_trend_after:
 
@@ -145,8 +147,8 @@ correct_drift_cubicspline(
 
 - cv_diff_threshold:
 
-  Maximum allowable change in CV ratio before and after smoothing for
-  correction to be applied.
+  Maximum allowable change (difference) in CV before and after smoothing
+  for correction to be applied.
 
 - use_original_if_fail:
 
@@ -168,11 +170,10 @@ MRMhubExperiment object
 
 In the output message, the median CV change is computed as the median of
 CV changes for all features in global correction or for features where
-the correction passed the defined CV difference treshold in case of
-conditional correction (`conditional_correction = FALSE`). For
-batch-wise correction, the change is calculated per batch, with the
-final median CV change being the median of these batch medians across
-features.
+the correction passed the defined CV difference threshold in case of
+conditional correction (`conditional_correction = TRUE`). For batch-wise
+correction, the change is calculated per batch, with the final median CV
+change being the median of these batch medians across features.
 
 ## References
 
@@ -189,4 +190,4 @@ https://doi-org.libproxy1.nus.edu.sg/10.1007/s00216-013-6856-7
 
 ## See also
 
-[`smooth.spline`](https://rdrr.io/r/stats/smooth.spline.html)
+[`stats::smooth.spline()`](https://rdrr.io/r/stats/smooth.spline.html)

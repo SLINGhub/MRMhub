@@ -1,4 +1,4 @@
-# Plot QC Filtering Summary by Feature Class
+# Plot QC filtering summary by feature class
 
 This function provides a summary of feature QC filtering based on
 feature class, showing the number of features that passed or failed
@@ -33,7 +33,7 @@ class.
 
 ## See also
 
-[`plot_qc_summary_overall`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_summary_overall.md)
+[`plot_qc_summary_overall()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_summary_overall.md)
 for an overall summary plot
-[`filter_features_qc`](https://slinghub.github.io/MRMhub/quant/reference/filter_features_qc.md)
+[`filter_features_qc()`](https://slinghub.github.io/MRMhub/quant/reference/filter_features_qc.md)
 for comparing QC metrics

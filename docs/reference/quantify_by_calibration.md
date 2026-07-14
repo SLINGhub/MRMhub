@@ -35,7 +35,7 @@ quantify_by_calibration(
 
 - include_qualifier:
 
-  A logical value. If `TRUE`, the function will include quantifier
+  A logical value. If `TRUE`, the function will include qualifier
   features in the calibration curve calculations.
 
 - fit_overwrite:

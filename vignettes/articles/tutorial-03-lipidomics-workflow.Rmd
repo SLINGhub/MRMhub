@@ -584,7 +584,8 @@ limit of detection. The corresponding PDF can be accessed within the
 `output` subfolder. Use `filt_` arguments to include or exclude specific
 analytes. The filter can use regular expressions (regex). A language
 model such as ChatGPT can assist in generating more complex regex-based
-filters.
+filters; see [Writing Pipelines with AI Assistants](manual-09-ai-assistants.html)
+for how to use LLMs with MRMhub effectively.
 
 <details>
 

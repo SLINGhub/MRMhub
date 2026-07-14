@@ -1,4 +1,4 @@
-# Calculate Quality Control (QC) Metrics for Features
+# Calculate quality control (QC) metrics for features
 
 Computes various quality control (QC) metrics for each feature in a
 `MRMhubExperiment` object. Metrics are derived from different sample
@@ -58,8 +58,9 @@ calc_qc_metrics(
 
 - include_calibration_results:
 
-  Logical, whether to incorporate external calibration results into the
-  QC metrics table if available. Default is TRUE.
+  Logical. If `NA` (default), external calibration results are
+  incorporated into the QC metrics table if available. If `TRUE`, they
+  are always incorporated.
 
 ## Value
 
@@ -213,26 +214,19 @@ The calculated metrics are stored in the `metrics_qc` table of the
 
   - `r.squared`: R-squared value indicating the goodness of fit.
 
-  - `coef_a`:
-
-    - For **linear fits**, this represents the slope of the regression
-      line.
-
-    - For **quadratic fits**, this represents the coefficient of the
-      quadratic term (`x²`).
+  - `coef_a`: The intercept of the regression line (both **linear** and
+    **quadratic** fits).
 
   - `coef_b`:
 
-    - For **linear fits**, this represents the intercept of the
-      regression line.
+    - For **linear fits**, the slope of the regression line.
 
-    - For **quadratic fits**, this represents the coefficient of the
-      linear term (`x`).
+    - For **quadratic fits**, the coefficient of the linear term (`x`).
 
   - `coef_c`:
 
-    - Only present for **quadratic fits**, representing the intercept of
-      the regression equation.
+    - For **quadratic fits**, the coefficient of the quadratic term
+      (`x²`).
 
     - Set to `NA` for linear fits.
 

@@ -1,4 +1,4 @@
-# Compare Feature Variability Before and After Normalization
+# Compare feature variability before and after normalization
 
 Evaluates the effectiveness of normalization by comparing feature
 variability (measured as %CV) in QC and/or study samples before and
@@ -11,7 +11,7 @@ plot types:
 
 - Ratio plot: log2 of (CV after / CV before) vs mean CV
 
-Features can be grouped and visualized by their fature class using
+Features can be grouped and visualized by their feature class using
 facets.
 
 The resulting visualization helps assess whether normalization improved

@@ -1,4 +1,4 @@
-# Gaussian Kernel smoothing helper function
+# Gaussian kernel smoothing helper function
 
 Function for Gaussian kernel-based smoothing, for use by
 `fun_correct_drift`.
