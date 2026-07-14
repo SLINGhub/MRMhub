@@ -1592,7 +1592,7 @@ parse_plain_wide_csv <- function(
     name_repair = "minimal"
   )
 
-  if (!is.null(analysis_id_col) & !is.na(analysis_id_col)) {
+  if (!is.null(analysis_id_col) && !is.na(analysis_id_col)) {
     # a column name was provided as analysis_id
     if (!analysis_id_col %in% names(d)) {
       cli::cli_abort(col_red(
