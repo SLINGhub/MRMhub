@@ -24,7 +24,7 @@ import_metadata_from_data <- function(
 
   if (!"analysis_order" %in% names(annot_analyses)) {
     annot_analyses <- annot_analyses |>
-      dplyr::mutate(analysis_order = row_number(), before = 1)
+      dplyr::mutate(analysis_order = row_number(), .before = 1)
   }
 
   annot_analyses <- clean_analysis_metadata(annot_analyses)
