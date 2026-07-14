@@ -1669,10 +1669,6 @@ correct_batch_centering <- function(
   # start from raw data, previous drift correction will be overwritten
   # if no drift correction has been applied yet, make a copy of the original (raw) data of the specified variable
 
-  txt1 <- ifelse(data@var_drift_corrected[[variable]], "drift", NA)
-  txt2 <- ifelse(data@var_drift_corrected[[variable]], "batch", NA)
-  txt <- stringr::str_flatten(c(txt1, txt2), collapse = " and ", na.rm = TRUE)
-
   is_first_correction <- FALSE
 
   if (data@var_drift_corrected[[variable]]) {
