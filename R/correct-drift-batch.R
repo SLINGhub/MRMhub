@@ -595,6 +595,8 @@ fun_correct_drift <- function(
 
   if (is.character(smooth_fun)) {
     fun_smooth <- get(smooth_fun, mode = "function")
+  } else {
+    fun_smooth <- smooth_fun
   }
 
   d_smooth_res_mapped <- d_smooth_res |>
