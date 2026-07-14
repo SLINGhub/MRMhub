@@ -11,7 +11,7 @@ Authors@R: c(person(given = "Bo", family = "Burla", role = c("aut", "cre"),
 Description: MRMhub-QUANT, the quantitation and reporting module of the MRMhub
     toolchain, is a tool for processing, quality control, and visualization of
     targeted metabolomics and lipidomics mass spectrometry data.
-License: GPL-3
+License: AGPL-3
 URL: https://github.com/SLINGhub/MRMhub,
     https://slinghub.github.io/MRMhub/quant/
 BugReports: https://github.com/SLINGhub/MRMhub/issues
