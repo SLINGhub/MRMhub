@@ -1421,16 +1421,18 @@ filter_features_qc <- function(
     # and a message appears
 
     if ("filter_istd" %in% names(metrics_qc_local)) {
-      if (!all(metrics_qc_local$pass_istd == metrics_old$pass_istd_before)) {
+      if (
+        !isTRUE(all(metrics_qc_local$pass_istd == metrics_old$pass_istd_before))
+      ) {
         prev_filters <- append(prev_filters, "ISTD")
       }
     }
 
     if ("filter_qualifier" %in% names(metrics_qc_local)) {
       if (
-        !all(
+        !isTRUE(all(
           metrics_qc_local$pass_qualifier == metrics_old$pass_qualifier_before
-        )
+        ))
       ) {
         prev_filters <- append(prev_filters, "Qualifier")
       }
@@ -1438,10 +1440,10 @@ filter_features_qc <- function(
 
     if ("filter_featureskeep" %in% names(metrics_qc_local)) {
       if (
-        !all(
+        !isTRUE(all(
           metrics_qc_local$pass_featureskeep ==
             metrics_old$pass_featureskeep_before
-        )
+        ))
       ) {
         prev_filters <- append(prev_filters, "Keepers")
       }
