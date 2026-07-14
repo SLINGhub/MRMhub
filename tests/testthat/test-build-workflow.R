@@ -65,6 +65,44 @@ test_that("importer and metadata route select the right calls", {
   expect_match(qmd, "save_report_xlsx", fixed = TRUE)
 })
 
+test_that("generic long CSV emits a column_mapping when provided", {
+  qmd <- generate_workflow_qmd(list(
+    importer = "csv_long", data_path = "d.csv", steps = character(),
+    column_mapping = c(analysis_id = "Sample", feature_id = "Compound", feature_area = "Area")
+  ))
+  expect_match(qmd, "import_data_csv_long(", fixed = TRUE)
+  expect_match(qmd, 'column_mapping = c(analysis_id = "Sample", feature_id = "Compound", feature_area = "Area")', fixed = TRUE)
+})
+
+test_that("generic wide CSV emits variable_name and optional args", {
+  qmd <- generate_workflow_qmd(list(
+    importer = "csv_wide", data_path = "w.csv", steps = character(),
+    variable_name = "conc", analysis_id_col = "SampleID", first_feature_column = 3
+  ))
+  expect_match(qmd, 'variable_name = "conc"', fixed = TRUE)
+  expect_match(qmd, 'analysis_id_col = "SampleID"', fixed = TRUE)
+  expect_match(qmd, "first_feature_column = 3", fixed = TRUE)
+})
+
+test_that("individual metadata files emit one import per provided table", {
+  qmd <- generate_workflow_qmd(list(
+    importer = "mrmhub", data_path = "d.tsv", metadata_route = "individual",
+    metadata_individual = list(analyses = "meta/analyses.csv", features = "meta/features.csv", istds = NULL),
+    steps = character()
+  ))
+  expect_match(qmd, 'import_metadata_analyses(mexp, path = "meta/analyses.csv")', fixed = TRUE)
+  expect_match(qmd, 'import_metadata_features(mexp, path = "meta/features.csv")', fixed = TRUE)
+  # A NULL table is skipped.
+  expect_no_match(qmd, "import_metadata_istds", fixed = TRUE)
+})
+
+test_that("format_named_vec renders a named vector as R source", {
+  expect_equal(
+    format_named_vec(c(analysis_id = "S", feature_id = "F")),
+    'c(analysis_id = "S", feature_id = "F")'
+  )
+})
+
 test_that("save_rds is optional", {
   with_rds <- generate_workflow_qmd(list(steps = character(), save_rds = TRUE))
   without <- generate_workflow_qmd(list(steps = character()))
@@ -140,15 +178,15 @@ test_that("validator surfaces import failures instead of erroring", {
 test_that("every optional step emits its real, correctly-named API call", {
   qmd <- generate_workflow_qmd(list(
     steps = c(
-      "set_order", "normalize_istd", "quantify_istd", "quantify_cal",
+      "normalize_istd", "quantify_istd", "quantify_cal",
       "calibrate_ref", "correct_drift", "correct_batch", "qc_metrics",
       "filter_qc", "plot_runscatter"
     )
   ))
-  expect_match(qmd, "mexp <- set_analysis_order(mexp)", fixed = TRUE)
   expect_match(qmd, "mexp <- quantify_by_calibration(mexp, fit_overwrite = TRUE)", fixed = TRUE)
   expect_match(qmd, "mexp <- calibrate_by_reference(", fixed = TRUE)
   expect_match(qmd, 'reference_sample_id = "REFERENCE_SAMPLE_ID"', fixed = TRUE)
+  # quantify steps selected -> variable is conc; default drift method -> SPL ref.
   expect_match(qmd, 'mexp <- correct_batch_centering(mexp, variable = "conc", ref_qc_types = "SPL")', fixed = TRUE)
   expect_match(qmd, "mexp <- calc_qc_metrics(mexp)", fixed = TRUE)
   expect_match(qmd, 'plot_runscatter(mexp, variable = "conc")', fixed = TRUE)
@@ -223,24 +261,33 @@ test_that("calibrate_ref precheck warns without a reference and errors on a bad 
 
 test_that("correct_batch precheck warns when the target variable is not yet present", {
   skip_if(demo_file() == "")
-  # Right after import feature_conc does not exist yet, so a drift/batch step
-  # targeting "conc" should warn that an upstream step must run first.
+  # With a quantify step selected the target variable is conc, but right after
+  # import feature_conc does not exist yet, so batch should warn to run it first.
   mexp <- build_experiment(demo_file(), "mrmhub", NULL, "embedded")
   issues <- workflow_steps()$correct_batch$precheck(
-    mexp, list(steps = "correct_batch", ref_qc_types = "SPL", variable = "conc")
+    mexp, list(steps = c("quantify_istd", "correct_batch"), ref_qc_types = "SPL")
   )
   expect_true(any(issues$severity == "warning"))
   expect_match(paste(issues$message, collapse = " "), "feature_conc", fixed = TRUE)
 })
 
-test_that("set_order precheck warns when run order cannot be inferred", {
-  # An empty experiment has neither a timestamp nor an analysis_order.
-  issues <- workflow_steps()$set_order$precheck(
-    MRMhubExperiment(),
-    list(steps = "set_order")
-  )
-  expect_equal(issues$severity, "warning")
-  expect_match(issues$message, "run order", ignore.case = TRUE)
+test_that("drift method selects the matching correct_drift_* function", {
+  base <- list(steps = c("quantify_istd", "correct_drift"), ref_qc_types = "BQC")
+  expect_match(generate_workflow_qmd(c(base, list(drift_method = "spline"))),
+    "correct_drift_cubicspline(mexp", fixed = TRUE)
+  expect_match(generate_workflow_qmd(c(base, list(drift_method = "loess"))),
+    "correct_drift_loess(mexp", fixed = TRUE)
+  expect_match(generate_workflow_qmd(c(base, list(drift_method = "gaussian"))),
+    "correct_drift_gaussiankernel(mexp", fixed = TRUE)
+})
+
+test_that("drift ref defaults by method and variable tracks the highest level", {
+  # Gaussian with no explicit ref -> SPL; only normalize selected -> norm_intensity.
+  q1 <- generate_workflow_qmd(list(steps = c("normalize_istd", "correct_drift"), drift_method = "gaussian"))
+  expect_match(q1, 'correct_drift_gaussiankernel(mexp, variable = "norm_intensity", ref_qc_types = "SPL")', fixed = TRUE)
+  # Spline with no explicit ref -> BQC; no normalize/quantify -> intensity.
+  q2 <- generate_workflow_qmd(list(steps = c("correct_drift"), drift_method = "spline"))
+  expect_match(q2, 'correct_drift_cubicspline(mexp, variable = "intensity", ref_qc_types = "BQC")', fixed = TRUE)
 })
 
 test_that("normalize_istd is gated off and errors when ISTDs are undefined", {
@@ -355,17 +402,33 @@ test_that("build_experiment attaches msorganiser metadata and surfaces tables mi
 })
 
 test_that("build_workflow() aborts when its Shiny dependencies are missing", {
+  # build_workflow() guards via rlang::check_installed(), not requireNamespace,
+  # so mock that. The runApp mock is a safety net: if the guard is ever
+  # bypassed the test fails fast instead of launching a real server and
+  # hanging the suite.
   local_mocked_bindings(
-    requireNamespace = function(package, ...) FALSE,
-    .package = "base"
+    check_installed = function(pkg, ...) {
+      rlang::abort("The shiny package is required.")
+    },
+    .package = "rlang"
+  )
+  local_mocked_bindings(
+    runApp = function(...) stop("runApp() must not be reached when deps are missing"),
+    .package = "shiny"
   )
   expect_error(build_workflow(), "shiny")
 })
 
 test_that("build_workflow() aborts when only bslib is missing", {
   local_mocked_bindings(
-    requireNamespace = function(package, ...) identical(package, "shiny"),
-    .package = "base"
+    check_installed = function(pkg, ...) {
+      rlang::abort("The bslib package is required.")
+    },
+    .package = "rlang"
+  )
+  local_mocked_bindings(
+    runApp = function(...) stop("runApp() must not be reached when deps are missing"),
+    .package = "shiny"
   )
   expect_error(build_workflow(), "bslib")
 })

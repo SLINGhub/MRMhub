@@ -21,28 +21,6 @@
 #' @noRd
 workflow_steps <- function() {
   list(
-    set_order = list(
-      id = "set_order",
-      label = "Set analysis order",
-      order = 10,
-      default_selected = FALSE,
-      heading = "Set the analytical run order",
-      prose = "Order analyses by acquisition time so drift is modelled correctly.",
-      emit = function(spec) "mexp <- set_analysis_order(mexp)",
-      precheck = function(mexp, spec) {
-        has_ts <- "acquisition_time_stamp" %in% names(mexp@dataset) &&
-          any(!is.na(mexp@dataset$acquisition_time_stamp))
-        has_order <- "analysis_order" %in% names(mexp@annot_analyses) &&
-          any(!is.na(mexp@annot_analyses$analysis_order))
-        if (!has_ts && !has_order) {
-          wf_issue(
-            "set_order",
-            "warning",
-            "No acquisition time stamp or 'analysis_order' metadata found -- run order cannot be inferred."
-          )
-        }
-      }
-    ),
     normalize_istd = list(
       id = "normalize_istd",
       label = "Normalize by internal standard",
@@ -176,7 +154,7 @@ workflow_steps <- function() {
       prose = "Anchor concentrations to a reference material (e.g. NIST SRM 1950) measured in the run.",
       emit = function(spec) {
         ref <- spec$reference_sample_id %||% "REFERENCE_SAMPLE_ID"
-        var <- spec$variable %||% "conc"
+        var <- workflow_variable(spec)
         glue::glue(
           'mexp <- calibrate_by_reference(\n',
           '  mexp,\n',
@@ -232,9 +210,15 @@ workflow_steps <- function() {
       heading = "Correct within-batch signal drift",
       prose = "Model and remove smooth intra-batch drift using QC samples (Broadhurst 2018).",
       emit = function(spec) {
-        var <- spec$variable %||% "conc"
-        ref <- format_char_vec(spec$ref_qc_types %||% "SPL")
-        glue::glue('mexp <- correct_drift_gaussiankernel(mexp, variable = "{var}", ref_qc_types = {ref})')
+        var <- workflow_variable(spec)
+        ref <- format_char_vec(drift_ref(spec))
+        fn <- switch(
+          spec$drift_method %||% "gaussian",
+          spline = "correct_drift_cubicspline",
+          loess = "correct_drift_loess",
+          "correct_drift_gaussiankernel"
+        )
+        glue::glue('mexp <- {fn}(mexp, variable = "{var}", ref_qc_types = {ref})')
       },
       precheck = function(mexp, spec) precheck_qc_ref(mexp, spec, "correct_drift")
     ),
@@ -246,8 +230,8 @@ workflow_steps <- function() {
       heading = "Correct between-batch offsets",
       prose = "Centre each batch to remove systematic offsets between batches.",
       emit = function(spec) {
-        var <- spec$variable %||% "conc"
-        ref <- format_char_vec(spec$ref_qc_types %||% "SPL")
+        var <- workflow_variable(spec)
+        ref <- format_char_vec(drift_ref(spec)) # batch matches the drift method's reference
         glue::glue('mexp <- correct_batch_centering(mexp, variable = "{var}", ref_qc_types = {ref})')
       },
       gate = function(mexp) {
@@ -304,7 +288,7 @@ workflow_steps <- function() {
       heading = "Inspect the run-scatter",
       prose = "Plot each feature across the analytical run to visually confirm the processing.",
       emit = function(spec) {
-        var <- spec$variable %||% "conc"
+        var <- workflow_variable(spec)
         glue::glue('plot_runscatter(mexp, variable = "{var}")')
       },
       precheck = function(mexp, spec) NULL
@@ -356,7 +340,7 @@ precheck_qc_ref <- function(mexp, spec, step) {
       )
     ))
   }
-  var <- spec$variable %||% "conc"
+  var <- workflow_variable(spec)
   col <- paste0("feature_", var)
   produced_by <- c(conc = "quantify_istd/quantify_cal", norm_intensity = "normalize_istd")
   if (!col %in% names(mexp@dataset)) {
@@ -375,6 +359,33 @@ precheck_qc_ref <- function(mexp, spec, step) {
 #' @noRd
 `%||%` <- function(x, y) if (is.null(x) || length(x) == 0) y else x
 
+# Highest processing level reached by the selected steps -- the feature variable
+# that drift/batch/plot should act on: conc if quantified, else norm_intensity if
+# ISTD-normalized, else raw intensity.
+#' @noRd
+workflow_variable <- function(spec) {
+  steps <- spec$steps %||% character()
+  if (any(c("quantify_istd", "quantify_cal", "calibrate_ref") %in% steps)) {
+    "conc"
+  } else if ("normalize_istd" %in% steps) {
+    "norm_intensity"
+  } else {
+    "intensity"
+  }
+}
+
+# Reference QC type(s) for drift/batch. An explicit spec$ref_qc_types wins;
+# otherwise the drift method decides: Gaussian kernel uses study samples (SPL),
+# spline/loess use pooled QCs (BQC by default; the app narrows this to the first
+# of BQC / TQC / QC actually present in the data).
+#' @noRd
+drift_ref <- function(spec) {
+  if (!is.null(spec$ref_qc_types) && length(spec$ref_qc_types) > 0) {
+    return(spec$ref_qc_types)
+  }
+  if (identical(spec$drift_method %||% "gaussian", "gaussian")) "SPL" else "BQC"
+}
+
 # Format a character vector as R source: "SPL" or c("SPL", "BQC").
 #' @noRd
 format_char_vec <- function(x) {
@@ -384,6 +395,13 @@ format_char_vec <- function(x) {
   } else {
     paste0('c(', paste0('"', x, '"', collapse = ", "), ')')
   }
+}
+
+# Format a named character vector as R source: c(analysis_id = "Sample", ...).
+#' @noRd
+format_named_vec <- function(x) {
+  parts <- paste0(names(x), ' = "', unname(as.character(x)), '"')
+  paste0("c(", paste(parts, collapse = ", "), ")")
 }
 
 #' @noRd
@@ -417,6 +435,9 @@ wf_issue <- function(step, severity, message) {
 #'   `"msorganiser"`, `"tables"` (multi-sheet xlsx), or `"none"`.
 #' @param steps Character vector of selected step ids (the ids defined in
 #'   `workflow_steps()`).
+#' @param csv_opts List of extra arguments for the generic CSV importers:
+#'   `column_mapping` (csv_long) or `variable_name` / `analysis_id_col` /
+#'   `first_feature_column` (csv_wide).
 #'
 #' @return A tibble with columns `step`, `severity` (`"error"`, `"warning"`, or
 #'   `"ok"`), and `message`.
@@ -426,12 +447,13 @@ validate_workflow_inputs <- function(
   importer = "mrmhub",
   metadata_file = NULL,
   metadata_route = "embedded",
-  steps = character()
+  steps = character(),
+  csv_opts = list()
 ) {
   spec <- list(steps = steps)
 
   mexp <- tryCatch(
-    suppressMessages(build_experiment(data_file, importer, metadata_file, metadata_route)),
+    suppressMessages(build_experiment(data_file, importer, metadata_file, metadata_route, csv_opts)),
     error = function(e) e
   )
 
@@ -459,7 +481,7 @@ validate_workflow_inputs <- function(
 # Build the experiment from files using the real importers. Kept separate so
 # validate_workflow_inputs() can wrap it in tryCatch.
 #' @noRd
-build_experiment <- function(data_file, importer, metadata_file, metadata_route) {
+build_experiment <- function(data_file, importer, metadata_file, metadata_route, csv_opts = list()) {
   embedded <- identical(metadata_route, "embedded")
   mexp <- MRMhubExperiment()
 
@@ -468,18 +490,47 @@ build_experiment <- function(data_file, importer, metadata_file, metadata_route)
     mrmhub = import_data_mrmhub(mexp, path = data_file, import_metadata = embedded, silent = TRUE),
     masshunter = import_data_masshunter(mexp, path = data_file, import_metadata = embedded),
     skyline = import_data_skyline(mexp, path = data_file, import_metadata = embedded),
-    csv_long = import_data_csv_long(mexp, path = data_file, import_metadata = embedded),
-    csv_wide = import_data_csv_wide(mexp, path = data_file, variable_name = "area"),
+    csv_long = import_data_csv_long(
+      mexp,
+      path = data_file,
+      import_metadata = embedded,
+      column_mapping = csv_opts$column_mapping
+    ),
+    csv_wide = import_data_csv_wide(
+      mexp,
+      path = data_file,
+      variable_name = csv_opts$variable_name %||% "area",
+      analysis_id_col = csv_opts$analysis_id_col %||% NA,
+      first_feature_column = csv_opts$first_feature_column %||% NA
+    ),
     cli::cli_abort("Unknown importer {.val {importer}}.")
   )
 
-  if (!is.null(metadata_file) && nzchar(metadata_file)) {
+  if (identical(metadata_route, "individual")) {
+    mexp <- import_metadata_individual(mexp, if (is.list(metadata_file)) metadata_file else list())
+  } else if (!is.null(metadata_file) && length(metadata_file) == 1 && nzchar(metadata_file)) {
     mexp <- switch(
       metadata_route,
       msorganiser = import_metadata_msorganiser(mexp, path = metadata_file, ignore_warnings = TRUE),
       tables = import_metadata_tables(mexp, metadata_file),
       mexp
     )
+  }
+  mexp
+}
+
+# Import separate per-table metadata CSVs. `files` is a named list with any of
+# `analyses`, `features`, `istds`; missing / NULL entries are skipped.
+#' @noRd
+import_metadata_individual <- function(mexp, files) {
+  if (!is.null(files$analyses)) {
+    mexp <- import_metadata_analyses(mexp, path = files$analyses)
+  }
+  if (!is.null(files$features)) {
+    mexp <- import_metadata_features(mexp, path = files$features)
+  }
+  if (!is.null(files$istds)) {
+    mexp <- import_metadata_istds(mexp, path = files$istds)
   }
   mexp
 }
@@ -525,8 +576,17 @@ import_metadata_tables <- function(mexp, path) {
 #'     \item{`metadata_path`}{Path to the metadata file (when not embedded).}
 #'     \item{`steps`}{Character vector of step ids to include (the ids defined
 #'       in `workflow_steps()`).}
-#'     \item{`variable`, `ref_qc_types`, `reference_sample_id`}{Optional argument
-#'       choices used by drift/batch/calibration steps.}
+#'     \item{`drift_method`}{Drift model for the drift step: `"gaussian"`
+#'       (default), `"spline"`, or `"loess"`.}
+#'     \item{`ref_qc_types`, `reference_sample_id`}{Optional reference QC type(s)
+#'       and reference sample id for drift/batch/calibration. The corrected
+#'       feature variable is derived automatically as the highest processing
+#'       level reached by the selected steps.}
+#'     \item{`column_mapping`}{Named character vector for `importer = "csv_long"`,
+#'       mapping canonical names to file columns, e.g.
+#'       `c(analysis_id = "Sample", feature_id = "Compound", feature_area = "Area")`.}
+#'     \item{`variable_name`, `analysis_id_col`, `first_feature_column`}{Arguments
+#'       for `importer = "csv_wide"`.}
 #'     \item{`output_xlsx`}{Path for the exported report. Default
 #'       `"results.xlsx"`.}
 #'     \item{`formats`}{Character vector of Quarto output formats, any of
@@ -618,8 +678,8 @@ qmd_import_section <- function(spec) {
     mrmhub = glue::glue('mexp <- import_data_mrmhub(mexp, path = "{spec$data_path}", import_metadata = {toupper(as.character(embedded))})'),
     masshunter = glue::glue('mexp <- import_data_masshunter(mexp, path = "{spec$data_path}", import_metadata = {toupper(as.character(embedded))})'),
     skyline = glue::glue('mexp <- import_data_skyline(mexp, path = "{spec$data_path}", import_metadata = {toupper(as.character(embedded))})'),
-    csv_long = glue::glue('mexp <- import_data_csv_long(mexp, path = "{spec$data_path}")'),
-    csv_wide = glue::glue('mexp <- import_data_csv_wide(mexp, path = "{spec$data_path}", variable_name = "area")  # adjust variable_name'),
+    csv_long = qmd_import_csv_long(spec),
+    csv_wide = qmd_import_csv_wide(spec),
     glue::glue('mexp <- import_data_mrmhub(mexp, path = "{spec$data_path}")')
   )
 
@@ -637,6 +697,37 @@ qmd_import_section <- function(spec) {
   )
 }
 
+# Generic long CSV: emit a column_mapping when the user has mapped columns, so
+# the required analysis_id / feature_id / value columns are resolved.
+#' @noRd
+qmd_import_csv_long <- function(spec) {
+  cm <- spec$column_mapping
+  if (is.null(cm) || length(cm) == 0) {
+    return(glue::glue('mexp <- import_data_csv_long(mexp, path = "{spec$data_path}")'))
+  }
+  paste0(
+    "mexp <- import_data_csv_long(\n",
+    "  mexp,\n",
+    '  path = "', spec$data_path, '",\n',
+    "  column_mapping = ", format_named_vec(cm), "\n",
+    ")"
+  )
+}
+
+# Generic wide CSV: variable_name is required; analysis_id_col / first_feature
+# _column are emitted only when the user set them.
+#' @noRd
+qmd_import_csv_wide <- function(spec) {
+  args <- glue::glue('variable_name = "{spec$variable_name %||% "area"}"')
+  if (!is.null(spec$analysis_id_col) && nzchar(as.character(spec$analysis_id_col))) {
+    args <- c(args, glue::glue('analysis_id_col = "{spec$analysis_id_col}"'))
+  }
+  if (!is.null(spec$first_feature_column) && !is.na(spec$first_feature_column)) {
+    args <- c(args, glue::glue("first_feature_column = {spec$first_feature_column}"))
+  }
+  glue::glue('mexp <- import_data_csv_wide(mexp, path = "{spec$data_path}", {paste(args, collapse = ", ")})')
+}
+
 #' @noRd
 qmd_metadata_call <- function(spec) {
   path <- spec$metadata_path %||% "your_metadata.xlsx"
@@ -648,6 +739,14 @@ qmd_metadata_call <- function(spec) {
       glue::glue('mexp <- import_metadata_features(mexp, path = "{path}", sheet = "Features")'),
       glue::glue('mexp <- import_metadata_istds(mexp, path = "{path}", sheet = "ISTDs")')
     ),
+    individual = {
+      mi <- spec$metadata_individual %||% list()
+      c(
+        if (!is.null(mi$analyses)) glue::glue('mexp <- import_metadata_analyses(mexp, path = "{mi$analyses}")'),
+        if (!is.null(mi$features)) glue::glue('mexp <- import_metadata_features(mexp, path = "{mi$features}")'),
+        if (!is.null(mi$istds)) glue::glue('mexp <- import_metadata_istds(mexp, path = "{mi$istds}")')
+      )
+    },
     character()
   )
 }
