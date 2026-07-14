@@ -330,7 +330,10 @@ get_analyis_end <- function(data, estimate_sequence_end) {
 
 get_runtime_median <- function(data) {
   if (check_data_present(data)) {
-    median(diff(unique(data@dataset$acquisition_time_stamp), units = "secs")) |>
+    median(as.numeric(
+      diff(unique(data@dataset$acquisition_time_stamp)),
+      units = "secs"
+    )) |>
       lubridate::seconds_to_period()
   } else {
     return(NA)
@@ -391,7 +394,10 @@ get_analysis_breaks <- function(data, break_duration_minutes) {
       return(NA_integer_)
     }
     as.integer(sum(
-      diff(unique(data@dataset$acquisition_time_stamp), units = "secs") >
+      as.numeric(
+        diff(unique(data@dataset$acquisition_time_stamp)),
+        units = "secs"
+      ) >
         break_duration_minutes * 60
     ))
   } else {
