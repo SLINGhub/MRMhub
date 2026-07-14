@@ -1638,19 +1638,19 @@ parse_plain_wide_csv <- function(
       d <- d |>
         mutate(
           across(
-            .cols = dplyr::any_of(names(c("qc_type", "batch_id"))),
+            .cols = dplyr::any_of(c("qc_type", "batch_id")),
             .fns = \(x) str_squish(as.character(x))
           )
         ) |>
         mutate(
           across(
-            .cols = dplyr::any_of(names(c("is_quantifier", "is_istd"))),
+            .cols = dplyr::any_of(c("is_quantifier", "is_istd")),
             .fns = \(x) as.logical(str_squish(as.character(x)))
           )
         ) |>
         mutate(
           across(
-            .cols = dplyr::any_of(names(c("analysis_order"))),
+            .cols = dplyr::any_of("analysis_order"),
             .fns = \(x) as.numeric(str_squish(as.character(x)))
           )
         )

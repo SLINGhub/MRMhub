@@ -99,61 +99,133 @@ quantify_by_calibration <- function(
       "fit_model",
       "coef_a_cal_1",
       "coef_b_cal_1",
-      "coef_c_cal_1"
+      "coef_c_cal_1",
+      "lowest_cal_cal_1",
+      "highest_cal_cal_1"
     )
 
   data@dataset <- data@dataset |>
     left_join(
-      d_stats_calc |>
-        select(
-          "feature_id",
-          "fit_model",
-          "coef_a_cal_1",
-          "coef_b_cal_1",
-          "coef_c_cal_1"
-        ),
+      d_stats_calc,
       by = c("feature_id" = "feature_id")
     ) |>
     mutate(
       feature_conc = case_when(
+        # Linear back-calculation: conc = (response - intercept) / slope.
+        # Guard a zero or missing slope, which would otherwise yield `Inf`.
         fit_model != "quadratic" ~
-          (.data$feature_norm_intensity - .data$coef_a_cal_1) /
-          .data$coef_b_cal_1,
+          if_else(
+            !is.na(.data$coef_b_cal_1) & .data$coef_b_cal_1 != 0,
+            (.data$feature_norm_intensity - .data$coef_a_cal_1) /
+              .data$coef_b_cal_1,
+            NA_real_
+          ),
+        # Quadratic back-calculation: solve a + b*conc + c*conc^2 = response.
+        # A quadratic has two roots; the calibrated range is used only to *select*
+        # the physical root (the one on the monotonic branch), which is then
+        # returned even if the sample lies outside the range (matching the prior
+        # behaviour). Only a genuinely complex root (no real solution) or the
+        # degenerate `c == 0` / `b == 0` case yields NA.
         TRUE ~
           purrr::pmap_dbl(
             list(
-              coef_a_cal_1,
-              coef_b_cal_1,
-              coef_c_cal_1,
-              feature_norm_intensity
+              .data$coef_a_cal_1,
+              .data$coef_b_cal_1,
+              .data$coef_c_cal_1,
+              .data$feature_norm_intensity,
+              .data$lowest_cal_cal_1,
+              .data$highest_cal_cal_1
             ),
-            function(a, b, c, x) {
-              # Check for invalid coefficients
-              if (is.na(c) || is.na(b) || is.na(a) || is.na(x) || a == 0) {
-                return(NA_real_) # Return NA if coefficients are invalid
+            function(a, b, c, x, lo, hi) {
+              if (is.na(a) || is.na(b) || is.na(c) || is.na(x)) {
+                return(NA_real_)
               }
-
-              # get the root
-              root <- tryCatch(
-                {
-                  polyroot(c(a - x, b, c))
-                },
-                error = function(e) {
-                  return(NA_complex_)
+              # Degenerate quadratic term: the curve is effectively linear.
+              if (c == 0) {
+                if (b == 0) {
+                  return(NA_real_)
                 }
-              )
-
-              # If the root is a complex number, check if it is valid (not NA)
-              if (length(root) > 0 && !is.na(Re(root[1]))) {
-                return(Re(root[1])) # Return the real part of the first root
-              } else {
-                return(NA_real_) # Return NA if no valid root
+                return((x - a) / b)
               }
+              roots <- tryCatch(
+                polyroot(c(a - x, b, c)),
+                error = function(e) complex(0)
+              )
+              # Keep only (near-)real roots.
+              real_roots <- Re(roots)[abs(Im(roots)) < 1e-6]
+              if (length(real_roots) == 0) {
+                return(NA_real_) # no real solution (response beyond the curve)
+              }
+              if (length(real_roots) == 1) {
+                return(real_roots)
+              }
+              # Two real roots: pick the one nearest the calibrated range (0 when
+              # inside it) so out-of-range samples still get the physical root.
+              if (!is.na(lo) && !is.na(hi)) {
+                dist_to_range <- pmax(lo - real_roots, real_roots - hi, 0)
+                return(real_roots[which.min(dist_to_range)])
+              }
+              # No range available: prefer the non-negative root.
+              nonneg <- real_roots[real_roots >= 0]
+              if (length(nonneg) >= 1) {
+                return(nonneg[1])
+              }
+              real_roots[1]
             }
           )
       )
-    ) |>
-    select(-c("coef_a_cal_1", "coef_b_cal_1", "coef_c_cal_1"))
+    )
+
+  # Flag concentrations that fall outside the calibrated range (below the lowest
+  # or above the highest calibrator). The value is retained as an extrapolation;
+  # this column records the fact so it travels with the data. Applies uniformly
+  # to linear and quadratic fits.
+  data@dataset <- data@dataset |>
+    mutate(
+      feature_conc_out_of_range = !is.na(.data$feature_conc) &
+        (.data$feature_conc < .data$lowest_cal_cal_1 |
+          .data$feature_conc > .data$highest_cal_cal_1)
+    )
+
+  n_out_of_range <- sum(
+    data@dataset$feature_conc_out_of_range & !data@dataset$is_istd,
+    na.rm = TRUE
+  )
+  if (n_out_of_range > 0) {
+    cli::cli_alert_info(cli::col_grey(
+      "{n_out_of_range} concentration value{?s} fall outside the calibrated range (retained, flagged in {.field feature_conc_out_of_range})."
+    ))
+  }
+
+  # Warn when a value with a valid calibration could not be back-calculated at
+  # all (no real solution on the curve, or a zero/degenerate slope) and was
+  # therefore set to `NA`.
+  d_backcalc_na <- data@dataset |>
+    filter(
+      !.data$is_istd,
+      !is.na(.data$feature_norm_intensity),
+      !is.na(.data$coef_b_cal_1),
+      is.na(.data$feature_conc)
+    )
+  if (nrow(d_backcalc_na) > 0) {
+    affected_features <- unique(d_backcalc_na$feature_id)
+    cli::cli_warn(c(
+      "!" = "{nrow(d_backcalc_na)} concentration value{?s} could not be back-calculated from the calibration curve and {?was/were} set to {.val {NA_real_}}.",
+      "i" = "This occurs when the response has no real solution on the curve or the slope is zero.",
+      "i" = "Affected feature{?s}: {.val {affected_features}}"
+    ))
+  }
+
+  data@dataset <- data@dataset |>
+    select(
+      -c(
+        "coef_a_cal_1",
+        "coef_b_cal_1",
+        "coef_c_cal_1",
+        "lowest_cal_cal_1",
+        "highest_cal_cal_1"
+      )
+    )
 
   n_features <- length(unique(d_stats_calc$feature_id))
 
@@ -640,6 +712,10 @@ calc_calibration_results <- function(
 #' @param with_bias_abs Logical. If `TRUE`, includes absolute bias in concentration units in the results. Defaults to `FALSE`.
 #' @param with_conc_ratio Logical. If `TRUE`, includes the ratio of measured to target concentration in the results. Defaults to `FALSE`.
 #' @param with_cv_intra Logical. If `TRUE`, includes intra-assay coefficient of variation (CV) for the in the results. Defaults to `TRUE`.
+#' @param with_conc_out_of_range Logical. If `TRUE` (and the dataset carries the
+#'   `feature_conc_out_of_range` flag from [`quantify_by_calibration()`]), includes
+#'   the fraction of replicate measurements whose concentration fell outside the
+#'   calibrated range (`frac_conc_out_of_range`). Defaults to `TRUE`.
 #'
 #' @return A data frame containing the calibration results, including metrics such as bias, percentage bias, and intra-assay CV based on specified parameters.
 #'
@@ -658,9 +734,13 @@ get_qc_bias_variability <- function(
   with_bias = TRUE,
   with_bias_abs = FALSE,
   with_conc_ratio = FALSE,
-  with_cv_intra = TRUE
+  with_cv_intra = TRUE,
+  with_conc_out_of_range = TRUE
 ) {
   check_data(data)
+
+  has_conc_out_of_range <- "feature_conc_out_of_range" %in%
+    names(data@dataset)
 
   if (!is.character(wide_format) || length(wide_format) != 1) {
     cli::cli_abort(
@@ -678,7 +758,8 @@ get_qc_bias_variability <- function(
       "feature_id",
       "is_quantifier",
       "analyte_id",
-      "feature_conc"
+      "feature_conc",
+      dplyr::any_of("feature_conc_out_of_range")
     ) |>
     inner_join(
       data@annot_qcconcentrations |>
@@ -743,6 +824,11 @@ get_qc_bias_variability <- function(
       bias_abs = mean(.data$bias_abs_val, na.rm = TRUE),
       conc_ratio = mean(.data$conc_ratio, na.rm = TRUE),
       conc_ratio_sd = sd(.data$conc_ratio, na.rm = TRUE),
+      frac_conc_out_of_range = if (has_conc_out_of_range) {
+        mean(.data$feature_conc_out_of_range, na.rm = TRUE)
+      } else {
+        NA_real_
+      },
       .by = c("sample_id", "qc_type", "feature_id")
     )
   d_qc_summary <- d_qc_summary |>
@@ -760,6 +846,9 @@ get_qc_bias_variability <- function(
       if (with_conc_ratio) "conc_ratio",
       if (with_conc_ratio && !all(is.na(d_qc_summary$conc_ratio_sd))) {
         "conc_ratio_sd"
+      },
+      if (with_conc_out_of_range && has_conc_out_of_range) {
+        "frac_conc_out_of_range"
       }
     )
 
@@ -773,7 +862,8 @@ get_qc_bias_variability <- function(
       "bias",
       "bias_abs",
       "conc_ratio",
-      "conc_ratio_sd"
+      "conc_ratio_sd",
+      "frac_conc_out_of_range"
     )
     available_columns <- intersect(optinal_columns, names(d_qc_summary))
 

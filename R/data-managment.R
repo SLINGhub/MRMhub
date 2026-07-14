@@ -444,7 +444,8 @@ update_after_quantitation <- function(
           "feature_pmol_total",
           "feature_conc",
           "feature_raw_conc",
-          "feature_conc_ratio"
+          "feature_conc_ratio",
+          "feature_conc_out_of_range"
         ))
       )
     if (with_message) {
@@ -836,7 +837,7 @@ link_data_metadata <- function(data = NULL, minimal_info = TRUE) {
     feature_norm_intensity = FALSE,
     feature_conc = FALSE
   )
-  data@var_drift_corrected <- c(
+  data@var_batch_corrected <- c(
     feature_intensity = FALSE,
     feature_norm_intensity = FALSE,
     feature_conc = FALSE
@@ -933,7 +934,8 @@ set_intensity_var <- function(
       "featue_norm_intensity",
       "feature_conc",
       "feature_amount",
-      "feature_raw_conc"
+      "feature_raw_conc",
+      "feature_conc_out_of_range"
     )
     if (any(calc_cols %in% names(data@dataset))) {
       data@dataset <- data@dataset |> select(-any_of(calc_cols))

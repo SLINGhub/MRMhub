@@ -297,7 +297,8 @@ test_that("get_qc_bias_variability returns correct data", {
       "conc_mean",
       "conc_sd",
       "cv_intra",
-      "bias"
+      "bias",
+      "frac_conc_out_of_range"
     )
   )
   expect_equal(nrow(result), 32)
@@ -312,7 +313,10 @@ test_that("get_qc_bias_variability returns correct data", {
     with_cv_intra = FALSE,
     with_conc_ratio = FALSE
   )
-  expect_equal(names(result), c("feature_id", "sample_id", "qc_type", "n"))
+  expect_equal(
+    names(result),
+    c("feature_id", "sample_id", "qc_type", "n", "frac_conc_out_of_range")
+  )
   expect_equal(unique(result$qc_type), c("CAL", "HQC", "LQC"))
 
   result <- get_qc_bias_variability(mexp_quant_norm, include_qualifier = TRUE)

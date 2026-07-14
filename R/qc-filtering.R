@@ -269,12 +269,31 @@ calc_qc_metrics <- function(
       } else {
         NA_real_
       },
+      conc_out_of_range_prop_spl = if (
+        "feature_conc_out_of_range" %in% names(data@dataset)
+      ) {
+        sum(
+          .data$feature_conc_out_of_range[.data$qc_type == "SPL"],
+          na.rm = TRUE
+        ) /
+          length(.data$feature_conc_out_of_range[.data$qc_type == "SPL"])
+      } else {
+        NA_real_
+      },
       na_in_all = if ("feature_intensity" %in% names(data@dataset)) {
         all(is.na(.data$feature_intensity))
       } else {
         NA_real_
       }
     )
+
+  # The out-of-calibration-range proportion is only meaningful when external
+  # calibration was applied. Keep `metrics_qc` schema unchanged otherwise by
+  # dropping the column when the flag is absent.
+  if (!("feature_conc_out_of_range" %in% names(data@dataset))) {
+    d_stats_missingval <- d_stats_missingval |>
+      dplyr::select(-"conc_out_of_range_prop_spl")
+  }
 
   # Set grouping variable depending on whether batch medians are used
   if (use_batch_medians) {

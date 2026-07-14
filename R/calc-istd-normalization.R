@@ -90,17 +90,58 @@ normalize_by_istd <- function(data = NULL, ignore_missing_annotation = FALSE) {
   d_temp <- data@dataset |>
     dplyr::left_join(d_annot, by = c("feature_id" = "feature_id"))
 
-  # Normalize intensities
+  # Normalize intensities. Divide by the single ISTD intensity of the group and
+  # guard a zero or missing divisor, which would otherwise yield `Inf`/`NaN`.
+  # `which(is_istd)[1]` reduces the divisor to one value so a stray duplicate
+  # ISTD row cannot silently recycle (duplicates are also rejected upstream).
   d_temp <- d_temp |>
     dplyr::group_by(.data$istd_feature_id, .data$analysis_id) |>
     dplyr::mutate(
-      feature_norm_intensity = ifelse(
-        !is.na(.data$istd_feature_id),
-        .data$feature_intensity / .data$feature_intensity[.data$is_istd],
+      n_istd_in_group = sum(.data$is_istd),
+      istd_intensity = .data$feature_intensity[which(.data$is_istd)[1]],
+      feature_norm_intensity = dplyr::if_else(
+        !is.na(.data$istd_feature_id) &
+          !is.na(.data$istd_intensity) &
+          .data$istd_intensity != 0,
+        .data$feature_intensity / .data$istd_intensity,
         NA_real_
       )
     ) |>
     dplyr::ungroup()
+
+  # A group must contain exactly one ISTD row. More than one makes the divisor
+  # ambiguous (`which(is_istd)[1]` would silently pick one), so abort loudly:
+  # this indicates duplicated data rows or invalid feature metadata (an ISTD
+  # assigned to multiple `is_istd` transitions), not normal operation.
+  d_multi_istd <- d_temp |>
+    dplyr::filter(!is.na(.data$istd_feature_id), .data$n_istd_in_group > 1) |>
+    dplyr::distinct(.data$istd_feature_id, .data$analysis_id)
+  if (nrow(d_multi_istd) > 0) {
+    cli::cli_abort(c(
+      "More than one internal-standard row found for an ISTD within an analysis.",
+      "x" = "{nrow(d_multi_istd)} (ISTD, analysis) group{?s} have >1 {.code is_istd} row; the normalization divisor is ambiguous.",
+      "i" = "Affected ISTD{?s}: {.val {unique(d_multi_istd$istd_feature_id)}}",
+      "i" = "Likely a duplicated data row or invalid feature metadata (an ISTD assigned to multiple {.code is_istd} transitions)."
+    ))
+  }
+
+  # Warn when an internal standard has zero intensity, which previously produced
+  # `Inf`/`NaN` and is now set to `NA`. (A missing ISTD row in the group already
+  # yielded `NA` before and is left unchanged / unwarned.)
+  d_zero_istd <- d_temp |>
+    dplyr::filter(
+      !is.na(.data$istd_feature_id),
+      !.data$is_istd,
+      !is.na(.data$feature_intensity),
+      .data$istd_intensity == 0
+    )
+  if (nrow(d_zero_istd) > 0) {
+    zero_analyses <- unique(d_zero_istd$analysis_id)
+    cli::cli_warn(c(
+      "!" = "{nrow(d_zero_istd)} feature value{?s} could not be ISTD-normalized because the internal standard had zero intensity and {?was/were} set to {.val {NA_real_}}.",
+      "i" = "Affected analys{?is/es}: {.val {zero_analyses}}"
+    ))
+  }
 
   # Add normalized intensities to dataset table
 

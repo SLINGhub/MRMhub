@@ -15,7 +15,8 @@ get_qc_bias_variability(
   with_bias = TRUE,
   with_bias_abs = FALSE,
   with_conc_ratio = FALSE,
-  with_cv_intra = TRUE
+  with_cv_intra = TRUE,
+  with_conc_out_of_range = TRUE
 )
 }
 \arguments{
@@ -42,6 +43,11 @@ If \code{"samples"}, the output is in wide format with samples as columns.}
 \item{with_conc_ratio}{Logical. If \code{TRUE}, includes the ratio of measured to target concentration in the results. Defaults to \code{FALSE}.}
 
 \item{with_cv_intra}{Logical. If \code{TRUE}, includes intra-assay coefficient of variation (CV) for the in the results. Defaults to \code{TRUE}.}
+
+\item{with_conc_out_of_range}{Logical. If \code{TRUE} (and the dataset carries the
+\code{feature_conc_out_of_range} flag from \code{\link[=quantify_by_calibration]{quantify_by_calibration()}}), includes
+the fraction of replicate measurements whose concentration fell outside the
+calibrated range (\code{frac_conc_out_of_range}). Defaults to \code{TRUE}.}
 }
 \value{
 A data frame containing the calibration results, including metrics such as bias, percentage bias, and intra-assay CV based on specified parameters.
