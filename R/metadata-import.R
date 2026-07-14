@@ -435,7 +435,7 @@ print_assertion_summary <- function(
     t1 <- t1 |>
       mutate(ignore_warn_flag = attr(data$annot_analyses, "ignore_warnings"))
     if (
-      attr(data$annot_analyses, "excl_unmatched_analyses") &
+      excl_unmatched_analyses &&
         "Analyses without metadata" %in% t_all$Issue
     ) {
       t_all$Type[t_all$Issue == "Analyses without metadata"] <- "N"
@@ -443,7 +443,7 @@ print_assertion_summary <- function(
 
     if (
       "Analyses without metadata" %in%
-        (t_all |> filter(.data$Type == "W") |> pull(.data$Issue)) &
+        (t_all |> filter(.data$Type == "W") |> pull(.data$Issue)) &&
         !ignore_warnings
     ) {
       if ("annot_analyses" %in% names(metadata_new)) {
