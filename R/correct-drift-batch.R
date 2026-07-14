@@ -1957,6 +1957,12 @@ fun_batch.correction = function(
     tmp_fit_after <- y_fit_after.clean # BB
     tmp_for_loc <- val.clean
     tmp_for_loc[!sample.for.loc] <- NA_real_
+
+    # Drop non-finite inputs before they poison a batch's location median
+    # (mirrors the scale branch below).
+    tmp_for_loc[is.infinite(tmp_for_loc)] <- NA_real_
+    tmp_for_loc[is.nan(tmp_for_loc)] <- NA_real_
+
     loc.batch <- rep(NA, nbatch)
     for (b in seq_len(nbatch)) {
       id <- which(batch == ubatch[b])
@@ -1971,8 +1977,11 @@ fun_batch.correction = function(
         val.clean[id] <- (tmp[id] - xloc) + loc.batch.mean
         y_fit_after.clean[id] <- (tmp_fit_after[id] - xloc) + loc.batch.mean
       } else {
-        val.clean[id] <- (tmp[id] / xloc) * loc.batch.mean
-        y_fit_after.clean[id] <- (tmp_fit_after[id] / xloc) * loc.batch.mean
+        # Guard a zero/non-finite batch location: division would yield Inf.
+        xloc_div <- if (is.finite(xloc) && xloc != 0) xloc else NA_real_
+        val.clean[id] <- (tmp[id] / xloc_div) * loc.batch.mean
+        y_fit_after.clean[id] <- (tmp_fit_after[id] / xloc_div) *
+          loc.batch.mean
       }
     }
   } else {
@@ -1981,7 +1990,8 @@ fun_batch.correction = function(
     tmp_for_loc <- val.clean
     tmp_for_loc[!sample.for.loc] <- NA_real_
 
-    # TODO: confirm if this is ok to do and its consequences. Once batch is NA, then shoudnt we report all?
+    # Drop non-finite inputs before they poison a batch's location/scale
+    # estimate; an uncorrectable batch then yields NA rather than wrong values.
     tmp_for_loc[is.infinite(tmp_for_loc)] <- NA_real_
     tmp_for_loc[is.nan(tmp_for_loc)] <- NA_real_
 
@@ -1998,12 +2008,18 @@ fun_batch.correction = function(
       id <- which(batch == ubatch[b])
       xloc <- loc.batch[b]
       if (log_transform_internal) {
+        # Guard a zero/non-finite batch scale (MAD): division would yield Inf.
+        xsca <- if (is.finite(sca.batch[b]) && sca.batch[b] != 0) {
+          sca.batch[b]
+        } else {
+          NA_real_
+        }
         val.clean[id] <- (tmp[id] - xloc) /
-          sca.batch[b] *
+          xsca *
           sca.batch.mean +
           loc.batch.mean
         y_fit_after.clean[id] <- (tmp_fit_after[id] - xloc) /
-          sca.batch[b] *
+          xsca *
           sca.batch.mean +
           loc.batch.mean
       } else {
