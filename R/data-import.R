@@ -568,6 +568,14 @@ import_data_main <- function(
 
   names(file_paths) <- file_paths
   args <- list(...)
+  # Forward `na_strings` to the parser when supplied. It is an explicit formal
+  # (not part of `...`), so without this the user's value is silently dropped and
+  # the parser falls back to its own default. Guarded with `missing()` because
+  # parsers that do not accept `na_strings` (MassHunter, mzTab-style) are never
+  # called with it.
+  if (!missing(na_strings)) {
+    args$na_strings <- na_strings
+  }
 
   d_raw <- file_paths |>
     purrr::map_dfr(
