@@ -7,6 +7,20 @@ lens + Posit R skills).
 
 **Every fix below is a proposal, gated on maintainer consent.** Existing tests are never edited.
 
+### Tier-1 (Blocking): COMPLETE ✅ (2026-07-14)
+
+All 14 Blocking findings fixed, each verified and committed one-per-commit on `development`:
+
+| # | Commit | # | Commit |
+|---|--------|---|--------|
+| #1/#2/#3/#4/#5/#6/#7 + out-of-range feature | `140cefb` | #11 pivot `values_fn` guard | `1234470` |
+| #8 `na_strings` forwarding | `c5e8f0c` | #12 `diff(units=)` → seconds | `583a082` |
+| #9 `valid_analysis` typo guard | `b9ac46b` | #13 core-join `relationship=` | `78127a3` |
+| #10 `qc_type` warn | `97ffc14` | #14 qualifier-count copy-paste | `82af184` |
+
+Full suite green throughout (`FAIL 0 | PASS 1744`, vdiffr off). Pending: `devtools::document()` +
+`check()`. Remaining review buckets (Tier-2, monkey-fixes, stale code, regression tests, perf) below.
+
 ### Fixes applied so far (2026-07-14, maintainer-approved, walkthrough)
 
 | Finding | File | Change | Verification |
