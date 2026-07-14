@@ -783,14 +783,22 @@ link_data_metadata <- function(data = NULL, minimal_info = TRUE) {
   if (nrow(data@annot_analyses) > 0) {
     data@dataset <- data@dataset |>
       select(-any_of("analysis_order")) |>
-      inner_join(data@annot_analyses, by = "analysis_id") |>
+      inner_join(
+        data@annot_analyses,
+        by = "analysis_id",
+        relationship = "many-to-one"
+      ) |>
       filter(.data$valid_analysis)
   }
 
   if (nrow(data@annot_features) > 0) {
     data@dataset <- data@dataset |>
       select(-any_of("feature_class")) |>
-      inner_join(data@annot_features, by = "feature_id") |>
+      inner_join(
+        data@annot_features,
+        by = "feature_id",
+        relationship = "many-to-one"
+      ) |>
       filter(.data$valid_feature)
   }
 
