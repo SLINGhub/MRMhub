@@ -20,6 +20,7 @@
 # Repo-level files that are not part of the R package
 ^integrator$
 ^docs-site$
+^docs-review$
 ^CLAUDE\.md$
 ^plan-.*\.prompt\.md$
 ^justfile$
