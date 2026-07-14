@@ -194,19 +194,37 @@ calibrate_by_reference <- function(
   d_temp <- d_temp |>
     dplyr::group_by(!!!syms(adj_groups)) |>
     dplyr::mutate(
-      var_normalized = !!variable_sym /
-        match.fun(summarize_fun)(
-          pull(
-            filter(
-              pick(everything()),
-              .data$sample_id %in% reference_sample_id
-            ),
-            !!variable_sym
+      ref_divisor = match.fun(summarize_fun)(
+        pull(
+          filter(
+            pick(everything()),
+            .data$sample_id %in% reference_sample_id
           ),
-          na.rm = TRUE
-        )
+          !!variable_sym
+        ),
+        na.rm = TRUE
+      ),
+      # A zero, missing, or non-finite reference summary would turn the
+      # normalization into Inf/NaN; return NA for those groups instead.
+      var_normalized = dplyr::if_else(
+        is.finite(.data$ref_divisor) & .data$ref_divisor != 0,
+        !!variable_sym / .data$ref_divisor,
+        NA_real_
+      )
     ) |>
     ungroup()
+
+  # Warn which groups had an unusable (zero/empty/non-finite) reference summary.
+  d_bad_ref <- d_temp |>
+    dplyr::filter(!is.finite(.data$ref_divisor) | .data$ref_divisor == 0) |>
+    dplyr::distinct(!!!syms(adj_groups))
+  if (nrow(d_bad_ref) > 0) {
+    cli::cli_warn(c(
+      "!" = "The reference summary was zero or undefined for {nrow(d_bad_ref)} group{?s}; normalized values there were set to {.val {NA_real_}}.",
+      "i" = "Check that reference sample{?s} {.val {reference_sample_id}} have non-zero values for the affected features."
+    ))
+  }
+  d_temp <- d_temp |> dplyr::select(-"ref_divisor")
 
   if (absolute_calibration) {
     # Check if the reference sample has concentration values
@@ -306,8 +324,21 @@ calibrate_by_reference <- function(
       )
 
     if (store_conc_ratio) {
+      n_zero_refconc <- sum(!is.na(d_temp$ref_conc) & d_temp$ref_conc == 0)
+      if (n_zero_refconc > 0) {
+        cli::cli_warn(
+          "{n_zero_refconc} concentration ratio{?s} had a zero reference concentration and {?was/were} set to {.val {NA_real_}}."
+        )
+      }
       d_temp <- d_temp |>
-        mutate(feature_conc_ratio = !!variable_sym / .data$ref_conc)
+        # A zero reference concentration would make the ratio Inf; return NA.
+        mutate(
+          feature_conc_ratio = dplyr::if_else(
+            .data$ref_conc == 0,
+            NA_real_,
+            !!variable_sym / .data$ref_conc
+          )
+        )
     }
 
     d_temp <- d_temp |>
