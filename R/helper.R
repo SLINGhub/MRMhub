@@ -54,15 +54,18 @@ compare_values <- function(tbl, val, threshold, operator, na_replace = FALSE) {
       str_detect(
         var_name,
         "conc"
-      ) ~ "Cannot filter by `{var_name}` because concentration data is unavailable. Please quantify the data first using `quantify_by_*()` functions.",
+      ) ~
+        "Cannot filter by `{var_name}` because concentration data is unavailable. Please quantify the data first using `quantify_by_*()` functions.",
       str_detect(
         var_name,
         "normint"
-      ) ~ "Cannot filter by `{var_name}` because normalized data is unavailable. Please normalize the data first using `normalize_by_*()` functions.",
+      ) ~
+        "Cannot filter by `{var_name}` because normalized data is unavailable. Please normalize the data first using `normalize_by_*()` functions.",
       str_detect(
         var_name,
         "response"
-      ) ~ "Cannot filter by `{var_name}` because response curve data is unavailable. Please verify the corresponding data and metadata.",
+      ) ~
+        "Cannot filter by `{var_name}` because response curve data is unavailable. Please verify the corresponding data and metadata.",
       TRUE ~ "QC parameter is not available. Please verify the argument `val`."
     )
     cli_abort(col_red(error_message))
@@ -198,13 +201,13 @@ get_conc_unit <- function(sample_amount_unit, analyte_amount_unit) {
     conc_unit <- glue::glue(
       "{analyte_amount_unit}/sample amount unit (multiple units)"
     )
-  } else if (
-    analyte_amount_unit == "pmol" && (units == "ul" | units == "\U003BCl")
-  ) {
+  } else if (length(analyte_units) > 1) {
+    conc_unit <- glue::glue(
+      "analyte amount unit/{sample_amount_unit} (multiple units)"
+    )
+  } else if (analyte_units == "pmol" && (units == "ul" | units == "\U003BCl")) {
     conc_unit <- "\U003BCmol/L"
-  } else if (
-    analyte_amount_unit == "ng" && (units == "ul" | units == "\U003BCl")
-  ) {
+  } else if (analyte_units == "ng" && (units == "ul" | units == "\U003BCl")) {
     conc_unit <- "\U003BCg/L"
   } else if (
     !str_detect(analyte_units, "\\/") && !str_detect(analyte_units, "\\-1")
