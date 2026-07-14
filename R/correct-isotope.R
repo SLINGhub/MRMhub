@@ -33,11 +33,9 @@ correct_interference_manual <- function(
   check_data(data)
   variable_var <- rlang::ensym(variable)
 
-  updated_feature_id <- ifelse(
-    is.null(updated_feature_id) | is.na(updated_feature_id),
-    NA_character_,
-    updated_feature_id
-  )
+  if (is.null(updated_feature_id) || is.na(updated_feature_id)) {
+    updated_feature_id <- NA_character_
+  }
 
   # Validate input
   if (is.na(feature) | !feature %in% data@annot_features$feature_id) {
@@ -73,7 +71,7 @@ correct_interference_manual <- function(
     ))
   }
   if (
-    !is.na(updated_feature_id) &
+    !is.na(updated_feature_id) &&
       updated_feature_id %in% data@annot_features$feature_id
   ) {
     cli::cli_abort(col_red(
