@@ -937,10 +937,8 @@ parse_masshunter_csv <- function(
     )
 
   # obtain list with column names of the columns that define transition values (e.g. "RT Cer d16:0/18:0"). Delimuter is currently tab (\t)
-  param_transition_names <-
-    colnames(datWide[,
-      -1:-tail(grep("\\\t", colnames(datWide), invert = TRUE), 1)
-    ])
+  # transition columns are exactly those whose name carries the tab delimiter
+  param_transition_names <- grep("\\\t", colnames(datWide), value = TRUE)
 
   # Obtain long table of all param-transition combinations, split param and compund name and then spread values of different param as columns
   datLong <- datWide |>
