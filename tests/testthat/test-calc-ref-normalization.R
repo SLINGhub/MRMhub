@@ -690,3 +690,44 @@ test_that("calibrate_by_reference outputs bias", {
     fixed = TRUE
   )
 })
+
+test_that("calibrate_by_reference supports multiple reference_sample_id", {
+  # Passing more than one reference id previously crashed on the scalar
+  # `ref_sample` column assignment. Relabelling the reference analyses under
+  # two distinct sample ids and passing both must pool the same analyses and
+  # therefore reproduce the single-reference normalization exactly.
+  ref_analyses <- unique(
+    mexp@dataset$analysis_id[mexp@dataset$sample_id == "NIST_SRM1950"]
+  )
+  expect_gt(length(ref_analyses), 1)
+
+  mid <- ceiling(length(ref_analyses) / 2)
+  mexp_split <- mexp
+  mexp_split@dataset$sample_id[
+    mexp_split@dataset$analysis_id %in% ref_analyses[seq_len(mid)]
+  ] <- "NIST_A"
+  mexp_split@dataset$sample_id[
+    mexp_split@dataset$analysis_id %in% ref_analyses[-seq_len(mid)]
+  ] <- "NIST_B"
+
+  res_multi <- calibrate_by_reference(
+    data = mexp_split,
+    variable = "conc",
+    reference_sample_id = c("NIST_A", "NIST_B"),
+    absolute_calibration = FALSE,
+    batch_wise = FALSE
+  )
+  res_single <- calibrate_by_reference(
+    data = mexp,
+    variable = "conc",
+    reference_sample_id = "NIST_SRM1950",
+    absolute_calibration = FALSE,
+    batch_wise = FALSE
+  )
+
+  expect_equal(
+    res_multi@dataset$feature_conc_normalized,
+    res_single@dataset$feature_conc_normalized
+  )
+  expect_true(any(!is.na(res_multi@dataset$feature_conc_normalized)))
+})

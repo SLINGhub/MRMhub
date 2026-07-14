@@ -23,7 +23,9 @@ calibrate_by_reference(
 one of: "intensity", "norm_intensity", or "conc"}
 
 \item{reference_sample_id}{Character vector specifying the sample ID(s) to use as
-reference(s) or standards}
+reference(s) or standards. When more than one ID is given, all analyses
+whose \code{sample_id} matches any of them are pooled and summarized together
+(per feature, and per batch when \code{batch_wise = TRUE}).}
 
 \item{absolute_calibration}{Logical indicating whether to perform absolute calibration using
 known concentrations of the reference sample (TRUE) or relative calibration (FALSE).}
