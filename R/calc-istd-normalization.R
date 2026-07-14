@@ -331,6 +331,11 @@ quantify_by_istd <- function(
         "One or more ISTDs are missing both chemical formula and molecular weight. Ensure that at least one is defined in the feature metadata."
       ))
     }
+    if (any(d_istd_mw$molecular_weight <= 0, na.rm = TRUE)) {
+      cli::cli_abort(col_red(
+        "One or more ISTD molecular weights are zero or negative. Please verify the molecular weights in the feature metadata."
+      ))
+    }
     d_istd <- d_istd |>
       left_join(d_istd_mw, by = c("quant_istd_feature_id" = "feature_id"))
     d_istd <- d_istd |>
