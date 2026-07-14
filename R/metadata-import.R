@@ -1636,6 +1636,23 @@ clean_analysis_metadata <- function(d_analyses) {
       make_lowercase = FALSE
     )
 
+  # Reject unrecognized `valid_analysis` tokens up front. Without this, a typo
+  # maps to NA in the lookup below and a column made entirely of typos would be
+  # all-NA, which the "non-mandatory field" branch then turns into all-TRUE --
+  # silently marking every analysis valid. Blank/NA is allowed (means "valid").
+  va_norm <- tolower(stringr::str_squish(as.character(
+    d_analyses$valid_analysis
+  )))
+  va_unrecognized <- !is.na(va_norm) &
+    va_norm != "" &
+    !(va_norm %in% c("yes", "true", "no", "false"))
+  if (any(va_unrecognized)) {
+    cli::cli_abort(c(
+      "Unrecognized value(s) in {.field valid_analysis}: {.val {unique(d_analyses$valid_analysis[va_unrecognized])}}.",
+      "i" = "Use one of {.val yes}, {.val no}, {.val true}, or {.val false}, or leave blank."
+    ))
+  }
+
   d_analyses <- d_analyses |>
     dplyr::select(
       "analysis_order",
@@ -1664,10 +1681,12 @@ clean_analysis_metadata <- function(d_analyses) {
         .data$replicate_no
       ))),
       specimen = stringr::str_squish(as.character(.data$specimen)),
-      valid_analysis = {
-        lkp <- c("yes" = TRUE, "true" = TRUE, "no" = FALSE, "false" = FALSE)
-        unname(lkp[tolower(.data$valid_analysis)])
-      },
+      valid_analysis = unname(c(
+        "yes" = TRUE,
+        "true" = TRUE,
+        "no" = FALSE,
+        "false" = FALSE
+      )[tolower(stringr::str_squish(as.character(.data$valid_analysis)))]),
       qc_type = if_else(
         .data$qc_type == "Sample" | is.na(.data$qc_type),
         "SPL",
