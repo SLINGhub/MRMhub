@@ -1076,7 +1076,7 @@ add_metadata <- function(
 ) {
   check_data(data)
   # ANALYSES METADATA ====================
-  if (!is.null(metadata$annot_analyses) & nrow(metadata$annot_analyses) > 0) {
+  if (!is.null(metadata$annot_analyses) && nrow(metadata$annot_analyses) > 0) {
     data@annot_analyses <- metadata$annot_analyses
 
     # Get info for cli output
@@ -1099,7 +1099,7 @@ add_metadata <- function(
     }
   }
   # FEATURE METADATA ====================
-  if (!is.null(metadata$annot_features) & nrow(metadata$annot_features) > 0) {
+  if (!is.null(metadata$annot_features) && nrow(metadata$annot_features) > 0) {
     # Determines if a feature is used as an ISTD
     all_istds <- unique(metadata$annot_features$istd_feature_id) |> na.omit()
     metadata$annot_features <- metadata$annot_features |>
@@ -1141,7 +1141,7 @@ add_metadata <- function(
     unique()
 
   # ISTD METADATA ====================
-  if (!is.null(metadata$annot_istds) & nrow(metadata$annot_istds) > 0) {
+  if (!is.null(metadata$annot_istds) && nrow(metadata$annot_istds) > 0) {
     # Add template table structure
     data@annot_istds <- metadata$annot_istds
 
@@ -1158,7 +1158,7 @@ add_metadata <- function(
 
   # RQC METADATA ====================
   if (
-    !is.null(metadata$annot_responsecurves) &
+    !is.null(metadata$annot_responsecurves) &&
       nrow(metadata$annot_responsecurves) > 0
   ) {
     # Add template table structure
@@ -1187,7 +1187,7 @@ add_metadata <- function(
 
   # QC CONCENTRATION METADATA ====================
   if (
-    !is.null(metadata$annot_qcconcentrations) &
+    !is.null(metadata$annot_qcconcentrations) &&
       nrow(metadata$annot_qcconcentrations) > 0
   ) {
     # Add template table structure
