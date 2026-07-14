@@ -204,8 +204,7 @@ import_metadata_analyses <- function(
 #' @param table A data frame or tibble with analysis (sample) metadata. If `path` is also provided, an error will be raised.
 #' @param path A character string specifying the path to a CSV (.csv) or Excel (.xlsx) file. If `table` is also provided, an error will be raised.
 #' @param sheet Defines the sheet name in case an Excel file is provided.
-# #' @param ignore_warnings Ignore warnings from data validation and proceed with importing metadata
-#' @param excl_unmatched_analyses Exclude analyses (samples) that have no matching metadata
+#' @param ignore_warnings Ignore warnings from data validation and proceed with importing metadata
 #' @return An updated `MRMhubExperiment` object
 #' @export
 #'
@@ -242,8 +241,7 @@ import_metadata_features <- function(
 #' @param table A data frame or tibble with analysis (sample) metadata. If `path` is also provided, an error will be raised.
 #' @param path A character string specifying the path to a CSV (.csv) or Excel (.xlsx) file. If `table` is also provided, an error will be raised.
 #' @param sheet Defines the sheet name in case an Excel file is provided.
-# #' @param ignore_warnings Ignore warnings from data validation and proceed with importing metadata
-#' @param excl_unmatched_analyses Exclude analyses (samples) that have no matching metadata
+#' @param ignore_warnings Ignore warnings from data validation and proceed with importing metadata
 #' @return An updated `MRMhubExperiment` object
 #' @export
 #'
@@ -857,7 +855,7 @@ assert_metadata <- function(
       ) |>
       #assertr::assert(\(x) {unique(x) %in% metadata$annot_istds$quant_istd_feature_id},quant_istd_feature_id, obligatory=TRUE, description = "W;Internal standard(s) not defined;ISTDs;quant_istd_feature_id") |>
       assertr::verify(
-        all(assertr::is_uniq("quant_istd_feature_id")),
+        all(assertr::is_uniq(.data$quant_istd_feature_id)),
         obligatory = TRUE,
         description = "E;Internal standard(s) duplicated;ISTDs;quant_istd_feature_id"
       ) |>
