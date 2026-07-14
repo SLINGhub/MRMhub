@@ -278,7 +278,9 @@ quantify_by_istd <- function(
   samples_no_amounts <- data@annot_analyses |>
     filter(
       .data$valid_analysis,
-      is.na(.data$sample_amount) | is.na(.data$istd_volume)
+      is.na(.data$sample_amount) |
+        .data$sample_amount <= 0 |
+        is.na(.data$istd_volume)
     ) |>
     dplyr::semi_join(data@dataset, by = c("analysis_id"))
 
@@ -417,7 +419,13 @@ quantify_by_istd <- function(
         1000
     )
   d_temp <- d_temp |>
-    mutate(feature_conc = .data$feature_pmol_total / .data$sample_amount)
+    mutate(
+      # A zero or negative sample amount is invalid and would make the
+      # concentration Inf; treat it like a missing amount (NA), consistent with
+      # the amount check above.
+      feature_conc = .data$feature_pmol_total /
+        dplyr::if_else(.data$sample_amount > 0, .data$sample_amount, NA_real_)
+    )
 
   if (concentration_unit == "mass") {
     d_temp <- d_temp |>
