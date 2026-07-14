@@ -1696,6 +1696,22 @@ clean_analysis_metadata <- function(d_analyses) {
     ) |>
     mutate(across(where(is.character), str_trim)) |>
     ungroup()
+
+  # Warn about qc_type values outside the known set. Custom values are permitted
+  # (some plots and workflows use them), but standard QC computations and plots
+  # coerce qc_type via factor(levels = qc_type_levels), which drops unknown
+  # values to NA -- so surface them rather than let those samples vanish silently.
+  qc_levels <- pkg.env$qc_type_annotation$qc_type_levels
+  qc_unknown <- !is.na(d_analyses$qc_type) &
+    !(d_analyses$qc_type %in% qc_levels)
+  if (any(qc_unknown)) {
+    cli::cli_warn(c(
+      "!" = "Unrecognized {.field qc_type} value(s): {.val {unique(d_analyses$qc_type[qc_unknown])}}.",
+      "i" = "These are not standard QC types and may be dropped from QC metrics and plots that expect them.",
+      "i" = "Standard values: {.val {qc_levels}} ({.val Sample} is an alias for {.val SPL})."
+    ))
+  }
+
   # Handle the non-mandatory field Valid_Analysis
   if (all(is.na(d_analyses$valid_analysis))) {
     d_analyses$valid_analysis <- TRUE
