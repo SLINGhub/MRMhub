@@ -171,7 +171,11 @@ fun_loess <- function(tbl, ref_qc_types, log_transform_internal, ...) {
             y_predicted <- 10^y_predicted
             y_fit <- 10^y_fit
           } else {
-            y_predicted <- tbl$y / y_fit * median(y_fit, na.rm = TRUE)
+            # A zero fitted value makes the ratio-scale correction Inf; treat
+            # that point as an unusable fit (NA) instead.
+            y_predicted <- tbl$y /
+              dplyr::if_else(y_fit == 0, NA_real_, y_fit) *
+              median(y_fit, na.rm = TRUE)
           }
         },
         warning = function(w) {
@@ -261,7 +265,11 @@ fun_cspline <- function(tbl, ref_qc_types, log_transform_internal, ...) {
             y_predicted <- 10^y_predicted # Convert back from log scale
             y_fit <- 10^y_fit # Convert fitted values back from log scale
           } else {
-            y_predicted <- tbl$y / y_fit * median(y_fit, na.rm = TRUE) # Scale back predictions
+            # A zero fitted value makes the ratio-scale correction Inf; treat
+            # that point as an unusable fit (NA) instead.
+            y_predicted <- tbl$y /
+              dplyr::if_else(y_fit == 0, NA_real_, y_fit) *
+              median(y_fit, na.rm = TRUE) # Scale back predictions
           }
         },
         warning = function(w) {
@@ -347,7 +355,11 @@ fun_gam_smooth <- function(
             y_predicted <- 10^y_predicted # Convert back from log scale
             y_fit <- 10^y_fit # Convert fitted values back from log scale
           } else {
-            y_predicted <- tbl$y / y_fit * median(y_fit, na.rm = TRUE) # Scale back predictions
+            # A zero fitted value makes the ratio-scale correction Inf; treat
+            # that point as an unusable fit (NA) instead.
+            y_predicted <- tbl$y /
+              dplyr::if_else(y_fit == 0, NA_real_, y_fit) *
+              median(y_fit, na.rm = TRUE) # Scale back predictions
           }
         },
         warning = function(w) {
