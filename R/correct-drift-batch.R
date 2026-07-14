@@ -54,7 +54,7 @@ fun_gauss.kernel.smooth = function(
           ## Location parameter smoothing
 
           if (arg$location_smooth) {
-            for (i in 1:n) {
+            for (i in seq_len(n)) {
               wt <- (xx - xx[i]) / arg$kernel_size
               wt <- dnorm(wt, 0, 1)
               wt[is.na(yy.train)] <- NA
@@ -74,7 +74,7 @@ fun_gauss.kernel.smooth = function(
             v <- rep(NA, n) ## point-wise weighted variances
             yy.mean <- mean(yy.est, na.rm = TRUE)
             yy.est <- yy.est - yy.mean
-            for (i in 1:n) {
+            for (i in seq_len(n)) {
               if (!is.na(yy.est[i])) {
                 wt <- (xx - xx[i]) / arg$kernel_size
                 wt <- dnorm(wt, 0, 1)
@@ -251,7 +251,9 @@ fun_cspline <- function(tbl, ref_qc_types, log_transform_internal, ...) {
           }
 
           # Predict smoothed values across the full range of x values
-          y_fit <- as.vector(predict(res_fit, x = seq(min(tbl$x), max(tbl$x), 1))$y)
+          y_fit <- as.vector(
+            predict(res_fit, x = seq(min(tbl$x), max(tbl$x), 1))$y
+          )
 
           # Adjust predictions based on log transformation if applied
           if (log_transform_internal) {
@@ -1924,7 +1926,7 @@ fun_batch.correction = function(
   ...
 ) {
   batch <- tab$batch_id
-  batch.order <- seq(1, nrow(tab))
+  batch.order <- seq_len(nrow(tab))
   val <- tab$y
   y_fit_after <- tab$y_fit_after # BB
   if (log_transform_internal) {
@@ -1946,12 +1948,12 @@ fun_batch.correction = function(
     tmp_for_loc <- val.clean
     tmp_for_loc[!sample.for.loc] <- NA_real_
     loc.batch <- rep(NA, nbatch)
-    for (b in 1:nbatch) {
+    for (b in seq_len(nbatch)) {
       id <- which(batch == ubatch[b])
       loc.batch[b] <- median(tmp_for_loc[id], na.rm = TRUE)
     }
     loc.batch.mean = mean(loc.batch, na.rm = TRUE)
-    for (b in 1:nbatch) {
+    for (b in seq_len(nbatch)) {
       id <- which(batch == ubatch[b])
       xloc <- loc.batch[b]
 
@@ -1975,14 +1977,14 @@ fun_batch.correction = function(
 
     loc.batch <- rep(NA, nbatch)
     sca.batch <- rep(NA, nbatch)
-    for (b in 1:nbatch) {
+    for (b in seq_len(nbatch)) {
       id = which(batch == ubatch[b])
       loc.batch[b] <- median(tmp_for_loc[id], na.rm = TRUE)
       sca.batch[b] <- mad(tmp_for_loc[id], na.rm = TRUE)
     }
     loc.batch.mean <- mean(loc.batch, na.rm = TRUE)
     sca.batch.mean <- mean(sca.batch, na.rm = TRUE)
-    for (b in 1:nbatch) {
+    for (b in seq_len(nbatch)) {
       id <- which(batch == ubatch[b])
       xloc <- loc.batch[b]
       if (log_transform_internal) {
