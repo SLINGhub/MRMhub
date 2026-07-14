@@ -945,7 +945,7 @@ set_intensity_var <- function(
 
   if (check_dataset_present(data)) {
     calc_cols <- c(
-      "featue_norm_intensity",
+      "feature_norm_intensity",
       "feature_conc",
       "feature_amount",
       "feature_raw_conc",

@@ -625,7 +625,7 @@ import_data_main <- function(
           "feature_intensity",
           "feature_height",
           "feature_conc",
-          "feauture_norm_intensity"
+          "feature_norm_intensity"
         ))
       ) |>
       distinct(.keep_all = FALSE) |>
