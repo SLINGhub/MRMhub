@@ -5,6 +5,16 @@ test_that("cv works", {
   expect_equal(cv(1, na.rm = TRUE), NA_real_)
 })
 
+test_that("cv returns NA_real_ for zero denominator or non-numeric input", {
+  # standard CV: mean == 0
+  expect_equal(cv(c(0, 0, 0)), NA_real_)
+  expect_equal(cv(c(-2, 2)), NA_real_)
+  # robust CV: median == 0
+  expect_equal(cv(c(0, 0, 0, 5), use_robust_cv = TRUE), NA_real_)
+  # non-numeric input
+  expect_equal(cv(c("a", "b")), NA_real_)
+})
+
 test_that("cv robust uses scaled MAD / median", {
   # Robust CV = 1.4826 * MAD / median * 100 (scaled MAD, so it is on the same
   # scale as the standard SD / mean CV).
@@ -146,7 +156,7 @@ test_that("method 'fold_change' calculates bounds correctly", {
   )
 
   expect_equal(
-    get_outlier_bounds(x2, "fold_change", k = c(-3,3)),
+    get_outlier_bounds(x2, "fold_change", k = c(-3, 3)),
     range(x2),
     tolerance = 1e-6
   )

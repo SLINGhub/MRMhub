@@ -17,8 +17,8 @@ computation takes place}
 standard CV (SD / mean)}
 }
 \value{
-a numeric value. If x contains a zero or is not numeric,
-NA_real_ is returned
+a numeric value. If the mean (or the median, for robust CV) is zero,
+or x is not numeric, NA_real_ is returned
 }
 \description{
 This function computes the percent coefficient of variation  of the values in x.

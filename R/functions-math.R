@@ -10,8 +10,8 @@
 #' (scaled median absolute deviation / median) is computed instead of the
 #' standard CV (SD / mean)
 #'
-#' @return a numeric value. If x contains a zero or is not numeric,
-#' NA_real_ is returned
+#' @return a numeric value. If the mean (or the median, for robust CV) is zero,
+#' or x is not numeric, NA_real_ is returned
 
 #' @export
 #'
@@ -19,14 +19,24 @@
 #' cv(c(5, 6, 3, 4, 5, NA), na.rm = TRUE)
 
 cv <- function(x, na.rm = FALSE, use_robust_cv = FALSE) {
+  if (!is.numeric(x)) {
+    return(NA_real_)
+  }
   if (use_robust_cv) {
     # Robust CV: scaled MAD over the median, on the same scale as the standard
     # SD / mean CV. mad()'s default constant (1.4826) makes MAD a consistent
     # estimator of SD for normal data.
-    mad(x, na.rm = na.rm) / median(x, na.rm = na.rm) * 100
+    center <- median(x, na.rm = na.rm)
+    spread <- mad(x, na.rm = na.rm)
   } else {
-    sd(x, na.rm = na.rm) / mean(x, na.rm = na.rm) * 100
+    center <- mean(x, na.rm = na.rm)
+    spread <- sd(x, na.rm = na.rm)
   }
+  # a zero (or NA) denominator makes the CV undefined
+  if (is.na(center) || center == 0) {
+    return(NA_real_)
+  }
+  spread / center * 100
 }
 
 #' Percent coefficient of variation (%CV) based on log-transformation
