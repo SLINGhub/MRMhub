@@ -427,7 +427,13 @@ print_assertion_summary <- function(
   if (is.null(t_all) | nrow(t_all) == 0) {
     return(NULL)
   } else {
-    t_all <- t_all |> arrange("Type", "Table", "Count")
+    # sort by severity (Defect > Error > Warning > Note), then table and count
+    t_all <- t_all |>
+      arrange(
+        factor(.data$Type, levels = c("D", "E", "W", "N")),
+        .data$Table,
+        .data$Count
+      )
   }
 
   # Ensure ignore_warnings only applies to the current metadata import
