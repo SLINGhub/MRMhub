@@ -21,7 +21,7 @@ import_metadata_features(
 
 \item{sheet}{Defines the sheet name in case an Excel file is provided.}
 
-\item{excl_unmatched_analyses}{Exclude analyses (samples) that have no matching metadata}
+\item{ignore_warnings}{Ignore warnings from data validation and proceed with importing metadata}
 }
 \value{
 An updated \code{MRMhubExperiment} object
