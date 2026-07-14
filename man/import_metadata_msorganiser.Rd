@@ -2,7 +2,7 @@
 % Please edit documentation in R/metadata-import.R
 \name{import_metadata_msorganiser}
 \alias{import_metadata_msorganiser}
-\title{Import Metadata from a MRMhub Metadata Organizer file}
+\title{Import metadata from a MRMhub Metadata Organizer file}
 \usage{
 import_metadata_msorganiser(
   data = NULL,

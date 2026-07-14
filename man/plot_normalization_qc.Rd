@@ -2,7 +2,7 @@
 % Please edit documentation in R/plots-qc-cv.R
 \name{plot_normalization_qc}
 \alias{plot_normalization_qc}
-\title{Compare Feature Variability Before and After Normalization}
+\title{Compare feature variability before and after normalization}
 \usage{
 plot_normalization_qc(
   data = NULL,
@@ -24,7 +24,7 @@ plot_normalization_qc(
 )
 }
 \arguments{
-\item{data}{A \code{MRMhubExperiment} object}
+\item{data}{A \code{MRMhubExperiment} object.}
 
 \item{before_norm_var}{A string specifying the variable from the QC metrics
 table to be used for the x-axis (before normalization).}
@@ -36,10 +36,10 @@ table to be used for the y-axis (after normalization).}
 Must be one of "scatter", "diff", or "ratio". Selecting "scatter" plots the before and after normalization CV values
 as a scatter plot, "diff" plots the difference between the two CV values against the average CV, and "ratio" plots the log2 ratio of the two CV values against the average CV.}
 
-\item{qc_types}{A character vector specifying the QC types to plot. It
-must contain at least one element. The default is \code{NA}, which means any
-of the non-blank QC types ("SPL", "TQC", "BQC", "HQC", "MQC", "LQC",
-"NIST", "LTR") will be plotted if present in the dataset.}
+\item{qc_types}{A character vector specifying the QC types to plot. It must
+contain at least one element. The default \code{NA} plots any of the non-blank
+QC types ("SPL", "TQC", "BQC", "HQC", "MQC", "LQC", "NIST", "LTR") present
+in the dataset.}
 
 \item{facet_by_class}{If \code{TRUE}, facets the plot by \code{feature_class}, as defined
 in the feature metadata.}
@@ -73,7 +73,7 @@ different feature classes (default is \code{5}). Only used if
 \item{font_base_size}{Base font size in points (default is \code{8}).}
 }
 \value{
-A \code{ggplot2} object representing the scatter plot comparing CV values
+A \code{ggplot} object representing the scatter plot comparing CV values
 before and after normalization.
 }
 \description{
@@ -86,7 +86,7 @@ The comparison is visualized through one of three plot types:
 \item Ratio plot: log2 of (CV after / CV before) vs mean CV
 }
 
-Features can be grouped and visualized by their fature class using facets.
+Features can be grouped and visualized by their feature class using facets.
 
 The resulting visualization helps assess whether normalization improved measurement
 precision across different features and sample/QC types.
@@ -121,4 +121,19 @@ plot_normalization_qc(
 }
 \seealso{
 \code{\link[=plot_qcmetrics_comparison]{plot_qcmetrics_comparison()}}, \code{\link[=calc_qc_metrics]{calc_qc_metrics()}}, \code{\link[=filter_features_qc]{filter_features_qc()}},
+
+Other QC plots:
+\code{\link[=plot_feature_correlations]{plot_feature_correlations()}},
+\code{\link[=plot_pca]{plot_pca()}},
+\code{\link[=plot_pca_loading]{plot_pca_loading()}},
+\code{\link[=plot_qc_interferences]{plot_qc_interferences()}},
+\code{\link[=plot_qc_matrixeffects]{plot_qc_matrixeffects()}},
+\code{\link[=plot_qc_summary_byclass]{plot_qc_summary_byclass()}},
+\code{\link[=plot_qc_summary_overall]{plot_qc_summary_overall()}},
+\code{\link[=plot_qcmetrics_comparison]{plot_qcmetrics_comparison()}},
+\code{\link[=plot_rla_boxplot]{plot_rla_boxplot()}},
+\code{\link[=plot_rt_vs_chain]{plot_rt_vs_chain()}},
+\code{\link[=plot_runscatter]{plot_runscatter()}},
+\code{\link[=plot_runsequence]{plot_runsequence()}}
 }
+\concept{QC plots}

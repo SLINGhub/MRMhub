@@ -2,7 +2,7 @@
 % Please edit documentation in R/data-managment.R
 \name{set_analysis_order}
 \alias{set_analysis_order}
-\title{Set Analysis Order}
+\title{Set analysis order}
 \usage{
 set_analysis_order(
   data = NULL,

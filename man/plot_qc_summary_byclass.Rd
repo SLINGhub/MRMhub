@@ -2,17 +2,17 @@
 % Please edit documentation in R/plots-qc-filtering.R
 \name{plot_qc_summary_byclass}
 \alias{plot_qc_summary_byclass}
-\title{Plot QC Filtering Summary by Feature Class}
+\title{Plot QC filtering summary by feature class}
 \usage{
 plot_qc_summary_byclass(data = NULL, font_base_size = 8)
 }
 \arguments{
-\item{data}{MRMhubExperiment object}
+\item{data}{A \code{MRMhubExperiment} object.}
 
 \item{font_base_size}{The base font size for the plot. Default is \code{8}.}
 }
 \value{
-A \code{ggplot2} object showing the feature QC filtering summary by feature class.
+A \code{ggplot} object showing the feature QC filtering summary by feature class.
 }
 \description{
 This function provides a summary of feature QC filtering based on feature class,
@@ -24,6 +24,21 @@ This means that a feature is classified as failing a given criterion (e.g., \cod
 only if it has passed all hierarchically lower filters (e.g., \code{S/B} ratio and \code{LOD}).
 }
 \seealso{
-\code{\link{plot_qc_summary_overall}} for an overall summary plot
-\code{\link{filter_features_qc}} for comparing QC metrics
+\code{\link[=plot_qc_summary_overall]{plot_qc_summary_overall()}} for an overall summary plot
+\code{\link[=filter_features_qc]{filter_features_qc()}} for comparing QC metrics
+
+Other QC plots:
+\code{\link[=plot_feature_correlations]{plot_feature_correlations()}},
+\code{\link[=plot_normalization_qc]{plot_normalization_qc()}},
+\code{\link[=plot_pca]{plot_pca()}},
+\code{\link[=plot_pca_loading]{plot_pca_loading()}},
+\code{\link[=plot_qc_interferences]{plot_qc_interferences()}},
+\code{\link[=plot_qc_matrixeffects]{plot_qc_matrixeffects()}},
+\code{\link[=plot_qc_summary_overall]{plot_qc_summary_overall()}},
+\code{\link[=plot_qcmetrics_comparison]{plot_qcmetrics_comparison()}},
+\code{\link[=plot_rla_boxplot]{plot_rla_boxplot()}},
+\code{\link[=plot_rt_vs_chain]{plot_rt_vs_chain()}},
+\code{\link[=plot_runscatter]{plot_runscatter()}},
+\code{\link[=plot_runsequence]{plot_runsequence()}}
 }
+\concept{QC plots}

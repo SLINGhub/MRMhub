@@ -2,7 +2,7 @@
 % Please edit documentation in R/classes.R
 \name{$,MRMhubExperiment-method}
 \alias{$,MRMhubExperiment-method}
-\title{Access Slots of a MRMhubExperiment Object via $ Syntax}
+\title{Access slots of a MRMhubExperiment object via $ syntax}
 \usage{
 \S4method{$}{MRMhubExperiment}(x, name)
 }

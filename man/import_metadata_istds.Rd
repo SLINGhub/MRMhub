@@ -2,7 +2,7 @@
 % Please edit documentation in R/metadata-import.R
 \name{import_metadata_istds}
 \alias{import_metadata_istds}
-\title{Import Internal Standards (ISTD) metadata}
+\title{Import internal standards (ISTD) metadata}
 \usage{
 import_metadata_istds(
   data = NULL,
@@ -21,7 +21,7 @@ import_metadata_istds(
 
 \item{sheet}{Defines the sheet name in case an Excel file is provided.}
 
-\item{ignore_warnings}{Ignore warnings from data validation and proceed with importing metadata}
+\item{excl_unmatched_analyses}{Exclude analyses (samples) that have no matching metadata}
 }
 \value{
 An updated \code{MRMhubExperiment} object

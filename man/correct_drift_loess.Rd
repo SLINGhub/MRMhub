@@ -2,7 +2,7 @@
 % Please edit documentation in R/correct-drift-batch.R
 \name{correct_drift_loess}
 \alias{correct_drift_loess}
-\title{Drift Correction by LOESS Smoothing}
+\title{Drift correction by LOESS smoothing}
 \usage{
 correct_drift_loess(
   data = NULL,
@@ -37,7 +37,8 @@ correct_drift_loess(
 \item{batch_wise}{Logical. Apply the correction to each batch separately
 (\code{TRUE}, default) or across all batches (\code{FALSE}).}
 
-\item{ignore_istd}{Do not apply corrections to ISTDs}
+\item{ignore_istd}{Logical. Exclude internal standards (ISTDs) from
+correction if \code{TRUE}.}
 
 \item{replace_previous}{Logical. Replace existing correction (\code{TRUE},
 default) or layer on top of it (\code{FALSE}).}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/plots-calibcurves.R
 \name{plot_calibrationcurves}
 \alias{plot_calibrationcurves}
-\title{Plot Calibration Curves}
+\title{Plot calibration curves}
 \usage{
 plot_calibrationcurves(
   data = NULL,
@@ -39,7 +39,7 @@ plot_calibrationcurves(
 )
 }
 \arguments{
-\item{data}{A \code{MRMhubExperiment} object containing the dataset.}
+\item{data}{A \code{MRMhubExperiment} object.}
 
 \item{variable}{Variable to plot on the y-axis, usually intensity. Default
 is \code{"intensity"}.}
@@ -101,7 +101,7 @@ excludes none.}
 
 \item{path}{File path for saving the PDF. Default is an empty string.}
 
-\item{return_plots}{Logical, if \code{TRUE}, returns plots as a list of ggplot2
+\item{return_plots}{Logical, if \code{TRUE}, returns plots as a list of \code{ggplot}
 objects. Default is \code{FALSE}.}
 
 \item{point_size}{Size of points in the plot. Default is 1.5.}
@@ -137,10 +137,14 @@ Default is \code{NA} which corresponds to the default shapes for QC types define
 \item{specific_page}{Show/save a specific page number only. \code{NA} plots/saves all pages.}
 
 \item{page_orientation}{Orientation of PDF, either \code{"LANDSCAPE"} or
-\code{"PORTRAIT"}. Default is `"LANDSCAPE}
+\code{"PORTRAIT"}. Default is \code{"LANDSCAPE"}.}
 
 \item{show_progress}{Logical. If \code{TRUE}, displays a progress bar during
 plot creation.}
+}
+\value{
+A list of \code{ggplot} objects if \code{return_plots = TRUE}, otherwise
+\code{NULL} (the plots are drawn to the active device or written to a PDF).
 }
 \description{
 This function plots calibration curves of each feature where defined
@@ -162,3 +166,8 @@ both direct plotting within R and saving plots as PDF files. Additionally,
 plots can be returned as a list of ggplot2 objects for further manipulation
 or integration into other analyses.
 }
+\seealso{
+Other calibration plots:
+\code{\link[=plot_responsecurves]{plot_responsecurves()}}
+}
+\concept{calibration plots}

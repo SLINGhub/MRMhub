@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions-chem.R
 \name{calc_average_molweight}
 \alias{calc_average_molweight}
-\title{Calculate Average Molecular Weight from Chemical Formulas}
+\title{Calculate average molecular weight from chemical formulas}
 \usage{
 calc_average_molweight(formula)
 }

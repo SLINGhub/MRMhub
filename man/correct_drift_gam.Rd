@@ -2,7 +2,7 @@
 % Please edit documentation in R/correct-drift-batch.R
 \name{correct_drift_gam}
 \alias{correct_drift_gam}
-\title{Drift Correction by Generalized Additive Model (GAM) Smoothing}
+\title{Drift correction by generalized additive model (GAM) smoothing}
 \usage{
 correct_drift_gam(
   data = NULL,

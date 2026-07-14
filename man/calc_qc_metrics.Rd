@@ -2,7 +2,7 @@
 % Please edit documentation in R/qc-filtering.R
 \name{calc_qc_metrics}
 \alias{calc_qc_metrics}
-\title{Calculate Quality Control (QC) Metrics for Features}
+\title{Calculate quality control (QC) metrics for features}
 \usage{
 calc_qc_metrics(
   data = NULL,

@@ -2,7 +2,7 @@
 % Please edit documentation in R/calc-istd-normalization.R
 \name{normalize_by_istd}
 \alias{normalize_by_istd}
-\title{Normalize Feature Intensities Using Internal Standards}
+\title{Normalize feature intensities using internal standards}
 \usage{
 normalize_by_istd(data = NULL, ignore_missing_annotation = FALSE)
 }

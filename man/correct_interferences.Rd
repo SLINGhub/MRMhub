@@ -17,11 +17,12 @@ correct_interferences(
 \item{variable}{Name of the variable to be corrected. Default:
 \code{feature_intensity}.}
 
-\item{sequential_correction}{A logical indicating whether to apply
-corrections sequentially, starting with the most downstream feature.  If
-\code{FALSE}, corrections are based on the raw signal of the interfering
-features. If \code{FALSE}, the correction will be based on the raw signal of the
-interfering feature.}
+\item{sequential_correction}{Logical. If \code{TRUE} (the default), a chain of
+interferences is corrected sequentially, so that each feature is corrected
+using the already-corrected signal of its interfering feature (the
+correction propagates along the chain). If \code{FALSE}, each feature is
+corrected independently using the raw (uncorrected) signal of its
+interfering feature, without propagation.}
 
 \item{neg_to_na}{If \code{TRUE}, negative or zero values after correction will be replaced with \code{NA}. Default: \code{FALSE}.}
 }
@@ -39,12 +40,12 @@ interference\_contribution}
 The interfering features and their relative contributions must be defined in
 the feature metadata.
 
-By default, sequential series of interferences (e.g., isotopic M+2
-interferences of PC 34:2 > PC 34:``1 > PC 34:0) will be corrected in a
-sequential manner. This means that the correction will applied iteratively,
-starting with the most downstream feature in the series. To disable this
-behavior, basing each correction on the raw signal of the interfering feature
-set \code{sequential_correction = FALSE}
+By default, a chain of interferences (e.g., isotopic M+2 interferences of
+PC 34:2 > PC 34:1 > PC 34:0) is corrected sequentially: each feature is
+corrected using the already-corrected signal of its interfering feature, so
+the correction propagates along the chain. To disable this and instead correct
+each feature independently from the raw (uncorrected) signal of its
+interfering feature, set \code{sequential_correction = FALSE}.
 }
 \details{
 For isotopic interference correction of MRM/PRM data, the relative

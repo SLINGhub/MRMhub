@@ -3,7 +3,7 @@
 \docType{class}
 \name{MRMhubExperiment-class}
 \alias{MRMhubExperiment-class}
-\title{S4 Class Representing the MRMhub Dataset}
+\title{S4 class representing the MRMhub dataset}
 \description{
 The \code{MRMhubExperiment} object is the core data structure utilized within the MRMhub workflow, encapsulating all relevant experimental data and metadata.
 It also includes processing results, details of the applied processing steps, and the current status of the data.

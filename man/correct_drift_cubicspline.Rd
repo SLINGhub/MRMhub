@@ -2,7 +2,7 @@
 % Please edit documentation in R/correct-drift-batch.R
 \name{correct_drift_cubicspline}
 \alias{correct_drift_cubicspline}
-\title{Drift Correction by Cubic Spline Smoothing}
+\title{Drift correction by cubic spline smoothing}
 \usage{
 correct_drift_cubicspline(
   data = NULL,
@@ -127,5 +127,5 @@ batch variation in an automated direct infusion mass spectrometry (DIMS) metabol
 Anal Bioanal Chem 405, 5147–5157 (2013). https://doi-org.libproxy1.nus.edu.sg/10.1007/s00216-013-6856-7
 }
 \seealso{
-\code{\link[stats]{smooth.spline}}
+\code{\link[stats:smooth.spline]{stats::smooth.spline()}}
 }

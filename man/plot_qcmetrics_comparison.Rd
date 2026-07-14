@@ -30,7 +30,7 @@ plot_qcmetrics_comparison(
 )
 }
 \arguments{
-\item{data}{A \code{MRMhubExperiment} object containing pre-calculated QC metrics.}
+\item{data}{A \code{MRMhubExperiment} object.}
 
 \item{plot_type}{A character string specifying the type of plot to generate.
 Must be one of "scatter", "diff", or "ratio". Selecting "scatter" plots the "y_variable" against the "y_variable" values
@@ -95,7 +95,7 @@ Default is \code{NA} which corresponds to the default shapes for QC types define
 \item{font_base_size}{Numeric; base font size in points (default is \code{8}).}
 }
 \value{
-A \code{ggplot2} object representing the scatter plot.
+A \code{ggplot} object representing the scatter plot.
 }
 \description{
 This function generates scatter plots comparing two QC metrics variables
@@ -119,4 +119,19 @@ metadata or retrieved via specific functions, e.g., \code{\link[=parse_lipid_fea
 }
 \seealso{
 \code{\link[=calc_qc_metrics]{calc_qc_metrics()}}, \code{\link[=filter_features_qc]{filter_features_qc()}}, \code{\link[=plot_normalization_qc]{plot_normalization_qc()}}, \code{\link[=normalize_by_istd]{normalize_by_istd()}}
+
+Other QC plots:
+\code{\link[=plot_feature_correlations]{plot_feature_correlations()}},
+\code{\link[=plot_normalization_qc]{plot_normalization_qc()}},
+\code{\link[=plot_pca]{plot_pca()}},
+\code{\link[=plot_pca_loading]{plot_pca_loading()}},
+\code{\link[=plot_qc_interferences]{plot_qc_interferences()}},
+\code{\link[=plot_qc_matrixeffects]{plot_qc_matrixeffects()}},
+\code{\link[=plot_qc_summary_byclass]{plot_qc_summary_byclass()}},
+\code{\link[=plot_qc_summary_overall]{plot_qc_summary_overall()}},
+\code{\link[=plot_rla_boxplot]{plot_rla_boxplot()}},
+\code{\link[=plot_rt_vs_chain]{plot_rt_vs_chain()}},
+\code{\link[=plot_runscatter]{plot_runscatter()}},
+\code{\link[=plot_runsequence]{plot_runsequence()}}
 }
+\concept{QC plots}

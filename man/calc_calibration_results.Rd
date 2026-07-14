@@ -70,15 +70,21 @@ these details are missing in the metadata, the default values provided via
 }
 \details{
 Additionally, the limit of detection (LoD) and limit of quantification (LoQ)
-are calculated for each feature based on the calibration curve. LoD is
-calculated as 3.3 times the sample standard error of the regression residuals
-divided by the regression slope, and LoQ is 10 times the same ratio. In the
-case of a quadratic fit, LoD and LoQ are calculated using the slope at
-the concentration of the lowest calibration point.
+are calculated for each feature based on the calibration curve, following the
+ICH Q2(R1/R2) approach (LoD = 3.3 sigma / S, LoQ = 10 sigma / S). Here sigma
+is the sample standard error of the regression residuals and S is the slope
+of the calibration curve. The slope is taken at zero concentration (the
+linear coefficient); for a quadratic fit the quadratic term does not
+contribute to this slope.
 
 The results of the regression and the calculated LoD and LoQ values are
 stored in the \code{metrics_calibration} table of the returned \code{MRMhubExperiment}
 object.
+}
+\references{
+ICH Harmonised Tripartite Guideline. Validation of Analytical Procedures:
+Text and Methodology Q2(R1) (2005); Q2(R2) (2023). International Council for
+Harmonisation of Technical Requirements for Pharmaceuticals for Human Use.
 }
 \seealso{
 \code{\link[=quantify_by_calibration]{quantify_by_calibration()}} for calculating concentrations based on

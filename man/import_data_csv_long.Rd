@@ -2,7 +2,7 @@
 % Please edit documentation in R/data-import.R
 \name{import_data_csv_long}
 \alias{import_data_csv_long}
-\title{Import Analysis Results from Long Format CSV Files}
+\title{Import analysis results from long-format CSV files}
 \usage{
 import_data_csv_long(
   data = NULL,

@@ -3,7 +3,7 @@
 \docType{data}
 \name{quant_lcms_dataset}
 \alias{quant_lcms_dataset}
-\title{LC-MS Dataset with External Calibration Curve and Metadata}
+\title{LC-MS dataset with external calibration curve and metadata}
 \format{
 A \code{MRMhubExperiment} object with the following data and metadata:
 \describe{

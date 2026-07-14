@@ -12,7 +12,9 @@ cv(x, na.rm = FALSE, use_robust_cv = FALSE)
 \item{na.rm}{logical, if TRUE then NA values are stripped from x before
 computation takes place}
 
-\item{use_robust_cv}{logical, if TRUE then the robust coefficient of variation}
+\item{use_robust_cv}{logical, if TRUE the robust coefficient of variation
+(scaled median absolute deviation / median) is computed instead of the
+standard CV (SD / mean)}
 }
 \value{
 a numeric value. If x contains a zero or is not numeric,

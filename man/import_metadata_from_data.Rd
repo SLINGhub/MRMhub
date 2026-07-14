@@ -2,7 +2,7 @@
 % Please edit documentation in R/metadata-import.R
 \name{import_metadata_from_data}
 \alias{import_metadata_from_data}
-\title{Retrieve Metadata from Imported Analysis Data}
+\title{Retrieve metadata from imported analysis data}
 \usage{
 import_metadata_from_data(data = NULL, qc_type_column_name = "qc_type")
 }

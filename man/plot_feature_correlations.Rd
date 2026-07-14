@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot-qc-correlations.R
 \name{plot_feature_correlations}
 \alias{plot_feature_correlations}
-\title{Plot Highly Correlated Feature Pairs}
+\title{Plot highly correlated feature pairs}
 \usage{
 plot_feature_correlations(
   data,
@@ -36,16 +36,16 @@ plot_feature_correlations(
 )
 }
 \arguments{
-\item{data}{A data frame containing numeric columns for correlation analysis}
+\item{data}{A \code{MRMhubExperiment} object.}
 
-\item{variable}{A character string indicating the variable to use for PCA
-analysis. Must be one of: "area", "height", "intensity", "norm_intensity", "response",
+\item{variable}{A character string indicating the signal variable to plot.
+Must be one of: "area", "height", "intensity", "norm_intensity", "response",
 "conc", "conc_raw", "rt", "fwhm".}
 
-\item{qc_types}{A character vector specifying the QC types to plot. It
-must contain at least one element. The default is \code{NA}, which means any
-of the non-blank QC types ("SPL", "TQC", "BQC", "HQC", "MQC", "LQC",
-"QC", "NIST", "LTR") will be plotted if present in the dataset.}
+\item{qc_types}{A character vector specifying the QC types to plot. It must
+contain at least one element. The default \code{NA} plots any of the non-blank
+QC types ("SPL", "TQC", "BQC", "HQC", "MQC", "LQC", "NIST", "LTR") present
+in the dataset.}
 
 \item{cor_min}{Numeric. Minimum correlation threshold. Only feature pairs with
 positive correlations above this value will be shown. Set to Inf to exclude positive
@@ -86,13 +86,10 @@ the filter is ignored. When a vector of length > 1 is supplied, only
 features with exactly these names are excluded (applied individually as
 OR conditions).}
 
-\item{min_median_value}{Minimum median
-feature value (as determined by the \code{variable}) across all samples from
-selected QC types that must be met for a feature to be included in the
-PCA analysis. \code{NA} (default) means no filtering will be applied. This
-parameter provides an fast way to exclude noisy features from the
-analysis. However, it is recommended to use \code{filter_data} with
-\code{\link[=filter_features_qc]{filter_features_qc()}}.}
+\item{min_median_value}{Minimum median feature value across the selected
+QC-type samples required for a feature to be included. \code{NA} (default)
+applies no filtering. This is a fast way to exclude noisy features; for
+principled QC-based filtering use \code{\link[=filter_features_qc]{filter_features_qc()}}.}
 
 \item{output_pdf}{If \code{TRUE}, saves the generated plots as a PDF
 file. When \code{FALSE}, plots are directly plotted.}
@@ -107,7 +104,7 @@ file. When \code{FALSE}, plots are directly plotted.}
 \code{"PORTRAIT"}.}
 
 \item{return_plots}{Logical. If \code{TRUE}, returns the plots as a list of
-\code{ggplot2} objects.}
+\code{ggplot} objects.}
 
 \item{point_size}{A numeric value indicating the size of points in
 millimeters. Default is 1.}
@@ -130,8 +127,8 @@ plot text elements. Default is 8.}
 plot creation.}
 }
 \value{
-A ggplot object showing scatter plots of highly correlated feature pairs.
-Returns NULL if no correlations meet the threshold criteria.
+A \code{ggplot} object showing scatter plots of highly correlated feature pairs.
+Returns \code{NULL} if no correlations meet the threshold criteria.
 }
 \description{
 Creates scatter plots for pairs of features that have correlations outside specified thresholds.
@@ -139,3 +136,19 @@ Each pair is displayed in a separate facet with its correlation coefficient.
 
 This plot can be used to visually inspect highly correlated features, that may represent duplicate identifications or represent isomers.
 }
+\seealso{
+Other QC plots:
+\code{\link[=plot_normalization_qc]{plot_normalization_qc()}},
+\code{\link[=plot_pca]{plot_pca()}},
+\code{\link[=plot_pca_loading]{plot_pca_loading()}},
+\code{\link[=plot_qc_interferences]{plot_qc_interferences()}},
+\code{\link[=plot_qc_matrixeffects]{plot_qc_matrixeffects()}},
+\code{\link[=plot_qc_summary_byclass]{plot_qc_summary_byclass()}},
+\code{\link[=plot_qc_summary_overall]{plot_qc_summary_overall()}},
+\code{\link[=plot_qcmetrics_comparison]{plot_qcmetrics_comparison()}},
+\code{\link[=plot_rla_boxplot]{plot_rla_boxplot()}},
+\code{\link[=plot_rt_vs_chain]{plot_rt_vs_chain()}},
+\code{\link[=plot_runscatter]{plot_runscatter()}},
+\code{\link[=plot_runsequence]{plot_runsequence()}}
+}
+\concept{QC plots}

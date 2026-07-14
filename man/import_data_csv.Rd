@@ -2,7 +2,7 @@
 % Please edit documentation in R/data-import.R
 \name{import_data_csv}
 \alias{import_data_csv}
-\title{(Depreciated) Import Wide CSV Files}
+\title{(Deprecated) Import wide CSV files}
 \usage{
 import_data_csv(
   data = NULL,
@@ -34,7 +34,7 @@ Only following metadata column names are supported: "qc_type", "batch_id", "is_q
 MRMhubExperiment object
 }
 \description{
-(Depreciated) Import Wide CSV Files
+(Deprecated) Import wide CSV files
 }
 \details{
 This function is deprecated. Please use \code{\link[=import_data_csv_wide]{import_data_csv_wide()}} instead.

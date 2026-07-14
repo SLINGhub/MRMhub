@@ -2,7 +2,7 @@
 % Please edit documentation in R/check-setup.R
 \name{check_setup}
 \alias{check_setup}
-\title{Check MRMhub Setup}
+\title{Check MRMhub setup}
 \usage{
 check_setup(verbose = TRUE)
 }

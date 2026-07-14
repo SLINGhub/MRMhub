@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot-featureprofile.R
 \name{plot_abundanceprofile}
 \alias{plot_abundanceprofile}
-\title{Plot Abundance Profile}
+\title{Plot abundance profile}
 \usage{
 plot_abundanceprofile(
   data,
@@ -34,7 +34,7 @@ plot_abundanceprofile(
 )
 }
 \arguments{
-\item{data}{A MRMhubExperiment object.}
+\item{data}{A \code{MRMhubExperiment} object.}
 
 \item{variable}{A character string indicating the variable to plot. For \code{use_qc_metrics = FALSE},
 this must be a base name like "area" or "conc". For \code{use_qc_metrics = TRUE}, this is the
@@ -110,3 +110,4 @@ A \code{ggplot} object representing the abundance profile plot.
 \description{
 Creates a profile plot showing the abundance distribution of features across different classes.
 }
+\concept{EDA plots}

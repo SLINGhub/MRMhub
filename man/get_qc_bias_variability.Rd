@@ -2,7 +2,7 @@
 % Please edit documentation in R/calc-calibrations.R
 \name{get_qc_bias_variability}
 \alias{get_qc_bias_variability}
-\title{Retrieve Calibration Regression Results}
+\title{Retrieve calibration regression results}
 \usage{
 get_qc_bias_variability(
   data,

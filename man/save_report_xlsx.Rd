@@ -2,7 +2,7 @@
 % Please edit documentation in R/data-export.R
 \name{save_report_xlsx}
 \alias{save_report_xlsx}
-\title{Write Data Processing Report (EXCEL)}
+\title{Write a data-processing report (Excel)}
 \usage{
 save_report_xlsx(
   data = NULL,
@@ -39,8 +39,8 @@ Following tables will be created as sheets in the EXCEL file:
 \itemize{
 \item Info: General  information including date, author, and MRMhub version, processing status and feature concentration unit.
 \item Feature_QC_metrics: Quality control metrics of all features.
-\item QCfilt_x_StudySamples: Feature (QC)-filtered data (variable defiend via \code{filtered_variable}) in study samples ('SPL'). Filter have to be set via \code{\link[=filter_features_qc]{filter_features_qc()}}. The \emph{x} corresponds to the \code{filtered_variable} argument.
-\item QCfilt_x_AllSamples: Feature (QC)-filtered data (variable defiend via \code{filtered_variable}) in all samples. Filter have to be set via \code{\link[=filter_features_qc]{filter_features_qc()}}. The \emph{x} corresponds to the \code{filtered_variable} argument.
+\item QCfilt_x_StudySamples: Feature (QC)-filtered data (variable defined via \code{filtered_variable}) in study samples ('SPL'). Filter have to be set via \code{\link[=filter_features_qc]{filter_features_qc()}}. The \emph{x} corresponds to the \code{filtered_variable} argument.
+\item QCfilt_x_AllSamples: Feature (QC)-filtered data (variable defined via \code{filtered_variable}) in all samples. Filter have to be set via \code{\link[=filter_features_qc]{filter_features_qc()}}. The \emph{x} corresponds to the \code{filtered_variable} argument.
 \item Conc_FullDataset: Final feature concentrations from the full, non-filtered dataset.
 \item Raw_Intensity_FullDataset: Raw feature intensities from the full, non-filtered dataset.
 \item Norm_Intensity_FullDataset: Normalized feature intensities from the full, non-filtered dataset.
@@ -51,7 +51,7 @@ Following tables will be created as sheets in the EXCEL file:
 in each batch
 }
 
-#' If certain data sets are not available, the function includes empty tables for the corresponding dataset.
+If certain data sets are not available, the function includes empty tables for the corresponding dataset.
 
 Concentration corresponds to the final concentration values after applying isotope correction, and drift and batch correction, if applicable.
 If any corrections, such as drift or batch correction, were applied to raw or normalized intensities, the exported values will reflect these corrections.

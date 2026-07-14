@@ -2,7 +2,7 @@
 % Please edit documentation in R/correct-drift-batch.R
 \name{fun_correct_drift}
 \alias{fun_correct_drift}
-\title{Drift Correction by Custom Function}
+\title{Drift correction by custom function}
 \usage{
 fun_correct_drift(
   data = NULL,

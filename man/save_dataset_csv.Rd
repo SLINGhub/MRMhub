@@ -2,7 +2,7 @@
 % Please edit documentation in R/data-export.R
 \name{save_dataset_csv}
 \alias{save_dataset_csv}
-\title{Export Data to CSV file}
+\title{Export data to a CSV file}
 \usage{
 save_dataset_csv(
   data = NULL,

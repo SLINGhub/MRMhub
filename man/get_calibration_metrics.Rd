@@ -2,13 +2,12 @@
 % Please edit documentation in R/calc-calibrations.R
 \name{get_calibration_metrics}
 \alias{get_calibration_metrics}
-\title{Get Calibration Metrics}
+\title{Get calibration metrics}
 \usage{
 get_calibration_metrics(
   data = NULL,
   with_lod = TRUE,
   with_loq = TRUE,
-  with_bias = TRUE,
   with_coefficients = TRUE,
   with_sigma = TRUE
 )
@@ -19,8 +18,6 @@ get_calibration_metrics(
 \item{with_lod}{Whether to include LoD in output. Default is \code{TRUE}.}
 
 \item{with_loq}{Whether to include LoQ in output. Default is \code{TRUE}.}
-
-\item{with_bias}{Whether to include bias in output. Default is \code{TRUE}.}
 
 \item{with_coefficients}{Whether to include regression coefficients. Default is \code{TRUE}.}
 
@@ -53,7 +50,9 @@ See its documentation for details.
 \item \code{LoQ} = 10× the sample standard error of residuals / slope of the regression (see Notes).
 }
 
-\strong{Note:} For LoD/LoQ calculation using \strong{quadratic} fits, the slope used
-in the formula is calculated at the lowest nonzero calibration point.
+\strong{Note:} LoD/LoQ follow the ICH Q2(R1/R2) approach (3.3 sigma / S and
+10 sigma / S). The slope \code{S} is the slope of the calibration curve at zero
+concentration (the linear coefficient \code{coef_b}); for a \strong{quadratic} fit the
+quadratic term does not contribute to this slope.
 }
 }

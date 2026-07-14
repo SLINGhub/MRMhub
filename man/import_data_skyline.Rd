@@ -2,7 +2,7 @@
 % Please edit documentation in R/data-import.R
 \name{import_data_skyline}
 \alias{import_data_skyline}
-\title{Import Skyline Peak Integration Results}
+\title{Import Skyline peak integration results}
 \usage{
 import_data_skyline(
   data = NULL,

@@ -2,19 +2,19 @@
 % Please edit documentation in R/plots-qc-filtering.R
 \name{plot_qc_summary_overall}
 \alias{plot_qc_summary_overall}
-\title{Plot Overall QC Filtering Summary}
+\title{Plot overall QC filtering summary}
 \usage{
 plot_qc_summary_overall(data = NULL, with_venn = TRUE, font_base_size = 8)
 }
 \arguments{
-\item{data}{MRMhubExperiment object}
+\item{data}{A \code{MRMhubExperiment} object.}
 
 \item{with_venn}{Whether to include a Venn diagram summarizing the features excluded due to different QC criteria. Default is \code{TRUE}.}
 
 \item{font_base_size}{The base font size for the plot. Default is \code{8}.}
 }
 \value{
-A \code{ggplot2} object showing the feature QC filtering summary with or without a Venn diagram.
+A \code{ggplot} object showing the feature QC filtering summary with or without a Venn diagram.
 }
 \description{
 This function generates a summary of the feature QC filtering process, visualizing the number of features that passed or failed the various QC criteria.
@@ -29,3 +29,19 @@ This ensures that features are evaluated progressively, starting from fundamenta
 
 Note: The function currently shows a warning \code{Using }size\verb{ aesthetic for lines was deprecated in ggplot2 3.4.0.} which can be ignored.
 }
+\seealso{
+Other QC plots:
+\code{\link[=plot_feature_correlations]{plot_feature_correlations()}},
+\code{\link[=plot_normalization_qc]{plot_normalization_qc()}},
+\code{\link[=plot_pca]{plot_pca()}},
+\code{\link[=plot_pca_loading]{plot_pca_loading()}},
+\code{\link[=plot_qc_interferences]{plot_qc_interferences()}},
+\code{\link[=plot_qc_matrixeffects]{plot_qc_matrixeffects()}},
+\code{\link[=plot_qc_summary_byclass]{plot_qc_summary_byclass()}},
+\code{\link[=plot_qcmetrics_comparison]{plot_qcmetrics_comparison()}},
+\code{\link[=plot_rla_boxplot]{plot_rla_boxplot()}},
+\code{\link[=plot_rt_vs_chain]{plot_rt_vs_chain()}},
+\code{\link[=plot_runscatter]{plot_runscatter()}},
+\code{\link[=plot_runsequence]{plot_runsequence()}}
+}
+\concept{QC plots}

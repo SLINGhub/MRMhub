@@ -2,7 +2,7 @@
 % Please edit documentation in R/metadata-import.R
 \name{assert_metadata}
 \alias{assert_metadata}
-\title{Add metadata an MRMhubExperiment object}
+\title{Add metadata to an MRMhubExperiment object}
 \usage{
 assert_metadata(
   data = NULL,

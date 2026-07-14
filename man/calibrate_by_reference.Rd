@@ -2,7 +2,7 @@
 % Please edit documentation in R/calc-ref-normalization.R
 \name{calibrate_by_reference}
 \alias{calibrate_by_reference}
-\title{Calibrate Features Values Using Reference Sample}
+\title{Calibrate feature values using a reference sample}
 \usage{
 calibrate_by_reference(
   data,

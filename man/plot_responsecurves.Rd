@@ -2,7 +2,7 @@
 % Please edit documentation in R/plots-qc-responsecurves.R
 \name{plot_responsecurves}
 \alias{plot_responsecurves}
-\title{Plot Response Curves}
+\title{Plot response curves}
 \usage{
 plot_responsecurves(
   data = NULL,
@@ -33,7 +33,7 @@ plot_responsecurves(
 )
 }
 \arguments{
-\item{data}{A \code{MRMhubExperiment} object containing the dataset and metadata.}
+\item{data}{A \code{MRMhubExperiment} object.}
 
 \item{variable}{The variable to plot on the y-axis.}
 
@@ -44,13 +44,17 @@ QC-filtered data (filtered via \code{\link[=filter_features_qc]{filter_features_
 
 \item{include_istd}{Logical, whether to include internal standard (ISTD) features. Default is \code{TRUE}.}
 
-\item{include_feature_filter}{A regex pattern or a vector of feature names used to filter features by \code{feature_id}.
-If \code{NA} or an empty string (\code{""}) is provided, the filter is ignored. When a vector of length > 1 is supplied,
-is supplied, only features with exactly these names are selected (applied individually as OR conditions).}
+\item{include_feature_filter}{A regex pattern or a vector of feature names
+used to filter features by \code{feature_id}. If \code{NA} or an empty string (\code{""})
+is provided, the filter is ignored. When a vector of length > 1 is
+supplied, only features with exactly these names are selected (applied
+individually as OR conditions).}
 
-\item{exclude_feature_filter}{A regex pattern or a vector of feature names to exclude features by feature_id.
-If \code{NA} or an empty string (\code{""}) is provided, the filter is ignored. When a vector of length > 1 is supplied,
-is supplied, only features with exactly these names are excluded (applied individually as OR conditions).}
+\item{exclude_feature_filter}{A regex pattern or a vector of feature names
+used to exclude features by \code{feature_id}. If \code{NA} or an empty string
+(\code{""}) is provided, the filter is ignored. When a vector of length > 1 is
+supplied, only features with exactly these names are excluded (applied
+individually as OR conditions).}
 
 \item{max_regression_value}{The maximum sample_amount (x) value for fitting
 the regression line. If \code{NA}, regression is based on all data points.}
@@ -62,7 +66,7 @@ file. When \code{FALSE}, plots are directly plotted.}
 \code{output_pdf} is \code{TRUE}.}
 
 \item{return_plots}{Logical. If \code{TRUE}, returns the plots as a list of
-\code{ggplot2} objects.}
+\code{ggplot} objects.}
 
 \item{color_curves}{A vector of colors for the curves. If \code{NULL} (default),
 the colors for each curve are generated automatically. If colors are provided,
@@ -114,7 +118,7 @@ Ignored when \code{curve_layout} is \code{"cols"} or \code{"rows"}, where each p
 plot creation.}
 }
 \value{
-If \code{return_plots} is \code{TRUE}, a list of \code{ggplot2} objects is
+If \code{return_plots} is \code{TRUE}, a list of \code{ggplot} objects is
 returned. Otherwise, the function saves the plot output or does not return
 anything.
 }
@@ -136,3 +140,8 @@ both direct plotting within R and saving plots as PDF files. Additionally,
 plots can be returned as a list of ggplot2 objects for further manipulation
 or integration into other analyses.
 }
+\seealso{
+Other calibration plots:
+\code{\link[=plot_calibrationcurves]{plot_calibrationcurves()}}
+}
+\concept{calibration plots}

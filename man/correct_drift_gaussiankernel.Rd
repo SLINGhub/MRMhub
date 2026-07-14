@@ -2,7 +2,7 @@
 % Please edit documentation in R/correct-drift-batch.R
 \name{correct_drift_gaussiankernel}
 \alias{correct_drift_gaussiankernel}
-\title{Drift Correction by Gaussian Kernel Smoothing}
+\title{Drift correction by Gaussian kernel smoothing}
 \usage{
 correct_drift_gaussiankernel(
   data = NULL,

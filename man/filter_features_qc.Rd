@@ -2,7 +2,7 @@
 % Please edit documentation in R/qc-filtering.R
 \name{filter_features_qc}
 \alias{filter_features_qc}
-\title{Feature Filtering Based on QC Criteria}
+\title{Feature filtering based on QC criteria}
 \usage{
 filter_features_qc(
   data = NULL,

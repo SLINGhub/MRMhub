@@ -3,7 +3,7 @@
 \docType{data}
 \name{lipidomics_dataset}
 \alias{lipidomics_dataset}
-\title{Plasma Lipidomics Dataset with Metadata}
+\title{Plasma lipidomics dataset with metadata}
 \format{
 A \code{MRMhubExperiment} object with the following data and metadata:
 \describe{

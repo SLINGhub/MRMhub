@@ -2,7 +2,7 @@
 % Please edit documentation in R/data-import.R
 \name{import_data_csv_wide}
 \alias{import_data_csv_wide}
-\title{Import Analysis Results from Plain Wide-Format CSV Files}
+\title{Import analysis results from plain wide-format CSV files}
 \usage{
 import_data_csv_wide(
   data = NULL,

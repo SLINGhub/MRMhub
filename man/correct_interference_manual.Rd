@@ -25,8 +25,9 @@ correct_interference_manual(
 \item{interfering_feature}{Name of feature that is interfering, i.e.
 contributing to the signal of \code{feature}}
 
-\item{interference_contribution}{Relative portion of the interfering feature to
-contribute to the feature signal. Must be between 0 and 1.}
+\item{interference_contribution}{Relative portion of the interfering feature
+contributing to the feature signal. Must be greater than 0; values are
+usually between 0 and 1, and values above 1 trigger a warning.}
 
 \item{neg_to_na}{If \code{TRUE}, negative or zero values after correction will be replaced with \code{NA}. Default: \code{FALSE}.}
 

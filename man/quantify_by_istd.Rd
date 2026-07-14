@@ -2,7 +2,7 @@
 % Please edit documentation in R/calc-istd-normalization.R
 \name{quantify_by_istd}
 \alias{quantify_by_istd}
-\title{Calculate Analyte Concentrations Using Internal Standards}
+\title{Calculate analyte concentrations using internal standards}
 \usage{
 quantify_by_istd(
   data = NULL,

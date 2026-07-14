@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot-qc-correlations.R
 \name{get_feature_correlations}
 \alias{get_feature_correlations}
-\title{Generate Correlation Matrix in Long Format}
+\title{Generate correlation matrix in long format}
 \usage{
 get_feature_correlations(tbl, cor_min_neg, cor_min)
 }

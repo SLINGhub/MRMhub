@@ -2,7 +2,7 @@
 % Please edit documentation in R/correct-drift-batch.R
 \name{fun_gam_smooth}
 \alias{fun_gam_smooth}
-\title{Generalized Additive Model (GAM) smoothing helper function}
+\title{Generalized additive model (GAM) smoothing helper function}
 \usage{
 fun_gam_smooth(tbl, ref_qc_types, log_transform_internal = TRUE, ...)
 }

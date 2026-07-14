@@ -2,7 +2,7 @@
 % Please edit documentation in R/correct-drift-batch.R
 \name{fun_gauss.kernel.smooth}
 \alias{fun_gauss.kernel.smooth}
-\title{Gaussian Kernel smoothing helper function}
+\title{Gaussian kernel smoothing helper function}
 \usage{
 fun_gauss.kernel.smooth(tbl, ref_qc_types, log_transform_internal, ...)
 }

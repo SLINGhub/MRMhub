@@ -2,7 +2,7 @@
 % Please edit documentation in R/classes.R
 \name{MRMhubExperiment}
 \alias{MRMhubExperiment}
-\title{Constructor for the MRMhubExperiment object.}
+\title{Constructor for the MRMhubExperiment object}
 \usage{
 MRMhubExperiment(title = "", analysis_type = NA_character_)
 }
@@ -15,5 +15,5 @@ MRMhubExperiment(title = "", analysis_type = NA_character_)
 \code{MRMhubExperiment} object
 }
 \description{
-Constructor for the MRMhubExperiment object.
+Constructor for the MRMhubExperiment object
 }

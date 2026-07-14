@@ -2,7 +2,7 @@
 % Please edit documentation in R/correct-drift-batch.R
 \name{correct_batch_centering}
 \alias{correct_batch_centering}
-\title{Batch Centering Correction}
+\title{Batch centering correction}
 \usage{
 correct_batch_centering(
   data = NULL,

@@ -2,7 +2,7 @@
 % Please edit documentation in R/metadata-import.R
 \name{add_metadata}
 \alias{add_metadata}
-\title{Add metadata an MRMhubExperiment object}
+\title{Add metadata to an MRMhubExperiment object}
 \usage{
 add_metadata(data = NULL, metadata, excl_unmatched_analyses = FALSE)
 }

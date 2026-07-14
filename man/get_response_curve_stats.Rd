@@ -2,7 +2,7 @@
 % Please edit documentation in R/calc-response.R
 \name{get_response_curve_stats}
 \alias{get_response_curve_stats}
-\title{Linear Regression Statistics of Response Curves}
+\title{Linear regression statistics of response curves}
 \usage{
 get_response_curve_stats(
   data = NULL,

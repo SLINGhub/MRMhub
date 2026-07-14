@@ -2,7 +2,7 @@
 % Please edit documentation in R/data-export.R
 \name{save_feature_qc_metrics}
 \alias{save_feature_qc_metrics}
-\title{Save Feature QC Metrics to CSV}
+\title{Save feature QC metrics to CSV}
 \usage{
 save_feature_qc_metrics(data = NULL, path)
 }

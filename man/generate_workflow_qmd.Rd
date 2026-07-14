@@ -18,8 +18,17 @@ generated document.}
 \item{\code{metadata_path}}{Path to the metadata file (when not embedded).}
 \item{\code{steps}}{Character vector of step ids to include (the ids defined
 in \code{workflow_steps()}).}
-\item{\code{variable}, \code{ref_qc_types}, \code{reference_sample_id}}{Optional argument
-choices used by drift/batch/calibration steps.}
+\item{\code{drift_method}}{Drift model for the drift step: \code{"gaussian"}
+(default), \code{"spline"}, or \code{"loess"}.}
+\item{\code{ref_qc_types}, \code{reference_sample_id}}{Optional reference QC type(s)
+and reference sample id for drift/batch/calibration. The corrected
+feature variable is derived automatically as the highest processing
+level reached by the selected steps.}
+\item{\code{column_mapping}}{Named character vector for \code{importer = "csv_long"},
+mapping canonical names to file columns, e.g.
+\code{c(analysis_id = "Sample", feature_id = "Compound", feature_area = "Area")}.}
+\item{\code{variable_name}, \code{analysis_id_col}, \code{first_feature_column}}{Arguments
+for \code{importer = "csv_wide"}.}
 \item{\code{output_xlsx}}{Path for the exported report. Default
 \code{"results.xlsx"}.}
 \item{\code{formats}}{Character vector of Quarto output formats, any of

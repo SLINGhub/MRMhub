@@ -2,7 +2,7 @@
 % Please edit documentation in R/helper.R
 \name{order_chained_columns_tbl}
 \alias{order_chained_columns_tbl}
-\title{Reorder Data Frame based on a chain of linked values in two columns.}
+\title{Reorder a data frame based on a chain of linked values in two columns}
 \usage{
 order_chained_columns_tbl(
   df,
