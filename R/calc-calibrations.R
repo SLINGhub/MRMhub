@@ -252,7 +252,7 @@ quantify_by_calibration <- function(
     dplyr::semi_join(data@dataset, by = c("analysis_id"))
 
   count_quant_pass <- sum(!d_calib$reg_failed_cal_1[d_calib$is_quantifier])
-  count_qual_pass <- sum(!d_calib$reg_failed_cal_1[d_calib$is_quantifier])
+  count_qual_pass <- sum(!d_calib$reg_failed_cal_1[!d_calib$is_quantifier])
   count_quant_all <- sum(d_calib$is_quantifier)
   count_qual_all <- sum(!d_calib$is_quantifier)
 
@@ -647,7 +647,7 @@ calc_calibration_results <- function(
   )
 
   count_quant_pass <- sum(!d_stats$reg_failed_cal_1[d_stats$is_quantifier])
-  count_qual_pass <- sum(!d_stats$reg_failed_cal_1[d_stats$is_quantifier])
+  count_qual_pass <- sum(!d_stats$reg_failed_cal_1[!d_stats$is_quantifier])
   count_quant_all <- sum(d_stats$is_quantifier)
   count_qual_all <- sum(!d_stats$is_quantifier)
 
