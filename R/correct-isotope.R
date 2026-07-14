@@ -353,7 +353,7 @@ correct_interferences <- function(
 
   # Apply corrections iteratively, using the result from the previous iteration
   d_corrected <- d_correct
-  for (i in 1:nrow(features_to_correct)) {
+  for (i in seq_len(nrow(features_to_correct))) {
     d_corrected <- correct_feature_intensity(
       d_corrected,
       features_to_correct,
