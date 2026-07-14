@@ -1,0 +1,119 @@
+---
+toc: false
+sidebar: false
+page-layout: full
+---
+
+::: {.grid .landing-grid}
+
+::: {.g-col-12 .g-col-lg-9}
+
+<img src="images/logo.svg" class="hex-logo" alt="MRMhub hex logo" />
+
+# INTEGRATOR
+
+::: {.lead}
+Robust, reproducible peak detection and integration for large-scale targeted LC-MS-MRM analyses
+:::
+
+::: {.title-sep}
+:::
+
+INTEGRATOR is the stand-alone peak-integration module of the
+[MRMhub framework](https://slinghub.github.io/MRMhub/). MS raw data are imported as mzML files, and MRMhub is then run as a console application in four steps: (1) import and conversion of mzML files, (2) cross-sample peak detection, (3) peak integration, and (4) plotting of chromatograms with integrated peaks as PDFs. Peak-area data are saved as long- and wide-format CSV files.
+
+## The workflow
+
+```{=html}
+<div style="text-align: center; margin: 1.5em 0;">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 90" style="max-width: 940px; width: 100%; height: auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+  <style>
+    .wf-box { rx: 8; ry: 8; stroke-width: 1.5; }
+    .wf-label { font-size: 13px; font-weight: 600; fill: #1a1a1a; pointer-events: none; }
+    .wf-arrow { fill: #666; }
+  </style>
+  <polygon class="wf-box" points="18,10 160,10 142,80 0,80" fill="#e8e8ec" stroke="#2c3e50"/>
+  <text class="wf-label" x="80" y="50" text-anchor="middle">Raw MRM files</text>
+  <polygon class="wf-arrow" points="170,38 180,45 170,52"/>
+  <a href="msconvert.html"><rect class="wf-box" x="190" y="10" width="160" height="70" fill="#f5e0c8" stroke="#c87f3b"/><text class="wf-label" x="270" y="50" text-anchor="middle">mzML (msconvert)</text></a>
+  <polygon class="wf-arrow" points="360,38 370,45 360,52"/>
+  <a href="running.html"><rect class="wf-box" x="380" y="10" width="160" height="70" fill="#d4e8d4" stroke="#5a9a5a"/><text class="wf-label" x="460" y="50" text-anchor="middle">INTEGRATOR</text></a>
+  <polygon class="wf-arrow" points="550,38 560,45 550,52"/>
+  <polygon class="wf-box" points="588,10 730,10 712,80 570,80" fill="#f5f2fa" stroke="#7a6ba4"/>
+  <text class="wf-label" x="650" y="43" text-anchor="middle">Peak areas</text>
+  <text x="650" y="60" text-anchor="middle" style="font-size: 10px; fill: #5a5a5a;">long.csv</text>
+  <polygon class="wf-arrow" points="740,38 750,45 740,52"/>
+  <a href="https://slinghub.github.io/MRMhub/quant/"><rect class="wf-box" x="760" y="10" width="180" height="70" fill="#eef4f8" stroke="#4a90a4" stroke-dasharray="4 3"/><text class="wf-label" x="850" y="50" text-anchor="middle">QUANT ↗</text></a>
+</svg>
+<p style="font-size: 0.85rem; color: #6c757d; margin-top: 0.25rem;">INTEGRATOR performs the peak integration; QUANT (dashed) is a separate MRMhub module.</p>
+</div>
+```
+
+## Download and setup
+
+INTEGRATOR is distributed as a self-contained executable for macOS and Windows via the
+[GitHub releases page](https://github.com/SLINGhub/MRMhub/releases); no installation and no separate
+runtimes are required. A copy of the executable is kept with each analysis project, which ensures reproducibility. On first launch, typically a one-time OS security prompt must be cleared. Detailed instructions are given in [Installing MRMhub-INTEGRATOR](setup.html).
+
+## Getting started
+
+::: {.arrow-list}
+- **[Run the demo](demo.html)** — the bundled dataset with all required files can be processed end-to-end with INTEGRATOR. It ships within the
+  [latest release](https://github.com/SLINGhub/MRMhub/releases) and is documented in `readme.txt`.
+- **[Quick Start](quickstart.html)** — a short tutorial for running a new peak integration project.
+- **[Browse real analyses](https://slinghub.github.io/mrmhub-workflows/)** — Read details on peak integration
+  of two large-scale lipidomics studies.
+- **[Manual](manual.html)** — detailed instructions and tool reference for every stage; also available from the **Manual** menu above.
+- **[FAQ & Troubleshooting](faq.html)** — common problems preparing input files and running INTEGRATOR, and how to resolve them.
+
+:::
+
+## Post-processing of integration results
+
+The results produced by INTEGRATOR can be used directly by the QUANT R package (`mrmhub`) for
+post-processing — normalisation, drift/batch correction, calibration, quality control, and
+reporting. See the [QUANT manual ↗](https://slinghub.github.io/MRMhub/quant/) and the corresponding
+[Demo](demo.html).
+
+:::
+
+::: {.g-col-12 .g-col-lg-3 .info-panel}
+
+### Links
+
+- [Browse source code](https://github.com/SLINGhub/MRMhub/tree/main/integrator)
+- [Report a bug](https://github.com/SLINGhub/MRMhub/issues)
+- [Download](https://github.com/SLINGhub/MRMhub/releases)
+
+### License
+
+- [GPL-3](https://www.gnu.org/licenses/gpl-3.0) (non-commercial use)
+- Commercial licensing — contact [Jonathan Tan](mailto:jonathan_tan@nus.edu.sg)
+
+### Community
+
+- [Code of Conduct](https://github.com/SLINGhub/MRMhub/blob/main/CODE_OF_CONDUCT.md)
+- [Contributing](https://github.com/SLINGhub/MRMhub/blob/main/.github/CONTRIBUTING.md)
+
+### Citation
+
+- [Citing MRMhub](https://doi.org/10.64898/2025.12.20.695370)
+
+<!--
+### Funding & Acknowledgements
+
+TODO (to be completed): funders, grant numbers, and institutional support.
+Uncomment this section once the details are filled in.
+-->
+
+### Developers
+
+<ul class="developer-list">
+<li><span class="dev-name">Guo Shou Teo</span> <a class="orcid" href="https://orcid.org/0000-0003-3891-1494" aria-label="ORCID iD"><svg viewBox="0 0 256 256" width="14" height="14"><circle cx="128" cy="128" r="128" fill="#A6CE39"/><path fill="#fff" d="M86.3 186.2H70.9V79.1h15.4v107.1zM78.6 66.9c-5.5 0-10-4.5-10-10s4.5-9.9 10-9.9 10 4.4 10 9.9-4.5 10-10 10zM124.3 79.1h41.6c39.6 0 57 28.3 57 53.6 0 27.5-21.5 53.6-56.8 53.6h-41.8V79.1zm15.4 93.3h24.5c34.9 0 42.9-26.5 42.9-39.7 0-21.5-13.7-39.7-43.7-39.7h-23.7v79.4z"/></svg></a><br><span class="dev-role">Author, maintainer</span></li>
+<li><span class="dev-name">Bo Burla</span> <a class="orcid" href="https://orcid.org/0000-0002-5918-3249" aria-label="ORCID iD"><svg viewBox="0 0 256 256" width="14" height="14"><circle cx="128" cy="128" r="128" fill="#A6CE39"/><path fill="#fff" d="M86.3 186.2H70.9V79.1h15.4v107.1zM78.6 66.9c-5.5 0-10-4.5-10-10s4.5-9.9 10-9.9 10 4.4 10 9.9-4.5 10-10 10zM124.3 79.1h41.6c39.6 0 57 28.3 57 53.6 0 27.5-21.5 53.6-56.8 53.6h-41.8V79.1zm15.4 93.3h24.5c34.9 0 42.9-26.5 42.9-39.7 0-21.5-13.7-39.7-43.7-39.7h-23.7v79.4z"/></svg></a><br><span class="dev-role">Author</span></li>
+<li><span class="dev-name">Hyungwon Choi</span> <a class="orcid" href="https://orcid.org/0000-0002-6687-3088" aria-label="ORCID iD"><svg viewBox="0 0 256 256" width="14" height="14"><circle cx="128" cy="128" r="128" fill="#A6CE39"/><path fill="#fff" d="M86.3 186.2H70.9V79.1h15.4v107.1zM78.6 66.9c-5.5 0-10-4.5-10-10s4.5-9.9 10-9.9 10 4.4 10 9.9-4.5 10-10 10zM124.3 79.1h41.6c39.6 0 57 28.3 57 53.6 0 27.5-21.5 53.6-56.8 53.6h-41.8V79.1zm15.4 93.3h24.5c34.9 0 42.9-26.5 42.9-39.7 0-21.5-13.7-39.7-43.7-39.7h-23.7v79.4z"/></svg></a><br><span class="dev-role">Author</span></li>
+</ul>
+
+:::
+
+:::

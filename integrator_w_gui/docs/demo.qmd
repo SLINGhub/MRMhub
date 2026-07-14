@@ -1,0 +1,64 @@
+---
+title: "Demo"
+description: |
+  Process the bundled demonstration dataset end-to-end in INTEGRATOR, without preparing any input
+  files
+toc: false
+sidebar: false
+---
+
+A complete demonstration project is bundled with every INTEGRATOR release. It contains example
+converted mzML files together with prepared input files (`param.txt`, `run_order.csv`, and a
+transition list), so peak integration can be run immediately — no input-file preparation is
+required. The demonstration is therefore the fastest way to verify the installation and to observe
+the outputs INTEGRATOR produces.
+
+For a new analysis with user-supplied data, see the [Quick Start](quickstart.html).
+
+## 1. Download the release
+
+The latest release is downloaded and unzipped from the
+[Releases](https://github.com/SLINGhub/MRMhub/releases) page. The demonstration project is included
+in the archive; its contents and layout are documented in the accompanying `readme.txt`, which
+serves as the authoritative reference.
+
+## 2. Clear the first-launch security prompt
+
+INTEGRATOR is a portable executable and is not installed. On first launch, the one-time operating
+system security prompt is cleared (macOS Gatekeeper / Windows "Unblock").
+→ [Installation](setup.html)
+
+## 3. Run INTEGRATOR on the demo data
+
+MRMhub is launched from the demonstration folder and the four steps are executed in order:
+
+1. **Data Validation** — the bundled input files are checked for consistency.
+2. **Peak Finding & RT-shift estimation** — `RT_matrix.csv` is produced.
+3. **Peak Integration** — `long.csv` and `quant_raw.csv` are produced.
+4. **Generate PDF results** *(optional)* — per-transition / per-sample chromatogram PDFs are written.
+
+→ [Processing Workflow](running.html)
+
+## 4. Review the results
+
+The integration is inspected in MRMhub-viz, where chromatograms and peak boundaries are examined.
+→ [MRMhub-viz](viz.html)
+
+## Expected outputs
+
+| File | Content |
+|---|---|
+| `RT_matrix.csv` | Per-sample integration borders (left/right) for each feature |
+| `long.csv` | Integrated peak areas in long format (one row per analysis × feature) |
+| `quant_raw.csv` | Wide-format peak areas |
+
+## Next step in the pipeline
+
+The exported `long.csv` can be post-processed with the separate **MRMhub-QUANT** module for ISTD
+normalisation, drift/batch correction, calibration, quality control, and reporting:
+
+```r
+import_data_mrmhub(path = "path/to/long.csv", import_metadata = TRUE)
+```
+
+→ [QUANT documentation ↗](https://slinghub.github.io/MRMhub/quant/)

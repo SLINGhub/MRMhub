@@ -1,0 +1,66 @@
+project:
+  type: website
+  output-dir: _site
+  # source/ holds raw source text (e.g. description.md) that feeds the manual
+  # pages — render only the .qmd pages so it is not published as an orphan page.
+  render:
+    - "*.qmd"
+
+website:
+  title: "MRMhub-INTEGRATOR"
+  page-navigation: true
+  navbar:
+    background: "#2d5c80"   # header/menu bar colour (shared across all three sites)
+    foreground: "#ffffff"
+    left:
+      - text: Home
+        href: index.qmd
+      - text: Quick Start
+        href: quickstart.qmd
+      - text: Manual
+        menu:
+          - text: Manual Contents
+            href: manual.qmd
+          - text: "---"
+          - text: Installation
+            href: setup.qmd
+          - text: Prepare Input Files
+            href: input-files.qmd
+          - text: Tuning Peak Integration
+            href: tuning.qmd
+          - text: Processing Workflow
+            href: running.qmd
+          - text: Output Files
+            href: output-files.qmd
+          - text: MRMhub-viz Visualiser
+            href: viz.qmd
+          - text: Sharing & Archiving
+            href: sharing.qmd
+          - text: "---"
+          - text: Algorithm
+            href: algorithm.qmd
+          - text: "---"
+          - text: mzML Conversion (MSConvert)
+            href: msconvert.qmd
+      - text: FAQ
+        href: faq.qmd
+      - text: "Changelog"
+        href: https://github.com/SLINGhub/MRMhub/releases
+    right:
+      - text: "← MRMhub home"
+        href: https://slinghub.github.io/MRMhub/
+      - text: "QUANT (R package) ↗"
+        href: https://slinghub.github.io/MRMhub/quant/
+      - icon: github
+        href: https://github.com/SLINGhub/MRMhub
+        aria-label: GitHub
+
+format:
+  html:
+    # `brand` after `cosmo` so _brand.yml (steel-blue primary) overrides cosmo's
+    # default blue; navy navbar is set above via website.navbar.background.
+    theme:
+      - cosmo
+      - brand
+    css: styles.css
+    toc: true

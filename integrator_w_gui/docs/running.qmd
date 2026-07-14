@@ -1,0 +1,161 @@
+---
+title: "Processing Workflow"
+description: "Running a peak integration with INTEGRATOR"
+---
+
+INTEGRATOR processes a prepared analysis project in four steps, using a terminal menu. Steps 1–3 run in sequence — data validation, peak detection with RT-shift estimation, and peak integration — producing the integrated results, and step 4 optionally renders chromatogram PDFs. The integration can be reviewed via the PDFs or in [MRMhub-viz](viz.qmd) (after step 3) and refined iteratively. Refinement typically proceeds from global (`param.txt`) to feature-level (`feature_list.csv`) parameters, re-running the full workflow. Individual peaks can also be adjusted — a manual integration — by editing `RT_matrix.csv` and re-running step 3.
+
+```{=html}
+<div style="text-align: center; margin: 1.5em 0;">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 252" role="img" aria-labelledby="wf-title wf-desc" style="max-width: 900px; width: 100%; height: auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+  <title id="wf-title">INTEGRATOR processing workflow with review and refinement loops</title>
+  <desc id="wf-desc">Four processing steps run left to right: 1 Data validation, 2 Peak detection and RT-shift estimation, 3 Peak integration, and 4 Chromatogram PDF generation (optional). Results feed a Review step, reached from step 3 via MRMhub-viz or from step 4 via the PDFs. Review drives two refinement paths: global and feature-wise refinement edits param.txt and the feature list and re-runs from step 1; per-peak refinement edits RT_matrix.csv and re-runs step 3.</desc>
+  <style>
+    .wf-box { rx: 8; ry: 8; stroke-width: 1.5; }
+    .wf-label { font-size: 13px; font-weight: 600; fill: #2C3E50; pointer-events: none; }
+    .wf-badge { font-size: 12px; font-weight: 700; pointer-events: none; }
+    .wf-arrow { fill: #666; }
+    .wf-flow { fill: none; stroke: #666; stroke-width: 1.5; }
+    .wf-io { font-size: 11px; fill: #666; }
+    .wf-loop { fill: none; stroke: #C27171; stroke-width: 1.5; }
+    .wf-loop-arrow { fill: #C27171; }
+    .wf-loop-head { font-size: 11px; font-weight: 700; fill: #B25C5C; }
+    .wf-loop-text { font-size: 11px; fill: #B25C5C; }
+  </style>
+  <line class="wf-flow" x1="190" y1="45" x2="222" y2="45"/>
+  <polygon class="wf-arrow" points="228,45 222,40 222,50"/>
+  <line class="wf-flow" x1="422" y1="45" x2="454" y2="45"/>
+  <polygon class="wf-arrow" points="460,45 454,40 454,50"/>
+  <line class="wf-flow" x1="628" y1="45" x2="660" y2="45"/>
+  <polygon class="wf-arrow" points="666,45 660,40 660,50"/>
+  <rect class="wf-box" x="20" y="16" width="170" height="58" fill="#e7eff3" stroke="#5B8FA8"/>
+  <rect class="wf-box" x="228" y="16" width="194" height="58" fill="#e6efe1" stroke="#6B9E5E"/>
+  <rect class="wf-box" x="460" y="16" width="168" height="58" fill="#f6ead9" stroke="#D4914E"/>
+  <rect class="wf-box" x="666" y="16" width="194" height="58" fill="#eceef1" stroke="#2C3E50" stroke-dasharray="5 3"/>
+  <circle cx="36" cy="16" r="12" fill="#fff" stroke="#5B8FA8" stroke-width="1.5"/>
+  <text class="wf-badge" x="36" y="20" text-anchor="middle" fill="#5B8FA8">1</text>
+  <circle cx="244" cy="16" r="12" fill="#fff" stroke="#6B9E5E" stroke-width="1.5"/>
+  <text class="wf-badge" x="244" y="20" text-anchor="middle" fill="#6B9E5E">2</text>
+  <circle cx="476" cy="16" r="12" fill="#fff" stroke="#D4914E" stroke-width="1.5"/>
+  <text class="wf-badge" x="476" y="20" text-anchor="middle" fill="#D4914E">3</text>
+  <circle cx="682" cy="16" r="12" fill="#fff" stroke="#2C3E50" stroke-width="1.5"/>
+  <text class="wf-badge" x="682" y="20" text-anchor="middle" fill="#2C3E50">4</text>
+  <text class="wf-label" x="105" y="50" text-anchor="middle">Data validation</text>
+  <text class="wf-label" x="325" y="41" text-anchor="middle">Peak detection &amp;</text>
+  <text class="wf-label" x="325" y="56" text-anchor="middle">RT-shift estimation</text>
+  <text class="wf-label" x="544" y="50" text-anchor="middle">Peak integration</text>
+  <text class="wf-label" x="763" y="41" text-anchor="middle">Chromatogram PDF</text>
+  <text class="wf-label" x="763" y="56" text-anchor="middle">generation (optional)</text>
+  <rect class="wf-box" x="554" y="155" width="200" height="56" fill="#f0ebf6" stroke="#7a6ba4"/>
+  <text class="wf-label" x="654" y="188" text-anchor="middle" fill="#4a3f66">Review results</text>
+  <path class="wf-flow" d="M544,74 V120 H600 V149"/>
+  <polygon class="wf-arrow" points="600,155 595,145 605,145"/>
+  <text class="wf-io" x="564" y="114" text-anchor="middle">MRMhub-viz</text>
+  <path class="wf-flow" d="M763,74 V120 H708 V149"/>
+  <polygon class="wf-arrow" points="708,155 703,145 713,145"/>
+  <text class="wf-io" x="736" y="114" text-anchor="middle">PDFs</text>
+  <path class="wf-loop" d="M650,211 V235 H105 V80"/>
+  <polygon class="wf-loop-arrow" points="105,74 100,84 110,84"/>
+  <text class="wf-loop-head" x="360" y="228" text-anchor="middle">Global and feature-wise refinement</text>
+  <text class="wf-loop-text" x="360" y="246" text-anchor="middle">edit param.txt / feature_list.csv</text>
+  <path class="wf-loop" stroke-dasharray="5 3" d="M554,175 H500 V80"/>
+  <polygon class="wf-loop-arrow" points="500,74 495,84 505,84"/>
+  <text class="wf-loop-head" x="496" y="131" text-anchor="end">Manual adjustments</text>
+  <text class="wf-loop-text" x="496" y="146" text-anchor="end">edit RT_matrix.csv</text>
+</svg>
+<p style="font-size: 0.85rem; color: #6c757d; margin-top: 0.5rem; max-width: 620px; margin-left: auto; margin-right: auto;">The four processing steps, the review, and the two refinement paths.</p>
+</div>
+```
+
+## Setting up an INTEGRATOR project
+
+A project with executables, `mzML` files, and the input files is assembled as detailed in [Installation](setup.qmd) and [Input Files](input-files.qmd). Before launching the integration, confirm:
+
+- Every mzML file is listed in the sample list, named exactly (`.mzML`, case-sensitive).
+- The CSV files keep the template column order, with all required columns filled.
+- Precursor/product *m/z* fall within `mz_tol`; RT in **minutes**.
+- `reference` samples are defined in the `run_order.csv`.
+
+::: {.callout-important}
+## Transitions must be present in ALL mzML files
+
+INTEGRATOR integrates only transitions present in **all mzML files** and listed in `feature_list.csv`. Transitions missing from even one file are dropped for the whole dataset (reported in `missing_compounds.txt` / `missing_details.txt`).
+:::
+
+## Launching INTEGRATOR
+
+INTEGRATOR is started from the project folder by double-clicking `MRMhub` (macOS) or `MRMhub.exe` (Windows), or by running it from a terminal opened there. A four-item menu is presented; for a new dataset steps 1–3 are run in order, and step 4 is optional.
+
+![The INTEGRATOR terminal menu, presented on launch.](images/MRMhub-Main.png){fig-align="center" width="622" fig-alt="Screenshot of the INTEGRATOR terminal interface, showing the MRMHUB banner and its four-item menu: 1 Validate data; 2 RT-shift estimation and feature detection; 3 update integration bounds and areas using RT_matrix.csv; and 4 generate chromatogram PDFs (optional)."}
+
+## Step 1 — Data validation
+
+The input files are validated against the mzML files. Report files are written in case mismatches are found:
+
+- **`missing_files.txt`** — mzML files present in the data folder but not listed in the `run_order.csv`, or listed but absent from the mzML folder.
+- **`missing_compounds.txt`** — transitions listed in `feature_list.csv` not found in all of the mzML files.
+- **`missing_details.txt`** — for each such transition, the specific samples in which it is absent.
+
+
+## Step 2 — Peak detection and RT-shift estimation {#step-2-peak-detection-and-rt-shift-estimation}
+
+The peak-detection and picking algorithm is run, producing a matrix of the detected peaks with their per-sample integration borders, stored in `RT_matrix.csv`.
+
+
+## Step 3 — Peak integration
+
+In this step, detected peaks (as defined in `RT_matrix.csv`) are integrated. The integration results are written to the project folder:
+
+- **`long.csv`** — long format, one row per *sample × feature*: area, height, apex RT, and FWHM, with precursor and product *m/z* values, and acquisition timestamps.
+- **`quant_raw.csv`** — wide-format table with peak areas. Precursor and product *m/z* values and the expected RT (from `feature_list.csv`) are included in the first three rows.
+- **`misc/`** — binary result files, used in step 4 and by MRMhub-viz.
+
+See [Output Files](output-files.qmd) for more details on the format of these result files. The integrated chromatograms with peak-integration results can now be reviewed using [MRMhub-viz](viz.qmd) (see [Review of results](#review-of-results)) and refined along two paths (see [Integration refinement](#integration-refinement) below).
+
+
+## Step 4 — Chromatogram PDF generation (optional)
+
+Chromatograms with integration results are plotted as PDFs in three folders. Note that this step may take time for large projects even with multithreading active (default).
+
+- **`by_transition/`** — one PDF per transition, except low-intensity peaks (see next).
+- **`by_transition_low/`** — as above, but transitions with peak areas below a threshold (set in `MRMhub_plot.r`).
+- **`by_sample/`** — one PDF per reference sample, with all its integrated transitions.
+
+
+## Review of results {#review-of-results}
+
+Integration results are reviewed in either of two ways:
+
+- **PDFs** (if step 4 was run) — browsed with a file previewer: macOS Quick Look (*Space*) or the Windows preview pane, switching transitions with the arrow keys.
+- [**MRMhub-viz**](viz.qmd) — interactive, per-transition chromatogram review, available after step 3.
+
+## Integration refinement
+
+To refine or adjust peak picking and integration, typically first the global, then the per-feature, integration parameters are optimised in an iterative process (see the flowchart at the top). Always re-run the full workflow (steps 1, 2, and 3) to apply the changes to the input files. See [Tuning Peak Integration](tuning.qmd) for details. 
+
+- **Global refinement** — adjust the global parameters in `param.txt`, in particular `RT_shift`, `RT_tol`, and `peak_width`.
+- **Per-feature refinement** — adjust the feature-specific integration parameters in `feature_list.csv` (e.g., `peak_width`, `uniform_width`, and fixed peak boundaries).
+
+
+Additionally, the user has the option to **manually adjust** the peak integration borders of **individual peaks** by updating the peak border values in the `RT_matrix.csv` file. This may be useful where no parameter choice leads to satisfactory integration results, or for specific complex chromatograms. **Step 3 must be re-run** to incorporate these updated borders (do not re-run Step 2 — see the warning below).
+
+::: {.callout-important}
+## Step 2 overwrites `RT_matrix.csv`
+Make a backup of `RT_matrix.csv` before re-running Step 2 if you have manually edited it, as step 2 **overwrites all manual edits!**
+:::
+
+## Post-processing of integration results
+
+One recommended route is **MRMhub QUANT**, the postprocessing module of **MRMhub**. This R package offers functions for normalisation, drift/batch correction, quality control, reporting, and more. Results are imported as:
+
+```r
+mrmhub::import_data_mrmhub(path = "path/to/long.csv", import_metadata = TRUE)
+```
+::: {.see-also}
+## See also
+
+- [Output Files](output-files.qmd) — the full format of every file produced here.
+- [Tuning Peak Integration](tuning.qmd) — choosing parameters for difficult peaks.
+- [MRMhub-viz](viz.qmd) — inspect peaks and guide refinement.
+- [Sharing & Archiving](sharing.qmd) — bundle data and parameters for reproducibility.
+:::

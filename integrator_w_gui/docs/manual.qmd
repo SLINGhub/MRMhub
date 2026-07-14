@@ -1,0 +1,38 @@
+---
+title: "Manual"
+description: |
+ Complete contents of the MRMhub-INTEGRATOR manual
+---
+
+Every manual page, grouped by steps of a peak-integration project.
+
+## Getting started
+
+- **[Quick Start](quickstart.html)** — setting up and running a new project, end to end.
+- **[Installation](setup.html)** — obtaining the executable and clearing the first-launch security prompt.
+- **[Demo dataset](demo.html)** — the raw data and input files bundled with every release.
+
+## Preparing and running
+
+- **[Prepare Input Files](input-files.html)** — `param.txt`, `run_order.csv`, `feature_list.csv`, and every parameter.
+- **[Tuning Peak Integration](tuning.html)** — refining detection and integration across the sequence.
+- **[Processing Workflow](running.html)** — the four-step terminal workflow and the files each step produces.
+
+## Results and downstream use
+
+- **[Output Files](output-files.html)** — `long.csv`, `quant_raw.csv`, `RT_matrix.csv`, and their formats.
+- **[MRMhub-viz Visualiser](viz.html)** — reviewing integrated chromatograms feature by feature.
+- **[Sharing & Archiving](sharing.html)** — packaging a completed project for transfer or archiving.
+
+## Reference
+
+- **[Algorithm](algorithm.html)** — the peak-detection and integration method.
+- **[mzML Conversion (MSConvert)](msconvert.html)** — converting vendor raw files to mzML.
+- **[FAQ & Troubleshooting](faq.html)** — frequent failure modes and how to resolve them.
+
+::: {.see-also}
+[See also]{.see-also-label}
+
+- [Home](index.html) — overview of INTEGRATOR and the MRMhub framework
+- [QUANT documentation ↗](https://slinghub.github.io/MRMhub/quant/) — downstream post-processing in the `mrmhub` R package
+:::

@@ -1,0 +1,39 @@
+---
+title: "MRMhub-viz: Integration Visualiser"
+description: "Reviewing INTEGRATOR's peak integration and guiding parameter refinement"
+---
+
+**MRMhub-viz** is a standalone, interactive application for reviewing the peak-integration results
+produced by INTEGRATOR (see [Processing Workflow — Step 3](running.qmd)). It reads the binary results
+written to the `misc/` folder during peak integration, so Step 3 must have been run at least once
+before a dataset can be displayed.
+
+## Running MRMhub-viz
+
+MRMhub-viz is a self-contained executable (~10 MB) that resides in the same folder as the **MRMhub**
+application. It is started by double-clicking `MRMhub-viz` (macOS) or `MRMhub-viz.exe` (Windows), or
+from a terminal opened in the project folder. On first launch after download the operating system
+shows a one-time security prompt — see
+[clearing the security prompt](setup.qmd#clearing-the-first-launch-security-prompt).
+
+## Chromatogram and integration review
+
+The transition to inspect is selected from the dropdown menu in the top-left corner. For that
+transition, the extracted ion chromatograms of the individual samples are shown together with the
+detected peak and its left and right integration borders, so the integration can be reviewed across
+the entire analytical sequence at a glance. Moving the pointer over a chromatogram reports the exact
+retention time at the cursor — the value used when defining fixed peak borders in the transition list
+(see [Input Files — Transition list](input-files.qmd)).
+
+![](images/paste-12.png){fig-alt="Screenshot of the MRMhub-viz window for transition LPC 22:5 (570.4 to 184.1 m/z), selected from the dropdown at the top left. A grid of per-sample chromatogram panels, one per injection (labelled Longit_batch1_6, _7, _8 and so on), each plots intensity against retention time from about 1.6 to 2.6 minutes, with the detected peak and its left (blue) and right (orange) integration borders shaded."}
+
+MRMhub-viz allows inspection of the integration results for an iterative review → refine loop. See
+[Tuning Peak Integration](tuning.qmd#review-refine-loop).
+
+::: {.see-also}
+## See also
+
+- [Tuning Peak Integration](tuning.qmd) — the parameters to adjust and the review → refine loop.
+- [Edit the input files](input-files.qmd) — adjust global and per-feature parameters.
+- [Processing Workflow](running.qmd) — re-run peak finding and integration after each change.
+:::

@@ -1,0 +1,15 @@
+# Shared MRMhub brand — navy title bar + steel-blue accents.
+# Identical to docs-site/_brand.yml; kept as a local copy because each Quarto
+# project auto-discovers _brand.yml at its own root. Palette source of truth:
+# plan-workflowDiagrams.prompt.md. The navy navbar is set in _quarto.yml
+# (website.navbar.background); `primary` drives links / buttons. Keep in sync
+# with docs-site/_brand.yml and _pkgdown.yml (QUANT).
+meta:
+  name: MRMhub-INTEGRATOR
+  link: https://slinghub.github.io/MRMhub/integrator/
+
+color:
+  palette:
+    steel-blue: "#5B8FA8"
+    navy: "#2C3E50"
+  primary: steel-blue
