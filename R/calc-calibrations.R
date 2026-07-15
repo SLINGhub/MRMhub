@@ -384,6 +384,20 @@ calc_calibration_results <- function(
   }
 
   calc_lm <- function(dt) {
+    # Descriptor fields are identical across all four result shapes below
+    # (linear/quadratic x success/error), so build them once here.
+    base_info <- list(
+      feature_id = dt$feature_id[1],
+      is_quantifier = dt$is_quantifier[1],
+      curve_id = dt$curve_id[1],
+      fit_model = dt$fit_model[1],
+      fit_weighting = dt$fit_weighting[1],
+      lowest_cal = sort(dt$concentration[dt$concentration != 0])[1],
+      highest_cal = sort(
+        dt$concentration[dt$concentration != 0],
+        decreasing = TRUE
+      )[1]
+    )
     tryCatch(
       {
         dt <- dt |>
@@ -423,64 +437,30 @@ calc_calibration_results <- function(
           reg_failed <- is.na(res$coefficients[[3]]) |
             is.na(res$coefficients[[2]]) |
             is.na(res$coefficients[[1]])
-          result <- list(
-            feature_id = dt$feature_id[1],
-            is_quantifier = dt$is_quantifier[1],
-            curve_id = dt$curve_id[1],
-            fit_model = dt$fit_model[1],
-            fit_weighting = dt$fit_weighting[1],
-            lowest_cal = sort(dt$concentration[dt$concentration != 0])[1],
-            highest_cal = sort(
-              dt$concentration[dt$concentration != 0],
-              decreasing = TRUE
-            )[1],
-            r.squared = r.squared,
-            coef_a = res$coefficients[[1]],
-            coef_b = res$coefficients[[2]],
-            coef_c = res$coefficients[[3]],
-            sigma = sigma,
-            reg_failed = reg_failed,
-            fit = if (include_fit_object) list(res) else list(NULL)
-          )
-          return(result)
+          coef_c <- res$coefficients[[3]]
         } else {
           reg_failed <- is.na(res$coefficients[[2]]) |
             is.na(res$coefficients[[1]])
-          result <- list(
-            feature_id = dt$feature_id[1],
-            is_quantifier = dt$is_quantifier[1],
-            curve_id = dt$curve_id[1],
-            fit_model = dt$fit_model[1],
-            fit_weighting = dt$fit_weighting[1],
-            lowest_cal = sort(dt$concentration[dt$concentration != 0])[1],
-            highest_cal = sort(
-              dt$concentration[dt$concentration != 0],
-              decreasing = TRUE
-            )[1],
+          coef_c <- NA_real_
+        }
+        return(c(
+          base_info,
+          list(
             r.squared = r.squared,
             coef_a = res$coefficients[[1]],
             coef_b = res$coefficients[[2]],
-            coef_c = NA_real_,
+            coef_c = coef_c,
             sigma = sigma,
             reg_failed = reg_failed,
             fit = if (include_fit_object) list(res) else list(NULL)
           )
-          return(result)
-        }
+        ))
       },
       error = function(e) {
-        if (dt$fit_model[1] == "quadratic") {
-          return(list(
-            feature_id = dt$feature_id[1],
-            is_quantifier = dt$is_quantifier[1],
-            curve_id = dt$curve_id[1],
-            fit_model = dt$fit_model[1],
-            fit_weighting = dt$fit_weighting[1],
-            lowest_cal = sort(dt$concentration[dt$concentration != 0])[1],
-            highest_cal = sort(
-              dt$concentration[dt$concentration != 0],
-              decreasing = TRUE
-            )[1],
+        # Linear and quadratic failures produce the same all-NA result.
+        c(
+          base_info,
+          list(
             r.squared = NA_real_,
             coef_a = NA_real_,
             coef_b = NA_real_,
@@ -488,28 +468,8 @@ calc_calibration_results <- function(
             sigma = NA_real_,
             reg_failed = TRUE,
             fit = list(NULL)
-          ))
-        } else {
-          return(list(
-            feature_id = dt$feature_id[1],
-            is_quantifier = dt$is_quantifier[1],
-            curve_id = dt$curve_id[1],
-            fit_model = dt$fit_model[1],
-            fit_weighting = dt$fit_weighting[1],
-            lowest_cal = sort(dt$concentration[dt$concentration != 0])[1],
-            highest_cal = sort(
-              dt$concentration[dt$concentration != 0],
-              decreasing = TRUE
-            )[1],
-            r.squared = NA_real_,
-            coef_a = NA_real_,
-            coef_b = NA_real_,
-            coef_c = NA_real_,
-            sigma = NA_real_,
-            reg_failed = TRUE,
-            fit = list(NULL)
-          ))
-        }
+          )
+        )
       }
     )
   }
