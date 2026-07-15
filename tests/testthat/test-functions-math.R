@@ -66,7 +66,7 @@ test_that("handles NA values correctly with na.rm", {
 test_that("throws an error for an invalid method string", {
   expect_error(
     get_outlier_bounds(1:10, method = "some_invalid_method"),
-    "should be one of"
+    "must be one of"
   )
 })
 
@@ -339,7 +339,7 @@ test_that("calculates tails correctly with a custom k", {
 test_that("throws an error for an invalid method", {
   expect_error(
     find_closest(5, 1:10, method = "wrong"),
-    "should be one of"
+    "must be one of"
   )
 })
 

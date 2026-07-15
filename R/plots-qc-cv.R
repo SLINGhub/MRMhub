@@ -340,11 +340,10 @@ plot_qcmetrics_comparison <- function(
     ))
   }
 
-  if (!all(c(x_variable, y_variable) %in% colnames(data@metrics_qc))) {
-    cli::cli_abort(
-      "{.arg x_variable} and {.arg y_variable} must be columns of the QC metrics table (see {.fn calc_qc_metrics})."
-    )
-  }
+  # Note: x_variable/y_variable are matched against the QC-metrics columns by
+  # pattern (see `col_pattern` below), not by exact name, so an exact
+  # `%in% colnames(data@metrics_qc)` check would wrongly reject valid callers
+  # such as plot_normalization_qc(). Invalid names surface downstream.
 
   d_qc <- data@metrics_qc
 

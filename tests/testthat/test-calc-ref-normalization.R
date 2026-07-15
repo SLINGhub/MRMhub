@@ -245,7 +245,7 @@ test_that("calibrate_by_reference catches input errors and issues", {
       absolute_calibration = TRUE,
       undefined_conc_action = "dontknow"
     ),
-    "Invalid value for `undefined_conc_action`.",
+    "must be one of",
     fixed = TRUE
   )
 

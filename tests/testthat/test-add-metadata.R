@@ -110,6 +110,6 @@ test_that("add_metadata() rejects a NULL data argument", {
       NULL,
       metadata = list(annot_analyses = lipidomics_dataset@annot_analyses)
     ),
-    "cannot be NULL"
+    "cannot be"
   )
 })

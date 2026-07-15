@@ -593,12 +593,6 @@ plot_rla_boxplot <- function(
       ) |>
       arrange(.data$analysis_order)
 
-    outlier_bounds <- get_outlier_bounds(
-      d_sum$val_res_median,
-      method = outlier_method,
-      k = outlier_k,
-      na.rm = TRUE
-    )
     if (outlier_method != "fold") {
       outlier_bounds <- get_outlier_bounds(
         d_sum$val_res_median,
@@ -1025,12 +1019,18 @@ plot_rla_boxplot <- function(
   if (!all(is.na(y_lim))) {
     ylim = y_lim
   } else if (outlier_exclude) {
-    tails <- get_outlier_bounds(
-      d_filt$val_res,
-      method = outlier_method,
-      k = outlier_k,
-      na.rm = TRUE
-    )
+    if (outlier_method != "fold") {
+      tails <- get_outlier_bounds(
+        d_filt$val_res,
+        method = outlier_method,
+        k = outlier_k,
+        na.rm = TRUE
+      )
+    } else if (length(outlier_k) == 2) {
+      tails <- outlier_k
+    } else {
+      tails <- c(-outlier_k, outlier_k)
+    }
     ylim = tails
   }
 

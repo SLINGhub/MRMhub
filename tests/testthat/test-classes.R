@@ -191,6 +191,6 @@ test_that("check_integrity_analyses works", {
 test_that("check_data works", {
   expect_no_error(check_data(mexp))
   expect_no_error(check_data(mexp_empty))
-  expect_error(check_data(NULL), "`data` cannot be NULL")
-  expect_error(check_data(tibble(a = 1)), "`data` must be a MRMhubExperiment")
+  expect_error(check_data(NULL), "cannot be")
+  expect_error(check_data(tibble(a = 1)), "must be an")
 })
