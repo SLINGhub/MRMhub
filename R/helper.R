@@ -271,6 +271,15 @@ order_chained_columns_tbl <- function(
   if (!all(c(from_col, to_col) %in% colnames(df))) {
     stop("One or more columns are not present in the data frame.")
   }
+  # The chain is built with a named vector keyed on `from_col`, so a duplicated
+  # key would silently drop all but the first mapping. Fail loudly instead.
+  if (anyDuplicated(df[[from_col]])) {
+    dup_keys <- unique(df[[from_col]][duplicated(df[[from_col]])])
+    cli::cli_abort(c(
+      "Duplicate keys in column {.field {from_col}}: the chain cannot be ordered unambiguously.",
+      "x" = "Duplicated value{?s}: {.val {dup_keys}}"
+    ))
+  }
 
   # Step 1: Identify connected nodes (rows that are involved in a chain)
   df_initial <- df

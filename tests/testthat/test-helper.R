@@ -373,3 +373,17 @@ test_that("order_chained_columns_tbl chain_id assignment", {
   expect_true(any(result$chain_id == 1)) # At least one connected chain
   expect_true(any(result$chain_id == 3)) # Disconnected chain at the end
 })
+
+
+# Test: duplicate from-key is rejected (would silently drop mappings otherwise)
+test_that("order_chained_columns_tbl fails on duplicate from-key", {
+  df_dup <- data.frame(
+    From = c("A", "A", "B"),
+    To = c("B", "C", "C"),
+    stringsAsFactors = FALSE
+  )
+  expect_error(
+    order_chained_columns_tbl(df_dup, "From", "To", FALSE, "keep"),
+    "Duplicate keys"
+  )
+})
