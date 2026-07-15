@@ -374,8 +374,13 @@ correct_interferences <- function(
       by = c("analysis_id", "feature_id")
     ) |>
     mutate(
-      interference_corrected = .data$feature_intensity !=
-        .data$intensity_corrected,
+      # A feature is interference-corrected iff it was in the correction set,
+      # not iff its value happened to change. Comparing pre/post intensities
+      # with `!=` mis-flags zero-effect corrections and returns NA when either
+      # intensity is NA. Membership mirrors the single-feature path (see the
+      # `if_else(feature_id == feature, TRUE, ...)` above).
+      interference_corrected = .data$feature_id %in%
+        features_to_correct$feature_id,
       feature_intensity = .data$intensity_corrected
     ) |>
     select(-"intensity_corrected")
