@@ -520,7 +520,7 @@ test_that("plot_responsecurves generates a plot with calib failes", {
   expect_s3_class(p[[1]], "gg")
   expect_equal(length(p), 2)
   expect_doppelganger_cond(
-    "default plot_calibration plot log_axes 1",
+    "default plot_calibration plot log_scale 1",
     p[[2]]
   )
 
@@ -537,7 +537,7 @@ test_that("plot_responsecurves generates a plot with calib failes", {
   expect_s3_class(p[[1]], "gg")
   expect_equal(length(p), 2)
   expect_doppelganger_cond(
-    "default plot_calibration plot log_axes 2",
+    "default plot_calibration plot log_scale 2",
     p[[1]]
   )
 })
