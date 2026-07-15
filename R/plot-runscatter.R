@@ -134,23 +134,7 @@
 
 plot_runscatter <- function(
   data = NULL,
-  variable = c(
-    "intensity",
-    "norm_intensity",
-    "conc",
-    "rt",
-    "area",
-    "height",
-    "fwhm",
-    "width",
-    "symmetry",
-    "intensity_raw",
-    "intensity_before",
-    "norm_intensity_raw",
-    "norm_intensity_before",
-    "conc_raw",
-    "conc_before"
-  ),
+  variable,
   # Data and filtering arguments
   filter_data = FALSE,
   qc_types = NA,
@@ -259,7 +243,7 @@ plot_runscatter <- function(
 
   # Match the selected variable with predefined options
   variable <- str_remove(variable, "feature_")
-  rlang::arg_match(
+  variable <- rlang::arg_match(
     variable,
     c(
       "area",

@@ -144,7 +144,7 @@ import_data_skyline <- function(
   silent = FALSE
 ) {
   check_data(data)
-  rlang::arg_match(transition_id_columns, c("name", "mz", "none"))
+  transition_id_columns <- rlang::arg_match(transition_id_columns)
   data <- import_data_main(
     data = data,
     path = path,

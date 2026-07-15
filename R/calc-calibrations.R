@@ -50,9 +50,9 @@ quantify_by_calibration <- function(
 ) {
   check_data(data)
 
-  rlang::arg_match(fit_model, c("linear", "quadratic"))
-  rlang::arg_match(fit_weighting, c("none", "1/x", "1/x^2"))
-  rlang::arg_match(lod_sigma, c("residual", "intercept"))
+  fit_model <- rlang::arg_match(fit_model)
+  fit_weighting <- rlang::arg_match(fit_weighting)
+  lod_sigma <- rlang::arg_match(lod_sigma)
 
   data <- calc_calibration_results(
     data = data,
@@ -394,7 +394,7 @@ calc_calibration_results <- function(
   rlang::arg_match(fit_model, c("linear", "quadratic"))
   rlang::arg_match(fit_weighting, c("none", "1/x", "1/x^2"))
   rlang::arg_match(variable, c("feature_intensity", "feature_norm_intensity"))
-  rlang::arg_match(lod_sigma, c("residual", "intercept"))
+  lod_sigma <- rlang::arg_match(lod_sigma)
 
   if (
     variable == "feature_norm_intensity" &&
