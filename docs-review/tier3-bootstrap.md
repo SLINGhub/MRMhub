@@ -45,11 +45,24 @@ original audit). Still **re-grep before editing** — a parallel chat also edits
 
 ## Tier-3 status (verified, newest work last)
 
-**Nothing in Tier-3 addressed yet** as of this bootstrap. The footgun batch is being done in the
-originating chat (see "Footguns" below — update this section as they land). The three larger refactors
-are the reason for this handoff doc.
+**Footgun batch DONE** (all 9, committed in the originating chat — see table below). The three larger
+refactors remain and are the reason for this handoff doc.
 
-### Footguns — small, low-risk (being done in originating chat; update as committed)
+### Footguns — small, low-risk (ALL DONE)
+
+| Item | Current location | Resolution |
+|---|---|---|
+| `call. = FALSE` passed to `cli_abort`/cli (base `stop` arg, silently ignored) | `classes.R:166,173`; `data-managment.R:663` | ✅ `call = NULL` — `53e4794` |
+| NA-unsafe `any()` in `if` | `data-import.R:666,670`; `data-managment.R:100` | ✅ `na.rm = TRUE` (real crash on NA feature_id/qc_type) — `fdc9be9` |
+| param `c` shadows `base::c` | `calc-calibrations.R:139` | ✅ renamed `a/b/c` → `coef_a/coef_b/coef_c` — `c9163ef` |
+| local `mad <- mad(x)` shadows `base::mad` | `functions-math.R:249` | ✅ `mad` → `mad_val` — `c9163ef` |
+| blanket `suppressWarnings(lm(...))` "hides" rank-deficiency | `calc-calibrations.R:407` | ✅ leave + comment — outcome already surfaced via `reg_failed` (NA coefs) — `c0f78ac` |
+| FP `!=` to detect "was corrected" (noise/NA → false positives) | `correct-isotope.R:377` | ✅ membership `feature_id %in% features_to_correct$feature_id` (+repro shown) — `4ddd06a` |
+| `get(operator)` vs safer `match.fun` | `helper.R:101` | ✅ `match.fun(operator)` — `c9163ef` |
+| `order_chained_columns_tbl` drops dup keys via `setNames` | `helper.R:302` | ✅ fail-loud guard on duplicate `from_col` +regression test (not reachable via sole caller, but future-proofed) — `ae34457` |
+| hardcoded `qc_type == "SPL"` while `ref_qc_types` is configurable | `correct-drift-batch.R:737,738,914,915,980,993,1843,1844` | ✅ **leave as-is — NOT a bug**: SPL is the canonical/default study-sample label (`metadata-import.R:1237,1719`); all 8 sites are *assessment* metrics that must NOT use `ref_qc_types` (the fitting set) per Broadhurst. Consistent with package-wide `_spl` idiom. |
+
+<details><summary>Original footgun table (pre-resolution, for reference)</summary>
 
 | Item | Current location | Notes |
 |---|---|---|
@@ -62,6 +75,8 @@ are the reason for this handoff doc.
 | hardcoded `qc_type == "SPL"` while `ref_qc_types` is configurable | `correct-drift-batch.R:737,738,914,915,980,993,1843,1844` | behavior-adjacent — **ASK** before changing CV-basis semantics |
 | `get(operator)` vs safer `match.fun` | `helper.R:101` | `match.fun(operator)` |
 | `order_chained_columns_tbl` drops dup keys via `setNames` | `helper.R:302` | dedupe/validate keys (cf. Tier-2 `339d0fb` did this for `column_mapping`) |
+
+</details>
 
 ### Larger refactors — higher effort / behavior-adjacent (this handoff's target)
 
