@@ -263,7 +263,10 @@ order_chained_columns_tbl <- function(
   disconnected_action = "keep"
 ) {
   # Match the argument for disconnected_action
-  disconnected_action <- rlang::arg_match(disconnected_action, c("keep", "exclude"))
+  disconnected_action <- rlang::arg_match(
+    disconnected_action,
+    c("keep", "exclude")
+  )
 
   if (nrow(df) == 0) {
     stop("Data frame has no rows")

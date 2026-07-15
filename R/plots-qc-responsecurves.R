@@ -99,7 +99,6 @@ plot_responsecurves <- function(
   label_wrap = FALSE,
   label_wrap_width = 25,
   font_base_size = 8,
-  
 
   # Layout settings (for multi-page PDF)
   rows_page = 4,
