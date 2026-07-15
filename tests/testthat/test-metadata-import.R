@@ -545,3 +545,97 @@ test_that("Replacing specific undefined metadata", {
     "Please verify warnings in corresponding metadata"
   )
 })
+
+test_that("assert_metadata rejects duplicated analysis_id keys", {
+  mexp <- mrmhub::MRMhubExperiment()
+  mexp <- mrmhub::import_data_masshunter(
+    mexp,
+    path = testthat::test_path(
+      "testdata/masshunter/MRMhub_TestData_MHQuant_S1P_DefaultSampleInfo_RT-Areas-FWHM.csv"
+    ),
+    import_metadata = FALSE
+  )
+  analyses <- get_metadata_table(
+    path = testthat::test_path(
+      "testdata/metadata/MRMhub_TestData_MHQuant_S1P_metadata_tables.xlsx"
+    ),
+    sheet = "Analyses"
+  )
+
+  # Positive control: the unperturbed table imports without error
+  expect_no_error(
+    mrmhub::import_metadata_analyses(
+      mexp,
+      table = analyses,
+      excl_unmatched_analyses = TRUE
+    )
+  )
+
+  # A duplicated analysis_id is caught by the `is_uniq` assertion
+  analyses_dup <- dplyr::bind_rows(analyses, analyses[1, ])
+  expect_error(
+    mrmhub::import_metadata_analyses(
+      mexp,
+      table = analyses_dup,
+      excl_unmatched_analyses = TRUE
+    ),
+    "verify corresponding metadata"
+  )
+})
+
+test_that("missing qc_type and valid_analysis are filled with forgiving defaults, not errors", {
+  mexp <- mrmhub::MRMhubExperiment()
+  mexp <- mrmhub::import_data_masshunter(
+    mexp,
+    path = testthat::test_path(
+      "testdata/masshunter/MRMhub_TestData_MHQuant_S1P_DefaultSampleInfo_RT-Areas-FWHM.csv"
+    ),
+    import_metadata = FALSE
+  )
+  analyses <- get_metadata_table(
+    path = testthat::test_path(
+      "testdata/metadata/MRMhub_TestData_MHQuant_S1P_metadata_tables.xlsx"
+    ),
+    sheet = "Analyses"
+  )
+  id1 <- analyses$analysis_id[[1]]
+
+  # Missing qc_type is treated as a study sample ("SPL"), so the not_na
+  # assertion never fires -- a blank value is a documented default, not an error.
+  analyses_na_qc <- analyses
+  analyses_na_qc$qc_type[1] <- NA
+  out_na <- mrmhub::import_metadata_analyses(
+    mexp,
+    table = analyses_na_qc,
+    excl_unmatched_analyses = TRUE
+  )
+  qc_na <- out_na@annot_analyses$qc_type[
+    out_na@annot_analyses$analysis_id == id1
+  ]
+  expect_equal(qc_na, "SPL")
+
+  # The literal "Sample" is an alias for "SPL"
+  analyses_sample <- analyses
+  analyses_sample$qc_type[1] <- "Sample"
+  out_sample <- mrmhub::import_metadata_analyses(
+    mexp,
+    table = analyses_sample,
+    excl_unmatched_analyses = TRUE
+  )
+  qc_sample <- out_sample@annot_analyses$qc_type[
+    out_sample@annot_analyses$analysis_id == id1
+  ]
+  expect_equal(qc_sample, "SPL")
+
+  # valid_analysis undefined for *all* analyses defaults to TRUE (undefined for
+  # only some is the inconsistency error covered above)
+  analyses_na_valid <- analyses
+  analyses_na_valid$valid_analysis <- NA
+  out_valid <- mrmhub::import_metadata_analyses(
+    mexp,
+    table = analyses_na_valid,
+    excl_unmatched_analyses = TRUE
+  )
+  expect_true(all(out_valid@annot_analyses$valid_analysis))
+  expect_false(any(is.na(out_valid@annot_analyses$valid_analysis)))
+})
