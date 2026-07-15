@@ -724,6 +724,16 @@ parse_masshunter_csv <- function(
   ))
   warnings_datWide <- readr::problems(datWide)
 
+  # Header-row contract (load-bearing for all positional access below):
+  # MassHunter Quant exports have exactly two header rows, so after readr drops
+  # empty leading rows (skip_empty_rows = TRUE) the imported `datWide` is:
+  #   row 1  -> compound/group header (feature name + " Method"/" Results" tag)
+  #   row 2  -> parameter/field header ("Data File", "Name", "Area", "RT", ...)
+  #   row 3+ -> data (one row per analysis)
+  # This layout is validated by the `datWide[3, ]` / "Compound Method" /
+  # "Data File" guards a few lines down. Column *positions* are not assumed:
+  # columns are matched by name later (`new_colnames`, `new_numeric_colnames`).
+
   # Remove text that is not required and remove dot chars that interfere later with the conversion wide to long
   # TODO: Convert to tidyverse functions
   datWide[2, ] <- lapply(datWide[2, ], \(y) gsub("\\. ", "", y))
@@ -834,7 +844,10 @@ parse_masshunter_csv <- function(
   # Dealing with exported "Qualifier" results: Adds the corresponding quantifier name (the first column of the group) with the Tag "QUAL" and the transition in front e.g. "Sph d18:0 [QUAL 302.3>266.2]"
 
   # Remove columns with no column names, as they are undefined (seems to be only Outlier Summary and Quantitation Message Summary)
-  datWide <- datWide |> dplyr::select(-where(~ .x[2] == ""))
+  # NA-safe: an empty parameter-header cell reads as "" (empty is not in `na =`),
+  # but guard against NA (e.g. a literal "NA"/"NULL" text) so the predicate never
+  # returns NA, which would abort `where()`. `||` short-circuits before `== ""`.
+  datWide <- datWide |> dplyr::select(-where(~ is.na(.x[2]) || .x[2] == ""))
 
   # Concatenate rows containing parameters + transitions to the form parameter.sample and parameter.transition headers. This will later be converted with reshape()
   colnames(datWide) <- paste(datWide[2, ], datWide[1, ], sep = "\t")

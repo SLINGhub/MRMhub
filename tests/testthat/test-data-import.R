@@ -702,6 +702,93 @@ test_that("Handles import_data_mrmhub errors", {
   )
 })
 
+# Characterization tests for parse_masshunter_csv() ---------------------------
+#
+# These pin the parsed output of every currently-valid MassHunter fixture with a
+# compact, OS-stable per-column fingerprint (dimensions, column classes, NA and
+# distinct counts, and rounded numeric sums). Their purpose is to make targeted
+# hardening of the (positional) parser provably behaviour-preserving: the
+# fingerprints must be byte-identical before and after such a change. The
+# fingerprint deliberately excludes a raw object hash and the actual timestamp
+# values so it stays reproducible across the CI operating systems.
+
+mh_fingerprint <- function(d) {
+  tibble::tibble(
+    column = names(d),
+    class = vapply(d, \(x) paste(class(x), collapse = "/"), character(1)),
+    n_na = vapply(d, \(x) sum(is.na(x)), integer(1)),
+    n_distinct = vapply(d, \(x) length(unique(x)), integer(1)),
+    # is.numeric() is FALSE for Date/POSIXct, so timestamps never enter the sum
+    num_sum = vapply(
+      d,
+      \(x) if (is.numeric(x)) round(sum(x, na.rm = TRUE), 3) else NA_real_,
+      numeric(1)
+    )
+  )
+}
+
+test_that("parse_masshunter_csv() output is stable across all valid fixtures", {
+  fixtures <- c(
+    "testdata/masshunter/1_Testdata_MHQuant_DefaultSampleInfo_AreaOnly.csv",
+    "testdata/masshunter/3_Testdata_MHQuant_DefaultSampleInfo_DetailedResults.csv",
+    "testdata/masshunter/4_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_DetailedMethods.csv",
+    "testdata/masshunter/5_Testdata_MHQuant_DetailedSampleInfo-RT-Areas-FWHM.csv",
+    "testdata/masshunter/6_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM-NoOutlierSum.csv",
+    "testdata/masshunter/7_Testdata_MHQuant_NoOutlierSum-noQuantMsgSum.csv",
+    "testdata/masshunter/8_Testdata_MHQuant_Corrupt_OutlierQuantMsgSumDeleted.csv",
+    "testdata/masshunter/9_Testdata_MHQuant_withQuantMethods_withQualifierMethResults.csv",
+    "testdata/masshunter/10_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM-NoQuantMsgSum.csv",
+    "testdata/masshunter/11_Testdata_MHQuant_DefaultSampleInfo-noAcqDataTime_RT-Areas-FWHM.csv",
+    "testdata/masshunter/15_Testdata_MHQuant_Corrupt_ExtraTopLine.csv",
+    "testdata/masshunter/19_Testdata_MHQuant_MultipleQUAL_with_expectedRT.csv",
+    "testdata/masshunter/20_Testdata_MHQuant_withSpecialCharsInFeatures.csv",
+    "testdata/masshunter/21_Testdata_MHQuant_with_dots_InFeatures.csv",
+    "testdata/masshunter/22_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq.csv",
+    "testdata/masshunter/22_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq-noalphafeat.csv",
+    "testdata/masshunter/23_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq_notimestamp.csv",
+    "testdata/masshunter/MHQuant_demo.csv",
+    "testdata/masshunter/MRMhub_TestData_MHQuant_S1P_DefaultSampleInfo_RT-Areas-FWHM.csv",
+    "testdata/masshunter/QuantLCMS_Example_MassHunter.csv",
+    "testdata/masshunter/QuantLCMS_Example_MassHunter_CalcConc.csv",
+    "testdata/masshunter/QuantLCMS_Example_MassHunter_FinalConc.csv",
+    "testdata/masshunter/QuantLCMS_Example_MassHunter-NoHdrSampleName.csv",
+    "testdata/lipidomics/17_Testdata_Lipidomics_GermanSystem.csv",
+    "testdata/lipidomics/18_Testdata_Lipidomics_MultiLanguageCharactersSamplenamesFeatures.csv"
+  )
+
+  for (f in fixtures) {
+    d <- suppressWarnings(suppressMessages(
+      parse_masshunter_csv(test_path(f))
+    ))
+    expect_snapshot({
+      cat("== ", basename(f), " ==\n", sep = "")
+      print(mh_fingerprint(d), n = Inf, width = Inf)
+    })
+  }
+})
+
+test_that("parse_masshunter_csv(expand_qualifier_names = FALSE) output is stable", {
+  fixtures <- c(
+    "testdata/masshunter/9_Testdata_MHQuant_withQuantMethods_withQualifierMethResults.csv",
+    "testdata/masshunter/19_Testdata_MHQuant_MultipleQUAL_with_expectedRT.csv"
+  )
+
+  for (f in fixtures) {
+    d <- suppressWarnings(suppressMessages(
+      parse_masshunter_csv(test_path(f), expand_qualifier_names = FALSE)
+    ))
+    expect_snapshot({
+      cat(
+        "== ",
+        basename(f),
+        " (expand_qualifier_names = FALSE) ==\n",
+        sep = ""
+      )
+      print(mh_fingerprint(d), n = Inf, width = Inf)
+    })
+  }
+})
+
 #' file_path = system.file("extdata", "MHQuant_demo.csv", package = "mrmhub")
 #'
 #' mexp <- import_data_masshunter(
