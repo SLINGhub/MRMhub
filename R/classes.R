@@ -279,17 +279,15 @@ setMethod(
 #' @return silent on success, prints abort message on fail
 #' @noRd
 check_data <- function(data = NULL) {
-  # fail if data is NULL
   if (is.null(data)) {
-    cli::cli_div(theme = list(span.emph = list(color = "#e81744")))
     cli::cli_abort(c(
-      "x" = "`data` cannot be {.emph NULL}, please use a {.emph MRMhubExperiment}"
+      "x" = "{.arg data} cannot be {.code NULL}, please supply an {.cls MRMhubExperiment}."
     ))
   }
-
-  if (is(data)[1] != 'MRMhubExperiment' && is(data)[1] != 'MRMhubExperiment') {
-    cli::cli_div(theme = list(span.emph = list(color = "#e81744")))
-    cli::cli_abort(c("x" = "`data` must be a {.emph MRMhubExperiment}"))
+  if (!is(data, "MRMhubExperiment")) {
+    cli::cli_abort(c(
+      "x" = "{.arg data} must be an {.cls MRMhubExperiment}, not {.cls {class(data)[1]}}."
+    ))
   }
 }
 
