@@ -442,7 +442,11 @@ save_dataset_mztab <- function(
       .col = as.character(glue::glue("abundance_assay[{.data$assay_no}]"))
     ) |>
     dplyr::select("feature_id", ".col", ".val") |>
-    tidyr::pivot_wider(names_from = ".col", values_from = ".val") |>
+    tidyr::pivot_wider(
+      names_from = ".col",
+      values_from = ".val",
+      values_fn = check_single_pivot_value
+    ) |>
     dplyr::select("feature_id", dplyr::all_of(assay_cols))
 
   # --- study-variable summaries (mean + %CV per qc_type group) --------------
@@ -475,7 +479,8 @@ save_dataset_mztab <- function(
     tidyr::pivot_wider(
       names_from = "study_variable_no",
       values_from = c(".mean", ".cv"),
-      names_glue = "{study_variable_no}_{.value}"
+      names_glue = "{study_variable_no}_{.value}",
+      values_fn = check_single_pivot_value
     )
 
   # gather a feature's abundance / summary columns in the requested row order

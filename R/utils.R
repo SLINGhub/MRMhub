@@ -4,6 +4,28 @@ utils::globalVariables(".data")
 utils::globalVariables("lipidomics_dataset")
 utils::globalVariables("weight")
 
+#' `values_fn` guard for wide pivots
+#'
+#' Passed as `values_fn` to [tidyr::pivot_wider()] so each output cell holds
+#' exactly one value. More than one means duplicate rows (same key columns) in
+#' the data, which `pivot_wider()` would otherwise silently collapse into a
+#' list-column; abort loudly instead. A single value (or none) is returned
+#' unchanged, so this is behaviour-preserving for well-formed data.
+#'
+#' @param x The values destined for one wide cell.
+#' @return `x` unchanged when it holds at most one value.
+#' @keywords internal
+#' @noRd
+check_single_pivot_value <- function(x) {
+  if (length(x) > 1L) {
+    cli::cli_abort(c(
+      "Cannot pivot to a wide table: more than one value per cell.",
+      "i" = "This indicates duplicate rows (same key columns) in the data."
+    ))
+  }
+  x
+}
+
 #' Coerce a column to numeric/integer, warning on silent parse failures
 #'
 #' Wraps [as.numeric()] / [as.integer()] so that a non-blank source value that

@@ -961,7 +961,11 @@ parse_masshunter_csv <- function(
       names_pattern = "(.*)\t(.*)$",
       names_to = c("Param", "feature_id")
     ) |>
-    tidyr::pivot_wider(names_from = "Param", values_from = "value")
+    tidyr::pivot_wider(
+      names_from = "Param",
+      values_from = "value",
+      values_fn = check_single_pivot_value
+    )
 
   # Convert types of known parameters and fields in the data set
 

@@ -332,3 +332,20 @@ test_that("save_metadata_msorganiser_template() copies the file correctly and se
 #     expect_error(save_metadata_msorganiser_template(tempfile()), "Template file not found in package")
 #   )
 # })
+
+test_that("save_report_xlsx aborts on duplicate (analysis, feature) rows", {
+  temp_file <- tempfile(fileext = ".xlsx")
+  on.exit(unlink(temp_file))
+
+  # A duplicated (analysis_id, feature_id) row would make pivot_wider produce a
+  # list-column in the exported wide sheets; the values_fn guard aborts instead.
+  mexp_dup <- mexp
+  mexp_dup@dataset <- dplyr::bind_rows(mexp_dup@dataset, mexp_dup@dataset[1, ])
+
+  suppressMessages(
+    expect_error(
+      save_report_xlsx(data = mexp_dup, path = temp_file),
+      "more than one value per cell"
+    )
+  )
+})

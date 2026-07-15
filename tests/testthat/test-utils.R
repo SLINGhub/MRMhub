@@ -86,3 +86,36 @@ test_that("coerce_logical_checked warns on unrecognized non-blank tokens", {
     "maybe"
   )
 })
+
+test_that("check_single_pivot_value passes single values and aborts on duplicates", {
+  expect_equal(check_single_pivot_value(5), 5)
+  expect_equal(check_single_pivot_value("a"), "a")
+  expect_equal(check_single_pivot_value(numeric(0)), numeric(0))
+  expect_error(
+    check_single_pivot_value(c(1, 2)),
+    "more than one value per cell"
+  )
+
+  # As a pivot_wider values_fn it is a no-op on clean data and errors on a
+  # duplicated (id, name) cell instead of silently producing a list-column.
+  clean <- tibble::tibble(id = c("a", "b"), name = c("x", "x"), val = c(1, 2))
+  expect_equal(
+    tidyr::pivot_wider(
+      clean,
+      names_from = "name",
+      values_from = "val",
+      values_fn = check_single_pivot_value
+    ),
+    tidyr::pivot_wider(clean, names_from = "name", values_from = "val")
+  )
+  dup <- tibble::tibble(id = c("a", "a"), name = c("x", "x"), val = c(1, 2))
+  expect_error(
+    tidyr::pivot_wider(
+      dup,
+      names_from = "name",
+      values_from = "val",
+      values_fn = check_single_pivot_value
+    ),
+    "more than one value per cell"
+  )
+})
