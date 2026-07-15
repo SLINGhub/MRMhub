@@ -2,6 +2,32 @@
 
 Paste into a new chat (or say: "Read docs-review/cleanup-bootstrap.md and start the cleanup work").
 
+## STATUS — COMPLETE (2026-07-15)
+
+All three items done; the audit's "Monkey-fixes" + stale-code bucket is closed.
+
+1. **Calibration-join in `calc_qc_metrics`** — investigated, **not a live bug** (fragile-but-correct;
+   verified empirically: no mis-map, no dropped/collided columns, one row/feature, symmetric
+   missing-metrics branch). Replaced the `#TODOTODO` with an explanatory comment. Commit `20cb686`.
+2. **Drift/batch debug output** — the only *active* debug line (`print(e$message)`) silenced, matching its
+   siblings. Found + fixed a real adjacent bug: `fun_gauss.kernel.smooth()`'s error branch returned
+   `y_adj` instead of `y_predicted`, dropping the `y_adj` column on all-error runs. Regression test added.
+   Commit `8d7901c`.
+3. **Old lipidomics parsing** — premise was wrong: nothing is unused (all reachable from the active
+   `parse_lipid_feature_names()`). No functions removed; swept 22 lines of commented-out dead code + the
+   obsolete rgoslin TODO. Commit `7bc46b5`.
+
+Follow-up (same session): replaced brittle exact PDF-`file_size` string assertions
+(`== "118K"` etc.) with the codebase's robust `size_kb ± tolerance` idiom across
+`test-plot-runscatter.R`, `test-plot-qc-correlations.R`, `test-plots-calibcurves.R` — a maintainer plot
+tweak had nudged the runscatter PDF 118.8→"119K", tripping the exact match.
+
+Left as-is per scope: isotope full-copy perf loop; `save_summarizedexperiment()` skeleton.
+
+---
+
+_Original bootstrap (for history):_
+
 ## Context
 
 Continuing the pragmatic, data-integrity-focused review of the `mrmhub` R package (repo root = package
