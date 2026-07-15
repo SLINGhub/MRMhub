@@ -54,25 +54,33 @@ fun_gauss.kernel.smooth = function(
           yy.corr <- yy #Added BB
           ## Location parameter smoothing
 
+          # Precompute the Gaussian kernel weight matrix once; both the location
+          # and scale smoothers reuse it (the weights depend only on `xx`). This
+          # is a vectorised replacement for the previous per-point O(n^2) loops.
+          # Column j is masked to NA where the training value is missing, so
+          # rowSums(na.rm = TRUE) reproduces the original sum(na.rm = TRUE)
+          # term-for-term and in the same order (bit-identical results).
+          if (arg$location_smooth || arg$scale_smooth) {
+            wt_mat <- dnorm(
+              outer(xx, xx, \(a, b) (b - a) / arg$kernel_size),
+              0,
+              1
+            )
+            wt_mat[, is.na(yy.train)] <- NA
+            wt_sum <- rowSums(wt_mat, na.rm = TRUE)
+            degenerate <- wt_sum == 0 # no usable training QCs spanning this point
+          }
+
           if (arg$location_smooth) {
-            for (i in seq_len(n)) {
-              wt <- (xx - xx[i]) / arg$kernel_size
-              wt <- dnorm(wt, 0, 1)
-              wt[is.na(yy.train)] <- NA
-              wt_sum <- sum(wt, na.rm = TRUE)
-              if (wt_sum == 0) {
-                # No usable (non-NA) training QC values in this batch: the
-                # weighted mean is undefined (0/0 = NaN). Set the fit to NA and
-                # flag it as failed so the correction is skipped downstream.
-                fit_degenerate <- TRUE
-                yy.corr[i] <- NA_real_
-                yy.est[i] <- NA_real_
-              } else {
-                yy.corr[i] <- median(yy, na.rm = TRUE) +
-                  sum(wt * yy.train, na.rm = TRUE) / wt_sum #Added by BB to get the fit
-                yy.est[i] <- yy[i] -
-                  sum(wt * yy.train, na.rm = TRUE) / wt_sum
-              }
+            # weighted mean of training residuals at each point (0/0 -> NA below)
+            fit_val <- rowSums(sweep(wt_mat, 2, yy.train, `*`), na.rm = TRUE) /
+              wt_sum
+            fit_val[degenerate] <- NA_real_
+            yy.corr <- median(yy, na.rm = TRUE) + fit_val #Added by BB to get the fit
+            yy.est <- yy - fit_val
+            if (any(degenerate)) {
+              # weighted mean undefined for >=1 point: flag so the fit is skipped
+              fit_degenerate <- TRUE
             }
           }
 
@@ -82,23 +90,15 @@ fun_gauss.kernel.smooth = function(
           yy.final <- yy.est
 
           if (arg$scale_smooth) {
-            v <- rep(NA, n) ## point-wise weighted variances
             yy.mean <- mean(yy.est, na.rm = TRUE)
             yy.est <- yy.est - yy.mean
-            for (i in seq_len(n)) {
-              if (!is.na(yy.est[i])) {
-                wt <- (xx - xx[i]) / arg$kernel_size
-                wt <- dnorm(wt, 0, 1)
-                wt[is.na(yy.train)] <- NA
-                wt_sum <- sum(wt, na.rm = TRUE)
-                if (wt_sum == 0) {
-                  fit_degenerate <- TRUE
-                  v[i] <- NA_real_
-                } else {
-                  v[i] <- sum(wt * yy.est^2, na.rm = TRUE) / wt_sum
-                }
-              }
+            ## point-wise weighted variances
+            v <- rowSums(sweep(wt_mat, 2, yy.est^2, `*`), na.rm = TRUE) / wt_sum
+            if (any(degenerate & !is.na(yy.est))) {
+              fit_degenerate <- TRUE
             }
+            v[degenerate] <- NA_real_
+            v[is.na(yy.est)] <- NA_real_ # loop computed v only for non-NA yy.est
             v.mean <- mean(v, na.rm = TRUE) ## average weighted variances across the data points
             s <- sqrt(v)
             s.mean <- mean(s, na.rm = TRUE)
