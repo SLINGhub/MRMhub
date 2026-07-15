@@ -136,19 +136,19 @@ quantify_by_calibration <- function(
               .data$lowest_cal_cal_1,
               .data$highest_cal_cal_1
             ),
-            function(a, b, c, x, lo, hi) {
-              if (is.na(a) || is.na(b) || is.na(c) || is.na(x)) {
+            function(coef_a, coef_b, coef_c, x, lo, hi) {
+              if (is.na(coef_a) || is.na(coef_b) || is.na(coef_c) || is.na(x)) {
                 return(NA_real_)
               }
               # Degenerate quadratic term: the curve is effectively linear.
-              if (c == 0) {
-                if (b == 0) {
+              if (coef_c == 0) {
+                if (coef_b == 0) {
                   return(NA_real_)
                 }
-                return((x - a) / b)
+                return((x - coef_a) / coef_b)
               }
               roots <- tryCatch(
-                polyroot(c(a - x, b, c)),
+                polyroot(c(coef_a - x, coef_b, coef_c)),
                 error = function(e) complex(0)
               )
               # Keep only (near-)real roots.

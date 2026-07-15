@@ -246,14 +246,14 @@ get_mad_tails <- function(x, k, na.rm = FALSE) {
   }
 
   med <- median(x, na.rm = na.rm)
-  mad <- mad(x, na.rm = na.rm)
+  mad_val <- mad(x, na.rm = na.rm)
   
-  if (is.na(med) || is.na(mad)) {
+  if (is.na(med) || is.na(mad_val)) {
       return(c(NA_real_, NA_real_))
   }
 
-  upper_fence <- med + k * mad
-  lower_fence <- med - k * mad
+  upper_fence <- med + k * mad_val
+  lower_fence <- med - k * mad_val
 
   # Find values that are strictly inside the fences
   vals_above_lower <- x[x > lower_fence] 

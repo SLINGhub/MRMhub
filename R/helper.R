@@ -98,7 +98,7 @@ compare_values <- function(tbl, val, threshold, operator, na_replace = FALSE) {
   if (is.na(threshold)) {
     return(rep(NA, nrow(tbl)))
   }
-  result <- get(operator)(v_val, threshold)
+  result <- match.fun(operator)(v_val, threshold)
   result <- replace_na(result, na_replace)
 }
 
