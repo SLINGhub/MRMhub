@@ -19,7 +19,7 @@ fun_gauss.kernel.smooth(tbl, ref_qc_types, log_transform_internal, ...)
 List with a \code{data.frame} containing original \code{x} and the smoothed \code{y} values, and a \code{boolean} value indicting whether the fit failed or not not.
 }
 \description{
-Function for Gaussian kernel-based smoothing, for use by \code{fun_correct_drift}.
+Function for Gaussian kernel-based smoothing, for use by \code{correct_drift}.
 }
 \author{
 Hyung Won Choi

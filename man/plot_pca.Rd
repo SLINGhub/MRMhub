@@ -67,17 +67,17 @@ qualifier features. Default is \code{TRUE}.}
 \item{include_istd}{A logical value indicating whether to include internal
 standard (ISTD) features. Default is \code{TRUE}.}
 
-\item{include_feature_filter}{A character or regex pattern used to filter
-features by \code{feature_id}. If \code{NA} or an empty string (\code{""}) is provided,
-the filter is ignored. When a vector of length > 1 is supplied, only
-features with exactly these names are selected (applied individually as
-OR conditions).}
+\item{include_feature_filter}{A regex pattern or a vector of feature names
+used to filter features by \code{feature_id}. If \code{NA} or an empty string (\code{""})
+is provided, the filter is ignored. When a vector of length > 1 is
+supplied, only features with exactly these names are selected (applied
+individually as OR conditions).}
 
-\item{exclude_feature_filter}{A character or regex pattern used to exclude
-features by \code{feature_id}. If \code{NA} or an empty string (\code{""}) is provided,
-the filter is ignored. When a vector of length > 1 is supplied, only
-features with exactly these names are excluded (applied individually as
-OR conditions).}
+\item{exclude_feature_filter}{A regex pattern or a vector of feature names
+used to exclude features by \code{feature_id}. If \code{NA} or an empty string
+(\code{""}) is provided, the filter is ignored. When a vector of length > 1 is
+supplied, only features with exactly these names are excluded (applied
+individually as OR conditions).}
 
 \item{min_median_value}{Minimum median feature value across the selected
 QC-type samples required for a feature to be included. \code{NA} (default)
@@ -108,8 +108,8 @@ millimeters. Default is 2.}
 \item{point_alpha}{A numeric value indicating the transparency of
 points (0-1). Default is 0.5.}
 
-\item{font_base_size}{A numeric value indicating the base font size for
-plot text elements. Default is 8.}
+\item{font_base_size}{Numeric. Base font size (in points) for plot text.
+Default is 8.}
 
 \item{ellipse_confidence_level}{A numeric value indicating the confidence level
 for the ellipses. Default is 0.95.}

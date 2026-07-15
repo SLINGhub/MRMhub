@@ -6,11 +6,9 @@
 \usage{
 plot_runscatter(
   data = NULL,
-  variable = c("intensity", "norm_intensity", "conc", "rt", "area", "height", "fwhm",
-    "width", "symmetry", "intensity_raw", "intensity_before", "norm_intensity_raw",
-    "norm_intensity_before", "conc_raw", "conc_before"),
-  filter_data = FALSE,
+  variable,
   qc_types = NA,
+  filter_data = FALSE,
   include_qualifier = TRUE,
   include_istd = TRUE,
   include_feature_filter = NA,
@@ -22,7 +20,7 @@ plot_runscatter(
   return_plots = FALSE,
   show_batches = TRUE,
   batch_zebra_stripe = FALSE,
-  batch_line_color = "#cdf7d9",
+  batch_line_color = "#b6f0c5",
   batch_fill_color = "grey93",
   cap_outliers = FALSE,
   cap_sample_k_mad = 4,
@@ -42,9 +40,9 @@ plot_runscatter(
   log_scale = FALSE,
   show_gridlines = FALSE,
   point_size = 1.5,
-  point_transparency = 1,
+  point_alpha = 1,
   point_border_width = NA,
-  font_base_size = 10,
+  font_base_size = 8,
   rows_page = 3,
   cols_page = 3,
   specific_page = NA,
@@ -72,9 +70,9 @@ Add \verb{_before} after the variable name to plot the feature values before the
 applied drift/batch correction, (e.g., \code{conc_before}). Add \verb{_raw} after the
 variable name to plot the raw uncorrected feature values (e.g., \code{conc_raw}).}
 
-\item{filter_data}{Logical, whether to use QC-filtered data based on criteria set via \code{filter_features_qc()}.}
-
 \item{qc_types}{QC types to be plotted. Can be a vector of QC types or a regular expression pattern. \code{NA} (default) displays all available QC/Sample types.}
+
+\item{filter_data}{Logical, whether to use QC-filtered data based on criteria set via \code{filter_features_qc()}.}
 
 \item{include_qualifier}{Logical, whether to include qualifier features. Default is \code{TRUE}.}
 
@@ -148,11 +146,12 @@ If \code{NA} (default), the color assigned to the qc_type is used.}
 
 \item{point_size}{Size of the data points. Default is \code{1.5}.}
 
-\item{point_transparency}{Alpha transparency of the data points.}
+\item{point_alpha}{Alpha transparency of the data points.}
 
 \item{point_border_width}{Width of the data point borders.}
 
-\item{font_base_size}{Base font size for the plot.}
+\item{font_base_size}{Numeric. Base font size (in points) for plot text.
+Default is 8.}
 
 \item{rows_page}{Number of rows per page.}
 

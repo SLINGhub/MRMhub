@@ -44,17 +44,17 @@ qualifier features. Default is \code{TRUE}.}
 \item{only_istd}{A logical value indicating whether to include features used as internal
 standards (ISTD).  Default is \code{TRUE}. Set to \code{FALSE} in combination with feature_filter parameters to show other features.}
 
-\item{include_feature_filter}{A character or regex pattern used to filter
-features by \code{feature_id}. If \code{NA} or an empty string (\code{""}) is provided,
-the filter is ignored. When a vector of length > 1 is supplied, only
-features with exactly these names are selected (applied individually as
-OR conditions).}
+\item{include_feature_filter}{A regex pattern or a vector of feature names
+used to filter features by \code{feature_id}. If \code{NA} or an empty string (\code{""})
+is provided, the filter is ignored. When a vector of length > 1 is
+supplied, only features with exactly these names are selected (applied
+individually as OR conditions).}
 
-\item{exclude_feature_filter}{A character or regex pattern used to exclude
-features by \code{feature_id}. If \code{NA} or an empty string (\code{""}) is provided,
-the filter is ignored. When a vector of length > 1 is supplied, only
-features with exactly these names are excluded (applied individually as
-OR conditions).}
+\item{exclude_feature_filter}{A regex pattern or a vector of feature names
+used to exclude features by \code{feature_id}. If \code{NA} or an empty string
+(\code{""}) is provided, the filter is ignored. When a vector of length > 1 is
+supplied, only features with exactly these names are excluded (applied
+individually as OR conditions).}
 
 \item{min_median_value}{Minimum median feature value across the selected
 QC-type samples required for a feature to be included. \code{NA} (default)
@@ -74,8 +74,8 @@ millimeters. Default is \code{0.5}.}
 
 \item{box_linewidth}{Numeric. Width of the boxplot lines. Default is \code{0.5}.}
 
-\item{font_base_size}{A numeric value indicating the base font size for
-plot text elements. Default is 8.}
+\item{font_base_size}{Numeric. Base font size (in points) for plot text.
+Default is 8.}
 
 \item{angle_x}{Numeric. Angle of the x-axis text labels. Default is \code{45}.}
 }

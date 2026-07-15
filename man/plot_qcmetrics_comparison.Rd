@@ -21,10 +21,10 @@ plot_qcmetrics_comparison(
   y_lim = c(NA_real_, NA_real_),
   cols_page = 5,
   point_size = 1.5,
+  point_alpha = 0.5,
   point_color = "#0460acff",
   point_fill = "#4da2e7ff",
   point_shape = 21,
-  point_alpha = 0.5,
   point_stroke = 0.5,
   font_base_size = 8
 )
@@ -73,6 +73,8 @@ auto-scaling (default is \code{c(0, NA)}).}
 
 \item{point_size}{Numeric; size of points in millimeters (default is \code{1}).}
 
+\item{point_alpha}{Numeric; transparency of points (default is \code{0.5}).}
+
 \item{point_color}{A vector specifying the colors for points corresponding
 to different QC types. This can be either an unnamed vector or a named
 vector, with names corresponding to QC types. Unused colors will be ignored.
@@ -88,11 +90,10 @@ to different QC types. This can be either an unnamed vector or a named
 vector, with names corresponding to QC types. Unused shapes will be ignored.
 Default is \code{NA} which corresponds to the default shapes for QC types defined in the package.}
 
-\item{point_alpha}{Numeric; transparency of points (default is \code{0.5}).}
-
 \item{point_stroke}{Numeric; thickness of point borders (default is \code{0.5}).}
 
-\item{font_base_size}{Numeric; base font size in points (default is \code{8}).}
+\item{font_base_size}{Numeric. Base font size (in points) for plot text.
+Default is 8.}
 }
 \value{
 A \code{ggplot} object representing the scatter plot.

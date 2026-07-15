@@ -19,5 +19,5 @@ fun_cspline(tbl, ref_qc_types, log_transform_internal, ...)
 List with a \code{data.frame} containing original x and the smoothed y values, and a \code{boolean} value indicating whether the fit failed or not.
 }
 \description{
-Function for cubic spline-based smoothing with optional cross-validation, for use by \code{fun_correct_drift}
+Function for cubic spline-based smoothing with optional cross-validation, for use by \code{correct_drift}
 }

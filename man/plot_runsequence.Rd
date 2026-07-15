@@ -14,7 +14,7 @@ plot_runsequence(
   segment_linewidth = 0.5,
   batch_zebra_stripe = FALSE,
   batch_line_color = "#b6f0c5",
-  batch_fill_color = "grey90",
+  batch_fill_color = "grey93",
   font_base_size = 8
 )
 }
@@ -44,7 +44,8 @@ instead of line separators.}
 
 \item{batch_fill_color}{Color of the batch shaded areas.}
 
-\item{font_base_size}{Numeric, base font size for the plot.}
+\item{font_base_size}{Numeric. Base font size (in points) for plot text.
+Default is 8.}
 }
 \value{
 A \code{ggplot} object representing the run sequence plot.

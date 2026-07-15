@@ -9,7 +9,8 @@ plot_qc_summary_byclass(data = NULL, font_base_size = 8)
 \arguments{
 \item{data}{A \code{MRMhubExperiment} object.}
 
-\item{font_base_size}{The base font size for the plot. Default is \code{8}.}
+\item{font_base_size}{Numeric. Base font size (in points) for plot text.
+Default is 8.}
 }
 \value{
 A \code{ggplot} object showing the feature QC filtering summary by feature class.

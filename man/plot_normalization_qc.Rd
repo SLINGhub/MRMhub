@@ -70,7 +70,8 @@ different feature classes (default is \code{5}). Only used if
 
 \item{point_alpha}{Transparency of points (default is \code{0.5}).}
 
-\item{font_base_size}{Base font size in points (default is \code{8}).}
+\item{font_base_size}{Numeric. Base font size (in points) for plot text.
+Default is 8.}
 }
 \value{
 A \code{ggplot} object representing the scatter plot comparing CV values

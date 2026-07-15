@@ -16,7 +16,7 @@ plot_rt_vs_chain(
   robust_regression = TRUE,
   cols_page = 5,
   point_size = 2,
-  point_transparency = 0.9,
+  point_alpha = 0.9,
   line_transparency = 0.5,
   font_base_size = 8
 )
@@ -48,11 +48,12 @@ fitted line and the median RT of the feature. The value is used to flag outliers
 
 \item{point_size}{Size of the data points. Default is 2}
 
-\item{point_transparency}{Alpha transparency of the data point. Default is 0.9}
+\item{point_alpha}{Alpha transparency of the data point. Default is 0.9}
 
 \item{line_transparency}{Alpha transparency of the regression lines. Default is 0.9}
 
-\item{font_base_size}{Base font size for the plot.}
+\item{font_base_size}{Numeric. Base font size (in points) for plot text.
+Default is 8.}
 }
 \value{
 A \code{ggplot} object representing faceted scatter plots

@@ -19,5 +19,5 @@ fun_gam_smooth(tbl, ref_qc_types, log_transform_internal = TRUE, ...)
 List with a \code{data.frame} containing original x and the smoothed y values, and a \code{boolean} value indicating whether the fit failed or not.
 }
 \description{
-Function for penalized spline-based smoothing using GAM, for use by \code{fun_correct_drift}
+Function for penalized spline-based smoothing using GAM, for use by \code{correct_drift}
 }

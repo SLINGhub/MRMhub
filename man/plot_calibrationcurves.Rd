@@ -14,7 +14,7 @@ plot_calibrationcurves(
   ci_show = NA,
   ci_clip = TRUE,
   zoom_n_points = NA,
-  log_axes = FALSE,
+  log_scale = FALSE,
   filter_data = FALSE,
   include_qualifier = TRUE,
   include_istd = FALSE,
@@ -24,13 +24,13 @@ plot_calibrationcurves(
   path = NA,
   return_plots = FALSE,
   point_size = 1.5,
-  line_width = 0.7,
   point_color = NA,
   point_fill = NA,
   point_shape = NA,
+  line_width = 0.7,
   line_color = "#4575b4",
   ribbon_fill = "#e6f6ff",
-  font_base_size = 7,
+  font_base_size = 8,
   rows_page = 4,
   cols_page = 5,
   specific_page = NA,
@@ -76,7 +76,7 @@ scale and ommitted in log-log scale.}
 
 \item{zoom_n_points}{Number of x lowest concentration points to display, used for zooming. Set to \code{NULL} or \code{NA} (default) to show all points.}
 
-\item{log_axes}{Logical. Determines whether the x and y axes are displayed in a logarithmic scale (log-log scale).
+\item{log_scale}{Logical. Determines whether the x and y axes are displayed in a logarithmic scale (log-log scale).
 Set to \code{TRUE} to enable logarithmic scaling; otherwise, set to \code{FALSE} for a linear scale.
 Note: If \code{TRUE}, any regression curves or standard error regions with negative
 values will be omitted from display.
@@ -106,8 +106,6 @@ objects. Default is \code{FALSE}.}
 
 \item{point_size}{Size of points in the plot. Default is 1.5.}
 
-\item{line_width}{Width of regression lines. Default is 0.7.}
-
 \item{point_color}{A vector specifying the colors for points corresponding
 to different QC types. This can be either an unnamed vector or a named
 vector, with names corresponding to QC types. Unused colors will be ignored.
@@ -123,12 +121,15 @@ to different QC types. This can be either an unnamed vector or a named
 vector, with names corresponding to QC types. Unused shapes will be ignored.
 Default is \code{NA} which corresponds to the default shapes for QC types defined in the package.}
 
+\item{line_width}{Width of regression lines. Default is 0.7.}
+
 \item{line_color}{Color of the regression line. Default is \code{"#4575b4"}.}
 
 \item{ribbon_fill}{Color for the confidence interval ribbon. Default is
 \code{"#91bfdb40"}.}
 
-\item{font_base_size}{Base font size for text in plots. Default is 7.}
+\item{font_base_size}{Numeric. Base font size (in points) for plot text.
+Default is 8.}
 
 \item{rows_page}{Number of plot rows. Default is 4.}
 

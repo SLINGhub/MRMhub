@@ -19,7 +19,7 @@ plot_pca_loading(
   include_feature_filter = NA,
   exclude_feature_filter = NA,
   min_median_value = NA,
-  font_base_size = 7
+  font_base_size = 8
 )
 }
 \arguments{
@@ -55,25 +55,25 @@ qualifier features. Default is \code{TRUE}.}
 \item{include_istd}{A logical value indicating whether to include internal
 standard (ISTD) features. Default is \code{TRUE}.}
 
-\item{include_feature_filter}{A character or regex pattern used to filter
-features by \code{feature_id}. If \code{NA} or an empty string (\code{""}) is provided,
-the filter is ignored. When a vector of length > 1 is supplied, only
-features with exactly these names are selected (applied individually as
-OR conditions).}
+\item{include_feature_filter}{A regex pattern or a vector of feature names
+used to filter features by \code{feature_id}. If \code{NA} or an empty string (\code{""})
+is provided, the filter is ignored. When a vector of length > 1 is
+supplied, only features with exactly these names are selected (applied
+individually as OR conditions).}
 
-\item{exclude_feature_filter}{A character or regex pattern used to exclude
-features by \code{feature_id}. If \code{NA} or an empty string (\code{""}) is provided,
-the filter is ignored. When a vector of length > 1 is supplied, only
-features with exactly these names are excluded (applied individually as
-OR conditions).}
+\item{exclude_feature_filter}{A regex pattern or a vector of feature names
+used to exclude features by \code{feature_id}. If \code{NA} or an empty string
+(\code{""}) is provided, the filter is ignored. When a vector of length > 1 is
+supplied, only features with exactly these names are excluded (applied
+individually as OR conditions).}
 
 \item{min_median_value}{Minimum median feature value across the selected
 QC-type samples required for a feature to be included. \code{NA} (default)
 applies no filtering. This is a fast way to exclude noisy features; for
 principled QC-based filtering use \code{\link[=filter_features_qc]{filter_features_qc()}}.}
 
-\item{font_base_size}{A numeric value indicating the base font size for
-plot text elements. Default is 7.}
+\item{font_base_size}{Numeric. Base font size (in points) for plot text.
+Default is 8.}
 }
 \value{
 A \code{ggplot} object with PCA loadings plot

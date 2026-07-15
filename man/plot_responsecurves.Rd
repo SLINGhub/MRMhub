@@ -21,7 +21,7 @@ plot_responsecurves(
   line_width = 0.7,
   label_wrap = FALSE,
   label_wrap_width = 25,
-  font_base_size = 7,
+  font_base_size = 8,
   rows_page = 4,
   cols_page = 5,
   curve_layout = "overlay",
@@ -82,7 +82,8 @@ lines using \code{label_wrap_width}. Default is \code{FALSE}.}
 \item{label_wrap_width}{Integer. Maximum width in characters for wrapped labels when
 \code{label_wrap = TRUE}. Default is \code{25}. Ignored when \code{label_wrap = FALSE}.}
 
-\item{font_base_size}{Base font size for text. Default is 7.}
+\item{font_base_size}{Numeric. Base font size (in points) for plot text.
+Default is 8.}
 
 \item{rows_page}{Number of rows of plots per page. Used for pagination in
 \code{curve_layout = "overlay"} and \code{"cols"}. Ignored in \code{curve_layout = "rows"}.}

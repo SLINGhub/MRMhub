@@ -6,8 +6,8 @@
 \usage{
 plot_rla_boxplot(
   data = NULL,
-  rla_type_batch,
   variable,
+  rla_type_batch,
   qc_types = NA,
   plot_range = NA,
   rla_limit_to_range = FALSE,
@@ -44,10 +44,10 @@ plot_rla_boxplot(
 \arguments{
 \item{data}{A \code{MRMhubExperiment} object.}
 
-\item{rla_type_batch}{Character, must be either "within" or "across", defining whether to use within-batch or across-batch RLA}
-
 \item{variable}{Variable to plot, must be one of "intensity", "norm_intensity", "conc", "area", "height", "fwhm", or one of
 "intensity_raw", "intensity_before", "norm_intensity_raw", "norm_intensity_before", "conc_raw", "conc_before"}
+
+\item{rla_type_batch}{Character, must be either "within" or "across", defining whether to use within-batch or across-batch RLA}
 
 \item{qc_types}{QC types to be plotted. Can be a vector of QC types or a regular expression pattern. \code{NA} (default) displays all available QC/Sample types.}
 
@@ -120,7 +120,8 @@ See get_outlier_bounds() for details. When using the "fold" method, either singl
 
 \item{linewidth}{Numeric, line width used for whiskers of the boxplot}
 
-\item{font_base_size}{Numeric, base font size for the plot}
+\item{font_base_size}{Numeric. Base font size (in points) for plot text.
+Default is 8.}
 
 \item{relative_log_abundances}{Logical, whether to use relative log abundances (RLA) or just log-transformed values}
 
