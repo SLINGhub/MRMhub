@@ -104,77 +104,83 @@ quantify_by_calibration <- function(
       "highest_cal_cal_1"
     )
 
-  data@dataset <- data@dataset |>
+  d_conc <- data@dataset |>
     left_join(
       d_stats_calc,
       by = c("feature_id" = "feature_id")
     ) |>
     mutate(
-      feature_conc = case_when(
-        # Linear back-calculation: conc = (response - intercept) / slope.
-        # Guard a zero or missing slope, which would otherwise yield `Inf`.
-        fit_model != "quadratic" ~
-          if_else(
-            !is.na(.data$coef_b_cal_1) & .data$coef_b_cal_1 != 0,
-            (.data$feature_norm_intensity - .data$coef_a_cal_1) /
-              .data$coef_b_cal_1,
-            NA_real_
-          ),
-        # Quadratic back-calculation: solve a + b*conc + c*conc^2 = response.
-        # A quadratic has two roots; the calibrated range is used only to *select*
-        # the physical root (the one on the monotonic branch), which is then
-        # returned even if the sample lies outside the range (matching the prior
-        # behaviour). Only a genuinely complex root (no real solution) or the
-        # degenerate `c == 0` / `b == 0` case yields NA.
-        TRUE ~
-          purrr::pmap_dbl(
-            list(
-              .data$coef_a_cal_1,
-              .data$coef_b_cal_1,
-              .data$coef_c_cal_1,
-              .data$feature_norm_intensity,
-              .data$lowest_cal_cal_1,
-              .data$highest_cal_cal_1
-            ),
-            function(coef_a, coef_b, coef_c, x, lo, hi) {
-              if (is.na(coef_a) || is.na(coef_b) || is.na(coef_c) || is.na(x)) {
-                return(NA_real_)
-              }
-              # Degenerate quadratic term: the curve is effectively linear.
-              if (coef_c == 0) {
-                if (coef_b == 0) {
-                  return(NA_real_)
-                }
-                return((x - coef_a) / coef_b)
-              }
-              roots <- tryCatch(
-                polyroot(c(coef_a - x, coef_b, coef_c)),
-                error = function(e) complex(0)
-              )
-              # Keep only (near-)real roots.
-              real_roots <- Re(roots)[abs(Im(roots)) < 1e-6]
-              if (length(real_roots) == 0) {
-                return(NA_real_) # no real solution (response beyond the curve)
-              }
-              if (length(real_roots) == 1) {
-                return(real_roots)
-              }
-              # Two real roots: pick the one nearest the calibrated range (0 when
-              # inside it) so out-of-range samples still get the physical root.
-              if (!is.na(lo) && !is.na(hi)) {
-                dist_to_range <- pmax(lo - real_roots, real_roots - hi, 0)
-                return(real_roots[which.min(dist_to_range)])
-              }
-              # No range available: prefer the non-negative root.
-              nonneg <- real_roots[real_roots >= 0]
-              if (length(nonneg) >= 1) {
-                return(nonneg[1])
-              }
-              real_roots[1]
-            }
-          )
+      # Linear back-calculation: conc = (response - intercept) / slope.
+      # Guard a zero or missing slope, which would otherwise yield `Inf`.
+      # Quadratic-fit rows are overwritten below; solving each quadratic with
+      # `polyroot` is costly, so it is applied only to those rows instead of to
+      # every row (the previous `case_when` evaluated it eagerly for all rows).
+      feature_conc = if_else(
+        !is.na(.data$coef_b_cal_1) & .data$coef_b_cal_1 != 0,
+        (.data$feature_norm_intensity - .data$coef_a_cal_1) /
+          .data$coef_b_cal_1,
+        NA_real_
       )
     )
+
+  # Quadratic back-calculation: solve a + b*conc + c*conc^2 = response, for the
+  # quadratic-fit rows only. A quadratic has two roots; the calibrated range is
+  # used only to *select* the physical root (the one on the monotonic branch),
+  # which is then returned even if the sample lies outside the range (matching
+  # the prior behaviour). Only a genuinely complex root (no real solution) or
+  # the degenerate `c == 0` / `b == 0` case yields NA. (Rows without a
+  # calibration have NA coefficients, so the linear branch already yields NA and
+  # they need not be revisited here.)
+  quad_rows <- which(d_conc$fit_model == "quadratic")
+  if (length(quad_rows) > 0) {
+    d_conc$feature_conc[quad_rows] <- purrr::pmap_dbl(
+      list(
+        d_conc$coef_a_cal_1[quad_rows],
+        d_conc$coef_b_cal_1[quad_rows],
+        d_conc$coef_c_cal_1[quad_rows],
+        d_conc$feature_norm_intensity[quad_rows],
+        d_conc$lowest_cal_cal_1[quad_rows],
+        d_conc$highest_cal_cal_1[quad_rows]
+      ),
+      function(coef_a, coef_b, coef_c, x, lo, hi) {
+        if (is.na(coef_a) || is.na(coef_b) || is.na(coef_c) || is.na(x)) {
+          return(NA_real_)
+        }
+        # Degenerate quadratic term: the curve is effectively linear.
+        if (coef_c == 0) {
+          if (coef_b == 0) {
+            return(NA_real_)
+          }
+          return((x - coef_a) / coef_b)
+        }
+        roots <- tryCatch(
+          polyroot(c(coef_a - x, coef_b, coef_c)),
+          error = function(e) complex(0)
+        )
+        # Keep only (near-)real roots.
+        real_roots <- Re(roots)[abs(Im(roots)) < 1e-6]
+        if (length(real_roots) == 0) {
+          return(NA_real_) # no real solution (response beyond the curve)
+        }
+        if (length(real_roots) == 1) {
+          return(real_roots)
+        }
+        # Two real roots: pick the one nearest the calibrated range (0 when
+        # inside it) so out-of-range samples still get the physical root.
+        if (!is.na(lo) && !is.na(hi)) {
+          dist_to_range <- pmax(lo - real_roots, real_roots - hi, 0)
+          return(real_roots[which.min(dist_to_range)])
+        }
+        # No range available: prefer the non-negative root.
+        nonneg <- real_roots[real_roots >= 0]
+        if (length(nonneg) >= 1) {
+          return(nonneg[1])
+        }
+        real_roots[1]
+      }
+    )
+  }
+  data@dataset <- d_conc
 
   # Flag concentrations that fall outside the calibrated range (below the lowest
   # or above the highest calibrator). The value is retained as an extrapolation;
