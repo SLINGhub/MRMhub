@@ -151,8 +151,8 @@ plot_calibrationcurves <- function(
   )
   variable <- stringr::str_c("feature_", variable_strip)
   variable_sym <- rlang::sym(variable)
-  rlang::arg_match(fit_model, c(NA, "linear", "quadratic"))
-  rlang::arg_match(fit_weighting, c(NA, "none", "1/x", "1/x^2"))
+  fit_model <- rlang::arg_match(fit_model)
+  fit_weighting <- rlang::arg_match(fit_weighting)
   # rlang::arg_match(fit_overwrite, c("TRUE", "FALSE"))
 
   plot_var <- rlang::sym(variable)
