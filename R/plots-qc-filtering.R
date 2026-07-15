@@ -30,9 +30,6 @@
 plot_qc_summary_byclass <- function(data = NULL, font_base_size = 8) {
   check_data(data)
 
-  #rlang::arg_match(use_batches, c("across", "individual", "summarise"))
-  #if(use_batches != "summarise") stop("Currently only `summarise` supported for parameter `batches`")
-
   if (!data@is_filtered) {
     cli_abort(col_red(
       "Feature QC filter has not yet been applied, or data has changed. Please run `filter_features_qc()` first."
@@ -284,8 +281,6 @@ plot_qc_summary_overall <- function(
   font_base_size = 8
 ) {
   check_data(data)
-  #rlang::arg_match(use_batches, c("across", "individual", "summarise"))
-  #if(use_batches != "summarise") stop("Currently only `summarise` supported for parameter `batches`")
 
   if (!data@is_filtered) {
     cli_abort(col_red(

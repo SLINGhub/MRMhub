@@ -126,9 +126,6 @@ plot_normalization_qc <- function(
 
   rlang::arg_match(plot_type, c("scatter", "diff", "ratio"))
 
-  # Match qc_type
-  #rlang::arg_match(qc_type, c("SPL", "BQC", "TQC", "NIST", "LTR", "PQC", "SST", "RQC"))
-
   if (all(is.na(qc_types))) {
     qc_types <- intersect(
       data$dataset$qc_type,

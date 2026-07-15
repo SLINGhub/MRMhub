@@ -124,9 +124,6 @@ plot_pca <- function(
   check_var_in_dataset(data@dataset, variable)
   variable_sym = rlang::sym(variable)
 
-  # Match qc_type TODO
-  #rlang::arg_match(qc_types, c("SPL", "BQC", "TQC", "NIST", "LTR", "PQC", "SST", "RQC"))
-
   rlang::arg_match(ellipse_variable, c("none", "qc_type", "batch_id"))
   ellipse_variable_sym = rlang::sym(ellipse_variable)
 
