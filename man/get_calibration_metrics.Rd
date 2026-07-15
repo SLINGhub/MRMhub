@@ -53,6 +53,9 @@ See its documentation for details.
 \strong{Note:} LoD/LoQ follow the ICH Q2(R1/R2) approach (3.3 sigma / S and
 10 sigma / S). The slope \code{S} is the slope of the calibration curve at zero
 concentration (the linear coefficient \code{coef_b}); for a \strong{quadratic} fit the
-quadratic term does not contribute to this slope.
+quadratic term does not contribute to this slope. The response \code{sigma} is
+selectable in \code{\link[=calc_calibration_results]{calc_calibration_results()}} via \code{lod_sigma} (residual
+standard error, the default, or the standard error of the intercept); the
+\code{sigma} column reported here is always the residual standard error.
 }
 }
