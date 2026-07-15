@@ -461,3 +461,55 @@ test_that("get_calibration_metrics handles errors", {
     "Calibration metrics has not yet been calculated"
   )
 })
+
+test_that("quantify_by_calibration guards un-invertible responses as NA, not Inf", {
+  # A quadratic calibration cannot invert every response: values off the curve
+  # have no real solution. The back-calculation guard sets these to NA (never
+  # Inf/NaN) and warns -- the same guard that also protects a zero calibration
+  # slope, which is unreachable through a real least-squares fit.
+  suppressMessages(
+    expect_warning(
+      mexp_res <- quantify_by_calibration(
+        mexp_norm,
+        fit_overwrite = TRUE,
+        include_qualifier = TRUE,
+        fit_model = "quadratic",
+        fit_weighting = "none",
+        ignore_missing_annotation = TRUE,
+        ignore_failed_calibration = TRUE
+      ),
+      "could not be back-calculated"
+    )
+  )
+
+  concs <- mexp_res@dataset$feature_conc
+  expect_false(any(is.infinite(concs) | is.nan(concs), na.rm = TRUE))
+})
+
+test_that("quantify_by_calibration errors cleanly on empty / zero-row input", {
+  # A freshly constructed (empty) experiment
+  expect_error(
+    quantify_by_calibration(
+      mrmhub::MRMhubExperiment(),
+      fit_overwrite = TRUE,
+      fit_model = "linear",
+      fit_weighting = "none"
+    ),
+    "No data to quantify"
+  )
+
+  # A normalized experiment whose dataset has been emptied. This previously
+  # crashed with a cryptic "Column `coef_b` not found" inside the LoD/LoQ step,
+  # because no calibration rows means the coefficient columns are never built.
+  mexp_zero <- mexp_norm
+  mexp_zero@dataset <- mexp_zero@dataset[FALSE, ]
+  expect_error(
+    quantify_by_calibration(
+      mexp_zero,
+      fit_overwrite = TRUE,
+      fit_model = "linear",
+      fit_weighting = "none"
+    ),
+    "No data to quantify"
+  )
+})

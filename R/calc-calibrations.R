@@ -391,6 +391,12 @@ calc_calibration_results <- function(
 ) {
   check_data(data)
 
+  if (nrow(data@dataset) == 0) {
+    cli::cli_abort(
+      "No data to quantify: the dataset is empty. Please import and process data first."
+    )
+  }
+
   rlang::arg_match(fit_model, c("linear", "quadratic"))
   rlang::arg_match(fit_weighting, c("none", "1/x", "1/x^2"))
   rlang::arg_match(variable, c("feature_intensity", "feature_norm_intensity"))
