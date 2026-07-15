@@ -404,6 +404,10 @@ calc_calibration_results <- function(
           paste0(variable, " ~ poly(concentration, 2, raw = TRUE)")
         )
 
+        # Warnings (e.g. rank-deficient fit) are intentionally suppressed: a
+        # failed fit yields NA coefficients, which `reg_failed` below detects
+        # and propagates to the calibration metrics, so the outcome is surfaced
+        # structurally rather than as per-curve warning noise.
         res <- suppressWarnings(lm(
           formula = formula,
           weights = weight,
