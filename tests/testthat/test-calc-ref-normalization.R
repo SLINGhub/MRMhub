@@ -731,3 +731,38 @@ test_that("calibrate_by_reference supports multiple reference_sample_id", {
   )
   expect_true(any(!is.na(res_multi@dataset$feature_conc_normalized)))
 })
+
+test_that("calibrate_by_reference sets a zero reference summary to NA (not Inf) and warns", {
+  refid <- "NIST_SRM1950"
+  feat <- "S1P d18:2 [M>60]"
+
+  # Zero the reference sample's intensity for one feature, so its (mean)
+  # reference summary is 0 -- without the guard the division would give Inf.
+  mexp_zero <- mexp
+  mexp_zero@dataset$feature_intensity[
+    mexp_zero@dataset$sample_id == refid &
+      mexp_zero@dataset$feature_id == feat
+  ] <- 0
+
+  suppressMessages(
+    expect_warning(
+      mexp_res <- calibrate_by_reference(
+        data = mexp_zero,
+        variable = "intensity",
+        reference_sample_id = refid,
+        absolute_calibration = FALSE
+      ),
+      "reference summary was zero or undefined"
+    )
+  )
+
+  affected <- mexp_res@dataset$feature_intensity_normalized[
+    mexp_res@dataset$feature_id == feat
+  ]
+  expect_true(all(is.na(affected)))
+  expect_false(any(
+    is.infinite(mexp_res@dataset$feature_intensity_normalized) |
+      is.nan(mexp_res@dataset$feature_intensity_normalized),
+    na.rm = TRUE
+  ))
+})
