@@ -1019,7 +1019,7 @@ parse_masshunter_csv <- function(
       ),
       dplyr::across(
         .cols = dplyr::any_of(names(new_logical_colnames)),
-        .fns = as.logical
+        .fns = \(x) coerce_logical_checked(x, dplyr::cur_column())
       ),
       dplyr::across(
         .cols = dplyr::any_of(names(new_char_colnames)),
