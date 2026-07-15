@@ -318,9 +318,9 @@ plot_runsequence <- function(
 #' This funcion returns a list with the ggplot  object representing the RLA plot and a table with detected outliers (if `outlier_detection = TRUE`).
 #'
 #' @template data_mexp
-#' @param rla_type_batch Character, must be either "within" or "across", defining whether to use within-batch or across-batch RLA
 #' @param variable Variable to plot, must be one of "intensity", "norm_intensity", "conc", "area", "height", "fwhm", or one of
 #' "intensity_raw", "intensity_before", "norm_intensity_raw", "norm_intensity_before", "conc_raw", "conc_before"
+#' @param rla_type_batch Character, must be either "within" or "across", defining whether to use within-batch or across-batch RLA
 #' @param qc_types QC types to be plotted. Can be a vector of QC types or a regular expression pattern. `NA` (default) displays all available QC/Sample types.
 #' @param plot_range Numeric vector of length 2, specifying the start and end indices of the analysis order to be plotted. `NA` plots all samples.
 #' @param rla_limit_to_range Logical, whether to limit the RLA values to the specified `plot_range`. Default is `FALSE`, which means RLA values are calculated for all samples.
@@ -377,8 +377,8 @@ plot_runsequence <- function(
 # TODO: Add minor ticks to x-axis
 plot_rla_boxplot <- function(
   data = NULL,
-  rla_type_batch,
   variable,
+  rla_type_batch,
   qc_types = NA,
   plot_range = NA,
   rla_limit_to_range = FALSE,
@@ -422,14 +422,14 @@ plot_rla_boxplot <- function(
     cli::cli_abort("No data available. Please import data and metadata first.")
   }
 
+  if (missing(variable)) {
+    cli::cli_abort("{.arg variable} must be supplied.")
+  }
+
   if (missing(rla_type_batch)) {
     cli::cli_abort(
       "{.arg rla_type_batch} must be supplied ('within', 'across')."
     )
-  }
-
-  if (missing(variable)) {
-    cli::cli_abort("{.arg variable} must be supplied.")
   }
 
   rlang::arg_match(rla_type_batch, c("within", "across"))
