@@ -36,7 +36,7 @@
 #' the number of colors must match the number of curves.
 #' @param point_size Size of points in millimeters.
 #' @param line_width Width of regression lines.
-#' @param font_base_size Base font size for text. Default is 7.
+#' @param font_base_size Base font size for text. Default is 8.
 #' @param rows_page Number of rows of plots per page. Used for pagination in
 #'   `curve_layout = "overlay"` and `"cols"`. Ignored in `curve_layout = "rows"`.
 #' @param cols_page Number of columns of plots per page. Used for pagination in
@@ -98,7 +98,7 @@ plot_responsecurves <- function(
   line_width = 0.7,
   label_wrap = FALSE,
   label_wrap_width = 25,
-  font_base_size = 7,
+  font_base_size = 8,
   
 
   # Layout settings (for multi-page PDF)

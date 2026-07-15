@@ -40,7 +40,7 @@ plot_runsequence <- function(
   segment_linewidth = 0.5,
   batch_zebra_stripe = FALSE,
   batch_line_color = "#b6f0c5",
-  batch_fill_color = "grey90",
+  batch_fill_color = "grey93",
   font_base_size = 8
 ) {
   # Check if data is valid

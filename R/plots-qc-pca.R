@@ -520,7 +520,7 @@ plot_pca_loading <- function(
   include_feature_filter = NA,
   exclude_feature_filter = NA,
   min_median_value = NA,
-  font_base_size = 7
+  font_base_size = 8
 ) {
   # ... (all data prep code remains the same) ...
 

@@ -153,7 +153,7 @@ plot_runscatter <- function(
   # Display of batches
   show_batches = TRUE,
   batch_zebra_stripe = FALSE,
-  batch_line_color = "#cdf7d9",
+  batch_line_color = "#b6f0c5",
   batch_fill_color = "grey93",
 
   # Outlier capping
@@ -183,7 +183,7 @@ plot_runscatter <- function(
   point_size = 1.5,
   point_alpha = 1,
   point_border_width = NA,
-  font_base_size = 10,
+  font_base_size = 8,
 
   # Layout settings
   rows_page = 3,
