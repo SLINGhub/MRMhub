@@ -660,7 +660,7 @@ set_analysis_order_analysismetadata <- function(
             "Acquisition timestamps are not present in analysis results.
            Please set argument `order_by` to either `resultfile` or `metadata`."
           ),
-          call. = FALSE
+          call = NULL
         )
       }
       data@annot_analyses |>

@@ -163,14 +163,14 @@ check_integrity_analyses <- function(
           if (d_xy < max_num_print) {
             writeLines(glue::glue(""))
             cli::cli_abort(
-              call. = FALSE,
+              call = NULL,
               glue::glue(
                 "No metadata present for {d_xy} of {data@dataset_orig$analysis_id |> unique() |> length()} analyses: {stringr::str_flatten_comma(unique(setdiff(data@dataset_orig$analysis_id |> unique(), data@annot_analyses$analysis_id)))}."
               )
             )
           } else {
             cli::cli_abort(
-              call. = FALSE,
+              call = NULL,
               glue::glue(
                 "{d_xy} of {data@dataset_orig$analysis_id |> unique() |> length()} analyses have no matching metadata."
               )
