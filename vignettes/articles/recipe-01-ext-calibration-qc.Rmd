@@ -88,7 +88,7 @@ mexp <- calc_calibration_results(
     data = mexp, zoom_n_points = 4,
     fit_overwrite = TRUE,  # Set to FALSE if defined in metadata
     fit_model = "quadratic",
-    fit_weighting = "1/x",log_axes = TRUE,
+    fit_weighting = "1/x",log_scale = TRUE,
     rows_page = 2,
     cols_page = 4, show_progress = FALSE
   )

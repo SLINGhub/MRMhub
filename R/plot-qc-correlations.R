@@ -81,7 +81,7 @@ get_feature_correlations <- function(tbl, cor_min_neg, cor_min) {
 #' @param point_alpha A numeric value indicating the transparency of
 #' points (0-1). Default is 0.8.
 #' @param point_stroke A numeric value indicating the stroke width of the points. Default is 0.3.
-#' @param line_size A numeric value indicating the size of the correlation line. Default is 0.5.
+#' @param line_width A numeric value indicating the size of the correlation line. Default is 0.5.
 #' @param line_color A character string indicating the color of the correlation line. Default is orange.
 #' @param line_alpha A numeric value indicating the transparency of the correlation line (0-1). Default is 0.5.
 #'
@@ -119,7 +119,7 @@ plot_feature_correlations <- function(
   point_size = 1,
   point_alpha = 0.8,
   point_stroke = 0.3,
-  line_size = 0.5,
+  line_width = 0.5,
   line_color = "orange",
   line_alpha = 0.5,
   font_base_size = 8,
@@ -336,7 +336,7 @@ plot_feature_correlations <- function(
       point_size = point_size,
       point_alpha = point_alpha,
       point_stroke = point_stroke,
-      line_size = line_size,
+      line_width = line_width,
       line_color = line_color,
       line_alpha = line_alpha,
       font_base_size = font_base_size
@@ -450,7 +450,7 @@ plot_feature_correlations_page <- function(d_plot, ...) {
       ggplot2::geom_smooth(
         method = "lm",
         formula = y ~ x,
-        linewidth = args$line_size,
+        linewidth = args$line_width,
         color = args$line_color,
         alpha = args$line_alpha,
         se = FALSE,

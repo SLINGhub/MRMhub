@@ -46,7 +46,7 @@
 #' scale and ommitted in log-log scale.
 #' @param ci_clip Logical, if `TRUE`, clips the confidence interval above or below the highest and lowest data point, respectively.
 #' @param zoom_n_points Number of x lowest concentration points to display, used for zooming. Set to `NULL` or `NA` (default) to show all points.
-#' @param log_axes Logical. Determines whether the x and y axes are displayed in a logarithmic scale (log-log scale).
+#' @param log_scale Logical. Determines whether the x and y axes are displayed in a logarithmic scale (log-log scale).
 #'   Set to `TRUE` to enable logarithmic scaling; otherwise, set to `FALSE` for a linear scale.
 #'   Note: If `TRUE`, any regression curves or standard error regions with negative
 #'   values will be omitted from display.
@@ -108,7 +108,7 @@ plot_calibrationcurves <- function(
   ci_show = NA,
   ci_clip = TRUE,
   zoom_n_points = NA,
-  log_axes = FALSE,
+  log_scale = FALSE,
   filter_data = FALSE,
   include_qualifier = TRUE,
   include_istd = FALSE,
@@ -169,7 +169,7 @@ plot_calibrationcurves <- function(
   }
 
   if (is.na(ci_show)) {
-    ci_show <- !log_axes
+    ci_show <- !log_scale
   }
 
   if (all(is.na(point_color))) {
@@ -491,7 +491,7 @@ plot_calibrationcurves <- function(
     dplyr::group_split(.data$feature_id) # TOD |> O .data$curve_id
 
   d_pred <- map(d_calib_stats_grp, function(x) {
-    get_predictions(x, d_calib, d_calib_subset, log_axes)
+    get_predictions(x, d_calib, d_calib_subset, log_scale)
   }) |>
     bind_rows()
 
@@ -580,7 +580,7 @@ plot_calibrationcurves <- function(
   }
 
   a <- !all(is.na(d_pred$concentration))
-  log_flag <- log_axes && a
+  log_flag <- log_scale && a
 
   #TODO: COVR still does not detect this part, even confirm being tested
   if (log_flag) {
@@ -682,7 +682,7 @@ plot_calibrationcurves <- function(
       x_axis_title = x_axis_unit,
       fit_model = fit_model,
       fit_weighting = fit_weighting,
-      log_axes = log_axes,
+      log_scale = log_scale,
       ci_show = ci_show,
       ci_clip = ci_clip,
       fit_overwrite = fit_overwrite
@@ -739,7 +739,7 @@ plot_calibcurves_page <- function(
   x_axis_title,
   fit_model,
   fit_weighting,
-  log_axes,
+  log_scale,
   ci_show,
   ci_clip,
   fit_overwrite
@@ -793,9 +793,9 @@ plot_calibcurves_page <- function(
       ) |>
       group_by(.data$feature_id, .data$curve_id) |>
       summarise(
-        xmin = if (log_axes) min(.data$concentration, na.rm = TRUE) else 0,
+        xmin = if (log_scale) min(.data$concentration, na.rm = TRUE) else 0,
         xmax = max(.data$concentration),
-        ymin = if (log_axes) min(!!plot_var, na.rm = TRUE) else 0,
+        ymin = if (log_scale) min(!!plot_var, na.rm = TRUE) else 0,
         ymax = max(!!plot_var, na.rm = TRUE),
         .groups = "drop"
       )
@@ -822,7 +822,7 @@ plot_calibcurves_page <- function(
         } else {
           safe_max(.data$y_pred, na.rm = TRUE)
         },
-        ymin_fit = if (log_axes) {
+        ymin_fit = if (log_scale) {
           if (ci_show && !ci_clip) {
             safe_min(.data$lwr, na.rm = TRUE)
           } else {
@@ -854,7 +854,7 @@ plot_calibcurves_page <- function(
       ) |>
       arrange(.data$feature_id, .data$curve_id)
 
-    trans_txt <- if (log_axes) "log10" else "identity"
+    trans_txt <- if (log_scale) "log10" else "identity"
 
     facet_limits$feature_id <- factor(facet_limits$feature_id)
 
@@ -958,7 +958,7 @@ plot_calibcurves_page <- function(
   ) {
     p <- p +
       ggplot2::geom_line(
-        data = if (log_axes) {
+        data = if (log_scale) {
           d_pred_filt |> filter(.data$y_pred > 0)
         } else {
           d_pred_filt
@@ -971,7 +971,7 @@ plot_calibcurves_page <- function(
         na.rm = TRUE
       ) +
       ggplot2::geom_line(
-        data = if (log_axes) {
+        data = if (log_scale) {
           d_pred_filt |> filter(.data$y_pred_fit > 0)
         } else {
           d_pred_filt
@@ -1055,7 +1055,7 @@ plot_calibcurves_page <- function(
       ) # Lighter minor gridlines
     )
 
-  # if (!log_axes) {
+  # if (!log_scale) {
   #   p <- p + ggplot2::coord_cartesian(xlim = c(0, NA), ylim = c(0, NA))
   # }
 
@@ -1082,7 +1082,7 @@ plot_calibcurves_page <- function(
       ggplot2::geom_text(
         data = d_calib_stats,
         aes(
-          x = if (!log_axes) 0 else .data$x_min,
+          x = if (!log_scale) 0 else .data$x_min,
           y = Inf,
           label = .data$label
         ),

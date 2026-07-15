@@ -79,7 +79,7 @@ test_that("plot_responsecurves generates a plot", {
   expect_no_error(
     p <- plot_calibrationcurves(
       data = mexp,
-      log_axes = TRUE,
+      log_scale = TRUE,
       fit_overwrite = TRUE,
       ci_show = T,
       fit_model = "quadratic",
@@ -97,7 +97,7 @@ test_that("plot_responsecurves generates a plot", {
   expect_message(
     p <- plot_calibrationcurves(
       data = mexp,
-      log_axes = TRUE,
+      log_scale = TRUE,
       fit_overwrite = TRUE,
       fit_model = "quadratic",
       ci_show = TRUE,
@@ -138,7 +138,7 @@ test_that("plot_responsecurves generates a plot", {
       fit_overwrite = TRUE,
       fit_model = "linear",
       fit_weighting = "1/x",
-      log_axes = TRUE,
+      log_scale = TRUE,
       rows_page = 2,
       cols_page = 2,
       return_plots = TRUE
@@ -154,7 +154,7 @@ test_that("plot_responsecurves generates a plot", {
       ci_show = TRUE,
       fit_model = "linear",
       fit_weighting = "1/x",
-      log_axes = TRUE,
+      log_scale = TRUE,
       rows_page = 2,
       cols_page = 2,
       return_plots = TRUE
@@ -529,7 +529,7 @@ test_that("plot_responsecurves generates a plot with calib failes", {
     fit_overwrite = TRUE,
     fit_model = "quadratic",
     fit_weighting = "1/x",
-    log_axes = TRUE,
+    log_scale = TRUE,
     rows_page = 2,
     cols_page = 2,
     return_plots = TRUE
@@ -559,7 +559,7 @@ test_that("plot_responsecurves generates a plot with some calib concs is NA ", {
     fit_overwrite = TRUE,
     fit_model = "quadratic",
     fit_weighting = "1/x",
-    log_axes = TRUE,
+    log_scale = TRUE,
     rows_page = 2,
     cols_page = 2,
     return_plots = TRUE

@@ -27,7 +27,7 @@
 #' @param include_qualifier Whether to include qualifier features.
 #' @param cols_page Number of facet columns, representing different feature classes, shown per page (default is `5`).
 #' @param point_size Size of the data points. Default is 2
-#' @param point_transparency Alpha transparency of the data point. Default is 0.9
+#' @param point_alpha Alpha transparency of the data point. Default is 0.9
 #' @param line_transparency Alpha transparency of the regression lines. Default is 0.9
 #' @param font_base_size Base font size for the plot.
 #'
@@ -48,7 +48,7 @@ plot_rt_vs_chain <- function(
   robust_regression = TRUE,
   cols_page = 5,
   point_size = 2,
-  point_transparency = 0.9,
+  point_alpha = 0.9,
   line_transparency = 0.5,
   font_base_size = 8
 ) {
@@ -354,7 +354,7 @@ plot_rt_vs_chain <- function(
         color = !!sym(col_var)
       ),
       size = point_size,
-      alpha = point_transparency,
+      alpha = point_alpha,
       stroke = 0.5
     ) +
     facet_wrap(vars(.data$lipid_class_lcb), ncol = cols_page, scales = "free") +

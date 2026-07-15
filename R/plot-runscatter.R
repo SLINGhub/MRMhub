@@ -94,7 +94,7 @@
 #' @param trend_color Color of the trend curve.
 #'
 #' @param point_size Size of the data points. Default is `1.5`.
-#' @param point_transparency Alpha transparency of the data points.
+#' @param point_alpha Alpha transparency of the data points.
 #' @param point_border_width Width of the data point borders.
 #' @param y_label_text Override the default y-axis label text.
 #' @param pages_per_core Number of pages to be plotted by core when multithreading is enabled. Default is `6`. Changing this number may improve performance.
@@ -181,7 +181,7 @@ plot_runscatter <- function(
   log_scale = FALSE,
   show_gridlines = FALSE,
   point_size = 1.5,
-  point_transparency = 1,
+  point_alpha = 1,
   point_border_width = NA,
   font_base_size = 10,
 
@@ -568,7 +568,7 @@ plot_runscatter <- function(
     page_orientation = page_orientation,
     point_size = point_size,
     cap_outliers = cap_outliers,
-    point_transparency = point_transparency,
+    point_alpha = point_alpha,
     show_batches = show_batches,
     batch_zebra_stripe = batch_zebra_stripe,
     batch_line_color = batch_line_color,
@@ -734,7 +734,7 @@ runscatter_plot_pages <- function(
   page_orientation,
   point_size,
   cap_outliers,
-  point_transparency,
+  point_alpha,
   show_batches,
   batch_zebra_stripe,
   batch_line_color,
@@ -1043,7 +1043,7 @@ runscatter_plot_pages <- function(
           group = .data$batch_id
         ),
         size = point_size,
-        alpha = point_transparency,
+        alpha = point_alpha,
         stroke = point_border_width,
         na.rm = TRUE
       )
