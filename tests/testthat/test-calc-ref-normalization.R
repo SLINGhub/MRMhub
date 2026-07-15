@@ -766,3 +766,32 @@ test_that("calibrate_by_reference sets a zero reference summary to NA (not Inf) 
     na.rm = TRUE
   ))
 })
+
+test_that("calibrate_by_reference warns and sets a zero reference concentration to an NA ratio", {
+  refid <- "NIST_SRM1950"
+
+  # Zero one known reference concentration; the concentration ratio
+  # (value / reference) would otherwise be Inf.
+  mexp_zero <- mexp
+  ref_rows <- which(mexp_zero@annot_qcconcentrations$sample_id == refid)
+  mexp_zero@annot_qcconcentrations$concentration[ref_rows[1]] <- 0
+
+  suppressMessages(
+    expect_warning(
+      mexp_res <- calibrate_by_reference(
+        mexp_zero,
+        variable = "conc",
+        reference_sample_id = refid,
+        absolute_calibration = TRUE,
+        undefined_conc_action = "na"
+      ),
+      "zero reference concentration"
+    )
+  )
+
+  expect_true(any(is.na(mexp_res@dataset$feature_conc_ratio)))
+  expect_false(any(
+    is.infinite(mexp_res@dataset$feature_conc_ratio),
+    na.rm = TRUE
+  ))
+})
