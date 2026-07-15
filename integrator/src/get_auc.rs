@@ -385,7 +385,7 @@ fn read_rtmat() -> Result<RtMat, Box<dyn Error>> {
         let to_float = |cn| -> Result<_, _> {
             let str0 = &line[cn];
             str0.parse()
-                .map_err(|_| format!("({}, {}), {str0}", &trans_str[cn], &line[0]))
+                .map_err(|_| format!("({}, {}), {str0}", trans_str[cn], &line[0]))
         };
         for &(.., beg0, end0) in &trans_col {
             let beg = to_float(beg0)?;
@@ -394,7 +394,7 @@ fn read_rtmat() -> Result<RtMat, Box<dyn Error>> {
             if beg > end {
                 return Err(format!(
                     "({}, {}), (begin RT)>(end RT) {beg} {end}",
-                    &trans_str[beg0], &line[0]
+                    trans_str[beg0], &line[0]
                 )
                 .into());
             }
