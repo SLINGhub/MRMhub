@@ -1361,51 +1361,37 @@ filter_features_qc <- function(
 
     prev_filters <- list()
 
-    if (all(metrics_old$filter_missingval_before)) {
-      if (all(metrics_qc_local$filter_missingval)) {
-        prev_filters <- append(prev_filters, "Missing Values")
-      } else {
-        metrics_qc_local$pass_missingval <- metrics_qc_local$pass_missingval_before
-        metrics_qc_local$filter_missingval <- metrics_qc_local$filter_missingval_before
+    # A filter that was fully applied in the previous run keeps its previous
+    # result when it is not applied now (so it is not silently dropped); if it
+    # is applied in both runs it is reported as replaced. The list order defines
+    # the order the filter names are reported in. These columns are always
+    # present once any filter has been applied before.
+    restore_filters <- list(
+      list(
+        filter = "filter_missingval",
+        pass = "pass_missingval",
+        label = "Missing Values"
+      ),
+      list(filter = "filter_lod", pass = "pass_lod", label = "Min-Intensity"),
+      list(filter = "filter_sb", pass = "pass_sb", label = "Signal-to-Blank"),
+      list(filter = "filter_cva", pass = "pass_cva", label = "%CV"),
+      list(filter = "filter_dratio", pass = "pass_dratio", label = "D-ratio")
+    )
+    for (f in restore_filters) {
+      filter_before <- paste0(f$filter, "_before")
+      pass_before <- paste0(f$pass, "_before")
+      if (all(metrics_old[[filter_before]])) {
+        if (all(metrics_qc_local[[f$filter]])) {
+          prev_filters <- append(prev_filters, f$label)
+        } else {
+          metrics_qc_local[[f$pass]] <- metrics_qc_local[[pass_before]]
+          metrics_qc_local[[f$filter]] <- metrics_qc_local[[filter_before]]
+        }
       }
     }
 
-    if (
-      all(metrics_qc_local$filter_lod) && all(metrics_old$filter_lod_before)
-    ) {
-      prev_filters <- append(prev_filters, "Min-Intensity")
-    } else {
-      metrics_qc_local$pass_lod <- metrics_qc_local$pass_lod_before
-      metrics_qc_local$filter_lod <- metrics_qc_local$filter_lod_before
-    }
-
-    if (all(metrics_old$filter_sb_before)) {
-      if (all(metrics_qc_local$filter_sb)) {
-        prev_filters <- append(prev_filters, "Signal-to-Blank")
-      } else {
-        metrics_qc_local$pass_sb <- metrics_qc_local$pass_sb_before
-        metrics_qc_local$filter_sb <- metrics_qc_local$filter_sb_before
-      }
-    }
-
-    if (all(metrics_old$filter_cva_before)) {
-      if (all(metrics_qc_local$filter_cva)) {
-        prev_filters <- append(prev_filters, "%CV")
-      } else {
-        metrics_qc_local$pass_cva <- metrics_qc_local$pass_cva_before
-        metrics_qc_local$filter_cva <- metrics_qc_local$filter_cva_before
-      }
-    }
-
-    if (all(metrics_old$filter_dratio_before)) {
-      if (all(metrics_qc_local$filter_dratio)) {
-        prev_filters <- append(prev_filters, "D-ratio")
-      } else {
-        metrics_qc_local$pass_dratio <- metrics_qc_local$pass_dratio_before
-        metrics_qc_local$filter_dratio <- metrics_qc_local$filter_dratio_before
-      }
-    }
-
+    # Linearity is handled separately: unlike the filters above its columns are
+    # only present when linearity filtering is configured, so guard on presence.
     if ("filter_linearity_before" %in% names(metrics_qc_local)) {
       if (all(metrics_old$filter_linearity_before)) {
         if (all(metrics_qc_local$filter_linearity)) {
@@ -1417,35 +1403,29 @@ filter_features_qc <- function(
       }
     }
 
-    # below filter are always defined (never NA). When they are changed in new filter application, they are always replaced a
-    # and a message appears
-
-    if ("filter_istd" %in% names(metrics_qc_local)) {
-      if (
-        !isTRUE(all(metrics_qc_local$pass_istd == metrics_old$pass_istd_before))
-      ) {
-        prev_filters <- append(prev_filters, "ISTD")
-      }
-    }
-
-    if ("filter_qualifier" %in% names(metrics_qc_local)) {
-      if (
-        !isTRUE(all(
-          metrics_qc_local$pass_qualifier == metrics_old$pass_qualifier_before
-        ))
-      ) {
-        prev_filters <- append(prev_filters, "Qualifier")
-      }
-    }
-
-    if ("filter_featureskeep" %in% names(metrics_qc_local)) {
-      if (
-        !isTRUE(all(
-          metrics_qc_local$pass_featureskeep ==
-            metrics_old$pass_featureskeep_before
-        ))
-      ) {
-        prev_filters <- append(prev_filters, "Keepers")
+    # These filters are always defined (never NA). When their pass result
+    # differs from the previous run they are always replaced and reported.
+    flag_filters <- list(
+      list(filter = "filter_istd", pass = "pass_istd", label = "ISTD"),
+      list(
+        filter = "filter_qualifier",
+        pass = "pass_qualifier",
+        label = "Qualifier"
+      ),
+      list(
+        filter = "filter_featureskeep",
+        pass = "pass_featureskeep",
+        label = "Keepers"
+      )
+    )
+    for (f in flag_filters) {
+      pass_before <- paste0(f$pass, "_before")
+      if (f$filter %in% names(metrics_qc_local)) {
+        if (
+          !isTRUE(all(metrics_qc_local[[f$pass]] == metrics_old[[pass_before]]))
+        ) {
+          prev_filters <- append(prev_filters, f$label)
+        }
       }
     }
 

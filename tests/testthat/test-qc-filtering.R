@@ -648,6 +648,43 @@ test_that("filter_features_qc works on selected criteria", {
 })
 
 
+# Regression: a min-intensity (LOD) filter enabled on a clear_existing = FALSE
+# re-run, when it was not enabled in the previous run, used to be silently
+# discarded (the previous, disabled state was restored). It must now apply.
+test_that("LOD filter applies on clear_existing = FALSE re-run (regression)", {
+  thr <- 5e5
+  fresh <- filter_features_qc(
+    mexp_proc,
+    clear_existing = TRUE,
+    include_qualifier = TRUE,
+    include_istd = FALSE,
+    min.intensity.median.spl = thr
+  )
+  run1 <- filter_features_qc(
+    mexp_proc,
+    clear_existing = TRUE,
+    include_qualifier = TRUE,
+    include_istd = FALSE
+  )
+  reconciled <- filter_features_qc(
+    run1,
+    clear_existing = FALSE,
+    include_qualifier = TRUE,
+    include_istd = FALSE,
+    min.intensity.median.spl = thr
+  )
+
+  # the LOD filter must fail some features in a fresh run ...
+  expect_gt(sum(!fresh@metrics_qc$pass_lod, na.rm = TRUE), 0)
+  # ... and the reconciled re-run must apply it identically (not revert it)
+  expect_true(all(reconciled@metrics_qc$filter_lod))
+  expect_equal(
+    sort(reconciled@metrics_qc$pass_lod),
+    sort(fresh@metrics_qc$pass_lod)
+  )
+})
+
+
 # Confirm overwriting of QC criteria works
 
 test_that("Confirm overwriting of QC criteria works", {
