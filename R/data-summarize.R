@@ -25,7 +25,7 @@ data_sum_features <- function(
   qualifier_action = "include",
   feature_classes = NA
 ) {
-  qualifier_action <- match.arg(
+  qualifier_action <- rlang::arg_match(
     qualifier_action,
     c("separate", "include", "exclude")
   )

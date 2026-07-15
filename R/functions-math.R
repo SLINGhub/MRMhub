@@ -123,8 +123,8 @@ get_outlier_bounds <- function(
   outlier_log = FALSE,
   na.rm = FALSE
 ) {
-  method <- match.arg(method)
-  
+  method <- rlang::arg_match(method)
+
   if (!na.rm && any(is.na(x))) {
     return(c(NA_real_, NA_real_))
   }
@@ -316,7 +316,7 @@ get_iqr_tails <- function(x, k = 1.5, na.rm = FALSE) {
 
 # find closest available number in a vector
 find_closest <- function(x, available_numbers, method = "absolute") {
-  method <- match.arg(method, c("absolute", "lower", "higher"))
+  method <- rlang::arg_match(method, c("absolute", "lower", "higher"))
 
   switch(
     method,
