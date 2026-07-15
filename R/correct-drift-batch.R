@@ -977,57 +977,35 @@ fun_correct_drift <- function(
     ungroup()
 
   if (any(d_sum_span$WITHIN_QC_SPAN)) {
-    n_spl_excl <- sum(d_sum_span$qc_type == "SPL" & !d_sum_span$WITHIN_QC_SPAN)
-    n_nist_excl <- sum(
-      d_sum_span$qc_type == "NIST" & !d_sum_span$WITHIN_QC_SPAN
+    # QC types reported when they fall outside the QC-spanned region, in a fixed
+    # order with human-readable labels. Blanks (PBLK/SBLK/UBLK) and RQC are
+    # intentionally omitted: they are never drift-corrected, so "excluded" is
+    # expected rather than informative and would only add noise.
+    report_types <- c(
+      SPL = "study samples (SPL)",
+      NIST = "NISTs",
+      BQC = "BQCs",
+      TQC = "TQCs",
+      LTR = "LTRs"
     )
-    n_bqc_excl <- sum(d_sum_span$qc_type == "BQC" & !d_sum_span$WITHIN_QC_SPAN)
-    n_tqc_excl <- sum(d_sum_span$qc_type == "TQC" & !d_sum_span$WITHIN_QC_SPAN)
-    n_ltr_excl <- sum(d_sum_span$qc_type == "LTR" & !d_sum_span$WITHIN_QC_SPAN)
-
-    txt_1 <- txt_2 <- txt_3 <- txt_4 <- txt_5 <- character()
-    if (n_spl_excl > 0) {
-      txt_1 <- paste0(
-        n_spl_excl,
-        " of ",
-        sum(d_sum_span$qc_type == "SPL"),
-        " study samples (SPL)"
-      )
-    }
-    if (n_nist_excl > 0) {
-      txt_2 <- paste0(
-        n_nist_excl,
-        " of ",
-        sum(d_sum_span$qc_type == "NIST"),
-        " NISTs"
-      )
-    }
-    if (n_bqc_excl > 0) {
-      txt_3 <- paste0(
-        n_bqc_excl,
-        " of ",
-        sum(d_sum_span$qc_type == "BQC"),
-        " BQCs"
-      )
-    }
-    if (n_tqc_excl > 0) {
-      txt_4 <- paste0(
-        n_tqc_excl,
-        " of ",
-        sum(d_sum_span$qc_type == "TQC"),
-        " TQCs"
-      )
-    }
-    if (n_ltr_excl > 0) {
-      txt_5 <- paste0(
-        n_ltr_excl,
-        " of ",
-        sum(d_sum_span$qc_type == "LTR"),
-        " LTRs"
-      )
+    txt_parts <- character()
+    for (qt in names(report_types)) {
+      n_excl <- sum(d_sum_span$qc_type == qt & !d_sum_span$WITHIN_QC_SPAN)
+      if (n_excl > 0) {
+        txt_parts <- c(
+          txt_parts,
+          paste0(
+            n_excl,
+            " of ",
+            sum(d_sum_span$qc_type == qt),
+            " ",
+            report_types[[qt]]
+          )
+        )
+      }
     }
 
-    txt_final <- paste(c(txt_1, txt_2, txt_3, txt_4, txt_5), collapse = ", ")
+    txt_final <- paste(txt_parts, collapse = ", ")
     if (txt_final != "") {
       txt <- glue::glue_collapse(ref_qc_types, sep = ", ", last = ", and ")
       cli_alert_warning(col_yellow(
