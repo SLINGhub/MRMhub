@@ -574,8 +574,6 @@ assert_metadata <- function(
   # ANALYSES METADATA ====================
   if (!is.null(metadata$annot_analyses) && nrow(metadata$annot_analyses) > 0) {
     ## Check for data defects ----
-    #TODO remove: metadata$annot_analyses$qc_type[3] <- NA
-
     metadata$annot_analyses <- metadata$annot_analyses |>
       assertr::verify(
         has_any_name("analysis_id"),
