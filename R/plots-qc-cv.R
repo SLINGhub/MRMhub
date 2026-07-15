@@ -343,11 +343,11 @@ plot_qcmetrics_comparison <- function(
     ))
   }
 
-  # if(!all(c(x_variable, y_variable) %in% colnames(data@metrics_qc))) {
-  #   cli::cli_abort(col_red("One or both of the specified variables (`x_variable`
-  #                          and `y_variable`) are not present in the QC metrics
-  #                          table. Please verify the help page"))
-  # }
+  if (!all(c(x_variable, y_variable) %in% colnames(data@metrics_qc))) {
+    cli::cli_abort(
+      "{.arg x_variable} and {.arg y_variable} must be columns of the QC metrics table (see {.fn calc_qc_metrics})."
+    )
+  }
 
   d_qc <- data@metrics_qc
 

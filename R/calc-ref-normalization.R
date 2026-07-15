@@ -110,6 +110,12 @@ calibrate_by_reference <- function(
       "When using `absolute_calibration = TRUE`, then `undefined_conc_action` must be specified, as either 'original', 'na', or 'error'"
     ))
   }
+  if (!is.null(undefined_conc_action)) {
+    undefined_conc_action <- rlang::arg_match(
+      undefined_conc_action,
+      c("original", "na", "error")
+    )
+  }
 
   # Check if the reference sample is present in the dataset
   if (!any(data@dataset$sample_id %in% reference_sample_id)) {

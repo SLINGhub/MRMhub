@@ -895,7 +895,6 @@ set_intensity_var <- function(
 ) {
   check_data(data)
   variable_strip <- str_remove(variable_name, "feature_")
-  #rlang::arg_match(variable_strip, c("area", "height", "conc"))
   variable_name <- stringr::str_c("feature_", variable_strip)
   if (auto_select) {
     var_list <- unlist(rlang::list2(...), use.names = FALSE)

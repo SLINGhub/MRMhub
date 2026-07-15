@@ -210,7 +210,7 @@ correct_interferences <- function(
 
   if (variable != "feature_intensity") {
     cli::cli_abort(
-      "Currently only correction for raw intensities suspported, thus variable must be set to `feature_intensity` or not defined."
+      "Currently only correction for raw intensities supported, thus variable must be set to `feature_intensity` or not defined."
     )
   }
   # Check if data is already interference-corrected
