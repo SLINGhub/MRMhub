@@ -67,7 +67,6 @@
 #' @param return_plots Logical, if `TRUE`, returns plots as a list of `ggplot`
 #'   objects. Default is `FALSE`.
 #' @param point_size Size of points in the plot. Default is 1.5.
-#' @param line_width Width of regression lines. Default is 0.7.
 #' @param point_color A vector specifying the colors for points corresponding
 #'   to different QC types. This can be either an unnamed vector or a named
 #'   vector, with names corresponding to QC types. Unused colors will be ignored.
@@ -82,6 +81,7 @@
 #'   Default is `NA` which corresponds to the default shapes for QC types defined in the package.
 
 #'
+#' @param line_width Width of regression lines. Default is 0.7.
 #' @param line_color Color of the regression line. Default is `"#4575b4"`.
 #' @param ribbon_fill Color for the confidence interval ribbon. Default is
 #'   `"#91bfdb40"`.

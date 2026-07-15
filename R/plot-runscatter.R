@@ -57,8 +57,8 @@
 #' applied drift/batch correction, (e.g., `conc_before`). Add `_raw` after the
 #' variable name to plot the raw uncorrected feature values (e.g., `conc_raw`).
 #'
-#' @param filter_data Logical, whether to use QC-filtered data based on criteria set via `filter_features_qc()`.
 #' @param qc_types QC types to be plotted. Can be a vector of QC types or a regular expression pattern. `NA` (default) displays all available QC/Sample types.
+#' @param filter_data Logical, whether to use QC-filtered data based on criteria set via `filter_features_qc()`.
 #' @param include_qualifier Logical, whether to include qualifier features. Default is `TRUE`.
 #' @param include_istd Logical, whether to include internal standard (ISTD) features. Default is `TRUE`.
 #' @template feature_filters_2

@@ -56,8 +56,6 @@ get_feature_correlations <- function(tbl, cor_min_neg, cor_min) {
 #' both axes. Default is `FALSE`.
 #' @param sort_by_corr A logical value indicating whether to sort the features in
 #' the plot by correlation or alphabetically by feature ID. Default is `TRUE`.
-#' @param rows_page Number of rows of plots per page.
-#' @param cols_page Number of columns of plots per page.
 #' @param filter_data A logical value indicating whether to use all data
 #' (default) or only QC-filtered data (filtered via [filter_features_qc()]).
 #' @param include_qualifier A logical value indicating whether to include
@@ -71,6 +69,8 @@ get_feature_correlations <- function(tbl, cor_min_neg, cor_min) {
 #'   `output_pdf` is `TRUE`.
 #' @param return_plots Logical. If `TRUE`, returns the plots as a list of
 #'   `ggplot` objects.
+#' @param rows_page Number of rows of plots per page.
+#' @param cols_page Number of columns of plots per page.
 #' @param specific_page An integer specifying a specific page to plot. If
 #'   `NA` (default), all pages are plotted.
 #' @param page_orientation Orientation of the PDF paper: `"LANDSCAPE"` or

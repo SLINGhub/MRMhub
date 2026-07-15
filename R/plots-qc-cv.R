@@ -249,6 +249,7 @@ plot_normalization_qc <- function(
 #'   auto-scaling (default is `c(0, NA)`).
 #' @param cols_page Integer; number of facet columns per page (default is `5`).
 #' @param point_size Numeric; size of points in millimeters (default is `1`).
+#' @param point_alpha Numeric; transparency of points (default is `0.5`).
 #' @param point_color A vector specifying the colors for points corresponding
 #'   to different QC types. This can be either an unnamed vector or a named
 #'   vector, with names corresponding to QC types. Unused colors will be ignored.
@@ -262,7 +263,6 @@ plot_normalization_qc <- function(
 #'   vector, with names corresponding to QC types. Unused shapes will be ignored.
 #'   Default is `NA` which corresponds to the default shapes for QC types defined in the package.
 #' @param point_stroke Numeric; thickness of point borders (default is `0.5`).
-#' @param point_alpha Numeric; transparency of points (default is `0.5`).
 #' @template font_base_size
 #'
 #' @return A `ggplot` object representing the scatter plot.

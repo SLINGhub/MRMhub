@@ -471,9 +471,9 @@ save_report_xlsx <- function(
 #' @param data MRMhubExperiment object
 #' @param path File name with path of exported CSV file
 #' @param variable Variable to be exported, must be present in the data and any of "area", "height", "intensity", "norm_intensity", "response", "conc", "conc_raw", "rt", "fwhm".
+#' @param qc_types QC types to be plotted. Can be a vector of QC types or a regular expression pattern. `NA` (default) displays all available QC/Sample types.
 #' @param filter_data A logical value indicating whether to use all data
 #' (default) or only QC-filtered data (filtered via [filter_features_qc()]). Default is `FALSE`.
-#' @param qc_types QC types to be plotted. Can be a vector of QC types or a regular expression pattern. `NA` (default) displays all available QC/Sample types.
 #' @param include_qualifier A logical value indicating whether to include
 #' qualifier features. Default is `NA`, which will be automatically set to `FALSE`
 #' if `variable` is `conc` or `conc_raw`, and `FALSE` otherwise.
