@@ -578,3 +578,40 @@ test_that("istd-based norm and quantification are correct, another test", {
     tolerance = 0.0000000001
   )
 })
+
+test_that("normalize_by_istd sets a zero-ISTD divisor to NA (not Inf) and warns", {
+  mexp <- lipidomics_dataset
+  istd_fid <- mexp@annot_features |>
+    dplyr::filter(.data$is_istd) |>
+    dplyr::pull(.data$feature_id) |>
+    head(1)
+  an <- unique(mexp@dataset$analysis_id)[1]
+  grp_feat <- mexp@annot_features |>
+    dplyr::filter(.data$istd_feature_id == istd_fid, !.data$is_istd) |>
+    dplyr::pull(.data$feature_id) |>
+    head(1)
+
+  # Zero the internal standard intensity for a single analysis; without the
+  # guard this divisor would yield Inf/NaN for every feature in the ISTD group.
+  mexp@dataset$feature_intensity[
+    mexp@dataset$feature_id == istd_fid & mexp@dataset$analysis_id == an
+  ] <- 0
+
+  suppressMessages(
+    expect_warning(
+      mexp_res <- normalize_by_istd(mexp),
+      "zero intensity"
+    )
+  )
+
+  # The affected feature is NA, and no value in the column is Inf/NaN
+  affected <- mexp_res@dataset$feature_norm_intensity[
+    mexp_res@dataset$feature_id == grp_feat & mexp_res@dataset$analysis_id == an
+  ]
+  expect_true(is.na(affected))
+  expect_false(any(
+    is.infinite(mexp_res@dataset$feature_norm_intensity) |
+      is.nan(mexp_res@dataset$feature_norm_intensity),
+    na.rm = TRUE
+  ))
+})
