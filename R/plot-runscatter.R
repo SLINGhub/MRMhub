@@ -136,8 +136,8 @@ plot_runscatter <- function(
   data = NULL,
   variable,
   # Data and filtering arguments
-  filter_data = FALSE,
   qc_types = NA,
+  filter_data = FALSE,
   include_qualifier = TRUE,
   include_istd = TRUE,
   include_feature_filter = NA,

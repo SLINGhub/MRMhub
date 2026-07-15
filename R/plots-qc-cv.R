@@ -298,10 +298,10 @@ plot_qcmetrics_comparison <- function(
   y_lim = c(NA_real_, NA_real_),
   cols_page = 5,
   point_size = 1.5,
+  point_alpha = 0.5,
   point_color = "#0460acff",
   point_fill = "#4da2e7ff",
   point_shape = 21,
-  point_alpha = 0.5,
   point_stroke = 0.5,
   font_base_size = 8
 ) {
