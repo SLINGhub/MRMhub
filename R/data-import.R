@@ -1233,6 +1233,13 @@ parse_plain_long_csv <- function(
   ...
 ) {
   args <- list(...)
+  unknown <- setdiff(names(args), c("transition_id_columns", ""))
+  if (length(unknown) > 0) {
+    cli::cli_abort(c(
+      "x" = "Unknown argument{?s} passed via {.arg ...}: {.arg {unknown}}.",
+      "i" = "The only argument accepted via {.arg ...} is {.arg transition_id_columns}."
+    ))
+  }
 
   ext_file <- tolower(fs::path_ext(path))
   sep <- case_when(
