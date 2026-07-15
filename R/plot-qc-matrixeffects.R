@@ -19,8 +19,7 @@
 #' @param point_size A numeric value indicating the size of points in
 #' millimeters. Default is `0.5`.
 #' @param dodge_width Numeric. Width used to dodge overlapping points by `qc_type`. Default is `0.6`.
-#' @param font_base_size A numeric value indicating the base font size for
-#' plot text elements. Default is 8.
+#' @template font_base_size
 #' @param point_alpha Numeric. Transparency of the plotted points. Default is `0.3`.
 #' @param box_linewidth Numeric. Width of the boxplot lines. Default is `0.5`.
 #' @param box_alpha Numeric. Transparency of the boxplot. Default is `0.3`.

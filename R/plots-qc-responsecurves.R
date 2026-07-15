@@ -36,7 +36,7 @@
 #' the number of colors must match the number of curves.
 #' @param point_size Size of points in millimeters.
 #' @param line_width Width of regression lines.
-#' @param font_base_size Base font size for text. Default is 8.
+#' @template font_base_size
 #' @param rows_page Number of rows of plots per page. Used for pagination in
 #'   `curve_layout = "overlay"` and `"cols"`. Ignored in `curve_layout = "rows"`.
 #' @param cols_page Number of columns of plots per page. Used for pagination in

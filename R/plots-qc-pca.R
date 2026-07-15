@@ -50,8 +50,7 @@
 #' millimeters. Default is 2.
 #' @param point_alpha A numeric value indicating the transparency of
 #' points (0-1). Default is 0.5.
-#' @param font_base_size A numeric value indicating the base font size for
-#' plot text elements. Default is 8.
+#' @template font_base_size
 #' @param ellipse_confidence_level A numeric value indicating the confidence level
 #' for the ellipses. Default is 0.95.
 #' @param ellipse_linewidth A numeric value indicating the line width of the
@@ -498,8 +497,7 @@ plot_pca <- function(
 #' @param include_istd A logical value indicating whether to include internal
 #' standard (ISTD) features. Default is `TRUE`.
 #' @template feature_filters
-#' @param font_base_size A numeric value indicating the base font size for
-#' plot text elements. Default is 7.
+#' @template font_base_size
 #'
 #' @return A `ggplot` object with PCA loadings plot
 #'

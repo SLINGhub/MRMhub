@@ -85,7 +85,7 @@
 #' @param line_color Color of the regression line. Default is `"#4575b4"`.
 #' @param ribbon_fill Color for the confidence interval ribbon. Default is
 #'   `"#91bfdb40"`.
-#' @param font_base_size Base font size for text in plots. Default is 8.
+#' @template font_base_size
 #' @param rows_page Number of plot rows. Default is 4.
 #' @param cols_page Number of plot columns. Default is 5.
 #' @param specific_page Show/save a specific page number only. `NA` plots/saves all pages.

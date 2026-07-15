@@ -41,7 +41,7 @@
 #'   `facet_by_class = TRUE`.
 #' @param point_size Size of points in millimeters (default is `1`).
 #' @param point_alpha Transparency of points (default is `0.5`).
-#' @param font_base_size Base font size in points (default is `8`).
+#' @template font_base_size
 #'
 #' @return A `ggplot` object representing the scatter plot comparing CV values
 #'   before and after normalization.
@@ -263,7 +263,7 @@ plot_normalization_qc <- function(
 #'   Default is `NA` which corresponds to the default shapes for QC types defined in the package.
 #' @param point_stroke Numeric; thickness of point borders (default is `0.5`).
 #' @param point_alpha Numeric; transparency of points (default is `0.5`).
-#' @param font_base_size Numeric; base font size in points (default is `8`).
+#' @template font_base_size
 #'
 #' @return A `ggplot` object representing the scatter plot.
 #'

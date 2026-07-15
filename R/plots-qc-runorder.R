@@ -26,7 +26,7 @@
 #' instead of line separators.
 #' @param batch_line_color Color of the batch separator lines.
 #' @param batch_fill_color Color of the batch shaded areas.
-#' @param font_base_size Numeric, base font size for the plot.
+#' @template font_base_size
 #' @return A `ggplot` object representing the run sequence plot.
 #' @family QC plots
 #' @export
@@ -362,7 +362,7 @@ plot_runsequence <- function(
 
 #' @param x_gridlines Logical, whether to show major x-axis gridlines
 #' @param linewidth Numeric, line width used for whiskers of the boxplot
-#' @param font_base_size Numeric, base font size for the plot
+#' @template font_base_size
 #' @param relative_log_abundances Logical, whether to use relative log abundances (RLA) or just log-transformed values
 #' @param show_plot Logical, whether to display the plot. Default is `TRUE`.
 #' @return A list with the `ggplot` object representing the RLA plot and a table with detected outliers if `outlier_detection = TRUE`.

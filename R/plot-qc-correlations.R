@@ -85,8 +85,7 @@ get_feature_correlations <- function(tbl, cor_min_neg, cor_min) {
 #' @param line_color A character string indicating the color of the correlation line. Default is orange.
 #' @param line_alpha A numeric value indicating the transparency of the correlation line (0-1). Default is 0.5.
 #'
-#' @param font_base_size A numeric value indicating the base font size for
-#' plot text elements. Default is 8.
+#' @template font_base_size
 #' @param show_progress Logical. If `TRUE`, displays a progress bar during
 #'   plot creation.
 #'

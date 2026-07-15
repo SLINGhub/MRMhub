@@ -29,7 +29,7 @@
 #' @param point_size Size of the data points. Default is 2
 #' @param point_alpha Alpha transparency of the data point. Default is 0.9
 #' @param line_transparency Alpha transparency of the regression lines. Default is 0.9
-#' @param font_base_size Base font size for the plot.
+#' @template font_base_size
 #'
 #' @return A `ggplot` object representing faceted scatter plots
 #'

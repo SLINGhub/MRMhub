@@ -41,7 +41,7 @@
 #' @param x_label A character string for the x-axis label. If `NA`, a default label is generated.
 #' @param y_axis_position A character string specifying the y-axis position ("left" or "right"). Default is "right".
 #' @param segment_width A numeric value for the linewidth of the feature segments. Default is 0.25.
-#' @param font_base_size A numeric value for the base font size. Default is 8.
+#' @template font_base_size
 #' @param grid_major_color Color for major grid lines. Default is "grey50".
 #' @param grid_major_linewidth Linewidth for major grid lines. Default is 0.1.
 #' @param grid_minor_color Color for minor grid lines. Default is "grey50".

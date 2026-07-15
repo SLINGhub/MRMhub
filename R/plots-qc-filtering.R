@@ -9,7 +9,7 @@
 #' only if it has passed all hierarchically lower filters (e.g., `S/B` ratio and `LOD`).
 #'
 #' @template data_mexp
-#' @param font_base_size The base font size for the plot. Default is `8`.
+#' @template font_base_size
 #'
 #' @return A `ggplot` object showing the feature QC filtering summary by feature class.
 #'
@@ -260,7 +260,7 @@ plot_qc_summary_byclass <- function(data = NULL, font_base_size = 8) {
 #'
 #' @template data_mexp
 #' @param with_venn Whether to include a Venn diagram summarizing the features excluded due to different QC criteria. Default is `TRUE`.
-#' @param font_base_size The base font size for the plot. Default is `8`.
+#' @template font_base_size
 #'
 #' @return A `ggplot` object showing the feature QC filtering summary with or without a Venn diagram.
 #'

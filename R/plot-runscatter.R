@@ -106,7 +106,7 @@
 #' @param cols_page Number of columns per page.
 #' @param specific_page Show/save a specific page number only. `NA` plots/saves all pages.
 #' @param page_orientation Page orientation, "LANDSCAPE" or "PORTRAIT".
-#' @param font_base_size Base font size for the plot.
+#' @template font_base_size
 #' @param use_dingbats Logical, whether to use Dingbats font in the PDF output for improved plotting speed. Default is `TRUE`. Set to `FALSE` if your PDF viewer does not show points correctly.
 #' @param show_progress Logical, whether to show a progress bar. Default is `TRUE`.
 #'
