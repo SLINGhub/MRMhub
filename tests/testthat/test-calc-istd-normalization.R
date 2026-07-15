@@ -615,3 +615,10 @@ test_that("normalize_by_istd sets a zero-ISTD divisor to NA (not Inf) and warns"
     na.rm = TRUE
   ))
 })
+
+test_that("normalize_by_istd errors cleanly on an empty experiment", {
+  expect_error(
+    normalize_by_istd(mrmhub::MRMhubExperiment()),
+    "No feature metadata available"
+  )
+})

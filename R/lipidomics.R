@@ -77,6 +77,13 @@ parse_lipid_feature_names <- function(
   check_installed("rgoslin")
   use_as_feature_class_s <- rlang::sym(use_as_feature_class)
 
+  # Nothing to parse for an empty table. `rgoslin::parseLipidNames()` returns a
+  # frame without the `Grammar` column when given no names, which would make the
+  # downstream `filter(Grammar == ...)` fail; return the input unchanged instead.
+  if (nrow(tbl) == 0) {
+    return(tbl)
+  }
+
   dat <- tbl |>
     select("feature_id") |>
     unique()

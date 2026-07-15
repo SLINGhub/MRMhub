@@ -1333,3 +1333,21 @@ test_that("calc_qc_metrics works with only conc present", {
     fixed = TRUE
   )
 })
+
+test_that("calc_qc_metrics handles empty / zero-row inputs without crashing", {
+  # A freshly constructed (fully empty) experiment returns cleanly
+  expect_s4_class(
+    suppressMessages(calc_qc_metrics(mrmhub::MRMhubExperiment())),
+    "MRMhubExperiment"
+  )
+
+  # A lipidomics experiment with a zero-row dataset must not crash in the lipid
+  # name parser (empty rgoslin parse has no `Grammar` column); it returns
+  # cleanly with metrics derived from the feature metadata.
+  mexp_zero <- mexp
+  mexp_zero@dataset <- mexp_zero@dataset[FALSE, ]
+  expect_no_error(
+    mexp_res <- suppressMessages(calc_qc_metrics(mexp_zero))
+  )
+  expect_s4_class(mexp_res, "MRMhubExperiment")
+})
