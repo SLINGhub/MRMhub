@@ -1,0 +1,110 @@
+# Import analysis metadata
+
+Imports analysis metadata (annotation) from a preloaded data frame or
+tibble via the `data` argument, or from data from a file (CSV or Excel)
+via the `path` argument. The analysis metadata must contain following
+columns: `analysis_id` and `qc_type`. Additional analysis metadata
+columns are described under details below.
+
+## Usage
+
+``` r
+import_metadata_analyses(
+  data = NULL,
+  table = NULL,
+  path = NULL,
+  sheet = NULL,
+  ignore_warnings = FALSE,
+  excl_unmatched_analyses = FALSE
+)
+```
+
+## Arguments
+
+- data:
+
+  A `MRMhubExperiment` object
+
+- table:
+
+  A data frame or tibble with analysis (sample) metadata. If `path` is
+  also provided, an error will be raised.
+
+- path:
+
+  A character string specifying the path to a CSV (.csv) or Excel
+  (.xlsx) file. If `table` is also provided, an error will be raised.
+
+- sheet:
+
+  Defines the sheet name in case an Excel file is provided.
+
+- ignore_warnings:
+
+  Ignore warnings from data validation and proceed with importing
+  metadata
+
+- excl_unmatched_analyses:
+
+  Exclude analyses (samples) that have no matching metadata
+
+## Value
+
+An updated `MRMhubExperiment` object
+
+## Examples
+
+``` r
+mexp <- MRMhubExperiment()
+file_path = system.file("extdata", "MHQuant_demo.csv", package = "mrmhub")
+mexp <- import_data_masshunter(
+  data = mexp,
+  path = file_path,
+  import_metadata = FALSE)
+#> ✔ Imported 38 analyses with 31 features
+#> ℹ `feature_area` selected as default feature intensity. Modify with `set_intensity_var()`.
+
+meta_path = system.file("extdata", "MHQuant_demo_metadata_analyses.csv", package = "mrmhub")
+
+mexp <- import_metadata_analyses(
+  data = mexp,
+  path = meta_path,
+  excl_unmatched_analyses = TRUE)
+#> ✔ Analysis metadata associated with 38 analyses.
+
+print(mexp)
+#> 
+#> ── MRMhubExperiment ────────────────────────────────────────────────────────────
+#> Title:
+#> 
+#> Processing status: Annotated raw AREA values
+#> 
+#> ── Annotated Raw Data ──
+#> 
+#> • Analyses: 38
+#> • Features: 31
+#> • Raw signal used for processing: `feature_area`
+#> 
+#> ── Metadata ──
+#> 
+#> • Analyses/samples: ✔
+#> • Features/analytes: ✖
+#> • Internal standards: ✖
+#> • Response curves: ✖
+#> • Calibrants/QC concentrations: ✖
+#> • Study samples: ✖
+#> 
+#> ── Processing Status ──
+#> 
+#> • Isotope corrected: ✖
+#> • ISTD normalized: ✖
+#> • ISTD quantitated: ✖
+#> • Drift corrected variables: ✖
+#> • Batch corrected variables: ✖
+#> • Feature filtering applied: ✖
+#> 
+#> ── Exclusion of Analyses and Features ──
+#> 
+#> • Analyses manually excluded (`analysis_id`): ✖
+#> • Features manually excluded (`feature_id`): ✖
+```

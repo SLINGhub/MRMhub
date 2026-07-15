@@ -1,0 +1,28 @@
+pandoc: 3.8.3
+pkgdown: 2.2.1
+pkgdown_sha: ~
+articles:
+  articles/00_get_started: 00_get_started.html
+  articles/01_datastructure: 01_datastructure.html
+  articles/02_keydataids: 02_keydataids.html
+  articles/02_QualityControl: 02_QualityControl.html
+  articles/02b_keyfeaturevar: 02b_keyfeaturevar.html
+  articles/03_mrmhubexperiment: 03_mrmhubexperiment.html
+  articles/04_dataimport: 04_dataimport.html
+  articles/05_metadataimport: 05_metadataimport.html
+  articles/07_driftbatchcorr: 07_driftbatchcorr.html
+  articles/Integrator_manual: Integrator_manual.html
+  mrmhub: mrmhub.html
+  articles/msconvert_manual: msconvert_manual.html
+  articles/R01_quantms: R01_quantms.html
+  articles/T_BatchCorrect: T_BatchCorrect.html
+  articles/T_CalibRef: T_CalibRef.html
+  articles/T_DriftCorrect: T_DriftCorrect.html
+  articles/T_RunScatter: T_RunScatter.html
+  articles/T01_prepdata: T01_prepdata.html
+  articles/T01_targetlipidomics_workflow: T01_targetlipidomics_workflow.html
+  articles/T02_settingup_workflow: T02_settingup_workflow.html
+last_built: 2026-07-15T08:14Z
+urls:
+  reference: https://slinghub.github.io/MRMhub/reference
+  article: https://slinghub.github.io/MRMhub/articles
