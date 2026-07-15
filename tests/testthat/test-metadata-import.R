@@ -639,3 +639,44 @@ test_that("missing qc_type and valid_analysis are filled with forgiving defaults
   expect_true(all(out_valid@annot_analyses$valid_analysis))
   expect_false(any(is.na(out_valid@annot_analyses$valid_analysis)))
 })
+
+test_that("an unrecognized qc_type is warned about and preserved, then drops to NA under the standard levels", {
+  mexp <- mrmhub::MRMhubExperiment()
+  mexp <- mrmhub::import_data_masshunter(
+    mexp,
+    path = testthat::test_path(
+      "testdata/masshunter/MRMhub_TestData_MHQuant_S1P_DefaultSampleInfo_RT-Areas-FWHM.csv"
+    ),
+    import_metadata = FALSE
+  )
+  analyses <- get_metadata_table(
+    path = testthat::test_path(
+      "testdata/metadata/MRMhub_TestData_MHQuant_S1P_metadata_tables.xlsx"
+    ),
+    sheet = "Analyses"
+  )
+  id1 <- analyses$analysis_id[[1]]
+  analyses$qc_type[1] <- "WEIRD"
+
+  # A custom qc_type is surfaced with a warning but retained (not dropped) at
+  # import -- custom values are permitted for non-standard workflows.
+  suppressMessages(
+    expect_warning(
+      mexp_res <- mrmhub::import_metadata_analyses(
+        mexp,
+        table = analyses,
+        excl_unmatched_analyses = TRUE
+      ),
+      "Unrecognized"
+    )
+  )
+  qc_col <- mexp_res@annot_analyses$qc_type
+  expect_type(qc_col, "character")
+  expect_equal(qc_col[mexp_res@annot_analyses$analysis_id == id1], "WEIRD")
+
+  # Standard QC computations and plots coerce qc_type via the canonical levels,
+  # which drops the unknown value to NA (a known value is retained).
+  qc_levels <- mrmhub:::pkg.env$qc_type_annotation$qc_type_levels
+  expect_true(is.na(factor("WEIRD", levels = qc_levels)))
+  expect_false(is.na(factor("SPL", levels = qc_levels)))
+})
