@@ -1,12 +1,9 @@
-# TODO: Replace with RGOSLIN !
-
 # Determine Lipid and Transition Class Name from analyte name
 # Retrieves "lipid class" from the analyte name and adds it a factor column. Lipid class is defined as group of lipids sharing same head group and modications but with different chain lengths and saturations.
 # lipid_class_base are for example all ceramides (including deoxy etc) and PC (including PC-O etc)
 # Different transitions of the same lipid class are indicatec in transition class
 
 get_analyte_id <- function(transition_name, remove_nl_transitions) {
-  #analyte_id <- str_trim(str_replace(transition_name, "\\[.*?\\]", ""))
   analyte_id <- remove_bracket_substrings(
     transition_name,
     remove_nl_transitions = remove_nl_transitions
@@ -14,7 +11,6 @@ get_analyte_id <- function(transition_name, remove_nl_transitions) {
 
   analyte_id <- str_trim(str_replace(analyte_id, "  ", " "))
   analyte_id <- str_trim(str_replace(analyte_id, "\\+", ""))
-  #analyte_id <- str_trim(str_replace(analyte_id, "\\[.*?\\]", ""))
   analyte_id <- str_trim(str_replace(analyte_id, "  ", " "))
   analyte_id <- str_trim(str_replace(analyte_id, "\\[ISTD\\]", ""))
   analyte_id <- str_trim(str_replace(analyte_id, "\\[IS\\]", ""))
@@ -90,14 +86,6 @@ parse_lipid_feature_names <- function(
 
   dat_temp <- dat
 
-  # cat("Retrieving lipid class/transition names...", fill = FALSE)
-  #dat_temp <- dat |> mutate(lipid_class_base = (str_squish(str_extract(.data$feature_id, "[A-z0-9]+[[:blank:]]*"))))
-  #dat_temp <- dat_temp |> mutate(lipid_class = (str_squish(str_extract(.data$feature_id, "[A-z0-9]+[[:blank:]]*([A-Z]{1}|[d|t|m])"))))
-
-  # add a "-", except for between name and sphingoid base
-  #dat_temp <- dat_temp |> mutate(lipid_class = str_replace(.data$lipid_class, "([[:blank:]]+)([^d|t|m]{1})", "-\\2"))
-  #dat_temp <- dat_temp |> mutate(lipid_class_by_lcb = str_extract(.data$feature_id, "[A-z0-9]+[[:blank:]]*([A-Z]{1}|[d|t|m][0-9\\:]{4})"))
-
   # Clean transition names
 
   dat_temp <- dat_temp |>
@@ -152,16 +140,6 @@ parse_lipid_feature_names <- function(
   dat_temp <- convert_triglycerides(dat_temp)
   dat_temp <- dat_temp |>
     mutate(analyte_id = normalize_isotope_labels(.data$analyte_id))
-
-  # # Convert the transition names for each lipid_class to a number (e.g. for Cer d18:1 "M>SphB","M>SphB-H2O"  becomes 1,2:  for for Cer m18:1 "M-H2O>SphB", "M-H2O>SphB" also becomes 1, 2)
-  # dat_temp <- dat_temp |>
-  #   group_by(.data$analyte_id) |>
-  #   # ToDo: replace superseeded do function
-  #   dplyr::do(
-  #     mutate(.data, transition_group_id = match(.$transition_name, levels(as.factor(dat_temp[dat_temp$lipid_class_by_lcb == unique(.$lipid_class_by_lcb), ]$transition_name))))
-  #   ) |>
-  #   mutate(transition_group_id = if_else(is.na(.data$transition_group_id), 1, .data$transition_group_id)) |>
-  #   ungroup()
 
   dat_temp_rgoslin <- dat_temp |>
     mutate(
