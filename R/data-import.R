@@ -663,11 +663,11 @@ import_data_main <- function(
   # stopifnot(methods::validObject(data))
 
   if (!silent) {
-    if (!any(data@dataset_orig$integration_qualifier)) {
+    if (!any(data@dataset_orig$integration_qualifier, na.rm = TRUE)) {
       cli_alert_success(cli::col_green(
         "Imported {length(unique(data@dataset_orig$analysis_id))} analyses with {length(unique(data@dataset_orig$feature_id))} features"
       ))
-    } else if (any(data@dataset_orig$integration_qualifier)) {
+    } else if (any(data@dataset_orig$integration_qualifier, na.rm = TRUE)) {
       cli_alert_success(cli::col_green(
         "Imported {length(unique(data@dataset_orig$analysis_id))} analyses with {length(unique(data@dataset_orig$feature_id))} features ({length(unique(data@dataset_orig$feature_id[!data@dataset_orig$integration_qualifier]))} quantifiers, {length(unique(data@dataset_orig$feature_id[data@dataset_orig$integration_qualifier]))} qualifiers)"
       ))

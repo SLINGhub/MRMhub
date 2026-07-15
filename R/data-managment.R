@@ -97,7 +97,7 @@ get_dataset_subset <- function(
   ) {
     if (length(qc_types) == 1) {
       # Single QC type: check if it exists in the dataset
-      if (any(str_detect(d_filt$qc_type, qc_types))) {
+      if (any(str_detect(d_filt$qc_type, qc_types), na.rm = TRUE)) {
         d_filt <- d_filt |> dplyr::filter(str_detect(.data$qc_type, qc_types))
       } else {
         cli::cli_abort(col_red(
