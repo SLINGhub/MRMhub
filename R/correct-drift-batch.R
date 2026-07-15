@@ -26,6 +26,7 @@ fun_gauss.kernel.smooth = function(
   n = length(yy) ## number of data points
 
   warnings_list <- NULL
+  fit_degenerate <- FALSE
 
   res <- tryCatch(
     {
@@ -58,10 +59,20 @@ fun_gauss.kernel.smooth = function(
               wt <- (xx - xx[i]) / arg$kernel_size
               wt <- dnorm(wt, 0, 1)
               wt[is.na(yy.train)] <- NA
-              yy.corr[i] <- median(yy, na.rm = TRUE) +
-                sum(wt * yy.train, na.rm = TRUE) / sum(wt, na.rm = TRUE) #Added by BB to get the fit
-              yy.est[i] <- yy[i] -
-                sum(wt * yy.train, na.rm = TRUE) / sum(wt, na.rm = TRUE)
+              wt_sum <- sum(wt, na.rm = TRUE)
+              if (wt_sum == 0) {
+                # No usable (non-NA) training QC values in this batch: the
+                # weighted mean is undefined (0/0 = NaN). Set the fit to NA and
+                # flag it as failed so the correction is skipped downstream.
+                fit_degenerate <- TRUE
+                yy.corr[i] <- NA_real_
+                yy.est[i] <- NA_real_
+              } else {
+                yy.corr[i] <- median(yy, na.rm = TRUE) +
+                  sum(wt * yy.train, na.rm = TRUE) / wt_sum #Added by BB to get the fit
+                yy.est[i] <- yy[i] -
+                  sum(wt * yy.train, na.rm = TRUE) / wt_sum
+              }
             }
           }
 
@@ -79,7 +90,13 @@ fun_gauss.kernel.smooth = function(
                 wt <- (xx - xx[i]) / arg$kernel_size
                 wt <- dnorm(wt, 0, 1)
                 wt[is.na(yy.train)] <- NA
-                v[i] <- sum(wt * yy.est^2, na.rm = TRUE) / sum(wt, na.rm = TRUE)
+                wt_sum <- sum(wt, na.rm = TRUE)
+                if (wt_sum == 0) {
+                  fit_degenerate <- TRUE
+                  v[i] <- NA_real_
+                } else {
+                  v[i] <- sum(wt * yy.est^2, na.rm = TRUE) / wt_sum
+                }
               }
             }
             v.mean <- mean(v, na.rm = TRUE) ## average weighted variances across the data points
@@ -104,7 +121,7 @@ fun_gauss.kernel.smooth = function(
           invokeRestart("muffleWarning")
         }
       )
-      list(y_fit = y_fit, y_predicted = y_predicted, has_error = FALSE)
+      list(y_fit = y_fit, y_predicted = y_predicted, has_error = fit_degenerate)
     },
     error = function(e) {
       print(e$message)

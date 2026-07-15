@@ -2202,3 +2202,57 @@ test_that("drift correction reports zero/negative values under log transform", {
     "zero or negative"
   )
 })
+
+test_that("fun_gauss.kernel.smooth flags fit as failed when all training QC values are NA", {
+  # When every reference-QC value in a batch is NA the Gaussian kernel weights
+  # all become NA, so sum(wt) collapses to 0 and the weighted mean would be
+  # 0/0 = NaN. The smoother must instead return NA fits and flag fit_error so
+  # the degenerate correction is skipped downstream (not silently applied).
+  tbl_degenerate <- data.frame(
+    analysis_id = paste0("a", 1:6),
+    feature_id = "F1",
+    batch_id = 1L,
+    qc_type = c("SPL", "BQC", "SPL", "BQC", "SPL", "BQC"),
+    x = 1:6,
+    y = c(100, NA, 110, NA, 120, NA) # BQC (training) rows all NA
+  )
+
+  res_degenerate <- fun_gauss.kernel.smooth(
+    tbl_degenerate,
+    ref_qc_types = "BQC",
+    log_transform_internal = TRUE,
+    kernel_size = 10,
+    outlier_filter = FALSE,
+    outlier_ksd = 5,
+    location_smooth = TRUE,
+    scale_smooth = FALSE
+  )
+
+  expect_true(res_degenerate$fit_error)
+  expect_true(all(is.na(res_degenerate$y_fit)))
+
+  # Positive control: with usable training QC values the fit succeeds and is
+  # finite, so the guard does not misfire on normal input.
+  tbl_ok <- data.frame(
+    analysis_id = paste0("a", 1:6),
+    feature_id = "F1",
+    batch_id = 1L,
+    qc_type = c("SPL", "BQC", "SPL", "BQC", "SPL", "BQC"),
+    x = 1:6,
+    y = c(100, 101, 110, 109, 120, 119)
+  )
+
+  res_ok <- fun_gauss.kernel.smooth(
+    tbl_ok,
+    ref_qc_types = "BQC",
+    log_transform_internal = TRUE,
+    kernel_size = 10,
+    outlier_filter = FALSE,
+    outlier_ksd = 5,
+    location_smooth = TRUE,
+    scale_smooth = FALSE
+  )
+
+  expect_false(res_ok$fit_error)
+  expect_true(all(is.finite(res_ok$y_fit)))
+})
