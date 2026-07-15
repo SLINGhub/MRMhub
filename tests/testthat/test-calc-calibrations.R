@@ -82,6 +82,59 @@ test_that("calc_calibration_results LoD/LoQ use the slope at zero (ICH Q2)", {
   expect_equal(res$loq_cal_1, 10 * res$sigma_cal_1 / res$coef_b_cal_1)
 })
 
+test_that("calc_calibration_results lod_sigma = 'intercept' uses the intercept SE", {
+  # Default (residual SE, Sy/x): current behaviour.
+  res_resid <- calc_calibration_results(
+    mexp_norm,
+    fit_overwrite = TRUE,
+    fit_model = "quadratic",
+    fit_weighting = "none",
+    ignore_missing_annotation = TRUE
+  )@metrics_calibration |>
+    filter(fit_model == "quadratic", !reg_failed_cal_1)
+
+  # Intercept SE (SDa), with the fit objects retained so we can read the exact
+  # standard error of the intercept used internally.
+  res_int <- calc_calibration_results(
+    mexp_norm,
+    fit_overwrite = TRUE,
+    fit_model = "quadratic",
+    fit_weighting = "none",
+    ignore_missing_annotation = TRUE,
+    lod_sigma = "intercept",
+    include_fit_object = TRUE
+  )@metrics_calibration |>
+    filter(fit_model == "quadratic", !reg_failed_cal_1)
+
+  sda <- vapply(
+    res_int$fit_cal_1,
+    function(f) summary(f)$coefficients["(Intercept)", "Std. Error"],
+    numeric(1)
+  )
+
+  # LoD/LoQ use the intercept SE over the slope at zero (coef_b).
+  expect_equal(res_int$lod_cal_1, 3.3 * sda / res_int$coef_b_cal_1)
+  expect_equal(res_int$loq_cal_1, 10 * sda / res_int$coef_b_cal_1)
+
+  # The reported `sigma` column is always the residual SE, independent of choice.
+  expect_equal(res_int$sigma_cal_1, res_resid$sigma_cal_1)
+
+  # The two sigma sources give different detection limits here.
+  expect_false(isTRUE(all.equal(res_int$lod_cal_1, res_resid$lod_cal_1)))
+})
+
+test_that("calc_calibration_results rejects an invalid lod_sigma", {
+  expect_error(
+    calc_calibration_results(
+      mexp_norm,
+      fit_overwrite = TRUE,
+      fit_model = "linear",
+      fit_weighting = "1/x",
+      lod_sigma = "bogus"
+    )
+  )
+})
+
 test_that("calc_calibration_results error handling works", {
   mexp_temp <- mexp_norm
 

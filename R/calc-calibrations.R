@@ -28,6 +28,11 @@
 #'@param ignore_failed_calibration If `FALSE`, raises error if calibration curve fit fails for any feature. If `TRUE`, failed fits will be ignored, and resulting feature concentration will be `NA`.
 #'@param ignore_missing_annotation If `FALSE`, raises error if any of the following information is missing: calibration curve data, ISTD mix volume and sample amounts for any feature.
 #'   If `TRUE`, missing annotations will be ignored, and resulting feature concentration will be `NA`
+#' @param lod_sigma A character string selecting the standard deviation of the
+#'   response (sigma) used in the ICH Q2 LoD/LoQ formulas. Must be one of
+#'   `"residual"` (the residual standard error of the regression, Sy/x; the
+#'   default) or `"intercept"` (the standard error of the intercept). See
+#'   [calc_calibration_results()] for details.
 #' @return A modified `MRMhubExperiment` object with updated concentration values.
 #'
 #' @seealso [calc_calibration_results()] for calculating the calibration curve results including LoD and LoQ.
@@ -40,12 +45,14 @@ quantify_by_calibration <- function(
   fit_model = c("linear", "quadratic"),
   fit_weighting = c("none", "1/x", "1/x^2"),
   ignore_failed_calibration = FALSE,
-  ignore_missing_annotation = FALSE
+  ignore_missing_annotation = FALSE,
+  lod_sigma = c("residual", "intercept")
 ) {
   check_data(data)
 
   rlang::arg_match(fit_model, c("linear", "quadratic"))
   rlang::arg_match(fit_weighting, c("none", "1/x", "1/x^2"))
+  rlang::arg_match(lod_sigma, c("residual", "intercept"))
 
   data <- calc_calibration_results(
     data = data,
@@ -54,7 +61,8 @@ quantify_by_calibration <- function(
     fit_overwrite = fit_overwrite,
     fit_model = fit_model,
     fit_weighting = fit_weighting,
-    ignore_missing_annotation = ignore_missing_annotation
+    ignore_missing_annotation = ignore_missing_annotation,
+    lod_sigma = lod_sigma
   )
   d_calib <- data@metrics_calibration
 
@@ -303,11 +311,21 @@ quantify_by_calibration <- function(
 #'
 #' Additionally, the limit of detection (LoD) and limit of quantification (LoQ)
 #' are calculated for each feature based on the calibration curve, following the
-#' ICH Q2(R1/R2) approach (LoD = 3.3 sigma / S, LoQ = 10 sigma / S). Here sigma
-#' is the sample standard error of the regression residuals and S is the slope
-#' of the calibration curve. The slope is taken at zero concentration (the
-#' linear coefficient); for a quadratic fit the quadratic term does not
-#' contribute to this slope.
+#' ICH Q2(R1/R2) approach (LoD = 3.3 sigma / S, LoQ = 10 sigma / S). Here S is
+#' the slope of the calibration curve, taken at zero concentration (the linear
+#' coefficient `coef_b`). For a quadratic fit the true slope is `b + 2 c x`,
+#' which reduces to `coef_b` at zero concentration, so the quadratic term does
+#' not contribute to the slope used here. ICH Q2 specifies the slope formula for
+#' linear responses only; using the low-concentration tangent slope for a
+#' quadratic fit is an approximation beyond the guideline (adequate when the
+#' curvature near zero is small).
+#'
+#' The response standard deviation `sigma` is selected via `lod_sigma`, following
+#' the ICH-acceptable choices: `"residual"` uses the residual standard error of
+#' the regression (Sy/x; the default and prior behaviour), while `"intercept"`
+#' uses the standard error of the intercept. The `sigma` column reported in
+#' `metrics_calibration` is always the residual standard error, independent of
+#' this choice.
 #'
 #' The results of the regression and the calculated LoD and LoQ values are
 #' stored in the `metrics_calibration` table of the returned `MRMhubExperiment`
@@ -340,6 +358,11 @@ quantify_by_calibration <- function(
 #'   volume, and sample amounts for any feature.
 #' @param include_fit_object If `TRUE`, the function will return the full
 #'   regression fit objects for each feature in the `metrics_calibration` table.
+#' @param lod_sigma A character string selecting the response standard deviation
+#'   (sigma) used in the ICH Q2 LoD/LoQ formulas. Must be one of `"residual"`
+#'   (the residual standard error of the regression, Sy/x; the default) or
+#'   `"intercept"` (the standard error of the intercept). No averaging of the two
+#'   is performed.
 #'
 #' @return A modified `MRMhubExperiment` object with an updated
 #'   `metrics_calibration` table containing the calibration curve results,
@@ -363,13 +386,15 @@ calc_calibration_results <- function(
   fit_model,
   fit_weighting,
   ignore_missing_annotation = FALSE,
-  include_fit_object = FALSE
+  include_fit_object = FALSE,
+  lod_sigma = c("residual", "intercept")
 ) {
   check_data(data)
 
   rlang::arg_match(fit_model, c("linear", "quadratic"))
   rlang::arg_match(fit_weighting, c("none", "1/x", "1/x^2"))
   rlang::arg_match(variable, c("feature_intensity", "feature_norm_intensity"))
+  rlang::arg_match(lod_sigma, c("residual", "intercept"))
 
   if (
     variable == "feature_norm_intensity" &&
@@ -435,9 +460,17 @@ calc_calibration_results <- function(
           na.action = na.exclude
         ))
 
-        r.squared <- summary(res)$r.squared
-
-        sigma <- summary(res)$sigma
+        summ <- summary(res)
+        r.squared <- summ$r.squared
+        sigma <- summ$sigma
+        # Standard error of the intercept (SDa), the alternative ICH Q2 sigma
+        # source. A rank-deficient fit may drop the intercept row, so guard it.
+        coef_mat <- summ$coefficients
+        sigma_intercept <- if ("(Intercept)" %in% rownames(coef_mat)) {
+          coef_mat["(Intercept)", "Std. Error"]
+        } else {
+          NA_real_
+        }
 
         if (dt$fit_model[1] == "quadratic") {
           reg_failed <- is.na(res$coefficients[[3]]) |
@@ -457,6 +490,7 @@ calc_calibration_results <- function(
             coef_b = res$coefficients[[2]],
             coef_c = coef_c,
             sigma = sigma,
+            sigma_intercept = sigma_intercept,
             reg_failed = reg_failed,
             fit = if (include_fit_object) list(res) else list(NULL)
           )
@@ -472,6 +506,7 @@ calc_calibration_results <- function(
             coef_b = NA_real_,
             coef_c = NA_real_,
             sigma = NA_real_,
+            sigma_intercept = NA_real_,
             reg_failed = TRUE,
             fit = list(NULL)
           )
@@ -483,18 +518,23 @@ calc_calibration_results <- function(
   # LoD/LoQ use the slope of the calibration curve at zero concentration, i.e.
   # the linear coefficient `coef_b` (ICH Q2). For a quadratic fit the slope is
   # b + 2*c*conc, which reduces to `coef_b` at conc = 0, so the quadratic term
-  # does not contribute to the slope used here.
-  add_quantlimits <- function(data) {
-    data <- data |>
-      mutate(slope_at_conc = .data$coef_b)
-
-    data <- data |>
+  # does not contribute to the slope used here. The response sigma is selected by
+  # `lod_sigma`: the residual standard error (Sy/x) or the intercept standard
+  # error (SDa). The transient `sigma_lod` / `slope_at_conc` helper columns are
+  # dropped by the downstream `select()`, so the stored `sigma` column always
+  # remains the residual standard error.
+  add_quantlimits <- function(data, lod_sigma) {
+    data |>
       mutate(
-        lod = 3.3 * .data$sigma / .data$slope_at_conc,
-        loq = 10 * .data$sigma / .data$slope_at_conc
+        slope_at_conc = .data$coef_b,
+        sigma_lod = if (lod_sigma == "intercept") {
+          .data$sigma_intercept
+        } else {
+          .data$sigma
+        },
+        lod = 3.3 * .data$sigma_lod / .data$slope_at_conc,
+        loq = 10 * .data$sigma_lod / .data$slope_at_conc
       )
-
-    data
   }
 
   d_calib <- data@dataset |>
@@ -554,7 +594,7 @@ calc_calibration_results <- function(
     dplyr::group_split(.data$feature_id, .data$curve_id)
 
   d_stats <- map(d_calib, function(x) calc_lm(x)) |> bind_rows()
-  d_stats <- add_quantlimits(d_stats)
+  d_stats <- add_quantlimits(d_stats, lod_sigma)
 
   d_stats <- d_stats |>
     dplyr::select(
@@ -895,7 +935,10 @@ get_qc_bias_variability <- function(
 #' **Note:** LoD/LoQ follow the ICH Q2(R1/R2) approach (3.3 sigma / S and
 #' 10 sigma / S). The slope `S` is the slope of the calibration curve at zero
 #' concentration (the linear coefficient `coef_b`); for a **quadratic** fit the
-#' quadratic term does not contribute to this slope.
+#' quadratic term does not contribute to this slope. The response `sigma` is
+#' selectable in [`calc_calibration_results()`] via `lod_sigma` (residual
+#' standard error, the default, or the standard error of the intercept); the
+#' `sigma` column reported here is always the residual standard error.
 
 #'
 #' @param data A `MRMhubExperiment` object with QC metrics.
