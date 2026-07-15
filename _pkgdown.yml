@@ -305,7 +305,7 @@ reference:
   - cv
   - cv_log
   - calc_average_molweight
-  - fun_correct_drift
+  - correct_drift
   - fun_gauss.kernel.smooth
   - fun_loess
   - fun_cspline

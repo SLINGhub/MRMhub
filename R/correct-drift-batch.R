@@ -1,6 +1,6 @@
 #' Gaussian kernel smoothing helper function
 #' @description
-#' Function for Gaussian kernel-based smoothing, for use by `fun_correct_drift`.
+#' Function for Gaussian kernel-based smoothing, for use by `correct_drift`.
 #' @author Hyung Won Choi
 #' @param tbl Table (`tibble` or `data.frame`) containing the fields `qc_type`, `x` (run order number), and `y` (variable)
 #' @param ref_qc_types QC types used for the smoothing (fit) by loess
@@ -147,7 +147,7 @@ fun_gauss.kernel.smooth = function(
 
 #' Loess smoothing helper function
 #' @description
-#' Function for loess-based smoothing, for use by `fun_correct_drift`
+#' Function for loess-based smoothing, for use by `correct_drift`
 #' @param tbl Table (`tibble` or `data.frame`) containing the fields `qc_type`, `x` (run order number), and `y` (variable)
 #' @param ref_qc_types QC types used for the smoothing (fit) by loess
 #' @param log_transform_internal Apply log transformation internally for smoothing if `TRUE` (default). This does not affect the final data, which remains untransformed.
@@ -228,7 +228,7 @@ fun_loess <- function(tbl, ref_qc_types, log_transform_internal, ...) {
 
 #' Cubic spline smoothing helper function
 #' @description
-#' Function for cubic spline-based smoothing with optional cross-validation, for use by `fun_correct_drift`
+#' Function for cubic spline-based smoothing with optional cross-validation, for use by `correct_drift`
 #' @param tbl Table (`tibble` or `data.frame`) containing the fields `qc_type`, `x` (run order number), and `y` (variable)
 #' @param ref_qc_types QC types used for the smoothing (fit) by cubic spline
 #' @param log_transform_internal Apply log transformation internally for smoothing if `TRUE` (default). This does not affect the final data, which remains untransformed.
@@ -324,7 +324,7 @@ fun_cspline <- function(tbl, ref_qc_types, log_transform_internal, ...) {
 
 #' Generalized additive model (GAM) smoothing helper function
 #' @description
-#' Function for penalized spline-based smoothing using GAM, for use by `fun_correct_drift`
+#' Function for penalized spline-based smoothing using GAM, for use by `correct_drift`
 #' @param tbl Table (`tibble` or `data.frame`) containing the fields `qc_type`, `x` (run order number), and `y` (variable)
 #' @param ref_qc_types QC types used for the smoothing (fit) by GAM
 #' @param log_transform_internal Apply log transformation internally for smoothing if `TRUE` (default). This does not affect the final data, which remains untransformed.
@@ -437,7 +437,7 @@ fun_gam_smooth <- function(
 #' @param ... Arguments specific for the smoothing function
 #' @return MRMhubExperiment object
 #' @export
-fun_correct_drift <- function(
+correct_drift <- function(
   data = NULL,
   smooth_fun,
   variable,
@@ -1189,7 +1189,7 @@ correct_drift_gaussiankernel <- function(
     ))
   }
 
-  fun_correct_drift(
+  correct_drift(
     data = data,
     smooth_fun = "fun_gauss.kernel.smooth",
     variable = variable,
@@ -1321,7 +1321,7 @@ correct_drift_loess <- function(
     cli_abort(col_red("Argument `degree` must be 1 or 2."))
   }
 
-  fun_correct_drift(
+  correct_drift(
     data = data,
     smooth_fun = "fun_loess",
     ref_qc_types = ref_qc_types,
@@ -1460,7 +1460,7 @@ correct_drift_cubicspline <- function(
     cli_abort(col_red("Either `spar` or `lambda` can be specified, not both."))
   }
 
-  fun_correct_drift(
+  correct_drift(
     data = data,
     ref_qc_types = ref_qc_types,
     variable = variable,
@@ -1575,7 +1575,7 @@ correct_drift_gam <- function(
     cli_abort(col_red("Argument `sp` must be NULL or numeric."))
   }
 
-  fun_correct_drift(
+  correct_drift(
     data = data,
     ref_qc_types = ref_qc_types,
     variable = variable,
