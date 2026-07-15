@@ -124,8 +124,8 @@ fun_gauss.kernel.smooth = function(
       list(y_fit = y_fit, y_predicted = y_predicted, has_error = fit_degenerate)
     },
     error = function(e) {
-      print(e$message)
-      return(list(y_fit = NA_real_, y_adj = NA_real_, has_error = TRUE))
+      # print(e$message) # will be shown for each feature/batch...
+      return(list(y_fit = NA_real_, y_predicted = NA_real_, has_error = TRUE))
     }
   )
 

@@ -2256,3 +2256,45 @@ test_that("fun_gauss.kernel.smooth flags fit as failed when all training QC valu
   expect_false(res_ok$fit_error)
   expect_true(all(is.finite(res_ok$y_fit)))
 })
+
+test_that("fun_gauss.kernel.smooth error branch returns a y_adj (NA) column", {
+  # Regression guard: the error handler must return `y_predicted` (the key the
+  # output builder reads), matching the loess/cspline/gam smoothers. A previous
+  # version returned `y_adj` here, so `res$y_predicted` was NULL and the assembled
+  # tibble silently lost its `y_adj` column for any errored fit-group. When every
+  # group in a run fails, that missing column then breaks the downstream
+  # `rename(y = "y_adj")` / `.data$y_adj` steps.
+  #
+  # The specific trigger below (omitting `outlier_filter`, so `if (arg$outlier_filter)`
+  # throws "argument is of length zero") is incidental; it just forces the tryCatch
+  # error path. What matters is the contract of the error branch.
+  tbl <- data.frame(
+    analysis_id = paste0("a", 1:6),
+    feature_id = "F1",
+    batch_id = 1L,
+    qc_type = c("SPL", "BQC", "SPL", "BQC", "SPL", "BQC"),
+    x = 1:6,
+    y = c(100, 101, 110, 109, 120, 119)
+  )
+
+  res <- suppressWarnings(fun_gauss.kernel.smooth(
+    tbl,
+    ref_qc_types = "BQC",
+    log_transform_internal = TRUE
+    # outlier_filter / location_smooth / scale_smooth deliberately omitted
+    # -> forces the tryCatch error branch
+  ))
+
+  expect_true(res$fit_error)
+  # y_adj must be present and NA, NOT NULL (the bug produced NULL here). It is a
+  # single NA that `bind_rows()` recycles to the group's row count.
+  expect_false(is.null(res$y_adj))
+  expect_true(all(is.na(res$y_adj)))
+
+  # And the errored group must still assemble into a tibble that HAS a y_adj
+  # column (this is what `correct_drift()` does via `bind_rows()`).
+  bound <- dplyr::bind_rows(list(res))
+  expect_true("y_adj" %in% names(bound))
+  expect_equal(nrow(bound), nrow(tbl))
+  expect_true(all(is.na(bound$y_adj)))
+})
