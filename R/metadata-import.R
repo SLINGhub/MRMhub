@@ -1232,7 +1232,10 @@ add_metadata <- function(
 # stopifnot(methods::validObject(data, excl_nonannotated_analyses))
 
 #' Read and parse metadata from a msorganiser Excel template
-#' @description Requires version 1.9.1 of the template
+#' @description Reads and parses a MiDAR / MSOrganiser Excel metadata template.
+#'   The template *schema* version (cell `About!C3`, e.g. `0.2.1`) must lie in
+#'   the supported range `[0.2, 0.3)`. This schema version is distinct from the
+#'   MSOrganiser *tool* version (e.g. 1.9.x) that generated the file.
 #' NOTES
 #' - if no sample_type is defined then SPL will be assigned
 #' - if valid_analysis is left blank for all analyses then samples then it will be replace by TRUE
@@ -1274,24 +1277,33 @@ read_metadata_msorganiser <- function(path, trim_ws = TRUE) {
     col_names = FALSE
   )
 
+  # isTRUE() keeps the check NA-safe: an empty About-sheet cell makes str_detect
+  # return NA, which would abort the if() instead of the clean error below.
   if (
-    !(str_detect(d_about[[1, 2]], "MSOrganiser") &&
-      str_detect(d_about[[3, 2]], "Version"))
+    !(isTRUE(str_detect(d_about[[1, 2]], "MSOrganiser")) &&
+      isTRUE(str_detect(d_about[[3, 2]], "Version")))
   ) {
     cli::cli_abort(col_red(
       "This appears to be an invalid or unsupported MSOrganiser template file. Please verify format and version."
     ))
   }
 
-  version <- str_replace(d_about[[3, 3]], "(\\.[^.]*)\\.", "\\1")
-  version <- suppressWarnings(as.numeric(version))
-  if (is.na(version)) {
+  # Template schema version lives in About!C3 (e.g. "0.2.1"). Parse it as a
+  # proper numeric_version rather than collapsing the string to a decimal:
+  # multi-digit minor/patch components then order correctly, and any
+  # unparseable value (e.g. "NOT VALID") is rejected below.
+  raw_version <- as.character(d_about[[3, 3]])
+  version <- tryCatch(
+    numeric_version(raw_version, strict = TRUE),
+    error = function(e) NULL
+  )
+  if (is.null(version) || is.na(raw_version)) {
     cli::cli_abort(col_red(
       "Invalid version number found in the template. Please use an MSOrganiser template v0.2 or higher."
     ))
   }
 
-  if (version < 0.2 || version >= 0.3) {
+  if (version < "0.2" || version >= "0.3") {
     cli::cli_abort(col_red(
       "Unsupported MSOrganiser template version. Please use an MSOrganiser template v0.2 or higher."
     ))
@@ -1323,7 +1335,7 @@ read_metadata_msorganiser <- function(path, trim_ws = TRUE) {
       istd_volume = "istd_mixture_volume_[ul]"
     )
 
-  # Ensure compatibility with older template versions (< 1.9.2)
+  # Ensure compatibility with older MSOrganiser tool versions (< 1.9.2)
 
   if ("raw_data_filename" %in% names(d_analyses)) {
     d_analyses <- d_analyses |> rename("analysis_id" = "raw_data_filename")
@@ -1350,7 +1362,7 @@ read_metadata_msorganiser <- function(path, trim_ws = TRUE) {
     filter(!if_all(everything(), is.na))
   names(d_features) <- tolower(names(d_features))
 
-  # Ensure compatibility with older template versions (< 1.9.2) ---
+  # Ensure compatibility with older MSOrganiser tool versions (< 1.9.2) ---
   if ("feature_name" %in% names(d_features)) {
     d_features <- d_features |> rename("feature_id" = "feature_name")
   }
@@ -1403,7 +1415,7 @@ read_metadata_msorganiser <- function(path, trim_ws = TRUE) {
   names(d_istds) <- tolower(names(d_istds))
   names(d_istds)[1] <- "istd_feature_id"
 
-  # Ensure compatibility with older template versions (< 1.9.2) ---
+  # Ensure compatibility with older MSOrganiser tool versions (< 1.9.2) ---
 
   d_istds <- d_istds |>
     dplyr::select(any_of(c(
@@ -1433,7 +1445,7 @@ read_metadata_msorganiser <- function(path, trim_ws = TRUE) {
 
   names(d_rqc) <- tolower(names(d_rqc))
 
-  # Ensure compatibility with older template versions (< 1.9.2)
+  # Ensure compatibility with older MSOrganiser tool versions (< 1.9.2)
   if ("raw_data_filename" %in% names(d_rqc)) {
     d_rqc <- d_rqc |> rename("analysis_id" = "raw_data_filename")
   }
