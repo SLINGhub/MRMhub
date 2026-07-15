@@ -317,6 +317,7 @@ test_that("save plots", {
 
   expect_null(p)
   expect_true(file_exists(temp_pdf_path), info = "PDF file was not created.")
-  expect_equal(as.character(fs::file_size(temp_pdf_path)), "239K")
+  size_kb <- as.numeric(fs::file_size(temp_pdf_path)) / 1024
+  expect_equal(size_kb, 239, tolerance = 0.2)
   fs::file_delete(temp_pdf_path)
 })

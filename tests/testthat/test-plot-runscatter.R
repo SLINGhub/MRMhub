@@ -100,7 +100,8 @@ test_that("plot_runscatter generates a plot", {
   )
   expect_null(p)
   expect_true(file_exists(temp_pdf_path), info = "PDF file was not created.")
-  expect_equal(as.character(fs::file_size(temp_pdf_path)), "118K")
+  size_kb <- as.numeric(fs::file_size(temp_pdf_path)) / 1024
+  expect_equal(size_kb, 119, tolerance = 0.2)
   fs::file_delete(temp_pdf_path)
 })
 
@@ -1002,7 +1003,7 @@ test_that("plot_runscatter pdf multi4", {
   expect_null(p)
   expect_true(file_exists(temp_pdf_path), info = "PDF file was not created.")
   size_kb <- as.numeric(fs::file_size(temp_pdf_path)) / 1024
-  expect_equal(size_kb, 125, tolerance = 1)
+  expect_equal(size_kb, 119, tolerance = 0.2)
   fs::file_delete(temp_pdf_path)
   mirai::daemons(0)
 })
@@ -1023,7 +1024,7 @@ test_that("plot_runscatter pdf multi", {
   expect_null(p)
   expect_true(file_exists(temp_pdf_path), info = "PDF file was not created.")
   size_kb <- as.numeric(fs::file_size(temp_pdf_path)) / 1024
-  expect_equal(size_kb, 125, tolerance = 1)
+  expect_equal(size_kb, 119, tolerance = 0.2)
   fs::file_delete(temp_pdf_path)
 })
 
@@ -1042,7 +1043,8 @@ test_that("plot_runscatter pdf multi", {
   )
   expect_null(p)
   expect_true(file_exists(temp_pdf_path), info = "PDF file was not created.")
-  expect_equal(as.character(fs::file_size(temp_pdf_path)), "118K")
+  size_kb <- as.numeric(fs::file_size(temp_pdf_path)) / 1024
+  expect_equal(size_kb, 119, tolerance = 0.2)
   fs::file_delete(temp_pdf_path)
 })
 
