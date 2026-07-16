@@ -414,7 +414,7 @@ think the resulting PCA plot suggests now?</p>
 <span>  include_istd <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">2 features contained missing or non-numeric values and were exluded.</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #00BB00;">The PCA was calculated based on `feature_intensity` values of 423 features.</span></span></span>
-<span><span class="co">#&gt; ggrepel: 10000 iterations in 0.010922s, 3 overlaps. Consider increasing 'max.iter'.</span></span></code></pre></div>
+<span><span class="co">#&gt; ggrepel: 10000 iterations in 0.006028s, 3 overlaps. Consider increasing 'max.iter'.</span></span></code></pre></div>
 <p><img src="tutorial-03-lipidomics-workflow_files/figure-html/pca-before-1.png" class="r-plt" alt="PCA plot" width="100%"></p>
 </div>
 <div class="section level2">
@@ -448,7 +448,7 @@ dimensions (by modifying <code>pca_dims</code>).</p>
 <span>  shared_labeltext_hide <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">2 features contained missing or non-numeric values and were exluded.</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #00BB00;">The PCA was calculated based on `feature_intensity` values of 423 features.</span></span></span>
-<span><span class="co">#&gt; ggrepel: 10000 iterations in 0.022584s, 7 overlaps. Consider increasing 'max.iter'.</span></span></code></pre></div>
+<span><span class="co">#&gt; ggrepel: 10000 iterations in 0.014144s, 7 overlaps. Consider increasing 'max.iter'.</span></span></code></pre></div>
 <p><img src="tutorial-03-lipidomics-workflow_files/figure-html/outlier-removal-1.png" class="r-plt" alt="PCA plot" width="100%"></p>
 </div>
 <div class="section level2">
@@ -876,7 +876,7 @@ folder.</p>
 </details><div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">mrmhub</span><span class="fu">::</span><span class="fu"><a href="../reference/save_report_xlsx.html">save_report_xlsx</a></span><span class="op">(</span><span class="va">myexp</span>, path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".xlsx"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Saving report to disk - please wait...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The data processing report of experiment 'sPerfect' has been saved to '/tmp/RtmpV2QPzr/file2ef14909c8f6.xlsx'.</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The data processing report of experiment 'sPerfect' has been saved to '/tmp/RtmpP9bWSu/file2e2943533cce.xlsx'.</span></span></span></code></pre></div>
 <p>Specific data subsets can also be saved as a clean flat, wide CSV
 file. This is the format used to share the data for the statistical
 analysis presented in the next part of this workshop.</p>
@@ -894,7 +894,7 @@ generated CSV files.</p>
 <span>  qc_types <span class="op">=</span> <span class="st">"SPL"</span>, </span>
 <span>  include_qualifier <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  filter_data <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Concentration values for 377 analyses and 324 features have been exported to '/tmp/RtmpV2QPzr/file2ef147e6e090.csv'.</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Concentration values for 377 analyses and 324 features have been exported to '/tmp/RtmpP9bWSu/file2e29172148d3.csv'.</span></span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="sharing-the-mrmhubexperiment-dataset">22. Sharing the <code>MRMhubExperiment</code> dataset<a class="anchor" aria-label="anchor" href="#sharing-the-mrmhubexperiment-dataset"></a>
