@@ -566,7 +566,8 @@ calc_calibration_results <- function(
   d_calib <- d_calib |>
     dplyr::inner_join(
       data@annot_qcconcentrations,
-      by = c("sample_id" = "sample_id", "analyte_id" = "analyte_id")
+      by = c("sample_id" = "sample_id", "analyte_id" = "analyte_id"),
+      relationship = "many-to-one"
     ) |>
     filter(.data$include_in_analysis) |>
     mutate(curve_id = "1")
@@ -784,7 +785,8 @@ get_qc_bias_variability <- function(
           "analyte_id",
           target_concentration = "concentration"
         ),
-      by = c("sample_id", "analyte_id")
+      by = c("sample_id", "analyte_id"),
+      relationship = "many-to-one"
     )
 
   if (all(is.na(qc_types))) {

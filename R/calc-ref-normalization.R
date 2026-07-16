@@ -309,16 +309,38 @@ calibrate_by_reference <- function(
       data@metrics_qc <- data@metrics_qc[FALSE, ]
     }
 
+    # One known concentration per analyte across the reference sample(s). The
+    # signal divisor above already pools the reference samples per group, so the
+    # concentration must likewise collapse to a single value per analyte.
+    # `distinct()` merges reference samples that agree; genuinely conflicting
+    # concentrations for an analyte are ambiguous and would otherwise silently
+    # duplicate every measurement of that analyte (a many-to-many join), so we
+    # abort - mirroring the concentration-unit consistency check above.
+    d_ref_conc <- data@annot_qcconcentrations |>
+      filter(.data$sample_id %in% reference_sample_id) |>
+      dplyr::select(
+        "analyte_id",
+        ref_conc = "concentration",
+        ref_conc_unit = "concentration_unit"
+      ) |>
+      dplyr::distinct()
+
+    conflicting_conc <- d_ref_conc |>
+      dplyr::count(.data$analyte_id) |>
+      dplyr::filter(.data$n > 1)
+    if (nrow(conflicting_conc) > 0) {
+      cli::cli_abort(col_red(c(
+        "Conflicting reference concentrations for {nrow(conflicting_conc)} analyte{?s} across reference sample{?s} {ref_ids_txt}.",
+        "i" = "Affected analyte{?s}: {.val {conflicting_conc$analyte_id}}",
+        "i" = "Each analyte must have a single reference concentration. Please verify QC concentration metadata."
+      )))
+    }
+
     d_temp <- d_temp |>
       dplyr::left_join(
-        data@annot_qcconcentrations |>
-          filter(.data$sample_id %in% reference_sample_id) |>
-          dplyr::select(
-            "analyte_id",
-            ref_conc = "concentration",
-            ref_conc_unit = "concentration_unit"
-          ),
-        by = c("analyte_id")
+        d_ref_conc,
+        by = c("analyte_id"),
+        relationship = "many-to-one"
       ) |>
       dplyr::group_by(!!!syms(adj_groups)) |>
       mutate(

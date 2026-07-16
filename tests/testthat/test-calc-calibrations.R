@@ -65,6 +65,28 @@ test_that("calc_calibration_results works", {
   expect_equal(unique(res$fit_weighting[c(1, 2, 3, 4)]), c("none", "1/x"))
 })
 
+test_that("a duplicated QC-concentration row is rejected by the calibration fit, not used twice", {
+  # A duplicated (sample_id, analyte_id) concentration would silently weight a
+  # calibrator level twice and bias every back-calculated concentration. The
+  # `relationship = "many-to-one"` guard on the fit join turns that into a hard
+  # error instead of a plausible-but-wrong curve.
+  mexp_dup <- mexp_norm
+  mexp_dup@annot_qcconcentrations <- dplyr::bind_rows(
+    mexp_dup@annot_qcconcentrations,
+    mexp_dup@annot_qcconcentrations
+  )
+
+  expect_error(
+    calc_calibration_results(
+      mexp_dup,
+      fit_overwrite = TRUE,
+      fit_model = "linear",
+      fit_weighting = "none"
+    ),
+    "match at most 1 row"
+  )
+})
+
 test_that("calc_calibration_results LoD/LoQ use the slope at zero (ICH Q2)", {
   # LoD/LoQ use the slope of the calibration curve at zero concentration, i.e.
   # the linear coefficient (coef_b), for both linear and quadratic fits. The

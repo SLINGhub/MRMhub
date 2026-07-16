@@ -583,6 +583,34 @@ test_that("assert_metadata rejects duplicated analysis_id keys", {
   )
 })
 
+test_that("assert_metadata rejects duplicated (sample_id, analyte_id) in QC concentrations", {
+  mexp <- quant_lcms_dataset
+  qc <- mexp@annot_qcconcentrations
+
+  # Positive control: the unperturbed concentration table validates.
+  expect_no_error(
+    mrmhub:::assert_metadata(
+      mexp,
+      metadata = list(annot_qcconcentrations = qc),
+      ignore_warnings = TRUE,
+      excl_unmatched_analyses = FALSE
+    )
+  )
+
+  # A duplicated (sample_id, analyte_id) row would silently double a calibrator
+  # level / QC target, so it must be rejected at import (obligatory E defect).
+  qc_dup <- dplyr::bind_rows(qc, qc[1, ])
+  expect_error(
+    mrmhub:::assert_metadata(
+      mexp,
+      metadata = list(annot_qcconcentrations = qc_dup),
+      ignore_warnings = FALSE,
+      excl_unmatched_analyses = FALSE
+    ),
+    "verify corresponding metadata"
+  )
+})
+
 test_that("missing qc_type and valid_analysis are filled with forgiving defaults, not errors", {
   mexp <- mrmhub::MRMhubExperiment()
   mexp <- mrmhub::import_data_masshunter(

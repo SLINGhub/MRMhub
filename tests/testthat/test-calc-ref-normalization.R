@@ -795,3 +795,54 @@ test_that("calibrate_by_reference warns and sets a zero reference concentration 
     na.rm = TRUE
   ))
 })
+
+test_that("multiple reference samples with equal concentrations do not fan out the dataset", {
+  # Two reference samples defining the SAME concentration for an analyte is a
+  # valid configuration. The reference-concentration lookup must collapse them to
+  # one value per analyte, not duplicate every measurement of that analyte
+  # (which previously broke the one-row-per-(analysis_id, feature_id) invariant).
+  mexp_temp <- mexp
+  qc <- mexp_temp@annot_qcconcentrations
+  qc_second_ref <- qc |>
+    dplyr::filter(sample_id == "NIST_SRM1950") |>
+    dplyr::mutate(sample_id = "NIST_SRM1950_dup") # identical concentrations
+  mexp_temp@annot_qcconcentrations <- dplyr::bind_rows(qc, qc_second_ref)
+
+  n_rows_before <- nrow(mexp_temp@dataset)
+  mexp_res <- calibrate_by_reference(
+    data = mexp_temp,
+    variable = "conc",
+    reference_sample_id = c("NIST_SRM1950", "NIST_SRM1950_dup"),
+    absolute_calibration = TRUE,
+    undefined_conc_action = "na"
+  )
+
+  expect_equal(nrow(mexp_res@dataset), n_rows_before)
+  expect_false(any(duplicated(
+    mexp_res@dataset[, c("analysis_id", "feature_id")]
+  )))
+})
+
+test_that("calibrate_by_reference aborts on conflicting reference concentrations", {
+  # If two reference samples give DIFFERENT concentrations for the same analyte,
+  # there is no safe choice: silently picking one (or duplicating rows) would
+  # corrupt the calibration. Abort with a clear message instead.
+  mexp_temp <- mexp
+  qc <- mexp_temp@annot_qcconcentrations
+  qc_second_ref <- qc |>
+    dplyr::filter(sample_id == "NIST_SRM1950") |>
+    dplyr::mutate(sample_id = "NIST_SRM1950_dup")
+  qc_second_ref$concentration[1] <- qc_second_ref$concentration[1] * 2 # conflict
+  mexp_temp@annot_qcconcentrations <- dplyr::bind_rows(qc, qc_second_ref)
+
+  expect_error(
+    calibrate_by_reference(
+      data = mexp_temp,
+      variable = "conc",
+      reference_sample_id = c("NIST_SRM1950", "NIST_SRM1950_dup"),
+      absolute_calibration = TRUE,
+      undefined_conc_action = "na"
+    ),
+    "Conflicting reference concentrations"
+  )
+})

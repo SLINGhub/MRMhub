@@ -975,6 +975,11 @@ assert_metadata <- function(
         description = "E;Missing value(s);QC concentrations;sample_id"
       ) |>
       assertr::verify(
+        anyDuplicated(data.frame(.data$sample_id, .data$analyte_id)) == 0L,
+        obligatory = TRUE,
+        description = "E;Duplicated concentration entries per sample and analyte;QC concentrations;sample_id|analyte_id"
+      ) |>
+      assertr::verify(
         check_groupwise_identical_ids(
           metadata$annot_qcconcentrations,
           group_col = "sample_id",
