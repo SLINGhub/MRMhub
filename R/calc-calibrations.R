@@ -833,7 +833,9 @@ get_qc_bias_variability <- function(
       conc_ratio = .data$feature_conc / .data$target_concentration,
     ) |>
     summarise(
-      n = dplyr::n(),
+      # Count the non-missing replicates that actually feed conc_mean/sd/cv_intra,
+      # so the reported n matches the CV denominator.
+      n = sum(!is.na(.data$feature_conc)),
       conc_target = mean(.data$target_concentration, na.rm = FALSE),
       conc_mean = mean(.data$feature_conc, na.rm = TRUE),
       conc_sd = sd(.data$feature_conc, na.rm = TRUE),

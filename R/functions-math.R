@@ -209,7 +209,9 @@ get_outlier_bounds <- function(
     } else if (length(k) != 2) {
       cli::cli_abort(col_red("k must be a single number or a vector of length 2."))
     }
-    delta <- log2(abs(k))
+    # Data are assumed log10-transformed (see @description), so a k-fold change is
+    # log10(k) on this scale, not log2(k).
+    delta <- log10(abs(k))
     lower <- med - delta[1]
     upper <- med + delta[2]
 

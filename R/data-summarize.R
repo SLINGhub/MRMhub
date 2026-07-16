@@ -51,9 +51,13 @@ data_sum_features <- function(
       dplyr::summarise(
         dplyr::across(
           any_of(c("feature_intensity", "feature_height", "feature_fwhm")),
-          ~ sum(.x, na.rm = TRUE)
+          # An all-missing group must stay NA, not become a fabricated 0.
+          ~ if (all(is.na(.x))) NA_real_ else sum(.x, na.rm = TRUE)
         ),
-        dplyr::across(any_of(c("feature_rt")), ~ mean(.x, na.rm = TRUE)),
+        dplyr::across(
+          any_of(c("feature_rt")),
+          ~ if (all(is.na(.x))) NA_real_ else mean(.x, na.rm = TRUE)
+        ),
         .groups = "drop"
       )
 

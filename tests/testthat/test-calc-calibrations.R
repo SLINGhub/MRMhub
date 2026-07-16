@@ -412,6 +412,24 @@ test_that("get_qc_bias_variability returns correct data", {
   expect_equal(nrow(result), 4)
 })
 
+test_that("get_qc_bias_variability counts only non-missing replicates in n", {
+  # n must match the denominator that feeds conc_mean/conc_sd/cv_intra, so
+  # NA-ing exactly one QC concentration lowers the total n by exactly one.
+  qc <- c("CAL", "LQC", "HQC")
+  base <- get_qc_bias_variability(mexp_quant_norm, qc_types = qc)
+
+  mexp_na <- mexp_quant_norm
+  idx <- which(
+    !mexp_na@dataset$is_istd &
+      mexp_na@dataset$qc_type %in% qc &
+      !is.na(mexp_na@dataset$feature_conc)
+  )[1]
+  mexp_na@dataset$feature_conc[idx] <- NA_real_
+
+  after <- get_qc_bias_variability(mexp_na, qc_types = qc)
+  expect_equal(sum(after$n), sum(base$n) - 1L)
+})
+
 test_that("get_qc_bias_variability handles errors", {
   expect_error(
     get_qc_bias_variability(

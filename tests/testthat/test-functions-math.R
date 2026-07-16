@@ -139,25 +139,29 @@ test_that("method 'z_robust' returns min/max of inliers", {
 })
 
 test_that("method 'fold_change' calculates bounds correctly", {
-  x <- log10(c(1, 2, 4, 8)) # Example from documentation
-  # median=0.4515. k=2 -> delta=log2(2)=1. Fences are -0.5485 and 1.4515.
-  # All values are within the fences.
-  expect_equal(get_outlier_bounds(x, "fold_change"), range(x), tolerance = 1e-6)
-
-  # Test with a custom k
-  x2 <- log10(c(1, 2, 4, 8, 100))
-  # median=log10(4)=0.602. k=3 -> delta=log2(3)=1.585.
-  # Fences are approx. -0.98 and 2.187.
-  # log10(100) = 2. All values are within these fences.
+  x <- log10(c(1, 2, 4, 8)) # Example from documentation (log10-transformed data)
+  # median = 0.4515; k = 2 -> delta = log10(2) = 0.301. Fences [0.1505, 0.7525]
+  # keep log10(2) and log10(4); log10(1) and log10(8) fall outside.
   expect_equal(
-    get_outlier_bounds(x2, "fold_change", k = 3),
-    range(x2),
+    get_outlier_bounds(x, "fold_change"),
+    c(log10(2), log10(4)),
     tolerance = 1e-6
   )
 
+  # Test with a custom k
+  x2 <- log10(c(1, 2, 4, 8, 100))
+  # median = log10(4) = 0.602; k = 3 -> delta = log10(3) = 0.477.
+  # Fences [0.125, 1.079] keep log10(2..8); log10(1) and log10(100) fall outside.
+  expect_equal(
+    get_outlier_bounds(x2, "fold_change", k = 3),
+    c(log10(2), log10(8)),
+    tolerance = 1e-6
+  )
+
+  # A signed k vector uses |k|; symmetric here, so the result is unchanged.
   expect_equal(
     get_outlier_bounds(x2, "fold_change", k = c(-3, 3)),
-    range(x2),
+    c(log10(2), log10(8)),
     tolerance = 1e-6
   )
 })

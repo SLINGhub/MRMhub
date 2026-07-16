@@ -54,3 +54,20 @@ test_that("Default plot_qc_matrixeffects looks as expected", {
   expect_equal(sum_pc, 2937988066.1)
 
 })
+
+test_that("data_sum_features returns NA (not a fabricated 0) when all merged transitions are missing", {
+  mexp_na <- mexp
+  an <- mexp_na@dataset$analysis_id[1]
+  msk <- mexp_na@dataset$analysis_id == an &
+    stringr::str_detect(mexp_na@dataset$feature_id, "LPC 18:1 \\((a|b)\\)")
+  expect_gt(sum(msk), 1) # both (a) and (b) present -> real aggregation happens
+
+  mexp_na@dataset$feature_intensity[msk] <- NA_real_
+
+  ded <- data_sum_features(mexp_na, qualifier_action = "include")
+  v <- ded@dataset$feature_intensity[
+    ded@dataset$analysis_id == an & ded@dataset$feature_id == "LPC 18:1"
+  ]
+  expect_length(v, 1)
+  expect_true(is.na(v))
+})
