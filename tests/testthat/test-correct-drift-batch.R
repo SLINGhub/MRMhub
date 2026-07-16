@@ -1556,6 +1556,34 @@ mexp_dcorr <- correct_drift_gaussiankernel(
 )
 
 
+test_that("batch centering guards zero/negative values before log-transforming", {
+  # log10(<=0) yields -Inf/NaN, which propagates through the centering and
+  # silently turns valid rows into NaN. Such values must be set to NA and
+  # reported, mirroring the guard in correct_drift(). The NA injected into the
+  # same feature is deliberate: it is exactly the case a missing `na.rm` in the
+  # guard's count silently drops from the report (disabling the guard).
+  mexp_neg <- mexp
+  f <- mexp_neg@dataset$feature_id[[1]]
+  idx <- which(
+    mexp_neg@dataset$feature_id == f & mexp_neg@dataset$qc_type == "SPL"
+  )
+  mexp_neg@dataset$feature_conc[idx[1]] <- -5
+  mexp_neg@dataset$feature_conc[idx[2]] <- NA_real_
+
+  expect_message(
+    mexp_res <- suppressWarnings(correct_batch_centering(
+      mexp_neg,
+      variable = "conc",
+      ref_qc_types = "BQC",
+      log_transform_internal = TRUE
+    )),
+    "zero or negative"
+  )
+  # the zero/negative value must not silently propagate as NaN
+  v <- mexp_res@dataset$feature_conc[mexp_res@dataset$feature_id == f]
+  expect_equal(sum(is.nan(v)), 0)
+})
+
 test_that("correct_batch_centering works", {
   expect_message(
     mexp_batch1 <- suppressWarnings(correct_batch_centering(

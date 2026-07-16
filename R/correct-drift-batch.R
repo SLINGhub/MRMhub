@@ -572,9 +572,12 @@ correct_drift <- function(
   ds$y <- ds$y_original
 
   if (log_transform_internal) {
+    # `na.rm` is load-bearing: without it a feature carrying any NA gives
+    # count = NA, `filter(count > 0)` drops it, and if every affected feature has
+    # an NA the guard silently disables itself -> log10(<=0) = NaN propagates.
     count_negative_or_zero <- ds |>
       group_by(.data$feature_id) |>
-      summarise(count = sum(.data$y <= 0)) |>
+      summarise(count = sum(.data$y <= 0, na.rm = TRUE)) |>
       filter(.data$count > 0)
     if (nrow(count_negative_or_zero) > 0) {
       ds$y[ds$y <= 0] <- NA_real_
@@ -1765,6 +1768,24 @@ correct_batch_centering <- function(
       }
 
       ds <- ds |> dplyr::filter(.data$feature_id %in% feature_list)
+    }
+  }
+
+  # Zero/negative values cannot be log-transformed: log10(<=0) gives -Inf/NaN,
+  # which propagates through the centering and silently turns valid rows into
+  # NaN. Set them to NA and report, mirroring the guard in `correct_drift()`.
+  if (log_transform_internal) {
+    count_negative_or_zero <- ds |>
+      group_by(.data$feature_id) |>
+      summarise(count = sum(.data$y <= 0, na.rm = TRUE)) |>
+      filter(.data$count > 0)
+    if (nrow(count_negative_or_zero) > 0) {
+      ds$y[ds$y <= 0] <- NA_real_
+      cli::cli_alert_info(
+        col_yellow(
+          "{nrow(count_negative_or_zero)} feature(s) contain one or more zero or negative `{variable_strip}` values. Verify your data or use `log_transform_internal = FALSE`."
+        )
+      )
     }
   }
 
