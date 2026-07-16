@@ -584,10 +584,13 @@ test_that("Imports MH with Calc. Conc or Final Conc. and Exp. Conc missing Name 
   mexp <- MRMhubExperiment()
 
   expect_message(
-    mexp <- import_data_masshunter(
-      mexp,
-      test_path("testdata/masshunter/QuantLCMS_Example_MassHunter.csv"),
-      expand_qualifier_names = TRUE
+    expect_warning(
+      mexp <- import_data_masshunter(
+        mexp,
+        test_path("testdata/masshunter/QuantLCMS_Example_MassHunter.csv"),
+        expand_qualifier_names = TRUE
+      ),
+      "Unrecognized qc_type"
     ),
     "Imported 25 analyses with 16 features (8 quantifiers, 8 qualifiers)",
     fixed = TRUE
@@ -600,11 +603,14 @@ test_that("Imports MH with Calc. Conc or Final Conc. and Exp. Conc missing Name 
   ))
 
   expect_message(
-    mexp <- import_data_masshunter(
-      mexp,
-      test_path("testdata/masshunter/QuantLCMS_Example_MassHunter.csv"),
-      expand_qualifier_names = TRUE,
-      conc_column = "conc_calc"
+    expect_warning(
+      mexp <- import_data_masshunter(
+        mexp,
+        test_path("testdata/masshunter/QuantLCMS_Example_MassHunter.csv"),
+        expand_qualifier_names = TRUE,
+        conc_column = "conc_calc"
+      ),
+      "Unrecognized qc_type"
     ),
     "Imported 25 analyses with 16 features (8 quantifiers, 8 qualifiers)",
     fixed = TRUE
@@ -617,11 +623,14 @@ test_that("Imports MH with Calc. Conc or Final Conc. and Exp. Conc missing Name 
   ))
 
   expect_message(
-    mexp <- import_data_masshunter(
-      mexp,
-      test_path("testdata/masshunter/QuantLCMS_Example_MassHunter_FinalConc.csv"),
-      expand_qualifier_names = TRUE,
-      conc_column = "conc_calc"
+    expect_warning(
+      mexp <- import_data_masshunter(
+        mexp,
+        test_path("testdata/masshunter/QuantLCMS_Example_MassHunter_FinalConc.csv"),
+        expand_qualifier_names = TRUE,
+        conc_column = "conc_calc"
+      ),
+      "Unrecognized qc_type"
     ),
     "Imported 25 analyses with 16 features (8 quantifiers, 8 qualifiers)",
     fixed = TRUE
@@ -634,11 +643,14 @@ test_that("Imports MH with Calc. Conc or Final Conc. and Exp. Conc missing Name 
   ))
 
   expect_message(
-    mexp <- import_data_masshunter(
-      mexp,
-      test_path("testdata/masshunter/QuantLCMS_Example_MassHunter_CalcConc.csv"),
-      expand_qualifier_names = TRUE,
-      conc_column = "conc_calc"
+    expect_warning(
+      mexp <- import_data_masshunter(
+        mexp,
+        test_path("testdata/masshunter/QuantLCMS_Example_MassHunter_CalcConc.csv"),
+        expand_qualifier_names = TRUE,
+        conc_column = "conc_calc"
+      ),
+      "Unrecognized qc_type"
     ),
     "Imported 25 analyses with 16 features (8 quantifiers, 8 qualifiers)",
     fixed = TRUE
@@ -651,20 +663,26 @@ test_that("Imports MH with Calc. Conc or Final Conc. and Exp. Conc missing Name 
   ))
 
   expect_message(
-    mexp <- import_data_masshunter(
-      mexp,
-      test_path("testdata/masshunter/QuantLCMS_Example_MassHunter-NoHdrSampleName.csv"),
-      expand_qualifier_names = TRUE
+    expect_warning(
+      mexp <- import_data_masshunter(
+        mexp,
+        test_path("testdata/masshunter/QuantLCMS_Example_MassHunter-NoHdrSampleName.csv"),
+        expand_qualifier_names = TRUE
+      ),
+      "Unrecognized qc_type"
     ),
     "Imported 25 analyses with 16 features (8 quantifiers, 8 qualifiers)",
     fixed = TRUE
   )
 
   expect_message(
-    mexp <- import_data_masshunter(
-      mexp,
-      test_path("testdata/masshunter/QuantLCMS_Example_MassHunter.csv"),
-      expand_qualifier_names = TRUE
+    expect_warning(
+      mexp <- import_data_masshunter(
+        mexp,
+        test_path("testdata/masshunter/QuantLCMS_Example_MassHunter.csv"),
+        expand_qualifier_names = TRUE
+      ),
+      "Unrecognized qc_type"
     ),
     "Imported 25 analyses with 16 features (8 quantifiers, 8 qualifiers)",
     fixed = TRUE
