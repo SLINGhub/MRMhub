@@ -170,6 +170,19 @@ myexp <- correct_batch_centering(
   ref_qc_types = "SPL"
 )
 #> ℹ Adding batch correction on top of `conc` drift-correction.
+#> Warning: ! 156 feature/batch combinations had no usable reference-QC ("SPL") values and
+#>   were left uncorrected; original values were kept.
+#> ℹ Affected features: "Cer d18:1/12:0 (ISTD) [M-H20>264]", "Cer d18:1/25:0
+#>   (ISTD) [M-H20>264]", "Hex2Cer d18:1/12:0 (ISTD) [282]", "Hex2Cer d18:1/12:0
+#>   (ISTD) [M-H20 > 264]", "Hex2Cer d18:1/16:0 d3 (ISTD) [-HexAll]", "Hex2Cer
+#>   d18:1/16:0 d3 (ISTD) [264]", "Hex2Cer d18:1/16:0 d3 (ISTD) [282]", "Hex3Cer
+#>   d18:1/18:0 d3 (ISTD) [-HexAll]", "Hex3Cer d18:1/18:0 d3 (ISTD) [264]",
+#>   "Hex3Cer d18:1/18:0 d3 (ISTD) [282]", "HexCer d18:1/08:0 (ISTD) [264]",
+#>   "HexCer d18:1/12:0 (ISTD) [264]", "HexCer d18:1/12:0 (ISTD) [282]", "HexCer
+#>   d18:1/12:0 (ISTD) [M-H2O > 264]", "HexCer d18:1/16:0 d3 (ISTD) [-HexAll]",
+#>   "HexCer d18:1/16:0 d3 (ISTD) [264]", "HexCer d18:1/16:0 d3 (ISTD) [282]",
+#>   "LPC 18:1 (a ) d7 (ISTD)", …, "TG 48:0 d5 (ISTD) [-16:0]", and "TG 48:0 d5
+#>   (ISTD) [SIM]"
 #> ✔ Batch median-centering of 6 batches was applied to drift-corrected concentrations of all 502 features.
 #> ℹ The median CV change of all features in study samples was -0.44% (range: -27.90% to 10.30%).  The median absolute CV of all features decreased from 38.99% to 38.76%.
 
@@ -242,7 +255,7 @@ for the full list of plotting functions grouped by workflow stage.
 # Detailed Excel report with multiple sheets
 save_report_xlsx(myexp, path = tempfile(fileext = ".xlsx"))
 #> Saving report to disk - please wait...
-#> ✔ The data processing report has been saved to '/tmp/Rtmp1n9QJq/file348a2fd4c51f.xlsx'.
+#> ✔ The data processing report has been saved to '/tmp/RtmpKjqOkr/file2cba74f1f367.xlsx'.
 
 # Flat CSV with concentration values that passed QC
 save_dataset_csv(
@@ -253,7 +266,7 @@ save_dataset_csv(
   include_qualifier = FALSE,
   filter_data = TRUE
 )
-#> ✔ Concentration values for 378 analyses and 181 features have been exported to '/tmp/Rtmp1n9QJq/file348a34a218d7.csv'.
+#> ✔ Concentration values for 378 analyses and 181 features have been exported to '/tmp/RtmpKjqOkr/file2cba13e096a4.csv'.
 
 # Save the complete object for reproducibility or sharing
 saveRDS(myexp, file = tempfile(fileext = ".rds"), compress = TRUE)

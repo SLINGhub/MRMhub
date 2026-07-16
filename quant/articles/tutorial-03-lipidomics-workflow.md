@@ -61,7 +61,7 @@ Exercises
 ``` r
 
 print(myexp@dataset) # Better use `get_analyticaldata(mexp, annotated = TRUE)`
-#> # A tibble: 250,997 × 20
+#> # A tibble: 250,997 × 21
 #>    analysis_order analysis_id  acquisition_time_stamp qc_type batch_id sample_id
 #>             <int> <chr>        <dttm>                 <chr>   <chr>    <chr>    
 #>  1              1 Longit_BLAN… 2017-10-20 14:15:36    SBLK    1        NA       
@@ -75,11 +75,11 @@ print(myexp@dataset) # Better use `get_analyticaldata(mexp, annotated = TRUE)`
 #>  9              1 Longit_BLAN… 2017-10-20 14:15:36    SBLK    1        NA       
 #> 10              1 Longit_BLAN… 2017-10-20 14:15:36    SBLK    1        NA       
 #> # ℹ 250,987 more rows
-#> # ℹ 14 more variables: replicate_no <int>, specimen <chr>, feature_id <chr>,
+#> # ℹ 15 more variables: replicate_no <int>, specimen <chr>, feature_id <chr>,
 #> #   feature_class <chr>, feature_label <chr>, is_istd <lgl>,
-#> #   is_quantifier <lgl>, analyte_id <chr>, feature_rt <dbl>,
-#> #   feature_area <dbl>, feature_height <dbl>, feature_fwhm <dbl>,
-#> #   feature_width <dbl>, feature_intensity <dbl>
+#> #   is_quantifier <lgl>, analyte_id <chr>, istd_feature_id <chr>,
+#> #   feature_rt <dbl>, feature_area <dbl>, feature_height <dbl>,
+#> #   feature_fwhm <dbl>, feature_width <dbl>, feature_intensity <dbl>
 ```
 
 ## 3. Analytical design and timeline
@@ -304,7 +304,7 @@ plot_pca(
   include_istd = FALSE)
 #> ! 2 features contained missing or non-numeric values and were exluded.
 #> ℹ The PCA was calculated based on `feature_intensity` values of 423 features.
-#> ggrepel: 10000 iterations in 0.010950s, 3 overlaps. Consider increasing 'max.iter'.
+#> ggrepel: 10000 iterations in 0.010922s, 3 overlaps. Consider increasing 'max.iter'.
 ```
 
 ![PCA
@@ -341,7 +341,7 @@ plot_pca(
   shared_labeltext_hide = NA)
 #> ! 2 features contained missing or non-numeric values and were exluded.
 #> ℹ The PCA was calculated based on `feature_intensity` values of 423 features.
-#> ggrepel: 10000 iterations in 0.022471s, 7 overlaps. Consider increasing 'max.iter'.
+#> ggrepel: 10000 iterations in 0.022584s, 7 overlaps. Consider increasing 'max.iter'.
 ```
 
 ![PCA
@@ -619,8 +619,20 @@ myexp <- mrmhub::correct_batch_centering(
   correct_scale = TRUE, 
   log_transform_internal = TRUE)
 #> ℹ Adding batch correction on top of `conc` drift-correction.
+#> Warning: ! 258 feature/batch combinations had no usable reference-QC ("SPL") values and
+#>   were left uncorrected; original values were kept.
+#> ℹ Affected features: "CE 18:1 d7 (ISTD)", "Cer d18:1/12:0 (ISTD) [M-H20>264]",
+#>   "Cer d18:1/25:0 (ISTD)", "Cer d18:1/25:0 (ISTD) [M-H20>264]", "COH d7 [161]
+#>   (ISTD)", "COH d7 [95] (ISTD)", "DG 15:0_18:1 d7 (ISTD) [-15:0]", "DG
+#>   15:0_18:1 d7 (ISTD) [-18:1]", "Hex2Cer d18:1/12:0 (ISTD)", "Hex2Cer
+#>   d18:1/12:0 (ISTD) [282]", "Hex2Cer d18:1/12:0 (ISTD) [M-H20 > 264]", "Hex2Cer
+#>   d18:1/16:0 d3 (ISTD) [-HexAll]", "Hex2Cer d18:1/16:0 d3 (ISTD) [264]",
+#>   "Hex2Cer d18:1/16:0 d3 (ISTD) [282]", "Hex3Cer d18:1/18:0 d3 (ISTD)
+#>   [-HexAll]", "Hex3Cer d18:1/18:0 d3 (ISTD) [264]", "Hex3Cer d18:1/18:0 d3
+#>   (ISTD) [282]", "HexCer d18:1/08:0 (ISTD) [264]", …, "TG 48:1 d7 (ISTD)
+#>   [-15:0]", and "TG 48:1 d7 (ISTD) [SIM]"
 #> ✔ Batch median-centering of 6 batches was applied to drift-corrected concentrations of all 502 features.
-#> ℹ The median CV change of all features in study samples was -0.29% (range: -31.80% to 69.10%).  The median absolute CV of all features increased from 38.39% to 39.44%.
+#> ℹ The median CV change of all features in study samples was -0.23% (range: -31.80% to 69.10%).  The median absolute CV of all features increased from 38.39% to 38.83%.
 
 my_trend_plot("conc", "PC 40:8")
 #> Generating plots (1 page)...
@@ -706,11 +718,12 @@ myexp <- filter_features_qc(
   features.to.keep = c("CE 20:4", "CE 22:5", "CE 22:6", "CE 16:0", "CE 18:0")
 )
 #> Calculating feature QC metrics - please wait...
+#> ! %CV not computed for 4440 feature×QC-type×variable combinations with fewer than 3 replicates (LTR: 4440).
 #> ! The QC parameter `min.intensity.median.spl` contains NAs for following features: LPC O-22:1, PC 34:5, PC 35:1, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC P-32:1 M+1. 
 #> These features failed QC.
 #> ! The QC parameter `min.signalblank.median.spl.pblk` contains NAs for following features: LPC O-22:1, PC 34:5, PC 35:1, PG 36:2, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC .... 
 #> These features failed QC.
-#> ! The QC parameter `max.cv.conc.bqc` contains NAs for following features: CE 18:1 d7 (ISTD), Cer d18:1/12:0 (ISTD) [M-H20>264], Cer d18:1/25:0 (ISTD), .... 
+#> ! The QC parameter `max.cv.conc.bqc` contains NAs for following features: Cer d18:1/12:0 (ISTD) [M-H20>264], Cer d18:1/25:0 (ISTD) [M-H20>264], Hex2Cer.... 
 #> These features failed QC.
 #> ! The following features were forced to be retained despite not meeting filtering criteria: CE 16:0, CE 20:4, CE 22:5, and CE 22:6
 #> ✔ New feature QC filters were defined: 324 of 423 quantifier features meet QC criteria (not including the 25 quantifier ISTD features).
@@ -803,7 +816,7 @@ Exercises
 
 mrmhub::save_report_xlsx(myexp, path = tempfile(fileext = ".xlsx"))
 #> Saving report to disk - please wait...
-#> ✔ The data processing report of experiment 'sPerfect' has been saved to '/tmp/RtmphNHHpm/file36bd50c0747.xlsx'.
+#> ✔ The data processing report of experiment 'sPerfect' has been saved to '/tmp/RtmpV2QPzr/file2ef14909c8f6.xlsx'.
 ```
 
 Specific data subsets can also be saved as a clean flat, wide CSV file.
@@ -824,7 +837,7 @@ mrmhub::save_dataset_csv(
   qc_types = "SPL", 
   include_qualifier = FALSE,
   filter_data = TRUE)
-#> ✔ Concentration values for 377 analyses and 324 features have been exported to '/tmp/RtmphNHHpm/file36bd4969eff.csv'.
+#> ✔ Concentration values for 377 analyses and 324 features have been exported to '/tmp/RtmpV2QPzr/file2ef147e6e090.csv'.
 ```
 
 ## 22. Sharing the `MRMhubExperiment` dataset

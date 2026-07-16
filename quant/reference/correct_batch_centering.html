@@ -95,7 +95,7 @@ on top of previous corrections or replace all prior batch corrections.'><meta pr
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Batch centering correction</h1>
-      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/gui-beta-v1.0.9/R/correct-drift-batch.R" class="external-link"><code>R/correct-drift-batch.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/development/R/correct-drift-batch.R" class="external-link"><code>R/correct-drift-batch.R</code></a></small>
       <div class="d-none name"><code>correct_batch_centering.Rd</code></div>
     </div>
 
@@ -156,7 +156,13 @@ previous batch corrections or apply the new correction on top. Defaults to
 
 <dt id="arg-log-transform-internal">log_transform_internal<a class="anchor" aria-label="anchor" href="#arg-log-transform-internal"></a></dt>
 <dd><p>A logical value indicating whether to log-transform
-the data internally during correction. Defaults to <code>TRUE</code>.</p></dd>
+the data internally during correction. Defaults to <code>TRUE</code>. This also sets the
+centering model: with <code>TRUE</code> the batch reference levels are aligned in log
+space, i.e. <strong>multiplicative (geometric)</strong> centering (the appropriate choice
+for multiplicatively-scaling MS intensities, and the reason it is the
+default); with <code>FALSE</code> they are aligned in raw space, i.e. <strong>additive</strong>
+centering (which can shift low values below zero). Either way the returned
+data are on the raw (untransformed) scale.</p></dd>
 
 
 <dt id="arg-feature-list">feature_list<a class="anchor" aria-label="anchor" href="#arg-feature-list"></a></dt>

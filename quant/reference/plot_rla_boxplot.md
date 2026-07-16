@@ -159,7 +159,8 @@ plot_rla_boxplot(
 
 - min_feature_intensity:
 
-  Numeric, exclude features with overall median signal below this value
+  Numeric, exclude features with overall median intensity below this
+  value
 
 - y_lim:
 

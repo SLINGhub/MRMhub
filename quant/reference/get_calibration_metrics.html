@@ -83,7 +83,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Get calibration metrics</h1>
-      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/gui-beta-v1.0.9/R/calc-calibrations.R" class="external-link"><code>R/calc-calibrations.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/development/R/calc-calibrations.R" class="external-link"><code>R/calc-calibrations.R</code></a></small>
       <div class="d-none name"><code>get_calibration_metrics.Rd</code></div>
     </div>
 
@@ -142,7 +142,10 @@ See its documentation for details.</p><div class="section">
 <li><p><code>weighting</code>: Weighting method used in fitting.</p></li>
 <li><p><code>lowest_cal</code>: Lowest nonzero calibration concentration.</p></li>
 <li><p><code>highest_cal</code>: Highest  calibration concentration.</p></li>
-<li><p><code>r.squared</code>: R-squared value, indicating goodness of fit.</p></li>
+<li><p><code>r.squared</code>: R-squared value, indicating goodness of fit. For a <strong>weighted</strong>
+fit this is the weighted coefficient of determination (computed from weighted
+sums of squares), matching the value reported by vendor software such as
+Agilent MassHunter for the same weighted curve.</p></li>
 <li><p><code>coef_a</code>: Intercept of the regression line</p></li>
 <li><p><code>coef_b</code>: Slope of the regression line in <strong>linear</strong> models, or coefficient of the linear term (<code>x</code>) in <strong>quadratic</strong> models.</p></li>
 <li><p><code>coef_c</code>: Coefficient of the quadratic term (<code>x^2</code>) in <strong>quadratic</strong> models. Returns <code>NA</code> for <strong>linear</strong> models.</p></li>
@@ -157,6 +160,12 @@ quadratic term does not contribute to this slope. The response <code>sigma</code
 selectable in <code><a href="calc_calibration_results.html">calc_calibration_results()</a></code> via <code>lod_sigma</code> (residual
 standard error, the default, or the standard error of the intercept); the
 <code>sigma</code> column reported here is always the residual standard error.</p>
+<p>For a <strong>weighted</strong> fit (<code>1/x</code>, <code>1/x^2</code>, <code>1/sqrt(x)</code>) <code>sigma</code> is R's weighted
+residual standard error, which is not on the raw response scale that the ICH
+<code>3.3 sigma / S</code> formula assumes, so the reported LoD/LoQ are approximate
+(typically slightly optimistic for <code>1/x</code>). Use <code>fit_weighting = "none"</code> if you
+require the strict ICH response-scale <code>Sy/x</code>; the back-calculated
+concentrations themselves are unaffected.</p>
 </div>
 
     </div>

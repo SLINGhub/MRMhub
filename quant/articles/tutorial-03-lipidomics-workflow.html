@@ -124,7 +124,7 @@
       <img src="../logo.svg" class="logo" alt=""><h1>Lipidomics Data Processing</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/gui-beta-v1.0.9/vignettes/articles/tutorial-03-lipidomics-workflow.Rmd" class="external-link"><code>vignettes/articles/tutorial-03-lipidomics-workflow.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/development/vignettes/articles/tutorial-03-lipidomics-workflow.Rmd" class="external-link"><code>vignettes/articles/tutorial-03-lipidomics-workflow.Rmd</code></a></small>
       <div class="d-none name"><code>tutorial-03-lipidomics-workflow.Rmd</code></div>
     </div>
 
@@ -188,7 +188,7 @@ filter functionality.</p>
 </blockquote>
 </details><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">myexp</span><span class="op">@</span><span class="va">dataset</span><span class="op">)</span> <span class="co"># Better use `get_analyticaldata(mexp, annotated = TRUE)`</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 250,997 × 20</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 250,997 × 21</span></span></span>
 <span><span class="co">#&gt;    analysis_order analysis_id  acquisition_time_stamp qc_type batch_id sample_id</span></span>
 <span><span class="co">#&gt;             <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>              1 Longit_BLAN… 2017-10-20 <span style="color: #949494;">14:15:36</span>    SBLK    1        <span style="color: #BB0000;">NA</span>       </span></span>
@@ -202,11 +202,11 @@ filter functionality.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>              1 Longit_BLAN… 2017-10-20 <span style="color: #949494;">14:15:36</span>    SBLK    1        <span style="color: #BB0000;">NA</span>       </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>              1 Longit_BLAN… 2017-10-20 <span style="color: #949494;">14:15:36</span>    SBLK    1        <span style="color: #BB0000;">NA</span>       </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 250,987 more rows</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 14 more variables: replicate_no &lt;int&gt;, specimen &lt;chr&gt;, feature_id &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 15 more variables: replicate_no &lt;int&gt;, specimen &lt;chr&gt;, feature_id &lt;chr&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   feature_class &lt;chr&gt;, feature_label &lt;chr&gt;, is_istd &lt;lgl&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   is_quantifier &lt;lgl&gt;, analyte_id &lt;chr&gt;, feature_rt &lt;dbl&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   feature_area &lt;dbl&gt;, feature_height &lt;dbl&gt;, feature_fwhm &lt;dbl&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   feature_width &lt;dbl&gt;, feature_intensity &lt;dbl&gt;</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;">#   is_quantifier &lt;lgl&gt;, analyte_id &lt;chr&gt;, istd_feature_id &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   feature_rt &lt;dbl&gt;, feature_area &lt;dbl&gt;, feature_height &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   feature_fwhm &lt;dbl&gt;, feature_width &lt;dbl&gt;, feature_intensity &lt;dbl&gt;</span></span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="analytical-design-and-timeline">3. Analytical design and timeline<a class="anchor" aria-label="anchor" href="#analytical-design-and-timeline"></a>
@@ -414,7 +414,7 @@ think the resulting PCA plot suggests now?</p>
 <span>  include_istd <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">2 features contained missing or non-numeric values and were exluded.</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #00BB00;">The PCA was calculated based on `feature_intensity` values of 423 features.</span></span></span>
-<span><span class="co">#&gt; ggrepel: 10000 iterations in 0.010950s, 3 overlaps. Consider increasing 'max.iter'.</span></span></code></pre></div>
+<span><span class="co">#&gt; ggrepel: 10000 iterations in 0.010922s, 3 overlaps. Consider increasing 'max.iter'.</span></span></code></pre></div>
 <p><img src="tutorial-03-lipidomics-workflow_files/figure-html/pca-before-1.png" class="r-plt" alt="PCA plot" width="100%"></p>
 </div>
 <div class="section level2">
@@ -448,7 +448,7 @@ dimensions (by modifying <code>pca_dims</code>).</p>
 <span>  shared_labeltext_hide <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">2 features contained missing or non-numeric values and were exluded.</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #00BB00;">The PCA was calculated based on `feature_intensity` values of 423 features.</span></span></span>
-<span><span class="co">#&gt; ggrepel: 10000 iterations in 0.022471s, 7 overlaps. Consider increasing 'max.iter'.</span></span></code></pre></div>
+<span><span class="co">#&gt; ggrepel: 10000 iterations in 0.022584s, 7 overlaps. Consider increasing 'max.iter'.</span></span></code></pre></div>
 <p><img src="tutorial-03-lipidomics-workflow_files/figure-html/outlier-removal-1.png" class="r-plt" alt="PCA plot" width="100%"></p>
 </div>
 <div class="section level2">
@@ -697,8 +697,20 @@ to center the batches. What do you observe?</p>
 <span>  correct_scale <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>  log_transform_internal <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #BBBB00;">Adding batch correction on top of `conc` drift-correction.</span></span></span>
+<span><span class="co">#&gt; Warning: <span style="color: #BBBB00;">!</span> 258 feature/batch combinations had no usable reference-QC (<span style="color: #0000BB;">"SPL"</span>) values and</span></span>
+<span><span class="co">#&gt;   were left uncorrected; original values were kept.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Affected features: <span style="color: #0000BB;">"CE 18:1 d7 (ISTD)"</span>, <span style="color: #0000BB;">"Cer d18:1/12:0 (ISTD) [M-H20&gt;264]"</span>,</span></span>
+<span><span class="co">#&gt;   <span style="color: #0000BB;">"Cer d18:1/25:0 (ISTD)"</span>, <span style="color: #0000BB;">"Cer d18:1/25:0 (ISTD) [M-H20&gt;264]"</span>, <span style="color: #0000BB;">"COH d7 [161]</span></span></span>
+<span><span class="co">#&gt;   <span style="color: #0000BB;">(ISTD)"</span>, <span style="color: #0000BB;">"COH d7 [95] (ISTD)"</span>, <span style="color: #0000BB;">"DG 15:0_18:1 d7 (ISTD) [-15:0]"</span>, <span style="color: #0000BB;">"DG</span></span></span>
+<span><span class="co">#&gt;   <span style="color: #0000BB;">15:0_18:1 d7 (ISTD) [-18:1]"</span>, <span style="color: #0000BB;">"Hex2Cer d18:1/12:0 (ISTD)"</span>, <span style="color: #0000BB;">"Hex2Cer</span></span></span>
+<span><span class="co">#&gt;   <span style="color: #0000BB;">d18:1/12:0 (ISTD) [282]"</span>, <span style="color: #0000BB;">"Hex2Cer d18:1/12:0 (ISTD) [M-H20 &gt; 264]"</span>, <span style="color: #0000BB;">"Hex2Cer</span></span></span>
+<span><span class="co">#&gt;   <span style="color: #0000BB;">d18:1/16:0 d3 (ISTD) [-HexAll]"</span>, <span style="color: #0000BB;">"Hex2Cer d18:1/16:0 d3 (ISTD) [264]"</span>,</span></span>
+<span><span class="co">#&gt;   <span style="color: #0000BB;">"Hex2Cer d18:1/16:0 d3 (ISTD) [282]"</span>, <span style="color: #0000BB;">"Hex3Cer d18:1/18:0 d3 (ISTD)</span></span></span>
+<span><span class="co">#&gt;   <span style="color: #0000BB;">[-HexAll]"</span>, <span style="color: #0000BB;">"Hex3Cer d18:1/18:0 d3 (ISTD) [264]"</span>, <span style="color: #0000BB;">"Hex3Cer d18:1/18:0 d3</span></span></span>
+<span><span class="co">#&gt;   <span style="color: #0000BB;">(ISTD) [282]"</span>, <span style="color: #0000BB;">"HexCer d18:1/08:0 (ISTD) [264]"</span>, …, <span style="color: #0000BB;">"TG 48:1 d7 (ISTD)</span></span></span>
+<span><span class="co">#&gt;   <span style="color: #0000BB;">[-15:0]"</span>, and <span style="color: #0000BB;">"TG 48:1 d7 (ISTD) [SIM]"</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Batch median-centering of 6 batches was applied to drift-corrected concentrations of all 502 features.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #555555;">The median CV change of all features in study samples was </span><span style="color: #555555; font-weight: bold;">-0.29%</span><span style="color: #555555;"> (range: -31.80% to 69.10%).  The median absolute CV of all features </span><span style="color: #555555; font-weight: bold;">increased from</span><span style="color: #555555;"> </span><span style="color: #555555; font-weight: bold;">38.39% to 39.44%</span><span style="color: #555555;">.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #555555;">The median CV change of all features in study samples was </span><span style="color: #555555; font-weight: bold;">-0.23%</span><span style="color: #555555;"> (range: -31.80% to 69.10%).  The median absolute CV of all features </span><span style="color: #555555; font-weight: bold;">increased from</span><span style="color: #555555;"> </span><span style="color: #555555; font-weight: bold;">38.39% to 38.83%</span><span style="color: #555555;">.</span></span></span>
 <span></span>
 <span><span class="fu">my_trend_plot</span><span class="op">(</span><span class="st">"conc"</span>, <span class="st">"PC 40:8"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">Generating plots (1 page)...</span></span></span></code></pre></div>
@@ -776,11 +788,12 @@ the effects visually.</p>
 <span>  features.to.keep <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CE 20:4"</span>, <span class="st">"CE 22:5"</span>, <span class="st">"CE 22:6"</span>, <span class="st">"CE 16:0"</span>, <span class="st">"CE 18:0"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Calculating feature QC metrics - please wait...</span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">%CV not computed for 4440 feature×QC-type×variable combinations with fewer than 3 replicates (LTR: 4440).</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">The QC parameter `min.intensity.median.spl` contains NAs for following features: LPC O-22:1, PC 34:5, PC 35:1, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC P-32:1 M+1. </span></span></span>
 <span><span class="co"><span style="color: #BBBB00;">#&gt; These features failed QC.</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">The QC parameter `min.signalblank.median.spl.pblk` contains NAs for following features: LPC O-22:1, PC 34:5, PC 35:1, PG 36:2, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC .... </span></span></span>
 <span><span class="co"><span style="color: #BBBB00;">#&gt; These features failed QC.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">The QC parameter `max.cv.conc.bqc` contains NAs for following features: CE 18:1 d7 (ISTD), Cer d18:1/12:0 (ISTD) [M-H20&gt;264], Cer d18:1/25:0 (ISTD), .... </span></span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">The QC parameter `max.cv.conc.bqc` contains NAs for following features: Cer d18:1/12:0 (ISTD) [M-H20&gt;264], Cer d18:1/25:0 (ISTD) [M-H20&gt;264], Hex2Cer.... </span></span></span>
 <span><span class="co"><span style="color: #BBBB00;">#&gt; These features failed QC.</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">The following features were forced to be retained despite not meeting filtering criteria: CE 16:0, CE 20:4, CE 22:5, and CE 22:6</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">New feature QC filters were defined: 324 of 423 quantifier features meet QC criteria (not including the 25 quantifier ISTD features).</span></span></span></code></pre></div>
@@ -863,7 +876,7 @@ folder.</p>
 </details><div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">mrmhub</span><span class="fu">::</span><span class="fu"><a href="../reference/save_report_xlsx.html">save_report_xlsx</a></span><span class="op">(</span><span class="va">myexp</span>, path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".xlsx"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Saving report to disk - please wait...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The data processing report of experiment 'sPerfect' has been saved to '/tmp/RtmphNHHpm/file36bd50c0747.xlsx'.</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The data processing report of experiment 'sPerfect' has been saved to '/tmp/RtmpV2QPzr/file2ef14909c8f6.xlsx'.</span></span></span></code></pre></div>
 <p>Specific data subsets can also be saved as a clean flat, wide CSV
 file. This is the format used to share the data for the statistical
 analysis presented in the next part of this workshop.</p>
@@ -881,7 +894,7 @@ generated CSV files.</p>
 <span>  qc_types <span class="op">=</span> <span class="st">"SPL"</span>, </span>
 <span>  include_qualifier <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  filter_data <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Concentration values for 377 analyses and 324 features have been exported to '/tmp/RtmphNHHpm/file36bd4969eff.csv'.</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Concentration values for 377 analyses and 324 features have been exported to '/tmp/RtmpV2QPzr/file2ef147e6e090.csv'.</span></span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="sharing-the-mrmhubexperiment-dataset">22. Sharing the <code>MRMhubExperiment</code> dataset<a class="anchor" aria-label="anchor" href="#sharing-the-mrmhubexperiment-dataset"></a>

@@ -239,6 +239,22 @@ themselves — **don’t invoke these automatically**; ask and report back
 `just site`). Lightweight read-only sanity (`devtools::load_all()`,
 parsing a file) is fine.
 
+**Engineering approach.** Work like a senior
+R/tidyverse/scientific-software engineer: **prefer the smallest change
+that carries real value, and don’t over-engineer.** Weigh win vs. risk
+on every change — this is scientific software, so a *silent
+wrong-number* bug (mis-mapped column, wrong root, dropped rows) is
+high-value to fix, while cosmetic churn is not. Concretely: fix genuine
+bugs and pair them with a regression test; delete dead code freely (it
+lowers complexity); but for a *not-a-bug* finding, prefer to just note
+it rather than commit a clarifying comment — reserve comments for
+genuinely cryptic code, and keep them a few lines, not paragraphs. Be
+skeptical of optional/behaviour-preserving refactors and defensive code
+paths added for “can’t happen” cases; they add surface area for little
+gain. Favor a few well-scoped commits over a long string of tiny ones.
+When a change is behavioural, surface the finding and confirm before
+editing rather than silently “fixing”.
+
 ## Vignettes / docs
 
 `vignettes/articles/` contains ~30 long-form `.Rmd` articles organised

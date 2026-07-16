@@ -7,7 +7,7 @@ computation proceeds.
 ## Usage
 
 ``` r
-cv(x, na.rm = FALSE, use_robust_cv = FALSE)
+cv(x, na.rm = FALSE, use_robust_cv = FALSE, min_n = 1L)
 ```
 
 ## Arguments
@@ -26,6 +26,14 @@ cv(x, na.rm = FALSE, use_robust_cv = FALSE)
   logical, if TRUE the robust coefficient of variation (scaled median
   absolute deviation / median) is computed instead of the standard CV
   (SD / mean)
+
+- min_n:
+
+  integer, the minimum number of observations (non-missing ones when
+  `na.rm = TRUE`) required to return a CV. Fewer than `min_n` values
+  return `NA_real_`. The default (`1`) is a no-op, since
+  [`sd()`](https://rdrr.io/r/stats/sd.html)/[`mad()`](https://rdrr.io/r/stats/mad.html)
+  already return `NA` for fewer than two values.
 
 ## Value
 

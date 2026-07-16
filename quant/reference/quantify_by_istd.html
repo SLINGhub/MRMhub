@@ -87,7 +87,7 @@ the corresponding spiked-in ISTD amount, and the per-feature response factor
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Calculate analyte concentrations using internal standards</h1>
-      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/gui-beta-v1.0.9/R/calc-istd-normalization.R" class="external-link"><code>R/calc-istd-normalization.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/development/R/calc-istd-normalization.R" class="external-link"><code>R/calc-istd-normalization.R</code></a></small>
       <div class="d-none name"><code>quantify_by_istd.Rd</code></div>
     </div>
 
@@ -136,7 +136,9 @@ If <code>TRUE</code>, missing annotations will be ignored, and resulting feature
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>By default, concentrations are returned in molar units (e.g., µmol/L). To return concentrations in mass units
+    <p>The ISTD used for quantitation is the feature's normalization ISTD
+(<code>istd_feature_id</code>); a separate quantitation ISTD is not supported.</p>
+<p>By default, concentrations are returned in molar units (e.g., µmol/L). To return concentrations in mass units
 (e.g., µg/L), set <code>concentration_unit = "mass"</code>. This requires either the chemical formula or molecular weight
 for each feature to be specified in the feature metadata.</p>
 <p>Internal standard concentrations can also be provided in <code>ng/mL</code>. In such cases, the function will convert these
