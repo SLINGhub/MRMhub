@@ -3008,7 +3008,7 @@
 <text transform='translate(542.11,510.61) rotate(-45)' text-anchor='end' style='font-size: 6.40px; fill: #4D4D4D; font-family: sans;' textLength='72.56px' lengthAdjust='spacingAndGlyphs'>TG 48:1 d7 (ISTD) [-15:0]</text>
 <text transform='translate(652.75,510.61) rotate(-45)' text-anchor='end' style='font-size: 6.40px; fill: #4D4D4D; font-family: sans;' textLength='69.36px' lengthAdjust='spacingAndGlyphs'>TG 48:1 d7 (ISTD) [SIM]</text>
 <text x='373.05' y='570.35' text-anchor='middle' style='font-size: 8.00px; font-family: sans;' textLength='61.38px' lengthAdjust='spacingAndGlyphs'>Internal Standard</text>
-<text transform='translate(9.49,260.24) rotate(-90)' text-anchor='middle' style='font-size: 8.00px; font-family: sans;' textLength='147.21px' lengthAdjust='spacingAndGlyphs'>Standardized Intensity (% of uncorrected)</text>
+<text transform='translate(9.49,260.24) rotate(-90)' text-anchor='middle' style='font-size: 8.00px; font-family: sans;' textLength='124.97px' lengthAdjust='spacingAndGlyphs'>Standardized Intensity (% of mean)</text>
 <rect x='369.82' y='448.00' width='143.63' height='14.35' style='stroke-width: 0.78; stroke: none; fill: #FFFFFF;' />
 <text x='373.81' y='457.37' style='font-size: 6.40px; font-family: sans;' textLength='22.42px' lengthAdjust='spacingAndGlyphs'>qc_type</text>
 <rect x='400.22' y='451.98' width='6.38' height='6.38' style='stroke-width: 0.78; stroke: none; fill: #FFFFFF;' />

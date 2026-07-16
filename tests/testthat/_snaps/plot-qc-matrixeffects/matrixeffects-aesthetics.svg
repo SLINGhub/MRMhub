@@ -18,7 +18,7 @@
   </clipPath>
 </defs>
 <g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHw1NzYuMDA=)'>
-<rect x='0.000000000000064' y='0.00' width='720.00' height='576.00' style='stroke-width: 1.16; stroke: #FFFFFF; fill: #FFFFFF;' />
+<rect x='0.00' y='0.00' width='720.00' height='576.00' style='stroke-width: 1.16; stroke: #FFFFFF; fill: #FFFFFF;' />
 </g>
 <defs>
   <clipPath id='cpNDUuMTJ8NzE0LjAyfDI0Ljg1fDU0Mi4zMA=='>
@@ -4497,7 +4497,7 @@
 <text x='597.69' y='554.29' text-anchor='end' style='font-size: 9.60px; fill: #4D4D4D; font-family: sans;' textLength='108.85px' lengthAdjust='spacingAndGlyphs'>TG 48:1 d7 (ISTD) [-15:0]</text>
 <text x='670.40' y='554.29' text-anchor='end' style='font-size: 9.60px; fill: #4D4D4D; font-family: sans;' textLength='104.04px' lengthAdjust='spacingAndGlyphs'>TG 48:1 d7 (ISTD) [SIM]</text>
 <text x='379.57' y='567.53' text-anchor='middle' style='font-size: 12.00px; font-family: sans;' textLength='92.07px' lengthAdjust='spacingAndGlyphs'>Internal Standard</text>
-<text transform='translate(14.24,283.58) rotate(-90)' text-anchor='middle' style='font-size: 12.00px; font-family: sans;' textLength='220.81px' lengthAdjust='spacingAndGlyphs'>Standardized Intensity (% of uncorrected)</text>
+<text transform='translate(14.24,283.58) rotate(-90)' text-anchor='middle' style='font-size: 12.00px; font-family: sans;' textLength='187.45px' lengthAdjust='spacingAndGlyphs'>Standardized Intensity (% of mean)</text>
 <rect x='338.74' y='479.80' width='215.45' height='21.52' style='stroke-width: 1.16; stroke: none; fill: #FFFFFF;' />
 <text x='344.71' y='493.86' style='font-size: 9.60px; font-family: sans;' textLength='33.63px' lengthAdjust='spacingAndGlyphs'>qc_type</text>
 <rect x='384.32' y='485.78' width='9.56' height='9.56' style='stroke-width: 1.16; stroke: none; fill: #FFFFFF;' />
