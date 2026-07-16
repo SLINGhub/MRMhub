@@ -219,7 +219,7 @@ plot_abundanceprofile <- function(
 
   # --- 3. Common Data Preparation & Y-Axis Setup ---
   if (all(is.na(d_features$feature_class))) {
-    if (!is.na(feature_map) && feature_map == "lipidomics") {
+    if (identical(feature_map, "lipidomics")) {
       d_features <- parse_lipid_feature_names(
         d_features,
         add_chain_composition = FALSE,
@@ -233,7 +233,7 @@ plot_abundanceprofile <- function(
     }
   }
 
-  if (!is.na(exclude_classes)) {
+  if (!all(is.na(exclude_classes))) {
     d_features <- d_features |>
       dplyr::filter(!(.data$feature_class %in% exclude_classes))
   }

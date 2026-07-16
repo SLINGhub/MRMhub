@@ -274,7 +274,7 @@ plot_runscatter <- function(
     cli::cli_abort(cli::col_red("`y_lim` must have numeric values or `NA`s."))
   }
 
-  if (show_reference_lines && is.na(ref_qc_types)) {
+  if (show_reference_lines && all(is.na(ref_qc_types))) {
     cli::cli_abort(
       "Please define a QC to show reference lines, via the `ref_qc_types` argument or set `show_reference_lines = FALSE`."
     )
@@ -963,7 +963,7 @@ runscatter_plot_pages <- function(
       }
       d_subset_stats <- d_subset |>
         left_join(d_batches, by = c("batch_id")) |>
-        filter(.data$qc_type == ref_qc_types) |>
+        filter(.data$qc_type %in% ref_qc_types) |>
         group_by(across(all_of(grp))) |>
         # TODO: could be cleaned up
         summarise(

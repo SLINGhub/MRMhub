@@ -91,6 +91,33 @@ test_that("Argument validation and errors are handled", {
     ),
     "Feature classes are not defined in the data"
   )
+
+  # A named-vector feature_map (the documented type) must reach the friendly
+  # abort, not a length>1 `&&` coercion crash.
+  expect_error(
+    plot_abundanceprofile(
+      data = mexp_temp,
+      variable = "conc",
+      qc_types = "SPL",
+      log_scale = TRUE,
+      feature_map = c(PC = "red", PE = "blue")
+    ),
+    "Feature classes are not defined in the data"
+  )
+})
+
+test_that("plot_abundanceprofile accepts a multi-value exclude_classes without crashing", {
+  # exclude_classes is documented as a character vector; `if (!is.na(vec))`
+  # previously errored for length > 1.
+  expect_no_error(
+    suppressMessages(plot_abundanceprofile(
+      data = mexp,
+      variable = "conc",
+      qc_types = "SPL",
+      log_scale = TRUE,
+      exclude_classes = c("PC", "PE")
+    ))
+  )
 })
 
 test_that("Filtering flags work correctly", {

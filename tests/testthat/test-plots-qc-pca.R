@@ -457,3 +457,30 @@ test_that("When abs_loading = FALSE, bars are non-negative in plotted axis", {
     expect_true(all(d1$y >= 0))
   }
 })
+
+test_that("plot_pca does not crash when labels are suppressed (labels_threshold_mad NULL/NA)", {
+  # NULL / NA are the documented ways to suppress labels; both previously crashed
+  # (`if (logical(0))` for NULL, missing `d_outlier` for NA).
+  expect_no_error(suppressMessages(plot_pca(
+    mexp, variable = "intensity", ellipse_variable = "none",
+    filter_data = FALSE, labels_threshold_mad = NULL
+  )))
+  expect_no_error(suppressMessages(plot_pca(
+    mexp, variable = "intensity", ellipse_variable = "none",
+    filter_data = FALSE, labels_threshold_mad = NA
+  )))
+})
+
+test_that("plot_pca drops a zero-variance feature with a warning, not a prcomp crash", {
+  mexp_zv <- mexp
+  f1 <- mexp_zv@dataset$feature_id[!mexp_zv@dataset$is_istd][1]
+  mexp_zv@dataset$feature_intensity[mexp_zv@dataset$feature_id == f1] <- 1000
+  expect_message(
+    p <- plot_pca(
+      mexp_zv, variable = "intensity", ellipse_variable = "none",
+      filter_data = FALSE, labels_threshold_mad = NA
+    ),
+    "zero variance"
+  )
+  expect_s3_class(p, "ggplot")
+})

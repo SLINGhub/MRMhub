@@ -1268,3 +1268,13 @@ test_that("plot_runscatter remove_gaps plot_range uses original order", {
 
   expect_doppelganger_cond("runscatter_remove_gaps_plotrange", p_range[[1]])
 })
+
+test_that("plot_runscatter accepts a multi-value ref_qc_types without a length-1 coercion crash", {
+  expect_no_error(
+    plot_runscatter(
+      data = mexp, variable = "intensity", rows_page = 3, cols_page = 4,
+      return_plots = TRUE, show_reference_lines = TRUE,
+      ref_qc_types = c("BQC", "TQC")
+    )
+  )
+})

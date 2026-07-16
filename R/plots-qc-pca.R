@@ -221,6 +221,18 @@ plot_pca <- function(
   if (log_transform) {
     m_raw <- log2(m_raw)
   }
+
+  # prcomp(scale = TRUE) cannot rescale a constant (zero-variance) column; drop
+  # such features with a warning instead of surfacing a cryptic prcomp error.
+  col_sd <- apply(m_raw, 2, stats::sd, na.rm = TRUE)
+  constant <- !is.na(col_sd) & col_sd == 0
+  if (any(constant)) {
+    cli_alert_warning(col_yellow(
+      "{sum(constant)} feature{?s} had zero variance across the selected samples and {?was/were} excluded from the PCA."
+    ))
+    m_raw <- m_raw[, !constant, drop = FALSE]
+  }
+
   # get pca result with annotation
   pca_res <- prcomp(m_raw, scale = TRUE, center = TRUE)
   pca_annot <- pca_augment(pca_res, d_metadata)
@@ -244,12 +256,17 @@ plot_pca <- function(
 
   pca_contrib <- pca_eigenvalues(pca_res)
 
-  if (!is.null(labels_threshold_mad) & !is.na(labels_threshold_mad)) {
+  # `&&` (short-circuit + scalar) so a NULL/NA threshold — the documented way to
+  # suppress labels — does not error; and d_outlier is always defined (empty when
+  # labels are off) so the join below never hits `object 'd_outlier' not found`.
+  if (!is.null(labels_threshold_mad) && !is.na(labels_threshold_mad)) {
     d_outlier <- pca_annot |>
       filter(
         abs(!!PCx) > (median(!!PCx) + labels_threshold_mad * mad(!!PCx)) |
           abs(!!PCy) > (median(!!PCy) + labels_threshold_mad * mad(!!PCy))
       )
+  } else {
+    d_outlier <- pca_annot[0, ]
   }
 
   pca_annot <- pca_annot |>
