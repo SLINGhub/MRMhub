@@ -11,6 +11,7 @@
 ^Meta$
 ^data-raw$
 ^dev$
+^dev-notes$
 ^man-roxygen$
 ^recode_values$
 ^air\.toml$
@@ -20,7 +21,6 @@
 # Repo-level files that are not part of the R package
 ^integrator$
 ^integrator_w_gui$
-^integrator_visualizer_src$
 ^MRMhub-Dataset1$
 ^docs-site$
 ^docs-review$
@@ -37,3 +37,6 @@
 # Build hygiene: dir placeholders + stray rendered-article output (knitr/Quarto _files)
 \.gitkeep$
 ^vignettes/articles/.*_files
+
+# Local, non-package share doc (INTEGRATOR fork review)
+^integrator-fork-review\.html$

@@ -15069,3 +15069,9 @@ integrator_w_gui/gui/src-tauri/target/release/mrmhub-integrator-gui.exe
 integrator_w_gui/gui/src-tauri/target/release/MRMhub-integrator-worker.exe
 integrator_w_gui/gui/src-tauri/target/release/mrmhub_integrator_gui.pdb
 integrator_w_gui/gui/src-tauri/binaries/MRMhub-integrator-worker-x86_64-pc-windows-msvc.exe
+
+# Local dev notes (audit plan + learnings) — not part of the package
+dev-notes/
+
+# Local, non-package share doc (not committed)
+integrator-fork-review.html
