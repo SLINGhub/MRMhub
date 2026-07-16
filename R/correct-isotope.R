@@ -105,10 +105,12 @@ correct_interference_manual <- function(
   neg_zero_sum <- data@dataset |>
     filter(.data$interference_corrected) |>
     group_by(.data$feature_id, .data$qc_type) |>
-    summarise(negative_count = sum(!!variable_var <= 0)) |>
+    # na.rm: a corrected value can legitimately be NA; without it the count
+    # becomes NA and the `if (sum(...) > 0)` below errors with `if (NA)`.
+    summarise(negative_count = sum(!!variable_var <= 0, na.rm = TRUE)) |>
     filter(!str_detect(.data$qc_type, "BLK"))
 
-  if (sum(neg_zero_sum$negative_count) > 0) {
+  if (sum(neg_zero_sum$negative_count, na.rm = TRUE) > 0) {
     if (neg_to_na) {
       cli_alert_warning(col_yellow(
         "Interference correction led to {sum(neg_zero_sum$negative_count)} negative or zero values in samples/QCs. All negative/zero values (incl. in Blanks) were replaced with `NA`."
@@ -253,20 +255,33 @@ correct_interferences <- function(
   # independent, the order will be based on the order of the features in the
   # dataset. This code also checks for circular dependencies in the interference
   # correction, like LPC 18:2 > LPC 18:1 > LPC 18:0 > LPC 18:2
-  features_to_correct <- d_correct |>
-    filter(!is.na(.data$interference_feature_id)) |>
-    select(
-      "feature_id",
-      "interference_feature_id",
-      "interference_contribution"
-    ) |>
-    distinct() |>
-    order_chained_columns_tbl(
-      "feature_id",
-      "interference_feature_id",
-      include_chain_id = FALSE,
-      disconnected_action = "keep"
-    )
+  # order_chained_columns_tbl() is where a circular interference chain is
+  # detected (it stop()s), so the friendly handler must wrap this call, not the
+  # arrange() below.
+  features_to_correct <- tryCatch(
+    d_correct |>
+      filter(!is.na(.data$interference_feature_id)) |>
+      select(
+        "feature_id",
+        "interference_feature_id",
+        "interference_contribution"
+      ) |>
+      distinct() |>
+      order_chained_columns_tbl(
+        "feature_id",
+        "interference_feature_id",
+        include_chain_id = FALSE,
+        disconnected_action = "keep"
+      ),
+    error = function(e) {
+      if (grepl("Circular dependency", conditionMessage(e), fixed = TRUE)) {
+        cli_abort(col_red(
+          "One or more circular correction(s) detected. Please verify the interference correction details defined in feature metadata."
+        ))
+      }
+      stop(e)
+    }
+  )
 
   # Check if there are incomplete interference data
   if (!all(stats::complete.cases(features_to_correct))) {
@@ -294,19 +309,8 @@ correct_interferences <- function(
   # if sequential_correction is TRUE, reorder features_to_correct to ensure that
   # the most downstream feature is corrected first
   if (sequential_correction) {
-    tryCatch(
-      {
-        features_to_correct <- features_to_correct |>
-          arrange(desc(row_number()))
-      },
-      error = function(e) {
-        if (e$message == "Circular dependency detected.") {
-          cli_abort(col_red(
-            "One or more circular correction(s) detected. Please verify the interfernece correction details defined in feature metadata."
-          ))
-        }
-      }
-    )
+    features_to_correct <- features_to_correct |>
+      arrange(desc(row_number()))
   }
 
   # Function to apply correction for each feature set in features_to_correct

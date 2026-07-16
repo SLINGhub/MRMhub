@@ -388,3 +388,41 @@ test_that("Handles corrections that lead to negative values", {
     fixed = TRUE
   )
 })
+
+test_that("correct_interferences does not crash when a corrected value is NA", {
+  # If an interfering feature's intensity is NA in an analysis, the target's
+  # corrected value becomes NA. The negative-value summary must tolerate that
+  # (previously `sum(x <= 0)` without na.rm made `if (sum(...) > 0)` error).
+  mexp_na <- mexp
+  msk <- mexp_na@dataset$feature_id == "S1P d18:2 [M>60]" &
+    mexp_na@dataset$analysis_id == "008_LTR_LTR01"
+  expect_gt(sum(msk), 0)
+  mexp_na@dataset$feature_intensity[msk] <- NA_real_
+
+  expect_no_error(
+    suppressMessages(correct_interferences(
+      mexp_na,
+      variable = "feature_intensity",
+      sequential_correction = TRUE
+    ))
+  )
+})
+
+test_that("correct_interferences reports a friendly error on a circular interference chain", {
+  # Close the d18:2 -> d18:1 -> d18:0 chain into a cycle (d18:2 -> d18:0).
+  mexp_circ <- mexp
+  af <- mexp_circ@annot_features
+  sel <- af$feature_id == "S1P d18:2 [M>60]"
+  af$interference_feature_id[sel] <- "S1P d18:0 [M>60]"
+  af$interference_contribution[sel] <- 0.1
+  mexp_circ@annot_features <- af
+
+  expect_error(
+    suppressMessages(correct_interferences(
+      mexp_circ,
+      variable = "feature_intensity",
+      sequential_correction = TRUE
+    )),
+    "circular correction"
+  )
+})

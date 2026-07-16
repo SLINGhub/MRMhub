@@ -85,8 +85,13 @@ plot_qc_interferences <- function(
     ) |>
     filter(.data$interference_corrected) |>
     mutate(
-      perc_change = (.data$feature_intensity / .data$feature_intensity_orig) *
-        100
+      # Guard a zero/NA pre-correction intensity (e.g. a blank), which would
+      # otherwise yield Inf/NaN percentages.
+      perc_change = dplyr::if_else(
+        is.na(.data$feature_intensity_orig) | .data$feature_intensity_orig == 0,
+        NA_real_,
+        (.data$feature_intensity / .data$feature_intensity_orig) * 100
+      )
     )
 
   df$qc_type <- factor(
