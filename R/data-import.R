@@ -1206,6 +1206,91 @@ parse_mrmhub_result <- function(path, silent = FALSE) {
 }
 
 
+# Skyline-like exports identify a transition by molecule name plus a
+# precursor/product ion (name or m/z), not by a single feature column. When the
+# caller passes `transition_id_columns` (parse_skyline_result() -> ...), build a
+# unique `feature_id` from the requested ion columns and abort if it is still
+# not unique. A no-op returning `d_raw` unchanged for every non-Skyline caller.
+#' @noRd
+apply_skyline_transition_ids <- function(d_raw, args) {
+  if ("transition_id_columns" %in% names(args)) {
+    if (!"analysis_id" %in% names(d_raw)) {
+      cli_abort(col_red(
+        "The `Replicate Name` column is missing in the data file. Please ensure it is included in the Skyline export."
+      ))
+    }
+
+    if (!"feature_id" %in% names(d_raw)) {
+      cli_abort(col_red(
+        "The `Molecule Name` column is missing in the data file. Please ensure it is included in the Skyline export."
+      ))
+    }
+
+    if (args$transition_id_columns == "name") {
+      if (
+        "method_precursor_name" %in%
+          names(d_raw) &&
+          "method_product_name" %in% names(d_raw) &&
+          !any(is.na(d_raw$method_precursor_name)) &&
+          !any(is.na(d_raw$method_product_name))
+      ) {
+        d_raw <- d_raw |>
+          unite(
+            "feature_id",
+            c("feature_id", "method_precursor_name", "method_product_name"),
+            sep = "_",
+            remove = FALSE
+          )
+      } else {
+        cli_abort(col_red(
+          "`Precursor Name` and/or `Product Name` columns are missing or contain no/missing values. Ensure these are included in the Skyline export, or modify `transition_id_columns` argument"
+        ))
+      }
+    } else if (args$transition_id_columns == "mz") {
+      if (
+        "method_precursor_mz" %in%
+          names(d_raw) &&
+          "method_product_mz" %in% names(d_raw) &&
+          !any(is.na(d_raw$method_precursor_mz)) &&
+          !any(is.na(d_raw$method_product_mz))
+      ) {
+        d_raw <- d_raw |>
+          unite(
+            "feature_id",
+            c("feature_id", "method_precursor_mz", "method_product_mz"),
+            sep = "_",
+            remove = FALSE
+          )
+      } else {
+        cli_abort(col_red(
+          "`Precursor Mz` and/or `Product Mz` columns are missing or contain no/missing values. Ensure these are included in the Skyline export, or modify `transition_id_columns` argument"
+        ))
+      }
+    } else if (args$transition_id_columns == "none") {
+      # Do nothing, as Molecule Name was mapped to feature_id
+    }
+
+    # Check for duplicate feature IDs
+    duplicate_rows <- d_raw |>
+      group_by(.data$feature_id, .data$analysis_id) |>
+      filter(n() > 1)
+
+    if (nrow(duplicate_rows) > 0) {
+      if (args$transition_id_columns == "none") {
+        cli::cli_abort(col_red(
+          "`Molecule Name` is not unique identifier for each transition. To generate unique feature IDs, please set the `transition_id_columns` argument to either `name` or `mz`."
+        ))
+      } else {
+        cli::cli_abort(col_red(
+          "Feature IDs are not unique even with precursor/product ion details added. Please check Precursor/Product Name/Mz columns in the data file."
+        ))
+      }
+    }
+  }
+  d_raw
+}
+
+
 #' Parses a plain long CSV file
 #'
 #' Parses a CSV table with analysis/samples and feature pairs in rows,
@@ -1307,83 +1392,11 @@ parse_plain_long_csv <- function(
   d_raw <- d_raw |>
     rename(!!!column_mapping_filt)
 
-  # -------- SKYLINE-Like format -----
-  #Check if input is of Skyline format (analysis id defined by molecule name and ion names/mz)
-  # TODO: A bit of a workaround... needs to be shifted, wrapped in a separate function called here
-  if ("transition_id_columns" %in% names(args)) {
-    if (!"analysis_id" %in% names(d_raw)) {
-      cli_abort(col_red(
-        "The `Replicate Name` column is missing in the data file. Please ensure it is included in the Skyline export."
-      ))
-    }
-
-    if (!"feature_id" %in% names(d_raw)) {
-      cli_abort(col_red(
-        "The `Molecule Name` column is missing in the data file. Please ensure it is included in the Skyline export."
-      ))
-    }
-
-    if (args$transition_id_columns == "name") {
-      if (
-        "method_precursor_name" %in%
-          names(d_raw) &&
-          "method_product_name" %in% names(d_raw) &&
-          !any(is.na(d_raw$method_precursor_name)) &&
-          !any(is.na(d_raw$method_product_name))
-      ) {
-        d_raw <- d_raw |>
-          unite(
-            "feature_id",
-            c("feature_id", "method_precursor_name", "method_product_name"),
-            sep = "_",
-            remove = FALSE
-          )
-      } else {
-        cli_abort(col_red(
-          "`Precursor Name` and/or `Product Name` columns are missing or contain no/missing values. Ensure these are included in the Skyline export, or modify `transition_id_columns` argument"
-        ))
-      }
-    } else if (args$transition_id_columns == "mz") {
-      if (
-        "method_precursor_mz" %in%
-          names(d_raw) &&
-          "method_product_mz" %in% names(d_raw) &&
-          !any(is.na(d_raw$method_precursor_mz)) &&
-          !any(is.na(d_raw$method_product_mz))
-      ) {
-        d_raw <- d_raw |>
-          unite(
-            "feature_id",
-            c("feature_id", "method_precursor_mz", "method_product_mz"),
-            sep = "_",
-            remove = FALSE
-          )
-      } else {
-        cli_abort(col_red(
-          "`Precursor Mz` and/or `Product Mz` columns are missing or contain no/missing values. Ensure these are included in the Skyline export, or modify `transition_id_columns` argument"
-        ))
-      }
-    } else if (args$transition_id_columns == "none") {
-      # Do nothing, as Molecule Name was mapped to feature_id
-    }
-
-    # Check for duplicate feature IDs
-    duplicate_rows <- d_raw |>
-      group_by(.data$feature_id, .data$analysis_id) |>
-      filter(n() > 1)
-
-    if (nrow(duplicate_rows) > 0) {
-      if (args$transition_id_columns == "none") {
-        cli::cli_abort(col_red(
-          "`Molecule Name` is not unique identifier for each transition. To generate unique feature IDs, please set the `transition_id_columns` argument to either `name` or `mz`."
-        ))
-      } else {
-        cli::cli_abort(col_red(
-          "Feature IDs are not unique even with precursor/product ion details added. Please check Precursor/Product Name/Mz columns in the data file."
-        ))
-      }
-    }
-  }
+  # -------- SKYLINE-like format --------
+  # Skyline exports need a composite feature_id (molecule name + precursor/
+  # product ion). apply_skyline_transition_ids() builds it; it is a no-op when
+  # `transition_id_columns` was not passed (i.e. non-Skyline callers).
+  d_raw <- apply_skyline_transition_ids(d_raw, args)
   # ---
 
   # Conditionally add 'analysis_id' if not present but raw_data_filename exists
