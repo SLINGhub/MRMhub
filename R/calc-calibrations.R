@@ -420,6 +420,42 @@ calc_calibration_results <- function(
     )
   }
 
+  # Pre-flight validation of the QC-concentration table before the calibration
+  # join below, so a hand-built or malformed table produces a clear message
+  # instead of a cryptic dplyr `many-to-one` or numeric-coercion error deep in
+  # the fit. (Import-time validation asserts the same key; this covers objects
+  # whose slots were set directly.)
+  if (nrow(data@annot_qcconcentrations) > 0) {
+    required_cols <- c(
+      "sample_id",
+      "analyte_id",
+      "concentration",
+      "include_in_analysis"
+    )
+    missing_cols <- setdiff(required_cols, names(data@annot_qcconcentrations))
+    if (length(missing_cols) > 0) {
+      cli::cli_abort(c(
+        "QC-concentration metadata is missing required column{?s} {.field {missing_cols}}.",
+        "i" = "Provide {?it/them} in the {.code qc_concentration} metadata before quantifying by calibration."
+      ))
+    }
+    assert_unique_ids(
+      paste(
+        data@annot_qcconcentrations$sample_id,
+        data@annot_qcconcentrations$analyte_id,
+        sep = " / "
+      ),
+      "(sample_id, analyte_id)",
+      "the QC-concentration metadata"
+    )
+    if (!is.numeric(data@annot_qcconcentrations$concentration)) {
+      cli::cli_abort(c(
+        "QC-concentration {.field concentration} must be numeric, but it is {.cls {class(data@annot_qcconcentrations$concentration)}}.",
+        "i" = "Check the {.code qc_concentration} metadata for non-numeric concentration values."
+      ))
+    }
+  }
+
   calc_lm <- function(dt) {
     # Descriptor fields are identical across all four result shapes below
     # (linear/quadratic x success/error), so build them once here.

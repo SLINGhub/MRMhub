@@ -86,8 +86,15 @@ normalize_by_istd <- function(data = NULL, ignore_missing_annotation = FALSE) {
     }
   }
 
-  # Add ISTD intensities to temporary dataset
+  # A duplicated `feature_id` in the feature metadata would fan out the ISTD
+  # join below and silently multiply every measurement of that feature.
+  assert_unique_ids(d_annot$feature_id, "feature_id", "the feature metadata")
+
+  # Add ISTD intensities to temporary dataset. Drop any `istd_feature_id`
+  # already carried in `@dataset` so the join re-derives a single clean copy
+  # instead of producing `istd_feature_id.x`/`.y` name-clash columns.
   d_temp <- data@dataset |>
+    dplyr::select(-dplyr::any_of("istd_feature_id")) |>
     dplyr::left_join(d_annot, by = c("feature_id" = "feature_id"))
 
   # Normalize intensities. Divide by the single ISTD intensity of the group and
@@ -122,6 +129,27 @@ normalize_by_istd <- function(data = NULL, ignore_missing_annotation = FALSE) {
       "x" = "{nrow(d_multi_istd)} (ISTD, analysis) group{?s} have >1 {.code is_istd} row; the normalization divisor is ambiguous.",
       "i" = "Affected ISTD{?s}: {.val {unique(d_multi_istd$istd_feature_id)}}",
       "i" = "Likely a duplicated data row or invalid feature metadata (an ISTD assigned to multiple {.code is_istd} transitions)."
+    ))
+  }
+
+  # Warn when a group contains no `is_istd` row at all. `which(is_istd)[1]` is
+  # then `NA`, so every analyte in that group is silently set to `NA`. This
+  # happens when the referenced ISTD is left non-self-referencing in the feature
+  # metadata (`is_istd` not set on its own feature row) or is absent from an
+  # analysis. (Features with no ISTD assigned at all are handled separately
+  # above; the zero-intensity case is handled below.)
+  d_no_istd_row <- d_temp |>
+    dplyr::filter(
+      !is.na(.data$istd_feature_id),
+      !.data$is_istd,
+      .data$n_istd_in_group == 0
+    )
+  if (nrow(d_no_istd_row) > 0) {
+    affected_istds <- unique(d_no_istd_row$istd_feature_id)
+    cli::cli_warn(c(
+      "!" = "{nrow(d_no_istd_row)} feature value{?s} could not be ISTD-normalized because no internal-standard row was present in the group and {?was/were} set to {.val {NA_real_}}.",
+      "i" = "Affected ISTD{?s}: {.val {affected_istds}}",
+      "i" = "The internal standard may be left non-self-referencing ({.code is_istd} not set on its own feature row) or absent in some analyses."
     ))
   }
 

@@ -68,8 +68,8 @@ test_that("calc_calibration_results works", {
 test_that("a duplicated QC-concentration row is rejected by the calibration fit, not used twice", {
   # A duplicated (sample_id, analyte_id) concentration would silently weight a
   # calibrator level twice and bias every back-calculated concentration. The
-  # `relationship = "many-to-one"` guard on the fit join turns that into a hard
-  # error instead of a plausible-but-wrong curve.
+  # pre-flight uniqueness guard turns that into a clear, actionable error before
+  # the join, instead of a plausible-but-wrong curve or a raw dplyr message.
   mexp_dup <- mexp_norm
   mexp_dup@annot_qcconcentrations <- dplyr::bind_rows(
     mexp_dup@annot_qcconcentrations,
@@ -83,7 +83,7 @@ test_that("a duplicated QC-concentration row is rejected by the calibration fit,
       fit_model = "linear",
       fit_weighting = "none"
     ),
-    "match at most 1 row"
+    "Duplicated .*sample_id, analyte_id"
   )
 })
 
@@ -160,7 +160,8 @@ test_that("calc_calibration_results rejects an invalid lod_sigma", {
 test_that("calc_calibration_results error handling works", {
   mexp_temp <- mexp_norm
 
-  mexp_temp@annot_qcconcentrations$concentration <- NA
+  # All calibrator concentrations missing (kept numeric): every fit fails.
+  mexp_temp@annot_qcconcentrations$concentration <- NA_real_
 
   expect_error(
     mexp_res <- calc_calibration_results(

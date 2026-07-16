@@ -465,7 +465,7 @@ test_that("Imports nested MH Quant .csv file containing QUALIFIER peak info into
     expand_qualifier_names = TRUE
   )
   d <- mexp@dataset
-  expect_equal(ncol(d), 18)
+  expect_equal(ncol(d), 19)
   expect_equal(nrow(d), 1040)
   expect_equal(d[[1, "feature_rt"]], 3.422)
   expect_equal(d[[1, "feature_area"]], 51)
@@ -485,7 +485,7 @@ test_that("Imports another MH Quant .csv files into one MRMhubExperiment", {
     expand_qualifier_names = TRUE
   )
   d <- mexp@dataset
-  expect_equal(ncol(d), 19)
+  expect_equal(ncol(d), 20)
   expect_equal(nrow(d), 1178)
   expect_equal(d[[1, "feature_rt"]], 7.160)
   expect_equal(d[[1, "feature_area"]], 5152996.0)
@@ -505,7 +505,7 @@ test_that("Imports multiple MH Quant .csv files into one MRMhubExperiment 1", {
     expand_qualifier_names = TRUE
   )
   d <- mexp@dataset
-  expect_equal(ncol(d), 19)
+  expect_equal(ncol(d), 20)
   expect_equal(nrow(d), 1178)
   expect_equal(d[[1, "feature_rt"]], 7.160)
   expect_equal(d[[1, "feature_area"]], 5152996.0)
@@ -679,7 +679,7 @@ test_that("Imports MRMhub result file (long format) into a MRMhubExperiment", {
     import_metadata = TRUE,
   )
   d <- mexp@dataset
-  expect_equal(ncol(d), 20)
+  expect_equal(ncol(d), 21)
   expect_equal(nrow(d), 13972.0)
   expect_equal(d[[1, "feature_rt"]], 7.2950)
   expect_equal(d[[1, "feature_area"]], 3134.16360)

@@ -771,3 +771,32 @@ test_that("set_intensity_var auto_select skips an all-NA candidate column", {
   ))
   expect_equal(res@feature_intensity_var, "feature_height")
 })
+
+test_that("link_data_metadata carries istd_feature_id into @dataset", {
+  # A typo (`istd_istd_feature_id`) previously dropped the ISTD id from the
+  # working dataset via `any_of()`, leaving any future reader with NA.
+  d <- mrmhub:::link_data_metadata(lipidomics_dataset)
+  expect_true("istd_feature_id" %in% names(d@dataset))
+  expect_true(any(!is.na(d@dataset$istd_feature_id)))
+  # No name-clash columns are introduced downstream in normalization.
+  norm <- suppressMessages(normalize_by_istd(lipidomics_dataset))
+  expect_false(any(grepl("istd_feature_id[.][xy]$", names(norm@dataset))))
+})
+
+test_that("link_data_metadata warns when valid_analysis is NA (not silently dropped)", {
+  mexp <- lipidomics_dataset
+  mexp@annot_analyses$valid_analysis[1] <- NA
+  expect_warning(
+    suppressMessages(mrmhub:::link_data_metadata(mexp)),
+    "valid_analysis"
+  )
+})
+
+test_that("link_data_metadata warns when valid_feature is NA (not silently dropped)", {
+  mexp <- lipidomics_dataset
+  mexp@annot_features$valid_feature[1] <- NA
+  expect_warning(
+    suppressMessages(mrmhub:::link_data_metadata(mexp)),
+    "valid_feature"
+  )
+})

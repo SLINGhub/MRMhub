@@ -622,3 +622,40 @@ test_that("normalize_by_istd errors cleanly on an empty experiment", {
     "No feature metadata available"
   )
 })
+
+test_that("normalize_by_istd aborts on a duplicated feature_id (fan-out guard)", {
+  mexp <- lipidomics_dataset
+  # A duplicated feature_id in the feature metadata would fan out the ISTD join
+  # and silently multiply every measurement of that feature.
+  mexp@annot_features <- dplyr::bind_rows(
+    mexp@annot_features,
+    mexp@annot_features[1, ]
+  )
+  expect_error(
+    normalize_by_istd(mexp),
+    "Duplicated .*feature_id"
+  )
+})
+
+test_that("normalize_by_istd warns when an ISTD group has no is_istd row", {
+  mexp <- lipidomics_dataset
+  istd_fid <- mexp@annot_features |>
+    dplyr::filter(.data$is_istd) |>
+    dplyr::pull(.data$feature_id) |>
+    head(1)
+  # Leave the ISTD non-self-referencing: unset is_istd on its own rows so its
+  # (ISTD, analysis) groups contain no is_istd row. The divisor is then NA and
+  # every analyte in the group is silently set to NA -- surfaced by a warning.
+  mexp@dataset$is_istd[mexp@dataset$feature_id == istd_fid] <- FALSE
+
+  suppressMessages(
+    expect_warning(
+      mexp_res <- normalize_by_istd(mexp),
+      "no internal-standard row was present"
+    )
+  )
+  affected <- mexp_res@dataset$feature_norm_intensity[
+    mexp_res@dataset$feature_id == istd_fid
+  ]
+  expect_true(all(is.na(affected)))
+})

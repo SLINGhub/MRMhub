@@ -781,6 +781,23 @@ link_data_metadata <- function(data = NULL, minimal_info = TRUE) {
       starts_with("feature_")
     )
   if (nrow(data@annot_analyses) > 0) {
+    # `filter(valid_analysis)` treats an NA flag as FALSE and silently drops the
+    # analysis. A missing (never-set) flag is likely a hand-built-metadata slip,
+    # not a deliberate exclusion, so surface it. Only touch `@dataset` when an NA
+    # flag actually exists (the common case skips the scan entirely).
+    na_ids <- data@annot_analyses$analysis_id[
+      is.na(data@annot_analyses$valid_analysis)
+    ]
+    if (length(na_ids) > 0) {
+      dropped <- intersect(na_ids, data@dataset$analysis_id)
+      if (length(dropped) > 0) {
+        cli::cli_warn(c(
+          "!" = "{length(dropped)} analys{?is/es} {?was/were} dropped because {.field valid_analysis} is {.val {NA}} in the analysis metadata.",
+          "i" = "{cli::qty(length(dropped))}Set {.field valid_analysis} to {.code TRUE}/{.code FALSE} to keep or exclude {?it/them} deliberately.",
+          "i" = "Affected: {.val {utils::head(dropped, 5)}}"
+        ))
+      }
+    }
     data@dataset <- data@dataset |>
       select(-any_of("analysis_order")) |>
       inner_join(
@@ -792,6 +809,19 @@ link_data_metadata <- function(data = NULL, minimal_info = TRUE) {
   }
 
   if (nrow(data@annot_features) > 0) {
+    na_ids <- data@annot_features$feature_id[
+      is.na(data@annot_features$valid_feature)
+    ]
+    if (length(na_ids) > 0) {
+      dropped <- intersect(na_ids, data@dataset$feature_id)
+      if (length(dropped) > 0) {
+        cli::cli_warn(c(
+          "!" = "{length(dropped)} feature{?s} {?was/were} dropped because {.field valid_feature} is {.val {NA}} in the feature metadata.",
+          "i" = "{cli::qty(length(dropped))}Set {.field valid_feature} to {.code TRUE}/{.code FALSE} to keep or exclude {?it/them} deliberately.",
+          "i" = "Affected: {.val {utils::head(dropped, 5)}}"
+        ))
+      }
+    }
     data@dataset <- data@dataset |>
       select(-any_of("feature_class")) |>
       inner_join(
@@ -821,7 +851,7 @@ link_data_metadata <- function(data = NULL, minimal_info = TRUE) {
         "is_istd",
         "is_quantifier",
         "analyte_id",
-        "istd_istd_feature_id",
+        "istd_feature_id",
         "specimen"
       )),
       starts_with("method_"),

@@ -112,3 +112,32 @@ coerce_logical_checked <- function(x, column = NULL) {
   }
   out
 }
+
+#' Abort on a duplicated join key before it can fan out a join
+#'
+#' Defense-in-depth guard placed immediately before a join whose key must be
+#' unique on one side. A duplicated key silently turns the join many-to-many,
+#' multiplying rows and corrupting every downstream aggregate, so abort with a
+#' clear, actionable message instead of letting a cryptic dplyr `many-to-one`
+#' error surface deep in the pipeline. Cheap: a single [anyDuplicated()] on a
+#' metadata column. Import-time validation already asserts these keys; this
+#' catches hand-built or directly-mutated objects that bypass import.
+#'
+#' @param ids A vector of identifier values. For a composite key, paste the
+#'   columns into one vector before calling.
+#' @param field Display name of the key, used in the message (e.g. `"feature_id"`).
+#' @param table Display name (prose) of the table the key belongs to.
+#' @return `ids`, invisibly, when unique.
+#' @keywords internal
+#' @noRd
+assert_unique_ids <- function(ids, field, table) {
+  if (anyDuplicated(ids)) {
+    dups <- unique(ids[duplicated(ids)])
+    cli::cli_abort(c(
+      "Duplicated {field} in {table}.",
+      "x" = "{length(dups)} value{?s} occur{?s/} more than once; a join on this key would fan out and silently corrupt results.",
+      "i" = "Duplicated value{?s}: {.val {utils::head(dups, 5)}}"
+    ))
+  }
+  invisible(ids)
+}
