@@ -306,7 +306,20 @@ workflow_step_availability <- function(mexp) {
   defs <- defs[order(vapply(defs, function(s) s$order, numeric(1)))]
   lapply(unname(defs), function(s) {
     g <- if (!is.null(s$gate) && inherits(mexp, "MRMhubExperiment")) {
-      tryCatch(s$gate(mexp), error = function(e) list(enabled = TRUE))
+      # Fail open: a buggy gate must not blank out the whole step list. But
+      # surface the error (rather than swallowing it silently) so the gate bug
+      # is visible during development instead of masquerading as "available".
+      tryCatch(
+        s$gate(mexp),
+        error = function(e) {
+          gate_err <- conditionMessage(e)
+          cli::cli_warn(c(
+            "Availability gate for workflow step {.val {s$id}} errored; treating the step as available.",
+            "x" = "{gate_err}"
+          ))
+          list(enabled = TRUE)
+        }
+      )
     } else {
       list(enabled = TRUE)
     }

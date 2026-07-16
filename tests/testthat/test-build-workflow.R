@@ -232,6 +232,32 @@ test_that("step availability disables steps whose supporting metadata is absent"
   expect_false(by_id$calibrate_ref$enabled)
 })
 
+test_that("workflow_step_availability warns and falls open when a gate errors", {
+  # A buggy gate must not blank the step list (fail open), but the error must be
+  # surfaced, not silently swallowed. Inject a step whose gate throws.
+  local_mocked_bindings(
+    workflow_steps = function() {
+      list(
+        boom = list(
+          id = "boom",
+          label = "Boom",
+          order = 10,
+          default_selected = FALSE,
+          gate = function(mexp) stop("gate exploded")
+        )
+      )
+    }
+  )
+  mexp <- MRMhubExperiment()
+
+  expect_warning(
+    av <- workflow_step_availability(mexp),
+    "boom"
+  )
+  by_id <- stats::setNames(av, vapply(av, function(s) s$id, character(1)))
+  expect_true(by_id$boom$enabled) # fell open despite the gate error
+})
+
 test_that("prechecks error when quantitation metadata is missing", {
   skip_if(demo_file() == "")
   mexp <- build_experiment(demo_file(), "mrmhub", NULL, "embedded")
