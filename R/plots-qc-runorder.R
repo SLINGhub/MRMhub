@@ -352,7 +352,7 @@ plot_runsequence <- function(
 #' @param outlier_k Numeric, multiplier for the outlier detection method. Default is `NULL`, which uses the default value for the selected method.
 #' See get_outlier_bounds() for details. When using the "fold" method, either single numeric value or a vector with two values (lower and upper fences) can be supplied.
 #'
-#' @param min_feature_intensity Numeric, exclude features with overall median signal below this value
+#' @param min_feature_intensity Numeric, exclude features with overall median intensity below this value
 #' @param y_lim Numeric vector of length 2, specifying the lower and upper y-axis limits. Default is `NA`, which uses limits calculated based on `outlier_exclude`.
 
 #' @param show_batches Logical, whether to show batch separators in the plot
@@ -485,9 +485,6 @@ plot_rla_boxplot <- function(
   x_axis_variable_sym <- rlang::sym(x_axis_variable)
 
   d_filt <- d_filt |>
-    mutate(value = ifelse(is.infinite(!!variable_sym), NA, !!variable_sym))
-
-  d_filt <- d_filt |>
     dplyr::select(any_of(c(
       "analysis_id",
       "analysis_order",
@@ -500,7 +497,9 @@ plot_rla_boxplot <- function(
       "feature_conc"
     ))) |>
     group_by(.data$feature_id) |>
-    filter(median(.data$feature_intensity) >= min_feature_intensity) |>
+    filter(
+      median(.data$feature_intensity, na.rm = TRUE) >= min_feature_intensity
+    ) |>
     droplevels() |>
     dplyr::arrange(.data$analysis_order)
 

@@ -395,6 +395,10 @@ plot_qcmetrics_comparison <- function(
           names_to = c(".value", "qc_type"),
           names_pattern = "^(.*)_(.*)$"
         )
+      if (all(!is.na(qc_types))) {
+        d_qc <- d_qc |>
+          filter(.data$qc_type %in% tolower(qc_types))
+      }
     } else {
       d_qc <- d_qc |>
         tidyr::pivot_longer(

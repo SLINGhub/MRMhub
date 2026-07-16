@@ -716,3 +716,55 @@ test_that("split_by_curve option works correctly", {
     expect_true(any(stringr::str_detect(get_strip_labels(p_wrap[[1]]), "\n")))
   })
 })
+
+test_that("plot_responsecurves R2 is fit over the same range as the drawn line", {
+  # Regression (WS-P(A)): stat_poly_eq fit the full range while geom_smooth fit
+  # only analyzed_amount <= max_regression_value, so the printed R2 did not
+  # describe the drawn regression line. Fails on the old code.
+  set.seed(123)
+  mexp <- lipidomics_dataset
+  mexp <- normalize_by_istd(mexp)
+  mexp <- calc_qc_metrics(mexp)
+
+  max_reg <- 60 # response curves span 10..100; this restricts the fit range
+  pl <- plot_responsecurves(
+    data = mexp,
+    variable = "intensity",
+    rows_page = 3,
+    cols_page = 4,
+    max_regression_value = max_reg,
+    curve_layout = "cols",
+    return_plots = TRUE,
+    show_progress = FALSE
+  )
+  p <- pl[[1]]
+  b <- ggplot2::ggplot_build(p)
+
+  # The stat_poly_eq layer exposes the computed r.squared.
+  r2_layer <- which(vapply(
+    b$data,
+    function(x) "r.squared" %in% names(x),
+    logical(1)
+  ))
+  plotted_r2 <- sort(round(b$data[[r2_layer]]$r.squared, 6))
+
+  r2_over <- function(dat) {
+    dat |>
+      dplyr::group_by(feature_id, curve_id) |>
+      dplyr::filter(any(not_zero), sum(!is.na(feature_intensity)) >= 3) |>
+      dplyr::summarise(
+        r2 = summary(stats::lm(feature_intensity ~ analyzed_amount))$r.squared,
+        .groups = "drop"
+      ) |>
+      dplyr::pull(r2) |>
+      round(6) |>
+      sort()
+  }
+  restricted <- r2_over(dplyr::filter(p$data, analyzed_amount <= max_reg))
+  full <- r2_over(p$data)
+
+  # Plotted R2 must match the restricted-range fit (the drawn line), not the
+  # full range.
+  expect_equal(plotted_r2, restricted, tolerance = 1e-5)
+  expect_false(isTRUE(all.equal(restricted, full)))
+})

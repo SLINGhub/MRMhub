@@ -484,3 +484,27 @@ test_that("function works when no correlations pass thresholds", {
   expect_s3_class(res, "data.frame")
   expect_equal(nrow(res), 0) # no correlations pass thresholds
 })
+
+test_that("plot_qcmetrics_comparison honors qc_types and does not pool QC types", {
+  # Regression (WS-P(A)): the !var_has_qctype pivot branch never filtered
+  # qc_type, so requesting a single QC type pooled every QC type present in the
+  # CV columns. Fails on the old code.
+  p <- plot_qcmetrics_comparison(
+    data = mexp,
+    x_variable = "intensity_cv",
+    y_variable = "norm_intensity_cv",
+    plot_type = "scatter",
+    qc_types = "BQC"
+  )
+  expect_setequal(unique(p$data$qc_type), "BQC")
+
+  # Confirm the test exercises the leaky branch: unfiltered, it pools >1 QC type.
+  p_all <- plot_qcmetrics_comparison(
+    data = mexp,
+    x_variable = "intensity_cv",
+    y_variable = "norm_intensity_cv",
+    plot_type = "scatter",
+    qc_types = NA
+  )
+  expect_gt(length(unique(p_all$data$qc_type)), 1)
+})

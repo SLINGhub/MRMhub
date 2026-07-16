@@ -450,7 +450,11 @@ plot_responsecurves_page <- function(
         inherit.aes = FALSE
       ) +
       ggpmisc::stat_poly_eq(
-        data = dat_subset |> filter(.data$not_zero),
+        data = dat_subset |>
+          filter(
+            .data$not_zero &
+              .data$analyzed_amount <= max_regression_value
+          ),
         aes(label = ggplot2::after_stat(.data$rr.label)),
         size = font_base_size * 0.4,
         rr.digits = 4,
@@ -553,7 +557,11 @@ plot_responsecurves_page <- function(
         inherit.aes = FALSE
       ) +
       ggpmisc::stat_poly_eq(
-        data = dat_subset |> filter(.data$not_zero),
+        data = dat_subset |>
+          filter(
+            .data$not_zero &
+              .data$analyzed_amount <= max_regression_value
+          ),
         aes(label = ggplot2::after_stat(.data$rr.label)),
         size = font_base_size * 0.4,
         rr.digits = 4,
@@ -626,7 +634,11 @@ plot_responsecurves_page <- function(
         inherit.aes = FALSE
       ) +
       ggpmisc::stat_poly_eq(
-        data = dat_subset |> filter(.data$not_zero),
+        data = dat_subset |>
+          filter(
+            .data$not_zero &
+              .data$analyzed_amount <= max_regression_value
+          ),
         aes(
           group = .data$curve_id,
           label = ggplot2::after_stat(.data$rr.label)

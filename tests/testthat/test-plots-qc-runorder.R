@@ -571,3 +571,78 @@ test_that("plot_rla_boxplot qc subset range with gaps date ", {
     p$plot
   )
 })
+
+# --- WS-P(A): RLA min_feature_intensity filter must be NA-safe and honor `variable` ---
+
+test_that("plot_rla_boxplot keeps a feature with a single NA (median filter is NA-safe)", {
+  # Regression: filter(median(feature_intensity) >= min_feature_intensity) had no
+  # na.rm, so one NA collapsed the median to NA and silently dropped the whole
+  # feature -- even at the default threshold of 0. Fails on the old code.
+  p_base <- plot_rla_boxplot(
+    mexp,
+    rla_type_batch = "across",
+    variable = "intensity",
+    show_plot = FALSE,
+    outlier_detection = FALSE
+  )
+  base_n <- dplyr::n_distinct(p_base$plot$data$feature_id)
+
+  mexp_na <- mexp
+  target <- unique(mexp_na@dataset$feature_id)[1]
+  idx <- which(mexp_na@dataset$feature_id == target)
+  mexp_na@dataset$feature_intensity[idx[1]] <- NA_real_
+
+  p <- plot_rla_boxplot(
+    mexp_na,
+    rla_type_batch = "across",
+    variable = "intensity",
+    show_plot = FALSE,
+    outlier_detection = FALSE
+  )
+  expect_true(target %in% p$plot$data$feature_id)
+  expect_equal(dplyr::n_distinct(p$plot$data$feature_id), base_n)
+})
+
+test_that("plot_rla_boxplot min_feature_intensity thresholds on intensity, not the plotted variable", {
+  # min_feature_intensity is a signal-quality floor on feature_intensity, applied
+  # even when a different variable is plotted (here `conc`). Distinguishes the
+  # intensity floor from a threshold on the plotted variable.
+  p0 <- plot_rla_boxplot(
+    mexp,
+    rla_type_batch = "across",
+    variable = "conc",
+    show_plot = FALSE,
+    min_feature_intensity = 0,
+    outlier_detection = FALSE
+  )
+  full_n <- dplyr::n_distinct(p0$plot$data$feature_id)
+  per_feature <- p0$plot$data |>
+    dplyr::group_by(feature_id) |>
+    dplyr::summarise(
+      mi = median(feature_intensity, na.rm = TRUE),
+      mc = median(feature_conc, na.rm = TRUE),
+      .groups = "drop"
+    )
+  thr <- 1e6 # on the intensity scale (medians ~2e4..4e7); every conc median << thr
+  intensity_based <- per_feature |>
+    dplyr::filter(mi >= thr) |>
+    dplyr::pull(feature_id)
+  variable_based <- per_feature |>
+    dplyr::filter(mc >= thr) |>
+    dplyr::pull(feature_id)
+
+  p1 <- plot_rla_boxplot(
+    mexp,
+    rla_type_batch = "across",
+    variable = "conc",
+    show_plot = FALSE,
+    min_feature_intensity = thr,
+    outlier_detection = FALSE
+  )
+  got <- unique(p1$plot$data$feature_id)
+  # Kept set follows feature_intensity (a strict subset), not feature_conc.
+  expect_setequal(got, intensity_based)
+  expect_gt(length(got), 0)
+  expect_lt(length(got), full_n)
+  expect_false(setequal(got, variable_based))
+})
