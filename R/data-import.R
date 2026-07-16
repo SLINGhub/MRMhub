@@ -709,7 +709,13 @@ parse_masshunter_csv <- function(
   # if (shiny::isRunning())
   #   incProgress(1 / length(n_datafiles), detail = paste0(", basename(file)))
   #
-  # Read Agilent MassHunter Quant Export file (CSV)
+  # Read Agilent MassHunter Quant Export file (CSV).
+  # The suppress*() wrap silences only readr's cosmetic chatter here (the auto
+  # `X1..Xn` naming from `col_names = FALSE`, column-spec output). Genuine parse
+  # problems are NOT lost: `readr::problems()` captures them into
+  # `warnings_datWide` just below, and any (`nrow > 0`) escalate to a hard
+  # `cli_abort` at the corruption check further down. Do not "fix" this by
+  # removing the suppression -- that only restores console noise.
   suppressWarnings(suppressMessages(
     datWide <-
       readr::read_csv(
