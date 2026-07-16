@@ -45,7 +45,10 @@ jobs:
         uses: quarto-dev/quarto-actions/setup@v2
 
       - name: Install mrmhub
-        run: Rscript -e 'remotes::install_local(dependencies = FALSE)'
+        # force = TRUE: install_local() otherwise compares the source version
+        # against the cached library and skips the install whenever Version: is
+        # unchanged, so articles render against a stale build.
+        run: Rscript -e 'remotes::install_local(dependencies = FALSE, force = TRUE)'
 
       - name: Build pkgdown site
         run: Rscript -e "pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)"
