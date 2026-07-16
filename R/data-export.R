@@ -712,6 +712,9 @@ save_metadata_msorganiser_template <- function(
   ))
 }
 
+# TODO(save_summarizedexperiment): implement a Bioconductor SummarizedExperiment
+# exporter for MRMhubExperiment. Parked for later; the commented skeleton below
+# is a rough starting point, not a working implementation.
 # save_summarizedexperiment  <- function(data) {
 
 # ds <- d_filt |>
