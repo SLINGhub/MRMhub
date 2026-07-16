@@ -1,7 +1,9 @@
 # Lipidomics Data Processing
 
+Tutorial
+
 This tutorial illustrates a postprocessing and quality control workflow
-starting from a preprocessing data from a lipidomics analysis. Starting
+starting from the preprocessed data of a lipidomics analysis. Starting
 from peak areas, the aim is to produce a curated dataset with lipid
 species concentrations that is ready for subsequent statistical
 analysis. This post-processing will include an assessment of the
@@ -9,8 +11,7 @@ analytical and data quality of the lipidomics analysis, followed by
 normalisation/quantification, feature filtering and reporting of the
 dataset.
 
-**Time:** ~45 min  \|  **Level:** Advanced  \|  **Prerequisites:**
-[Basic
+**Time** ~45 min  ·  **Level** Advanced  ·  **Prerequisites** [Basic
 workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md)
 
 ``` r
@@ -147,7 +148,7 @@ plot_rt_vs_chain(
   myexp, 
   qc_types = "SPL", 
   x_var = "total_c", outlier_residual_min = 0.3,
-  base_font_size = 8, 
+  font_base_size = 8,
   point_size = 1)  
 #> ℹ The following features were flagged as potential annotation outliers: DG 18:1_20:0 [-18:1], DG 14:1_20:0 [-20:0], PC 32:1, PC 32:2, SM 40:1, SM 39:1, SM 36:2, SM 36:2 d9 (ISTD), SM 32:2, SM 38:3|PC 33:1 d7 M+2, SM 34:3, TG O-51:2 [-18:1]
 ```
@@ -177,7 +178,7 @@ plot_runscatter(
   exclude_feature_filter = "Hex|282",
   cap_outliers = TRUE,
   log_scale = FALSE, 
-  show_batches = TRUE,base_font_size = 5,
+  show_batches = TRUE,font_base_size = 5,
   output_pdf = FALSE,
   path = "./output/runscatter_istd.pdf",
   cols_page = 4, rows_page = 3
@@ -187,11 +188,7 @@ plot_runscatter(
 
 ![RunScatter
 plot](tutorial-03-lipidomics-workflow_files/figure-html/runscatter-1.png)![RunScatter
-plot](tutorial-03-lipidomics-workflow_files/figure-html/runscatter-2.png)
-
-    #>  ■■■■■■■■■■■■■■■■■■■■■             67% |  ETA:  1s
-
-![RunScatter
+plot](tutorial-03-lipidomics-workflow_files/figure-html/runscatter-2.png)![RunScatter
 plot](tutorial-03-lipidomics-workflow_files/figure-html/runscatter-3.png)
 
 ## 7. Adding detailed metadata
@@ -222,8 +219,8 @@ myexp <- import_metadata_msorganiser(myexp, path = file_path, ignore_warnings = 
 #>   Type  Table    Column                Issue                           Count
 #>   <chr> <chr>    <chr>                 <chr>                           <int>
 #> 1 W*    Analyses analysis_id           Analyses not in analysis data      15
-#> 2 W*    Features feature_id            Feature(s) not in analysis data     4
-#> 3 W*    Features feature_id            Feature(s) without metadata         1
+#> 2 W*    Features feature_id            Feature(s) without metadata         1
+#> 3 W*    Features feature_id            Feature(s) not in analysis data     4
 #> 4 W*    ISTDs    quant_istd_feature_id Internal standard(s) not used       1
 #> 
 #> --------------------------------------------------------------------------------
@@ -274,7 +271,7 @@ mrmhub::plot_rla_boxplot(
   batch_zebra_stripe = FALSE,
   linewidth = 0.1
 )
-#> ℹ Found 40 outliers in the 487 shown analyses
+#> ℹ Found 9 outliers in the 487 shown analyses
 ```
 
 ![RLA
@@ -307,7 +304,7 @@ plot_pca(
   include_istd = FALSE)
 #> ! 2 features contained missing or non-numeric values and were exluded.
 #> ℹ The PCA was calculated based on `feature_intensity` values of 423 features.
-#> ggrepel: 10000 iterations in 0.010954s, 3 overlaps. Consider increasing 'max.iter'.
+#> ggrepel: 10000 iterations in 0.010950s, 3 overlaps. Consider increasing 'max.iter'.
 ```
 
 ![PCA
@@ -344,7 +341,7 @@ plot_pca(
   shared_labeltext_hide = NA)
 #> ! 2 features contained missing or non-numeric values and were exluded.
 #> ℹ The PCA was calculated based on `feature_intensity` values of 423 features.
-#> ggrepel: 10000 iterations in 0.022725s, 7 overlaps. Consider increasing 'max.iter'.
+#> ggrepel: 10000 iterations in 0.022471s, 7 overlaps. Consider increasing 'max.iter'.
 ```
 
 ![PCA
@@ -533,6 +530,8 @@ myexp <- mrmhub::correct_drift_gaussiankernel(
 #> ℹ 4 feature(s) contain one or more zero or negative `conc` values. Verify your data or use `log_transform_internal = FALSE`.
 #> ! 1 features showed no variation in the study sample's original values across analyses. 
 #> ! 1 features have invalid values after smoothing. NA will be be returned for all values of these faetures. Set `use_original_if_fail = FALSE to return orginal values..
+#> ! Smoothing failed for 1 feature(s) in all batches. Please check data, metadata, and fit parameters.
+#> ! Smoothing failed for 1 feature(s) in at least one batch: PG 36:2. Please check data, metadata and fit parameters.
 #> ✔ Drift correction was applied to 459 of 460 features (batch-wise).
 #> ℹ The median CV change of all features in study samples was -1.00% (range: -12.53% to 2.59%). The median absolute CV of all features across batches decreased from 39.00% to 37.71%.
 ```
@@ -640,7 +639,9 @@ limit of detection. The corresponding PDF can be accessed within the
 `output` subfolder. Use `filt_` arguments to include or exclude specific
 analytes. The filter can use regular expressions (regex). A language
 model such as ChatGPT can assist in generating more complex regex-based
-filters.
+filters; see [Writing Pipelines with AI
+Assistants](https://slinghub.github.io/MRMhub/quant/articles/manual-09-ai-assistants.md)
+for how to use LLMs with MRMhub effectively.
 
 Exercises
 
@@ -802,7 +803,7 @@ Exercises
 
 mrmhub::save_report_xlsx(myexp, path = tempfile(fileext = ".xlsx"))
 #> Saving report to disk - please wait...
-#> ✔ The data processing report of experiment 'sPerfect' has been saved to '/tmp/Rtmp6IxIOq/file32a834a1dc6e.xlsx'.
+#> ✔ The data processing report of experiment 'sPerfect' has been saved to '/tmp/RtmphNHHpm/file36bd50c0747.xlsx'.
 ```
 
 Specific data subsets can also be saved as a clean flat, wide CSV file.
@@ -823,7 +824,7 @@ mrmhub::save_dataset_csv(
   qc_types = "SPL", 
   include_qualifier = FALSE,
   filter_data = TRUE)
-#> ✔ Concentration values for 377 analyses and 324 features have been exported to '/tmp/Rtmp6IxIOq/file32a833f9c994.csv'.
+#> ✔ Concentration values for 377 analyses and 324 features have been exported to '/tmp/RtmphNHHpm/file36bd4969eff.csv'.
 ```
 
 ## 22. Sharing the `MRMhubExperiment` dataset
@@ -882,14 +883,20 @@ print(myexp)
 #> • Features manually excluded (`feature_id`): ✖
 ```
 
-## Next Steps
+## Next steps
 
-- [Drift
+- [Drift and Batch
   Correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.md)
-  — drift correction methods and diagnostics
-- [Batch
-  Correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-06-batch-correction.md)
-  — inter-batch correction options
+  — correction methods and diagnostics
+- [Exploring QC: RunScatter and
+  PCA](https://slinghub.github.io/MRMhub/quant/articles/tutorial-05-run-scatter.md)
+  — QC visualisation in depth
+- [Interference
+  Correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-11-interference-correction.md)
+  — correcting isotopic/isobaric overlap
+- [External Calibration &
+  QC](https://slinghub.github.io/MRMhub/quant/articles/recipe-01-ext-calibration-qc.md)
+  — quantitation with calibration curves
 - [External Calibration &
   QC](https://slinghub.github.io/MRMhub/quant/articles/recipe-01-ext-calibration-qc.md)
   — quantify with external calibration curves

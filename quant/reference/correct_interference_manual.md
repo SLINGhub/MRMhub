@@ -26,7 +26,7 @@ correct_interference_manual(
 
 - variable:
 
-  Default: `feature_intensity`. Name of Variable to be corrected.
+  Name of the variable to be corrected, e.g. `feature_intensity`.
 
 - feature:
 
@@ -39,8 +39,9 @@ correct_interference_manual(
 
 - interference_contribution:
 
-  Relative portion of the interfering feature to contribute to the
-  feature signal. Must be between 0 and 1.
+  Relative portion of the interfering feature contributing to the
+  feature signal. Must be greater than 0; values are usually between 0
+  and 1, and values above 1 trigger a warning.
 
 - neg_to_na:
 

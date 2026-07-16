@@ -4,17 +4,18 @@ This function corrects lipidomics feature intensities by subtracting
 interference (e.g., isotope overlap or in-source fragments). The
 correction is applied using the following formula: \$\$value\\corrected
 = value\\raw - value\\raw\\interfering\\feature \times
-proportion\\interference\$\$
+interference\\contribution\$\$
 
 The interfering features and their relative contributions must be
 defined in the feature metadata.
 
-By default, sequential series of interferences (e.g., isotopic M+2
-interferences of PC 34:2 \> PC 34:“1 \> PC 34:0) will be corrected in a
-sequential manner. This means that the correction will applied
-iteratively, starting with the most downstream feature in the series. To
-disable this behavior, basing each correction on the raw signal of the
-interfering feature set `sequential_correction = FALSE`
+By default, a chain of interferences (e.g., isotopic M+2 interferences
+of PC 34:2 \> PC 34:1 \> PC 34:0) is corrected sequentially: each
+feature is corrected using the already-corrected signal of its
+interfering feature, so the correction propagates along the chain. To
+disable this and instead correct each feature independently from the raw
+(uncorrected) signal of its interfering feature, set
+`sequential_correction = FALSE`.
 
 ## Usage
 
@@ -39,10 +40,12 @@ correct_interferences(
 
 - sequential_correction:
 
-  A logical indicating whether to apply corrections sequentially,
-  starting with the most downstream feature. If `FALSE`, corrections are
-  based on the raw signal of the interfering features. If `FALSE`, the
-  correction will be based on the raw signal of the interfering feature.
+  Logical. If `TRUE` (the default), a chain of interferences is
+  corrected sequentially, so that each feature is corrected using the
+  already-corrected signal of its interfering feature (the correction
+  propagates along the chain). If `FALSE`, each feature is corrected
+  independently using the raw (uncorrected) signal of its interfering
+  feature, without propagation.
 
 - neg_to_na:
 
@@ -58,8 +61,8 @@ interferences.
 
 For isotopic interference correction of MRM/PRM data, the relative
 isotope abundances needed for the calculation
-('proportion_interference') can be calculated using the LICAR
-application (Gao et al., 2021), see below..
+(`interference_contribution`) can be calculated using the LICAR
+application (Gao et al., 2021), see below.
 
 ## References
 

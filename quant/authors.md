@@ -12,7 +12,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/SLINGhub/MRMhub/blob/development/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/SLINGhub/MRMhub/blob/gui-beta-v1.0.9/DESCRIPTION)
 
 Burla B, Teo G, Choi H (2026). *mrmhub: Small Molecule Mass Spectrometry
 Data Processing, Quality Control, and Reporting*. R package version

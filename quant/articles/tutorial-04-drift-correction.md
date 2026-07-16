@@ -1,21 +1,19 @@
-# Drift Correction (Smoothing)
+# Drift and Batch Correction
 
-MRMhub provides different functions for run-order drift correction,
-differing by the employed smoothing algorithm. These functions can be
-categorized into functions that are either more suited for QC or study
-sample-based drift correction.
+Tutorial
 
-The data must be provided via a MRMhubExperiment object, whereby raw
+MRMhub provides functions for run-order drift correction, differing by
+the employed smoothing algorithm and suited to either QC- or
+study-sample-based correction, and for batch-effect correction by median
+centering. The data must be provided via an MRMhubExperiment object; raw
 data that was imported or processed data can be corrected, such as
-`intensity` or `conc` values.
+`intensity` or `conc` values. These functions have various options for
+customization; please refer to the manual page on [Drift and Batch
+Correction](https://slinghub.github.io/MRMhub/quant/articles/manual-07-corrections.md)
+for more details. This tutorial first demonstrates the drift-correction
+methods, then batch-effect correction and how the two are combined.
 
-These drift correction functions have various options for customization,
-please refer the manual page on [Drift and Batch
-Correction](https://slinghub.github.io/MRMhub/quant/articles/manual-07-drift-batch-correction.md)
-for more details.
-
-**Time:** ~15 min  \|  **Level:** Intermediate  \|  **Prerequisites:**
-[Basic
+**Time** ~20 min  ·  **Level** Intermediate  ·  **Prerequisites** [Basic
 workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md)
 
 ## Import data
@@ -206,6 +204,86 @@ plot_runscatter(mexp_drift, variable = "conc", qc_types = c("BQC", "SPL"),
 ![RunScatter plots before and after batch correction
 ](tutorial-04-drift-correction_files/figure-html/unnamed-chunk-9-1.png)
 
+## Batch-effect correction
+
+Batch effects — systematic differences between analytical batches — are
+corrected by median centering with
+[`correct_batch_centering()`](https://slinghub.github.io/MRMhub/quant/reference/correct_batch_centering.md).
+The following example uses a separate dataset of seven batches to show
+the effect clearly.
+
+``` r
+
+myexp_batch <- mrmhub::MRMhubExperiment()
+myexp_batch <- import_data_csv_wide(
+  myexp_batch,
+  path = "simdata-u1000-sd100_7batches.csv",
+  variable_name = "conc",
+  import_metadata = TRUE)
+```
+
+The concentration values of each batch are centered on a reference QC
+type, here the study samples (`ref_qc_types = "SPL"`). The
+`correct_scale` parameter controls whether the batch-to-batch
+differences in variance (scale) are also corrected; with
+`correct_scale = FALSE` only the median (location) of each batch is
+aligned.
+
+``` r
+
+myexp_batch <- correct_batch_centering(
+  data = myexp_batch,
+  variable = "conc",
+  ref_qc_types = "SPL",
+  correct_scale = FALSE
+)
+#> ℹ Adding batch correction to `conc` data.
+#> ✔ Batch median-centering of 7 batches was applied to raw concentrations of all 1 features.
+#> ℹ The median CV change of all features in study samples was -30.49% (range: -30.50% to -30.50%).  The median absolute CV of all features decreased from 44.05% to 13.56%.
+```
+
+The data before and after batch correction are compared below; the
+batches are now aligned. If the study samples or other QC types do not
+follow the reference samples, they may not be corrected appropriately.
+
+``` r
+
+plot_runscatter(myexp_batch, variable = "conc_before", rows_page = 1, cols_page = 1)
+```
+
+![RunScatter plots before and after batch correction
+](tutorial-04-drift-correction_files/figure-html/unnamed-chunk-12-1.png)
+
+``` r
+
+plot_runscatter(myexp_batch, variable = "conc", rows_page = 1, cols_page = 1)
+```
+
+![RunScatter plots before and after batch correction
+](tutorial-04-drift-correction_files/figure-html/unnamed-chunk-12-2.png)
+
+### Correcting variance as well as location
+
+Although the batches are aligned, the spread (variance) of the points
+still varies considerably between batches. This is corrected by scaling
+the variance with `correct_scale = TRUE`, after which the spread is
+fairly consistent across batches.
+
+``` r
+
+myexp_batch <- mrmhub::correct_batch_centering(
+  myexp_batch,
+  ref_qc_types = "SPL",
+  variable = "conc",
+  correct_scale = TRUE
+)
+
+plot_runscatter(myexp_batch, variable = "conc", rows_page = 1, cols_page = 1)
+```
+
+![RunScatter plot after batch correction with variance scaling
+](tutorial-04-drift-correction_files/figure-html/unnamed-chunk-13-1.png)
+
 ## Method comparison
 
 `MRMhub` provides four drift correction methods. Loess and cubic spline
@@ -215,7 +293,7 @@ model (GAM) smoothing via
 [`correct_drift_gam()`](https://slinghub.github.io/MRMhub/quant/reference/correct_drift_gam.md),
 is also available. The method comparison below summarises the typical
 use cases of the three most common — see the [Drift and Batch Correction
-(reference)](https://slinghub.github.io/MRMhub/quant/articles/manual-07-drift-batch-correction.md)
+(reference)](https://slinghub.github.io/MRMhub/quant/articles/manual-07-corrections.md)
 for the full parameter description of all four.
 
 | Method | Function | Reference samples | Typical use |
@@ -264,14 +342,14 @@ save_dataset_csv(
 #> ✔ Concentration values for 498 analyses and 3 features have been exported to 'drift-batch-corrected-conc-data.csv'.
 ```
 
-## Next Steps
+## Next steps
 
-- [RunScatter
-  Plot](https://slinghub.github.io/MRMhub/quant/articles/tutorial-05-run-scatter.md)
-  — visualise run order effects
-- [Batch
-  Correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-06-batch-correction.md)
-  — correct inter-batch variability
-- [Drift & Batch Correction
-  (reference)](https://slinghub.github.io/MRMhub/quant/articles/manual-07-drift-batch-correction.md)
+- [RunScatter and PCA QC
+  exploration](https://slinghub.github.io/MRMhub/quant/articles/tutorial-05-run-scatter.md)
+  — visualise run-order and batch effects
+- [Drift and Batch Correction
+  (reference)](https://slinghub.github.io/MRMhub/quant/articles/manual-07-corrections.md)
   — full method documentation
+- [Calibration by Reference
+  Sample](https://slinghub.github.io/MRMhub/quant/articles/tutorial-07-calibration-reference.md)
+  — normalise to a reference material

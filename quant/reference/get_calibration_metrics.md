@@ -1,4 +1,4 @@
-# Get Calibration Metrics
+# Get calibration metrics
 
 Extracts calibration fit metrics from a `MRMhubExperiment` object.
 
@@ -9,7 +9,6 @@ get_calibration_metrics(
   data = NULL,
   with_lod = TRUE,
   with_loq = TRUE,
-  with_bias = TRUE,
   with_coefficients = TRUE,
   with_sigma = TRUE
 )
@@ -28,10 +27,6 @@ get_calibration_metrics(
 - with_loq:
 
   Whether to include LoQ in output. Default is `TRUE`.
-
-- with_bias:
-
-  Whether to include bias in output. Default is `TRUE`.
 
 - with_coefficients:
 
@@ -85,6 +80,12 @@ See its documentation for details.
 - `LoQ` = 10× the sample standard error of residuals / slope of the
   regression (see Notes).
 
-**Note:** For LoD/LoQ calculation using **quadratic** fits, the slope
-used in the formula is calculated at the lowest nonzero calibration
-point.
+**Note:** LoD/LoQ follow the ICH Q2(R1/R2) approach (3.3 sigma / S and
+10 sigma / S). The slope `S` is the slope of the calibration curve at
+zero concentration (the linear coefficient `coef_b`); for a
+**quadratic** fit the quadratic term does not contribute to this slope.
+The response `sigma` is selectable in
+[`calc_calibration_results()`](https://slinghub.github.io/MRMhub/quant/reference/calc_calibration_results.md)
+via `lod_sigma` (residual standard error, the default, or the standard
+error of the intercept); the `sigma` column reported here is always the
+residual standard error.

@@ -1,10 +1,13 @@
-# Linear Regression Statistics of Response Curves
+# Linear regression statistics of response curves
 
 This function calculates linear regression statistics (R-squared, slope,
 and intercept) for each response curve in the provided
-`MRMhubExperiment` object. Optionally, it can include additional
-statistics from the `lancer` package (if installed) when
-`with_staturation_stats` is set to TRUE.
+`MRMhubExperiment` object. Before fitting, the analyzed sample amount
+(`x`) and feature intensity (`y`) of each curve are each scaled to their
+maximum (set to 1), so the returned `slopenorm` and `y0norm` are on this
+normalized scale. Optionally, it can include additional statistics from
+the `lancer` package (if installed) when `with_staturation_stats` is set
+to TRUE.
 
 ## Usage
 
@@ -32,7 +35,8 @@ get_response_curve_stats(
 
 - limit_to_rqc:
 
-  Logical, if TRUE (default), only include rows with `qc_type == "RQC"`.
+  Logical, if `TRUE`, only include rows with `qc_type == "RQC"`. Default
+  is `FALSE`.
 
 - silent_invalid_data:
 

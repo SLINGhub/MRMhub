@@ -1,4 +1,4 @@
-# Import Internal Standards (ISTD) metadata
+# Import internal standards (ISTD) metadata
 
 Imports ISTD metadata (annotation) from a preloaded data frame or tibble
 via the `data` argument, or from data from a file (CSV or Excel) via the

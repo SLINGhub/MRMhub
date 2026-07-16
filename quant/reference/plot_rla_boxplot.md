@@ -1,4 +1,4 @@
-# Relative Log Abundance (RLA) Plot
+# Relative log abundance (RLA) plot
 
 The Relative Log Abundance (RLA) plot visualizes standardized feature
 abundances distributions across samples. RLA standardization involves
@@ -20,8 +20,8 @@ plot and a table with detected outliers (if `outlier_detection = TRUE`).
 ``` r
 plot_rla_boxplot(
   data = NULL,
-  rla_type_batch,
   variable,
+  rla_type_batch,
   qc_types = NA,
   plot_range = NA,
   rla_limit_to_range = FALSE,
@@ -50,7 +50,7 @@ plot_rla_boxplot(
   batch_fill_color = "grey93",
   x_gridlines = FALSE,
   linewidth = 0.2,
-  base_font_size = 8,
+  font_base_size = 8,
   relative_log_abundances = TRUE,
   show_plot = TRUE
 )
@@ -60,12 +60,7 @@ plot_rla_boxplot(
 
 - data:
 
-  MRMhubExperiment
-
-- rla_type_batch:
-
-  Character, must be either "within" or "across", defining whether to
-  use within-batch or across-batch RLA
+  A `MRMhubExperiment` object.
 
 - variable:
 
@@ -73,6 +68,11 @@ plot_rla_boxplot(
   "conc", "area", "height", "fwhm", or one of "intensity_raw",
   "intensity_before", "norm_intensity_raw", "norm_intensity_before",
   "conc_raw", "conc_before"
+
+- rla_type_batch:
+
+  Character, must be either "within" or "across", defining whether to
+  use within-batch or across-batch RLA
 
 - qc_types:
 
@@ -140,15 +140,17 @@ plot_rla_boxplot(
 
   A regex pattern or a vector of feature names used to filter features
   by `feature_id`. If `NA` or an empty string (`""`) is provided, the
-  filter is ignored. When a vector of length \> 1 is supplied, is
-  supplied, only features with exactly these names are selected (applied
-  individually as OR conditions).
+  filter is ignored. When a vector of length \> 1 is supplied, only
+  features with exactly these names are selected (applied individually
+  as OR conditions).
 
 - exclude_feature_filter:
 
-  A regex pattern or a vector of feature names to exclude features by
-  feature_id. If `NA` or an empty string (`""`) is provided, the filter
-  is ignored. When a vector of length \> 1 is supplied.
+  A regex pattern or a vector of feature names used to exclude features
+  by `feature_id`. If `NA` or an empty string (`""`) is provided, the
+  filter is ignored. When a vector of length \> 1 is supplied, only
+  features with exactly these names are excluded (applied individually
+  as OR conditions).
 
 - show_timestamp:
 
@@ -220,9 +222,9 @@ plot_rla_boxplot(
 
   Numeric, line width used for whiskers of the boxplot
 
-- base_font_size:
+- font_base_size:
 
-  Numeric, base font size for the plot
+  Numeric. Base font size (in points) for plot text. Default is 8.
 
 - relative_log_abundances:
 
@@ -235,8 +237,8 @@ plot_rla_boxplot(
 
 ## Value
 
-A list with the ggplot object representing the RLA plot and a table with
-detected outliers if `outlier_detection = TRUE`.
+A list with the `ggplot` object representing the RLA plot and a table
+with detected outliers if `outlier_detection = TRUE`.
 
 ## References
 
@@ -246,3 +248,19 @@ Analytical Chemistry 10768-10776 [DOI:
 (2015) Statistical Methods for Handling Unwanted Variation in
 Metabolomics Data. Analytical Chemistry 87(7):3606-3615 [DOI:
 10.1021/ac502439y](https://doi.org/10.1021/ac502439y)
+
+## See also
+
+Other QC plots:
+[`plot_feature_correlations()`](https://slinghub.github.io/MRMhub/quant/reference/plot_feature_correlations.md),
+[`plot_normalization_qc()`](https://slinghub.github.io/MRMhub/quant/reference/plot_normalization_qc.md),
+[`plot_pca()`](https://slinghub.github.io/MRMhub/quant/reference/plot_pca.md),
+[`plot_pca_loading()`](https://slinghub.github.io/MRMhub/quant/reference/plot_pca_loading.md),
+[`plot_qc_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_interferences.md),
+[`plot_qc_matrixeffects()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_matrixeffects.md),
+[`plot_qc_summary_byclass()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_summary_byclass.md),
+[`plot_qc_summary_overall()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_summary_overall.md),
+[`plot_qcmetrics_comparison()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qcmetrics_comparison.md),
+[`plot_rt_vs_chain()`](https://slinghub.github.io/MRMhub/quant/reference/plot_rt_vs_chain.md),
+[`plot_runscatter()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.md),
+[`plot_runsequence()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runsequence.md)

@@ -1,23 +1,22 @@
 # Basic MRMhub Workflow
 
-**Time:** ~15 min  \|  **Level:** Beginner–Intermediate  \| 
-**Prerequisites:** [Your First
+Tutorial
+
+**Time** ~15 min  ·  **Level** Beginner–Intermediate  · 
+**Prerequisites** [Your First
 Analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md)
 
-**How this differs from “Your First Analysis”:** That tutorial uses
-bundled demo data and covers only import, normalize, and export in 5
-minutes. This tutorial uses real file paths, imports metadata via
-MSOrganiser, applies drift and batch correction, runs QC filtering, and
-exports a full report — a realistic end-to-end workflow.
-
 This tutorial outlines the key steps in a MRMhub workflow, based on a
-lipidomics dataset. See the [Lipidomics Data
+lipidomics dataset; see the [Lipidomics Data
 Processing](https://slinghub.github.io/MRMhub/quant/articles/tutorial-03-lipidomics-workflow.md)
-tutorial for an even more detailed example.
-
-These examples are simplified and may not apply to every dataset and
-experimental setup. See other tutorials and recipes for additional
-workflows and data types.
+tutorial for a more detailed example. Where [Your First
+Analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md)
+uses bundled demo data and covers only import, normalize and export,
+this tutorial uses real file paths, imports metadata via an MSOrganiser
+template, applies drift and batch correction, runs QC filtering, and
+exports a full report. The examples are simplified and may not apply to
+every dataset and experimental setup, so consult the other tutorials and
+recipes for additional workflows and data types.
 
 ## Step 1: Set Up a Project
 
@@ -50,7 +49,7 @@ library(mrmhub)
 
 The `MRMhubExperiment` object is the main **data container** in the
 MRMhub workflow. See [The MRMhubExperiment
-Object](https://slinghub.github.io/MRMhub/quant/articles/manual-04-mrmhub-experiment.md)
+Object](https://slinghub.github.io/MRMhub/quant/articles/manual-02-data-object.md)
 for details.
 
 Create a new empty object:
@@ -82,9 +81,9 @@ myexp <- import_data_mrmhub(
 **Using a different data source?**
 
 See [Import and prepare data
-files](https://slinghub.github.io/MRMhub/quant/articles/manual-05a-which-importer.md)
+files](https://slinghub.github.io/MRMhub/quant/articles/manual-04-data-import.md)
 for a decision flowchart, or [Data
-Import](https://slinghub.github.io/MRMhub/quant/articles/manual-05-data-import.md)
+Import](https://slinghub.github.io/MRMhub/quant/articles/manual-04-data-import.md)
 for the full API reference.
 
 ## Step 4: Add Metadata
@@ -95,7 +94,7 @@ amounts, etc.
 
 Metadata can be imported from separate CSV/Excel files or R data frames
 (see [Metadata
-Import](https://slinghub.github.io/MRMhub/quant/articles/manual-06-metadata-import.md)),
+Import](https://slinghub.github.io/MRMhub/quant/articles/manual-05-metadata.md)),
 or from an MSOrganiser template:
 
 ``` r
@@ -111,8 +110,8 @@ myexp <- import_metadata_msorganiser(
 #>   Type  Table    Column                Issue                           Count
 #>   <chr> <chr>    <chr>                 <chr>                           <int>
 #> 1 W*    Analyses analysis_id           Analyses not in analysis data      15
-#> 2 W*    Features feature_id            Feature(s) not in analysis data     4
-#> 3 W*    Features feature_id            Feature(s) without metadata         1
+#> 2 W*    Features feature_id            Feature(s) without metadata         1
+#> 3 W*    Features feature_id            Feature(s) not in analysis data     4
 #> 4 W*    ISTDs    quant_istd_feature_id Internal standard(s) not used       1
 #> 
 #> --------------------------------------------------------------------------------
@@ -124,36 +123,13 @@ myexp <- import_metadata_msorganiser(
 #> ✔ Response curve metadata associated with 12 annotated analyses.
 ```
 
-The validation checks may produce warnings. Setting
-`ignore_warnings = TRUE` allows the import to proceed, but warnings are
-still displayed in the console (marked with `*`). Review them to ensure
-nothing critical is missed.
-
-**Validating metadata before import**
-
-Use
-[`assert_metadata()`](https://slinghub.github.io/MRMhub/quant/reference/assert_metadata.md)
-to check annotation tables before linking. The function takes the
-metadata as a named list and returns the validated list, which is then
-passed to
-[`add_metadata()`](https://slinghub.github.io/MRMhub/quant/reference/add_metadata.md):
-
-``` r
-
-validated <- assert_metadata(
-  myexp,
-  metadata = list(annot_analyses = annot_analyses,
-                  annot_features = annot_features),
-  ignore_warnings = FALSE,
-  excl_unmatched_analyses = FALSE
-)
-
-myexp <- add_metadata(myexp, metadata = validated)
-```
-
-See [Validating and Fixing
+The validation checks may produce warnings, which by default cause the
+import to fail. Setting `ignore_warnings = TRUE` allows it to proceed;
+the warnings are still shown in the console table, marked with an
+asterisk (`*`) in the `status` column, and should be reviewed to ensure
+nothing critical is missed. See [Validating and Fixing
 Metadata](https://slinghub.github.io/MRMhub/quant/articles/tutorial-10-metadata-validation.md)
-for a full walkthrough.
+for how to inspect and resolve them.
 
 ## Step 5: Process the Data
 
@@ -180,10 +156,10 @@ myexp <- correct_drift_gaussiankernel(
 )
 #> ℹ Applying `conc` drift correction...
 #> ℹ 2 feature(s) contain one or more zero or negative `conc` values. Verify your data or use `log_transform_internal = FALSE`.
-#>  ■■■■■■■■■■■■■                     38% |  ETA:  5s
-#>  ■■■■■■■■■■■■■■■■■■■■■■■■          75% |  ETA:  2s
 #> ! 1 features showed no variation in the study sample's original values across analyses. 
 #> ! 1 features have invalid values after smoothing. NA will be be returned for all values of these faetures. Set `use_original_if_fail = FALSE to return orginal values..
+#> ! Smoothing failed for 1 feature(s) in all batches. Please check data, metadata, and fit parameters.
+#> ! Smoothing failed for 1 feature(s) in at least one batch: PG 36:2. Please check data, metadata and fit parameters.
 #> ✔ Drift correction was applied to 459 of 460 features (batch-wise).
 #> ℹ The median CV change of all features in study samples was -0.56% (range: -10.22% to 2.49%). The median absolute CV of all features across batches decreased from 38.96% to 38.56%.
 
@@ -230,8 +206,8 @@ The recommended order is:
 5.  QC filtering
 
 See [Design
-Overview](https://slinghub.github.io/MRMhub/quant/articles/manual-00-design-overview.md)
-for the full pipeline diagram.
+Decisions](https://slinghub.github.io/MRMhub/quant/articles/manual-03-design-decisions.md)
+for the rationale behind this order.
 
 ## Step 6: Visualize Results
 
@@ -253,7 +229,7 @@ plot_runscatter(
 #> Generating plots (1 page)...
 ```
 
-![](tutorial-02-basic-workflow_files/figure-html/unnamed-chunk-5-1.png)
+![](tutorial-02-basic-workflow_files/figure-html/unnamed-chunk-4-1.png)
 
 See [Visualisation
 Functions](https://slinghub.github.io/MRMhub/quant/articles/manual-08-visualization.md)
@@ -266,7 +242,7 @@ for the full list of plotting functions grouped by workflow stage.
 # Detailed Excel report with multiple sheets
 save_report_xlsx(myexp, path = tempfile(fileext = ".xlsx"))
 #> Saving report to disk - please wait...
-#> ✔ The data processing report has been saved to '/tmp/RtmpeBCBjw/file307617a09202.xlsx'.
+#> ✔ The data processing report has been saved to '/tmp/Rtmp1n9QJq/file348a2fd4c51f.xlsx'.
 
 # Flat CSV with concentration values that passed QC
 save_dataset_csv(
@@ -277,30 +253,27 @@ save_dataset_csv(
   include_qualifier = FALSE,
   filter_data = TRUE
 )
-#> ✔ Concentration values for 378 analyses and 181 features have been exported to '/tmp/RtmpeBCBjw/file307652d6aba9.csv'.
+#> ✔ Concentration values for 378 analyses and 181 features have been exported to '/tmp/Rtmp1n9QJq/file348a34a218d7.csv'.
 
 # Save the complete object for reproducibility or sharing
 saveRDS(myexp, file = tempfile(fileext = ".rds"), compress = TRUE)
 ```
 
-The `.rds` file preserves the entire `MRMhubExperiment` object. A
-colleague can open it in R and run their own processing, plots, and QC
-checks; no code is needed to reproduce the data state.
+The `.rds` file preserves the entire `MRMhubExperiment` object, so a
+colleague can open it in R and run their own processing, plots and QC
+checks — no code is needed to reproduce the data state.
 
-### Next Steps
+## Next steps
 
-- [Lipidomics
-  Workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-03-lipidomics-workflow.md)
-  — more detailed lipidomics example
-- [Drift
+- [Lipidomics Data
+  Processing](https://slinghub.github.io/MRMhub/quant/articles/tutorial-03-lipidomics-workflow.md)
+  — a more detailed lipidomics example
+- [Drift and Batch
   Correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.md)
-  — drift correction methods
-- [Batch
-  Correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-06-batch-correction.md)
-  — batch correction options
-- [PCA
-  Exploration](https://slinghub.github.io/MRMhub/quant/articles/tutorial-09-pca-exploration.md)
-  — QC exploration with PCA
+  — correction methods and diagnostics
+- [Exploring QC: RunScatter and
+  PCA](https://slinghub.github.io/MRMhub/quant/articles/tutorial-05-run-scatter.md)
+  — QC visualisation and outlier screening
 - [External Calibration &
   QC](https://slinghub.github.io/MRMhub/quant/articles/recipe-01-ext-calibration-qc.md)
-  — external calibration
+  — quantitation with calibration curves

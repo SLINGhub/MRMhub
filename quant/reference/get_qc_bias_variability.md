@@ -1,4 +1,4 @@
-# Retrieve Calibration Regression Results
+# Retrieve calibration regression results
 
 This function retrieves calibration curve regression results from a
 `MRMhubExperiment` object. It returns a summary of quality control (QC)
@@ -21,7 +21,8 @@ get_qc_bias_variability(
   with_bias = TRUE,
   with_bias_abs = FALSE,
   with_conc_ratio = FALSE,
-  with_cv_intra = TRUE
+  with_cv_intra = TRUE,
+  with_conc_out_of_range = TRUE
 )
 ```
 
@@ -79,12 +80,21 @@ get_qc_bias_variability(
 - with_conc_ratio:
 
   Logical. If `TRUE`, includes the ratio of measured to target
-  concentration in the results. Defaults to `TRUE`.
+  concentration in the results. Defaults to `FALSE`.
 
 - with_cv_intra:
 
   Logical. If `TRUE`, includes intra-assay coefficient of variation (CV)
   for the in the results. Defaults to `TRUE`.
+
+- with_conc_out_of_range:
+
+  Logical. If `TRUE` (and the dataset carries the
+  `feature_conc_out_of_range` flag from
+  [`quantify_by_calibration()`](https://slinghub.github.io/MRMhub/quant/reference/quantify_by_calibration.md)),
+  includes the fraction of replicate measurements whose concentration
+  fell outside the calibrated range (`frac_conc_out_of_range`). Defaults
+  to `TRUE`.
 
 ## Value
 

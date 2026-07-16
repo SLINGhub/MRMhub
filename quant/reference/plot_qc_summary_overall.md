@@ -1,4 +1,4 @@
-# Plot Overall QC Filtering Summary
+# Plot overall QC filtering summary
 
 This function generates a summary of the feature QC filtering process,
 visualizing the number of features that passed or failed the various QC
@@ -20,7 +20,7 @@ plot_qc_summary_overall(data = NULL, with_venn = TRUE, font_base_size = 8)
 
 - data:
 
-  MRMhubExperiment object
+  A `MRMhubExperiment` object.
 
 - with_venn:
 
@@ -29,11 +29,11 @@ plot_qc_summary_overall(data = NULL, with_venn = TRUE, font_base_size = 8)
 
 - font_base_size:
 
-  The base font size for the plot. Default is `8`.
+  Numeric. Base font size (in points) for plot text. Default is 8.
 
 ## Value
 
-A `ggplot2` object showing the feature QC filtering summary with or
+A `ggplot` object showing the feature QC filtering summary with or
 without a Venn diagram.
 
 ## Details
@@ -51,3 +51,19 @@ fundamental quality checks up to more stringent filtering criteria.
 Note: The function currently shows a warning
 `Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.`
 which can be ignored.
+
+## See also
+
+Other QC plots:
+[`plot_feature_correlations()`](https://slinghub.github.io/MRMhub/quant/reference/plot_feature_correlations.md),
+[`plot_normalization_qc()`](https://slinghub.github.io/MRMhub/quant/reference/plot_normalization_qc.md),
+[`plot_pca()`](https://slinghub.github.io/MRMhub/quant/reference/plot_pca.md),
+[`plot_pca_loading()`](https://slinghub.github.io/MRMhub/quant/reference/plot_pca_loading.md),
+[`plot_qc_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_interferences.md),
+[`plot_qc_matrixeffects()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_matrixeffects.md),
+[`plot_qc_summary_byclass()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_summary_byclass.md),
+[`plot_qcmetrics_comparison()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qcmetrics_comparison.md),
+[`plot_rla_boxplot()`](https://slinghub.github.io/MRMhub/quant/reference/plot_rla_boxplot.md),
+[`plot_rt_vs_chain()`](https://slinghub.github.io/MRMhub/quant/reference/plot_rt_vs_chain.md),
+[`plot_runscatter()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.md),
+[`plot_runsequence()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runsequence.md)

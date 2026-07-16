@@ -1,6 +1,6 @@
 # Loess smoothing helper function
 
-Function for loess-based smoothing, for use by `fun_correct_drift`
+Function for loess-based smoothing, for use by `correct_drift`
 
 ## Usage
 

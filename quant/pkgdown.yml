@@ -2,25 +2,18 @@ pandoc: 3.8.3
 pkgdown: 2.2.1
 pkgdown_sha: ~
 articles:
-  articles/manual-00-design-overview: manual-00-design-overview.html
   articles/manual-00-installation: manual-00-installation.html
-  articles/manual-00-integrator-vs-quant: manual-00-integrator-vs-quant.html
-  articles/manual-00-key-concepts: manual-00-key-concepts.html
-  articles/manual-00-sample-types: manual-00-sample-types.html
-  articles/manual-01-data-structure: manual-01-data-structure.html
-  articles/manual-02-data-identifiers: manual-02-data-identifiers.html
-  articles/manual-03-feature-variables: manual-03-feature-variables.html
-  articles/manual-04-mrmhub-experiment: manual-04-mrmhub-experiment.html
-  articles/manual-05-data-import: manual-05-data-import.html
-  articles/manual-05a-which-importer: manual-05a-which-importer.html
-  articles/manual-05b-data-file-structures: manual-05b-data-file-structures.html
-  articles/manual-06-metadata-import: manual-06-metadata-import.html
-  articles/manual-06a-metadata-table-structures: manual-06a-metadata-table-structures.html
-  articles/manual-07-drift-batch-correction: manual-07-drift-batch-correction.html
+  articles/manual-01-key-concepts: manual-01-key-concepts.html
+  articles/manual-02-data-object: manual-02-data-object.html
+  articles/manual-03-design-decisions: manual-03-design-decisions.html
+  articles/manual-04-data-import: manual-04-data-import.html
+  articles/manual-05-metadata: manual-05-metadata.html
+  articles/manual-06-sample-types: manual-06-sample-types.html
+  articles/manual-07-corrections: manual-07-corrections.html
   articles/manual-08-visualization: manual-08-visualization.html
-  articles/manual-09-troubleshooting: manual-09-troubleshooting.html
-  articles/manual-10-design-decisions: manual-10-design-decisions.html
-  articles/manual-11-cheatsheet: manual-11-cheatsheet.html
+  articles/manual-09-ai-assistants: manual-09-ai-assistants.html
+  articles/manual-10-troubleshooting: manual-10-troubleshooting.html
+  articles/manual-index: manual-index.html
   mrmhub: mrmhub.html
   articles/recipe-01-ext-calibration-qc: recipe-01-ext-calibration-qc.html
   articles/recipe-02-custom-qc-report: recipe-02-custom-qc-report.html
@@ -31,13 +24,11 @@ articles:
   articles/tutorial-03-lipidomics-workflow: tutorial-03-lipidomics-workflow.html
   articles/tutorial-04-drift-correction: tutorial-04-drift-correction.html
   articles/tutorial-05-run-scatter: tutorial-05-run-scatter.html
-  articles/tutorial-06-batch-correction: tutorial-06-batch-correction.html
   articles/tutorial-07-calibration-reference: tutorial-07-calibration-reference.html
-  articles/tutorial-08-multi-batch: tutorial-08-multi-batch.html
-  articles/tutorial-09-pca-exploration: tutorial-09-pca-exploration.html
   articles/tutorial-10-metadata-validation: tutorial-10-metadata-validation.html
   articles/tutorial-11-interference-correction: tutorial-11-interference-correction.html
-last_built: 2026-07-13T03:22Z
+  articles/tutorial-12-workflow-builder: tutorial-12-workflow-builder.html
+last_built: 2026-07-16T01:56Z
 urls:
   reference: https://slinghub.github.io/MRMhub/quant/reference
   article: https://slinghub.github.io/MRMhub/quant/articles

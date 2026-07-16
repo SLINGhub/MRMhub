@@ -1,6 +1,6 @@
-# Constructor for the MRMhubExperiment object.
+# Constructor for the MRMhubExperiment object
 
-Constructor for the MRMhubExperiment object.
+Constructor for the MRMhubExperiment object
 
 ## Usage
 

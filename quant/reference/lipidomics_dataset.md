@@ -1,4 +1,4 @@
-# Plasma Lipidomics Dataset with Metadata
+# Plasma lipidomics dataset with metadata
 
 This demo dataset is included for use in function examples and user
 testing.. It is a small, preprocessed subset of a plasma lipidomics

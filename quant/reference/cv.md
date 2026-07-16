@@ -23,12 +23,14 @@ cv(x, na.rm = FALSE, use_robust_cv = FALSE)
 
 - use_robust_cv:
 
-  logical, if TRUE then the robust coefficient of variation
+  logical, if TRUE the robust coefficient of variation (scaled median
+  absolute deviation / median) is computed instead of the standard CV
+  (SD / mean)
 
 ## Value
 
-a numeric value. If x contains a zero or is not numeric, NA_real\_ is
-returned
+a numeric value. If the mean (or the median, for robust CV) is zero, or
+x is not numeric, NA_real\_ is returned
 
 ## Examples
 

@@ -1,4 +1,4 @@
-# Import Skyline Peak Integration Results
+# Import Skyline peak integration results
 
 This function imports tabular data files (\*.csv) exported from
 `Skyline`, containing peak integration results.

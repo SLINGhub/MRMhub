@@ -1,4 +1,4 @@
-# Generate Correlation Matrix in Long Format
+# Generate correlation matrix in long format
 
 Creates a correlation matrix and transforms it to long format, filtering
 by correlation thresholds.

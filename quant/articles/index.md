@@ -2,89 +2,49 @@
 
 ### All vignettes
 
-- [Design Overview: How Data Flows Through
-  MRMhub](https://slinghub.github.io/MRMhub/quant/articles/manual-00-design-overview.md):
-
-  A bird’s-eye view of the MRMhub data pipeline from raw instrument
-  files to final quantitative results.
-
 - [Installation](https://slinghub.github.io/MRMhub/quant/articles/manual-00-installation.md):
 
   Install mrmhub, verify your setup, and fix common install errors.
 
-- [INTEGRATOR vs QUANT: Which Tool Do I
-  Need?](https://slinghub.github.io/MRMhub/quant/articles/manual-00-integrator-vs-quant.md):
-
-  Understand the relationship between INTEGRATOR and QUANT (the R
-  package mrmhub).
-
 - [Key Concepts &
-  Glossary](https://slinghub.github.io/MRMhub/quant/articles/manual-00-key-concepts.md):
+  Glossary](https://slinghub.github.io/MRMhub/quant/articles/manual-01-key-concepts.md):
 
-  Plain-language overview of MRMhub’s data model, terminology, and
-  architecture.
-
-- [Definitions: Sample Types and QC
-  Roles](https://slinghub.github.io/MRMhub/quant/articles/manual-00-sample-types.md):
-
-  Reference for all sample type labels used in MRMhub and their roles in
-  quality control and data processing.
-
-- [Data and Metadata in
-  MRMhub](https://slinghub.github.io/MRMhub/quant/articles/manual-01-data-structure.md):
-
-  Overview of how MRMhub organizes analytical data and metadata within
-  the MRMhubExperiment object.
-
-- [Data Identifiers in
-  MRMhub](https://slinghub.github.io/MRMhub/quant/articles/manual-02-data-identifiers.md):
-
-  Explanation of the key identifier columns used to organize data in
-  MRMhub.
-
-- [Feature Variables in
-  MRMhub](https://slinghub.github.io/MRMhub/quant/articles/manual-03-feature-variables.md):
-
-  Reference for all feature variables (measurement columns) available in
-  MRMhub.
+  Core vocabulary of MRMhub — the data model, terminology, and the
+  function-naming convention.
 
 - [The MRMhubExperiment Data
-  Object](https://slinghub.github.io/MRMhub/quant/articles/manual-04-mrmhub-experiment.md):
+  Object](https://slinghub.github.io/MRMhub/quant/articles/manual-02-data-object.md):
 
-  How to create, use, and access data in MRMhubExperiment objects.
+  The primary data container of the MRMhub workflow: its data and
+  metadata tables, the identifiers that link them, and the feature
+  variables it stores.
 
-- [Importing Analytical Data and
-  Metadata](https://slinghub.github.io/MRMhub/quant/articles/manual-05-data-import.md):
+- [Design Decisions: Why This
+  Architecture?](https://slinghub.github.io/MRMhub/quant/articles/manual-03-design-decisions.md):
 
-  How to import analytical data and metadata into MRMhub from various
-  sources.
+  Explains the key design decisions behind MRMhub QUANT – for power
+  users and contributors who want to understand or extend the package.
 
-- [Import and prepare data
-  files](https://slinghub.github.io/MRMhub/quant/articles/manual-05a-which-importer.md):
+- [Importing Analytical
+  Data](https://slinghub.github.io/MRMhub/quant/articles/manual-04-data-import.md):
 
-  A decision guide for choosing the right data and metadata import
-  functions in MRMhub.
+  Importing analytical data from different sources into an
+  MRMhubExperiment.
 
-- [Data file
-  structures](https://slinghub.github.io/MRMhub/quant/articles/manual-05b-data-file-structures.md):
+- [Importing
+  Metadata](https://slinghub.github.io/MRMhub/quant/articles/manual-05-metadata.md):
 
-  Reference for the file layout and columns expected by each MRMhub data
-  importer.
+  Attaching and validating sample, feature, ISTD and QC metadata on an
+  MRMhubExperiment.
 
-- [Metadata
-  import](https://slinghub.github.io/MRMhub/quant/articles/manual-06-metadata-import.md):
+- [Sample Types & QC
+  Roles](https://slinghub.github.io/MRMhub/quant/articles/manual-06-sample-types.md):
 
-  MRMhub: postprocessing and quality control of small molecule mass
-  spectrometry data
-
-- [Metadata table
-  structures](https://slinghub.github.io/MRMhub/quant/articles/manual-06a-metadata-table-structures.md):
-
-  Reference for the columns of each MRMhub metadata table and what they
-  are used for.
+  Reference for the QC-type labels used in MRMhub and their roles in
+  quality control and data processing.
 
 - [Drift and Batch
-  Correction](https://slinghub.github.io/MRMhub/quant/articles/manual-07-drift-batch-correction.md):
+  Correction](https://slinghub.github.io/MRMhub/quant/articles/manual-07-corrections.md):
 
   MRMhub: postprocessing and quality control of small molecule mass
   spectrometry data
@@ -95,23 +55,22 @@
   Reference for the MRMhub plotting functions, grouped by workflow
   stage, with the canonical argument forms and customisation guidance.
 
+- [Writing Pipelines with AI
+  Assistants](https://slinghub.github.io/MRMhub/quant/articles/manual-09-ai-assistants.md):
+
+  How to use large language models (Claude, ChatGPT, or local models) to
+  help write MRMhub QUANT pipelines – how to ground them in the real
+  API, and how to verify what they produce.
+
 - [Troubleshooting and
-  FAQ](https://slinghub.github.io/MRMhub/quant/articles/manual-09-troubleshooting.md):
+  FAQ](https://slinghub.github.io/MRMhub/quant/articles/manual-10-troubleshooting.md):
 
   Solutions to the most common errors and questions when using MRMhub
   QUANT.
 
-- [Design Decisions: Why This
-  Architecture?](https://slinghub.github.io/MRMhub/quant/articles/manual-10-design-decisions.md):
+- [Manual](https://slinghub.github.io/MRMhub/quant/articles/manual-index.md):
 
-  Explains the key design decisions behind MRMhub QUANT – for power
-  users and contributors who want to understand or extend the package.
-
-- [Function
-  Cheatsheet](https://slinghub.github.io/MRMhub/quant/articles/manual-11-cheatsheet.md):
-
-  The core functions used in a typical MRMhub workflow, in order, with
-  one-line descriptions and links to the full reference.
+  Complete contents of the MRMhub-QUANT manual.
 
 - [MRMhub](https://slinghub.github.io/MRMhub/quant/articles/mrmhub.md):
 
@@ -159,31 +118,14 @@
   MRMhub: Postprocessing and Quality Control of Small-Molecule Mass
   Spectrometry Data
 
-- [Drift Correction
-  (Smoothing)](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.md):
+- [Drift and Batch
+  Correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.md):
 
-- [RunScatter
-  Plot](https://slinghub.github.io/MRMhub/quant/articles/tutorial-05-run-scatter.md):
-
-- [Batch-effect
-  correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-06-batch-correction.md):
+- [Exploring QC: RunScatter and
+  PCA](https://slinghub.github.io/MRMhub/quant/articles/tutorial-05-run-scatter.md):
 
 - [Calibration by a Reference
   Sample](https://slinghub.github.io/MRMhub/quant/articles/tutorial-07-calibration-reference.md):
-
-- [Multi-Batch
-  Study](https://slinghub.github.io/MRMhub/quant/articles/tutorial-08-multi-batch.md):
-
-  End-to-end workflow for a realistic multi-batch targeted metabolomics
-  study with drift correction, batch correction, QC monitoring, and
-  final merge.
-
-- [QC Exploration with
-  PCA](https://slinghub.github.io/MRMhub/quant/articles/tutorial-09-pca-exploration.md):
-
-  Use Principal Component Analysis to identify outlier injections,
-  assess batch effects, and verify the result of drift and batch
-  corrections.
 
 - [Validating and Fixing
   Metadata](https://slinghub.github.io/MRMhub/quant/articles/tutorial-10-metadata-validation.md):
@@ -197,3 +139,9 @@
 
   Identify and correct isotopic or isobaric interferences between MRM
   transitions using a contribution-based subtraction model.
+
+- [Build a Workflow Without
+  Code](https://slinghub.github.io/MRMhub/quant/articles/tutorial-12-workflow-builder.md):
+
+  Use the point-and-click builder to validate your data and metadata and
+  generate a runnable Quarto workflow.

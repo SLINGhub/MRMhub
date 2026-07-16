@@ -1,7 +1,7 @@
 # Cubic spline smoothing helper function
 
 Function for cubic spline-based smoothing with optional
-cross-validation, for use by `fun_correct_drift`
+cross-validation, for use by `correct_drift`
 
 ## Usage
 

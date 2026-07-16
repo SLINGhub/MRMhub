@@ -1,4 +1,4 @@
-# Compare Feature Variability Before and After Normalization
+# Compare feature variability before and after normalization
 
 Evaluates the effectiveness of normalization by comparing feature
 variability (measured as %CV) in QC and/or study samples before and
@@ -11,7 +11,7 @@ plot types:
 
 - Ratio plot: log2 of (CV after / CV before) vs mean CV
 
-Features can be grouped and visualized by their fature class using
+Features can be grouped and visualized by their feature class using
 facets.
 
 The resulting visualization helps assess whether normalization improved
@@ -44,7 +44,7 @@ plot_normalization_qc(
 
 - data:
 
-  A `MRMhubExperiment` object
+  A `MRMhubExperiment` object.
 
 - before_norm_var:
 
@@ -68,9 +68,9 @@ plot_normalization_qc(
 - qc_types:
 
   A character vector specifying the QC types to plot. It must contain at
-  least one element. The default is `NA`, which means any of the
-  non-blank QC types ("SPL", "TQC", "BQC", "HQC", "MQC", "LQC", "NIST",
-  "LTR") will be plotted if present in the dataset.
+  least one element. The default `NA` plots any of the non-blank QC
+  types ("SPL", "TQC", "BQC", "HQC", "MQC", "LQC", "NIST", "LTR")
+  present in the dataset.
 
 - facet_by_class:
 
@@ -122,11 +122,11 @@ plot_normalization_qc(
 
 - font_base_size:
 
-  Base font size in points (default is `8`).
+  Numeric. Base font size (in points) for plot text. Default is 8.
 
 ## Value
 
-A `ggplot2` object representing the scatter plot comparing CV values
+A `ggplot` object representing the scatter plot comparing CV values
 before and after normalization.
 
 ## Details
@@ -153,6 +153,20 @@ to visualize the results.
 [`plot_qcmetrics_comparison()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qcmetrics_comparison.md),
 [`calc_qc_metrics()`](https://slinghub.github.io/MRMhub/quant/reference/calc_qc_metrics.md),
 [`filter_features_qc()`](https://slinghub.github.io/MRMhub/quant/reference/filter_features_qc.md),
+
+Other QC plots:
+[`plot_feature_correlations()`](https://slinghub.github.io/MRMhub/quant/reference/plot_feature_correlations.md),
+[`plot_pca()`](https://slinghub.github.io/MRMhub/quant/reference/plot_pca.md),
+[`plot_pca_loading()`](https://slinghub.github.io/MRMhub/quant/reference/plot_pca_loading.md),
+[`plot_qc_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_interferences.md),
+[`plot_qc_matrixeffects()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_matrixeffects.md),
+[`plot_qc_summary_byclass()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_summary_byclass.md),
+[`plot_qc_summary_overall()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_summary_overall.md),
+[`plot_qcmetrics_comparison()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qcmetrics_comparison.md),
+[`plot_rla_boxplot()`](https://slinghub.github.io/MRMhub/quant/reference/plot_rla_boxplot.md),
+[`plot_rt_vs_chain()`](https://slinghub.github.io/MRMhub/quant/reference/plot_rt_vs_chain.md),
+[`plot_runscatter()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.md),
+[`plot_runsequence()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runsequence.md)
 
 ## Examples
 

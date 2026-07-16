@@ -1,4 +1,4 @@
-# Retrieve Metadata from Imported Analysis Data
+# Retrieve metadata from imported analysis data
 
 Retrieves available metadata from the imported analysis data and
 associates it with the provided MRMhubExperiment object.

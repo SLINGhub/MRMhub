@@ -6,9 +6,11 @@ Functions to validate your R environment and explore the MRMhub workflow
 interactively.
 
 - [`check_setup()`](https://slinghub.github.io/MRMhub/quant/reference/check_setup.md)
-  : Check MRMhub Setup
-- [`run_walkthrough()`](https://slinghub.github.io/MRMhub/quant/reference/run_walkthrough.md)
-  : Launch the MRMhub Walkthrough App
+  : Check MRMhub setup
+- [`build_workflow()`](https://slinghub.github.io/MRMhub/quant/reference/build_workflow.md)
+  : Launch the MRMhub Workflow Builder
+- [`generate_workflow_qmd()`](https://slinghub.github.io/MRMhub/quant/reference/generate_workflow_qmd.md)
+  : Generate a runnable Quarto (.qmd) mrmhub workflow
 
 ## QUANT R package reference
 
@@ -16,13 +18,13 @@ Functions to create, access and query MRMhubExperiment objects, which
 are the central data object in the MRMhub workflow.
 
 - [`MRMhubExperiment()`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment.md)
-  : Constructor for the MRMhubExperiment object.
+  : Constructor for the MRMhubExperiment object
 - [`MRMhubExperiment-class`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
-  : S4 Class Representing the MRMhub Dataset
+  : S4 class representing the MRMhub dataset
 - [`` `$`( ``*`<MRMhubExperiment>`*`)`](https://slinghub.github.io/MRMhub/quant/reference/cash-MRMhubExperiment-method.md)
-  : Access Slots of a MRMhubExperiment Object via \$ Syntax
+  : Access slots of a MRMhubExperiment object via \$ syntax
 - [`set_analysis_order()`](https://slinghub.github.io/MRMhub/quant/reference/set_analysis_order.md)
-  : Set Analysis Order
+  : Set analysis order
 - [`get_batch_boundaries()`](https://slinghub.github.io/MRMhub/quant/reference/get_batch_boundaries.md)
   : Get the start and end analysis numbers of specified batches
 - [`data_sum_features()`](https://slinghub.github.io/MRMhub/quant/reference/data_sum_features.md)
@@ -64,11 +66,13 @@ i.e. to import different analytical data into data frames.
 - [`import_data_masshunter()`](https://slinghub.github.io/MRMhub/quant/reference/import_data_masshunter.md)
   : Import Agilent MassHunter Quantitative Analysis CSV files
 - [`import_data_skyline()`](https://slinghub.github.io/MRMhub/quant/reference/import_data_skyline.md)
-  : Import Skyline Peak Integration Results
+  : Import Skyline peak integration results
 - [`import_data_csv_wide()`](https://slinghub.github.io/MRMhub/quant/reference/import_data_csv_wide.md)
-  : Import Analysis Results from Plain Wide-Format CSV Files
+  : Import analysis results from plain wide-format CSV files
 - [`import_data_csv_long()`](https://slinghub.github.io/MRMhub/quant/reference/import_data_csv_long.md)
-  : Import Analysis Results from Long Format CSV Files
+  : Import analysis results from long-format CSV files
+- [`import_data_mztab()`](https://slinghub.github.io/MRMhub/quant/reference/import_data_mztab.md)
+  : Import data from an mzTab-M file
 - [`parse_mrmhub_result()`](https://slinghub.github.io/MRMhub/quant/reference/parse_mrmhub_result.md)
   : Parses MRMhub peak integration results into a tibble
 - [`parse_masshunter_csv()`](https://slinghub.github.io/MRMhub/quant/reference/parse_masshunter_csv.md)
@@ -80,7 +84,7 @@ i.e. to import different analytical data into data frames.
 - [`parse_plain_long_csv()`](https://slinghub.github.io/MRMhub/quant/reference/parse_plain_long_csv.md)
   : Parses a plain long CSV file
 - [`import_data_csv()`](https://slinghub.github.io/MRMhub/quant/reference/import_data_csv.md)
-  : (Depreciated) Import Wide CSV Files
+  : (Deprecated) Import wide CSV files
 
 ## Metadata import
 
@@ -93,23 +97,21 @@ MRMhub Excel template or CSV files.
 - [`import_metadata_features()`](https://slinghub.github.io/MRMhub/quant/reference/import_metadata_features.md)
   : Import feature metadata
 - [`import_metadata_istds()`](https://slinghub.github.io/MRMhub/quant/reference/import_metadata_istds.md)
-  : Import Internal Standards (ISTD) metadata
+  : Import internal standards (ISTD) metadata
 - [`import_metadata_responsecurves()`](https://slinghub.github.io/MRMhub/quant/reference/import_metadata_responsecurves.md)
   : Import response curves metadata
 - [`import_metadata_qcconcentrations()`](https://slinghub.github.io/MRMhub/quant/reference/import_metadata_qcconcentrations.md)
   : Import calibration curves metadata
 - [`import_metadata_msorganiser()`](https://slinghub.github.io/MRMhub/quant/reference/import_metadata_msorganiser.md)
-  : Import Metadata from a MRMhub Metadata Organizer file
+  : Import metadata from a MRMhub Metadata Organizer file
 - [`import_metadata_from_data()`](https://slinghub.github.io/MRMhub/quant/reference/import_metadata_from_data.md)
-  : Retrieve Metadata from Imported Analysis Data
+  : Retrieve metadata from imported analysis data
 - [`save_metadata_templates()`](https://slinghub.github.io/MRMhub/quant/reference/save_metadata_templates.md)
   : Saves a Excel (xlsx) file with metadata templates
 - [`save_metadata_msorganiser_template()`](https://slinghub.github.io/MRMhub/quant/reference/save_metadata_msorganiser_template.md)
   : Saves a MRMhub Metadata Organizer template
 - [`add_metadata()`](https://slinghub.github.io/MRMhub/quant/reference/add_metadata.md)
-  : Add metadata an MRMhubExperiment object
-- [`assert_metadata()`](https://slinghub.github.io/MRMhub/quant/reference/assert_metadata.md)
-  : Add metadata an MRMhubExperiment object
+  : Add metadata to an MRMhubExperiment object
 
 ## Isotope correction
 
@@ -127,13 +129,13 @@ Function to plot and analyze external calibration curves
 - [`quantify_by_calibration()`](https://slinghub.github.io/MRMhub/quant/reference/quantify_by_calibration.md)
   : Calculate concentrations based on external calibration
 - [`plot_calibrationcurves()`](https://slinghub.github.io/MRMhub/quant/reference/plot_calibrationcurves.md)
-  : Plot Calibration Curves
+  : Plot calibration curves
 - [`calc_calibration_results()`](https://slinghub.github.io/MRMhub/quant/reference/calc_calibration_results.md)
   : Calculate external calibration curve results
 - [`get_calibration_metrics()`](https://slinghub.github.io/MRMhub/quant/reference/get_calibration_metrics.md)
-  : Get Calibration Metrics
+  : Get calibration metrics
 - [`get_qc_bias_variability()`](https://slinghub.github.io/MRMhub/quant/reference/get_qc_bias_variability.md)
-  : Retrieve Calibration Regression Results
+  : Retrieve calibration regression results
 
 ## Normalization, Quantification
 
@@ -143,26 +145,26 @@ external calibration curves. Function to for absolute or relative
 calibration using a reference sample.
 
 - [`normalize_by_istd()`](https://slinghub.github.io/MRMhub/quant/reference/normalize_by_istd.md)
-  : Normalize Feature Intensities Using Internal Standards
+  : Normalize feature intensities using internal standards
 - [`quantify_by_istd()`](https://slinghub.github.io/MRMhub/quant/reference/quantify_by_istd.md)
-  : Calculate Analyte Concentrations Using Internal Standards
+  : Calculate analyte concentrations using internal standards
 - [`calibrate_by_reference()`](https://slinghub.github.io/MRMhub/quant/reference/calibrate_by_reference.md)
-  : Calibrate Features Values Using Reference Sample
+  : Calibrate feature values using a reference sample
 
 ## Drift/Batch Correction
 
 Function for drift and batch correction correction
 
 - [`correct_drift_gaussiankernel()`](https://slinghub.github.io/MRMhub/quant/reference/correct_drift_gaussiankernel.md)
-  : Drift Correction by Gaussian Kernel Smoothing
+  : Drift correction by Gaussian kernel smoothing
 - [`correct_drift_cubicspline()`](https://slinghub.github.io/MRMhub/quant/reference/correct_drift_cubicspline.md)
-  : Drift Correction by Cubic Spline Smoothing
+  : Drift correction by cubic spline smoothing
 - [`correct_drift_loess()`](https://slinghub.github.io/MRMhub/quant/reference/correct_drift_loess.md)
-  : Drift Correction by LOESS Smoothing
+  : Drift correction by LOESS smoothing
 - [`correct_drift_gam()`](https://slinghub.github.io/MRMhub/quant/reference/correct_drift_gam.md)
-  : Drift Correction by Generalized Additive Model (GAM) Smoothing
+  : Drift correction by generalized additive model (GAM) smoothing
 - [`correct_batch_centering()`](https://slinghub.github.io/MRMhub/quant/reference/correct_batch_centering.md)
-  : Batch Centering Correction
+  : Batch centering correction
 
 ## Quality Control and Filtering
 
@@ -170,40 +172,40 @@ Functions to calculate feature QC metrics and apply QC filtering, and
 vizualize the filtering results.
 
 - [`calc_qc_metrics()`](https://slinghub.github.io/MRMhub/quant/reference/calc_qc_metrics.md)
-  : Calculate Quality Control (QC) Metrics for Features
+  : Calculate quality control (QC) metrics for features
 - [`filter_features_qc()`](https://slinghub.github.io/MRMhub/quant/reference/filter_features_qc.md)
-  : Feature Filtering Based on QC Criteria
+  : Feature filtering based on QC criteria
 - [`detect_outlier_pca()`](https://slinghub.github.io/MRMhub/quant/reference/detect_outlier_pca.md)
   : Get list of analyses classified as technical outliers
 - [`plot_qc_summary_byclass()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_summary_byclass.md)
-  : Plot QC Filtering Summary by Feature Class
+  : Plot QC filtering summary by feature class
 - [`plot_qc_summary_overall()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_summary_overall.md)
-  : Plot Overall QC Filtering Summary
+  : Plot overall QC filtering summary
 - [`plot_abundanceprofile()`](https://slinghub.github.io/MRMhub/quant/reference/plot_abundanceprofile.md)
-  : Plot Abundance Profile
+  : Plot abundance profile
 
 ## Quality Control Plots
 
 Functions to plots diverse QC visualizatios.
 
 - [`plot_runsequence()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runsequence.md)
-  : RunSequence Plot
+  : RunSequence plot
 - [`plot_runscatter()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.md)
-  : RunScatter Plot
+  : RunScatter plot
 - [`plot_rla_boxplot()`](https://slinghub.github.io/MRMhub/quant/reference/plot_rla_boxplot.md)
-  : Relative Log Abundance (RLA) Plot
+  : Relative log abundance (RLA) plot
 - [`plot_pca()`](https://slinghub.github.io/MRMhub/quant/reference/plot_pca.md)
-  : PCA Plot for Quality Control
+  : PCA plot for quality control
 - [`plot_pca_loading()`](https://slinghub.github.io/MRMhub/quant/reference/plot_pca_loading.md)
   : Plot PCA loadings
 - [`plot_feature_correlations()`](https://slinghub.github.io/MRMhub/quant/reference/plot_feature_correlations.md)
-  : Plot Highly Correlated Feature Pairs
+  : Plot highly correlated feature pairs
 - [`plot_rt_vs_chain()`](https://slinghub.github.io/MRMhub/quant/reference/plot_rt_vs_chain.md)
-  : Plot Retention Time versus Chain Length and Saturation
+  : Plot retention time versus chain length and saturation
 - [`plot_qc_matrixeffects()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_matrixeffects.md)
   : Plot standardized feature intensities grouped by QC type
 - [`plot_normalization_qc()`](https://slinghub.github.io/MRMhub/quant/reference/plot_normalization_qc.md)
-  : Compare Feature Variability Before and After Normalization
+  : Compare feature variability before and after normalization
 - [`plot_qcmetrics_comparison()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qcmetrics_comparison.md)
   : Comparison of two feature QC metrics variables
 - [`plot_qc_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_interferences.md)
@@ -214,9 +216,9 @@ Functions to plots diverse QC visualizatios.
 Functions to calculate and visualize response curves
 
 - [`plot_responsecurves()`](https://slinghub.github.io/MRMhub/quant/reference/plot_responsecurves.md)
-  : Plot Response Curves
+  : Plot response curves
 - [`get_response_curve_stats()`](https://slinghub.github.io/MRMhub/quant/reference/get_response_curve_stats.md)
-  : Linear Regression Statistics of Response Curves
+  : Linear regression statistics of response curves
 
 ## Data Reporting and Sharing
 
@@ -224,13 +226,13 @@ Functions to export processed and raw datasets and the processing steps
 in different formats.
 
 - [`save_report_xlsx()`](https://slinghub.github.io/MRMhub/quant/reference/save_report_xlsx.md)
-  : Write Data Processing Report (EXCEL)
+  : Write a data-processing report (Excel)
 - [`save_dataset_csv()`](https://slinghub.github.io/MRMhub/quant/reference/save_dataset_csv.md)
-  : Export Data to CSV file
+  : Export data to a CSV file
 - [`save_dataset_mztab()`](https://slinghub.github.io/MRMhub/quant/reference/save_dataset_mztab.md)
   : Export an experiment to mzTab-M (HUPO-PSI)
 - [`save_feature_qc_metrics()`](https://slinghub.github.io/MRMhub/quant/reference/save_feature_qc_metrics.md)
-  : Save Feature QC Metrics to CSV
+  : Save feature QC metrics to CSV
 
 ## Lipidomics
 
@@ -244,9 +246,9 @@ Functions specific to lipidomics data processing and analysis.
 Example datasets for testing and demonstration.
 
 - [`lipidomics_dataset`](https://slinghub.github.io/MRMhub/quant/reference/lipidomics_dataset.md)
-  : Plasma Lipidomics Dataset with Metadata
+  : Plasma lipidomics dataset with metadata
 - [`quant_lcms_dataset`](https://slinghub.github.io/MRMhub/quant/reference/quant_lcms_dataset.md)
-  : LC-MS Dataset with External Calibration Curve and Metadata
+  : LC-MS dataset with external calibration curve and metadata
 - [`data_load_example()`](https://slinghub.github.io/MRMhub/quant/reference/data_load_example.md)
   : Load an example MRMhubExperiment dataset
 
@@ -260,17 +262,17 @@ spectrometry is also available.
 - [`cv_log()`](https://slinghub.github.io/MRMhub/quant/reference/cv_log.md)
   : Percent coefficient of variation (%CV) based on log-transformation
 - [`calc_average_molweight()`](https://slinghub.github.io/MRMhub/quant/reference/calc_average_molweight.md)
-  : Calculate Average Molecular Weight from Chemical Formulas
-- [`fun_correct_drift()`](https://slinghub.github.io/MRMhub/quant/reference/fun_correct_drift.md)
-  : Drift Correction by Custom Function
+  : Calculate average molecular weight from chemical formulas
+- [`correct_drift()`](https://slinghub.github.io/MRMhub/quant/reference/correct_drift.md)
+  : Drift correction by custom function
 - [`fun_gauss.kernel.smooth()`](https://slinghub.github.io/MRMhub/quant/reference/fun_gauss.kernel.smooth.md)
-  : Gaussian Kernel smoothing helper function
+  : Gaussian kernel smoothing helper function
 - [`fun_loess()`](https://slinghub.github.io/MRMhub/quant/reference/fun_loess.md)
   : Loess smoothing helper function
 - [`fun_cspline()`](https://slinghub.github.io/MRMhub/quant/reference/fun_cspline.md)
   : Cubic spline smoothing helper function
 - [`fun_gam_smooth()`](https://slinghub.github.io/MRMhub/quant/reference/fun_gam_smooth.md)
-  : Generalized Additive Model (GAM) smoothing helper function
+  : Generalized additive model (GAM) smoothing helper function
 - [`get_mad_tails()`](https://slinghub.github.io/MRMhub/quant/reference/get_mad_tails.md)
   : Get MAD-based tails
 - [`get_iqr_tails()`](https://slinghub.github.io/MRMhub/quant/reference/get_iqr_tails.md)
@@ -278,4 +280,5 @@ spectrometry is also available.
 - [`get_outlier_bounds()`](https://slinghub.github.io/MRMhub/quant/reference/get_outlier_bounds.md)
   : Get outlier bounds via different methods
 - [`order_chained_columns_tbl()`](https://slinghub.github.io/MRMhub/quant/reference/order_chained_columns_tbl.md)
-  : Reorder Data Frame based on a chain of linked values in two columns.
+  : Reorder a data frame based on a chain of linked values in two
+  columns

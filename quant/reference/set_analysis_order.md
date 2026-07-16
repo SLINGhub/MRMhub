@@ -1,4 +1,4 @@
-# Set Analysis Order
+# Set analysis order
 
 Determines the sequence of analyses using either instrument timestamps,
 the order in the imported raw data file, or the order defined in the

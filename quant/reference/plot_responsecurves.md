@@ -1,4 +1,4 @@
-# Plot Response Curves
+# Plot response curves
 
 This function plots response curves for each feature. Multiple response
 curves, each with a linear regression line, can be plotted on the same
@@ -24,7 +24,7 @@ plot_responsecurves(
   line_width = 0.7,
   label_wrap = FALSE,
   label_wrap_width = 25,
-  font_base_size = 7,
+  font_base_size = 8,
   rows_page = 4,
   cols_page = 5,
   curve_layout = "overlay",
@@ -40,7 +40,7 @@ plot_responsecurves(
 
 - data:
 
-  A `MRMhubExperiment` object containing the dataset and metadata.
+  A `MRMhubExperiment` object.
 
 - variable:
 
@@ -65,17 +65,17 @@ plot_responsecurves(
 
   A regex pattern or a vector of feature names used to filter features
   by `feature_id`. If `NA` or an empty string (`""`) is provided, the
-  filter is ignored. When a vector of length \> 1 is supplied, is
-  supplied, only features with exactly these names are selected (applied
-  individually as OR conditions).
+  filter is ignored. When a vector of length \> 1 is supplied, only
+  features with exactly these names are selected (applied individually
+  as OR conditions).
 
 - exclude_feature_filter:
 
-  A regex pattern or a vector of feature names to exclude features by
-  feature_id. If `NA` or an empty string (`""`) is provided, the filter
-  is ignored. When a vector of length \> 1 is supplied, is supplied,
-  only features with exactly these names are excluded (applied
-  individually as OR conditions).
+  A regex pattern or a vector of feature names used to exclude features
+  by `feature_id`. If `NA` or an empty string (`""`) is provided, the
+  filter is ignored. When a vector of length \> 1 is supplied, only
+  features with exactly these names are excluded (applied individually
+  as OR conditions).
 
 - max_regression_value:
 
@@ -94,7 +94,7 @@ plot_responsecurves(
 
 - return_plots:
 
-  Logical. If `TRUE`, returns the plots as a list of `ggplot2` objects.
+  Logical. If `TRUE`, returns the plots as a list of `ggplot` objects.
 
 - color_curves:
 
@@ -123,7 +123,7 @@ plot_responsecurves(
 
 - font_base_size:
 
-  Base font size for text. Default is 7.
+  Numeric. Base font size (in points) for plot text. Default is 8.
 
 - rows_page:
 
@@ -185,7 +185,7 @@ plot_responsecurves(
 
 ## Value
 
-If `return_plots` is `TRUE`, a list of `ggplot2` objects is returned.
+If `return_plots` is `TRUE`, a list of `ggplot` objects is returned.
 Otherwise, the function saves the plot output or does not return
 anything.
 
@@ -203,3 +203,8 @@ exceeds the product of `rows_page` and `cols_page` settings. The
 function supports both direct plotting within R and saving plots as PDF
 files. Additionally, plots can be returned as a list of ggplot2 objects
 for further manipulation or integration into other analyses.
+
+## See also
+
+Other calibration plots:
+[`plot_calibrationcurves()`](https://slinghub.github.io/MRMhub/quant/reference/plot_calibrationcurves.md)

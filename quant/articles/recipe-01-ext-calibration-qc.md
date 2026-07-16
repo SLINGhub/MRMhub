@@ -1,5 +1,7 @@
 # Quantitative assay with Ext. calibration and QC
 
+Recipe
+
 This vignette demonstrates a simple workflow for a quantitative targeted
 assay with external calibration and quality control samples, as used
 e.g., in clinical chemistry or environmental analysis.
@@ -30,12 +32,24 @@ mexp <- import_data_masshunter(
   data = mexp,
   path = "QuantLCMS_Example_MassHunter.csv",
   import_metadata = TRUE)
+#> Warning: ! Unrecognized qc_type value(s): "Cal".
+#> ℹ These are not standard QC types and may be dropped from QC metrics and plots
+#>   that expect them.
+#> ℹ Standard values: "SBLK", "TBLK", "UBLK", "HQC", "MQC", "LQC", "QC", "PBLK",
+#>   "CAL", "EQA", "PQC", "TQC", "BQC", "RQC", "EQC", "NIST", "LTR", "SPL", "SST",
+#>   and "MBLK" ("Sample" is an alias for "SPL").
 
 # Import metadata from an MSOrganiser template file
 mexp <- import_metadata_msorganiser(
   mexp,
   path = "datasets/QuantLCMS_Example_MetadataTemplate.xlsx",
   excl_unmatched_analyses = TRUE, ignore_warnings = TRUE)
+#> Warning: ! Unrecognized qc_type value(s): "IBLK".
+#> ℹ These are not standard QC types and may be dropped from QC metrics and plots
+#>   that expect them.
+#> ℹ Standard values: "SBLK", "TBLK", "UBLK", "HQC", "MQC", "LQC", "QC", "PBLK",
+#>   "CAL", "EQA", "PQC", "TQC", "BQC", "RQC", "EQC", "NIST", "LTR", "SPL", "SST",
+#>   and "MBLK" ("Sample" is an alias for "SPL").
 #> --------------------------------------------------------------------------------
 #> # A tibble: 1 × 5
 #>   Type  Table    Column    Issue                        Count
@@ -69,7 +83,7 @@ mexp <- calc_calibration_results(
     data = mexp, zoom_n_points = 4,
     fit_overwrite = TRUE,  # Set to FALSE if defined in metadata
     fit_model = "quadratic",
-    fit_weighting = "1/x",log_axes = TRUE,
+    fit_weighting = "1/x",log_scale = TRUE,
     rows_page = 2,
     cols_page = 4, show_progress = FALSE
   )
@@ -99,6 +113,13 @@ tbl_cal
 #> #   coef_c <dbl>, lod <dbl>, loq <dbl>, sigma <dbl>
 ```
 
+The summary includes the limit of detection (`lod`) and limit of
+quantification (`loq`) for each feature, calculated following the ICH
+Q2(R1/R2) approach (LoD = 3.3 σ / S, LoQ = 10 σ / S), where σ is the
+residual standard error of the regression and S is the slope of the
+calibration curve at zero concentration (the linear coefficient; the
+quadratic term does not contribute to this slope).
+
 Once the curves have been inspected and the quality of the analysis is
 satisfactory, the concentrations for all features in samples can be
 calculated using the external calibration curves.
@@ -127,7 +148,7 @@ tbl <- get_qc_bias_variability(mexp, qc_types = c("HQC", "LQC"))
                    filter_data = FALSE)
  
  print(tbl)
-#> # A tibble: 8 × 9
+#> # A tibble: 8 × 10
 #>   feature_id     sample_id qc_type     n conc_target conc_mean conc_sd cv_intra
 #>   <chr>          <chr>     <chr>   <int>       <dbl>     <dbl>   <dbl>    <dbl>
 #> 1 Aldosterone    HQC       HQC         5       9.74      8.65    1.14     13.1 
@@ -138,10 +159,10 @@ tbl <- get_qc_bias_variability(mexp, qc_types = c("HQC", "LQC"))
 #> 6 Cortisol       LQC       LQC         5      25.2      20.0     2.40     12.0 
 #> 7 Cortisone      HQC       HQC         5     119.      114.      6.73      5.89
 #> 8 Cortisone      LQC       LQC         5       6.52      6.23    0.504     8.08
-#> # ℹ 1 more variable: bias <dbl>
+#> # ℹ 2 more variables: bias <dbl>, frac_conc_out_of_range <dbl>
 ```
 
-## Next Steps
+## Next steps
 
 - [Calibration by a Reference
   Sample](https://slinghub.github.io/MRMhub/quant/articles/tutorial-07-calibration-reference.md)

@@ -1,4 +1,4 @@
-# Write Data Processing Report (EXCEL)
+# Write a data-processing report (Excel)
 
 Generates a data processing report from a `MRMhubExperiment` object and
 writes it to an Excel file. The report includes information on the data
@@ -61,13 +61,13 @@ specified Excel file.
 
 - Feature_QC_metrics: Quality control metrics of all features.
 
-- QCfilt_x_StudySamples: Feature (QC)-filtered data (variable defiend
+- QCfilt_x_StudySamples: Feature (QC)-filtered data (variable defined
   via `filtered_variable`) in study samples ('SPL'). Filter have to be
   set via
   [`filter_features_qc()`](https://slinghub.github.io/MRMhub/quant/reference/filter_features_qc.md).
   The *x* corresponds to the `filtered_variable` argument.
 
-- QCfilt_x_AllSamples: Feature (QC)-filtered data (variable defiend via
+- QCfilt_x_AllSamples: Feature (QC)-filtered data (variable defined via
   `filtered_variable`) in all samples. Filter have to be set via
   [`filter_features_qc()`](https://slinghub.github.io/MRMhub/quant/reference/filter_features_qc.md).
   The *x* corresponds to the `filtered_variable` argument.
@@ -92,7 +92,7 @@ specified Excel file.
 - BatchInfo: Information on batches and positions of first and last
   analysis/sample in each batch
 
-\#' If certain data sets are not available, the function includes empty
+If certain data sets are not available, the function includes empty
 tables for the corresponding dataset.
 
 Concentration corresponds to the final concentration values after

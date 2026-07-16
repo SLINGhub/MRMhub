@@ -1,4 +1,4 @@
-# Plot Calibration Curves
+# Plot calibration curves
 
 This function plots calibration curves of each feature where defined and
 displays QC samples with defined concentrations within the plot. Users
@@ -19,7 +19,7 @@ plot_calibrationcurves(
   ci_show = NA,
   ci_clip = TRUE,
   zoom_n_points = NA,
-  log_axes = FALSE,
+  log_scale = FALSE,
   filter_data = FALSE,
   include_qualifier = TRUE,
   include_istd = FALSE,
@@ -29,13 +29,13 @@ plot_calibrationcurves(
   path = NA,
   return_plots = FALSE,
   point_size = 1.5,
-  line_width = 0.7,
   point_color = NA,
   point_fill = NA,
   point_shape = NA,
+  line_width = 0.7,
   line_color = "#4575b4",
   ribbon_fill = "#e6f6ff",
-  font_base_size = 7,
+  font_base_size = 8,
   rows_page = 4,
   cols_page = 5,
   specific_page = NA,
@@ -48,7 +48,7 @@ plot_calibrationcurves(
 
 - data:
 
-  A `MRMhubExperiment` object containing the dataset.
+  A `MRMhubExperiment` object.
 
 - variable:
 
@@ -102,7 +102,7 @@ plot_calibrationcurves(
   Number of x lowest concentration points to display, used for zooming.
   Set to `NULL` or `NA` (default) to show all points.
 
-- log_axes:
+- log_scale:
 
   Logical. Determines whether the x and y axes are displayed in a
   logarithmic scale (log-log scale). Set to `TRUE` to enable logarithmic
@@ -145,16 +145,12 @@ plot_calibrationcurves(
 
 - return_plots:
 
-  Logical, if `TRUE`, returns plots as a list of ggplot2 objects.
+  Logical, if `TRUE`, returns plots as a list of `ggplot` objects.
   Default is `FALSE`.
 
 - point_size:
 
   Size of points in the plot. Default is 1.5.
-
-- line_width:
-
-  Width of regression lines. Default is 0.7.
 
 - point_color:
 
@@ -180,6 +176,10 @@ plot_calibrationcurves(
   Default is `NA` which corresponds to the default shapes for QC types
   defined in the package.
 
+- line_width:
+
+  Width of regression lines. Default is 0.7.
+
 - line_color:
 
   Color of the regression line. Default is `"#4575b4"`.
@@ -190,7 +190,7 @@ plot_calibrationcurves(
 
 - font_base_size:
 
-  Base font size for text in plots. Default is 7.
+  Numeric. Base font size (in points) for plot text. Default is 8.
 
 - rows_page:
 
@@ -207,11 +207,16 @@ plot_calibrationcurves(
 - page_orientation:
 
   Orientation of PDF, either `"LANDSCAPE"` or `"PORTRAIT"`. Default is
-  \`"LANDSCAPE
+  `"LANDSCAPE"`.
 
 - show_progress:
 
   Logical. If `TRUE`, displays a progress bar during plot creation.
+
+## Value
+
+A list of `ggplot` objects if `return_plots = TRUE`, otherwise `NULL`
+(the plots are drawn to the active device or written to a PDF).
 
 ## Details
 
@@ -227,3 +232,8 @@ exceeds the product of `rows_page` and `cols_page` settings. The
 function supports both direct plotting within R and saving plots as PDF
 files. Additionally, plots can be returned as a list of ggplot2 objects
 for further manipulation or integration into other analyses.
+
+## See also
+
+Other calibration plots:
+[`plot_responsecurves()`](https://slinghub.github.io/MRMhub/quant/reference/plot_responsecurves.md)

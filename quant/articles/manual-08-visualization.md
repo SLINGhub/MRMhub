@@ -142,7 +142,7 @@ plot_normalization_qc(mexp,
 
 Two-dimensional PCA score plot with confidence ellipses grouped by
 `qc_type`, `batch_id`, or `"none"`. See [QC Exploration with
-PCA](https://slinghub.github.io/MRMhub/quant/articles/tutorial-09-pca-exploration.md)
+PCA](https://slinghub.github.io/MRMhub/quant/articles/tutorial-05-run-scatter.md)
 for an interpretation walk-through.
 
 ``` r
@@ -347,17 +347,15 @@ p_rla  <- plot_rla_boxplot(mexp, variable = "norm_intensity",
 p_seq / (p_pca | p_rla)
 ```
 
-### Next Steps
+### Next steps
 
-- [Run-Scatter Plot
-  (tutorial)](https://slinghub.github.io/MRMhub/quant/articles/tutorial-05-run-scatter.md)
-  — detailed
-  [`plot_runscatter()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.md)
-  usage
-- [QC Exploration with
-  PCA](https://slinghub.github.io/MRMhub/quant/articles/tutorial-09-pca-exploration.md)
-  — PCA interpretation
-- [Drift Correction
+- [Exploring QC: RunScatter and
+  PCA](https://slinghub.github.io/MRMhub/quant/articles/tutorial-05-run-scatter.md)
+  —
+  [`plot_runscatter()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.md),
+  [`plot_pca()`](https://slinghub.github.io/MRMhub/quant/reference/plot_pca.md)
+  and outlier screening
+- [Drift and Batch Correction
   (tutorial)](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.md)
   —
   [`plot_runscatter()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.md)

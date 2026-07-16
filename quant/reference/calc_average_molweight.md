@@ -1,4 +1,4 @@
-# Calculate Average Molecular Weight from Chemical Formulas
+# Calculate average molecular weight from chemical formulas
 
 Calculates the average molecular weight of one or more chemical
 formulas, based on the natural isotopic distribution of elements. The

@@ -1,4 +1,4 @@
-# Batch Centering Correction
+# Batch centering correction
 
 This function performs batch centering correction on each feature.
 Optionally, the scale of the batches can be equalized across batches.

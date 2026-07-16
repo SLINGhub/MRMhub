@@ -1,4 +1,4 @@
-# PCA Plot for Quality Control
+# PCA plot for quality control
 
 Generates a Principal Component Analysis (PCA) plot for visualizing
 samples including quality control (QC) samples. This function provides
@@ -48,7 +48,7 @@ plot_pca(
 
 - data:
 
-  A MRMhubExperiment object
+  A `MRMhubExperiment` object.
 
 - variable:
 
@@ -59,9 +59,9 @@ plot_pca(
 - qc_types:
 
   A character vector specifying the QC types to plot. It must contain at
-  least one element. The default is `NA`, which means any of the
-  non-blank QC types ("SPL", "TQC", "BQC", "HQC", "MQC", "LQC", "NIST",
-  "LTR") will be plotted if present in the dataset.
+  least one element. The default `NA` plots any of the non-blank QC
+  types ("SPL", "TQC", "BQC", "HQC", "MQC", "LQC", "NIST", "LTR")
+  present in the dataset.
 
 - ellipse_variable:
 
@@ -101,26 +101,26 @@ plot_pca(
 
 - include_feature_filter:
 
-  A character or regex pattern used to filter features by `feature_id`.
-  If `NA` or an empty string (`""`) is provided, the filter is ignored.
-  When a vector of length \> 1 is supplied, only features with exactly
-  these names are selected (applied individually as OR conditions).
+  A regex pattern or a vector of feature names used to filter features
+  by `feature_id`. If `NA` or an empty string (`""`) is provided, the
+  filter is ignored. When a vector of length \> 1 is supplied, only
+  features with exactly these names are selected (applied individually
+  as OR conditions).
 
 - exclude_feature_filter:
 
-  A character or regex pattern used to exclude features by `feature_id`.
-  If `NA` or an empty string (`""`) is provided, the filter is ignored.
-  When a vector of length \> 1 is supplied, only features with exactly
-  these names are excluded (applied individually as OR conditions).
+  A regex pattern or a vector of feature names used to exclude features
+  by `feature_id`. If `NA` or an empty string (`""`) is provided, the
+  filter is ignored. When a vector of length \> 1 is supplied, only
+  features with exactly these names are excluded (applied individually
+  as OR conditions).
 
 - min_median_value:
 
-  Minimum median feature value (as determined by the `variable`) across
-  all samples from selected QC types that must be met for a feature to
-  be included in the PCA analysis. `NA` (default) means no filtering
-  will be applied. This parameter provides an fast way to exclude noisy
-  features from the analysis. However, it is recommended to use
-  `filter_data` with
+  Minimum median feature value across the selected QC-type samples
+  required for a feature to be included. `NA` (default) applies no
+  filtering. This is a fast way to exclude noisy features; for
+  principled QC-based filtering use
   [`filter_features_qc()`](https://slinghub.github.io/MRMhub/quant/reference/filter_features_qc.md).
 
 - show_labels:
@@ -164,8 +164,7 @@ plot_pca(
 
 - font_base_size:
 
-  A numeric value indicating the base font size for plot text elements.
-  Default is 8.
+  Numeric. Base font size (in points) for plot text. Default is 8.
 
 - ellipse_confidence_level:
 
@@ -198,4 +197,20 @@ plot_pca(
 
 ## Value
 
-A ggplot object with the PCA plot
+A `ggplot` object with the PCA plot
+
+## See also
+
+Other QC plots:
+[`plot_feature_correlations()`](https://slinghub.github.io/MRMhub/quant/reference/plot_feature_correlations.md),
+[`plot_normalization_qc()`](https://slinghub.github.io/MRMhub/quant/reference/plot_normalization_qc.md),
+[`plot_pca_loading()`](https://slinghub.github.io/MRMhub/quant/reference/plot_pca_loading.md),
+[`plot_qc_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_interferences.md),
+[`plot_qc_matrixeffects()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_matrixeffects.md),
+[`plot_qc_summary_byclass()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_summary_byclass.md),
+[`plot_qc_summary_overall()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_summary_overall.md),
+[`plot_qcmetrics_comparison()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qcmetrics_comparison.md),
+[`plot_rla_boxplot()`](https://slinghub.github.io/MRMhub/quant/reference/plot_rla_boxplot.md),
+[`plot_rt_vs_chain()`](https://slinghub.github.io/MRMhub/quant/reference/plot_rt_vs_chain.md),
+[`plot_runscatter()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.md),
+[`plot_runsequence()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runsequence.md)
