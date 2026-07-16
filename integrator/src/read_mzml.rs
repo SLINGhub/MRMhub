@@ -34,7 +34,7 @@ pub fn read(param_t: &crate::Param) -> Result<(), Box<dyn Error>> {
     let mut time_stamp = Vec::with_capacity(mzml_fs.len());
     {
         let mut wtr = csv::WriterBuilder::new().from_path("ambiguous_assignment.csv")?;
-        wtr.write_record(["Transition Name", "chromatogram index"])?;
+        wtr.write_record(["Transition_Name", "chromatogram_index"])?;
         let (_, qq) = parse::mzml(mzml_fs[0].0);
         let &crate::Param { mz_tol, .. } = param_t;
         for trans in &t_list {
@@ -86,14 +86,39 @@ struct QQ {
     index: Option<u16>,
 }
 fn read_assay(assay_f: &Path) -> Result<Vec<QQ>, Box<dyn Error>> {
-    let rdr = csv::ReaderBuilder::new()
+    let mut rdr = csv::ReaderBuilder::new()
         .comment(Some(b'#'))
         .has_headers(true)
         .trim(csv::Trim::All)
         .from_path(assay_f)?;
+    let header = rdr.headers()?;
+    let get_col = |name: &str| -> Result<usize, Box<dyn Error>> {
+        header
+            .iter()
+            .position(|x| {
+                x.split_once(' ').map_or_else(
+                    || x.eq_ignore_ascii_case(name),
+                    |x| x.0.eq_ignore_ascii_case(name),
+                )
+            })
+            .ok_or_else(|| format!("{name} column not found!").into())
+    };
+    let feat_id_c = get_col("Feature_ID")?;
+    let t_name_c = get_col("Transition_Name")?;
+    let istd_c = get_col("ISTD_Feature_ID")?;
+    let q1_c = get_col("Precursor_Ion")?;
+    let q3_c = get_col("Product_Ion")?;
+    let rt_c = get_col("RT")?;
+    let unif_c = get_col("uniform_width")?;
+    let srt_c = get_col("start_RT")?;
+    let ert_c = get_col("end_RT")?;
+    let pw_c = get_col("peak_width")?;
+    let bl_c = get_col("baseline")?;
+    let ci_c = get_col("chromatogram_index")?;
+
     let mut records: Vec<csv::StringRecord> = rdr.into_records().collect::<Result<_, _>>()?;
-    records.sort_unstable_by(|x, y| x[1].cmp(&y[1]));
-    let mut t_name: Vec<&str> = records.iter().map(|x| &x[1]).collect();
+    records.sort_unstable_by(|x, y| x[t_name_c].cmp(&y[t_name_c]));
+    let mut t_name: Vec<&str> = records.iter().map(|x| &x[t_name_c]).collect();
     t_name.dedup();
     let mut pos0 = 0;
     let mut pos1 = 0;
@@ -102,25 +127,28 @@ fn read_assay(assay_f: &Path) -> Result<Vec<QQ>, Box<dyn Error>> {
         .map(|name| {
             pos0 = pos1;
             pos1 = (pos0 + 1..records.len())
-                .find(|x| &records[*x][1] != name)
+                .find(|x| &records[*x][t_name_c] != name)
                 .unwrap_or(records.len());
             let rec_p = &records[pos0];
             for x in &records[pos0 + 1..pos1] {
-                if x[3] != rec_p[3] || x[4] != rec_p[4] {
-                    return Err([&rec_p[0], &rec_p[1]].join(", ").into());
+                if x[q1_c] != rec_p[q1_c] || x[q3_c] != rec_p[q3_c] {
+                    return Err([&rec_p[feat_id_c], &rec_p[t_name_c]].join(", ").into());
                 }
             }
             let mut rt_iso: Vec<(f32, _, f32, f32)> = records[pos0..pos1]
                 .iter()
                 .map(|x| {
-                    x[5].parse()
-                        .map_err(|_| format!("{}, {}, RT = {}", &x[0], &x[1], &x[5]))
+                    x[rt_c]
+                        .parse()
+                        .map_err(|_| {
+                            format!("{}, {}, RT = {}", &x[feat_id_c], &x[t_name_c], &x[rt_c])
+                        })
                         .map(|rt| {
                             (
                                 rt,
-                                x[0].to_string(),
-                                x[7].parse().unwrap_or(-90.),
-                                x[8].parse().unwrap_or(990.),
+                                x[feat_id_c].to_string(),
+                                x[srt_c].parse().unwrap_or(-90.),
+                                x[ert_c].parse().unwrap_or(990.),
                             )
                         })
                 })
@@ -129,22 +157,31 @@ fn read_assay(assay_f: &Path) -> Result<Vec<QQ>, Box<dyn Error>> {
                 rt_iso = vec![x.clone()];
             }
             rt_iso.sort_unstable_by(|x, y| x.0.partial_cmp(&y.0).unwrap());
-            let Ok(q1) = rec_p[3].parse::<f32>() else {
+            let Ok(q1) = rec_p[q1_c].parse::<f32>() else {
                 return Err(["precursor m/z for ", name].concat().into());
             };
-            let Ok(q3) = rec_p[4].parse::<f32>() else {
+            let Ok(q3) = rec_p[q3_c].parse::<f32>() else {
                 return Err(["product m/z for ", name].concat().into());
             };
             Ok(QQ {
-                name: rec_p[1].to_string(),
-                istd: rec_p[if rec_p[2].is_empty() { 1 } else { 2 }].to_string(),
+                name: rec_p[t_name_c].to_string(),
+                istd: rec_p[if rec_p[istd_c].is_empty() {
+                    t_name_c
+                } else {
+                    istd_c
+                }]
+                .to_string(),
                 q1,
                 q3,
                 rt: rt_iso.iter().map(|x| x.0).sum::<f32>() / (rt_iso.len() as f32),
                 rt_iso,
-                u_rt: rec_p[6].eq_ignore_ascii_case("y"),
+                u_rt: rec_p[unif_c].eq_ignore_ascii_case("y"),
                 peak_w: {
-                    let mut iter = rec_p[9].split(',');
+                    let mut iter = rec_p[pw_c]
+                        .trim()
+                        .trim_start_matches('[')
+                        .trim_end_matches(']')
+                        .split(',');
                     let p0 = |x: &str| x.trim().parse().ok();
                     (|| {
                         Some((
@@ -155,8 +192,8 @@ fn read_assay(assay_f: &Path) -> Result<Vec<QQ>, Box<dyn Error>> {
                         ))
                     })()
                 },
-                baseline: rec_p[10].to_string(),
-                index: rec_p[11].parse().ok(),
+                baseline: rec_p[bl_c].to_string(),
+                index: rec_p[ci_c].parse().ok(),
             })
         })
         .collect::<Result<_, Box<dyn Error>>>()
