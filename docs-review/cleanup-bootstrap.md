@@ -2,27 +2,45 @@
 
 Paste into a new chat (or say: "Read docs-review/cleanup-bootstrap.md and start the cleanup work").
 
-## STATUS — COMPLETE (2026-07-15)
+## STATUS — CLOSED (2026-07-16)
 
-All three items done; the audit's "Monkey-fixes" + stale-code bucket is closed.
+The full audit cleanup (initial bucket + §191 Monkey-fixes + §209 stale/dead scaffolding) is done.
+Highest-value outcomes: **one real latent bug fixed** (`8d7901c`) and **brittle PDF-size tests made
+robust** (`36cb6b8`); the rest is low-risk hygiene, targeted docs, and dead-code removal. A mid-review
+course correction against over-engineering is recorded in `CLAUDE.md` (Engineering approach) and the
+`feedback_avoid_overengineering` memory.
 
-1. **Calibration-join in `calc_qc_metrics`** — investigated, **not a live bug** (fragile-but-correct;
-   verified empirically: no mis-map, no dropped/collided columns, one row/feature, symmetric
-   missing-metrics branch). Replaced the `#TODOTODO` with an explanatory comment. Commit `20cb686`.
-2. **Drift/batch debug output** — the only *active* debug line (`print(e$message)`) silenced, matching its
-   siblings. Found + fixed a real adjacent bug: `fun_gauss.kernel.smooth()`'s error branch returned
-   `y_adj` instead of `y_predicted`, dropping the `y_adj` column on all-error runs. Regression test added.
-   Commit `8d7901c`.
-3. **Old lipidomics parsing** — premise was wrong: nothing is unused (all reachable from the active
-   `parse_lipid_feature_names()`). No functions removed; swept 22 lines of commented-out dead code + the
-   obsolete rgoslin TODO. Commit `7bc46b5`.
+### Initial bucket
+1. **Calibration-join in `calc_qc_metrics`** — **not a live bug** (verified empirically). `#TODOTODO`
+   replaced with a comment (`20cb686`), later trimmed to ~6 lines (`3eca29b`).
+2. **Drift/batch debug output** — silenced the active `print(e$message)` AND fixed a real adjacent bug:
+   `fun_gauss.kernel.smooth()`'s error branch returned `y_adj` not `y_predicted`, dropping the `y_adj`
+   column on all-error runs. + regression test. `8d7901c`.
+3. **Old lipidomics parsing** — nothing unused; swept 22 lines of dead comments + rgoslin TODO. `7bc46b5`.
+4. **Brittle PDF `file_size` tests** — exact `== "118K"` → robust `size_kb ± tolerance`. `36cb6b8`.
 
-Follow-up (same session): replaced brittle exact PDF-`file_size` string assertions
-(`== "118K"` etc.) with the codebase's robust `size_kb ± tolerance` idiom across
-`test-plot-runscatter.R`, `test-plot-qc-correlations.R`, `test-plots-calibcurves.R` — a maintainer plot
-tweak had nudged the runscatter PDF 118.8→"119K", tripping the exact match.
+### §191 Monkey-fixes — all reviewed
+- `qc-filtering.R` calibration-join, `data-import.R` MassHunter `suppressWarnings`, `qc-filtering.R`
+  lipidomics stopgap → **not bugs**, documented (`a93ceb6`, `a99b1c0`).
+- `build-workflow.R:309` gate `tryCatch` → keep fail-open + `cli_warn` so errors surface, + test (`8347d9b`).
+- `data-import.R:1306` Skyline block → extracted to `apply_skyline_transition_ids()` helper (`b8c07a4`).
+- `correct-drift-batch.R:161` `suppressWarnings?` TODO → resolved (upstream NA-replacement), removed (`57102d2`).
+- `plots-qc-filtering.R:449` magic `hjust` → documented (`c029118`).
+- Already resolved before this pass: `metadata-import.R:573` data-tampering leftover, batch-centering
+  "confirm if ok".
 
-Left as-is per scope: isotope full-copy perf loop; `save_summarizedexperiment()` skeleton.
+### §209 stale/dead code
+- Dead `status_processing` stores, commented `cli_alert_info`, unused `batch.order` removed (`9647de1`).
+- Dead `txtProgressBar` scaffolding + unused `total_groups`/`update_frequency` removed (`db0b624`).
+- `save_summarizedexperiment()` skeleton **kept** with an explicit TODO for a later pass (`d2e6811`).
+
+### Deliberately left
+- Intentionally kept: `#correct_location` formal arg; isotope full-copy perf loop.
+- Consciously skipped as low-value: the §209 *misc* commented-line bucket in `data-export`/`data-import`.
+
+All changes verified (full suite green, 1819 passed / 0 failed at close). Maintainer WIP
+(`calc-*`, `metadata-import.R`, generated `man/`/`NAMESPACE`, `.Rbuildignore`) left untouched throughout;
+run `document()` + `check()` before merging `development`.
 
 ---
 
