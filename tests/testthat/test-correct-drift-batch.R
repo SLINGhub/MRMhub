@@ -2159,6 +2159,68 @@ test_that("correct_batch correct var name in outputs", {
     fixed = TRUE)
 })
 
+test_that("batch correction keeps original study values when a batch lacks a reference-QC anchor", {
+  feat <- "CE 18:1"
+  ds <- mexp@dataset
+  bch <- unique(ds$batch_id[ds$feature_id == feat & ds$qc_type == "BQC"])[1]
+
+  spl_mask <- ds$feature_id == feat & ds$batch_id == bch & ds$qc_type == "SPL"
+  orig_spl <- ds$feature_conc[spl_mask]
+  skip_if(length(orig_spl) == 0 || all(is.na(orig_spl)))
+
+  # Remove the reference-QC (BQC) anchor for this feature in this batch: the
+  # batch median becomes NA. Valid study samples must be kept, not NA-wiped.
+  mexp_temp <- mexp
+  bqc_mask <- mexp_temp@dataset$feature_id == feat &
+    mexp_temp@dataset$batch_id == bch &
+    mexp_temp@dataset$qc_type == "BQC"
+  mexp_temp@dataset$feature_conc[bqc_mask] <- NA_real_
+
+  expect_warning(
+    mexp_res <- suppressMessages(correct_batch_centering(
+      mexp_temp,
+      correct_scale = FALSE,
+      ref_qc_types = "BQC",
+      variable = "conc"
+    )),
+    "left uncorrected"
+  )
+
+  kept <- mexp_res@dataset$feature_conc[
+    mexp_res@dataset$feature_id == feat &
+      mexp_res@dataset$batch_id == bch &
+      mexp_res@dataset$qc_type == "SPL"
+  ]
+  expect_equal(kept, orig_spl)
+})
+
+test_that("feature_list subset batch correction preserves non-selected features' _before snapshot", {
+  selected <- c("CE 18:1", "PC 40:8")
+  feats <- unique(mexp@dataset$feature_id[!mexp@dataset$is_istd])
+  not_selected <- setdiff(feats, selected)[1]
+
+  orig_conc <- mexp@dataset$feature_conc[mexp@dataset$feature_id == not_selected]
+
+  mexp_res <- suppressMessages(correct_batch_centering(
+    mexp,
+    correct_scale = FALSE,
+    ref_qc_types = "SPL",
+    variable = "conc",
+    feature_list = selected
+  ))
+
+  before_ns <- mexp_res@dataset$feature_conc_before[
+    mexp_res@dataset$feature_id == not_selected
+  ]
+  new_conc <- mexp_res@dataset$feature_conc[
+    mexp_res@dataset$feature_id == not_selected
+  ]
+  # Non-selected feature: _before snapshot must not be NA-wiped, and its
+  # concentration must be unchanged (it was never corrected).
+  expect_false(all(is.na(before_ns)))
+  expect_equal(new_conc, orig_conc)
+})
+
 test_that("correct_drift_gaussiankernel rejects log_transform_internal = FALSE", {
   expect_error(
     correct_drift_gaussiankernel(

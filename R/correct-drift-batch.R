@@ -1781,8 +1781,20 @@ correct_batch_centering <- function(
       }),
     ) |>
     unnest(cols = c("res")) |>
-    select(-"data") |>
-    mutate(was_corrected = TRUE)
+    select(-"data")
+
+  # A batch with no usable reference-QC anchor for a feature is left uncorrected
+  # (originals kept, `was_corrected = FALSE` from `fun_batch.correction`) rather
+  # than NA-wiping valid study samples. Report those feature/batch combinations.
+  d_uncorrected <- d_res |>
+    dplyr::filter(!.data$was_corrected) |>
+    dplyr::distinct(.data$feature_id, .data$batch_id)
+  if (nrow(d_uncorrected) > 0) {
+    cli::cli_warn(c(
+      "!" = "{nrow(d_uncorrected)} feature/batch combination{?s} had no usable reference-QC ({.val {ref_qc_types}}) values and {?was/were} left uncorrected; original values were kept.",
+      "i" = "Affected feature{?s}: {.val {unique(d_uncorrected$feature_id)}}"
+    ))
+  }
 
   d_res_sum <- d_res |>
     group_by(.data$feature_id) |>
@@ -1851,19 +1863,31 @@ correct_batch_centering <- function(
     ) |>
     replace_na(list(was_corrected = FALSE)) |>
     mutate(
-      !!variable_sym := if_else(
-        .data$was_corrected,
-        .data$y_adj,
-        !!variable_sym
-      ),
-      !!variable_before_sym := .data$y,
-      !!variable_fit_sym := .data[[variable_fit]],
+      # Snapshot the pre-correction value and fit BEFORE the main variable is
+      # reassigned. For features not selected via `feature_list`
+      # (was_corrected = FALSE) keep their current values instead of NA-wiping
+      # the _before / _fit_after snapshots.
       !!variable_raw_fit_sym := if (is_first_correction) {
         .data[[variable_fit_after]]
       } else {
         !!variable_raw_fit_sym
       },
-      !!variable_fit_after_sym := .data$y_fit_after_adj
+      !!variable_before_sym := if_else(
+        .data$was_corrected,
+        .data$y,
+        !!variable_sym
+      ),
+      !!variable_fit_after_sym := if_else(
+        .data$was_corrected,
+        .data$y_fit_after_adj,
+        .data[[variable_fit_after]]
+      ),
+      !!variable_sym := if_else(
+        .data$was_corrected,
+        .data$y_adj,
+        !!variable_sym
+      ),
+      !!variable_fit_sym := .data[[variable_fit]]
     ) |>
     select(-"y_adj", -"y_fit_after_adj", -"y", -"was_corrected")
 
@@ -1909,6 +1933,12 @@ fun_batch.correction = function(
   val.clean <- val ## placeholder
   y_fit_after.clean <- y_fit_after # BB
 
+  # Track which rows were actually corrected. A batch with no usable ref-QC
+  # anchor for this feature (loc.batch = NA) must keep its original values rather
+  # than NA-wiping valid study samples; those rows are flagged not-corrected so
+  # the caller preserves them and reports them.
+  row_corrected <- rep(TRUE, length(val))
+
   ### Cross-batch scale normalization
   if (!correct_scale) {
     tmp <- val.clean
@@ -1932,14 +1962,25 @@ fun_batch.correction = function(
       xloc <- loc.batch[b]
 
       if (log_transform_internal) {
-        val.clean[id] <- (tmp[id] - xloc) + loc.batch.mean
-        y_fit_after.clean[id] <- (tmp_fit_after[id] - xloc) + loc.batch.mean
+        if (is.finite(xloc)) {
+          val.clean[id] <- (tmp[id] - xloc) + loc.batch.mean
+          y_fit_after.clean[id] <- (tmp_fit_after[id] - xloc) + loc.batch.mean
+        } else {
+          # No usable ref-QC anchor in this batch: keep originals, flag skipped.
+          val.clean[id] <- tmp[id]
+          y_fit_after.clean[id] <- tmp_fit_after[id]
+          row_corrected[id] <- FALSE
+        }
       } else {
         # Guard a zero/non-finite batch location: division would yield Inf.
-        xloc_div <- if (is.finite(xloc) && xloc != 0) xloc else NA_real_
-        val.clean[id] <- (tmp[id] / xloc_div) * loc.batch.mean
-        y_fit_after.clean[id] <- (tmp_fit_after[id] / xloc_div) *
-          loc.batch.mean
+        if (is.finite(xloc) && xloc != 0) {
+          val.clean[id] <- (tmp[id] / xloc) * loc.batch.mean
+          y_fit_after.clean[id] <- (tmp_fit_after[id] / xloc) * loc.batch.mean
+        } else {
+          val.clean[id] <- tmp[id]
+          y_fit_after.clean[id] <- tmp_fit_after[id]
+          row_corrected[id] <- FALSE
+        }
       }
     }
   } else {
@@ -1972,14 +2013,21 @@ fun_batch.correction = function(
         } else {
           NA_real_
         }
-        val.clean[id] <- (tmp[id] - xloc) /
-          xsca *
-          sca.batch.mean +
-          loc.batch.mean
-        y_fit_after.clean[id] <- (tmp_fit_after[id] - xloc) /
-          xsca *
-          sca.batch.mean +
-          loc.batch.mean
+        if (is.finite(xloc) && is.finite(xsca)) {
+          val.clean[id] <- (tmp[id] - xloc) /
+            xsca *
+            sca.batch.mean +
+            loc.batch.mean
+          y_fit_after.clean[id] <- (tmp_fit_after[id] - xloc) /
+            xsca *
+            sca.batch.mean +
+            loc.batch.mean
+        } else {
+          # No usable ref-QC anchor/scale in this batch: keep originals, flag skipped.
+          val.clean[id] <- tmp[id]
+          y_fit_after.clean[id] <- tmp_fit_after[id]
+          row_corrected[id] <- FALSE
+        }
       } else {
         cli_abort(col_red(
           "Currently data must be log-transformed for batch scaling. Please set `log_transform_internal = TRUE`"
@@ -1994,5 +2042,6 @@ fun_batch.correction = function(
   } else {
     y_fit_after.clean
   }
+  tab$was_corrected <- row_corrected
   tab
 }
