@@ -147,8 +147,14 @@ calc_qc_metrics <- function(
   # Check if the input data is valid
   check_data(data)
 
-  # If the analysis type is lipidomics, extract lipid class names
-  # TODO: remove later when fixed
+  # If the analysis type is lipidomics, (re)derive lipid-class names into the
+  # dataset so QC metrics/plots can group by `feature_class` (= lipid_class_lcb).
+  # STOPGAP: this parsing side-effects `data@dataset` from inside a metrics
+  # function; it really belongs upstream in the import / add_metadata pipeline.
+  # Relocating it there (and having QC + plots consume the already-parsed
+  # classes) would let this branch be removed. Safe to call repeatedly for now:
+  # parse_lipid_feature_names() drops any pre-existing lipid columns before
+  # re-joining, so it is idempotent.
   if (
     !is.na(data@analysis_type) &&
       all(!is.na(data@annot_features$feature_class)) &&
