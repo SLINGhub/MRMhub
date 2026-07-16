@@ -92,7 +92,7 @@ individually as OR conditions).}
 \item{show_timestamp}{Logical, whether to use the acquisition timestamp as
 the x-axis instead of the run sequence number}
 
-\item{min_feature_intensity}{Numeric, exclude features with overall median signal below this value}
+\item{min_feature_intensity}{Numeric, exclude features with overall median intensity below this value}
 
 \item{y_lim}{Numeric vector of length 2, specifying the lower and upper y-axis limits. Default is \code{NA}, which uses limits calculated based on \code{outlier_exclude}.}
 

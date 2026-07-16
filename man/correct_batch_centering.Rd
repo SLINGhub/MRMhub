@@ -34,7 +34,13 @@ previous batch corrections or apply the new correction on top. Defaults to
 \code{TRUE} (replace).}
 
 \item{log_transform_internal}{A logical value indicating whether to log-transform
-the data internally during correction. Defaults to \code{TRUE}.}
+the data internally during correction. Defaults to \code{TRUE}. This also sets the
+centering model: with \code{TRUE} the batch reference levels are aligned in log
+space, i.e. \strong{multiplicative (geometric)} centering (the appropriate choice
+for multiplicatively-scaling MS intensities, and the reason it is the
+default); with \code{FALSE} they are aligned in raw space, i.e. \strong{additive}
+centering (which can shift low values below zero). Either way the returned
+data are on the raw (untransformed) scale.}
 
 \item{feature_list}{Sets specific features for correction only. Can be character vector or a single string which is then interpreted as regular expression. Default is \code{NULL} which means all features are selected.}
 

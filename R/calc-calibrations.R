@@ -483,7 +483,13 @@ calc_calibration_results <- function(
               "1/sqrt(x)" = 1 / sqrt(.data$concentration),
               NA_real_
             )
-          )
+          ) |>
+          # A zero-concentration (blank) calibrator cannot be inverse-weighted
+          # (weight = 1/0 = Inf), which makes lm() fail. Drop non-finite-weight
+          # rows so the weighted fit succeeds over the real standards. Unweighted
+          # fits keep the blank (weight = 1). The exclusion is reported once,
+          # aggregated per feature, by the caller before the split.
+          filter(is.finite(.data$weight))
 
         formula <- ifelse(
           dt$fit_model[1] == "linear",
@@ -631,6 +637,19 @@ calc_calibration_results <- function(
   } else {
     d_calib <- d_calib |>
       mutate(fit_model = fit_model, fit_weighting = fit_weighting)
+  }
+
+  # A zero-concentration (blank) calibrator cannot be inverse-weighted
+  # (weight = 1/0 = Inf) and is dropped from the weighted fit in `calc_lm`.
+  # Surface which features are affected so the exclusion is attributable rather
+  # than surfacing later as a generic "fit failed".
+  zero_cal_weighted <- d_calib |>
+    filter(.data$fit_weighting != "none", .data$concentration == 0) |>
+    dplyr::distinct(.data$feature_id)
+  if (nrow(zero_cal_weighted) > 0) {
+    cli::cli_alert_info(cli::col_yellow(
+      "Zero-concentration calibrator excluded from the weighted fit for {nrow(zero_cal_weighted)} feature{?s} ({paste(zero_cal_weighted$feature_id, collapse = ', ')}); a blank cannot be inverse-weighted."
+    ))
   }
 
   d_calib <- d_calib |>
@@ -969,7 +988,10 @@ get_qc_bias_variability <- function(
 #' - `weighting`: Weighting method used in fitting.
 #' - `lowest_cal`: Lowest nonzero calibration concentration.
 #' - `highest_cal`: Highest  calibration concentration.
-#' - `r.squared`: R-squared value, indicating goodness of fit.
+#' - `r.squared`: R-squared value, indicating goodness of fit. For a **weighted**
+#'   fit this is the weighted coefficient of determination (computed from weighted
+#'   sums of squares), matching the value reported by vendor software such as
+#'   Agilent MassHunter for the same weighted curve.
 #' - `coef_a`: Intercept of the regression line
 #' - `coef_b`: Slope of the regression line in **linear** models, or coefficient of the linear term (`x`) in **quadratic** models.
 #' - `coef_c`: Coefficient of the quadratic term (`x^2`) in **quadratic** models. Returns `NA` for **linear** models.
@@ -985,6 +1007,13 @@ get_qc_bias_variability <- function(
 #' selectable in [`calc_calibration_results()`] via `lod_sigma` (residual
 #' standard error, the default, or the standard error of the intercept); the
 #' `sigma` column reported here is always the residual standard error.
+#'
+#' For a **weighted** fit (`1/x`, `1/x^2`, `1/sqrt(x)`) `sigma` is R's weighted
+#' residual standard error, which is not on the raw response scale that the ICH
+#' `3.3 sigma / S` formula assumes, so the reported LoD/LoQ are approximate
+#' (typically slightly optimistic for `1/x`). Use `fit_weighting = "none"` if you
+#' require the strict ICH response-scale `Sy/x`; the back-calculated
+#' concentrations themselves are unaffected.
 
 #'
 #' @param data A `MRMhubExperiment` object with QC metrics.

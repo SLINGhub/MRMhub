@@ -214,6 +214,9 @@ normalize_by_istd <- function(data = NULL, ignore_missing_annotation = FALSE) {
 #' the corresponding spiked-in ISTD amount, and the per-feature response factor
 #' (`response_factor`, from the feature metadata), normalized by the sample amount.
 #'
+#' The ISTD used for quantitation is the feature's normalization ISTD
+#' (`istd_feature_id`); a separate quantitation ISTD is not supported.
+#'
 #' By default, concentrations are returned in molar units (e.g., µmol/L). To return concentrations in mass units
 #' (e.g., µg/L), set `concentration_unit = "mass"`. This requires either the chemical formula or molecular weight
 #' for each feature to be specified in the feature metadata.

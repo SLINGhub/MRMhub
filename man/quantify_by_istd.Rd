@@ -32,6 +32,9 @@ the corresponding spiked-in ISTD amount, and the per-feature response factor
 (\code{response_factor}, from the feature metadata), normalized by the sample amount.
 }
 \details{
+The ISTD used for quantitation is the feature's normalization ISTD
+(\code{istd_feature_id}); a separate quantitation ISTD is not supported.
+
 By default, concentrations are returned in molar units (e.g., µmol/L). To return concentrations in mass units
 (e.g., µg/L), set \code{concentration_unit = "mass"}. This requires either the chemical formula or molecular weight
 for each feature to be specified in the feature metadata.

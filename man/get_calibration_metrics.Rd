@@ -40,7 +40,10 @@ See its documentation for details.
 \item \code{weighting}: Weighting method used in fitting.
 \item \code{lowest_cal}: Lowest nonzero calibration concentration.
 \item \code{highest_cal}: Highest  calibration concentration.
-\item \code{r.squared}: R-squared value, indicating goodness of fit.
+\item \code{r.squared}: R-squared value, indicating goodness of fit. For a \strong{weighted}
+fit this is the weighted coefficient of determination (computed from weighted
+sums of squares), matching the value reported by vendor software such as
+Agilent MassHunter for the same weighted curve.
 \item \code{coef_a}: Intercept of the regression line
 \item \code{coef_b}: Slope of the regression line in \strong{linear} models, or coefficient of the linear term (\code{x}) in \strong{quadratic} models.
 \item \code{coef_c}: Coefficient of the quadratic term (\code{x^2}) in \strong{quadratic} models. Returns \code{NA} for \strong{linear} models.
@@ -57,5 +60,12 @@ quadratic term does not contribute to this slope. The response \code{sigma} is
 selectable in \code{\link[=calc_calibration_results]{calc_calibration_results()}} via \code{lod_sigma} (residual
 standard error, the default, or the standard error of the intercept); the
 \code{sigma} column reported here is always the residual standard error.
+
+For a \strong{weighted} fit (\code{1/x}, \code{1/x^2}, \code{1/sqrt(x)}) \code{sigma} is R's weighted
+residual standard error, which is not on the raw response scale that the ICH
+\verb{3.3 sigma / S} formula assumes, so the reported LoD/LoQ are approximate
+(typically slightly optimistic for \code{1/x}). Use \code{fit_weighting = "none"} if you
+require the strict ICH response-scale \code{Sy/x}; the back-calculated
+concentrations themselves are unaffected.
 }
 }

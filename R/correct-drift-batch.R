@@ -1588,7 +1588,13 @@ correct_drift_gam <- function(
 #'   previous batch corrections or apply the new correction on top. Defaults to
 #'   `TRUE` (replace).
 #' @param log_transform_internal A logical value indicating whether to log-transform
-#'   the data internally during correction. Defaults to `TRUE`.
+#'   the data internally during correction. Defaults to `TRUE`. This also sets the
+#'   centering model: with `TRUE` the batch reference levels are aligned in log
+#'   space, i.e. **multiplicative (geometric)** centering (the appropriate choice
+#'   for multiplicatively-scaling MS intensities, and the reason it is the
+#'   default); with `FALSE` they are aligned in raw space, i.e. **additive**
+#'   centering (which can shift low values below zero). Either way the returned
+#'   data are on the raw (untransformed) scale.
 #' @param feature_list Sets specific features for correction only. Can be character vector or a single string which is then interpreted as regular expression. Default is `NULL` which means all features are selected.
 #' @param replace_exisiting_trendcurves A logical value indicating whether to replace
 #' trend curves from previous corrections. This is only use for plotting using `plot_runscatter()`. Default is `FALSE`.
@@ -1791,7 +1797,7 @@ correct_batch_centering <- function(
     dplyr::distinct(.data$feature_id, .data$batch_id)
   if (nrow(d_uncorrected) > 0) {
     cli::cli_warn(c(
-      "!" = "{nrow(d_uncorrected)} feature/batch combination{?s} had no usable reference-QC ({.val {ref_qc_types}}) values and {?was/were} left uncorrected; original values were kept.",
+      "!" = "{nrow(d_uncorrected)} feature/batch combination{?s} had no usable reference-QC ({.val {ref_qc_types}}) values and {cli::qty(nrow(d_uncorrected))}{?was/were} left uncorrected; original values were kept.",
       "i" = "Affected feature{?s}: {.val {unique(d_uncorrected$feature_id)}}"
     ))
   }

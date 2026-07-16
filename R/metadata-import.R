@@ -1954,6 +1954,9 @@ clean_feature_metadata <- function(d_features) {
       ),
       analyte_id = stringr::str_squish(.data$analyte_id),
       istd_feature_id = stringr::str_squish(.data$istd_feature_id),
+      # By design the quantitation ISTD is the same as the normalization ISTD:
+      # quant_istd_feature_id is derived from istd_feature_id, not taken as a
+      # separate user input. A distinct quant ISTD is intentionally not supported.
       quant_istd_feature_id = stringr::str_squish(.data$istd_feature_id),
       is_quantifier = {
         lkp <- c("yes" = TRUE, "true" = TRUE, "no" = FALSE, "false" = FALSE)

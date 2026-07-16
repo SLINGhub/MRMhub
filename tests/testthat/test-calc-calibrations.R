@@ -87,6 +87,37 @@ test_that("a duplicated QC-concentration row is rejected by the calibration fit,
   )
 })
 
+test_that("a zero-concentration blank is dropped from a weighted fit and reported", {
+  # A blank (concentration 0) cannot be inverse-weighted (1/0 = Inf), which makes
+  # the weighted lm() fail (previously a silent generic "fit failed"). It must be
+  # dropped so the fit succeeds over the real standards, and the exclusion
+  # surfaced so it is attributable.
+  mexp_blank <- mexp_norm
+  qc <- mexp_blank@annot_qcconcentrations
+  low_sample <- qc |>
+    dplyr::slice_min(concentration, n = 1, with_ties = FALSE) |>
+    dplyr::pull(sample_id)
+  mexp_blank@annot_qcconcentrations <- qc |>
+    dplyr::mutate(
+      concentration = dplyr::if_else(sample_id == low_sample, 0, concentration)
+    )
+
+  expect_message(
+    mexp_res <- calc_calibration_results(
+      mexp_blank,
+      fit_overwrite = TRUE,
+      fit_model = "linear",
+      fit_weighting = "1/x"
+    ),
+    "Zero-concentration calibrator excluded"
+  )
+  # the weighted fit now succeeds over the real standards (would fail on 1/0=Inf)
+  r <- mexp_res@metrics_calibration
+  reg_failed <- unlist(r[grepl("reg_failed", names(r))])
+  expect_false(any(reg_failed, na.rm = TRUE))
+  expect_true(all(is.finite(r$r2_cal_1)))
+})
+
 test_that("calc_calibration_results LoD/LoQ use the slope at zero (ICH Q2)", {
   # LoD/LoQ use the slope of the calibration curve at zero concentration, i.e.
   # the linear coefficient (coef_b), for both linear and quadratic fits. The
