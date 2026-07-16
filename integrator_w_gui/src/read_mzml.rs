@@ -97,23 +97,60 @@ struct QQ {
 }
 // reads and validates the transition assay
 fn read_assay(assay_f: &Path) -> Result<Vec<QQ>, Box<dyn Error>> {
+    fn cell(record: &csv::StringRecord, column: usize) -> &str {
+        record.get(column).unwrap_or("")
+    }
+
     let mut rdr = csv::ReaderBuilder::new()
         .comment(Some(b'#'))
         .has_headers(true)
         .trim(csv::Trim::All)
         .from_path(assay_f)?;
     let headers = rdr.headers()?.clone();
+    let normalized_headers: Vec<String> = headers
+        .iter()
+        .map(|header| header.trim().to_ascii_lowercase())
+        .collect();
     let find_column = |name: &str| {
-        headers
-            .iter()
-            .position(|header| header.eq_ignore_ascii_case(name))
+        let name = name.to_ascii_lowercase();
+        normalized_headers.iter().position(|header| header == &name)
     };
+    let find_column_containing = |needle: &str| {
+        let needle = needle.to_ascii_lowercase();
+        normalized_headers
+            .iter()
+            .position(|header| header.contains(&needle))
+    };
+    let compound_col = find_column("compound name").unwrap_or(0);
+    let transition_col = find_column("transition name").unwrap_or(1);
+    let istd_col = find_column("istd").unwrap_or(2);
+    let precursor_col = find_column("precursor ion").unwrap_or(3);
+    let product_col = find_column("product ion").unwrap_or(4);
+    let rt_col = find_column("rt").unwrap_or(5);
+    let uniform_col = find_column("uniform_width (y/n)")
+        .or_else(|| find_column("uniform width"))
+        .or_else(|| find_column_containing("uniform"))
+        .unwrap_or(6);
+    let left_bound_col = find_column_containing("left integration bound").unwrap_or(7);
+    let right_bound_col = find_column_containing("right integration bound").unwrap_or(8);
+    let fixed_col = find_column("fixed(y/n)")
+        .or_else(|| find_column("fixed"))
+        .or_else(|| find_column_containing("fixed"));
     let peak_width_col = find_column("peak width").or_else(|| find_column("peak_width"));
     let baseline_col = find_column("baseline");
     let index_col = find_column("chromatogram index");
     let mut records: Vec<csv::StringRecord> = rdr.into_records().collect::<Result<_, _>>()?;
-    records.sort_unstable_by(|x, y| x[1].cmp(&y[1]));
-    let mut t_name: Vec<&str> = records.iter().map(|x| &x[1]).collect();
+    let is_yes = |value: &str| {
+        matches!(
+            value.trim().to_ascii_lowercase().as_str(),
+            "y" | "yes" | "true" | "1"
+        )
+    };
+    records.sort_unstable_by(|x, y| cell(x, transition_col).cmp(cell(y, transition_col)));
+    let mut t_name: Vec<&str> = records
+        .iter()
+        .map(|record| cell(record, transition_col))
+        .collect();
     t_name.dedup();
     let mut pos0 = 0;
     let mut pos1 = 0;
@@ -122,25 +159,44 @@ fn read_assay(assay_f: &Path) -> Result<Vec<QQ>, Box<dyn Error>> {
         .map(|name| {
             pos0 = pos1;
             pos1 = (pos0 + 1..records.len())
-                .find(|x| &records[*x][1] != name)
+                .find(|x| cell(&records[*x], transition_col) != name)
                 .unwrap_or(records.len());
             let rec_p = &records[pos0];
             for x in &records[pos0 + 1..pos1] {
-                if x[3] != rec_p[3] || x[4] != rec_p[4] {
-                    return Err([&rec_p[0], &rec_p[1]].join(", ").into());
+                if cell(x, precursor_col) != cell(rec_p, precursor_col)
+                    || cell(x, product_col) != cell(rec_p, product_col)
+                {
+                    return Err([cell(rec_p, compound_col), cell(rec_p, transition_col)]
+                        .join(", ")
+                        .into());
                 }
             }
             let mut rt_iso: Vec<(f32, _, f32, f32)> = records[pos0..pos1]
                 .iter()
                 .map(|x| {
-                    x[5].parse()
-                        .map_err(|_| format!("{}, {}, RT = {}", &x[0], &x[1], &x[5]))
+                    let fixed_bounds = fixed_col.map_or(true, |column| is_yes(cell(x, column)));
+                    let left_bound = fixed_bounds
+                        .then(|| cell(x, left_bound_col).parse().unwrap_or(-90.))
+                        .unwrap_or(-90.);
+                    let right_bound = fixed_bounds
+                        .then(|| cell(x, right_bound_col).parse().unwrap_or(990.))
+                        .unwrap_or(990.);
+                    cell(x, rt_col)
+                        .parse()
+                        .map_err(|_| {
+                            format!(
+                                "{}, {}, RT = {}",
+                                cell(x, compound_col),
+                                cell(x, transition_col),
+                                cell(x, rt_col)
+                            )
+                        })
                         .map(|rt| {
                             (
                                 rt,
-                                x[0].to_string(),
-                                x[7].parse().unwrap_or(-90.),
-                                x[8].parse().unwrap_or(990.),
+                                cell(x, compound_col).to_string(),
+                                left_bound,
+                                right_bound,
                             )
                         })
                 })
@@ -149,20 +205,25 @@ fn read_assay(assay_f: &Path) -> Result<Vec<QQ>, Box<dyn Error>> {
                 rt_iso = vec![x.clone()];
             }
             rt_iso.sort_unstable_by(|x, y| x.0.partial_cmp(&y.0).unwrap());
-            let Ok(q1) = rec_p[3].parse::<f32>() else {
+            let Ok(q1) = cell(rec_p, precursor_col).parse::<f32>() else {
                 return Err(["precursor m/z for ", name].concat().into());
             };
-            let Ok(q3) = rec_p[4].parse::<f32>() else {
+            let Ok(q3) = cell(rec_p, product_col).parse::<f32>() else {
                 return Err(["product m/z for ", name].concat().into());
             };
             Ok(QQ {
-                name: rec_p[1].to_string(),
-                istd: rec_p[if rec_p[2].is_empty() { 1 } else { 2 }].to_string(),
+                name: cell(rec_p, transition_col).to_string(),
+                istd: if cell(rec_p, istd_col).is_empty() {
+                    cell(rec_p, transition_col)
+                } else {
+                    cell(rec_p, istd_col)
+                }
+                .to_string(),
                 q1,
                 q3,
                 rt: rt_iso.iter().map(|x| x.0).sum::<f32>() / (rt_iso.len() as f32),
                 rt_iso,
-                u_rt: rec_p[6].eq_ignore_ascii_case("y"),
+                u_rt: is_yes(cell(rec_p, uniform_col)),
                 peak_w: peak_width_col
                     .and_then(|column| rec_p.get(column))
                     .and_then(|value| {
