@@ -9,6 +9,10 @@
 #' @param use_robust_cv logical, if TRUE the robust coefficient of variation
 #' (scaled median absolute deviation / median) is computed instead of the
 #' standard CV (SD / mean)
+#' @param min_n integer, the minimum number of observations (non-missing ones
+#' when `na.rm = TRUE`) required to return a CV. Fewer than `min_n` values
+#' return `NA_real_`. The default (`1`) is a no-op, since `sd()`/`mad()` already
+#' return `NA` for fewer than two values.
 #'
 #' @return a numeric value. If the mean (or the median, for robust CV) is zero,
 #' or x is not numeric, NA_real_ is returned
@@ -18,8 +22,15 @@
 #' @examples
 #' cv(c(5, 6, 3, 4, 5, NA), na.rm = TRUE)
 
-cv <- function(x, na.rm = FALSE, use_robust_cv = FALSE) {
+cv <- function(x, na.rm = FALSE, use_robust_cv = FALSE, min_n = 1L) {
   if (!is.numeric(x)) {
+    return(NA_real_)
+  }
+  # A %CV over too few replicates is not a meaningful precision estimate.
+  # `min_n` is the smallest number of observations (non-missing ones when
+  # `na.rm = TRUE`) for which a CV is returned; below it the result is NA.
+  n_obs <- if (na.rm) sum(!is.na(x)) else length(x)
+  if (n_obs < min_n) {
     return(NA_real_)
   }
   if (use_robust_cv) {

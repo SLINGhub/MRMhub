@@ -322,6 +322,54 @@ calc_qc_metrics <- function(
     filter(.data$qc_type != "RQC") |>
     mutate(qc_type = factor(.data$qc_type), batch_id = factor(.data$batch_id))
 
+  # Minimum non-missing replicates for a QC %CV to be a meaningful precision
+  # estimate (cf. FDA/EMA bioanalytical guidance, which expects >= 3). Below this
+  # floor the %CV is set to NA; the suppressed combinations are counted and
+  # surfaced (below) so a low-n omission is attributable, never silent.
+  min_cv_replicates <- 3L
+
+  cv_qc_types <- c("TQC", "BQC", "SPL", "LTR", "NIST")
+  cv_vars <- c(
+    if ("feature_intensity" %in% names(data@dataset)) "feature_intensity",
+    if (
+      "feature_norm_intensity" %in%
+        names(data@dataset) &&
+        (is.na(include_norm_intensity_stats) || include_norm_intensity_stats)
+    ) {
+      "feature_norm_intensity"
+    },
+    if (
+      "feature_conc" %in%
+        names(data@dataset) &&
+        (is.na(include_conc_stats) || include_conc_stats)
+    ) {
+      "feature_conc"
+    }
+  )
+  if (length(cv_vars) > 0) {
+    # Per feature x QC-type, count the non-missing replicates of each summarised
+    # variable. 0 => the QC-type is genuinely absent (not a low-n suppression),
+    # so only 1..(floor - 1) is reported.
+    low_rep <- d_stats_var |>
+      filter(.data$qc_type %in% cv_qc_types) |>
+      summarise(
+        .by = c(all_of(grp), "qc_type"),
+        across(all_of(cv_vars), \(x) sum(!is.na(x)))
+      ) |>
+      tidyr::pivot_longer(
+        all_of(cv_vars),
+        names_to = "variable",
+        values_to = "n_rep"
+      ) |>
+      filter(.data$n_rep >= 1L & .data$n_rep < min_cv_replicates)
+    if (nrow(low_rep) > 0) {
+      by_qc <- dplyr::count(low_rep, .data$qc_type)
+      cli::cli_alert_warning(cli::col_yellow(
+        "%CV not computed for {nrow(low_rep)} feature\u00d7QC-type\u00d7variable combination{?s} with fewer than {min_cv_replicates} replicates ({paste0(by_qc$qc_type, ': ', by_qc$n, collapse = ', ')})."
+      ))
+    }
+  }
+
   # Summarize intensity statistics by group, feature (see before0)
   d_stats_var_final <- d_stats_var |> select(all_of(grp)) |> distinct()
 
@@ -442,27 +490,32 @@ calc_qc_metrics <- function(
         intensity_cv_tqc = cv(
           .data$feature_intensity[.data$qc_type == "TQC"],
           na.rm = TRUE,
-          use_robust_cv
+          use_robust_cv,
+          min_n = min_cv_replicates
         ),
         intensity_cv_bqc = cv(
           .data$feature_intensity[.data$qc_type == "BQC"],
           na.rm = TRUE,
-          use_robust_cv
+          use_robust_cv,
+          min_n = min_cv_replicates
         ),
         intensity_cv_spl = cv(
           .data$feature_intensity[.data$qc_type == "SPL"],
           na.rm = TRUE,
-          use_robust_cv
+          use_robust_cv,
+          min_n = min_cv_replicates
         ),
         intensity_cv_ltr = cv(
           .data$feature_intensity[.data$qc_type == "LTR"],
           na.rm = TRUE,
-          use_robust_cv
+          use_robust_cv,
+          min_n = min_cv_replicates
         ),
         intensity_cv_nist = cv(
           .data$feature_intensity[.data$qc_type == "NIST"],
           na.rm = TRUE,
-          use_robust_cv
+          use_robust_cv,
+          min_n = min_cv_replicates
         ),
 
         # Calculate quantiles within summarise
@@ -502,27 +555,32 @@ calc_qc_metrics <- function(
         norm_intensity_cv_tqc = cv(
           .data$feature_norm_intensity[.data$qc_type == "TQC"],
           na.rm = TRUE,
-          use_robust_cv
+          use_robust_cv,
+          min_n = min_cv_replicates
         ),
         norm_intensity_cv_bqc = cv(
           .data$feature_norm_intensity[.data$qc_type == "BQC"],
           na.rm = TRUE,
-          use_robust_cv
+          use_robust_cv,
+          min_n = min_cv_replicates
         ),
         norm_intensity_cv_spl = cv(
           .data$feature_norm_intensity[.data$qc_type == "SPL"],
           na.rm = TRUE,
-          use_robust_cv
+          use_robust_cv,
+          min_n = min_cv_replicates
         ),
         norm_intensity_cv_ltr = cv(
           .data$feature_norm_intensity[.data$qc_type == "LTR"],
           na.rm = TRUE,
-          use_robust_cv
+          use_robust_cv,
+          min_n = min_cv_replicates
         ),
         norm_intensity_cv_nist = cv(
           .data$feature_norm_intensity[.data$qc_type == "NIST"],
           na.rm = TRUE,
-          use_robust_cv
+          use_robust_cv,
+          min_n = min_cv_replicates
         ),
         normint_dratio_sd_bqc = sd(
           .data$feature_norm_intensity[.data$qc_type == "BQC"],
@@ -595,27 +653,32 @@ calc_qc_metrics <- function(
         conc_cv_tqc = cv(
           .data$feature_conc[.data$qc_type == "TQC"],
           na.rm = TRUE,
-          use_robust_cv
+          use_robust_cv,
+          min_n = min_cv_replicates
         ),
         conc_cv_bqc = cv(
           .data$feature_conc[.data$qc_type == "BQC"],
           na.rm = TRUE,
-          use_robust_cv
+          use_robust_cv,
+          min_n = min_cv_replicates
         ),
         conc_cv_spl = cv(
           .data$feature_conc[.data$qc_type == "SPL"],
           na.rm = TRUE,
-          use_robust_cv
+          use_robust_cv,
+          min_n = min_cv_replicates
         ),
         conc_cv_nist = cv(
           .data$feature_conc[.data$qc_type == "NIST"],
           na.rm = TRUE,
-          use_robust_cv
+          use_robust_cv,
+          min_n = min_cv_replicates
         ),
         conc_cv_ltr = cv(
           .data$feature_conc[.data$qc_type == "LTR"],
           na.rm = TRUE,
-          use_robust_cv
+          use_robust_cv,
+          min_n = min_cv_replicates
         ),
         conc_dratio_sd_bqc = sd(
           .data$feature_conc[.data$qc_type == "BQC"],

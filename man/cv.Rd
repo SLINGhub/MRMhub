@@ -4,7 +4,7 @@
 \alias{cv}
 \title{Percent coefficient of variation (\%CV)}
 \usage{
-cv(x, na.rm = FALSE, use_robust_cv = FALSE)
+cv(x, na.rm = FALSE, use_robust_cv = FALSE, min_n = 1L)
 }
 \arguments{
 \item{x}{a numeric vector with untransformed data}
@@ -15,6 +15,11 @@ computation takes place}
 \item{use_robust_cv}{logical, if TRUE the robust coefficient of variation
 (scaled median absolute deviation / median) is computed instead of the
 standard CV (SD / mean)}
+
+\item{min_n}{integer, the minimum number of observations (non-missing ones
+when \code{na.rm = TRUE}) required to return a CV. Fewer than \code{min_n} values
+return \code{NA_real_}. The default (\code{1}) is a no-op, since \code{sd()}/\code{mad()} already
+return \code{NA} for fewer than two values.}
 }
 \value{
 a numeric value. If the mean (or the median, for robust CV) is zero,

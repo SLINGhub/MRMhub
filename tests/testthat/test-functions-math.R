@@ -15,6 +15,24 @@ test_that("cv returns NA_real_ for zero denominator or non-numeric input", {
   expect_equal(cv(c("a", "b")), NA_real_)
 })
 
+test_that("cv min_n suppresses CVs over too few replicates", {
+  # default (min_n = 1) is a no-op: n = 2 still computes as before
+  expect_equal(cv(c(10, 12), na.rm = TRUE), 12.8564869)
+  expect_equal(
+    cv(c(5, 6, 3, 4, 5, NA), na.rm = TRUE, min_n = 1L),
+    24.7864223
+  )
+  # below the floor -> NA
+  expect_equal(cv(c(10, 12), na.rm = TRUE, min_n = 3L), NA_real_)
+  # at/above the floor -> computed
+  expect_equal(cv(c(10, 12, 11), na.rm = TRUE, min_n = 3L), 9.0909091)
+  # the floor counts non-missing values, not slots, when na.rm = TRUE
+  expect_equal(cv(c(10, 12, NA), na.rm = TRUE, min_n = 3L), NA_real_)
+  expect_equal(cv(c(10, 12, NA, 13), na.rm = TRUE, min_n = 3L), 13.0930734)
+  # with na.rm = FALSE the slot count governs (NA already makes the CV NA)
+  expect_equal(cv(c(10, 12, 11), na.rm = FALSE, min_n = 3L), 9.0909091)
+})
+
 test_that("cv robust uses scaled MAD / median", {
   # Robust CV = 1.4826 * MAD / median * 100 (scaled MAD, so it is on the same
   # scale as the standard SD / mean CV).

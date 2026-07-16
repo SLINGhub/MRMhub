@@ -67,6 +67,37 @@ test_that("calc_qc_metrics works for all qc groups", {
   expect_equal(min(mexp_res@metrics_qc$slopenorm_rqc_B), 0.65001359)
 })
 
+test_that("calc_qc_metrics floors QC %CV below 3 replicates and surfaces it", {
+  # Reduce TQC to 2 non-missing intensity replicates per feature: a %CV over
+  # fewer than 3 values is not a meaningful precision estimate, so it must be
+  # NA (it was a value before the floor) and the omission surfaced.
+  tqc_keep <- mexp@dataset |>
+    dplyr::filter(qc_type == "TQC") |>
+    dplyr::distinct(analysis_id) |>
+    dplyr::pull(analysis_id)
+  tqc_keep <- tqc_keep[1:2]
+  mexp_low <- mexp
+  mexp_low@dataset <- mexp@dataset |>
+    dplyr::mutate(
+      feature_intensity = dplyr::if_else(
+        qc_type == "TQC" & !(analysis_id %in% tqc_keep),
+        NA_real_,
+        feature_intensity
+      )
+    )
+
+  expect_message(
+    mexp_res <- calc_qc_metrics(mexp_low, use_batch_medians = FALSE),
+    "%CV not computed"
+  )
+  # the floored QC type -> all NA
+  expect_true(all(is.na(mexp_res@metrics_qc$intensity_cv_tqc)))
+  # a well-replicated QC type is unaffected
+  expect_false(all(is.na(mexp_res@metrics_qc$intensity_cv_spl)))
+  # only feature_intensity was reduced, so the norm-intensity CV still computes
+  expect_false(all(is.na(mexp_res@metrics_qc$norm_intensity_cv_tqc)))
+})
+
 test_that("calc_qc_metrics batch-wise works for all qc groups", {
   mexp_res <- calc_qc_metrics(mexp, use_batch_medians = TRUE)
 
