@@ -699,24 +699,12 @@ calc_qc_metrics <- function(
     }
   }
 
-  # If calibration results should be included and metrics_calibration is not
-  # empty, join calibration data.
-  #
-  # `metrics_calibration` is pivoted wide on `curve_id`, which is hardcoded to
-  # "1" in calc_calibration_results(), so every metric column is named
-  # `{metric}_cal_1` (e.g. `r2_cal_1`, and the doubled `lowest_cal_cal_1` /
-  # `highest_cal_cal_1`). The two rename steps normalise these to a plain `_cal`
-  # suffix: the first drops the single-curve index `_1`, the second collapses the
-  # doubled `cal` left behind on the `lowest_cal` / `highest_cal` metrics. This
-  # relies on there being exactly ONE calibration curve; a future multi-curve
-  # fit would need a real reshape here, not string surgery. `is_quantifier` is
-  # dropped because metrics_qc already carries it (would collide on the join),
-  # and `fit_cal` is the list-column of fit objects, not a QC metric.
-  #
-  # NOTE: unlike the response-curve path above (get_response_curve_stats()), this
-  # join has no dedicated validation helper. It is safe today only because
-  # metrics_calibration is always produced by calc_calibration_results() with a
-  # guaranteed single-curve schema. Fold into a validated helper if that changes.
+  # Join calibration metrics into metrics_qc. metrics_calibration is pivoted wide
+  # on the single hardcoded curve_id ("1"), so columns are `{metric}_cal_1`; the
+  # two rename steps strip the `_1` index and collapse the doubled `cal` on
+  # lowest_cal/highest_cal. Assumes ONE curve (multi-curve would need a real
+  # reshape, not string surgery). Drop is_quantifier (metrics_qc already carries
+  # it) and fit_cal (a list-column of fit objects, not a metric).
   if (is.na(include_calibration_results) || include_calibration_results) {
     if (nrow(data@metrics_calibration) > 0) {
       data@metrics_qc <- data@metrics_qc |>
