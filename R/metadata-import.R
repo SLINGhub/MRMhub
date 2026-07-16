@@ -629,7 +629,7 @@ assert_metadata <- function(
           !all(is.na(x))
         }) &
           dplyr::any_of(c("sample_amount", "sample_amount_unit")),
-        description = "W;Incomplete value(s);Analyses;sample_amount|sample_amount_unit"
+        description = "N;Incomplete value(s);Analyses;sample_amount|sample_amount_unit"
       ) |>
       assertr::assert(
         \(x) {
@@ -639,7 +639,29 @@ assert_metadata <- function(
           !all(is.na(x))
         }) &
           dplyr::any_of(c("istd_volume")),
-        description = "W;Not defined for all analyses;Analyses;istd_volume"
+        description = "N;Not defined for all analyses;Analyses;istd_volume"
+      ) |>
+      assertr::assert(
+        assertr::within_bounds(
+          lower.bound = 0,
+          upper.bound = Inf,
+          include.lower = FALSE,
+          include.upper = TRUE,
+          allow.na = TRUE
+        ),
+        all_of(c("sample_amount")),
+        description = "W;Invalid values (0 or negative);Analyses;sample_amount"
+      ) |>
+      assertr::assert(
+        assertr::within_bounds(
+          lower.bound = 0,
+          upper.bound = Inf,
+          include.lower = FALSE,
+          include.upper = TRUE,
+          allow.na = TRUE
+        ),
+        all_of(c("istd_volume")),
+        description = "W;Invalid values (0 or negative);Analyses;istd_volume"
       ) |>
       assertr::assert(
         \(x) {
@@ -802,6 +824,17 @@ assert_metadata <- function(
         ),
         all_of(c("response_factor")),
         description = "W;Invalid values (0 or negative);Features;response_factor"
+      ) |>
+      assertr::assert(
+        assertr::within_bounds(
+          lower.bound = 0,
+          upper.bound = Inf,
+          include.lower = FALSE,
+          include.upper = TRUE,
+          allow.na = TRUE
+        ),
+        all_of(c("molecular_weight")),
+        description = "W;Invalid values (0 or negative);Features;molecular_weight"
       )
 
     #assertr::assert(\(x){any(xor(is.na(x), is.na(metadata$annot_features$interference_feature_id)))}, "interference_feature_id", obligatory=FALSE, description = "E;Missing interference proportion(s);Features;interference_contribution") |>
@@ -870,7 +903,17 @@ assert_metadata <- function(
         "quant_istd_feature_id",
         description = "W;Internal standard(s) not used;ISTDs;feature_id"
       ) |>
-      #assertr::assert(\(x){x > 0}, any_of(c("istd_conc_nmolar")), description = "W;Values 0 or negative;ISTDs;istd_conc_nmolar") |>
+      assertr::assert(
+        assertr::within_bounds(
+          lower.bound = 0,
+          upper.bound = Inf,
+          include.lower = FALSE,
+          include.upper = TRUE,
+          allow.na = TRUE
+        ),
+        any_of(c("istd_conc_nmolar", "istd_conc_ngml")),
+        description = "W;Invalid values (0 or negative);ISTDs;istd_conc_nmolar|istd_conc_ngml"
+      ) |>
       assertr::chain_end(error_fun = assertr::error_append)
 
     if ("annot_istds" %in% names(metadata_new)) {
@@ -924,8 +967,22 @@ assert_metadata <- function(
         \(x) {
           not_na(x)
         },
-        any_of(c("analyzed_amount")),
-        description = "W;Missing value(s);Response Curves;analyzed_amount"
+        where(\(x) {
+          !all(is.na(x))
+        }) &
+          dplyr::any_of(c("analyzed_amount")),
+        description = "N;Missing value(s);Response Curves;analyzed_amount"
+      ) |>
+      assertr::assert(
+        assertr::within_bounds(
+          lower.bound = 0,
+          upper.bound = Inf,
+          include.lower = TRUE,
+          include.upper = TRUE,
+          allow.na = TRUE
+        ),
+        all_of(c("analyzed_amount")),
+        description = "W;Negative values;Response Curves;analyzed_amount"
       )
     if (!is.null(data)) {
       metadata$annot_responsecurves <- metadata$annot_responsecurves |>
@@ -992,8 +1049,22 @@ assert_metadata <- function(
         \(x) {
           not_na(x)
         },
-        any_of(c("concentration")),
-        description = "W;Missing value(s);QC concentrations;analyzed_amount"
+        where(\(x) {
+          !all(is.na(x))
+        }) &
+          dplyr::any_of(c("concentration")),
+        description = "N;Missing value(s);QC concentrations;concentration"
+      ) |>
+      assertr::assert(
+        assertr::within_bounds(
+          lower.bound = 0,
+          upper.bound = Inf,
+          include.lower = TRUE,
+          include.upper = TRUE,
+          allow.na = TRUE
+        ),
+        all_of(c("concentration")),
+        description = "W;Negative values;QC concentrations;concentration"
       ) |>
       assertr::assert(
         \(x) {
@@ -1579,6 +1650,8 @@ clean_analysis_metadata <- function(d_analyses) {
     ))
   }
 
+  d_analyses <- trim_stray_cells(d_analyses, "analysis_id", "analysis")
+
   # Fill missing columns
   d_analyses <- d_analyses |>
     add_missing_column(
@@ -1703,6 +1776,8 @@ clean_analysis_metadata <- function(d_analyses) {
         "replicate_no",
         integer = TRUE
       ),
+      sample_amount = coerce_checked(.data$sample_amount, "sample_amount"),
+      istd_volume = coerce_checked(.data$istd_volume, "istd_volume"),
       specimen = stringr::str_squish(as.character(.data$specimen)),
       valid_analysis = unname(c(
         "yes" = TRUE,
@@ -1766,6 +1841,8 @@ clean_feature_metadata <- function(d_features) {
       "Feature metadata must have column: `feature_id`. Please verify the input data. "
     ))
   }
+
+  d_features <- trim_stray_cells(d_features, "feature_id", "feature")
   d_features <- d_features |>
     add_missing_column(
       col_name = "feature_class",
@@ -1871,6 +1948,10 @@ clean_feature_metadata <- function(d_features) {
       feature_label = stringr::str_squish(.data$feature_label),
       feature_class = stringr::str_squish(.data$feature_class),
       chem_formula = stringr::str_squish(.data$chem_formula),
+      molecular_weight = coerce_checked(
+        .data$molecular_weight,
+        "molecular_weight"
+      ),
       analyte_id = stringr::str_squish(.data$analyte_id),
       istd_feature_id = stringr::str_squish(.data$istd_feature_id),
       quant_istd_feature_id = stringr::str_squish(.data$istd_feature_id),
@@ -1948,6 +2029,8 @@ clean_istd_metadata <- function(d_istds) {
     ))
   }
 
+  d_istds <- trim_stray_cells(d_istds, "istd_feature_id", "ISTD")
+
   d_istds <- d_istds |>
     add_missing_column(
       col_name = "remarks",
@@ -1962,7 +2045,7 @@ clean_istd_metadata <- function(d_istds) {
       remarks = as.character(.data$remarks)
     ) |>
     mutate(across(
-      starts_with("feature_conc_"),
+      starts_with("istd_conc_"),
       \(x) coerce_checked(x, dplyr::cur_column())
     )) |>
     mutate(across(where(is.character), str_squish)) |>
@@ -2000,6 +2083,8 @@ clean_response_metadata <- function(d_rqc) {
       "Response curves metadata must have following columns: `analysis_id`, `curve_id`, `analyzed_amount` and `analyzed_amount_unit`. Please verify the input data. "
     ))
   }
+
+  d_rqc <- trim_stray_cells(d_rqc, "analysis_id", "response curve")
 
   d_rqc <- d_rqc |>
     add_missing_column(
@@ -2048,6 +2133,12 @@ clean_qcconc_metadata <- function(d_cal) {
     ))
   }
 
+  d_cal <- trim_stray_cells(
+    d_cal,
+    c("sample_id", "analyte_id"),
+    "QC concentration"
+  )
+
   d_cal <- d_cal |>
     add_missing_column(
       col_name = "remarks",
@@ -2070,6 +2161,7 @@ clean_qcconc_metadata <- function(d_cal) {
       ),
       sample_id = stringr::str_squish(as.character(.data$sample_id)),
       analyte_id = stringr::str_squish(as.character(.data$analyte_id)),
+      concentration = coerce_checked(.data$concentration, "concentration"),
       concentration_unit = stringr::str_squish(.data$concentration_unit),
       include_in_analysis = {
         lkp <- c("yes" = TRUE, "true" = TRUE, "no" = FALSE, "false" = FALSE)

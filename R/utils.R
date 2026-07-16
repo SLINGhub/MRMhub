@@ -141,3 +141,56 @@ assert_unique_ids <- function(ids, field, table) {
   }
   invisible(ids)
 }
+
+#' Drop leftover stray rows and headerless columns from spreadsheet metadata
+#'
+#' Spreadsheet metadata often carries stray content: a value or formula remnant
+#' left in a cell with no identifier. Two shapes are trimmed here, both warned so
+#' the removal stays attributable:
+#'
+#' * **Headerless columns** -- a column whose name is missing/blank (a leftover
+#'   column with no header). It cannot be a real field, so drop it. (Named-but-
+#'   unknown columns are the user's own extras; those are left for the trailing
+#'   `select()` in each cleaner to handle.)
+#' * **Keyless rows** -- a row where *all* key columns are `NA`. It has no usable
+#'   key, cannot join to anything, and left in place inflates row counts and can
+#'   trip uniqueness checks. (A row with a *partial* key is a genuine data error,
+#'   left for the assertion layer.) The upstream all-`NA` row filter misses these
+#'   because a stray value elsewhere keeps the row non-empty.
+#'
+#' @param tbl A tibble/data.frame.
+#' @param key_cols Character vector of key column names. Columns absent from
+#'   `tbl` are ignored.
+#' @param table Display name of the table, used in the warning messages.
+#' @return `tbl` with stray columns and rows removed.
+#' @keywords internal
+#' @noRd
+trim_stray_cells <- function(tbl, key_cols, table) {
+  # Headerless (blank / NA name) columns -> genuine leftover columns.
+  nms <- names(tbl)
+  blank_col <- is.na(nms) | trimws(nms) == ""
+  if (any(blank_col)) {
+    n_col <- sum(blank_col)
+    cli::cli_warn(
+      c(
+        "!" = "{n_col} unnamed column{?s} in the {table} metadata {?was/were} dropped (no header -- likely a stray spreadsheet column)."
+      )
+    )
+    tbl <- tbl[, !blank_col, drop = FALSE]
+  }
+
+  keys <- intersect(key_cols, names(tbl))
+  if (length(keys) == 0 || nrow(tbl) == 0) {
+    return(tbl)
+  }
+  stray <- rowSums(!is.na(tbl[keys])) == 0
+  if (any(stray)) {
+    n_stray <- sum(stray)
+    cli::cli_warn(c(
+      "!" = "{n_stray} stray row{?s} in the {table} metadata {?was/were} dropped ({cli::qty(length(keys))}no value in key column{?s} {.field {keys}}).",
+      "i" = "This usually indicates a leftover cell in the source spreadsheet."
+    ))
+    tbl <- tbl[!stray, , drop = FALSE]
+  }
+  tbl
+}

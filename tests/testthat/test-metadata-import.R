@@ -708,3 +708,86 @@ test_that("an unrecognized qc_type is warned about and preserved, then drops to 
   expect_true(is.na(factor("WEIRD", levels = qc_levels)))
   expect_false(is.na(factor("SPL", levels = qc_levels)))
 })
+
+test_that("clean_* coerce character numeric metadata columns to numeric", {
+  # Previously clean_istd_metadata coerced starts_with("feature_conc_") -- a
+  # no-op, since the columns are istd_conc_*, so ISTD concentrations stayed
+  # character. Sample amount / istd volume / MW / concentration read from CSV
+  # were likewise left as character.
+  istd <- mrmhub:::clean_istd_metadata(
+    dplyr::tibble(istd_feature_id = "X", istd_conc_nmolar = "5.5")
+  )
+  expect_type(istd$istd_conc_nmolar, "double")
+
+  qc <- mrmhub:::clean_qcconc_metadata(dplyr::tibble(
+    sample_id = "S",
+    analyte_id = "A",
+    concentration = "3.2",
+    concentration_unit = "uM"
+  ))
+  expect_type(qc$concentration, "double")
+
+  an <- mrmhub:::clean_analysis_metadata(dplyr::tibble(
+    analysis_id = "a1",
+    sample_amount = "10",
+    istd_volume = "5"
+  ))
+  expect_type(an$sample_amount, "double")
+  expect_type(an$istd_volume, "double")
+
+  ft <- mrmhub:::clean_feature_metadata(dplyr::tibble(
+    feature_id = "F",
+    molecular_weight = "200"
+  ))
+  expect_type(ft$molecular_weight, "double")
+})
+
+test_that("clean_* drop stray rows and headerless columns with a warning", {
+  # A row whose key is NA (a leftover cell elsewhere) is dropped and surfaced.
+  expect_warning(
+    r <- mrmhub:::clean_feature_metadata(
+      dplyr::tibble(feature_id = c("A", NA), feature_class = c("x", "STRAY"))
+    ),
+    "stray row"
+  )
+  expect_setequal(r$feature_id[!is.na(r$feature_id)], "A")
+
+  # A column with a blank header is a stray spreadsheet column -> dropped/warned.
+  d <- dplyr::tibble(feature_id = c("A", "B"), z = c("x", "y"))
+  names(d)[2] <- ""
+  expect_warning(mrmhub:::clean_feature_metadata(d), "unnamed column")
+})
+
+test_that("metadata validation warns (overridably) on <=0 divisors, notes on missing", {
+  mexp <- mrmhub::import_data_masshunter(
+    mrmhub::MRMhubExperiment(),
+    testthat::test_path(
+      "testdata/masshunter/MRMhub_TestData_MHQuant_S1P_DefaultSampleInfo_RT-Areas-FWHM.csv"
+    ),
+    import_metadata = FALSE
+  )
+  ids <- unique(mexp@dataset_orig$analysis_id)
+  base_df <- dplyr::tibble(analysis_id = ids, qc_type = "SPL")
+
+  # A present <=0 sample_amount corrupts the concentration divisor -> W, which
+  # blocks by default but can be overridden with ignore_warnings = TRUE.
+  df_neg <- base_df |>
+    dplyr::mutate(sample_amount = c(-5, rep(10, length(ids) - 1)))
+  expect_error(
+    suppressMessages(mrmhub::import_metadata_analyses(mexp, table = df_neg)),
+    "verify warnings"
+  )
+  expect_no_error(
+    suppressMessages(
+      mrmhub::import_metadata_analyses(mexp, table = df_neg, ignore_warnings = TRUE)
+    )
+  )
+
+  # A *missing* sample_amount is processable (only needed if quantifying, which
+  # guards it) -> N, which never blocks.
+  df_na <- base_df |>
+    dplyr::mutate(sample_amount = c(NA_real_, rep(10, length(ids) - 1)))
+  expect_no_error(
+    suppressMessages(mrmhub::import_metadata_analyses(mexp, table = df_na))
+  )
+})
