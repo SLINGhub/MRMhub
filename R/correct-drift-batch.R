@@ -1852,12 +1852,10 @@ correct_batch_centering <- function(
     cli_alert_success(col_green(glue::glue(
       "Batch median-centering of {nbatches} batches was applied to drift-corrected {var_names} of {if_else(all(is.na(feature_list)), 'all', 'the selected')} {nfeat} features."
     )))
-    data@status_processing <- "Batch- and drift-corrected {var_names}"
   } else {
     cli_alert_success(col_green(glue::glue(
       "Batch median-centering of {nbatches} batches was applied to raw {var_names} of {if_else(all(is.na(feature_list)), 'all', 'the selected')} {nfeat} features."
     )))
-    data@status_processing <- "Batch-corrected {var_names}"
   }
   # Print stats
 
@@ -1870,9 +1868,6 @@ correct_batch_centering <- function(
       "remained the same at",
     TRUE ~ "remained similar at"
   )
-
-  # cli_alert_info(cli::col_grey(
-  #     c("The median CV of features in the study samples across batches {.strong {text_change}} by {d_res_sum$cv_diff_text}% (range: {d_res_sum$cv_diff_min}% to {d_res_sum$cv_diff_max}%), from {format(round(d_res_sum$cv_before,1), nsmall = 1)}%  to {format(round(d_res_sum$cv_after,1), nsmall = 1)}%.")))
 
   cli_alert_info(cli::col_grey(
     "The median CV change of all features in study samples was {.strong {formatC(d_res_sum$cv_diff_median, format = 'f', digits = 2)}%} (range: {formatC(d_res_sum$cv_diff_min, format = 'f', digits = 2)}% to {formatC(d_res_sum$cv_diff_max, format = 'f', digits = 2)}%).  The median absolute CV of all features {.strong {text_change}} {.strong {formatC(d_res_sum$cv_before, format = 'f', digits = 2)}% {ifelse(str_detect(text_change, 'remained'), '',  paste0('to ', formatC(d_res_sum$cv_after, format = 'f', digits = 2),'%'))}}."
@@ -1931,7 +1926,6 @@ fun_batch.correction = function(
   ...
 ) {
   batch <- tab$batch_id
-  batch.order <- seq_len(nrow(tab))
   val <- tab$y
   y_fit_after <- tab$y_fit_after # BB
   if (log_transform_internal) {
