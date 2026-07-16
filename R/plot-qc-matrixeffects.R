@@ -192,7 +192,7 @@ plot_qc_matrixeffects <- function(
     ) +
     ggplot2::coord_cartesian(ylim = y_lim, expand = TRUE) +
     ggplot2::theme_bw(base_size = font_base_size) +
-    ylab("Standardized Intensity (% of uncorrected)") +
+    ylab("Standardized Intensity (% of mean)") +
     xlab("Internal Standard") +
     theme(
       axis.text.x = ggplot2::element_text(angle = angle_x, hjust = 1),

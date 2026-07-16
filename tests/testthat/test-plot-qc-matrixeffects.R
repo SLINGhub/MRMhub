@@ -13,6 +13,16 @@ test_that("Default plot_qc_matrixeffects looks as expected", {
 })
 
 
+test_that("y-axis label matches the standardization (% of mean)", {
+  p <- plot_qc_matrixeffects(data = mexp)
+  # The axis must describe what is plotted: each point is an intensity as a
+  # percentage of its (per-feature) mean, not a "% of uncorrected" baseline.
+  expect_match(p$labels$y, "% of mean", fixed = TRUE)
+  # The standardization sets each feature's mean to 100, so the pooled mean is 100.
+  expect_equal(mean(p$data$scaled_intensity, na.rm = TRUE), 100)
+})
+
+
 # --- Tests for Core Logic ---
 
 test_that("batchwise_normalization = FALSE changes the standardization", {
