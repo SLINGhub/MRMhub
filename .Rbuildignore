@@ -19,6 +19,9 @@
 ^mydata\.csv$
 # Repo-level files that are not part of the R package
 ^integrator$
+^integrator_w_gui$
+^integrator_visualizer_src$
+^MRMhub-Dataset1$
 ^docs-site$
 ^docs-review$
 ^CLAUDE\.md$
