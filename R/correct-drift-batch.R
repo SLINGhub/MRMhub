@@ -605,21 +605,6 @@ correct_drift <- function(
     ) |>
     group_split(!!!syms(adj_groups))
 
-  # Calculate the total number of groups and set up the progress bar
-  total_groups <- length(d_smooth_res)
-  update_frequency <- ceiling(total_groups * 0.02)
-
-  # Setup progress bar, as the build-in  based on cli does not work in quarto
-  # update_progress <- function(i) {
-  #   if (i %% update_frequency == 0) {
-  #     setTxtProgressBar(pb, i)
-  #   }
-  # }
-
-  # if (show_progress) {
-  #   pb <- txtProgressBar(min = 0, max = total_groups, style = 3, width = 44)
-  # }
-
   arglist <- list(...)
 
   if (is.character(smooth_fun)) {
@@ -652,17 +637,7 @@ correct_drift <- function(
 
   d_smooth_res <- d_smooth_res_mapped |> bind_rows()
 
-  # if (show_progress) {
-  #   setTxtProgressBar(pb, total_groups)
-  #   cat(cli::col_green(" - trend smoothing done!"))
-  #   close(pb)
-  # }
-
   if (recalc_trend_after) {
-    # if (show_progress) {
-    #   pb <- txtProgressBar(min = 0, max = total_groups, style = 3, width = 44)
-    # }
-
     d_smooth_recalc <- d_smooth_res |> rename(y = "y_adj")
 
     d_smooth_recalc <- d_smooth_recalc |>
@@ -701,12 +676,6 @@ correct_drift <- function(
         "batch_id",
         y_fit_after = "y_fit"
       )
-
-    # if (show_progress) {
-    #   setTxtProgressBar(pb, total_groups)
-    #   cat(cli::col_green(" - trend recalc done!"))
-    #   close(pb)
-    # }
 
     d_smooth_res <- d_smooth_res |>
       left_join(
