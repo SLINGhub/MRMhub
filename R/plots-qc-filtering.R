@@ -446,7 +446,10 @@ plot_qc_summary_overall <- function(
     geom_text(
       aes(
         label = .data$count_pass,
-        hjust = ifelse(.data$count_pass < max(.data$count_pass) / 1.5, -2, 2), # <- Here lies the magic
+        # Place the count label outside bars shorter than ~2/3 of the longest
+        # (hjust -2) and inside longer bars (hjust 2), so labels never overflow
+        # the panel or run off the bar end (x is flipped via coord_flip()).
+        hjust = ifelse(.data$count_pass < max(.data$count_pass) / 1.5, -2, 2),
       ),
       size = font_base_size / 3.5,
     ) +
