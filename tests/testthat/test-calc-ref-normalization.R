@@ -452,8 +452,10 @@ test_that("calibrate_by_reference works", {
 
 
 test_that("calibrate_by_reference batch-wise works", {
+  # The "check reference sample has non-zero values" warning is asserted in the
+  # dedicated tests below; suppress it here where it is incidental.
   expect_message(
-    mexp_res <- calibrate_by_reference(
+    mexp_res <- suppressWarnings(calibrate_by_reference(
       data = mexp,
       variable = "conc",
       reference_sample_id = "NIST_SRM1950",
@@ -461,7 +463,7 @@ test_that("calibrate_by_reference batch-wise works", {
       batch_wise = TRUE,
       undefined_conc_action = "original",
       store_normalized = FALSE
-    ),
+    )),
     "3 feature concentrations were batch-wise re-calibrated ",
     fixed = TRUE
   )

@@ -207,13 +207,15 @@ test_that("plot_runscatter filter work", {
 
 # check diverse feature filters
 test_that("plot_runscatter with unknown qc_types", {
-  mexp_newqc <- import_data_csv(
+  # This fixture deliberately contains non-standard QC types; the expected
+  # "Unrecognized qc_type" import warning is asserted in test-data-import.R.
+  mexp_newqc <- suppressWarnings(import_data_csv(
     data = MRMhubExperiment(),
     path = test_path("testdata/plain-wide/plain_wide_dataset2_22rows_unknownQC.csv"),
     variable_name = "conc",
     analysis_id_col = "analysis_id",
     import_metadata = TRUE
-  )
+  ))
 
   expect_message(
     p <- plot_runscatter(

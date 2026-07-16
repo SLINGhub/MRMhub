@@ -1558,34 +1558,34 @@ mexp_dcorr <- correct_drift_gaussiankernel(
 
 test_that("correct_batch_centering works", {
   expect_message(
-    mexp_batch1 <- correct_batch_centering(
+    mexp_batch1 <- suppressWarnings(correct_batch_centering(
       mexp_dcorr,
       correct_scale = FALSE,
       ref_qc_types = "SPL",
       variable = "conc"
-    ),
+    )),
     "Adding batch correction on top of `conc` drift-correction",
     fixed = TRUE
   )
 
   expect_message(
-    mexp_batch1 <- correct_batch_centering(
+    mexp_batch1 <- suppressWarnings(correct_batch_centering(
       mexp_dcorr,
       correct_scale = FALSE,
       ref_qc_types = "SPL",
       variable = "conc"
-    ),
+    )),
     "Batch median-centering of 6 batches was applied to drift-corrected concentrations of all 29 features",
     fixed = TRUE
   )
 
   expect_message(
-    mexp_batch1 <- correct_batch_centering(
+    mexp_batch1 <- suppressWarnings(correct_batch_centering(
       mexp_dcorr,
       correct_scale = FALSE,
       ref_qc_types = "SPL",
       variable = "conc"
-    ),
+    )),
     "range: -8.40% to 2.20%",
     fixed = TRUE
   )
@@ -1749,14 +1749,14 @@ test_that("correct_batch_centering works", {
 test_that("correct_batch_centering works with replace_previous", {
   # add on top of previous with only drift correction before is same result as replace previous
   expect_message(
-    mexp_batch1 <- correct_batch_centering(
+    mexp_batch1 <- suppressWarnings(correct_batch_centering(
       mexp_dcorr,
       correct_scale = FALSE,
       replace_previous = FALSE,
       ref_qc_types = "BQC",
       variable = "conc",
       replace_exisiting_trendcurves = FALSE
-    ),
+    )),
     "-4.30% to 3.10%)",
     fixed = TRUE
   )
@@ -1771,14 +1771,14 @@ test_that("correct_batch_centering works with replace_previous", {
   )
 
   expect_message(
-    mexp_batch2 <- correct_batch_centering(
+    mexp_batch2 <- suppressWarnings(correct_batch_centering(
       mexp_batch1,
       correct_scale = FALSE,
       replace_previous = FALSE,
       ref_qc_types = "SPL",
       variable = "conc",
       replace_exisiting_trendcurves = FALSE
-    ),
+    )),
     "-4.10% to -0.10%)",
     fixed = TRUE
   )
