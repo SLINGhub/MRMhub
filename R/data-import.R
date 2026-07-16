@@ -555,6 +555,15 @@ import_data_main <- function(
     file_paths <- fs::dir_ls(path, glob = file_ext)
   }
 
+  # An empty match (wrong/empty folder, or no file of the expected type) would
+  # otherwise surface later as a cryptic "Can't subset columns ... analysis_id".
+  if (length(file_paths) == 0) {
+    cli::cli_abort(col_red(c(
+      "No files matching {.val {file_ext}} were found in {.path {path}}.",
+      "i" = "Please verify the folder path and the expected file type."
+    )))
+  }
+
   if (!all(fs::file_exists(file_paths))) {
     cli::cli_abort(col_red(
       "One or more given files do not exist. Please verify file paths."
@@ -1054,10 +1063,13 @@ parse_masshunter_csv <- function(
       )
     ) |>
     dplyr::mutate(
-      raw_data_filename = stringr::str_replace(
+      # Strip only a trailing `.d` extension (case-insensitive). The previous
+      # unanchored first-match str_replace corrupted any name containing ".d"
+      # earlier in the string (e.g. "Study.data_01.d"), producing a wrong
+      # analysis_id and even collisions between distinct files.
+      raw_data_filename = stringr::str_remove(
         .data$raw_data_filename,
-        "\\.d",
-        ""
+        stringr::regex("\\.d$", ignore_case = TRUE)
       )
     ) |>
     dplyr::mutate(dplyr::across(where(is.character), stringr::str_squish)) |>

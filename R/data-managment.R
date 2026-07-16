@@ -898,8 +898,18 @@ set_intensity_var <- function(
   variable_name <- stringr::str_c("feature_", variable_strip)
   if (auto_select) {
     var_list <- unlist(rlang::list2(...), use.names = FALSE)
-    id_all <- match(var_list, names(data@dataset_orig))
-    idx <- which(!is.na(id_all))[1]
+    # Pick the first candidate that is both present AND has data. Selecting a
+    # column that exists but is entirely NA (header present, no values) would
+    # silently make every intensity NA.
+    is_usable <- vapply(
+      var_list,
+      function(v) {
+        v %in% names(data@dataset_orig) &&
+          any(!is.na(data@dataset_orig[[v]]))
+      },
+      logical(1)
+    )
+    idx <- which(is_usable)[1]
     if (!is.na(idx)) {
       data@feature_intensity_var = var_list[idx]
       cli_alert_info(

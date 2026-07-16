@@ -752,3 +752,22 @@ test_that("exclude_features excludes features", {
     "All exclusions removed"
   )
 })
+
+test_that("set_intensity_var auto_select skips an all-NA candidate column", {
+  m <- mrmhub::MRMhubExperiment()
+  m@dataset_orig <- tibble::tibble(
+    analysis_id = c("a1", "a2"),
+    feature_id = c("F1", "F1"),
+    feature_area = c(NA_real_, NA_real_), # present but no data
+    feature_height = c(100, 200) # has data
+  )
+  res <- suppressMessages(set_intensity_var(
+    m,
+    variable_name = NULL,
+    auto_select = TRUE,
+    warnings = TRUE,
+    "feature_area",
+    "feature_height"
+  ))
+  expect_equal(res@feature_intensity_var, "feature_height")
+})

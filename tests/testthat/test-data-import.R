@@ -1456,3 +1456,43 @@ test_that("import_data_skyline works", {
   expect_equal(mexp@dataset[[81, "feature_class"]], "Steroids")
   expect_equal(mexp@dataset[[81, "feature_id"]], "Aldosterone D4_365_319")
 })
+
+test_that("importing from a folder with no matching files gives a clear error", {
+  empty_dir <- withr::local_tempdir()
+  expect_error(
+    mrmhub::import_data_masshunter(
+      mrmhub::MRMhubExperiment(),
+      path = empty_dir,
+      import_metadata = FALSE
+    ),
+    "No files matching"
+  )
+})
+
+test_that("MassHunter import strips only a trailing .d, not a '.d' in the middle of a name", {
+  src <- testthat::test_path(
+    "testdata/masshunter/MRMhub_TestData_MHQuant_S1P_DefaultSampleInfo_RT-Areas-FWHM.csv"
+  )
+  lines <- readLines(src, warn = FALSE)
+  # Give one sample a Data File name that also contains '.d' in the middle.
+  lines <- gsub(
+    "006_EBLK_Extracted Blank+ISTD01.d",
+    "006_EBLK.dmid_01.d",
+    lines,
+    fixed = TRUE
+  )
+  tmp <- withr::local_tempfile(fileext = ".csv")
+  writeLines(lines, tmp)
+
+  mexp <- suppressMessages(mrmhub::import_data_masshunter(
+    mrmhub::MRMhubExperiment(),
+    path = tmp,
+    import_metadata = FALSE
+  ))
+  ids <- unique(mexp@dataset_orig$analysis_id)
+
+  # only the trailing .d is removed; the mid-name '.d' is preserved
+  expect_true("006_EBLK.dmid_01" %in% ids)
+  # and no id is left with a trailing .d
+  expect_false(any(grepl("\\.d$", ids)))
+})
