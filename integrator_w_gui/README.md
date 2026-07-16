@@ -39,6 +39,13 @@ To compile on Mac:
 - Download the source and cd bash directory to the MRMhub folder
 - run `bash integrator_w_gui/gui/build-macos.sh`
 - output in integrator_w_gui/gui/src-tauri/target/release, put both executables in the same directory to run (may need to verify security perms on newer versions of OSX!)
+- an error may print in bash after build is done, you can ignore it as it doesn't affect the actual build (related to windows style crlf line endings being used)
+- IF you are unable to run the script at all and it exits with errors, cd to the repo folder and run:
+```bash
+perl -pi -e 's/\r$//' integrator_w_gui/gui/build-macos.sh
+chmod +x integrator_w_gui/gui/build-macos.sh
+./integrator_w_gui/gui/build-macos.sh
+```
 
 To compile on Windows:
 - Download the source and cd bash directory to the MRMhub folder
