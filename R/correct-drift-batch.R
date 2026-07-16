@@ -158,7 +158,7 @@ fun_loess <- function(tbl, ref_qc_types, log_transform_internal, ...) {
   surface <- ifelse(arg$extrapolate, "direct", "interpolate")
   if (log_transform_internal) {
     tbl$y <- log10(tbl$y)
-  } #TODO: suppressWarnings?
+  }
 
   warnings_list <- NULL
   res <- tryCatch(
