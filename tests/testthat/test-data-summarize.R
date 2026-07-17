@@ -55,6 +55,93 @@ test_that("Default plot_qc_matrixeffects looks as expected", {
 
 })
 
+test_that("data_sum_features sums feature_area and NAs the peak widths of merged analytes", {
+  ded <- suppressMessages(data_sum_features(mexp, qualifier_action = "include"))
+
+  an <- mexp@dataset$analysis_id[1]
+  constituents <- mexp@dataset[
+    mexp@dataset$analysis_id == an &
+      stringr::str_detect(mexp@dataset$feature_id, "LPC 18:1 \\((a|b)\\)"),
+  ]
+  expect_gt(nrow(constituents), 1) # a real merge happens
+
+  merged <- ded@dataset[
+    ded@dataset$analysis_id == an & ded@dataset$feature_id == "LPC 18:1",
+  ]
+  expect_equal(nrow(merged), 1)
+
+  # feature_area is an extensive signal variable and is summed like intensity /
+  # height; previously it fell through the aggregation and became a silent NA.
+  expect_equal(merged$feature_area, sum(constituents$feature_area, na.rm = TRUE))
+  expect_equal(merged$feature_rt, mean(constituents$feature_rt, na.rm = TRUE))
+
+  # a merged analyte is not a single chromatographic peak -> no meaningful width
+  expect_true(is.na(merged$feature_fwhm))
+  expect_true(is.na(merged$feature_width))
+
+  # ... but unmerged features keep theirs
+  kept <- ded@dataset[ded@dataset$feature_id == "CE 18:1", ]
+  expect_false(all(is.na(kept$feature_fwhm)))
+  expect_false(all(is.na(kept$feature_width)))
+})
+
+test_that("data_sum_features invalidates values derived from the pre-merge intensities", {
+  norm <- suppressMessages(normalize_by_istd(mexp))
+  expect_true("feature_norm_intensity" %in% names(norm@dataset))
+  expect_true(norm@is_istd_normalized)
+
+  expect_message(
+    ded <- data_sum_features(norm, qualifier_action = "include"),
+    "no longer valid"
+  )
+
+  # the derived column is removed, not left as a silent all-NA on merged analytes
+  expect_false("feature_norm_intensity" %in% names(ded@dataset))
+  expect_false(ded@is_istd_normalized)
+  expect_false(ded@is_filtered)
+  expect_equal(nrow(ded@metrics_qc), 0L)
+  expect_false(any(ded@var_drift_corrected))
+  expect_false(any(ded@var_batch_corrected))
+})
+
+test_that("data_sum_features removes correction snapshots of the merged variables", {
+  norm <- suppressMessages(normalize_by_istd(mexp))
+  drift <- suppressWarnings(suppressMessages(correct_drift_gaussiankernel(
+    norm,
+    variable = "feature_norm_intensity",
+    ref_qc_types = "BQC"
+  )))
+  expect_true(any(grepl("^feature_norm_intensity_", names(drift@dataset))))
+
+  ded <- suppressMessages(data_sum_features(drift, qualifier_action = "include"))
+
+  # no stale `_before` / `_fit` / `_raw` columns survive the merge as all-NA
+  expect_false(any(grepl(
+    "^feature_(intensity|norm_intensity|conc)_",
+    names(ded@dataset)
+  )))
+  expect_false(any(ded@var_drift_corrected))
+})
+
+test_that("data_sum_features warns when merged transitions disagree on feature metadata", {
+  mexp_conflict <- mexp
+  mexp_conflict@annot_features$istd_feature_id[
+    mexp_conflict@annot_features$feature_id == "LPC 18:1 (b)"
+  ] <- "CE 18:1 d7 (ISTD)"
+
+  expect_warning(
+    suppressMessages(data_sum_features(mexp_conflict, qualifier_action = "include")),
+    "differing feature metadata"
+  )
+})
+
+test_that("data_sum_features stays silent when merged transitions agree on feature metadata", {
+  expect_no_warning(suppressMessages(data_sum_features(
+    mexp,
+    qualifier_action = "include"
+  )))
+})
+
 test_that("data_sum_features returns NA (not a fabricated 0) when all merged transitions are missing", {
   mexp_na <- mexp
   an <- mexp_na@dataset$analysis_id[1]

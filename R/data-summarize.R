@@ -10,10 +10,27 @@
 #' of featured that share same analyte_id. Currently the original feature_id is not backed up anywhere. Use with caution
 #' and check results carefully!
 #'
+#' @details
+#' Only raw signal variables are aggregated across the transitions of an analyte:
+#' `feature_intensity`, `feature_height` and `feature_area` are summed, and
+#' `feature_rt` is averaged. `feature_fwhm` and `feature_width` are set to `NA`
+#' for merged analytes: the constituents are separate chromatographic peaks, so
+#' no aggregate of their peak widths describes the merged quantity.
+#'
+#' Summing transitions redefines `feature_intensity`, so all values *derived*
+#' from the pre-merge intensities are invalidated and removed: normalized
+#' intensities, concentrations, drift/batch correction results and QC metrics.
+#' Re-run [normalize_by_istd()] and the quantitation/correction steps after
+#' merging. A message reports this when such values were present.
+#'
+#' A merged analyte inherits the feature metadata (`feature_class`,
+#' `feature_label`, `istd_feature_id`) of its *first* constituent transition. A
+#' warning is issued when the constituents disagree, since the value that wins is
+#' then arbitrary -- for `istd_feature_id` it silently decides which internal
+#' standard the merged analyte is normalized against.
 #'
 #' @param data MRMhubExperiment object
 #' @param qualifier_action Character. How to handle qualifier features. To sum them up separately select "separate",
-#' @param feature_classes Select feature classes to sum up. Default (NA) is to sum up all feature classes according to their analyte_id.
 #' to include them in the sum if quantifier select "include", to not sum them up select "exclude".
 #'
 #' @return MRMhubExperiment object
@@ -22,13 +39,13 @@
 # The main function structure remains the same
 data_sum_features <- function(
   data,
-  qualifier_action = "include",
-  feature_classes = NA
+  qualifier_action = "include"
 ) {
   qualifier_action <- rlang::arg_match(
     qualifier_action,
     c("separate", "include", "exclude")
   )
+  warn_inconsistent_merged_metadata(data@annot_features)
   ds <- data@dataset
 
   ds_na_analytes <- ds |> dplyr::filter(is.na(.data$analyte_id))
@@ -50,7 +67,7 @@ data_sum_features <- function(
       dplyr::group_by(.data$analysis_id, .data$analyte_id) |>
       dplyr::summarise(
         dplyr::across(
-          any_of(c("feature_intensity", "feature_height", "feature_fwhm")),
+          any_of(c("feature_intensity", "feature_height", "feature_area")),
           # An all-missing group must stay NA, not become a fabricated 0.
           ~ if (all(is.na(.x))) NA_real_ else sum(.x, na.rm = TRUE)
         ),
@@ -58,6 +75,10 @@ data_sum_features <- function(
           any_of(c("feature_rt")),
           ~ if (all(is.na(.x))) NA_real_ else mean(.x, na.rm = TRUE)
         ),
+        # The constituents are separate chromatographic peaks, so neither summing
+        # nor averaging their widths describes the merged analyte. Set to NA
+        # explicitly rather than reporting a meaningless aggregate.
+        dplyr::across(any_of(c("feature_fwhm", "feature_width")), ~ NA_real_),
         .groups = "drop"
       )
 
@@ -149,5 +170,77 @@ data_sum_features <- function(
     distinct()
 
   data@annot_features <- annot
+
+  # Summing transitions redefines `feature_intensity`, so every value derived
+  # from the pre-merge intensities no longer describes the data. Invalidate them
+  # (removes the columns and informs the user) instead of leaving stale or all-NA
+  # values behind, mirroring `correct_interferences()`.
+  data <- update_after_normalization(data, FALSE)
+  data@var_drift_corrected <- c(
+    feature_intensity = FALSE,
+    feature_norm_intensity = FALSE,
+    feature_conc = FALSE
+  )
+  data@var_batch_corrected <- c(
+    feature_intensity = FALSE,
+    feature_norm_intensity = FALSE,
+    feature_conc = FALSE
+  )
+  data@metrics_qc <- data@metrics_qc[FALSE, ]
+
+  # `update_after_normalization()` drops the normalized/quantitated variables
+  # themselves, but not the correction snapshots derived from them (`_orig`,
+  # `_before`, `_fit`, ...), which would otherwise linger as all-NA columns for
+  # the merged analytes.
+  derived_vars <- names(data@dataset)[
+    grepl("^feature_(intensity|norm_intensity|conc)_", names(data@dataset))
+  ]
+  data@dataset <- data@dataset |>
+    select(-all_of(derived_vars), -any_of("feature_pmol_total"))
+
   data
+}
+
+# Merging transitions attributes the *first* constituent's feature metadata to
+# the merged analyte (`distinct(.keep_all = TRUE)` in `aggregate_quant()`). That
+# is only safe while the constituents agree; a disagreement means an arbitrary
+# value wins, which for `istd_feature_id` silently decides the ISTD the merged
+# analyte is normalized against. Checked on the (small) feature metadata rather
+# than on the long `@dataset`.
+warn_inconsistent_merged_metadata <- function(annot_features) {
+  cols <- intersect(
+    c("feature_class", "feature_label", "istd_feature_id"),
+    names(annot_features)
+  )
+  if (length(cols) == 0 || !"analyte_id" %in% names(annot_features)) {
+    return(invisible(NULL))
+  }
+
+  merged <- annot_features |>
+    dplyr::filter(!is.na(.data$analyte_id), .data$analyte_id != "") |>
+    dplyr::group_by(.data$analyte_id) |>
+    dplyr::filter(dplyr::n() > 1) |>
+    dplyr::ungroup()
+  if (nrow(merged) == 0) {
+    return(invisible(NULL))
+  }
+
+  conflicts <- merged |>
+    dplyr::group_by(.data$analyte_id) |>
+    dplyr::summarise(
+      dplyr::across(all_of(cols), ~ dplyr::n_distinct(.x) > 1),
+      .groups = "drop"
+    )
+  fields <- cols[vapply(conflicts[cols], any, logical(1))]
+  if (length(fields) == 0) {
+    return(invisible(NULL))
+  }
+
+  analytes <- conflicts$analyte_id[Reduce(`|`, conflicts[fields])]
+  cli::cli_warn(c(
+    "!" = "{length(analytes)} merged analyte{?s} {?has/have} transitions with differing feature metadata.",
+    "i" = "{cli::qty(length(fields))}The first transition's value is used for {?this field/these fields}: {.field {fields}}",
+    "i" = "{cli::qty(length(analytes))}Affected analyte{?s}: {.val {utils::head(analytes, 5)}}"
+  ))
+  invisible(NULL)
 }

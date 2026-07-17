@@ -4,14 +4,12 @@
 \alias{data_sum_features}
 \title{Sum up feature intensities per analyte}
 \usage{
-data_sum_features(data, qualifier_action = "include", feature_classes = NA)
+data_sum_features(data, qualifier_action = "include")
 }
 \arguments{
 \item{data}{MRMhubExperiment object}
 
-\item{qualifier_action}{Character. How to handle qualifier features. To sum them up separately select "separate",}
-
-\item{feature_classes}{Select feature classes to sum up. Default (NA) is to sum up all feature classes according to their analyte_id.
+\item{qualifier_action}{Character. How to handle qualifier features. To sum them up separately select "separate",
 to include them in the sum if quantifier select "include", to not sum them up select "exclude".}
 }
 \value{
@@ -26,4 +24,23 @@ want to combine into a single analyte intensity value, such as LPC sn1 and sn2 s
 NOTE: This is still an experimental function! It will overwrite the feature_id in the dataset and analysis metadata
 of featured that share same analyte_id. Currently the original feature_id is not backed up anywhere. Use with caution
 and check results carefully!
+}
+\details{
+Only raw signal variables are aggregated across the transitions of an analyte:
+\code{feature_intensity}, \code{feature_height} and \code{feature_area} are summed, and
+\code{feature_rt} is averaged. \code{feature_fwhm} and \code{feature_width} are set to \code{NA}
+for merged analytes: the constituents are separate chromatographic peaks, so
+no aggregate of their peak widths describes the merged quantity.
+
+Summing transitions redefines \code{feature_intensity}, so all values \emph{derived}
+from the pre-merge intensities are invalidated and removed: normalized
+intensities, concentrations, drift/batch correction results and QC metrics.
+Re-run \code{\link[=normalize_by_istd]{normalize_by_istd()}} and the quantitation/correction steps after
+merging. A message reports this when such values were present.
+
+A merged analyte inherits the feature metadata (\code{feature_class},
+\code{feature_label}, \code{istd_feature_id}) of its \emph{first} constituent transition. A
+warning is issued when the constituents disagree, since the value that wins is
+then arbitrary -- for \code{istd_feature_id} it silently decides which internal
+standard the merged analyte is normalized against.
 }
