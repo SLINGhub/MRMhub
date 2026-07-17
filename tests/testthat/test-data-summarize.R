@@ -85,6 +85,62 @@ test_that("data_sum_features sums feature_area and NAs the peak widths of merged
   expect_false(all(is.na(kept$feature_width)))
 })
 
+test_that("data_sum_features keeps feature_id unique when merged transitions disagree", {
+  # `mexp2` merges several PC transitions into one analyte and marks the "PC 4*"
+  # ones as qualifiers, so the constituents disagree on `is_quantifier` -- the
+  # normal quantifier/qualifier merge. A full-row `distinct()` kept every
+  # disagreeing row, leaving a duplicated `feature_id` in the feature metadata
+  # that fans out (or now aborts) the next join on it.
+  for (action in c("include", "separate", "exclude")) {
+    ded <- suppressWarnings(suppressMessages(
+      data_sum_features(mexp2, qualifier_action = action)
+    ))
+    expect_equal(sum(ded@annot_features$feature_id == "PC"), 1L)
+    expect_false(anyDuplicated(ded@annot_features$feature_id) > 0)
+  }
+
+  # Metadata the merge does not decide still comes from the first constituent.
+  ded <- suppressWarnings(suppressMessages(
+    data_sum_features(mexp2, qualifier_action = "include")
+  ))
+  first <- mexp2@annot_features |>
+    dplyr::filter(!is.na(.data$analyte_id), .data$analyte_id == "PC") |>
+    head(1)
+  merged <- ded@annot_features |> dplyr::filter(.data$feature_id == "PC")
+  expect_equal(merged$istd_feature_id, first$istd_feature_id)
+})
+
+test_that("a merged analyte quantifies if any constituent does", {
+  # quant + qual and quant + quant give a quantifier; qual + qual stays a
+  # qualifier. `is_quantifier` is decided by the merge, so it must not depend on
+  # the constituents' row order, and the feature metadata must agree with the
+  # dataset.
+  merge_two <- function(q1, q2) {
+    m <- mexp_orig
+    af <- m@annot_features
+    f <- head(af$feature_id[!af$is_istd & !af$feature_id %in% af$istd_feature_id], 2)
+    m@annot_features$analyte_id[m@annot_features$feature_id %in% f] <- "M"
+    m@annot_features$is_quantifier[m@annot_features$feature_id %in% f] <- c(q1, q2)
+    m@dataset$analyte_id[m@dataset$feature_id %in% f] <- "M"
+    m@dataset$is_quantifier[m@dataset$feature_id == f[1]] <- q1
+    m@dataset$is_quantifier[m@dataset$feature_id == f[2]] <- q2
+    suppressWarnings(suppressMessages(
+      data_sum_features(m, qualifier_action = "include")
+    ))
+  }
+  quantifier_of <- function(ded) {
+    annot <- ded@annot_features$is_quantifier[ded@annot_features$feature_id == "M"]
+    ds <- unique(ded@dataset$is_quantifier[ded@dataset$feature_id == "M"])
+    expect_equal(annot, ds) # the two tables must not disagree
+    annot
+  }
+
+  expect_false(quantifier_of(merge_two(FALSE, FALSE))) # qual  + qual  = qual
+  expect_true(quantifier_of(merge_two(TRUE, TRUE))) # quant + quant = quant
+  expect_true(quantifier_of(merge_two(TRUE, FALSE))) # quant + qual  = quant
+  expect_true(quantifier_of(merge_two(FALSE, TRUE))) # ... and order-independent
+})
+
 test_that("data_sum_features invalidates values derived from the pre-merge intensities", {
   norm <- suppressMessages(normalize_by_istd(mexp))
   expect_true("feature_norm_intensity" %in% names(norm@dataset))

@@ -43,4 +43,9 @@ A merged analyte inherits the feature metadata (\code{feature_class},
 warning is issued when the constituents disagree, since the value that wins is
 then arbitrary -- for \code{istd_feature_id} it silently decides which internal
 standard the merged analyte is normalized against.
+
+\code{is_quantifier} is not inherited but determined by the merge: the merged
+analyte is a quantifier if any of its constituents is one. A quantifier
+combined with either a qualifier or another quantifier therefore yields a
+quantifier, whereas qualifiers merged among themselves remain a qualifier.
 }

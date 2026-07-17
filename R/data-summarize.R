@@ -29,6 +29,11 @@
 #' then arbitrary -- for `istd_feature_id` it silently decides which internal
 #' standard the merged analyte is normalized against.
 #'
+#' `is_quantifier` is not inherited but determined by the merge: the merged
+#' analyte is a quantifier if any of its constituents is one. A quantifier
+#' combined with either a qualifier or another quantifier therefore yields a
+#' quantifier, whereas qualifiers merged among themselves remain a qualifier.
+#'
 #' @param data MRMhubExperiment object
 #' @param qualifier_action Character. How to handle qualifier features. To sum them up separately select "separate",
 #' to include them in the sum if quantifier select "include", to not sum them up select "exclude".
@@ -61,7 +66,12 @@ data_sum_features <- function(
       c("feature_id", "feature_class")
     )
     metadata_cols <- c("feature_class", "feature_label")
-    other_cols <- setdiff(names(df), c(feature_cols, "feature_id"))
+    # `is_quantifier` is decided by the merge (below), not inherited from the
+    # first constituent, so it is kept out of the first-wins metadata block.
+    other_cols <- setdiff(
+      names(df),
+      c(feature_cols, "feature_id", "is_quantifier")
+    )
 
     agg_numeric <- df |>
       dplyr::group_by(.data$analysis_id, .data$analyte_id) |>
@@ -79,6 +89,12 @@ data_sum_features <- function(
         # nor averaging their widths describes the merged analyte. Set to NA
         # explicitly rather than reporting a meaningless aggregate.
         dplyr::across(any_of(c("feature_fwhm", "feature_width")), ~ NA_real_),
+        # The merged analyte quantifies if any constituent does: quant + qual and
+        # quant + quant give a quantifier, qual + qual stays a qualifier.
+        dplyr::across(
+          any_of("is_quantifier"),
+          ~ if (all(is.na(.x))) NA else any(.x, na.rm = TRUE)
+        ),
         .groups = "drop"
       )
 
@@ -128,13 +144,14 @@ data_sum_features <- function(
     dplyr::bind_rows(aggregated_data, rows_to_keep)
   }
 
+  # `is_quantifier` is set by the merge rule in `aggregate_quant()`, not forced
+  # here: a blanket TRUE also relabelled unmerged features and turned a
+  # qualifier-only analyte into a quantifier.
   if (qualifier_action == "include") {
-    ds_res <- process_and_aggregate_subset(ds_to_process) |>
-      dplyr::mutate(is_quantifier = TRUE)
+    ds_res <- process_and_aggregate_subset(ds_to_process)
   } else if (qualifier_action == "exclude") {
     quant_rows <- dplyr::filter(ds_to_process, .data$is_quantifier)
-    ds_res <- process_and_aggregate_subset(quant_rows) |>
-      dplyr::mutate(is_quantifier = TRUE)
+    ds_res <- process_and_aggregate_subset(quant_rows)
   } else {
     # separate
     quant_rows <- dplyr::filter(ds_to_process, .data$is_quantifier)
@@ -167,7 +184,21 @@ data_sum_features <- function(
         .data$feature_id
       )
     ) |>
-    distinct()
+    # Same merge rule as `aggregate_quant()` above, so the feature metadata and
+    # `@dataset` cannot disagree about the merged analyte.
+    mutate(
+      is_quantifier = if (all(is.na(.data$is_quantifier))) {
+        NA
+      } else {
+        any(.data$is_quantifier, na.rm = TRUE)
+      },
+      .by = "feature_id"
+    ) |>
+    # Keyed on `feature_id`, not the whole row: constituents legitimately differ
+    # (`feature_class`, `feature_label`), so a full-row `distinct()` kept every
+    # one and left a duplicated `feature_id` behind. The first transition's
+    # metadata wins, as documented.
+    distinct(.data$feature_id, .keep_all = TRUE)
 
   data@annot_features <- annot
 
