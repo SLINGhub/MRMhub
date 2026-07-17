@@ -679,6 +679,58 @@ test_that("filter_features_qc works on selected criteria", {
 })
 
 
+# Regression: selecting one response curve leaves `response.curves.summary` at its
+# NA default, because only the multi-curve branch requires it. `switch(NA, ...)`
+# returns NULL rather than its default arm, which used to crash the filter.
+test_that("response filtering works for one curve without an explicit summary", {
+  mexp_res <- filter_features_qc(
+    mexp_proc,
+    clear_existing = TRUE,
+    include_qualifier = FALSE,
+    include_istd = FALSE,
+    response.curves.selection = 1,
+    min.rsquare.response = 0.98
+  )
+
+  # a single curve has nothing to summarize across, so the result must match the
+  # same call made with the summary spelled out (the sibling test above pins 8)
+  mexp_explicit <- filter_features_qc(
+    mexp_proc,
+    clear_existing = TRUE,
+    include_qualifier = FALSE,
+    include_istd = FALSE,
+    response.curves.selection = 1,
+    response.curves.summary = "mean",
+    min.rsquare.response = 0.98
+  )
+
+  expect_equal(length(unique(mexp_res@dataset_filtered$feature_id)), 8)
+  expect_equal(mexp_res@dataset_filtered, mexp_explicit@dataset_filtered)
+})
+
+
+# `response.curves.summary` is consumed by a `switch()` on every path, so it must
+# be validated on every path. It previously was not for a single curve, and an
+# unrecognized value became a bogus function name that crashed further down.
+test_that("an invalid response.curves.summary is rejected for one curve too", {
+  expect_error(
+    filter_features_qc(
+      mexp_proc,
+      clear_existing = TRUE,
+      include_qualifier = FALSE,
+      include_istd = FALSE,
+      response.curves.selection = 1,
+      response.curves.summary = "meen",
+      min.rsquare.response = 0.98
+    ),
+    # the arg_match message, not merely "meen": the unvalidated value also errored
+    # before this fix, but as a cryptic `meen()` not-found deep inside pmap_dbl.
+    # `\\s+` absorbs the line break cli inserts.
+    regexp = "must\\s+be\\s+one\\s+of"
+  )
+})
+
+
 # Regression: a min-intensity (LOD) filter enabled on a clear_existing = FALSE
 # re-run, when it was not enabled in the previous run, used to be silently
 # discarded (the previous, disabled state was restored). It must now apply.

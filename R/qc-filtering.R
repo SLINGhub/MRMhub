@@ -946,18 +946,30 @@ filter_features_qc <- function(
           cli::cli_abort(cli::col_red(
             "Please set `response.curves.summary` to define curve how the results from different curves should be summarized for filtered, Must be either either 'mean', 'median', 'best' or 'worst'."
           ))
-        } else {
-          rlang::arg_match(
-            response.curves.summary,
-            c("mean", "median", "best", "worst")
-          )
-          if (nrow(data@annot_responsecurves) == 0) {
-            cli::cli_abort(cli::col_red(
-              "No response curves are defined in the metadata. Please either remove `response.curves.selection` and any response filters, or reprocess with updated metadata"
-            ))
-          }
         }
+        if (nrow(data@annot_responsecurves) == 0) {
+          cli::cli_abort(cli::col_red(
+            "No response curves are defined in the metadata. Please either remove `response.curves.selection` and any response filters, or reprocess with updated metadata"
+          ))
+        }
+      } else if (is.na(response.curves.summary)) {
+        # One curve has nothing to summarize across, so any reducer is a no-op
+        # here. Defaulting to one keeps this simple: the alternative is teaching
+        # the four `switch()`es below a "not applicable" case.
+        # Caveat: for a curve whose metric is missing, mean(NA, na.rm = TRUE) is
+        # NaN rather than NA (`median`/`safe_min`/`safe_max` give NA). It reaches
+        # `metrics_qc`, but not any filter decision -- `is.na(NaN)` is TRUE and the
+        # comparisons yield NA either way.
+        response.curves.summary <- "mean"
       }
+      # Validate on every path, because the `switch()` that consumes this is
+      # reached on every path: an unvalidated value silently becomes a bogus
+      # function name (or NULL, for NA -- `switch()` skips its default arm)
+      # and surfaces only as a crash further down.
+      response.curves.summary <- rlang::arg_match(
+        response.curves.summary,
+        c("mean", "median", "best", "worst")
+      )
     }
   }
 
