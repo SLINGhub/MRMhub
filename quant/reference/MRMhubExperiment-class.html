@@ -46,6 +46,7 @@ It also includes processing results, details of the applied processing steps, an
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
   </ul></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-manual" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Manual</button>
@@ -109,6 +110,14 @@ It also includes processing results, details of the applied processing steps, an
 
 <dt><code>feature_intensity_var</code></dt>
 <dd><p>Feature variable used as default for calculations</p></dd>
+
+
+<dt><code>conc_analyte_unit</code></dt>
+<dd><p>Unit of the analyte amount underlying <code>feature_conc</code>,
+set when the data are quantitated. <code>"pmol"</code> or <code>"ng"</code> for ISTD quantitation
+(see <code><a href="quantify_by_istd.html">quantify_by_istd()</a></code>), or the calibrant concentration unit (e.g.
+<code>"nmol/L"</code>) for calibration quantitation. Divided by <code>sample_amount_unit</code> by
+<code>get_conc_unit()</code> to name the unit of <code>feature_conc</code>. <code>NA</code> when not quantitated.</p></dd>
 
 
 <dt><code>dataset_orig</code></dt>

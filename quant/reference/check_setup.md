@@ -58,6 +58,8 @@ check_setup()
 #> ✔ rgoslin (1.16.0)
 #> ✔ lancer (0.1.1)
 #> ✔ enviPat (2.8)
+#> ✔ SummarizedExperiment (1.42.0)
+#> ✔ lipidr (2.26.0)
 #> 
 #> ── Summary ──
 #> 

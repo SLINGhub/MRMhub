@@ -24,7 +24,7 @@ state.
 | Alternative | Why not |
 |----|----|
 | Pure tibble workflow (tidyverse) | No built-in integrity checks; too easy to desync data and metadata |
-| SummarizedExperiment (Bioconductor) | Requires rectangular matrix; targeted MS data is naturally long with structural missingness |
+| SummarizedExperiment (Bioconductor) | Models a feature × sample matrix, not a processing pipeline: no *typed* home for the original data, the processing state, or the non-rectangular annotation tables. Supported as an **export target** instead |
 | R6 class | Less formal than S4; no validity checking; mutable-by-reference is error-prone for data analysis |
 
 **Rationale:**
@@ -39,10 +39,24 @@ state.
 3.  **Pipeline state** — Flags like `is_istd_normalized`,
     `var_drift_corrected` prevent accidental double-processing.
 
-4.  **Not SummarizedExperiment** — SE requires rectangular matrix layout
-    (features × samples). Targeted MS data is naturally long-format with
-    varying features per sample and multiple intensity variables per
-    measurement.
+4.  **Not SummarizedExperiment — but exports to it.** SE models a
+    feature × sample matrix. It offers no *typed* home for
+    `dataset_orig`, for the processing state, or for the annotation
+    tables that are not one-row-per-feature (`annot_responsecurves`,
+    `annot_qcconcentrations`, `metrics_calibration`) — they can only
+    ride along as an untyped `metadata()` list. And while `colData`
+    happily *carries* `qc_type` and `batch_id`, no Bioconductor class
+    *models* them, nor calibration curves or internal-standard
+    relationships: nothing downstream knows that a `PBLK` column is a
+    blank, or that one feature normalizes another. Enforcing that is the
+    work QUANT exists to do.
+
+    The argument is about the *internal* representation only. Several
+    parallel intensity variables are no obstacle — SE holds them as
+    parallel assays, which is exactly what the exporter relies on. Once
+    an experiment is processed,
+    [`save_dataset_summarizedexperiment()`](https://slinghub.github.io/MRMhub/quant/articles/recipe-04-summarizedexperiment.md)
+    hands it to `limma`, `lipidr`, `POMA` and the rest of the ecosystem.
 
 ``` r
 
@@ -225,6 +239,15 @@ All functions should:
 - Broadhurst et al. (2018). Guidelines and considerations for the use of
   system suitability and quality control samples in mass spectrometry
   assays. *Metabolomics*, 14, 72.
+- Morgan M, Obenchain V, Hester J, Pagès H (2026). SummarizedExperiment:
+  A container (S4 class) for matrix-like assays.
+  <doi:%5B10.18129/B9.bioc.SummarizedExperiment>\](<https://doi.org/10.18129/B9.bioc.SummarizedExperiment>).
+  R package version 1.42.0,
+  <https://bioconductor.org/packages/SummarizedExperiment>.
+- Mohamed A, Molendijk J, Hill MM (2020). lipidr: A Software Tool for
+  Data Mining and Analysis of Lipidomics Datasets. *Journal of Proteome
+  Research*, 19(7), 2890–2897.
+  <doi:%5B10.1021/acs.jproteome.0c00082>\](<https://doi.org/10.1021/acs.jproteome.0c00082>).
 
 ## Next steps
 

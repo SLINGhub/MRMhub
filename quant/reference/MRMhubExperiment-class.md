@@ -20,6 +20,15 @@ processing steps, and the current status of the data.
 
   Feature variable used as default for calculations
 
+- `conc_analyte_unit`:
+
+  Unit of the analyte amount underlying `feature_conc`, set when the
+  data are quantitated. `"pmol"` or `"ng"` for ISTD quantitation (see
+  [`quantify_by_istd()`](https://slinghub.github.io/MRMhub/quant/reference/quantify_by_istd.md)),
+  or the calibrant concentration unit (e.g. `"nmol/L"`) for calibration
+  quantitation. Divided by `sample_amount_unit` by `get_conc_unit()` to
+  name the unit of `feature_conc`. `NA` when not quantitated.
+
 - `dataset_orig`:
 
   Original imported analysis data. Required fields:

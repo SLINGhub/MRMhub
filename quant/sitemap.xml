@@ -21,6 +21,7 @@
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/recipe-01-ext-calibration-qc.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/recipe-02-custom-qc-report.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/recipe-03-mztab-export.html</loc></url>
+<url><loc>https://slinghub.github.io/MRMhub/quant/articles/recipe-04-summarizedexperiment.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/tutorial-01-prep-data.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.html</loc></url>
@@ -136,6 +137,7 @@
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/quantify_by_istd.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/save_dataset_csv.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/save_dataset_mztab.html</loc></url>
+<url><loc>https://slinghub.github.io/MRMhub/quant/reference/save_dataset_summarizedexperiment.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/save_feature_qc_metrics.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/save_metadata_msorganiser_template.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/save_metadata_templates.html</loc></url>

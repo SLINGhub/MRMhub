@@ -231,6 +231,8 @@ in different formats.
   : Export data to a CSV file
 - [`save_dataset_mztab()`](https://slinghub.github.io/MRMhub/quant/reference/save_dataset_mztab.md)
   : Export an experiment to mzTab-M (HUPO-PSI)
+- [`save_dataset_summarizedexperiment()`](https://slinghub.github.io/MRMhub/quant/reference/save_dataset_summarizedexperiment.md)
+  : Export an experiment to a Bioconductor SummarizedExperiment
 - [`save_feature_qc_metrics()`](https://slinghub.github.io/MRMhub/quant/reference/save_feature_qc_metrics.md)
   : Save feature QC metrics to CSV
 
