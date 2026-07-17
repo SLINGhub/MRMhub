@@ -1813,8 +1813,14 @@ correct_batch_centering <- function(
   # A batch with no usable reference-QC anchor for a feature is left uncorrected
   # (originals kept, `was_corrected = FALSE` from `fun_batch.correction`) rather
   # than NA-wiping valid study samples. Report those feature/batch combinations.
+  # A feature/batch with no data at all for `variable` was not skipped for lack of
+  # a reference-QC anchor -- there was nothing to correct -- so reporting it here
+  # would name the wrong cause. (ISTD concentrations are constant and get NA-ed by
+  # the drift smoothing, which already reports them.)
   d_uncorrected <- d_res |>
+    dplyr::ungroup() |>
     dplyr::filter(!.data$was_corrected) |>
+    dplyr::filter(any(!is.na(.data$y)), .by = c("feature_id", "batch_id")) |>
     dplyr::distinct(.data$feature_id, .data$batch_id)
   if (nrow(d_uncorrected) > 0) {
     cli::cli_warn(c(

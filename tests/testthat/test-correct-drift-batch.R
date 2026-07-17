@@ -1679,14 +1679,18 @@ test_that("correct_batch_centering works", {
 
   expect_doppelganger_cond("batch_centering_nodriftbefore ", p[[2]])
 
+  # ISTD concentrations are constant, so scale correction has no usable scale for
+  # them and they are reported as uncorrected. Incidental here; the warning is
+  # asserted in "batch correction keeps original study values when a batch lacks
+  # a reference-QC anchor".
   expect_message(
-    mexp_batch1 <- correct_batch_centering(
+    mexp_batch1 <- suppressWarnings(correct_batch_centering(
       mexp,
       correct_scale = TRUE,
       ref_qc_types = "SPL",
       variable = "conc",
       replace_exisiting_trendcurves = FALSE
-    ),
+    )),
     "-11.00% to 2.80%",
     fixed = TRUE
   )
