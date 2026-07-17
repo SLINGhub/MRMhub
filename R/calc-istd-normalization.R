@@ -383,6 +383,22 @@ quantify_by_istd <- function(
     ))
   }
 
+  # All three joins below are onto `@dataset`, so a duplicated key in any of
+  # these lookups fans out every measurement it matches. `d_istd` is checked
+  # here rather than at its source, so that the molecular-weight join above --
+  # which can itself duplicate the key -- is covered too.
+  assert_unique_ids(
+    data@annot_analyses$analysis_id,
+    "analysis_id",
+    "the analysis metadata"
+  )
+  assert_unique_ids(d_features$feature_id, "feature_id", "the feature metadata")
+  assert_unique_ids(
+    d_istd$quant_istd_feature_id,
+    "quant_istd_feature_id",
+    "the ISTD metadata"
+  )
+
   # Add ISTD concentrations and sample amounts to temporary dataset
   d_temp <- data@dataset |>
     select(

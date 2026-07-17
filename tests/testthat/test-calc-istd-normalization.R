@@ -661,6 +661,47 @@ test_that("normalize_by_istd warns when an ISTD group has no is_istd row", {
 })
 
 
+test_that("quantify_by_istd aborts on a duplicated join key (fan-out guards)", {
+  mexp <- suppressMessages(normalize_by_istd(lipidomics_dataset))
+
+  # Positive control: a clean object quantifies and keeps one row per
+  # (analysis_id, feature_id).
+  expect_no_error(mexp_ok <- suppressMessages(quantify_by_istd(mexp)))
+  expect_equal(nrow(mexp_ok@dataset), nrow(mexp@dataset))
+
+  # Each lookup below is joined onto `@dataset`, so a duplicated key silently
+  # multiplied every measurement it matched.
+  mexp_analyses <- mexp
+  mexp_analyses@annot_analyses <- dplyr::bind_rows(
+    mexp_analyses@annot_analyses,
+    mexp_analyses@annot_analyses[1, ]
+  )
+  expect_error(
+    quantify_by_istd(mexp_analyses),
+    "Duplicated\\s+analysis_id"
+  )
+
+  mexp_features <- mexp
+  mexp_features@annot_features <- dplyr::bind_rows(
+    mexp_features@annot_features,
+    mexp_features@annot_features[1, ]
+  )
+  expect_error(
+    quantify_by_istd(mexp_features),
+    "Duplicated\\s+feature_id"
+  )
+
+  mexp_istds <- mexp
+  mexp_istds@annot_istds <- dplyr::bind_rows(
+    mexp_istds@annot_istds,
+    mexp_istds@annot_istds[1, ]
+  )
+  expect_error(
+    quantify_by_istd(mexp_istds),
+    "Duplicated\\s+quant_istd_feature_id"
+  )
+})
+
 test_that("quantify_by_istd records the analyte amount unit it used", {
   # Downstream exporters name the concentration unit from this slot; if it is
   # not recorded they can only guess, and a guess of "pmol" silently reports
