@@ -11,6 +11,11 @@
 #' @slot title Title of the experiment
 #' @slot analysis_type Analysis type, one of "lipidomics", "metabolomics", "externalcalib", "others"
 #' @slot feature_intensity_var Feature variable used as default for calculations
+#' @slot conc_analyte_unit Unit of the analyte amount underlying `feature_conc`,
+#'   set when the data are quantitated. `"pmol"` or `"ng"` for ISTD quantitation
+#'   (see [quantify_by_istd()]), or the calibrant concentration unit (e.g.
+#'   `"nmol/L"`) for calibration quantitation. Divided by `sample_amount_unit` by
+#'   `get_conc_unit()` to name the unit of `feature_conc`. `NA` when not quantitated.
 #' @slot dataset_orig Original imported analysis data. Required fields:
 #' @slot dataset Processed analysis data. Required fields:
 #' @slot dataset_filtered Processed analysis data. Required fields:
@@ -44,6 +49,7 @@ setClass(
     title = "character",
     analysis_type = "character",
     feature_intensity_var = "character",
+    conc_analyte_unit = "character",
     dataset_orig = "tbl_df",
     dataset = "tbl_df",
     dataset_filtered = "tbl_df",
@@ -72,6 +78,7 @@ setClass(
     title = "",
     analysis_type = "",
     feature_intensity_var = "",
+    conc_analyte_unit = NA_character_,
     dataset_orig = pkg.env$table_templates$dataset_orig_template,
     dataset = pkg.env$table_templates$dataset_template,
     dataset_filtered = pkg.env$table_templates$dataset_template,

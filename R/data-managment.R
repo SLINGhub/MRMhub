@@ -459,6 +459,7 @@ update_after_quantitation <- function(
         "Concentrations are no longer valid. Please reprocess the data."
       ))
     }
+    data@conc_analyte_unit <- NA_character_
   }
   data@is_quantitated <- is_quantitated
   data@is_filtered <- FALSE
@@ -934,8 +935,7 @@ set_intensity_var <- function(
     is_usable <- vapply(
       var_list,
       function(v) {
-        v %in% names(data@dataset_orig) &&
-          any(!is.na(data@dataset_orig[[v]]))
+        v %in% names(data@dataset_orig) && any(!is.na(data@dataset_orig[[v]]))
       },
       logical(1)
     )

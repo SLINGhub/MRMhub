@@ -305,17 +305,9 @@ save_dataset_mztab <- function(
 
   # --- quantification unit --------------------------------------------------
   if (variable == "conc") {
-    conc_unit_origin <- if (
-      data@is_quantitated &&
-        data@status_processing == "Calibration-quantitated data"
-    ) {
-      unique(data@annot_qcconcentrations$concentration_unit)
-    } else {
-      "pmol"
-    }
     unit_str <- get_conc_unit(
       data@annot_analyses$sample_amount_unit,
-      conc_unit_origin
+      get_conc_analyte_unit(data)
     )
     if (is.na(unit_str) || !nzchar(unit_str)) {
       unit_str <- "arbitrary"

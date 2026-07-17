@@ -301,38 +301,24 @@ plot_abundanceprofile <- function(
       } else if (stringr::str_detect(variable_clean, "r2")) {
         x_label <- "R2 of Response Curve"
       } else if (stringr::str_detect(variable_clean, "conc")) {
-        if (
-          data@is_quantitated &&
-            data@status_processing == "Calibration-quantitated data"
-        ) {
-          conc_unit_origin <- unique(
-            data@annot_qcconcentrations$concentration_unit
-          )
-        } else {
-          conc_unit_origin <- "pmol"
-        }
         d_analyses <- data@annot_analyses |>
           dplyr::filter(.data$qc_type %in% qc_types)
-        unit <- get_conc_unit(d_analyses$sample_amount_unit, conc_unit_origin)
+        unit <- get_conc_unit(
+          d_analyses$sample_amount_unit,
+          get_conc_analyte_unit(data)
+        )
         x_label <- paste0("Concentration (", unit, ")")
       } else {
         x_label <- variable_clean
       }
     } else {
-      if (
-        data@is_quantitated &&
-          data@status_processing == "Calibration-quantitated data"
-      ) {
-        conc_unit_origin <- unique(
-          data@annot_qcconcentrations$concentration_unit
-        )
-      } else {
-        conc_unit_origin <- "pmol"
-      }
       d_analyses <- data@annot_analyses |>
         dplyr::filter(.data$qc_type %in% qc_types)
       if (stringr::str_detect(variable_clean, "conc")) {
-        unit <- get_conc_unit(d_analyses$sample_amount_unit, conc_unit_origin)
+        unit <- get_conc_unit(
+          d_analyses$sample_amount_unit,
+          get_conc_analyte_unit(data)
+        )
         x_label <- paste0("Concentration (", unit, ")")
       } else {
         x_label <- stringr::str_replace_all(variable_clean, "_", " ") |>

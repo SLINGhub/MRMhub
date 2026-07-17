@@ -659,3 +659,40 @@ test_that("normalize_by_istd warns when an ISTD group has no is_istd row", {
   ]
   expect_true(all(is.na(affected)))
 })
+
+
+test_that("quantify_by_istd records the analyte amount unit it used", {
+  # Downstream exporters name the concentration unit from this slot; if it is
+  # not recorded they can only guess, and a guess of "pmol" silently reports
+  # mass-quantitated data as molar.
+  mexp_molar <- quantify_by_istd(normalize_by_istd(lipidomics_dataset))
+  expect_identical(get_conc_analyte_unit(mexp_molar), "pmol")
+
+  mexp_mass <- normalize_by_istd(lipidomics_dataset)
+  mexp_mass@annot_features$molecular_weight <- 700
+  mexp_mass <- quantify_by_istd(mexp_mass, concentration_unit = "mass")
+  expect_identical(get_conc_analyte_unit(mexp_mass), "ng")
+
+  # invalidating the concentrations must not leave a stale unit behind
+  expect_identical(
+    get_conc_analyte_unit(
+      suppressMessages(update_after_quantitation(mexp_molar, FALSE))
+    ),
+    NA_character_
+  )
+})
+
+test_that("get_conc_analyte_unit tolerates objects saved before the slot existed", {
+  # R does not retrofit slots onto deserialized S4 objects, so an object saved
+  # by an older version has none. It cannot have been quantitated by a version
+  # that sets it, so NA is correct -- and it must not error.
+  legacy <- MRMhubExperiment()
+  attr(legacy, "conc_analyte_unit") <- NULL
+
+  expect_false(methods::.hasSlot(legacy, "conc_analyte_unit"))
+  expect_identical(get_conc_analyte_unit(legacy), NA_character_)
+  expect_identical(
+    get_conc_unit(c("uL"), get_conc_analyte_unit(legacy)),
+    NA_character_
+  )
+})

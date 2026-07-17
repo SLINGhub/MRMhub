@@ -497,6 +497,7 @@ quantify_by_istd <- function(
   n_istd <- length(unique(d_temp$quant_istd_feature_id)) - length(istd_no_conc)
 
   analyte_unit <- ifelse(concentration_unit == "mass", "ng", "pmol")
+  data@conc_analyte_unit <- analyte_unit
   conc_unit <- get_conc_unit(
     data@annot_analyses$sample_amount_unit,
     analyte_unit

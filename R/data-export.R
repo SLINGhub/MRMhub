@@ -243,15 +243,6 @@ save_report_xlsx <- function(
     ) |>
       tibble::add_row()
   }
-  if (
-    data@is_quantitated &&
-      data@status_processing == "Calibration-quantitated data"
-  ) {
-    conc_unit_origin <- unique(data@annot_qcconcentrations$concentration_unit)
-  } else {
-    conc_unit_origin <- "pmol"
-  }
-
   d_info <- tibble::tribble(
     ~Info,
     ~Value,
@@ -264,7 +255,10 @@ save_report_xlsx <- function(
     "",
     "",
     "feature_conc Unit",
-    get_conc_unit(data@annot_analyses$sample_amount_unit, conc_unit_origin)
+    get_conc_unit(
+      data@annot_analyses$sample_amount_unit,
+      get_conc_analyte_unit(data)
+    )
   )
 
   if (nrow(data@metrics_qc) == 0) {

@@ -256,6 +256,9 @@ quantify_by_calibration <- function(
     ))
   }
 
+  # Calibrants already carry a concentration, so this is what `feature_conc` is
+  # in; `get_conc_unit()` passes such a unit through unchanged.
+  data@conc_analyte_unit <- conc_unit
   conc_unit <- get_conc_unit(data@annot_analyses$sample_amount_unit, conc_unit)
 
   samples_no_amounts <- data@annot_analyses |>

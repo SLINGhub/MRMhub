@@ -17,6 +17,12 @@ It also includes processing results, details of the applied processing steps, an
 
 \item{\code{feature_intensity_var}}{Feature variable used as default for calculations}
 
+\item{\code{conc_analyte_unit}}{Unit of the analyte amount underlying \code{feature_conc},
+set when the data are quantitated. \code{"pmol"} or \code{"ng"} for ISTD quantitation
+(see \code{\link[=quantify_by_istd]{quantify_by_istd()}}), or the calibrant concentration unit (e.g.
+\code{"nmol/L"}) for calibration quantitation. Divided by \code{sample_amount_unit} by
+\code{get_conc_unit()} to name the unit of \code{feature_conc}. \code{NA} when not quantitated.}
+
 \item{\code{dataset_orig}}{Original imported analysis data. Required fields:}
 
 \item{\code{dataset}}{Processed analysis data. Required fields:}

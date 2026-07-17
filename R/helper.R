@@ -191,10 +191,27 @@ add_missing_column <- function(
 #' @return string with feature_conc unit
 #' @noRd
 
+# `conc_analyte_unit` was added after the bundled datasets and users' saved
+# objects were serialized, and R does not retrofit slots onto deserialized S4
+# instances. Such an object cannot have been quantitated by a version that sets
+# the slot, so NA -- no concentration unit -- is the right answer for it.
+get_conc_analyte_unit <- function(data) {
+  if (methods::.hasSlot(data, "conc_analyte_unit")) {
+    data@conc_analyte_unit
+  } else {
+    NA_character_
+  }
+}
+
 get_conc_unit <- function(sample_amount_unit, analyte_amount_unit) {
   units <- tolower(unique(sample_amount_unit))
   analyte_units <- tolower(unique(analyte_amount_unit))
   if (length(units) == 0) {
+    return(NA_character_)
+  }
+  # Unquantitated data has no analyte amount unit, so no concentration unit
+  # can be named. Guessing one would misreport mass-quantitated data as molar.
+  if (length(analyte_units) == 0 || all(is.na(analyte_units))) {
     return(NA_character_)
   }
   if (length(units) > 1) {
