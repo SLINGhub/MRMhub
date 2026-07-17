@@ -145,7 +145,17 @@ correct_interference_manual <- function(
   data@is_isotope_corr <- TRUE
   data@status_processing <- "Isotope-corrected raw data"
   data <- update_after_normalization(data, FALSE)
+  # The correction rewrites `variable`, so any previous drift *and* batch
+  # correction of it no longer applies. Leaving `var_batch_corrected` set made a
+  # subsequent `correct_batch_centering()` take its `replace_previous` path and
+  # restore the variable from the now-stale `_before` snapshot, silently
+  # discarding this correction.
   data@var_drift_corrected <- c(
+    feature_intensity = FALSE,
+    feature_norm_intensity = FALSE,
+    feature_conc = FALSE
+  )
+  data@var_batch_corrected <- c(
     feature_intensity = FALSE,
     feature_norm_intensity = FALSE,
     feature_conc = FALSE
@@ -421,7 +431,14 @@ correct_interferences <- function(
   data@is_isotope_corr <- TRUE
   data@status_processing <- "Isotope-corrected raw data"
   data <- update_after_normalization(data, FALSE)
+  # See `correct_interference_manual()`: both drift and batch corrections of
+  # `variable` are invalidated by rewriting it.
   data@var_drift_corrected <- c(
+    feature_intensity = FALSE,
+    feature_norm_intensity = FALSE,
+    feature_conc = FALSE
+  )
+  data@var_batch_corrected <- c(
     feature_intensity = FALSE,
     feature_norm_intensity = FALSE,
     feature_conc = FALSE

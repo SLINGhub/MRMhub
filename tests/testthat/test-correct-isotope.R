@@ -426,3 +426,32 @@ test_that("correct_interferences reports a friendly error on a circular interfer
     "circular correction"
   )
 })
+
+test_that("interference correction is not discarded by a later batch correction", {
+  ft <- "PC 28:0|SM 32:1 M+3"
+  getv <- function(d) d@dataset$feature_intensity[d@dataset$feature_id == ft]
+  batch <- function(d) {
+    suppressWarnings(suppressMessages(correct_batch_centering(
+      d,
+      variable = "feature_intensity",
+      ref_qc_types = "BQC"
+    )))
+  }
+
+  b1 <- batch(lipidomics_dataset)
+  expect_true(b1@var_batch_corrected[["feature_intensity"]])
+  expect_true("feature_intensity_before" %in% names(b1@dataset))
+
+  i1 <- suppressWarnings(suppressMessages(correct_interferences(b1)))
+  # the correction actually moves values, otherwise the test proves nothing
+  expect_false(isTRUE(all.equal(getv(b1), getv(i1))))
+  # rewriting feature_intensity invalidates the previous batch correction of it
+  expect_false(i1@var_batch_corrected[["feature_intensity"]])
+
+  # `replace_previous = TRUE` (the default) restores the variable from the
+  # `_before` snapshot. That snapshot predates the interference correction, so a
+  # stale var_batch_corrected flag silently reverted it.
+  with_corr <- batch(i1)
+  without_corr <- batch(b1)
+  expect_false(isTRUE(all.equal(getv(with_corr), getv(without_corr))))
+})
