@@ -22,8 +22,8 @@ plot_runsequence(
   segment_linewidth = 0.5,
   batch_zebra_stripe = FALSE,
   batch_line_color = "#b6f0c5",
-  batch_fill_color = "grey90",
-  base_font_size = 8
+  batch_fill_color = "grey93",
+  font_base_size = 8
 )
 ```
 
@@ -31,7 +31,7 @@ plot_runsequence(
 
 - data:
 
-  MRMhubExperiment object
+  A `MRMhubExperiment` object.
 
 - qc_types:
 
@@ -74,10 +74,26 @@ plot_runsequence(
 
   Color of the batch shaded areas.
 
-- base_font_size:
+- font_base_size:
 
-  Numeric, base font size for the plot.
+  Numeric. Base font size (in points) for plot text. Default is 8.
 
 ## Value
 
-A ggplot object representing the run sequence plot.
+A `ggplot` object representing the run sequence plot.
+
+## See also
+
+Other QC plots:
+[`plot_feature_correlations()`](https://slinghub.github.io/MRMhub/quant/reference/plot_feature_correlations.md),
+[`plot_normalization_qc()`](https://slinghub.github.io/MRMhub/quant/reference/plot_normalization_qc.md),
+[`plot_pca()`](https://slinghub.github.io/MRMhub/quant/reference/plot_pca.md),
+[`plot_pca_loading()`](https://slinghub.github.io/MRMhub/quant/reference/plot_pca_loading.md),
+[`plot_qc_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_interferences.md),
+[`plot_qc_matrixeffects()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_matrixeffects.md),
+[`plot_qc_summary_byclass()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_summary_byclass.md),
+[`plot_qc_summary_overall()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_summary_overall.md),
+[`plot_qcmetrics_comparison()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qcmetrics_comparison.md),
+[`plot_rla_boxplot()`](https://slinghub.github.io/MRMhub/quant/reference/plot_rla_boxplot.md),
+[`plot_rt_vs_chain()`](https://slinghub.github.io/MRMhub/quant/reference/plot_rt_vs_chain.md),
+[`plot_runscatter()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.md)

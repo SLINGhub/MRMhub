@@ -37,9 +37,10 @@ import_metadata_istds(
 
   Defines the sheet name in case an Excel file is provided.
 
-- excl_unmatched_analyses:
+- ignore_warnings:
 
-  Exclude analyses (samples) that have no matching metadata
+  Ignore warnings from data validation and proceed with importing
+  metadata
 
 ## Value
 

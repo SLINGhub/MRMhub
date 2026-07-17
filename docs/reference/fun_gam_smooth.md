@@ -1,7 +1,7 @@
 # Generalized additive model (GAM) smoothing helper function
 
 Function for penalized spline-based smoothing using GAM, for use by
-`fun_correct_drift`
+`correct_drift`
 
 ## Usage
 

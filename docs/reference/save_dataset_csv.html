@@ -48,6 +48,7 @@ Allows selection of features and optional QC filtering."><meta property="og:imag
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
   </ul></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-manual" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Manual</button>
@@ -103,8 +104,8 @@ Allows selection of features and optional QC filtering.</p>
 <span>  data <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">path</span>,</span>
 <span>  <span class="va">variable</span>,</span>
-<span>  filter_data <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  qc_types <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  filter_data <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  include_qualifier <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  include_istd <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  include_feature_filter <span class="op">=</span> <span class="cn">NA</span>,</span>
@@ -129,13 +130,13 @@ Allows selection of features and optional QC filtering.</p>
 <dd><p>Variable to be exported, must be present in the data and any of "area", "height", "intensity", "norm_intensity", "response", "conc", "conc_raw", "rt", "fwhm".</p></dd>
 
 
+<dt id="arg-qc-types">qc_types<a class="anchor" aria-label="anchor" href="#arg-qc-types"></a></dt>
+<dd><p>QC types to be plotted. Can be a vector of QC types or a regular expression pattern. <code>NA</code> (default) displays all available QC/Sample types.</p></dd>
+
+
 <dt id="arg-filter-data">filter_data<a class="anchor" aria-label="anchor" href="#arg-filter-data"></a></dt>
 <dd><p>A logical value indicating whether to use all data
 (default) or only QC-filtered data (filtered via <code><a href="filter_features_qc.html">filter_features_qc()</a></code>). Default is <code>FALSE</code>.</p></dd>
-
-
-<dt id="arg-qc-types">qc_types<a class="anchor" aria-label="anchor" href="#arg-qc-types"></a></dt>
-<dd><p>QC types to be plotted. Can be a vector of QC types or a regular expression pattern. <code>NA</code> (default) displays all available QC/Sample types.</p></dd>
 
 
 <dt id="arg-include-qualifier">include_qualifier<a class="anchor" aria-label="anchor" href="#arg-include-qualifier"></a></dt>
@@ -184,7 +185,7 @@ OR conditions).</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

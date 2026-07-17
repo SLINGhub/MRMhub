@@ -48,6 +48,7 @@ the corresponding spiked-in ISTD amount, and the per-feature response factor
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
   </ul></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-manual" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Manual</button>
@@ -136,7 +137,9 @@ If <code>TRUE</code>, missing annotations will be ignored, and resulting feature
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>By default, concentrations are returned in molar units (e.g., µmol/L). To return concentrations in mass units
+    <p>The ISTD used for quantitation is the feature's normalization ISTD
+(<code>istd_feature_id</code>); a separate quantitation ISTD is not supported.</p>
+<p>By default, concentrations are returned in molar units (e.g., µmol/L). To return concentrations in mass units
 (e.g., µg/L), set <code>concentration_unit = "mass"</code>. This requires either the chemical formula or molecular weight
 for each feature to be specified in the feature metadata.</p>
 <p>Internal standard concentrations can also be provided in <code>ng/mL</code>. In such cases, the function will convert these
@@ -164,7 +167,7 @@ along with the intermediate total amount per analysis in <code>feature_pmol_tota
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

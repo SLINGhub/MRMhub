@@ -48,6 +48,7 @@ This plot can be used to visually inspect highly correlated features, that may r
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
   </ul></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-manual" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Manual</button>
@@ -107,8 +108,6 @@ Each pair is displayed in a separate facet with its correlation coefficient.</p>
 <span>  cor_min_neg <span class="op">=</span> <span class="op">-</span><span class="fl">0.99</span>,</span>
 <span>  log_scale <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  sort_by_corr <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  rows_page <span class="op">=</span> <span class="fl">4</span>,</span>
-<span>  cols_page <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  filter_data <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  include_qualifier <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  include_istd <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -117,13 +116,15 @@ Each pair is displayed in a separate facet with its correlation coefficient.</p>
 <span>  min_median_value <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  output_pdf <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  path <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  return_plots <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  rows_page <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>  cols_page <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  specific_page <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  page_orientation <span class="op">=</span> <span class="st">"LANDSCAPE"</span>,</span>
-<span>  return_plots <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  point_size <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  point_alpha <span class="op">=</span> <span class="fl">0.8</span>,</span>
 <span>  point_stroke <span class="op">=</span> <span class="fl">0.3</span>,</span>
-<span>  line_size <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>  line_width <span class="op">=</span> <span class="fl">0.5</span>,</span>
 <span>  line_color <span class="op">=</span> <span class="st">"orange"</span>,</span>
 <span>  line_alpha <span class="op">=</span> <span class="fl">0.5</span>,</span>
 <span>  font_base_size <span class="op">=</span> <span class="fl">8</span>,</span>
@@ -136,20 +137,20 @@ Each pair is displayed in a separate facet with its correlation coefficient.</p>
 
 
 <dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
-<dd><p>A <code>MRMhubExperiment</code> object containing the dataset and metadata.</p></dd>
+<dd><p>A <code>MRMhubExperiment</code> object.</p></dd>
 
 
 <dt id="arg-variable">variable<a class="anchor" aria-label="anchor" href="#arg-variable"></a></dt>
-<dd><p>A character string indicating the variable to use for PCA
-analysis. Must be one of: "area", "height", "intensity", "norm_intensity", "response",
+<dd><p>A character string indicating the signal variable to plot.
+Must be one of: "area", "height", "intensity", "norm_intensity", "response",
 "conc", "conc_raw", "rt", "fwhm".</p></dd>
 
 
 <dt id="arg-qc-types">qc_types<a class="anchor" aria-label="anchor" href="#arg-qc-types"></a></dt>
-<dd><p>A character vector specifying the QC types to plot. It
-must contain at least one element. The default is <code>NA</code>, which means any
-of the non-blank QC types ("SPL", "TQC", "BQC", "HQC", "MQC", "LQC",
-"QC", "NIST", "LTR") will be plotted if present in the dataset.</p></dd>
+<dd><p>A character vector specifying the QC types to plot. It must
+contain at least one element. The default <code>NA</code> plots any of the non-blank
+QC types ("SPL", "TQC", "BQC", "HQC", "MQC", "LQC", "NIST", "LTR") present
+in the dataset.</p></dd>
 
 
 <dt id="arg-cor-min">cor_min<a class="anchor" aria-label="anchor" href="#arg-cor-min"></a></dt>
@@ -174,14 +175,6 @@ both axes. Default is <code>FALSE</code>.</p></dd>
 the plot by correlation or alphabetically by feature ID. Default is <code>TRUE</code>.</p></dd>
 
 
-<dt id="arg-rows-page">rows_page<a class="anchor" aria-label="anchor" href="#arg-rows-page"></a></dt>
-<dd><p>Number of rows of plots per page.</p></dd>
-
-
-<dt id="arg-cols-page">cols_page<a class="anchor" aria-label="anchor" href="#arg-cols-page"></a></dt>
-<dd><p>Number of columns of plots per page.</p></dd>
-
-
 <dt id="arg-filter-data">filter_data<a class="anchor" aria-label="anchor" href="#arg-filter-data"></a></dt>
 <dd><p>A logical value indicating whether to use all data
 (default) or only QC-filtered data (filtered via <code><a href="filter_features_qc.html">filter_features_qc()</a></code>).</p></dd>
@@ -198,29 +191,26 @@ standard (ISTD) features. Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-include-feature-filter">include_feature_filter<a class="anchor" aria-label="anchor" href="#arg-include-feature-filter"></a></dt>
-<dd><p>A character or regex pattern used to filter
-features by <code>feature_id</code>. If <code>NA</code> or an empty string (<code>""</code>) is provided,
-the filter is ignored. When a vector of length &gt; 1 is supplied, only
-features with exactly these names are selected (applied individually as
-OR conditions).</p></dd>
+<dd><p>A regex pattern or a vector of feature names
+used to filter features by <code>feature_id</code>. If <code>NA</code> or an empty string (<code>""</code>)
+is provided, the filter is ignored. When a vector of length &gt; 1 is
+supplied, only features with exactly these names are selected (applied
+individually as OR conditions).</p></dd>
 
 
 <dt id="arg-exclude-feature-filter">exclude_feature_filter<a class="anchor" aria-label="anchor" href="#arg-exclude-feature-filter"></a></dt>
-<dd><p>A character or regex pattern used to exclude
-features by <code>feature_id</code>. If <code>NA</code> or an empty string (<code>""</code>) is provided,
-the filter is ignored. When a vector of length &gt; 1 is supplied, only
-features with exactly these names are excluded (applied individually as
-OR conditions).</p></dd>
+<dd><p>A regex pattern or a vector of feature names
+used to exclude features by <code>feature_id</code>. If <code>NA</code> or an empty string
+(<code>""</code>) is provided, the filter is ignored. When a vector of length &gt; 1 is
+supplied, only features with exactly these names are excluded (applied
+individually as OR conditions).</p></dd>
 
 
 <dt id="arg-min-median-value">min_median_value<a class="anchor" aria-label="anchor" href="#arg-min-median-value"></a></dt>
-<dd><p>Minimum median
-feature value (as determined by the <code>variable</code>) across all samples from
-selected QC types that must be met for a feature to be included in the
-PCA analysis. <code>NA</code> (default) means no filtering will be applied. This
-parameter provides an fast way to exclude noisy features from the
-analysis. However, it is recommended to use <code>filter_data</code> with
-<code><a href="filter_features_qc.html">filter_features_qc()</a></code>.</p></dd>
+<dd><p>Minimum median feature value across the selected
+QC-type samples required for a feature to be included. <code>NA</code> (default)
+applies no filtering. This is a fast way to exclude noisy features; for
+principled QC-based filtering use <code><a href="filter_features_qc.html">filter_features_qc()</a></code>.</p></dd>
 
 
 <dt id="arg-output-pdf">output_pdf<a class="anchor" aria-label="anchor" href="#arg-output-pdf"></a></dt>
@@ -233,6 +223,19 @@ file. When <code>FALSE</code>, plots are directly plotted.</p></dd>
 <code>output_pdf</code> is <code>TRUE</code>.</p></dd>
 
 
+<dt id="arg-return-plots">return_plots<a class="anchor" aria-label="anchor" href="#arg-return-plots"></a></dt>
+<dd><p>Logical. If <code>TRUE</code>, returns the plots as a list of
+<code>ggplot</code> objects.</p></dd>
+
+
+<dt id="arg-rows-page">rows_page<a class="anchor" aria-label="anchor" href="#arg-rows-page"></a></dt>
+<dd><p>Number of rows of plots per page.</p></dd>
+
+
+<dt id="arg-cols-page">cols_page<a class="anchor" aria-label="anchor" href="#arg-cols-page"></a></dt>
+<dd><p>Number of columns of plots per page.</p></dd>
+
+
 <dt id="arg-specific-page">specific_page<a class="anchor" aria-label="anchor" href="#arg-specific-page"></a></dt>
 <dd><p>An integer specifying a specific page to plot. If
 <code>NA</code> (default), all pages are plotted.</p></dd>
@@ -241,11 +244,6 @@ file. When <code>FALSE</code>, plots are directly plotted.</p></dd>
 <dt id="arg-page-orientation">page_orientation<a class="anchor" aria-label="anchor" href="#arg-page-orientation"></a></dt>
 <dd><p>Orientation of the PDF paper: <code>"LANDSCAPE"</code> or
 <code>"PORTRAIT"</code>.</p></dd>
-
-
-<dt id="arg-return-plots">return_plots<a class="anchor" aria-label="anchor" href="#arg-return-plots"></a></dt>
-<dd><p>Logical. If <code>TRUE</code>, returns the plots as a list of
-<code>ggplot2</code> objects.</p></dd>
 
 
 <dt id="arg-point-size">point_size<a class="anchor" aria-label="anchor" href="#arg-point-size"></a></dt>
@@ -262,7 +260,7 @@ points (0-1). Default is 0.8.</p></dd>
 <dd><p>A numeric value indicating the stroke width of the points. Default is 0.3.</p></dd>
 
 
-<dt id="arg-line-size">line_size<a class="anchor" aria-label="anchor" href="#arg-line-size"></a></dt>
+<dt id="arg-line-width">line_width<a class="anchor" aria-label="anchor" href="#arg-line-width"></a></dt>
 <dd><p>A numeric value indicating the size of the correlation line. Default is 0.5.</p></dd>
 
 
@@ -275,8 +273,8 @@ points (0-1). Default is 0.8.</p></dd>
 
 
 <dt id="arg-font-base-size">font_base_size<a class="anchor" aria-label="anchor" href="#arg-font-base-size"></a></dt>
-<dd><p>A numeric value indicating the base font size for
-plot text elements. Default is 8.</p></dd>
+<dd><p>Numeric. Base font size (in points) for plot text.
+Default is 8.</p></dd>
 
 
 <dt id="arg-show-progress">show_progress<a class="anchor" aria-label="anchor" href="#arg-show-progress"></a></dt>
@@ -286,8 +284,24 @@ plot creation.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A ggplot object showing scatter plots of highly correlated feature pairs.
-Returns NULL if no correlations meet the threshold criteria.</p>
+    <p>A <code>ggplot</code> object showing scatter plots of highly correlated feature pairs.
+Returns <code>NULL</code> if no correlations meet the threshold criteria.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p>Other QC plots:
+<code><a href="plot_normalization_qc.html">plot_normalization_qc()</a></code>,
+<code><a href="plot_pca.html">plot_pca()</a></code>,
+<code><a href="plot_pca_loading.html">plot_pca_loading()</a></code>,
+<code><a href="plot_qc_interferences.html">plot_qc_interferences()</a></code>,
+<code><a href="plot_qc_matrixeffects.html">plot_qc_matrixeffects()</a></code>,
+<code><a href="plot_qc_summary_byclass.html">plot_qc_summary_byclass()</a></code>,
+<code><a href="plot_qc_summary_overall.html">plot_qc_summary_overall()</a></code>,
+<code><a href="plot_qcmetrics_comparison.html">plot_qcmetrics_comparison()</a></code>,
+<code><a href="plot_rla_boxplot.html">plot_rla_boxplot()</a></code>,
+<code><a href="plot_rt_vs_chain.html">plot_rt_vs_chain()</a></code>,
+<code><a href="plot_runscatter.html">plot_runscatter()</a></code>,
+<code><a href="plot_runsequence.html">plot_runsequence()</a></code></p></div>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -299,7 +313,7 @@ Returns NULL if no correlations meet the threshold criteria.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

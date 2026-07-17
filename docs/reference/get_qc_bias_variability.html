@@ -52,6 +52,7 @@ it is NA for all analytes, i.e. when no replicates were measured."><meta propert
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
   </ul></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-manual" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Manual</button>
@@ -116,7 +117,8 @@ it is <code>NA</code> for all analytes, i.e. when no replicates were measured.</
 <span>  with_bias <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  with_bias_abs <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  with_conc_ratio <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  with_cv_intra <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  with_cv_intra <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  with_conc_out_of_range <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -169,6 +171,13 @@ If <code>"samples"</code>, the output is in wide format with samples as columns.
 <dt id="arg-with-cv-intra">with_cv_intra<a class="anchor" aria-label="anchor" href="#arg-with-cv-intra"></a></dt>
 <dd><p>Logical. If <code>TRUE</code>, includes intra-assay coefficient of variation (CV) for the in the results. Defaults to <code>TRUE</code>.</p></dd>
 
+
+<dt id="arg-with-conc-out-of-range">with_conc_out_of_range<a class="anchor" aria-label="anchor" href="#arg-with-conc-out-of-range"></a></dt>
+<dd><p>Logical. If <code>TRUE</code> (and the dataset carries the
+<code>feature_conc_out_of_range</code> flag from <code><a href="quantify_by_calibration.html">quantify_by_calibration()</a></code>), includes
+the fraction of replicate measurements whose concentration fell outside the
+calibrated range (<code>frac_conc_out_of_range</code>). Defaults to <code>TRUE</code>.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -189,7 +198,7 @@ If <code>"samples"</code>, the output is in wide format with samples as columns.
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

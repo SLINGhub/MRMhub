@@ -26,10 +26,10 @@ plot_qcmetrics_comparison(
   y_lim = c(NA_real_, NA_real_),
   cols_page = 5,
   point_size = 1.5,
+  point_alpha = 0.5,
   point_color = "#0460acff",
   point_fill = "#4da2e7ff",
   point_shape = 21,
-  point_alpha = 0.5,
   point_stroke = 0.5,
   font_base_size = 8
 )
@@ -39,7 +39,7 @@ plot_qcmetrics_comparison(
 
 - data:
 
-  A `MRMhubExperiment` object containing pre-calculated QC metrics.
+  A `MRMhubExperiment` object.
 
 - plot_type:
 
@@ -113,6 +113,10 @@ plot_qcmetrics_comparison(
 
   Numeric; size of points in millimeters (default is `1`).
 
+- point_alpha:
+
+  Numeric; transparency of points (default is `0.5`).
+
 - point_color:
 
   A vector specifying the colors for points corresponding to different
@@ -137,21 +141,17 @@ plot_qcmetrics_comparison(
   Default is `NA` which corresponds to the default shapes for QC types
   defined in the package.
 
-- point_alpha:
-
-  Numeric; transparency of points (default is `0.5`).
-
 - point_stroke:
 
   Numeric; thickness of point borders (default is `0.5`).
 
 - font_base_size:
 
-  Numeric; base font size in points (default is `8`).
+  Numeric. Base font size (in points) for plot text. Default is 8.
 
 ## Value
 
-A `ggplot2` object representing the scatter plot.
+A `ggplot` object representing the scatter plot.
 
 ## Details
 
@@ -180,3 +180,17 @@ The comparison is visualized through one of three plot types:
 [`filter_features_qc()`](https://slinghub.github.io/MRMhub/quant/reference/filter_features_qc.md),
 [`plot_normalization_qc()`](https://slinghub.github.io/MRMhub/quant/reference/plot_normalization_qc.md),
 [`normalize_by_istd()`](https://slinghub.github.io/MRMhub/quant/reference/normalize_by_istd.md)
+
+Other QC plots:
+[`plot_feature_correlations()`](https://slinghub.github.io/MRMhub/quant/reference/plot_feature_correlations.md),
+[`plot_normalization_qc()`](https://slinghub.github.io/MRMhub/quant/reference/plot_normalization_qc.md),
+[`plot_pca()`](https://slinghub.github.io/MRMhub/quant/reference/plot_pca.md),
+[`plot_pca_loading()`](https://slinghub.github.io/MRMhub/quant/reference/plot_pca_loading.md),
+[`plot_qc_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_interferences.md),
+[`plot_qc_matrixeffects()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_matrixeffects.md),
+[`plot_qc_summary_byclass()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_summary_byclass.md),
+[`plot_qc_summary_overall()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_summary_overall.md),
+[`plot_rla_boxplot()`](https://slinghub.github.io/MRMhub/quant/reference/plot_rla_boxplot.md),
+[`plot_rt_vs_chain()`](https://slinghub.github.io/MRMhub/quant/reference/plot_rt_vs_chain.md),
+[`plot_runscatter()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.md),
+[`plot_runsequence()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runsequence.md)

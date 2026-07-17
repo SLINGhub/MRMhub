@@ -60,7 +60,11 @@ See its documentation for details.
 
 - `highest_cal`: Highest calibration concentration.
 
-- `r.squared`: R-squared value, indicating goodness of fit.
+- `r.squared`: R-squared value, indicating goodness of fit. For a
+  **weighted** fit this is the weighted coefficient of determination
+  (computed from weighted sums of squares), matching the value reported
+  by vendor software such as Agilent MassHunter for the same weighted
+  curve.
 
 - `coef_a`: Intercept of the regression line
 
@@ -84,3 +88,15 @@ See its documentation for details.
 10 sigma / S). The slope `S` is the slope of the calibration curve at
 zero concentration (the linear coefficient `coef_b`); for a
 **quadratic** fit the quadratic term does not contribute to this slope.
+The response `sigma` is selectable in
+[`calc_calibration_results()`](https://slinghub.github.io/MRMhub/quant/reference/calc_calibration_results.md)
+via `lod_sigma` (residual standard error, the default, or the standard
+error of the intercept); the `sigma` column reported here is always the
+residual standard error.
+
+For a **weighted** fit (`1/x`, `1/x^2`, `1/sqrt(x)`) `sigma` is R's
+weighted residual standard error, which is not on the raw response scale
+that the ICH `3.3 sigma / S` formula assumes, so the reported LoD/LoQ
+are approximate (typically slightly optimistic for `1/x`). Use
+`fit_weighting = "none"` if you require the strict ICH response-scale
+`Sy/x`; the back-calculated concentrations themselves are unaffected.

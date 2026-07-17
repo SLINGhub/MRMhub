@@ -55,7 +55,14 @@ correct_batch_centering(
 - log_transform_internal:
 
   A logical value indicating whether to log-transform the data
-  internally during correction. Defaults to `TRUE`.
+  internally during correction. Defaults to `TRUE`. This also sets the
+  centering model: with `TRUE` the batch reference levels are aligned in
+  log space, i.e. **multiplicative (geometric)** centering (the
+  appropriate choice for multiplicatively-scaling MS intensities, and
+  the reason it is the default); with `FALSE` they are aligned in raw
+  space, i.e. **additive** centering (which can shift low values below
+  zero). Either way the returned data are on the raw (untransformed)
+  scale.
 
 - feature_list:
 

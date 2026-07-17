@@ -49,6 +49,9 @@ intermediate `feature_pmol_total`).
 
 ## Details
 
+The ISTD used for quantitation is the feature's normalization ISTD
+(`istd_feature_id`); a separate quantitation ISTD is not supported.
+
 By default, concentrations are returned in molar units (e.g., µmol/L).
 To return concentrations in mass units (e.g., µg/L), set
 `concentration_unit = "mass"`. This requires either the chemical formula

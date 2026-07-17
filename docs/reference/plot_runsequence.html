@@ -56,6 +56,7 @@ the analysis timeline."><meta property="og:image" content="https://slinghub.gith
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
   </ul></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-manual" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Manual</button>
@@ -121,8 +122,8 @@ the analysis timeline.</p>
 <span>  segment_linewidth <span class="op">=</span> <span class="fl">0.5</span>,</span>
 <span>  batch_zebra_stripe <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  batch_line_color <span class="op">=</span> <span class="st">"#b6f0c5"</span>,</span>
-<span>  batch_fill_color <span class="op">=</span> <span class="st">"grey90"</span>,</span>
-<span>  base_font_size <span class="op">=</span> <span class="fl">8</span></span>
+<span>  batch_fill_color <span class="op">=</span> <span class="st">"grey93"</span>,</span>
+<span>  font_base_size <span class="op">=</span> <span class="fl">8</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -131,7 +132,7 @@ the analysis timeline.</p>
 
 
 <dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
-<dd><p>MRMhubExperiment object</p></dd>
+<dd><p>A <code>MRMhubExperiment</code> object.</p></dd>
 
 
 <dt id="arg-qc-types">qc_types<a class="anchor" aria-label="anchor" href="#arg-qc-types"></a></dt>
@@ -175,13 +176,30 @@ instead of line separators.</p></dd>
 <dd><p>Color of the batch shaded areas.</p></dd>
 
 
-<dt id="arg-base-font-size">base_font_size<a class="anchor" aria-label="anchor" href="#arg-base-font-size"></a></dt>
-<dd><p>Numeric, base font size for the plot.</p></dd>
+<dt id="arg-font-base-size">font_base_size<a class="anchor" aria-label="anchor" href="#arg-font-base-size"></a></dt>
+<dd><p>Numeric. Base font size (in points) for plot text.
+Default is 8.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A ggplot object representing the run sequence plot.</p>
+    <p>A <code>ggplot</code> object representing the run sequence plot.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p>Other QC plots:
+<code><a href="plot_feature_correlations.html">plot_feature_correlations()</a></code>,
+<code><a href="plot_normalization_qc.html">plot_normalization_qc()</a></code>,
+<code><a href="plot_pca.html">plot_pca()</a></code>,
+<code><a href="plot_pca_loading.html">plot_pca_loading()</a></code>,
+<code><a href="plot_qc_interferences.html">plot_qc_interferences()</a></code>,
+<code><a href="plot_qc_matrixeffects.html">plot_qc_matrixeffects()</a></code>,
+<code><a href="plot_qc_summary_byclass.html">plot_qc_summary_byclass()</a></code>,
+<code><a href="plot_qc_summary_overall.html">plot_qc_summary_overall()</a></code>,
+<code><a href="plot_qcmetrics_comparison.html">plot_qcmetrics_comparison()</a></code>,
+<code><a href="plot_rla_boxplot.html">plot_rla_boxplot()</a></code>,
+<code><a href="plot_rt_vs_chain.html">plot_rt_vs_chain()</a></code>,
+<code><a href="plot_runscatter.html">plot_runscatter()</a></code></p></div>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -193,7 +211,7 @@ instead of line separators.</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

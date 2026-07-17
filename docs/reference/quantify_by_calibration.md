@@ -23,7 +23,8 @@ quantify_by_calibration(
   fit_model = c("linear", "quadratic"),
   fit_weighting = c("none", "1/x", "1/x^2"),
   ignore_failed_calibration = FALSE,
-  ignore_missing_annotation = FALSE
+  ignore_missing_annotation = FALSE,
+  lod_sigma = c("residual", "intercept")
 )
 ```
 
@@ -71,6 +72,15 @@ quantify_by_calibration(
   missing: calibration curve data, ISTD mix volume and sample amounts
   for any feature. If `TRUE`, missing annotations will be ignored, and
   resulting feature concentration will be `NA`
+
+- lod_sigma:
+
+  A character string selecting the standard deviation of the response
+  (sigma) used in the ICH Q2 LoD/LoQ formulas. Must be one of
+  `"residual"` (the residual standard error of the regression, Sy/x; the
+  default) or `"intercept"` (the standard error of the intercept). See
+  [`calc_calibration_results()`](https://slinghub.github.io/MRMhub/quant/reference/calc_calibration_results.md)
+  for details.
 
 ## Value
 

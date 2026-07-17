@@ -44,6 +44,7 @@
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
   </ul></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-manual" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Manual</button>
@@ -142,7 +143,10 @@ See its documentation for details.</p><div class="section">
 <li><p><code>weighting</code>: Weighting method used in fitting.</p></li>
 <li><p><code>lowest_cal</code>: Lowest nonzero calibration concentration.</p></li>
 <li><p><code>highest_cal</code>: Highest  calibration concentration.</p></li>
-<li><p><code>r.squared</code>: R-squared value, indicating goodness of fit.</p></li>
+<li><p><code>r.squared</code>: R-squared value, indicating goodness of fit. For a <strong>weighted</strong>
+fit this is the weighted coefficient of determination (computed from weighted
+sums of squares), matching the value reported by vendor software such as
+Agilent MassHunter for the same weighted curve.</p></li>
 <li><p><code>coef_a</code>: Intercept of the regression line</p></li>
 <li><p><code>coef_b</code>: Slope of the regression line in <strong>linear</strong> models, or coefficient of the linear term (<code>x</code>) in <strong>quadratic</strong> models.</p></li>
 <li><p><code>coef_c</code>: Coefficient of the quadratic term (<code>x^2</code>) in <strong>quadratic</strong> models. Returns <code>NA</code> for <strong>linear</strong> models.</p></li>
@@ -153,7 +157,16 @@ See its documentation for details.</p><div class="section">
 </ul><p><strong>Note:</strong> LoD/LoQ follow the ICH Q2(R1/R2) approach (3.3 sigma / S and
 10 sigma / S). The slope <code>S</code> is the slope of the calibration curve at zero
 concentration (the linear coefficient <code>coef_b</code>); for a <strong>quadratic</strong> fit the
-quadratic term does not contribute to this slope.</p>
+quadratic term does not contribute to this slope. The response <code>sigma</code> is
+selectable in <code><a href="calc_calibration_results.html">calc_calibration_results()</a></code> via <code>lod_sigma</code> (residual
+standard error, the default, or the standard error of the intercept); the
+<code>sigma</code> column reported here is always the residual standard error.</p>
+<p>For a <strong>weighted</strong> fit (<code>1/x</code>, <code>1/x^2</code>, <code>1/sqrt(x)</code>) <code>sigma</code> is R's weighted
+residual standard error, which is not on the raw response scale that the ICH
+<code>3.3 sigma / S</code> formula assumes, so the reported LoD/LoQ are approximate
+(typically slightly optimistic for <code>1/x</code>). Use <code>fit_weighting = "none"</code> if you
+require the strict ICH response-scale <code>Sy/x</code>; the back-calculated
+concentrations themselves are unaffected.</p>
 </div>
 
     </div>
@@ -167,7 +180,7 @@ quadratic term does not contribute to this slope.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

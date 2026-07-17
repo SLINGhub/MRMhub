@@ -44,6 +44,7 @@
     <li><a class="dropdown-item" href="articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
+    <li><a class="dropdown-item" href="articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
   </ul></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-manual" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Manual</button>
@@ -189,6 +190,7 @@
 </ul><p>After adding/removing exported functions or changing roxygen, run <code><a href="https://devtools.r-lib.org/reference/document.html" class="external-link">devtools::document()</a></code> — <code>NAMESPACE</code> is generated and shouldn’t be edited by hand.</p>
 <p><strong>Do not hand-edit generated outputs.</strong> <code>NAMESPACE</code> (roxygen), <code>man/*.Rd</code> (roxygen), and <code>docs/</code> (pkgdown) are regenerated from source — edits to them will be silently overwritten on the next <code>document()</code> / <code>build_site()</code>. If you need a change there, change the upstream roxygen block or pkgdown config.</p>
 <p><strong>Running checks.</strong> The maintainer prefers to run <code><a href="https://devtools.r-lib.org/reference/test.html" class="external-link">devtools::test()</a></code> / <code>document()</code> / <code>check()</code> and <code><a href="https://pkgdown.r-lib.org/reference/build_site.html" class="external-link">pkgdown::build_site()</a></code> themselves — <strong>don’t invoke these automatically</strong>; ask and report back (the <code>justfile</code> wraps them: <code>just test</code>, <code>just check</code>, <code>just document</code>, <code>just site</code>). Lightweight read-only sanity (<code><a href="https://devtools.r-lib.org/reference/load_all.html" class="external-link">devtools::load_all()</a></code>, parsing a file) is fine.</p>
+<p><strong>Engineering approach.</strong> Work like a senior R/tidyverse/scientific-software engineer: <strong>prefer the smallest change that carries real value, and don’t over-engineer.</strong> Weigh win vs. risk on every change — this is scientific software, so a <em>silent wrong-number</em> bug (mis-mapped column, wrong root, dropped rows) is high-value to fix, while cosmetic churn is not. Concretely: fix genuine bugs and pair them with a regression test; delete dead code freely (it lowers complexity); but for a <em>not-a-bug</em> finding, prefer to just note it rather than commit a clarifying comment — reserve comments for genuinely cryptic code, and keep them a few lines, not paragraphs. Be skeptical of optional/behaviour-preserving refactors and defensive code paths added for “can’t happen” cases; they add surface area for little gain. Favor a few well-scoped commits over a long string of tiny ones. When a change is behavioural, surface the finding and confirm before editing rather than silently “fixing”.</p>
 </div>
 <div class="section level2">
 <h2 id="vignettes--docs">Vignettes / docs<a class="anchor" aria-label="anchor" href="#vignettes--docs"></a></h2>
@@ -225,7 +227,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

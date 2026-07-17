@@ -315,6 +315,8 @@ in different formats.
   : Export data to a CSV file
 - [`save_dataset_mztab()`](https://slinghub.github.io/MRMhub/quant/reference/save_dataset_mztab.md)
   : Export an experiment to mzTab-M (HUPO-PSI)
+- [`save_dataset_summarizedexperiment()`](https://slinghub.github.io/MRMhub/quant/reference/save_dataset_summarizedexperiment.md)
+  : Export an experiment to a Bioconductor SummarizedExperiment
 - [`save_feature_qc_metrics()`](https://slinghub.github.io/MRMhub/quant/reference/save_feature_qc_metrics.md)
   : Save feature QC metrics to CSV
 
@@ -347,7 +349,7 @@ spectrometry is also available.
   : Percent coefficient of variation (%CV) based on log-transformation
 - [`calc_average_molweight()`](https://slinghub.github.io/MRMhub/quant/reference/calc_average_molweight.md)
   : Calculate average molecular weight from chemical formulas
-- [`fun_correct_drift()`](https://slinghub.github.io/MRMhub/quant/reference/fun_correct_drift.md)
+- [`correct_drift()`](https://slinghub.github.io/MRMhub/quant/reference/correct_drift.md)
   : Drift correction by custom function
 - [`fun_gauss.kernel.smooth()`](https://slinghub.github.io/MRMhub/quant/reference/fun_gauss.kernel.smooth.md)
   : Gaussian kernel smoothing helper function
@@ -462,6 +464,13 @@ spectrometry is also available.
   processed MRMhubExperiment for sharing or MetaboLights submission, and
   import results from tools such as Lipid Data Analyzer, MS-DIAL or
   MZmine.
+
+- [Export to Bioconductor
+  (SummarizedExperiment)](https://slinghub.github.io/MRMhub/quant/articles/recipe-04-summarizedexperiment.md):
+
+  Export a processed MRMhubExperiment as a Bioconductor
+  SummarizedExperiment, and take it downstream: differential abundance
+  with limma, or lipid-specific analysis with lipidr.
 
 - [Your First
   Analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md):

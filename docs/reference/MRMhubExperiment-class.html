@@ -46,6 +46,7 @@ It also includes processing results, details of the applied processing steps, an
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
   </ul></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-manual" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Manual</button>
@@ -111,6 +112,14 @@ It also includes processing results, details of the applied processing steps, an
 <dd><p>Feature variable used as default for calculations</p></dd>
 
 
+<dt><code>conc_analyte_unit</code></dt>
+<dd><p>Unit of the analyte amount underlying <code>feature_conc</code>,
+set when the data are quantitated. <code>"pmol"</code> or <code>"ng"</code> for ISTD quantitation
+(see <code><a href="quantify_by_istd.html">quantify_by_istd()</a></code>), or the calibrant concentration unit (e.g.
+<code>"nmol/L"</code>) for calibration quantitation. Divided by <code>sample_amount_unit</code> by
+<code>get_conc_unit()</code> to name the unit of <code>feature_conc</code>. <code>NA</code> when not quantitated.</p></dd>
+
+
 <dt><code>dataset_orig</code></dt>
 <dd><p>Original imported analysis data. Required fields:</p></dd>
 
@@ -157,10 +166,6 @@ It also includes processing results, details of the applied processing steps, an
 
 <dt><code>metrics_calibration</code></dt>
 <dd><p>Calibration metrics calculated from external calibration curves for each measured feature</p></dd>
-
-
-<dt><code>parameters_processing</code></dt>
-<dd><p>Values of parameters used for the different processing steps</p></dd>
 
 
 <dt><code>status_processing</code></dt>
@@ -213,7 +218,7 @@ It also includes processing results, details of the applied processing steps, an
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

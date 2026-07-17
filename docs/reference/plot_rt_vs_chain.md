@@ -22,9 +22,9 @@ plot_rt_vs_chain(
   robust_regression = TRUE,
   cols_page = 5,
   point_size = 2,
-  point_transparency = 0.9,
+  point_alpha = 0.9,
   line_transparency = 0.5,
-  base_font_size = 8
+  font_base_size = 8
 )
 ```
 
@@ -32,7 +32,7 @@ plot_rt_vs_chain(
 
 - data:
 
-  A `MRMhubExperiment` object
+  A `MRMhubExperiment` object.
 
 - x_var:
 
@@ -41,7 +41,10 @@ plot_rt_vs_chain(
 
 - qc_types:
 
-  A character vector of QC types to include in the plot. If `NA`, all
+  A character vector specifying the QC types to plot. It must contain at
+  least one element. The default `NA` plots any of the non-blank QC
+  types ("SPL", "TQC", "BQC", "HQC", "MQC", "LQC", "NIST", "LTR")
+  present in the dataset.
 
 - outliers_highlight:
 
@@ -83,7 +86,7 @@ plot_rt_vs_chain(
 
   Size of the data points. Default is 2
 
-- point_transparency:
+- point_alpha:
 
   Alpha transparency of the data point. Default is 0.9
 
@@ -91,13 +94,13 @@ plot_rt_vs_chain(
 
   Alpha transparency of the regression lines. Default is 0.9
 
-- base_font_size:
+- font_base_size:
 
-  Base font size for the plot.
+  Numeric. Base font size (in points) for plot text. Default is 8.
 
 ## Value
 
-A `ggplot2` object representing faceted scatter plots
+A `ggplot` object representing faceted scatter plots
 
 ## Details
 
@@ -109,3 +112,19 @@ be plotted against the ECN, which is calculated as \\ECN = C\_{total} -
 ecn_k \times DB\_{total}\\, where \\ecn_k\\ is a constant that may need
 to be adjusted to the specific chromatographic properties. The default
 value is \\ecn_k = 1.5\\.
+
+## See also
+
+Other QC plots:
+[`plot_feature_correlations()`](https://slinghub.github.io/MRMhub/quant/reference/plot_feature_correlations.md),
+[`plot_normalization_qc()`](https://slinghub.github.io/MRMhub/quant/reference/plot_normalization_qc.md),
+[`plot_pca()`](https://slinghub.github.io/MRMhub/quant/reference/plot_pca.md),
+[`plot_pca_loading()`](https://slinghub.github.io/MRMhub/quant/reference/plot_pca_loading.md),
+[`plot_qc_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_interferences.md),
+[`plot_qc_matrixeffects()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_matrixeffects.md),
+[`plot_qc_summary_byclass()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_summary_byclass.md),
+[`plot_qc_summary_overall()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_summary_overall.md),
+[`plot_qcmetrics_comparison()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qcmetrics_comparison.md),
+[`plot_rla_boxplot()`](https://slinghub.github.io/MRMhub/quant/reference/plot_rla_boxplot.md),
+[`plot_runscatter()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.md),
+[`plot_runsequence()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runsequence.md)

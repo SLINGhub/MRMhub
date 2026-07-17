@@ -52,6 +52,7 @@ summarized using either mean (default) or median (set by the summarize_fun argum
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
   </ul></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-manual" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Manual</button>
@@ -133,7 +134,9 @@ one of: "intensity", "norm_intensity", or "conc"</p></dd>
 
 <dt id="arg-reference-sample-id">reference_sample_id<a class="anchor" aria-label="anchor" href="#arg-reference-sample-id"></a></dt>
 <dd><p>Character vector specifying the sample ID(s) to use as
-reference(s) or standards</p></dd>
+reference(s) or standards. When more than one ID is given, all analyses
+whose <code>sample_id</code> matches any of them are pooled and summarized together
+(per feature, and per batch when <code>batch_wise = TRUE</code>).</p></dd>
 
 
 <dt id="arg-absolute-calibration">absolute_calibration<a class="anchor" aria-label="anchor" href="#arg-absolute-calibration"></a></dt>
@@ -223,7 +226,7 @@ will be included by default. To include filtered normalized feature abundances, 
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

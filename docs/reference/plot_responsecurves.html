@@ -48,6 +48,7 @@ Each feature is displayed as a separate facet."><meta property="og:image" conten
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
   </ul></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-manual" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Manual</button>
@@ -116,7 +117,7 @@ Each feature is displayed as a separate facet.</p>
 <span>  line_width <span class="op">=</span> <span class="fl">0.7</span>,</span>
 <span>  label_wrap <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  label_wrap_width <span class="op">=</span> <span class="fl">25</span>,</span>
-<span>  font_base_size <span class="op">=</span> <span class="fl">7</span>,</span>
+<span>  font_base_size <span class="op">=</span> <span class="fl">8</span>,</span>
 <span>  rows_page <span class="op">=</span> <span class="fl">4</span>,</span>
 <span>  cols_page <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  curve_layout <span class="op">=</span> <span class="st">"overlay"</span>,</span>
@@ -133,7 +134,7 @@ Each feature is displayed as a separate facet.</p>
 
 
 <dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
-<dd><p>A <code>MRMhubExperiment</code> object containing the dataset and metadata.</p></dd>
+<dd><p>A <code>MRMhubExperiment</code> object.</p></dd>
 
 
 <dt id="arg-variable">variable<a class="anchor" aria-label="anchor" href="#arg-variable"></a></dt>
@@ -154,15 +155,19 @@ QC-filtered data (filtered via <code><a href="filter_features_qc.html">filter_fe
 
 
 <dt id="arg-include-feature-filter">include_feature_filter<a class="anchor" aria-label="anchor" href="#arg-include-feature-filter"></a></dt>
-<dd><p>A regex pattern or a vector of feature names used to filter features by <code>feature_id</code>.
-If <code>NA</code> or an empty string (<code>""</code>) is provided, the filter is ignored. When a vector of length &gt; 1 is supplied,
-is supplied, only features with exactly these names are selected (applied individually as OR conditions).</p></dd>
+<dd><p>A regex pattern or a vector of feature names
+used to filter features by <code>feature_id</code>. If <code>NA</code> or an empty string (<code>""</code>)
+is provided, the filter is ignored. When a vector of length &gt; 1 is
+supplied, only features with exactly these names are selected (applied
+individually as OR conditions).</p></dd>
 
 
 <dt id="arg-exclude-feature-filter">exclude_feature_filter<a class="anchor" aria-label="anchor" href="#arg-exclude-feature-filter"></a></dt>
-<dd><p>A regex pattern or a vector of feature names to exclude features by feature_id.
-If <code>NA</code> or an empty string (<code>""</code>) is provided, the filter is ignored. When a vector of length &gt; 1 is supplied,
-is supplied, only features with exactly these names are excluded (applied individually as OR conditions).</p></dd>
+<dd><p>A regex pattern or a vector of feature names
+used to exclude features by <code>feature_id</code>. If <code>NA</code> or an empty string
+(<code>""</code>) is provided, the filter is ignored. When a vector of length &gt; 1 is
+supplied, only features with exactly these names are excluded (applied
+individually as OR conditions).</p></dd>
 
 
 <dt id="arg-max-regression-value">max_regression_value<a class="anchor" aria-label="anchor" href="#arg-max-regression-value"></a></dt>
@@ -182,7 +187,7 @@ file. When <code>FALSE</code>, plots are directly plotted.</p></dd>
 
 <dt id="arg-return-plots">return_plots<a class="anchor" aria-label="anchor" href="#arg-return-plots"></a></dt>
 <dd><p>Logical. If <code>TRUE</code>, returns the plots as a list of
-<code>ggplot2</code> objects.</p></dd>
+<code>ggplot</code> objects.</p></dd>
 
 
 <dt id="arg-color-curves">color_curves<a class="anchor" aria-label="anchor" href="#arg-color-curves"></a></dt>
@@ -210,7 +215,8 @@ lines using <code>label_wrap_width</code>. Default is <code>FALSE</code>.</p></d
 
 
 <dt id="arg-font-base-size">font_base_size<a class="anchor" aria-label="anchor" href="#arg-font-base-size"></a></dt>
-<dd><p>Base font size for text. Default is 7.</p></dd>
+<dd><p>Numeric. Base font size (in points) for plot text.
+Default is 8.</p></dd>
 
 
 <dt id="arg-rows-page">rows_page<a class="anchor" aria-label="anchor" href="#arg-rows-page"></a></dt>
@@ -269,7 +275,7 @@ plot creation.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>If <code>return_plots</code> is <code>TRUE</code>, a list of <code>ggplot2</code> objects is
+    <p>If <code>return_plots</code> is <code>TRUE</code>, a list of <code>ggplot</code> objects is
 returned. Otherwise, the function saves the plot output or does not return
 anything.</p>
     </div>
@@ -286,6 +292,11 @@ both direct plotting within R and saving plots as PDF files. Additionally,
 plots can be returned as a list of ggplot2 objects for further manipulation
 or integration into other analyses.</p>
     </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p>Other calibration plots:
+<code><a href="plot_calibrationcurves.html">plot_calibrationcurves()</a></code></p></div>
+    </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
@@ -296,7 +307,7 @@ or integration into other analyses.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

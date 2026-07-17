@@ -74,6 +74,7 @@ drift/batch correction, QC filtering, and export.
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
   </ul>
 </li>
 <li class="nav-item dropdown">
@@ -221,8 +222,8 @@ from an MSOrganiser template:</p>
 <span><span class="co">#&gt;   Type  Table    Column                Issue                           Count</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> W*    Analyses analysis_id           Analyses not in analysis data      15</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> W*    Features feature_id            Feature(s) not in analysis data     4</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> W*    Features feature_id            Feature(s) without metadata         1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> W*    Features feature_id            Feature(s) without metadata         1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> W*    Features feature_id            Feature(s) not in analysis data     4</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> W*    ISTDs    quant_istd_feature_id Internal standard(s) not used       1</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="font-style: italic;">--------------------------------------------------------------------------------</span></span></span>
@@ -263,9 +264,10 @@ correction, and QC filtering:</p>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #00BB00;">Applying `conc` drift correction...</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #BBBB00;">2 feature(s) contain one or more zero or negative `conc` values. Verify your data or use `log_transform_internal = FALSE`.</span></span></span>
-<span><span class="co">#&gt;  <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■     </span>  86% |  ETA:  1s</span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">1 features showed no variation in the study sample's original values across analyses. </span></span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">1 features have invalid values after smoothing. NA will be be returned for all values of these faetures. Set `use_original_if_fail = FALSE to return orginal values..</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">Smoothing failed for 1 feature(s) in all batches. Please check data, metadata, and fit parameters.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">Smoothing failed for 1 feature(s) in at least one batch: PG 36:2. Please check data, metadata and fit parameters.</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Drift correction was applied to 459 of 460 features (batch-wise).</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #555555;">The median CV change of all features in study samples was </span><span style="color: #555555; font-weight: bold;">-0.56%</span><span style="color: #555555;"> (range: -10.22% to 2.49%). The median absolute CV of all features across batches </span><span style="color: #555555; font-weight: bold;">decreased from</span><span style="color: #555555;"> </span><span style="color: #555555; font-weight: bold;">38.96% to 38.56%</span><span style="color: #555555;">.</span></span></span>
 <span></span>
@@ -341,7 +343,7 @@ workflow stage.</p>
 <code class="sourceCode R"><span><span class="co"># Detailed Excel report with multiple sheets</span></span>
 <span><span class="fu"><a href="../reference/save_report_xlsx.html">save_report_xlsx</a></span><span class="op">(</span><span class="va">myexp</span>, path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".xlsx"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Saving report to disk - please wait...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The data processing report has been saved to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpNeqJfa/file15be021c151d3.xlsx'.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The data processing report has been saved to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//Rtmp8uIGfC/filee40a37767735.xlsx'.</span></span></span>
 <span></span>
 <span><span class="co"># Flat CSV with concentration values that passed QC</span></span>
 <span><span class="fu"><a href="../reference/save_dataset_csv.html">save_dataset_csv</a></span><span class="op">(</span></span>
@@ -352,7 +354,7 @@ workflow stage.</p>
 <span>  include_qualifier <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  filter_data <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Concentration values for 378 analyses and 181 features have been exported to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpNeqJfa/file15be0372e8d31.csv'.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Concentration values for 378 analyses and 181 features have been exported to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//Rtmp8uIGfC/filee40a5c4e1798.csv'.</span></span></span>
 <span></span>
 <span><span class="co"># Save the complete object for reproducibility or sharing</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">saveRDS</a></span><span class="op">(</span><span class="va">myexp</span>, file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".rds"</span><span class="op">)</span>, compress <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
@@ -390,7 +392,7 @@ PCA</a> — QC visualisation and outlier screening</li>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

@@ -52,6 +52,7 @@ or feature metadata.'><meta property="og:image" content="https://slinghub.github
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
   </ul></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-manual" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Manual</button>
@@ -115,7 +116,7 @@ or feature metadata.</p>
 <span>  ci_show <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  ci_clip <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  zoom_n_points <span class="op">=</span> <span class="cn">NA</span>,</span>
-<span>  log_axes <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  log_scale <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  filter_data <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  include_qualifier <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  include_istd <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -125,13 +126,13 @@ or feature metadata.</p>
 <span>  path <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  return_plots <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  point_size <span class="op">=</span> <span class="fl">1.5</span>,</span>
-<span>  line_width <span class="op">=</span> <span class="fl">0.7</span>,</span>
 <span>  point_color <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  point_fill <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  point_shape <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  line_width <span class="op">=</span> <span class="fl">0.7</span>,</span>
 <span>  line_color <span class="op">=</span> <span class="st">"#4575b4"</span>,</span>
 <span>  ribbon_fill <span class="op">=</span> <span class="st">"#e6f6ff"</span>,</span>
-<span>  font_base_size <span class="op">=</span> <span class="fl">7</span>,</span>
+<span>  font_base_size <span class="op">=</span> <span class="fl">8</span>,</span>
 <span>  rows_page <span class="op">=</span> <span class="fl">4</span>,</span>
 <span>  cols_page <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  specific_page <span class="op">=</span> <span class="cn">NA</span>,</span>
@@ -145,7 +146,7 @@ or feature metadata.</p>
 
 
 <dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
-<dd><p>A <code>MRMhubExperiment</code> object containing the dataset.</p></dd>
+<dd><p>A <code>MRMhubExperiment</code> object.</p></dd>
 
 
 <dt id="arg-variable">variable<a class="anchor" aria-label="anchor" href="#arg-variable"></a></dt>
@@ -199,7 +200,7 @@ scale and ommitted in log-log scale.</p></dd>
 <dd><p>Number of x lowest concentration points to display, used for zooming. Set to <code>NULL</code> or <code>NA</code> (default) to show all points.</p></dd>
 
 
-<dt id="arg-log-axes">log_axes<a class="anchor" aria-label="anchor" href="#arg-log-axes"></a></dt>
+<dt id="arg-log-scale">log_scale<a class="anchor" aria-label="anchor" href="#arg-log-scale"></a></dt>
 <dd><p>Logical. Determines whether the x and y axes are displayed in a logarithmic scale (log-log scale).
 Set to <code>TRUE</code> to enable logarithmic scaling; otherwise, set to <code>FALSE</code> for a linear scale.
 Note: If <code>TRUE</code>, any regression curves or standard error regions with negative
@@ -241,16 +242,12 @@ excludes none.</p></dd>
 
 
 <dt id="arg-return-plots">return_plots<a class="anchor" aria-label="anchor" href="#arg-return-plots"></a></dt>
-<dd><p>Logical, if <code>TRUE</code>, returns plots as a list of ggplot2
+<dd><p>Logical, if <code>TRUE</code>, returns plots as a list of <code>ggplot</code>
 objects. Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-point-size">point_size<a class="anchor" aria-label="anchor" href="#arg-point-size"></a></dt>
 <dd><p>Size of points in the plot. Default is 1.5.</p></dd>
-
-
-<dt id="arg-line-width">line_width<a class="anchor" aria-label="anchor" href="#arg-line-width"></a></dt>
-<dd><p>Width of regression lines. Default is 0.7.</p></dd>
 
 
 <dt id="arg-point-color">point_color<a class="anchor" aria-label="anchor" href="#arg-point-color"></a></dt>
@@ -274,6 +271,10 @@ vector, with names corresponding to QC types. Unused shapes will be ignored.
 Default is <code>NA</code> which corresponds to the default shapes for QC types defined in the package.</p></dd>
 
 
+<dt id="arg-line-width">line_width<a class="anchor" aria-label="anchor" href="#arg-line-width"></a></dt>
+<dd><p>Width of regression lines. Default is 0.7.</p></dd>
+
+
 <dt id="arg-line-color">line_color<a class="anchor" aria-label="anchor" href="#arg-line-color"></a></dt>
 <dd><p>Color of the regression line. Default is <code>"#4575b4"</code>.</p></dd>
 
@@ -284,7 +285,8 @@ Default is <code>NA</code> which corresponds to the default shapes for QC types 
 
 
 <dt id="arg-font-base-size">font_base_size<a class="anchor" aria-label="anchor" href="#arg-font-base-size"></a></dt>
-<dd><p>Base font size for text in plots. Default is 7.</p></dd>
+<dd><p>Numeric. Base font size (in points) for plot text.
+Default is 8.</p></dd>
 
 
 <dt id="arg-rows-page">rows_page<a class="anchor" aria-label="anchor" href="#arg-rows-page"></a></dt>
@@ -310,6 +312,11 @@ plot creation.</p></dd>
 
 </dl></div>
     <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>A list of <code>ggplot</code> objects if <code>return_plots = TRUE</code>, otherwise
+<code>NULL</code> (the plots are drawn to the active device or written to a PDF).</p>
+    </div>
+    <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Features for plotting can be filtered using QC filters defined via
 <code><a href="filter_features_qc.html">filter_features_qc()</a></code> or through <code>include_feature_filter</code> and
@@ -322,6 +329,11 @@ both direct plotting within R and saving plots as PDF files. Additionally,
 plots can be returned as a list of ggplot2 objects for further manipulation
 or integration into other analyses.</p>
     </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p>Other calibration plots:
+<code><a href="plot_responsecurves.html">plot_responsecurves()</a></code></p></div>
+    </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
@@ -332,7 +344,7 @@ or integration into other analyses.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

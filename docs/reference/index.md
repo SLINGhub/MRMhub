@@ -231,6 +231,8 @@ in different formats.
   : Export data to a CSV file
 - [`save_dataset_mztab()`](https://slinghub.github.io/MRMhub/quant/reference/save_dataset_mztab.md)
   : Export an experiment to mzTab-M (HUPO-PSI)
+- [`save_dataset_summarizedexperiment()`](https://slinghub.github.io/MRMhub/quant/reference/save_dataset_summarizedexperiment.md)
+  : Export an experiment to a Bioconductor SummarizedExperiment
 - [`save_feature_qc_metrics()`](https://slinghub.github.io/MRMhub/quant/reference/save_feature_qc_metrics.md)
   : Save feature QC metrics to CSV
 
@@ -263,7 +265,7 @@ spectrometry is also available.
   : Percent coefficient of variation (%CV) based on log-transformation
 - [`calc_average_molweight()`](https://slinghub.github.io/MRMhub/quant/reference/calc_average_molweight.md)
   : Calculate average molecular weight from chemical formulas
-- [`fun_correct_drift()`](https://slinghub.github.io/MRMhub/quant/reference/fun_correct_drift.md)
+- [`correct_drift()`](https://slinghub.github.io/MRMhub/quant/reference/correct_drift.md)
   : Drift correction by custom function
 - [`fun_gauss.kernel.smooth()`](https://slinghub.github.io/MRMhub/quant/reference/fun_gauss.kernel.smooth.md)
   : Gaussian kernel smoothing helper function

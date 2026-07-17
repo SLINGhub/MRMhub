@@ -36,11 +36,9 @@ providing critical insights into data quality.
 ``` r
 plot_runscatter(
   data = NULL,
-  variable = c("intensity", "norm_intensity", "conc", "rt", "area", "height", "fwhm",
-    "width", "symmetry", "intensity_raw", "intensity_before", "norm_intensity_raw",
-    "norm_intensity_before", "conc_raw", "conc_before"),
-  filter_data = FALSE,
+  variable,
   qc_types = NA,
+  filter_data = FALSE,
   include_qualifier = TRUE,
   include_istd = TRUE,
   include_feature_filter = NA,
@@ -52,7 +50,7 @@ plot_runscatter(
   return_plots = FALSE,
   show_batches = TRUE,
   batch_zebra_stripe = FALSE,
-  batch_line_color = "#cdf7d9",
+  batch_line_color = "#b6f0c5",
   batch_fill_color = "grey93",
   cap_outliers = FALSE,
   cap_sample_k_mad = 4,
@@ -72,9 +70,9 @@ plot_runscatter(
   log_scale = FALSE,
   show_gridlines = FALSE,
   point_size = 1.5,
-  point_transparency = 1,
+  point_alpha = 1,
   point_border_width = NA,
-  base_font_size = 10,
+  font_base_size = 8,
   rows_page = 3,
   cols_page = 3,
   specific_page = NA,
@@ -98,7 +96,7 @@ plot_runscatter(
 
 - data:
 
-  A `MRMhubExperiment` object containing the dataset and metadata.
+  A `MRMhubExperiment` object.
 
 - variable:
 
@@ -109,16 +107,16 @@ plot_runscatter(
   `conc_before`). Add `_raw` after the variable name to plot the raw
   uncorrected feature values (e.g., `conc_raw`).
 
-- filter_data:
-
-  Logical, whether to use QC-filtered data based on criteria set via
-  [`filter_features_qc()`](https://slinghub.github.io/MRMhub/quant/reference/filter_features_qc.md).
-
 - qc_types:
 
   QC types to be plotted. Can be a vector of QC types or a regular
   expression pattern. `NA` (default) displays all available QC/Sample
   types.
+
+- filter_data:
+
+  Logical, whether to use QC-filtered data based on criteria set via
+  [`filter_features_qc()`](https://slinghub.github.io/MRMhub/quant/reference/filter_features_qc.md).
 
 - include_qualifier:
 
@@ -133,17 +131,17 @@ plot_runscatter(
 
   A regex pattern or a vector of feature names used to filter features
   by `feature_id`. If `NA` or an empty string (`""`) is provided, the
-  filter is ignored. When a vector of length \> 1 is supplied, is
-  supplied, only features with exactly these names are selected (applied
-  individually as OR conditions).
+  filter is ignored. When a vector of length \> 1 is supplied, only
+  features with exactly these names are selected (applied individually
+  as OR conditions).
 
 - exclude_feature_filter:
 
-  A regex pattern or a vector of feature names to exclude features by
-  feature_id. If `NA` or an empty string (`""`) is provided, the filter
-  is ignored. When a vector of length \> 1 is supplied, is supplied,
-  only features with exactly these names are excluded (applied
-  individually as OR conditions).
+  A regex pattern or a vector of feature names used to exclude features
+  by `feature_id`. If `NA` or an empty string (`""`) is provided, the
+  filter is ignored. When a vector of length \> 1 is supplied, only
+  features with exactly these names are excluded (applied individually
+  as OR conditions).
 
 - plot_range:
 
@@ -265,7 +263,7 @@ plot_runscatter(
 
   Size of the data points. Default is `1.5`.
 
-- point_transparency:
+- point_alpha:
 
   Alpha transparency of the data points.
 
@@ -273,9 +271,9 @@ plot_runscatter(
 
   Width of the data point borders.
 
-- base_font_size:
+- font_base_size:
 
-  Base font size for the plot.
+  Numeric. Base font size (in points) for plot text. Default is 8.
 
 - rows_page:
 
@@ -356,7 +354,8 @@ plot_runscatter(
 
 ## Value
 
-A list of ggplot2 plots, or `NULL` if \`return
+A list of `ggplot` objects if `return_plots = TRUE`, otherwise `NULL`
+(the plots are drawn to the active device or written to a PDF).
 
 ## Details
 
@@ -379,3 +378,19 @@ A list of ggplot2 plots, or `NULL` if \`return
   the last drift or batch correction, add "\_before" to the variable
   name, e.g. `conc_before` or `intensity_before` and set
   `show_trend = TRUE`.
+
+## See also
+
+Other QC plots:
+[`plot_feature_correlations()`](https://slinghub.github.io/MRMhub/quant/reference/plot_feature_correlations.md),
+[`plot_normalization_qc()`](https://slinghub.github.io/MRMhub/quant/reference/plot_normalization_qc.md),
+[`plot_pca()`](https://slinghub.github.io/MRMhub/quant/reference/plot_pca.md),
+[`plot_pca_loading()`](https://slinghub.github.io/MRMhub/quant/reference/plot_pca_loading.md),
+[`plot_qc_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_interferences.md),
+[`plot_qc_matrixeffects()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_matrixeffects.md),
+[`plot_qc_summary_byclass()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_summary_byclass.md),
+[`plot_qc_summary_overall()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_summary_overall.md),
+[`plot_qcmetrics_comparison()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qcmetrics_comparison.md),
+[`plot_rla_boxplot()`](https://slinghub.github.io/MRMhub/quant/reference/plot_rla_boxplot.md),
+[`plot_rt_vs_chain()`](https://slinghub.github.io/MRMhub/quant/reference/plot_rt_vs_chain.md),
+[`plot_runsequence()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runsequence.md)

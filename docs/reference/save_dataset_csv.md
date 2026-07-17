@@ -12,8 +12,8 @@ save_dataset_csv(
   data = NULL,
   path,
   variable,
-  filter_data = FALSE,
   qc_types = NA,
+  filter_data = FALSE,
   include_qualifier = NA,
   include_istd = NA,
   include_feature_filter = NA,
@@ -38,18 +38,18 @@ save_dataset_csv(
   "area", "height", "intensity", "norm_intensity", "response", "conc",
   "conc_raw", "rt", "fwhm".
 
+- qc_types:
+
+  QC types to be plotted. Can be a vector of QC types or a regular
+  expression pattern. `NA` (default) displays all available QC/Sample
+  types.
+
 - filter_data:
 
   A logical value indicating whether to use all data (default) or only
   QC-filtered data (filtered via
   [`filter_features_qc()`](https://slinghub.github.io/MRMhub/quant/reference/filter_features_qc.md)).
   Default is `FALSE`.
-
-- qc_types:
-
-  QC types to be plotted. Can be a vector of QC types or a regular
-  expression pattern. `NA` (default) displays all available QC/Sample
-  types.
 
 - include_qualifier:
 

@@ -54,6 +54,7 @@ isobaric, isomeric, or unknown interferences."><meta property="og:image" content
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
   </ul></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-manual" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Manual</button>
@@ -120,9 +121,9 @@ isobaric, isomeric, or unknown interferences.</p>
 <span>  robust_regression <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  cols_page <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  point_size <span class="op">=</span> <span class="fl">2</span>,</span>
-<span>  point_transparency <span class="op">=</span> <span class="fl">0.9</span>,</span>
+<span>  point_alpha <span class="op">=</span> <span class="fl">0.9</span>,</span>
 <span>  line_transparency <span class="op">=</span> <span class="fl">0.5</span>,</span>
-<span>  base_font_size <span class="op">=</span> <span class="fl">8</span></span>
+<span>  font_base_size <span class="op">=</span> <span class="fl">8</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -131,7 +132,7 @@ isobaric, isomeric, or unknown interferences.</p>
 
 
 <dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
-<dd><p>A <code>MRMhubExperiment</code> object</p></dd>
+<dd><p>A <code>MRMhubExperiment</code> object.</p></dd>
 
 
 <dt id="arg-x-var">x_var<a class="anchor" aria-label="anchor" href="#arg-x-var"></a></dt>
@@ -139,7 +140,10 @@ isobaric, isomeric, or unknown interferences.</p>
 
 
 <dt id="arg-qc-types">qc_types<a class="anchor" aria-label="anchor" href="#arg-qc-types"></a></dt>
-<dd><p>A character vector of QC types to include in the plot. If <code>NA</code>, all</p></dd>
+<dd><p>A character vector specifying the QC types to plot. It must
+contain at least one element. The default <code>NA</code> plots any of the non-blank
+QC types ("SPL", "TQC", "BQC", "HQC", "MQC", "LQC", "NIST", "LTR") present
+in the dataset.</p></dd>
 
 
 <dt id="arg-outliers-highlight">outliers_highlight<a class="anchor" aria-label="anchor" href="#arg-outliers-highlight"></a></dt>
@@ -175,7 +179,7 @@ fitted line and the median RT of the feature. The value is used to flag outliers
 <dd><p>Size of the data points. Default is 2</p></dd>
 
 
-<dt id="arg-point-transparency">point_transparency<a class="anchor" aria-label="anchor" href="#arg-point-transparency"></a></dt>
+<dt id="arg-point-alpha">point_alpha<a class="anchor" aria-label="anchor" href="#arg-point-alpha"></a></dt>
 <dd><p>Alpha transparency of the data point. Default is 0.9</p></dd>
 
 
@@ -183,13 +187,14 @@ fitted line and the median RT of the feature. The value is used to flag outliers
 <dd><p>Alpha transparency of the regression lines. Default is 0.9</p></dd>
 
 
-<dt id="arg-base-font-size">base_font_size<a class="anchor" aria-label="anchor" href="#arg-base-font-size"></a></dt>
-<dd><p>Base font size for the plot.</p></dd>
+<dt id="arg-font-base-size">font_base_size<a class="anchor" aria-label="anchor" href="#arg-font-base-size"></a></dt>
+<dd><p>Numeric. Base font size (in points) for plot text.
+Default is 8.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <code>ggplot2</code> object representing faceted scatter plots</p>
+    <p>A <code>ggplot</code> object representing faceted scatter plots</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -201,6 +206,22 @@ the retention time can be plotted against the ECN, which is calculated as
 to be adjusted to the specific chromatographic properties. The default value is
 \(ecn_k = 1.5\).</p>
     </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p>Other QC plots:
+<code><a href="plot_feature_correlations.html">plot_feature_correlations()</a></code>,
+<code><a href="plot_normalization_qc.html">plot_normalization_qc()</a></code>,
+<code><a href="plot_pca.html">plot_pca()</a></code>,
+<code><a href="plot_pca_loading.html">plot_pca_loading()</a></code>,
+<code><a href="plot_qc_interferences.html">plot_qc_interferences()</a></code>,
+<code><a href="plot_qc_matrixeffects.html">plot_qc_matrixeffects()</a></code>,
+<code><a href="plot_qc_summary_byclass.html">plot_qc_summary_byclass()</a></code>,
+<code><a href="plot_qc_summary_overall.html">plot_qc_summary_overall()</a></code>,
+<code><a href="plot_qcmetrics_comparison.html">plot_qcmetrics_comparison()</a></code>,
+<code><a href="plot_rla_boxplot.html">plot_rla_boxplot()</a></code>,
+<code><a href="plot_runscatter.html">plot_runscatter()</a></code>,
+<code><a href="plot_runsequence.html">plot_runsequence()</a></code></p></div>
+    </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
@@ -211,7 +232,7 @@ to be adjusted to the specific chromatographic properties. The default value is
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

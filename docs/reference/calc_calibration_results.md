@@ -23,7 +23,8 @@ calc_calibration_results(
   fit_model,
   fit_weighting,
   ignore_missing_annotation = FALSE,
-  include_fit_object = FALSE
+  include_fit_object = FALSE,
+  lod_sigma = c("residual", "intercept")
 )
 ```
 
@@ -78,6 +79,14 @@ calc_calibration_results(
   If `TRUE`, the function will return the full regression fit objects
   for each feature in the `metrics_calibration` table.
 
+- lod_sigma:
+
+  A character string selecting the response standard deviation (sigma)
+  used in the ICH Q2 LoD/LoQ formulas. Must be one of `"residual"` (the
+  residual standard error of the regression, Sy/x; the default) or
+  `"intercept"` (the standard error of the intercept). No averaging of
+  the two is performed.
+
 ## Value
 
 A modified `MRMhubExperiment` object with an updated
@@ -89,10 +98,21 @@ including concentrations, LoD, and LoQ values for each feature.
 Additionally, the limit of detection (LoD) and limit of quantification
 (LoQ) are calculated for each feature based on the calibration curve,
 following the ICH Q2(R1/R2) approach (LoD = 3.3 sigma / S, LoQ = 10
-sigma / S). Here sigma is the sample standard error of the regression
-residuals and S is the slope of the calibration curve. The slope is
-taken at zero concentration (the linear coefficient); for a quadratic
-fit the quadratic term does not contribute to this slope.
+sigma / S). Here S is the slope of the calibration curve, taken at zero
+concentration (the linear coefficient `coef_b`). For a quadratic fit the
+true slope is `b + 2 c x`, which reduces to `coef_b` at zero
+concentration, so the quadratic term does not contribute to the slope
+used here. ICH Q2 specifies the slope formula for linear responses only;
+using the low-concentration tangent slope for a quadratic fit is an
+approximation beyond the guideline (adequate when the curvature near
+zero is small).
+
+The response standard deviation `sigma` is selected via `lod_sigma`,
+following the ICH-acceptable choices: `"residual"` uses the residual
+standard error of the regression (Sy/x; the default and prior
+behaviour), while `"intercept"` uses the standard error of the
+intercept. The `sigma` column reported in `metrics_calibration` is
+always the residual standard error, independent of this choice.
 
 The results of the regression and the calculated LoD and LoQ values are
 stored in the `metrics_calibration` table of the returned

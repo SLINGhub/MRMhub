@@ -72,6 +72,7 @@
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
   </ul>
 </li>
 <li class="nav-item dropdown">
@@ -159,12 +160,24 @@ be obtained from <a href="https://github.com/SLINGhub/mrmhub/tree/main/data-raw"
 <span>  data <span class="op">=</span> <span class="va">mexp</span>,</span>
 <span>  path <span class="op">=</span> <span class="st">"QuantLCMS_Example_MassHunter.csv"</span>,</span>
 <span>  import_metadata <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: <span style="color: #BBBB00;">!</span> Unrecognized <span style="color: #00BB00;">qc_type</span> value(s): <span style="color: #0000BB;">"Cal"</span>.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> These are not standard QC types and may be dropped from QC metrics and plots</span></span>
+<span><span class="co">#&gt;   that expect them.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Standard values: <span style="color: #0000BB;">"SBLK"</span>, <span style="color: #0000BB;">"TBLK"</span>, <span style="color: #0000BB;">"UBLK"</span>, <span style="color: #0000BB;">"HQC"</span>, <span style="color: #0000BB;">"MQC"</span>, <span style="color: #0000BB;">"LQC"</span>, <span style="color: #0000BB;">"QC"</span>, <span style="color: #0000BB;">"PBLK"</span>,</span></span>
+<span><span class="co">#&gt;   <span style="color: #0000BB;">"CAL"</span>, <span style="color: #0000BB;">"EQA"</span>, <span style="color: #0000BB;">"PQC"</span>, <span style="color: #0000BB;">"TQC"</span>, <span style="color: #0000BB;">"BQC"</span>, <span style="color: #0000BB;">"RQC"</span>, <span style="color: #0000BB;">"EQC"</span>, <span style="color: #0000BB;">"NIST"</span>, <span style="color: #0000BB;">"LTR"</span>, <span style="color: #0000BB;">"SPL"</span>, <span style="color: #0000BB;">"SST"</span>,</span></span>
+<span><span class="co">#&gt;   and <span style="color: #0000BB;">"MBLK"</span> (<span style="color: #0000BB;">"Sample"</span> is an alias for <span style="color: #0000BB;">"SPL"</span>).</span></span>
 <span></span>
 <span><span class="co"># Import metadata from an MSOrganiser template file</span></span>
 <span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_metadata_msorganiser.html">import_metadata_msorganiser</a></span><span class="op">(</span></span>
 <span>  <span class="va">mexp</span>,</span>
 <span>  path <span class="op">=</span> <span class="st">"datasets/QuantLCMS_Example_MetadataTemplate.xlsx"</span>,</span>
 <span>  excl_unmatched_analyses <span class="op">=</span> <span class="cn">TRUE</span>, ignore_warnings <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: <span style="color: #BBBB00;">!</span> Unrecognized <span style="color: #00BB00;">qc_type</span> value(s): <span style="color: #0000BB;">"IBLK"</span>.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> These are not standard QC types and may be dropped from QC metrics and plots</span></span>
+<span><span class="co">#&gt;   that expect them.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Standard values: <span style="color: #0000BB;">"SBLK"</span>, <span style="color: #0000BB;">"TBLK"</span>, <span style="color: #0000BB;">"UBLK"</span>, <span style="color: #0000BB;">"HQC"</span>, <span style="color: #0000BB;">"MQC"</span>, <span style="color: #0000BB;">"LQC"</span>, <span style="color: #0000BB;">"QC"</span>, <span style="color: #0000BB;">"PBLK"</span>,</span></span>
+<span><span class="co">#&gt;   <span style="color: #0000BB;">"CAL"</span>, <span style="color: #0000BB;">"EQA"</span>, <span style="color: #0000BB;">"PQC"</span>, <span style="color: #0000BB;">"TQC"</span>, <span style="color: #0000BB;">"BQC"</span>, <span style="color: #0000BB;">"RQC"</span>, <span style="color: #0000BB;">"EQC"</span>, <span style="color: #0000BB;">"NIST"</span>, <span style="color: #0000BB;">"LTR"</span>, <span style="color: #0000BB;">"SPL"</span>, <span style="color: #0000BB;">"SST"</span>,</span></span>
+<span><span class="co">#&gt;   and <span style="color: #0000BB;">"MBLK"</span> (<span style="color: #0000BB;">"Sample"</span> is an alias for <span style="color: #0000BB;">"SPL"</span>).</span></span>
 <span><span class="co">#&gt; <span style="color: #000000;">--------------------------------------------------------------------------------</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 1 × 5</span></span></span>
 <span><span class="co">#&gt;   Type  Table    Column    Issue                        Count</span></span>
@@ -194,7 +207,7 @@ curves are then calculated and plotted.</p>
 <span>    data <span class="op">=</span> <span class="va">mexp</span>, zoom_n_points <span class="op">=</span> <span class="fl">4</span>,</span>
 <span>    fit_overwrite <span class="op">=</span> <span class="cn">TRUE</span>,  <span class="co"># Set to FALSE if defined in metadata</span></span>
 <span>    fit_model <span class="op">=</span> <span class="st">"quadratic"</span>,</span>
-<span>    fit_weighting <span class="op">=</span> <span class="st">"1/x"</span>,log_axes <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    fit_weighting <span class="op">=</span> <span class="st">"1/x"</span>,log_scale <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>    rows_page <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>    cols_page <span class="op">=</span> <span class="fl">4</span>, show_progress <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
@@ -247,7 +260,7 @@ shown below. The final concentration data is saved to a CSV file.</p>
 <span>                   filter_data <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span> </span>
 <span> <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">tbl</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 8 × 9</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 8 × 10</span></span></span>
 <span><span class="co">#&gt;   feature_id     sample_id qc_type     n conc_target conc_mean conc_sd cv_intra</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Aldosterone    HQC       HQC         5       9.74      8.65    1.14     13.1 </span></span>
@@ -258,7 +271,7 @@ shown below. The final concentration data is saved to a CSV file.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Cortisol       LQC       LQC         5      25.2      20.0     2.40     12.0 </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span> Cortisone      HQC       HQC         5     119.      114.      6.73      5.89</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">8</span> Cortisone      LQC       LQC         5       6.52      6.23    0.504     8.08</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 1 more variable: bias &lt;dbl&gt;</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 2 more variables: bias &lt;dbl&gt;, frac_conc_out_of_range &lt;dbl&gt;</span></span></span></code></pre></div>
 <div class="section level2">
 <h2 id="next-steps">Next steps<a class="anchor" aria-label="anchor" href="#next-steps"></a>
 </h2>
@@ -285,7 +298,7 @@ the plotting reference, including calibration and QC plots</li>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

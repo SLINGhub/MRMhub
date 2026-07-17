@@ -40,7 +40,7 @@ plot_abundanceprofile(
 
 - data:
 
-  A MRMhubExperiment object.
+  A `MRMhubExperiment` object.
 
 - variable:
 
@@ -159,7 +159,7 @@ plot_abundanceprofile(
 
 - font_base_size:
 
-  A numeric value for the base font size. Default is 8.
+  Numeric. Base font size (in points) for plot text. Default is 8.
 
 - grid_major_color:
 

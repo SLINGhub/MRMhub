@@ -74,6 +74,7 @@ and contributors who want to understand or extend the package.
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
   </ul>
 </li>
 <li class="active nav-item dropdown">
@@ -171,8 +172,10 @@ metadata</td>
 </tr>
 <tr class="even">
 <td>SummarizedExperiment (Bioconductor)</td>
-<td>Requires rectangular matrix; targeted MS data is naturally long with
-structural missingness</td>
+<td>Models a feature × sample matrix, not a processing pipeline: no
+<em>typed</em> home for the original data, the processing state, or the
+non-rectangular annotation tables. Supported as an <strong>export
+target</strong> instead</td>
 </tr>
 <tr class="odd">
 <td>R6 class</td>
@@ -191,23 +194,39 @@ without updating annotations.</p></li>
 <li><p><strong>Pipeline state</strong> — Flags like
 <code>is_istd_normalized</code>, <code>var_drift_corrected</code>
 prevent accidental double-processing.</p></li>
-<li><p><strong>Not SummarizedExperiment</strong> — SE requires
-rectangular matrix layout (features × samples). Targeted MS data is
-naturally long-format with varying features per sample and multiple
-intensity variables per measurement.</p></li>
+<li>
+<p><strong>Not SummarizedExperiment — but exports to it.</strong> SE
+models a feature × sample matrix. It offers no <em>typed</em> home for
+<code>dataset_orig</code>, for the processing state, or for the
+annotation tables that are not one-row-per-feature
+(<code>annot_responsecurves</code>, <code>annot_qcconcentrations</code>,
+<code>metrics_calibration</code>) — they can only ride along as an
+untyped <code>metadata()</code> list. And while <code>colData</code>
+happily <em>carries</em> <code>qc_type</code> and <code>batch_id</code>,
+no Bioconductor class <em>models</em> them, nor calibration curves or
+internal-standard relationships: nothing downstream knows that a
+<code>PBLK</code> column is a blank, or that one feature normalizes
+another. Enforcing that is the work QUANT exists to do.</p>
+<p>The argument is about the <em>internal</em> representation only.
+Several parallel intensity variables are no obstacle — SE holds them as
+parallel assays, which is exactly what the exporter relies on. Once an
+experiment is processed, <a href="recipe-04-summarizedexperiment.html"><code>save_dataset_summarizedexperiment()</code></a>
+hands it to <code>limma</code>, <code>lipidr</code>, <code>POMA</code>
+and the rest of the ecosystem.</p>
+</li>
 </ol>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># The object structure:</span></span>
 <span><span class="fu">slotNames</span><span class="op">(</span><span class="st">"MRMhubExperiment"</span><span class="op">)</span></span>
-<span><span class="co">#&gt;  [1] "title"                "analysis_type"        "feature_intensity_var"</span></span>
-<span><span class="co">#&gt;  [4] "dataset_orig"         "dataset"              "dataset_filtered"     </span></span>
-<span><span class="co">#&gt;  [7] "annot_analyses"       "annot_features"       "annot_istds"          </span></span>
-<span><span class="co">#&gt; [10] "annot_responsecurves" "annot_qcconcentrations" "annot_studysamples"</span></span>
-<span><span class="co">#&gt; [13] "annot_batches"        "metrics_qc"           "metrics_calibration"  </span></span>
-<span><span class="co">#&gt; [16] "parameters_processing" "status_processing"   "is_istd_normalized"   </span></span>
-<span><span class="co">#&gt; [19] "is_quantitated"       "is_filtered"          "has_outliers_tech"    </span></span>
-<span><span class="co">#&gt; [22] "is_isotope_corr"      "analyses_excluded"    "features_excluded"    </span></span>
-<span><span class="co">#&gt; [25] "var_drift_corrected"  "var_batch_corrected"</span></span></code></pre></div>
+<span><span class="co">#&gt;  [1] "title"                  "analysis_type"          "feature_intensity_var"</span></span>
+<span><span class="co">#&gt;  [4] "conc_analyte_unit"      "dataset_orig"           "dataset"</span></span>
+<span><span class="co">#&gt;  [7] "dataset_filtered"       "annot_analyses"         "annot_features"</span></span>
+<span><span class="co">#&gt; [10] "annot_istds"            "annot_responsecurves"   "annot_qcconcentrations"</span></span>
+<span><span class="co">#&gt; [13] "annot_studysamples"     "annot_batches"          "metrics_qc"</span></span>
+<span><span class="co">#&gt; [16] "metrics_calibration"    "status_processing"      "is_istd_normalized"</span></span>
+<span><span class="co">#&gt; [19] "is_quantitated"         "is_filtered"            "has_outliers_tech"</span></span>
+<span><span class="co">#&gt; [22] "is_isotope_corr"        "analyses_excluded"      "features_excluded"</span></span>
+<span><span class="co">#&gt; [25] "var_drift_corrected"    "var_batch_corrected"</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="decision-2-long-format-data-exchange">Decision 2: Long-Format Data Exchange<a class="anchor" aria-label="anchor" href="#decision-2-long-format-data-exchange"></a>
@@ -490,6 +509,12 @@ result object</li>
 <li>Broadhurst et al. (2018). Guidelines and considerations for the use
 of system suitability and quality control samples in mass spectrometry
 assays. <em>Metabolomics</em>, 14, 72.</li>
+<li>Morgan M, Obenchain V, Hester J, Pagès H (2026).
+SummarizedExperiment: A container (S4 class) for matrix-like assays. <a href="doi:%5B10.18129/B9.bioc.SummarizedExperiment" class="uri">doi:[10.18129/B9.bioc.SummarizedExperiment</a>](<a href="https://doi.org/10.18129/B9.bioc.SummarizedExperiment" class="external-link uri">https://doi.org/10.18129/B9.bioc.SummarizedExperiment</a>).
+R package version 1.42.0, <a href="https://bioconductor.org/packages/SummarizedExperiment" class="external-link uri">https://bioconductor.org/packages/SummarizedExperiment</a>.</li>
+<li>Mohamed A, Molendijk J, Hill MM (2020). lipidr: A Software Tool for
+Data Mining and Analysis of Lipidomics Datasets. <em>Journal of Proteome
+Research</em>, 19(7), 2890–2897. <a href="doi:%5B10.1021/acs.jproteome.0c00082" class="uri">doi:[10.1021/acs.jproteome.0c00082</a>](<a href="https://doi.org/10.1021/acs.jproteome.0c00082" class="external-link uri">https://doi.org/10.1021/acs.jproteome.0c00082</a>).</li>
 </ul>
 </div>
 <div class="section level2">
@@ -518,7 +543,7 @@ Glossary</a> — the vocabulary used throughout</li>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

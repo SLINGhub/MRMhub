@@ -110,8 +110,8 @@ myexp <- import_metadata_msorganiser(
 #>   Type  Table    Column                Issue                           Count
 #>   <chr> <chr>    <chr>                 <chr>                           <int>
 #> 1 W*    Analyses analysis_id           Analyses not in analysis data      15
-#> 2 W*    Features feature_id            Feature(s) not in analysis data     4
-#> 3 W*    Features feature_id            Feature(s) without metadata         1
+#> 2 W*    Features feature_id            Feature(s) without metadata         1
+#> 3 W*    Features feature_id            Feature(s) not in analysis data     4
 #> 4 W*    ISTDs    quant_istd_feature_id Internal standard(s) not used       1
 #> 
 #> --------------------------------------------------------------------------------
@@ -156,9 +156,10 @@ myexp <- correct_drift_gaussiankernel(
 )
 #> ℹ Applying `conc` drift correction...
 #> ℹ 2 feature(s) contain one or more zero or negative `conc` values. Verify your data or use `log_transform_internal = FALSE`.
-#>  ■■■■■■■■■■■■■■■■■■■■■■■■■■■       86% |  ETA:  1s
 #> ! 1 features showed no variation in the study sample's original values across analyses. 
 #> ! 1 features have invalid values after smoothing. NA will be be returned for all values of these faetures. Set `use_original_if_fail = FALSE to return orginal values..
+#> ! Smoothing failed for 1 feature(s) in all batches. Please check data, metadata, and fit parameters.
+#> ! Smoothing failed for 1 feature(s) in at least one batch: PG 36:2. Please check data, metadata and fit parameters.
 #> ✔ Drift correction was applied to 459 of 460 features (batch-wise).
 #> ℹ The median CV change of all features in study samples was -0.56% (range: -10.22% to 2.49%). The median absolute CV of all features across batches decreased from 38.96% to 38.56%.
 
@@ -241,7 +242,7 @@ for the full list of plotting functions grouped by workflow stage.
 # Detailed Excel report with multiple sheets
 save_report_xlsx(myexp, path = tempfile(fileext = ".xlsx"))
 #> Saving report to disk - please wait...
-#> ✔ The data processing report has been saved to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpNeqJfa/file15be021c151d3.xlsx'.
+#> ✔ The data processing report has been saved to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//Rtmp8uIGfC/filee40a37767735.xlsx'.
 
 # Flat CSV with concentration values that passed QC
 save_dataset_csv(
@@ -252,7 +253,7 @@ save_dataset_csv(
   include_qualifier = FALSE,
   filter_data = TRUE
 )
-#> ✔ Concentration values for 378 analyses and 181 features have been exported to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpNeqJfa/file15be0372e8d31.csv'.
+#> ✔ Concentration values for 378 analyses and 181 features have been exported to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//Rtmp8uIGfC/filee40a5c4e1798.csv'.
 
 # Save the complete object for reproducibility or sharing
 saveRDS(myexp, file = tempfile(fileext = ".rds"), compress = TRUE)

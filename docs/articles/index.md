@@ -94,6 +94,13 @@
   import results from tools such as Lipid Data Analyzer, MS-DIAL or
   MZmine.
 
+- [Export to Bioconductor
+  (SummarizedExperiment)](https://slinghub.github.io/MRMhub/quant/articles/recipe-04-summarizedexperiment.md):
+
+  Export a processed MRMhubExperiment as a Bioconductor
+  SummarizedExperiment, and take it downstream: differential abundance
+  with limma, or lipid-specific analysis with lipidr.
+
 - [Your First
   Analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md):
 

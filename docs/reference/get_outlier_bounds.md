@@ -88,7 +88,7 @@ get_outlier_bounds(c(1, 2, 3, 4, 100), "z_normal")
 get_outlier_bounds(c(1, 2, 3, 4, 100), "z_robust")
 #> [1] 1 4
 get_outlier_bounds(log10(c(1, 2, 4, 8)), "fold_change")       # default 2×
-#> [1] 0.00000 0.90309
+#> [1] 0.30103 0.60206
 get_outlier_bounds(log10(c(1, 2, 4, 8)), "fold_change", k = 3) # 3× fold-change
 #> [1] 0.00000 0.90309
 ```

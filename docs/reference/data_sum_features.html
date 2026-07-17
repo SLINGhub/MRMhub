@@ -54,6 +54,7 @@ and check results carefully!"><meta property="og:image" content="https://slinghu
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
   </ul></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-manual" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Manual</button>
@@ -108,7 +109,7 @@ and check results carefully!</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">data_sum_features</span><span class="op">(</span><span class="va">data</span>, qualifier_action <span class="op">=</span> <span class="st">"include"</span>, feature_classes <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">data_sum_features</span><span class="op">(</span><span class="va">data</span>, qualifier_action <span class="op">=</span> <span class="st">"include"</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -120,17 +121,31 @@ and check results carefully!</p>
 
 
 <dt id="arg-qualifier-action">qualifier_action<a class="anchor" aria-label="anchor" href="#arg-qualifier-action"></a></dt>
-<dd><p>Character. How to handle qualifier features. To sum them up separately select "separate",</p></dd>
-
-
-<dt id="arg-feature-classes">feature_classes<a class="anchor" aria-label="anchor" href="#arg-feature-classes"></a></dt>
-<dd><p>Select feature classes to sum up. Default (NA) is to sum up all feature classes according to their analyte_id.
+<dd><p>Character. How to handle qualifier features. To sum them up separately select "separate",
 to include them in the sum if quantifier select "include", to not sum them up select "exclude".</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>MRMhubExperiment object</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>Only raw signal variables are aggregated across the transitions of an analyte:
+<code>feature_intensity</code>, <code>feature_height</code> and <code>feature_area</code> are summed, and
+<code>feature_rt</code> is averaged. <code>feature_fwhm</code> and <code>feature_width</code> are set to <code>NA</code>
+for merged analytes: the constituents are separate chromatographic peaks, so
+no aggregate of their peak widths describes the merged quantity.</p>
+<p>Summing transitions redefines <code>feature_intensity</code>, so all values <em>derived</em>
+from the pre-merge intensities are invalidated and removed: normalized
+intensities, concentrations, drift/batch correction results and QC metrics.
+Re-run <code><a href="normalize_by_istd.html">normalize_by_istd()</a></code> and the quantitation/correction steps after
+merging. A message reports this when such values were present.</p>
+<p>A merged analyte inherits the feature metadata (<code>feature_class</code>,
+<code>feature_label</code>, <code>istd_feature_id</code>) of its <em>first</em> constituent transition. A
+warning is issued when the constituents disagree, since the value that wins is
+then arbitrary – for <code>istd_feature_id</code> it silently decides which internal
+standard the merged analyte is normalized against.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -142,7 +157,7 @@ to include them in the sum if quantifier select "include", to not sum them up se
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

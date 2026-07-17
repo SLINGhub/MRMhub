@@ -38,7 +38,9 @@ calibrate_by_reference(
 - reference_sample_id:
 
   Character vector specifying the sample ID(s) to use as reference(s) or
-  standards
+  standards. When more than one ID is given, all analyses whose
+  `sample_id` matches any of them are pooled and summarized together
+  (per feature, and per batch when `batch_wise = TRUE`).
 
 - absolute_calibration:
 

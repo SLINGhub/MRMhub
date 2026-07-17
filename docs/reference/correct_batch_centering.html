@@ -56,6 +56,7 @@ on top of previous corrections or replace all prior batch corrections.'><meta pr
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
   </ul></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-manual" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Manual</button>
@@ -156,7 +157,13 @@ previous batch corrections or apply the new correction on top. Defaults to
 
 <dt id="arg-log-transform-internal">log_transform_internal<a class="anchor" aria-label="anchor" href="#arg-log-transform-internal"></a></dt>
 <dd><p>A logical value indicating whether to log-transform
-the data internally during correction. Defaults to <code>TRUE</code>.</p></dd>
+the data internally during correction. Defaults to <code>TRUE</code>. This also sets the
+centering model: with <code>TRUE</code> the batch reference levels are aligned in log
+space, i.e. <strong>multiplicative (geometric)</strong> centering (the appropriate choice
+for multiplicatively-scaling MS intensities, and the reason it is the
+default); with <code>FALSE</code> they are aligned in raw space, i.e. <strong>additive</strong>
+centering (which can shift low values below zero). Either way the returned
+data are on the raw (untransformed) scale.</p></dd>
 
 
 <dt id="arg-feature-list">feature_list<a class="anchor" aria-label="anchor" href="#arg-feature-list"></a></dt>
@@ -191,7 +198,7 @@ function.</p></dd>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

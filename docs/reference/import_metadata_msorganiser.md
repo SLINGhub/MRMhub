@@ -63,8 +63,8 @@ mexp <- import_metadata_msorganiser(
 #>   Type  Table    Column                Issue                           Count
 #>   <chr> <chr>    <chr>                 <chr>                           <int>
 #> 1 W*    Analyses analysis_id           Analyses not in analysis data      15
-#> 2 W*    Features feature_id            Feature(s) not in analysis data   321
-#> 3 W*    Features feature_id            Feature(s) without metadata         1
+#> 2 W*    Features feature_id            Feature(s) without metadata         1
+#> 3 W*    Features feature_id            Feature(s) not in analysis data   321
 #> 4 W*    ISTDs    quant_istd_feature_id Internal standard(s) not used       2
 #> 
 #> --------------------------------------------------------------------------------
