@@ -304,7 +304,7 @@ plot_pca(
   include_istd = FALSE)
 #> ! 2 features contained missing or non-numeric values and were exluded.
 #> ℹ The PCA was calculated based on `feature_intensity` values of 423 features.
-#> ggrepel: 10000 iterations in 0.010796s, 3 overlaps. Consider increasing 'max.iter'.
+#> ggrepel: 10000 iterations in 0.010923s, 3 overlaps. Consider increasing 'max.iter'.
 ```
 
 ![PCA
@@ -341,7 +341,7 @@ plot_pca(
   shared_labeltext_hide = NA)
 #> ! 2 features contained missing or non-numeric values and were exluded.
 #> ℹ The PCA was calculated based on `feature_intensity` values of 423 features.
-#> ggrepel: 10000 iterations in 0.022368s, 7 overlaps. Consider increasing 'max.iter'.
+#> ggrepel: 10000 iterations in 0.022696s, 7 overlaps. Consider increasing 'max.iter'.
 ```
 
 ![PCA
@@ -619,18 +619,14 @@ myexp <- mrmhub::correct_batch_centering(
   correct_scale = TRUE, 
   log_transform_internal = TRUE)
 #> ℹ Adding batch correction on top of `conc` drift-correction.
-#> Warning: ! 258 feature/batch combinations had no usable reference-QC ("SPL") values and
+#> Warning: ! 102 feature/batch combinations had no usable reference-QC ("SPL") values and
 #>   were left uncorrected; original values were kept.
-#> ℹ Affected features: "CE 18:1 d7 (ISTD)", "Cer d18:1/12:0 (ISTD) [M-H20>264]",
-#>   "Cer d18:1/25:0 (ISTD)", "Cer d18:1/25:0 (ISTD) [M-H20>264]", "COH d7 [161]
-#>   (ISTD)", "COH d7 [95] (ISTD)", "DG 15:0_18:1 d7 (ISTD) [-15:0]", "DG
-#>   15:0_18:1 d7 (ISTD) [-18:1]", "Hex2Cer d18:1/12:0 (ISTD)", "Hex2Cer
-#>   d18:1/12:0 (ISTD) [282]", "Hex2Cer d18:1/12:0 (ISTD) [M-H20 > 264]", "Hex2Cer
-#>   d18:1/16:0 d3 (ISTD) [-HexAll]", "Hex2Cer d18:1/16:0 d3 (ISTD) [264]",
-#>   "Hex2Cer d18:1/16:0 d3 (ISTD) [282]", "Hex3Cer d18:1/18:0 d3 (ISTD)
-#>   [-HexAll]", "Hex3Cer d18:1/18:0 d3 (ISTD) [264]", "Hex3Cer d18:1/18:0 d3
-#>   (ISTD) [282]", "HexCer d18:1/08:0 (ISTD) [264]", …, "TG 48:1 d7 (ISTD)
-#>   [-15:0]", and "TG 48:1 d7 (ISTD) [SIM]"
+#> ℹ Affected features: "CE 18:1 d7 (ISTD)", "Cer d18:1/25:0 (ISTD)", "COH d7
+#>   [161] (ISTD)", "COH d7 [95] (ISTD)", "DG 15:0_18:1 d7 (ISTD) [-15:0]", "DG
+#>   15:0_18:1 d7 (ISTD) [-18:1]", "Hex2Cer d18:1/12:0 (ISTD)", "LPC 18:1 (ab ) d7
+#>   (ISTD)", "LPE 18:1 d7 (ab) (ISTD)", "PC 33:1 d7 (ISTD)", "PE 33:1 d7 (ISTD)",
+#>   "PG 33:1 d7 (ISTD)", "PI 33:1 d7 (ISTD)", "PS 33:1 d7 (ISTD)", "SM 36:2 d9
+#>   (ISTD)", "TG 48:1 d7 (ISTD) [-15:0]", and "TG 48:1 d7 (ISTD) [SIM]"
 #> ✔ Batch median-centering of 6 batches was applied to drift-corrected concentrations of all 502 features.
 #> ℹ The median CV change of all features in study samples was -0.23% (range: -31.80% to 69.10%).  The median absolute CV of all features increased from 38.39% to 38.83%.
 
@@ -816,7 +812,7 @@ Exercises
 
 mrmhub::save_report_xlsx(myexp, path = tempfile(fileext = ".xlsx"))
 #> Saving report to disk - please wait...
-#> ✔ The data processing report of experiment 'sPerfect' has been saved to '/tmp/Rtmp1W9PwI/file2f4c6c4c28a7.xlsx'.
+#> ✔ The data processing report of experiment 'sPerfect' has been saved to '/tmp/Rtmpy6fR8f/file2f634737ccc5.xlsx'.
 ```
 
 Specific data subsets can also be saved as a clean flat, wide CSV file.
@@ -837,7 +833,7 @@ mrmhub::save_dataset_csv(
   qc_types = "SPL", 
   include_qualifier = FALSE,
   filter_data = TRUE)
-#> ✔ Concentration values for 377 analyses and 324 features have been exported to '/tmp/Rtmp1W9PwI/file2f4c729c6e32.csv'.
+#> ✔ Concentration values for 377 analyses and 324 features have been exported to '/tmp/Rtmpy6fR8f/file2f6379901cd1.csv'.
 ```
 
 ## 22. Sharing the `MRMhubExperiment` dataset

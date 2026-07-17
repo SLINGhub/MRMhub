@@ -414,7 +414,7 @@ think the resulting PCA plot suggests now?</p>
 <span>  include_istd <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">2 features contained missing or non-numeric values and were exluded.</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #00BB00;">The PCA was calculated based on `feature_intensity` values of 423 features.</span></span></span>
-<span><span class="co">#&gt; ggrepel: 10000 iterations in 0.010796s, 3 overlaps. Consider increasing 'max.iter'.</span></span></code></pre></div>
+<span><span class="co">#&gt; ggrepel: 10000 iterations in 0.010923s, 3 overlaps. Consider increasing 'max.iter'.</span></span></code></pre></div>
 <p><img src="tutorial-03-lipidomics-workflow_files/figure-html/pca-before-1.png" class="r-plt" alt="PCA plot" width="100%"></p>
 </div>
 <div class="section level2">
@@ -448,7 +448,7 @@ dimensions (by modifying <code>pca_dims</code>).</p>
 <span>  shared_labeltext_hide <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">2 features contained missing or non-numeric values and were exluded.</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #00BB00;">The PCA was calculated based on `feature_intensity` values of 423 features.</span></span></span>
-<span><span class="co">#&gt; ggrepel: 10000 iterations in 0.022368s, 7 overlaps. Consider increasing 'max.iter'.</span></span></code></pre></div>
+<span><span class="co">#&gt; ggrepel: 10000 iterations in 0.022696s, 7 overlaps. Consider increasing 'max.iter'.</span></span></code></pre></div>
 <p><img src="tutorial-03-lipidomics-workflow_files/figure-html/outlier-removal-1.png" class="r-plt" alt="PCA plot" width="100%"></p>
 </div>
 <div class="section level2">
@@ -697,18 +697,14 @@ to center the batches. What do you observe?</p>
 <span>  correct_scale <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>  log_transform_internal <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #BBBB00;">Adding batch correction on top of `conc` drift-correction.</span></span></span>
-<span><span class="co">#&gt; Warning: <span style="color: #BBBB00;">!</span> 258 feature/batch combinations had no usable reference-QC (<span style="color: #0000BB;">"SPL"</span>) values and</span></span>
+<span><span class="co">#&gt; Warning: <span style="color: #BBBB00;">!</span> 102 feature/batch combinations had no usable reference-QC (<span style="color: #0000BB;">"SPL"</span>) values and</span></span>
 <span><span class="co">#&gt;   were left uncorrected; original values were kept.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Affected features: <span style="color: #0000BB;">"CE 18:1 d7 (ISTD)"</span>, <span style="color: #0000BB;">"Cer d18:1/12:0 (ISTD) [M-H20&gt;264]"</span>,</span></span>
-<span><span class="co">#&gt;   <span style="color: #0000BB;">"Cer d18:1/25:0 (ISTD)"</span>, <span style="color: #0000BB;">"Cer d18:1/25:0 (ISTD) [M-H20&gt;264]"</span>, <span style="color: #0000BB;">"COH d7 [161]</span></span></span>
-<span><span class="co">#&gt;   <span style="color: #0000BB;">(ISTD)"</span>, <span style="color: #0000BB;">"COH d7 [95] (ISTD)"</span>, <span style="color: #0000BB;">"DG 15:0_18:1 d7 (ISTD) [-15:0]"</span>, <span style="color: #0000BB;">"DG</span></span></span>
-<span><span class="co">#&gt;   <span style="color: #0000BB;">15:0_18:1 d7 (ISTD) [-18:1]"</span>, <span style="color: #0000BB;">"Hex2Cer d18:1/12:0 (ISTD)"</span>, <span style="color: #0000BB;">"Hex2Cer</span></span></span>
-<span><span class="co">#&gt;   <span style="color: #0000BB;">d18:1/12:0 (ISTD) [282]"</span>, <span style="color: #0000BB;">"Hex2Cer d18:1/12:0 (ISTD) [M-H20 &gt; 264]"</span>, <span style="color: #0000BB;">"Hex2Cer</span></span></span>
-<span><span class="co">#&gt;   <span style="color: #0000BB;">d18:1/16:0 d3 (ISTD) [-HexAll]"</span>, <span style="color: #0000BB;">"Hex2Cer d18:1/16:0 d3 (ISTD) [264]"</span>,</span></span>
-<span><span class="co">#&gt;   <span style="color: #0000BB;">"Hex2Cer d18:1/16:0 d3 (ISTD) [282]"</span>, <span style="color: #0000BB;">"Hex3Cer d18:1/18:0 d3 (ISTD)</span></span></span>
-<span><span class="co">#&gt;   <span style="color: #0000BB;">[-HexAll]"</span>, <span style="color: #0000BB;">"Hex3Cer d18:1/18:0 d3 (ISTD) [264]"</span>, <span style="color: #0000BB;">"Hex3Cer d18:1/18:0 d3</span></span></span>
-<span><span class="co">#&gt;   <span style="color: #0000BB;">(ISTD) [282]"</span>, <span style="color: #0000BB;">"HexCer d18:1/08:0 (ISTD) [264]"</span>, …, <span style="color: #0000BB;">"TG 48:1 d7 (ISTD)</span></span></span>
-<span><span class="co">#&gt;   <span style="color: #0000BB;">[-15:0]"</span>, and <span style="color: #0000BB;">"TG 48:1 d7 (ISTD) [SIM]"</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Affected features: <span style="color: #0000BB;">"CE 18:1 d7 (ISTD)"</span>, <span style="color: #0000BB;">"Cer d18:1/25:0 (ISTD)"</span>, <span style="color: #0000BB;">"COH d7</span></span></span>
+<span><span class="co">#&gt;   <span style="color: #0000BB;">[161] (ISTD)"</span>, <span style="color: #0000BB;">"COH d7 [95] (ISTD)"</span>, <span style="color: #0000BB;">"DG 15:0_18:1 d7 (ISTD) [-15:0]"</span>, <span style="color: #0000BB;">"DG</span></span></span>
+<span><span class="co">#&gt;   <span style="color: #0000BB;">15:0_18:1 d7 (ISTD) [-18:1]"</span>, <span style="color: #0000BB;">"Hex2Cer d18:1/12:0 (ISTD)"</span>, <span style="color: #0000BB;">"LPC 18:1 (ab ) d7</span></span></span>
+<span><span class="co">#&gt;   <span style="color: #0000BB;">(ISTD)"</span>, <span style="color: #0000BB;">"LPE 18:1 d7 (ab) (ISTD)"</span>, <span style="color: #0000BB;">"PC 33:1 d7 (ISTD)"</span>, <span style="color: #0000BB;">"PE 33:1 d7 (ISTD)"</span>,</span></span>
+<span><span class="co">#&gt;   <span style="color: #0000BB;">"PG 33:1 d7 (ISTD)"</span>, <span style="color: #0000BB;">"PI 33:1 d7 (ISTD)"</span>, <span style="color: #0000BB;">"PS 33:1 d7 (ISTD)"</span>, <span style="color: #0000BB;">"SM 36:2 d9</span></span></span>
+<span><span class="co">#&gt;   <span style="color: #0000BB;">(ISTD)"</span>, <span style="color: #0000BB;">"TG 48:1 d7 (ISTD) [-15:0]"</span>, and <span style="color: #0000BB;">"TG 48:1 d7 (ISTD) [SIM]"</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Batch median-centering of 6 batches was applied to drift-corrected concentrations of all 502 features.</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #555555;">The median CV change of all features in study samples was </span><span style="color: #555555; font-weight: bold;">-0.23%</span><span style="color: #555555;"> (range: -31.80% to 69.10%).  The median absolute CV of all features </span><span style="color: #555555; font-weight: bold;">increased from</span><span style="color: #555555;"> </span><span style="color: #555555; font-weight: bold;">38.39% to 38.83%</span><span style="color: #555555;">.</span></span></span>
 <span></span>
@@ -876,7 +872,7 @@ folder.</p>
 </details><div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">mrmhub</span><span class="fu">::</span><span class="fu"><a href="../reference/save_report_xlsx.html">save_report_xlsx</a></span><span class="op">(</span><span class="va">myexp</span>, path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".xlsx"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Saving report to disk - please wait...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The data processing report of experiment 'sPerfect' has been saved to '/tmp/Rtmp1W9PwI/file2f4c6c4c28a7.xlsx'.</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The data processing report of experiment 'sPerfect' has been saved to '/tmp/Rtmpy6fR8f/file2f634737ccc5.xlsx'.</span></span></span></code></pre></div>
 <p>Specific data subsets can also be saved as a clean flat, wide CSV
 file. This is the format used to share the data for the statistical
 analysis presented in the next part of this workshop.</p>
@@ -894,7 +890,7 @@ generated CSV files.</p>
 <span>  qc_types <span class="op">=</span> <span class="st">"SPL"</span>, </span>
 <span>  include_qualifier <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  filter_data <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Concentration values for 377 analyses and 324 features have been exported to '/tmp/Rtmp1W9PwI/file2f4c729c6e32.csv'.</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Concentration values for 377 analyses and 324 features have been exported to '/tmp/Rtmpy6fR8f/file2f6379901cd1.csv'.</span></span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="sharing-the-mrmhubexperiment-dataset">22. Sharing the <code>MRMhubExperiment</code> dataset<a class="anchor" aria-label="anchor" href="#sharing-the-mrmhubexperiment-dataset"></a>
