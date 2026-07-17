@@ -78,10 +78,6 @@ processing steps, and the current status of the data.
   Calibration metrics calculated from external calibration curves for
   each measured feature
 
-- `parameters_processing`:
-
-  Values of parameters used for the different processing steps
-
 - `status_processing`:
 
   Status within the data processing workflow

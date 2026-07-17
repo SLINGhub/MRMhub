@@ -62,15 +62,15 @@ state.
 
 # The object structure:
 slotNames("MRMhubExperiment")
-#>  [1] "title"                "analysis_type"        "feature_intensity_var"
-#>  [4] "dataset_orig"         "dataset"              "dataset_filtered"     
-#>  [7] "annot_analyses"       "annot_features"       "annot_istds"          
-#> [10] "annot_responsecurves" "annot_qcconcentrations" "annot_studysamples"
-#> [13] "annot_batches"        "metrics_qc"           "metrics_calibration"  
-#> [16] "parameters_processing" "status_processing"   "is_istd_normalized"   
-#> [19] "is_quantitated"       "is_filtered"          "has_outliers_tech"    
-#> [22] "is_isotope_corr"      "analyses_excluded"    "features_excluded"    
-#> [25] "var_drift_corrected"  "var_batch_corrected"
+#>  [1] "title"                  "analysis_type"          "feature_intensity_var"
+#>  [4] "conc_analyte_unit"      "dataset_orig"           "dataset"
+#>  [7] "dataset_filtered"       "annot_analyses"         "annot_features"
+#> [10] "annot_istds"            "annot_responsecurves"   "annot_qcconcentrations"
+#> [13] "annot_studysamples"     "annot_batches"          "metrics_qc"
+#> [16] "metrics_calibration"    "status_processing"      "is_istd_normalized"
+#> [19] "is_quantitated"         "is_filtered"            "has_outliers_tech"
+#> [22] "is_isotope_corr"        "analyses_excluded"      "features_excluded"
+#> [25] "var_drift_corrected"    "var_batch_corrected"
 ```
 
 ## Decision 2: Long-Format Data Exchange
