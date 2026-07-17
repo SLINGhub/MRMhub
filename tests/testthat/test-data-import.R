@@ -519,14 +519,22 @@ test_that("Imports multiple MH Quant .csv files into one MRMhubExperiment 1", {
 test_that("Error duplicated reporting when import multiple MH Quant .csv files into one MRMhubExperiment", {
   mexp <- MRMhubExperiment()
 
-  expect_error(
+  # `\\s+` tolerates the line break cli inserts when wrapping the message
+  err <- expect_error(
     mexp <- import_data_masshunter(
       mexp,
       test_path("testdata/masshunter/MQquant_multiple_duplicates/"),
       import_metadata = TRUE,
       expand_qualifier_names = TRUE
     ),
-    regexp = "duplicated reportings \\(analysis and feature pairs\\) with identical"
+    regexp = "measures\\s+the\\s+same\\s+feature\\s+more\\s+than\\s+once"
+  )
+  # the overlapping files report the same measurement verbatim ...
+  expect_match(conditionMessage(err), "identical")
+  # ... and the offending analysis/feature pairs are named
+  expect_match(
+    conditionMessage(err),
+    "001_EQC_TQC\\s+prerun\\s+01\\s+/\\s+CE\\s+18:1"
   )
 })
 
@@ -568,14 +576,22 @@ test_that("Error file not exist", {
 test_that("Imports multiple MH Quant .csv files into one MRMhubExperiment", {
   mexp <- MRMhubExperiment()
 
-  expect_error(
+  # `\\s+` tolerates the line break cli inserts when wrapping the message
+  err <- expect_error(
     mexp <- import_data_masshunter(
       mexp,
       test_path("testdata/masshunter/MQquant_multiple_duplicates2/"),
       import_metadata = TRUE,
       expand_qualifier_names = TRUE
     ),
-    regexp = "duplicated reportings \\(analysis and feature pairs\\) with different"
+    regexp = "measures\\s+the\\s+same\\s+feature\\s+more\\s+than\\s+once"
+  )
+  # here the duplicated pairs disagree on the values -- a distinct cause from the
+  # verbatim-duplicate case above, so the message must say so
+  expect_match(conditionMessage(err), "differing")
+  expect_match(
+    conditionMessage(err),
+    "001_EQC_TQC\\s+prerun\\s+01\\s+/\\s+CE\\s+18:1"
   )
 })
 

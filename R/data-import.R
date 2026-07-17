@@ -607,12 +607,20 @@ import_data_main <- function(
       relocate("analysis_order", .before = 1)
   }
 
-  # VERIFY DATA, i.e. analysis_ids, feature_ids, and values are replicated ===
-  ## which can be result of multiple imports of the same/overlapping data or due to parsing error
-  n_idpairs_distinct <- d_raw |>
-    select("analysis_id", "feature_id") |>
-    distinct(.keep_all = FALSE) |>
-    nrow()
+  # VERIFY DATA: a feature must be measured at most once per analysis =========
+  ## A measurement is one value at the intersection of one analysis and one
+  ## feature, so more than one row per (analysis_id, feature_id) is always wrong.
+  ## The values tell the causes apart: identical values mean the same data was
+  ## read twice (overlapping result files, a duplicated row), differing values
+  ## mean two measurements collapsed onto one id (transitions or injections
+  ## sharing a name -- `analysis_id` defaults to `raw_data_filename` -- or a
+  ## parsing/mapping error). Metadata cannot be a cause: it is imported only after
+  ## this function returns.
+  ## `count()` not `distinct()`: same single pass, but yields the offending pairs.
+  d_idpairs <- d_raw |>
+    dplyr::count(.data$analysis_id, .data$feature_id, name = "n_rows")
+  n_idpairs_distinct <- nrow(d_idpairs)
+
   if (nrow(d_raw) > n_idpairs_distinct) {
     has_duplicated_id <- TRUE
 
@@ -650,13 +658,26 @@ import_data_main <- function(
   }
 
   if (has_duplicated_id) {
+    dup_pairs <- d_idpairs |>
+      dplyr::filter(.data$n_rows > 1) |>
+      dplyr::mutate(
+        pair = paste(.data$analysis_id, .data$feature_id, sep = " / ")
+      )
+    n_dup <- nrow(dup_pairs)
+
     if (has_duplicated_values) {
-      cli::cli_abort(glue::glue(
-        "Imported data contains duplicated reportings (analysis and feature pairs) with {cli::style_italic('identical')} feature variable values. Please verify imported dataset(s)."
+      cli::cli_abort(c(
+        "Imported data measures the same feature more than once in the same analysis.",
+        "x" = "{n_dup} analysis/feature pair{?s} {cli::qty(n_dup)}{?is/are} measured more than once, each time with {cli::style_italic('identical')} values: {.val {utils::head(dup_pairs$pair, 5)}}",
+        "i" = "Identical values mean the same data was read twice: the same result file, or an overlapping part of it, imported more than once.",
+        "i" = "A row or transition duplicated within a single file has the same effect."
       ))
     } else {
-      cli::cli_abort(glue::glue(
-        "Imported data contains duplicated reportings (analysis and feature pairs) with {cli::style_italic('different')} feature variable values. Please verify imported dataset(s)."
+      cli::cli_abort(c(
+        "Imported data measures the same feature more than once in the same analysis.",
+        "x" = "{n_dup} analysis/feature pair{?s} {cli::qty(n_dup)}{?is/are} measured more than once, with {cli::style_italic('differing')} values: {.val {utils::head(dup_pairs$pair, 5)}}",
+        "i" = "Differing values mean two separate measurements carry the same ids: two transitions or two injections named identically, re-integrated results, or the wrong column mapped to {.field analysis_id} or {.field feature_id}.",
+        "i" = "Please verify the imported file(s), including the analysis and feature names they report."
       ))
     }
   }
