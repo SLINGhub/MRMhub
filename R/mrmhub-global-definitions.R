@@ -82,9 +82,6 @@ pkg.env$table_templates <- list(
     "batch_no" = numeric(),
     "id_batch_start" = numeric(),
     "id_batch_end" = numeric()
-  ),
-  parameters_processing_template = dplyr::tibble(
-    "parameter_name" = character()
   )
 )
 

@@ -47,8 +47,6 @@ set when the data are quantitated. \code{"pmol"} or \code{"ng"} for ISTD quantit
 
 \item{\code{metrics_calibration}}{Calibration metrics calculated from external calibration curves for each measured feature}
 
-\item{\code{parameters_processing}}{Values of parameters used for the different processing steps}
-
 \item{\code{status_processing}}{Status within the data processing workflow}
 
 \item{\code{is_istd_normalized}}{Flag if data has been ISTD normalized}

@@ -1002,47 +1002,6 @@ filter_features_qc <- function(
     }
   }
 
-  # Save QC filter criteria to MRMhubExperiment object
-  # TODO: fix some of the param below ie. features.to.keep
-
-  # Store the QC filter criteria in MRMhubExperiment object
-  data@parameters_processing <- data@parameters_processing |>
-    mutate(
-      max.prop.missing.intensity.spl = max.prop.missing.intensity.spl,
-      max.prop.missing.normintensity.spl = max.prop.missing.normintensity.spl,
-      max.prop.missing.conc.spl = max.prop.missing.conc.spl,
-      min.intensity.lowest.bqc = min.intensity.lowest.bqc,
-      min.intensity.lowest.tqc = min.intensity.lowest.tqc,
-      min.intensity.lowest.spl = min.intensity.lowest.spl,
-      min.intensity.median.bqc = min.intensity.median.bqc,
-      min.intensity.median.tqc = min.intensity.median.tqc,
-      min.intensity.median.spl = min.intensity.median.spl,
-      min.intensity.highest.spl = min.intensity.highest.spl,
-      max.cv.conc.bqc = max.cv.conc.bqc,
-      max.cv.conc.tqc = max.cv.conc.tqc,
-      max.cv.intensity.bqc = max.cv.intensity.bqc,
-      max.cv.intensity.tqc = max.cv.intensity.tqc,
-      max.cv.normintensity.bqc = max.cv.normintensity.bqc,
-      max.cv.normintensity.tqc = max.cv.normintensity.tqc,
-      max.dratio.sd.conc.bqc = max.dratio.sd.conc.bqc,
-      max.dratio.sd.conc.tqc = max.dratio.sd.conc.tqc,
-      max.dratio.mad.conc.bqc = max.dratio.mad.conc.bqc,
-      max.dratio.mad.conc.tqc = max.dratio.mad.conc.tqc,
-      max.dratio.sd.normint.bqc = max.dratio.sd.normint.bqc,
-      max.dratio.sd.normint.tqc = max.dratio.sd.normint.tqc,
-      min.signalblank.median.spl.pblk = min.signalblank.median.spl.pblk,
-      min.signalblank.median.spl.ublk = min.signalblank.median.spl.ublk,
-      min.signalblank.median.spl.sblk = min.signalblank.median.spl.sblk,
-      response.curves.selection = list(response.curves.selection),
-      min.rsquare.response = min.rsquare.response,
-      min.slope.response = min.slope.response,
-      max.slope.response = max.slope.response,
-      max.yintercept.response = max.yintercept.response,
-      include_qualifier = include_qualifier,
-      include_istd = include_istd,
-      features.to.keep = paste(features.to.keep, collapse = ", ")
-    )
-
   metrics_qc_local <- data_local@metrics_qc
   ##tictoc::tic()
 
