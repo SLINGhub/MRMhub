@@ -1514,3 +1514,95 @@ test_that("MassHunter import strips only a trailing .d, not a '.d' in the middle
   # and no id is left with a trailing .d
   expect_false(any(grepl("\\.d$", ids)))
 })
+
+# ---- T4.7: per-key attribute lookups must not fan out the imported rows -------
+
+# `parse_plain_long_csv()` builds per-analysis / per-feature attribute lookups
+# with `distinct()` and joins them back onto every data row. Both must hold
+# exactly one row per key, or every measurement of that key is duplicated.
+
+test_that("a whitespace variant of a feature_id does not duplicate imported rows", {
+  tmp <- withr::local_tempfile(fileext = ".csv")
+  writeLines(
+    c(
+      "analysis_id,feature_id,feature_class,istd_feature_id,area",
+      "A1,PC 32:1,PC,PC 32:1 ISTD,100",
+      "A2,PC 32:1,PC,PC 32:1 ISTD,200",
+      # same feature, typed with a stray internal space. `str_squish()` in the
+      # importer normalizes it to "PC 32:1", so the file holds exactly one
+      # measurement per (analysis_id, feature_id).
+      "A3,PC  32:1,PC,PC 32:1 ISTD,300"
+    ),
+    tmp
+  )
+
+  tbl <- mrmhub::parse_plain_long_csv(tmp, silent = TRUE)
+
+  expect_equal(nrow(tbl), 3L)
+  expect_equal(sort(tbl$feature_area), c(100, 200, 300))
+  expect_equal(nrow(dplyr::distinct(tbl, analysis_id, feature_id)), 3L)
+})
+
+test_that("a whitespace variant of an analysis_id does not duplicate imported rows", {
+  tmp <- withr::local_tempfile(fileext = ".csv")
+  writeLines(
+    c(
+      "analysis_id,qc_type,feature_id,feature_class,area",
+      "Sample 01,SPL,PC 32:1,PC,100",
+      "Sample  01,SPL,PC 34:1,PC,200"
+    ),
+    tmp
+  )
+
+  tbl <- mrmhub::parse_plain_long_csv(tmp, silent = TRUE)
+
+  expect_equal(nrow(tbl), 2L)
+  expect_equal(sort(tbl$feature_area), c(100, 200))
+  expect_equal(unique(tbl$analysis_id), "Sample 01")
+})
+
+test_that("a feature_id with conflicting feature_class values aborts naming the real cause", {
+  tmp <- withr::local_tempfile(fileext = ".csv")
+  writeLines(
+    c(
+      "analysis_id,feature_id,feature_class,istd_feature_id,area",
+      "A1,PC 32:1,PC,PC 32:1 ISTD,100",
+      "A2,PC 32:1,pc,PC 32:1 ISTD,200"
+    ),
+    tmp
+  )
+
+  # names the disagreeing column and the offending id ...
+  expect_error(
+    mrmhub::parse_plain_long_csv(tmp, silent = TRUE),
+    "feature_class"
+  )
+  expect_error(
+    mrmhub::parse_plain_long_csv(tmp, silent = TRUE),
+    "PC 32:1"
+  )
+  # ... and never blames the user's file for duplicates it does not have
+  expect_error(
+    suppressMessages(mrmhub::import_data_csv_long(
+      mrmhub::MRMhubExperiment(),
+      path = tmp,
+      import_metadata = FALSE
+    )),
+    "feature_class"
+  )
+})
+
+test_that("an analysis_id with conflicting qc_type values aborts naming the real cause", {
+  tmp <- withr::local_tempfile(fileext = ".csv")
+  writeLines(
+    c(
+      "analysis_id,qc_type,feature_id,feature_class,area",
+      "S01,SPL,PC 32:1,PC,100",
+      "S01,spl,PC 34:1,PC,200"
+    ),
+    tmp
+  )
+
+  expect_error(mrmhub::parse_plain_long_csv(tmp, silent = TRUE), "qc_type")
+  expect_error(mrmhub::parse_plain_long_csv(tmp, silent = TRUE), "S01")
+})

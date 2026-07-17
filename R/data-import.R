@@ -1474,6 +1474,9 @@ parse_plain_long_csv <- function(
   }
 
   # extract and pivot to improve speed
+  # Squish before `distinct()`: the ids are squished again on the data side below,
+  # so whitespace variants left here survive dedup, then collapse into a duplicate
+  # key and fan out the join.
   d_sample <- d_raw |>
     dplyr::select(any_of(c(
       "analysis_id",
@@ -1482,6 +1485,7 @@ parse_plain_long_csv <- function(
       "acquisition_time_stamp",
       "batch_id"
     ))) |>
+    dplyr::mutate(dplyr::across(where(is.character), stringr::str_squish)) |>
     dplyr::distinct()
 
   # Conditionally parse acquisition_time_stamp if it exists
@@ -1503,7 +1507,10 @@ parse_plain_long_csv <- function(
           ),
           quiet = TRUE
         )
-      )
+      ) |>
+      # parsing maps differing spellings onto one instant, which can make two rows
+      # identical -- collapse them before the uniqueness check below
+      dplyr::distinct()
   }
 
   missing_ids <- setdiff("feature_id", names(d_raw))
@@ -1513,23 +1520,24 @@ parse_plain_long_csv <- function(
     ))
   }
 
-  # Always squish all character columns that exist
-  d_sample <- d_sample |>
-    dplyr::mutate(dplyr::across(where(is.character), stringr::str_squish))
-
   d_feature <- d_raw |>
     dplyr::select(any_of(c(
       "feature_id",
       "feature_class",
       "istd_feature_id"
     ))) |>
-    dplyr::distinct() |>
     dplyr::mutate(
       dplyr::across(
         any_of(c("feature_id", "istd_feature_id")),
         ~ stringr::str_squish(as.character(.))
       )
-    )
+    ) |>
+    dplyr::distinct()
+
+  # Both lookups are joined onto every data row below, so each must hold exactly
+  # one row per key. A key left with conflicting attributes has no safe guess.
+  assert_consistent_attributes(d_sample, "analysis_id", "the imported data")
+  assert_consistent_attributes(d_feature, "feature_id", "the imported data")
 
   # finalize data
 
@@ -1564,8 +1572,13 @@ parse_plain_long_csv <- function(
       analysis_id = str_squish(.data$analysis_id),
       feature_id = str_squish(.data$feature_id)
     ) |>
-    left_join(d_sample, by = "analysis_id") |>
-    left_join(d_feature, by = "feature_id", keep = FALSE) |>
+    left_join(d_sample, by = "analysis_id", relationship = "many-to-one") |>
+    left_join(
+      d_feature,
+      by = "feature_id",
+      keep = FALSE,
+      relationship = "many-to-one"
+    ) |>
     relocate(any_of(c(
       "analysis_id",
       "raw_data_filename",

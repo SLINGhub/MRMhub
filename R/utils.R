@@ -142,6 +142,45 @@ assert_unique_ids <- function(ids, field, table) {
   invisible(ids)
 }
 
+#' Abort when a per-key attribute lookup carries conflicting values
+#'
+#' Sibling of [assert_unique_ids()] for the importers, which build small
+#' per-analysis / per-feature attribute lookups with [dplyr::distinct()] and join
+#' them back onto every data row. A key whose attributes disagree between rows of
+#' the raw file survives `distinct()` as more than one row, so the join then
+#' duplicates every measurement of that key. There is no safe guess about which
+#' spelling was intended, so abort naming the column that actually disagrees --
+#' otherwise the fan-out only surfaces further downstream as a "duplicated
+#' reportings" error blaming the user's file for duplicates it does not contain.
+#'
+#' @param d_lookup Per-key attribute table, expected to hold one row per `key`.
+#' @param key Name of the key column.
+#' @param table Display name (prose) of the source the lookup was built from.
+#' @return `d_lookup`, invisibly, when consistent.
+#' @keywords internal
+#' @noRd
+assert_consistent_attributes <- function(d_lookup, key, table) {
+  dup_keys <- unique(d_lookup[[key]][duplicated(d_lookup[[key]])])
+  if (length(dup_keys) == 0) {
+    return(invisible(d_lookup))
+  }
+  d_conflict <- d_lookup[d_lookup[[key]] %in% dup_keys, , drop = FALSE]
+  attr_cols <- setdiff(names(d_lookup), key)
+  conflicting <- attr_cols[vapply(
+    attr_cols,
+    function(col) {
+      any(tapply(d_conflict[[col]], d_conflict[[key]], dplyr::n_distinct) > 1)
+    },
+    logical(1)
+  )]
+  n <- length(dup_keys)
+  cli::cli_abort(c(
+    "Inconsistent {.field {key}} metadata in {table}.",
+    "x" = "{n} {.field {key}} value{cli::qty(n)}{?s} {cli::qty(n)}{?carries/carry} more than one {.field {conflicting}}: {.val {utils::head(dup_keys, 5)}}",
+    "i" = "Each {.field {key}} must carry the same {.field {conflicting}} in every row, otherwise every measurement of it is duplicated."
+  ))
+}
+
 #' Drop leftover stray rows and headerless columns from spreadsheet metadata
 #'
 #' Spreadsheet metadata often carries stray content: a value or formula remnant
