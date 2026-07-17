@@ -126,6 +126,44 @@ test_that("plot_normalization_qc generates correct plot types", {
   expect_doppelganger_cond("norm-qc-ratio", p_ratio)
 })
 
+test_that("plot_normalization_qc does not clip an improved CV", {
+  # For `diff` and `ratio` a negative y is the improvement -- the feature's CV
+  # went down. A `c(0, NA)` y_lim clipped exactly those points, so normalization
+  # looked inert. Count what is drawn against what was computed.
+  drawn_y <- function(p) {
+    b <- suppressWarnings(ggplot2::ggplot_build(p))
+    layer <- which(vapply(b$data, \(x) "y" %in% names(x), logical(1)))[1]
+    b$data[[layer]]$y
+  }
+
+  for (type in c("diff", "ratio")) {
+    p <- plot_normalization_qc(
+      data = mexp,
+      before_norm_var = "intensity",
+      after_norm_var = "norm_intensity",
+      plot_type = type,
+      qc_types = "SPL"
+    )
+    computed <- p$data$y_values
+    expect_true(any(computed < 0, na.rm = TRUE)) # the fixture exercises it
+    expect_equal(sum(!is.na(drawn_y(p))), sum(!is.na(computed)))
+  }
+
+  # An explicit y_lim still wins, clipping as asked.
+  p_clipped <- plot_normalization_qc(
+    data = mexp,
+    before_norm_var = "intensity",
+    after_norm_var = "norm_intensity",
+    plot_type = "diff",
+    qc_types = "SPL",
+    y_lim = c(0, NA_real_)
+  )
+  expect_lt(
+    sum(!is.na(drawn_y(p_clipped))),
+    sum(!is.na(p_clipped$data$y_values))
+  )
+})
+
 test_that("plot_normalization_qc faceting works", {
   p_faceted <- plot_normalization_qc(
     data = mexp,

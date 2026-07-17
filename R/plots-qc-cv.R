@@ -33,9 +33,11 @@
 #' @param cv_threshold_value Numerical threshold value to be shown as dashed
 #'   lines in the plot (default is `25`).
 #' @param x_lim Numeric vector of length 2 for x-axis limits. Use `NA` for
-#'   auto-scaling (default is `c(0, NA)`).
+#'   auto-scaling (default is `c(NA, NA)`).
 #' @param y_lim Numeric vector of length 2 for y-axis limits. Use `NA` for
-#'   auto-scaling (default is `c(0, NA)`).
+#'   auto-scaling (default is `c(NA, NA)`). A fixed lower limit of `0` would clip
+#'   the negative values of `plot_type = "diff"` and `"ratio"`, which are the
+#'   features whose CV the normalization reduced.
 #' @param cols_page Number of facet columns per page, representing
 #'   different feature classes (default is `5`). Only used if
 #'   `facet_by_class = TRUE`.
@@ -89,8 +91,8 @@ plot_normalization_qc <- function(
   filter_data = FALSE,
   include_qualifier = FALSE,
   cv_threshold_value = 25,
-  x_lim = c(0, NA_real_),
-  y_lim = c(0, NA_real_),
+  x_lim = c(NA_real_, NA_real_),
+  y_lim = c(NA_real_, NA_real_),
   cols_page = 5,
   point_size = 1,
   point_alpha = 0.5,
