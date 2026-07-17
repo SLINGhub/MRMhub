@@ -146,6 +146,10 @@ merging. A message reports this when such values were present.</p>
 warning is issued when the constituents disagree, since the value that wins is
 then arbitrary – for <code>istd_feature_id</code> it silently decides which internal
 standard the merged analyte is normalized against.</p>
+<p><code>is_quantifier</code> is not inherited but determined by the merge: the merged
+analyte is a quantifier if any of its constituents is one. A quantifier
+combined with either a qualifier or another quantifier therefore yields a
+quantifier, whereas qualifiers merged among themselves remain a qualifier.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
