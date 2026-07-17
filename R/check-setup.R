@@ -86,7 +86,9 @@ check_setup <- function(verbose = TRUE) {
     "ComplexHeatmap",
     "rgoslin",
     "lancer",
-    "enviPat"
+    "enviPat",
+    "SummarizedExperiment",
+    "lipidr"
   )
 
   if (verbose) {

@@ -80,6 +80,8 @@ navbar:
         href: articles/recipe-02-custom-qc-report.html
       - text: Import & export mzTab-M
         href: articles/recipe-03-mztab-export.html
+      - text: Export to Bioconductor (SummarizedExperiment)
+        href: articles/recipe-04-summarizedexperiment.html
     manual:
       text: Manual
       menu:
@@ -286,6 +288,7 @@ reference:
   - save_report_xlsx
   - save_dataset_csv
   - save_dataset_mztab
+  - save_dataset_summarizedexperiment
   - save_feature_qc_metrics
 - title: Lipidomics
   description: |

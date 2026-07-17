@@ -65,7 +65,10 @@ Suggests:
     shiny,
     bslib,
     rmzTabM,
-    DT
+    DT,
+    SummarizedExperiment,
+    S4Vectors,
+    lipidr
 Remotes:
     SLINGhub/lancer,
     github::lifs-tools/rmzTabM
@@ -97,6 +100,7 @@ Collate:
     'data-mztab.R'
     'data-outlier.R'
     'data-summarize.R'
+    'data-summarizedexperiment.R'
     'datasets.R'
     'functions-chem.R'
     'functions-math.R'
