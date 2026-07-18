@@ -237,19 +237,12 @@ plot_pca <- function(
   pca_res <- prcomp(m_raw, scale = TRUE, center = TRUE)
   pca_annot <- pca_augment(pca_res, d_metadata)
 
+  # Order by the master qc_type levels (not a hard-coded subset), so QC types
+  # the default selection includes (HQC/MQC/LQC, ...) keep their level and get a
+  # colour/shape/legend from the scales below instead of collapsing to NA.
   pca_annot$qc_type <- droplevels(factor(
     pca_annot$qc_type,
-    levels = c(
-      "SPL",
-      "UBLK",
-      "SBLK",
-      "TQC",
-      "BQC",
-      "RQC",
-      "LTR",
-      "NIST",
-      "PBLK"
-    )
+    levels = pkg.env$qc_type_annotation$qc_type_levels
   ))
   pca_annot <- pca_annot |>
     dplyr::arrange(.data$qc_type)

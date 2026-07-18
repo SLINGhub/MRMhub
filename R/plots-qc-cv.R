@@ -421,7 +421,7 @@ plot_qcmetrics_comparison <- function(
 
   d_qc <- d_qc |>
     mutate(across(c(!!x_variable, !!y_variable), ~ ifelse(.x == 0, NA, .x))) |>
-    drop_na()
+    tidyr::drop_na(dplyr::all_of(c(x_variable, y_variable)))
 
   if (plot_type == "diff") {
     d_qc <- d_qc |>

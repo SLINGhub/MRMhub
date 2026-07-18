@@ -768,3 +768,33 @@ test_that("plot_responsecurves R2 is fit over the same range as the drawn line",
   expect_equal(plotted_r2, restricted, tolerance = 1e-5)
   expect_false(isTRUE(all.equal(restricted, full)))
 })
+
+test_that("plot_responsecurves keeps the R2 label when a curve point is NA", {
+  # not_zero = sum(x != 0) lacked na.rm, so a single NA curve point propagated to
+  # NA -> the stat_poly_eq filter treated it as FALSE and the feature lost its R2
+  # label, despite plenty of non-zero points remaining.
+  m <- lipidomics_dataset |> normalize_by_istd()
+  curve_an <- m@annot_responsecurves$analysis_id
+  tf <- unique(m@dataset$feature_id)[1]
+  label_rows <- function(x) {
+    p <- suppressMessages(suppressWarnings(plot_responsecurves(
+      data = x,
+      variable = "intensity",
+      rows_page = 3,
+      cols_page = 4,
+      return_plots = TRUE
+    )))
+    b <- ggplot2::ggplot_build(p[[1]])
+    li <- which(vapply(b$data, \(d) "label" %in% names(d), logical(1)))
+    nrow(b$data[[li[1]]])
+  }
+  base_n <- label_rows(m)
+  k <- which(
+    m@dataset$feature_id == tf &
+      m@dataset$analysis_id %in% curve_an &
+      !is.na(m@dataset$feature_intensity) &
+      m@dataset$feature_intensity != 0
+  )
+  m@dataset$feature_intensity[k[1]] <- NA_real_
+  expect_equal(label_rows(m), base_n)
+})

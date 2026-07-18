@@ -546,3 +546,26 @@ test_that("plot_qcmetrics_comparison honors qc_types and does not pool QC types"
   )
   expect_gt(length(unique(p_all$data$qc_type)), 1)
 })
+
+test_that("plot_qcmetrics_comparison() keeps features with NA feature_class", {
+  # A bare drop_na() used to drop any feature whose (optional) feature_class was
+  # NA, even with facet_by_class = FALSE. The drop must be scoped to the plotted
+  # CV columns.
+  m <- lipidomics_dataset |> normalize_by_istd() |> quantify_by_istd()
+  m <- calc_qc_metrics(m)
+  args <- list(
+    x_variable = "intensity_cv_tqc",
+    y_variable = "intensity_cv_bqc",
+    plot_type = "scatter",
+    facet_by_class = FALSE
+  )
+  p_clean <- suppressMessages(suppressWarnings(
+    do.call(plot_qcmetrics_comparison, c(list(m), args))
+  ))
+  na_feat <- unique(p_clean$data$feature_id)[1] # guaranteed drawn with a class
+  m@metrics_qc$feature_class[m@metrics_qc$feature_id == na_feat] <- NA
+  p_na <- suppressMessages(suppressWarnings(
+    do.call(plot_qcmetrics_comparison, c(list(m), args))
+  ))
+  expect_true(na_feat %in% p_na$data$feature_id)
+})

@@ -484,3 +484,20 @@ test_that("plot_pca drops a zero-variance feature with a warning, not a prcomp c
   )
   expect_s3_class(p, "ggplot")
 })
+
+test_that("plot_pca keeps QC types outside the legacy hard-coded level set", {
+  # quant_lcms_dataset carries HQC and LQC, which the default qc_types selection
+  # includes but the previous hard-coded factor levels omitted -> those samples
+  # collapsed to NA (no colour / shape / legend). They must survive typed.
+  p <- suppressMessages(suppressWarnings(
+    plot_pca(
+      quant_lcms_dataset,
+      variable = "intensity",
+      show_labels = FALSE,
+      ellipse_variable = "none"
+    )
+  ))
+  qc <- as.character(p$data$qc_type)
+  expect_true(all(c("HQC", "LQC") %in% qc))
+  expect_false(any(is.na(p$data$qc_type)))
+})

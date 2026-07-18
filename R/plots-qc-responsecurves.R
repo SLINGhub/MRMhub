@@ -389,7 +389,7 @@ plot_responsecurves_page <- function(
       filter(.data$feature_id %in% selected_features) |>
       arrange(.data$feature_id, .data$curve_id) |>
       group_by(.data$feature_id) |>
-      mutate(not_zero = sum(!!plot_var != 0) > 2)
+      mutate(not_zero = sum(!!plot_var != 0, na.rm = TRUE) > 2)
   } else if (curve_layout == "rows") {
     # Paginate by features (cols_page features per page)
     feature_start <- cols_page * (specific_page - 1) + 1
@@ -399,7 +399,7 @@ plot_responsecurves_page <- function(
       filter(.data$feature_id %in% selected_features) |>
       arrange(.data$curve_id, .data$feature_id) |>
       group_by(.data$feature_id) |>
-      mutate(not_zero = sum(!!plot_var != 0) > 2)
+      mutate(not_zero = sum(!!plot_var != 0, na.rm = TRUE) > 2)
   } else {
     # overlay: original slice-based pagination
     row_start <- n_samples * cols_page * rows_page * (specific_page - 1) + 1
@@ -408,7 +408,7 @@ plot_responsecurves_page <- function(
       arrange(.data$feature_id, .data$curve_id) |>
       slice(row_start:row_end) |>
       group_by(.data$feature_id) |>
-      mutate(not_zero = sum(!!plot_var != 0) > 2)
+      mutate(not_zero = sum(!!plot_var != 0, na.rm = TRUE) > 2)
   }
 
   dat_subset$curve_id <- factor(dat_subset$curve_id)
