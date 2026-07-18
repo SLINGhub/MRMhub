@@ -292,11 +292,22 @@ plot_rt_vs_chain <- function(
       )
     )
 
-  # Ensure grouping columns are factors for plotting
-  d_plot[[group_var]] <- factor(d_plot[[group_var]])
-  fitted_lines[[group_var]] <- factor(fitted_lines[[group_var]])
-  d_plot[[col_var]] <- factor(d_plot[[col_var]])
-  fitted_lines[[col_var]] <- factor(fitted_lines[[col_var]])
+  # Ensure the grouping columns are factors with a single sorted level set shared
+  # by the points and the fitted lines. col_var is mapped to both colour and
+  # fill, so identical levels/order across the two frames are what let ggplot
+  # merge them into one legend rather than drawing a duplicate.
+  for (v in unique(c(group_var, col_var))) {
+    lv <- sort(unique(as.numeric(as.character(c(
+      if (v %in% names(d_plot)) d_plot[[v]],
+      if (v %in% names(fitted_lines)) fitted_lines[[v]]
+    )))))
+    if (v %in% names(d_plot)) {
+      d_plot[[v]] <- factor(d_plot[[v]], levels = lv)
+    }
+    if (v %in% names(fitted_lines)) {
+      fitted_lines[[v]] <- factor(fitted_lines[[v]], levels = lv)
+    }
+  }
 
   # Colour palette
   alt_bright_dark_colors <- c(
@@ -375,14 +386,20 @@ plot_rt_vs_chain <- function(
   # Set colour and fill scales
   p <- p +
     scale_color_manual(
-      values = rep(alt_bright_dark_colors, length.out = n_colors_needed)
+      values = rep(alt_bright_dark_colors, length.out = n_colors_needed),
+      limits = levels(d_plot[[col_var]])
     ) +
+    # Map fill with the SAME scale as colour (identical values + break order via
+    # `limits`) so ggplot merges the two into a single legend instead of drawing
+    # a duplicate. The shared `limits` also keeps the legend sorted, since colour
+    # otherwise trains on both the points and the regression lines.
     scale_fill_manual(
       values = rep(alt_bright_dark_colors, length.out = n_colors_needed),
-      na.value = "white"
+      limits = levels(d_plot[[col_var]])
     ) +
-    # Show open symbol for non-outlier, filled for outlier in legend
-    scale_shape_manual(values = c("No" = 1, "Yes" = 8)) +
+    # Filled symbols (fillable shapes 21/24) for both outlier states, matching
+    # the other QC plots; outlier state is distinguished by shape.
+    scale_shape_manual(values = c("No" = 21, "Yes" = 24)) +
     labs(x = x_title, y = "Median Retention Time", shape = "Outlier") +
     theme_bw(base_size = font_base_size) +
     theme(

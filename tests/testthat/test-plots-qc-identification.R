@@ -114,3 +114,30 @@ test_that("plot_rt_vs_chain no outlier report", {
 
   expect_doppelganger_cond(" plot_rtr_vs_chain tibble data", p)
 })
+
+test_that("plot_rt_vs_chain draws a single merged colour/fill legend", {
+  # The points map colour and fill to the same variable; the two scales must
+  # share identical breaks/values so ggplot merges them into ONE legend instead
+  # of drawing a duplicate (previously two same-titled legends whose order
+  # flipped between renders). Filled shapes (21/24) match the other QC plots.
+  for (xv in c("total_c", "total_db", "ecn")) {
+    p <- suppressMessages(suppressWarnings(
+      plot_rt_vs_chain(mexp, qc_types = "SPL", x_var = xv)
+    ))
+    cd <- ggplot2::get_guide_data(p, "colour")
+    fd <- ggplot2::get_guide_data(p, "fill")
+    expect_identical(cd$.label, fd$.label)
+    expect_identical(cd$.value, fd$.value)
+    # legend is sorted (colour otherwise trains on points + fitted lines)
+    expect_false(is.unsorted(as.numeric(cd$.label)))
+  }
+  # points use fillable shapes
+  b <- ggplot2::ggplot_build(suppressMessages(suppressWarnings(
+    plot_rt_vs_chain(mexp, qc_types = "SPL", x_var = "total_c")
+  )))
+  shapes <- unique(stats::na.omit(unlist(lapply(
+    b$data,
+    function(d) if ("shape" %in% names(d)) d$shape
+  ))))
+  expect_true(all(shapes %in% c(21, 24)))
+})
