@@ -569,3 +569,27 @@ test_that("plot_qcmetrics_comparison() keeps features with NA feature_class", {
   ))
   expect_true(na_feat %in% p_na$data$feature_id)
 })
+
+test_that("plot_qcmetrics_comparison scatter axes start at 0, diff/ratio do not", {
+  # Both scatter axes are CV values (>= 0), so they default to a 0 lower limit
+  # (a visible origin). diff/ratio must keep an NA lower limit so their negative
+  # (CV-improved) values are not clipped.
+  m <- lipidomics_dataset |> normalize_by_istd() |> calc_qc_metrics()
+  lower <- function(pt) {
+    p <- suppressMessages(suppressWarnings(plot_qcmetrics_comparison(
+      m,
+      x_variable = "intensity_cv_tqc",
+      y_variable = "intensity_cv_bqc",
+      plot_type = pt,
+      facet_by_class = FALSE
+    )))
+    b <- ggplot2::ggplot_build(p)
+    c(
+      x = b$layout$panel_scales_x[[1]]$limits[1],
+      y = b$layout$panel_scales_y[[1]]$limits[1]
+    )
+  }
+  expect_equal(unname(lower("scatter")), c(0, 0))
+  expect_true(all(is.na(lower("diff"))))
+  expect_true(all(is.na(lower("ratio"))))
+})
