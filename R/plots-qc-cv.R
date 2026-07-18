@@ -334,13 +334,14 @@ plot_qcmetrics_comparison <- function(
     ))
   }
 
-  # The scatter plot's axes are both CV values (>= 0), so give it a visible
-  # origin: default the lower limits to 0 unless the user set them or the axes
-  # are log-scaled. diff/ratio keep NA lower limits so their negative (improved)
-  # values are not clipped.
+  # In the scatter plot a CV axis (a coefficient of variation, always >= 0)
+  # gets a visible 0 origin, but a non-CV metric (e.g. rt_median) autoscales --
+  # forcing rt to 0 wastes the axis. So default the lower limit to 0 per axis,
+  # only for a CV variable, and only when the user did not set it and the axis
+  # is not log-scaled. diff/ratio keep NA lower limits (negative = improvement).
   if (plot_type == "scatter" && !log_scale) {
-    if (is.na(x_lim[1])) x_lim[1] <- 0
-    if (is.na(y_lim[1])) y_lim[1] <- 0
+    if (grepl("_cv", x_variable) && is.na(x_lim[1])) x_lim[1] <- 0
+    if (grepl("_cv", y_variable) && is.na(y_lim[1])) y_lim[1] <- 0
   }
 
   # Check if QC metrics table is available

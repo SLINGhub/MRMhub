@@ -570,16 +570,16 @@ test_that("plot_qcmetrics_comparison() keeps features with NA feature_class", {
   expect_true(na_feat %in% p_na$data$feature_id)
 })
 
-test_that("plot_qcmetrics_comparison scatter axes start at 0, diff/ratio do not", {
-  # Both scatter axes are CV values (>= 0), so they default to a 0 lower limit
-  # (a visible origin). diff/ratio must keep an NA lower limit so their negative
-  # (CV-improved) values are not clipped.
+test_that("plot_qcmetrics_comparison starts only CV scatter axes at 0", {
+  # A scatter CV axis (>= 0) gets a 0 lower limit (visible origin); a non-CV
+  # metric (e.g. rt_median) autoscales. diff/ratio keep NA lower limits so their
+  # negative (CV-improved) values are not clipped.
   m <- lipidomics_dataset |> normalize_by_istd() |> calc_qc_metrics()
-  lower <- function(pt) {
+  lower <- function(pt, xv, yv) {
     p <- suppressMessages(suppressWarnings(plot_qcmetrics_comparison(
       m,
-      x_variable = "intensity_cv_tqc",
-      y_variable = "intensity_cv_bqc",
+      x_variable = xv,
+      y_variable = yv,
       plot_type = pt,
       facet_by_class = FALSE
     )))
@@ -589,7 +589,16 @@ test_that("plot_qcmetrics_comparison scatter axes start at 0, diff/ratio do not"
       y = b$layout$panel_scales_y[[1]]$limits[1]
     )
   }
-  expect_equal(unname(lower("scatter")), c(0, 0))
-  expect_true(all(is.na(lower("diff"))))
-  expect_true(all(is.na(lower("ratio"))))
+  # CV vs CV scatter: both axes pinned to 0
+  expect_equal(
+    unname(lower("scatter", "intensity_cv_tqc", "intensity_cv_bqc")),
+    c(0, 0)
+  )
+  # non-CV x (rt_median) autoscales; the CV y still starts at 0
+  rt <- lower("scatter", "rt_median_bqc", "norm_intensity_cv_bqc")
+  expect_true(is.na(rt[["x"]]))
+  expect_equal(rt[["y"]], 0)
+  # diff/ratio keep NA lower limits (negatives = improvement)
+  expect_true(all(is.na(lower("diff", "intensity_cv_tqc", "intensity_cv_bqc"))))
+  expect_true(all(is.na(lower("ratio", "intensity_cv_tqc", "intensity_cv_bqc"))))
 })
