@@ -967,9 +967,14 @@ runscatter_plot_pages <- function(
         group_by(across(all_of(grp))) |>
         # TODO: could be cleaned up
         summarise(
-          mean = mean(.data$value_mod, na.rm = TRUE),
+          # The reference mean/SD describe the true variability of the reference
+          # QC type, so they use the uncapped `value` -- computing them on the
+          # MAD-capped `value_mod` would understate the SD and narrow the band.
+          # (The y_max_cap clamp below still uses `value_mod`: it only bounds the
+          # drawn rectangle to the visible, capped y-range.)
+          mean = mean(.data$value, na.rm = TRUE),
           sd = if (!is.na(reference_k_sd)) {
-            reference_k_sd * sd(.data$value_mod, na.rm = TRUE)
+            reference_k_sd * sd(.data$value, na.rm = TRUE)
           } else {
             0
           },

@@ -1280,3 +1280,64 @@ test_that("plot_runscatter accepts a multi-value ref_qc_types without a length-1
     )
   )
 })
+
+test_that("plot_runscatter reference band SD uses uncapped values", {
+  # The reference band (mean +/- k*SD control range) must describe the true
+  # variability of the reference QC type. Computing SD on the MAD-capped
+  # value_mod understates it and narrows the band; it must use the raw `value`.
+  p <- suppressMessages(suppressWarnings(plot_runscatter(
+    data = mexp,
+    variable = "intensity",
+    show_reference_lines = TRUE,
+    ref_qc_types = "BQC",
+    reference_sd_shade = TRUE,
+    reference_k_sd = 2,
+    reference_batchwise = FALSE,
+    cap_outliers = TRUE,
+    cap_qc_k_mad = 1,
+    cap_sample_k_mad = 2,
+    rows_page = 3,
+    cols_page = 4,
+    return_plots = TRUE
+  )))
+  d <- p[[1]]$data
+  # Independently recompute the band per feature (mirrors the summarise): mean/SD
+  # on raw `value`, clamped for drawing to [0, max(value_mod)] as the code does.
+  stats <- d |>
+    dplyr::filter(.data$qc_type == "BQC") |>
+    dplyr::group_by(.data$feature_id) |>
+    dplyr::summarise(
+      m_raw = mean(.data$value, na.rm = TRUE),
+      s_raw = 2 * sd(.data$value, na.rm = TRUE),
+      m_cap = mean(.data$value_mod, na.rm = TRUE),
+      s_cap = 2 * sd(.data$value_mod, na.rm = TRUE),
+      vmax = max(.data$value_mod, na.rm = TRUE),
+      .groups = "drop"
+    ) |>
+    dplyr::mutate(
+      h_raw = pmin(.data$vmax, .data$m_raw + .data$s_raw) -
+        pmax(0, .data$m_raw - .data$s_raw),
+      h_cap = pmin(.data$vmax, .data$m_cap + .data$s_cap) -
+        pmax(0, .data$m_cap - .data$s_cap)
+    )
+  # Locate the band geom_rect layer (finite ymin/ymax, one rect per feature).
+  b <- ggplot2::ggplot_build(p[[1]])
+  band <- NULL
+  for (layer in b$data) {
+    if (!all(c("ymin", "ymax", "alpha") %in% names(layer))) next
+    fin <- layer[is.finite(layer$ymin) & is.finite(layer$ymax), ]
+    if (nrow(fin) == nrow(stats)) {
+      band <- fin
+      break
+    }
+  }
+  expect_false(is.null(band))
+  h_drawn <- sort(round(band$ymax - band$ymin, 2))
+  # Band matches the raw-value recompute, and the raw and capped bands differ
+  # (i.e. capping really bit here, so the test is not vacuous).
+  expect_equal(h_drawn, sort(round(stats$h_raw, 2)))
+  expect_false(isTRUE(all.equal(
+    sort(round(stats$h_raw, 2)),
+    sort(round(stats$h_cap, 2))
+  )))
+})
