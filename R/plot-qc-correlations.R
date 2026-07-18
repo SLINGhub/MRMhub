@@ -236,19 +236,12 @@ plot_feature_correlations <- function(
     )
   })
 
+  # Order by the master qc_type levels (not a hard-coded subset): QC types the
+  # default selection includes (HQC/MQC/LQC, ...) otherwise become NA here and
+  # are then deleted by the drop_na() below, vanishing from the plot entirely.
   d_plot$qc_type <- droplevels(factor(
     d_plot$qc_type,
-    levels = c(
-      "SPL",
-      "UBLK",
-      "SBLK",
-      "TQC",
-      "BQC",
-      "RQC",
-      "LTR",
-      "NIST",
-      "PBLK"
-    )
+    levels = pkg.env$qc_type_annotation$qc_type_levels
   ))
   d_plot <- d_plot |>
     dplyr::arrange(.data$qc_type)
@@ -395,7 +388,7 @@ plot_feature_correlations_page <- function(d_plot, ...) {
   d_plot <- d_plot |>
     slice(row_start:row_end) |>
     mutate(y = ifelse(.data$y <= 0, NA_real_, .data$y)) |>
-    drop_na()
+    tidyr::drop_na("x", "y")
 
   # Create plot
   p <- d_plot |>

@@ -321,3 +321,19 @@ test_that("save plots", {
   expect_equal(size_kb, 239, tolerance = 0.2)
   fs::file_delete(temp_pdf_path)
 })
+
+test_that("plot_feature_correlations keeps QC types outside the legacy level set", {
+  # quant_lcms_dataset carries HQC/LQC, which the default selection includes.
+  # A hard-coded 9-of-20 qc_type factor made them NA, and a bare drop_na() then
+  # deleted those rows -> the QC samples vanished from the correlation plot.
+  p <- suppressMessages(suppressWarnings(plot_feature_correlations(
+    quant_lcms_dataset,
+    variable = "intensity",
+    cor_min = 0,
+    cor_min_neg = -1,
+    return_plots = TRUE
+  )))
+  qc <- p[[1]]$data$qc_type
+  expect_true(all(c("HQC", "LQC") %in% as.character(qc)))
+  expect_false(any(is.na(qc)))
+})
