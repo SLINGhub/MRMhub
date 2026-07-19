@@ -145,6 +145,66 @@ test_that("plot_rla_boxplot rejects outlier_method = 'fold' without outlier_k", 
   )
 })
 
+# A qc_types value matching no sample silently produced an empty plot. Guard it
+# with an informative error naming the argument.
+test_that("plot_runsequence errors when qc_types matches no samples", {
+  expect_error(
+    plot_runsequence(mexp, qc_types = "TCQ"), # typo -> no rows
+    "qc_types"
+  )
+})
+
+# An unknown outlier_qctypes previously slipped through (the arg_match was
+# commented out), filtered the data to zero rows, and reported "No outliers
+# found." -- a false negative. It must instead reject the unknown value.
+test_that("plot_rla_boxplot rejects an unknown outlier_qctypes", {
+  expect_error(
+    plot_rla_boxplot(
+      mexp,
+      variable = "intensity",
+      rla_type_batch = "within",
+      outlier_qctypes = "TCQ", # typo of "TQC"
+      show_plot = FALSE
+    ),
+    "outlier_qctypes"
+  )
+})
+
+# A degenerate plot_range makes n_ticks = n_samples / (range[2] - range[1]) * 10
+# divide by zero (equal endpoints) or go negative (reversed). Guard it.
+test_that("plot_rla_boxplot rejects a degenerate plot_range", {
+  expect_error(
+    plot_rla_boxplot(
+      mexp,
+      variable = "intensity",
+      rla_type_batch = "within",
+      plot_range = c(5, 5),
+      show_plot = FALSE
+    ),
+    "plot_range"
+  )
+  expect_error(
+    plot_rla_boxplot(
+      mexp,
+      variable = "intensity",
+      rla_type_batch = "within",
+      plot_range = c(10, 5),
+      show_plot = FALSE
+    ),
+    "plot_range"
+  )
+  expect_error(
+    plot_rla_boxplot(
+      mexp,
+      variable = "intensity",
+      rla_type_batch = "within",
+      plot_range = c(1, 5, 10),
+      show_plot = FALSE
+    ),
+    "plot_range"
+  )
+})
+
 test_that("plot_rla_boxplot no data works", {
   expect_error(
     p <- plot_rla_boxplot(

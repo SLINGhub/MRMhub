@@ -67,6 +67,9 @@ plot_runsequence <- function(
           str_detect(.data$qc_type, qc_types)
         }
       )
+    if (nrow(d_filt) == 0) {
+      cli::cli_abort("No samples match {.arg qc_types} = {.val {qc_types}}.")
+    }
   }
 
   # Convert acquisition_time_stamp to POSIXct if using datetime
@@ -473,6 +476,16 @@ plot_rla_boxplot <- function(
     )
   }
 
+  # A degenerate plot_range makes the downstream tick count divide by zero
+  # (equal endpoints) or go negative (reversed), crashing in `pretty()`.
+  if (!all(is.na(plot_range))) {
+    if (length(plot_range) != 2 || anyNA(plot_range) || plot_range[1] >= plot_range[2]) {
+      cli::cli_abort(
+        "{.arg plot_range} must be a length-2 vector with {.code plot_range[1] < plot_range[2]}."
+      )
+    }
+  }
+
   # Subset dataset according to arguments
   d_filt <- get_dataset_subset(
     data,
@@ -584,11 +597,14 @@ plot_rla_boxplot <- function(
     left_join(order_map, by = "analysis_order")
 
   if (outlier_detection) {
-    # Print outliers
-    # outlier_qc_types <- rlang::arg_match(
-    #   outlier_qctypes,
-    #   pkg.env$qc_type_annotation$qc_type_levels
-    # )
+    # Validate against the full QC-type set (multiple = TRUE, so the length-5
+    # default is accepted). An unknown value would otherwise filter to zero rows
+    # and be misreported as "No outliers found.".
+    outlier_qctypes <- rlang::arg_match(
+      outlier_qctypes,
+      pkg.env$qc_type_annotation$qc_type_levels,
+      multiple = TRUE
+    )
 
     d_sum <- d_filt |>
       filter(.data$qc_type %in% outlier_qctypes) |>
