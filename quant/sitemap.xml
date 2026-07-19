@@ -131,6 +131,8 @@
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/plot_rt_vs_chain.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/plot_runsequence.html</loc></url>
+<url><loc>https://slinghub.github.io/MRMhub/quant/reference/pretty_logticks.html</loc></url>
+<url><loc>https://slinghub.github.io/MRMhub/quant/reference/pretty_n_breaks.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/print.assertr_tibble.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/quant_lcms_dataset.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/quantify_by_calibration.html</loc></url>
@@ -142,7 +144,7 @@
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/save_metadata_msorganiser_template.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/save_metadata_templates.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/save_report_xlsx.html</loc></url>
-<url><loc>https://slinghub.github.io/MRMhub/quant/reference/scientific_format_end.html</loc></url>
+<url><loc>https://slinghub.github.io/MRMhub/quant/reference/scale_pretty_x.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/set_analysis_order.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/set_intensity_var.html</loc></url>
 </urlset>

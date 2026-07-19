@@ -682,6 +682,36 @@ is checked for consistency, so that each
 same feature cannot be reported more than once within an analysis.</p>
 </div>
 <div class="section level2">
+<h2 id="identifier-normalization">Identifier normalization<a class="anchor" aria-label="anchor" href="#identifier-normalization"></a>
+</h2>
+<p>All identifiers are normalized as they are imported. Leading and
+trailing spaces are removed and internal runs of whitespace are
+collapsed to a single space, so <code>"QC  01"</code> and
+<code>"QC 01"</code> become the same value. Raw-data file extensions
+(<code>.mzML</code>, <code>.d</code>, <code>.raw</code>,
+<code>.wiff</code>, <code>.wiff2</code>, <code>.lcd</code>,
+<code>.chrom</code>, case-insensitive) are stripped from
+<code>analysis_id</code>, and only a genuine <em>trailing</em> extension
+is removed — a name such as <code>Study.data_01.d</code> keeps its
+internal <code>.data</code>.</p>
+<p>The identical normalization is applied when metadata is imported.
+This is what lets an <code>analysis_id</code> typed into a metadata
+sheet match the one derived from a data-file name; without it, a stray
+space would cause the analysis to be dropped silently when data and
+metadata are joined.</p>
+<div class="callout callout-note">
+<p>This normalization is <strong>always</strong> applied, on both data
+and metadata, and <strong>no warning is issued</strong> when whitespace
+is removed — it is silent by design. Stray spaces are a common and
+hard-to-trace cause of identifiers failing to map between data and
+metadata, so they are removed rather than reported. The one visible
+consequence is that two identifiers differing <em>only</em> by
+whitespace collapse to one and are then reported as a duplicate (for
+example, the same feature appearing to be measured twice in one
+analysis).</p>
+</div>
+</div>
+<div class="section level2">
 <h2 id="next-steps">Next steps<a class="anchor" aria-label="anchor" href="#next-steps"></a>
 </h2>
 <ul>

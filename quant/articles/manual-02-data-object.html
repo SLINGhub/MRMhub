@@ -377,6 +377,12 @@ normalize raw intensities.</td>
 </tr>
 </tbody>
 </table>
+<p>All identifiers are whitespace-normalized on import —
+leading/trailing spaces removed and internal runs collapsed — and
+raw-data file extensions are stripped from <code>analysis_id</code>,
+using the same rules for data and metadata so the two join reliably. See
+<a href="manual-04-data-import.html#identifier-normalization">Importing
+Analytical Data</a> for details.</p>
 <p>The <code>qc_type</code> field categorizes samples by their
 analytical purpose and is used throughout the package. It combines
 standardized terms introduced by <span class="citation">Broadhurst et

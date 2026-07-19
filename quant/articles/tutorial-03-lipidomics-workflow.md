@@ -187,11 +187,7 @@ plot_runscatter(
 ```
 
 ![RunScatter
-plot](tutorial-03-lipidomics-workflow_files/figure-html/runscatter-1.png)
-
-    #>  ■■■■■■■■■■■                       33% |  ETA:  2s
-
-![RunScatter
+plot](tutorial-03-lipidomics-workflow_files/figure-html/runscatter-1.png)![RunScatter
 plot](tutorial-03-lipidomics-workflow_files/figure-html/runscatter-2.png)![RunScatter
 plot](tutorial-03-lipidomics-workflow_files/figure-html/runscatter-3.png)
 
@@ -308,7 +304,7 @@ plot_pca(
   include_istd = FALSE)
 #> ! 2 features contained missing or non-numeric values and were exluded.
 #> ℹ The PCA was calculated based on `feature_intensity` values of 423 features.
-#> ggrepel: 10000 iterations in 0.010878s, 3 overlaps. Consider increasing 'max.iter'.
+#> ggrepel: 10000 iterations in 0.011446s, 3 overlaps. Consider increasing 'max.iter'.
 ```
 
 ![PCA
@@ -345,7 +341,7 @@ plot_pca(
   shared_labeltext_hide = NA)
 #> ! 2 features contained missing or non-numeric values and were exluded.
 #> ℹ The PCA was calculated based on `feature_intensity` values of 423 features.
-#> ggrepel: 10000 iterations in 0.022417s, 7 overlaps. Consider increasing 'max.iter'.
+#> ggrepel: 10000 iterations in 0.023693s, 7 overlaps. Consider increasing 'max.iter'.
 ```
 
 ![PCA
@@ -816,7 +812,7 @@ Exercises
 
 mrmhub::save_report_xlsx(myexp, path = tempfile(fileext = ".xlsx"))
 #> Saving report to disk - please wait...
-#> ✔ The data processing report of experiment 'sPerfect' has been saved to '/tmp/RtmpLQ1QpX/file2f7df997fc3.xlsx'.
+#> ✔ The data processing report of experiment 'sPerfect' has been saved to '/tmp/Rtmpd8cStN/file2f5c385fd75.xlsx'.
 ```
 
 Specific data subsets can also be saved as a clean flat, wide CSV file.
@@ -837,7 +833,7 @@ mrmhub::save_dataset_csv(
   qc_types = "SPL", 
   include_qualifier = FALSE,
   filter_data = TRUE)
-#> ✔ Concentration values for 377 analyses and 324 features have been exported to '/tmp/RtmpLQ1QpX/file2f7d19dd490.csv'.
+#> ✔ Concentration values for 377 analyses and 324 features have been exported to '/tmp/Rtmpd8cStN/file2f5c6c0ea8f.csv'.
 ```
 
 ## 22. Sharing the `MRMhubExperiment` dataset

@@ -134,6 +134,21 @@ The analysis metadata must contain following columns: <code>istd_feature_id</cod
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>An updated <code>MRMhubExperiment</code> object</p>
     </div>
+    <div class="section level2">
+    <h2 id="identifier-normalization">Identifier normalization<a class="anchor" aria-label="anchor" href="#identifier-normalization"></a></h2>
+
+
+<p>All imported identifiers are whitespace-normalized on import: leading and
+trailing spaces are removed and internal runs of whitespace are collapsed to
+a single space (for example <code>"QC  01"</code> becomes <code>"QC 01"</code>). Raw-data file
+extensions (<code>.mzML</code>, <code>.d</code>, <code>.raw</code>, <code>.wiff</code>, <code>.wiff2</code>, <code>.lcd</code>, <code>.chrom</code>,
+case-insensitive) are stripped from <code>analysis_id</code>.</p>
+<p>The same normalization is applied to both the data and the metadata, which is
+what lets an <code>analysis_id</code> typed into metadata match the one derived from a
+data-file name instead of silently failing to join. A consequence is that two
+identifiers differing only by whitespace collapse to one and are then reported
+as duplicates.</p>
+    </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

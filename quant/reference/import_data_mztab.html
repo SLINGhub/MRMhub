@@ -147,6 +147,21 @@ part of mzTab-M and must be supplied afterwards with <code><a href="add_metadata
 (mzTab-M has no analytical-batch concept).</p>
     </div>
     <div class="section level2">
+    <h2 id="identifier-normalization">Identifier normalization<a class="anchor" aria-label="anchor" href="#identifier-normalization"></a></h2>
+
+
+<p>All imported identifiers are whitespace-normalized on import: leading and
+trailing spaces are removed and internal runs of whitespace are collapsed to
+a single space (for example <code>"QC  01"</code> becomes <code>"QC 01"</code>). Raw-data file
+extensions (<code>.mzML</code>, <code>.d</code>, <code>.raw</code>, <code>.wiff</code>, <code>.wiff2</code>, <code>.lcd</code>, <code>.chrom</code>,
+case-insensitive) are stripped from <code>analysis_id</code>.</p>
+<p>The same normalization is applied to both the data and the metadata, which is
+what lets an <code>analysis_id</code> typed into metadata match the one derived from a
+data-file name instead of silently failing to join. A consequence is that two
+identifiers differing only by whitespace collapse to one and are then reported
+as duplicates.</p>
+    </div>
+    <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p><code><a href="import_data_mrmhub.html">import_data_mrmhub()</a></code>, <code><a href="save_dataset_mztab.html">save_dataset_mztab()</a></code>, <code><a href="add_metadata.html">add_metadata()</a></code></p></div>
     </div>

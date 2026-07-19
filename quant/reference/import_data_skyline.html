@@ -156,6 +156,21 @@ and include <code>Replicate Name</code>, <code>Molecule Name</code>, and either
 <code>Precursor Mz</code>/<code>Product Mz</code> or <code>Precursor Name</code>/<code>Product Name</code> columns.
 At least one feature variable, such as <code>Area</code> or <code>RT</code>, must also be exported.</p>
     </div>
+    <div class="section level2">
+    <h2 id="identifier-normalization">Identifier normalization<a class="anchor" aria-label="anchor" href="#identifier-normalization"></a></h2>
+
+
+<p>All imported identifiers are whitespace-normalized on import: leading and
+trailing spaces are removed and internal runs of whitespace are collapsed to
+a single space (for example <code>"QC  01"</code> becomes <code>"QC 01"</code>). Raw-data file
+extensions (<code>.mzML</code>, <code>.d</code>, <code>.raw</code>, <code>.wiff</code>, <code>.wiff2</code>, <code>.lcd</code>, <code>.chrom</code>,
+case-insensitive) are stripped from <code>analysis_id</code>.</p>
+<p>The same normalization is applied to both the data and the metadata, which is
+what lets an <code>analysis_id</code> typed into metadata match the one derived from a
+data-file name instead of silently failing to join. A consequence is that two
+identifiers differing only by whitespace collapse to one and are then reported
+as duplicates.</p>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
