@@ -399,6 +399,10 @@ plot_qcmetrics_comparison <- function(
     str_detect(x_variable, "(tqc|bqc|spl|ltr|nist|blk|qc)$") ||
     str_detect(y_variable, "(tqc|bqc|spl|ltr|nist|blk|qc)$")
 
+  # TRUE when both axes name the same single QC type (shown in the legend);
+  # drives both the point labelling and stripping the redundant axis suffix.
+  single_qc_type <- FALSE
+
   if (!var_match) {
     if (!var_has_qctype) {
       d_qc <- d_qc |>
@@ -417,7 +421,15 @@ plot_qcmetrics_comparison <- function(
           cols = dplyr::matches(col_pattern),
           names_to = c(".value")
         )
-      d_qc$qc_type <- "none"
+      # Both axes carry the same QC-type suffix (e.g. "_bqc") -> label the points
+      # by it so the legend shows the single QC type; a cross-type comparison or
+      # a bare metric leaves them unlabelled ("none").
+      x_qc <- str_extract(x_variable, "[^_]+$")
+      y_qc <- str_extract(y_variable, "[^_]+$")
+      single_qc_type <-
+        identical(x_qc, y_qc) &&
+        toupper(x_qc) %in% pkg.env$qc_type_annotation$qc_type_levels
+      d_qc$qc_type <- if (single_qc_type) x_qc else "none"
       if (all(!is.na(qc_types))) {
         d_qc <- d_qc |>
           filter(.data$qc_type %in% tolower(qc_types))
@@ -447,16 +459,21 @@ plot_qcmetrics_comparison <- function(
       )
   }
 
+  # The QC type is shown in the legend for a single-type comparison, so drop the
+  # now-redundant qc_type suffix (e.g. "_bqc") from the axis titles.
+  x_var_lab <- if (single_qc_type) str_remove(x_variable, "_[^_]+$") else x_variable
+  y_var_lab <- if (single_qc_type) str_remove(y_variable, "_[^_]+$") else y_variable
+
   x_label <- case_when(
-    plot_type == "scatter" ~ paste("QC metric:", x_variable),
-    plot_type == "diff" ~ paste("Mean of", x_variable, "and", y_variable),
-    plot_type == "ratio" ~ paste("Mean of", x_variable, "and", y_variable),
+    plot_type == "scatter" ~ paste("QC metric:", x_var_lab),
+    plot_type == "diff" ~ paste("Mean of", x_var_lab, "and", y_var_lab),
+    plot_type == "ratio" ~ paste("Mean of", x_var_lab, "and", y_var_lab),
   )
 
   y_label <- case_when(
-    plot_type == "scatter" ~ paste("QC metric:", y_variable),
-    plot_type == "diff" ~ paste(y_variable, "-", x_variable),
-    plot_type == "ratio" ~ paste("log2(", y_variable, "/", x_variable, ")"),
+    plot_type == "scatter" ~ paste("QC metric:", y_var_lab),
+    plot_type == "diff" ~ paste(y_var_lab, "-", x_var_lab),
+    plot_type == "ratio" ~ paste("log2(", y_var_lab, "/", x_var_lab, ")"),
   )
 
   if (plot_type == "scatter") {
@@ -596,18 +613,22 @@ plot_qcmetrics_comparison <- function(
         expand = ggplot2::expansion(mult = c(0, 0.02))
       )
   } else {
+    # More room on an autoscaled axis (0.1); keep an axis pinned at 0 (a CV floor)
+    # tight (0.05) so no large empty band opens below 0.
+    x_expand <- if (!is.na(x_lim[1]) && x_lim[1] == 0) 0.05 else 0.1
+    y_expand <- if (!is.na(y_lim[1]) && y_lim[1] == 0) 0.05 else 0.1
     g <- g +
       ggplot2::scale_x_continuous(
         #labels = scientific_format_end,
         name = x_label,
         limits = x_lim,
-        expand = ggplot2::expansion(mult = c(0.2, 0.2))
+        expand = ggplot2::expansion(mult = x_expand)
       ) +
       ggplot2::scale_y_continuous(
         #labels = scientific_format_end,
         limits = y_lim,
         name = y_label,
-        expand = ggplot2::expansion(mult = c(0.2, 0.2))
+        expand = ggplot2::expansion(mult = y_expand)
       )
   }
 

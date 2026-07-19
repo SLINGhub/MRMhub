@@ -315,6 +315,65 @@ test_that("plot_qcmetrics_comparison plot no facets", {
   expect_doppelganger_cond("nofacet plot_qcmetrics_comparison plot", p)
 })
 
+test_that("plot_qcmetrics_comparison labels a single-QC-type comparison by its type", {
+  # Two different metrics sharing one qc_type suffix (rt_median_bqc vs
+  # norm_intensity_cv_bqc) -> every point is BQC, so the legend shows BQC
+  # instead of collapsing to an unlabelled "NONE".
+  p <- plot_qcmetrics_comparison(
+    data = mexp,
+    x_variable = "rt_median_bqc",
+    y_variable = "norm_intensity_cv_bqc",
+    plot_type = "scatter",
+    facet_by_class = FALSE
+  )
+  expect_setequal(unique(ggplot2::ggplot_build(p)$plot$data$qc_type), "BQC")
+  expect_identical(ggplot2::get_guide_data(p, "colour")$.label, "BQC")
+  # the QC type is in the legend, so the axis titles drop the "_bqc" suffix
+  expect_identical(ggplot2::get_labs(p)$x, "QC metric: rt_median")
+  expect_identical(ggplot2::get_labs(p)$y, "QC metric: norm_intensity_cv")
+
+  # Different metrics with different qc_type suffixes (bqc vs tqc) have no single
+  # type -> the points stay unlabelled ("NONE") and no qc_type legend is drawn.
+  p2 <- plot_qcmetrics_comparison(
+    data = mexp,
+    x_variable = "rt_median_bqc",
+    y_variable = "norm_intensity_cv_tqc",
+    plot_type = "scatter",
+    facet_by_class = FALSE
+  )
+  expect_setequal(unique(ggplot2::ggplot_build(p2)$plot$data$qc_type), "NONE")
+  # no single QC type -> the suffix stays, so the two axes remain distinguishable
+  expect_identical(ggplot2::get_labs(p2)$x, "QC metric: rt_median_bqc")
+  expect_identical(ggplot2::get_labs(p2)$y, "QC metric: norm_intensity_cv_tqc")
+})
+
+test_that("plot_qcmetrics_comparison combines multiple QC types for a shared-vs-per-type metric", {
+  # Unsuffixed metric names (rt_median vs norm_intensity_cv) match every qc_type
+  # variant, so the plot combines all QC types, coloured + legended by qc_type
+  # (the "rt vs CV" view). The axis titles keep the bare metric names.
+  p <- plot_qcmetrics_comparison(
+    data = mexp,
+    x_variable = "rt_median",
+    y_variable = "norm_intensity_cv",
+    plot_type = "scatter",
+    facet_by_class = FALSE
+  )
+  expect_setequal(
+    unique(ggplot2::ggplot_build(p)$plot$data$qc_type),
+    c("BQC", "TQC", "SPL", "LTR")
+  )
+  expect_setequal(
+    ggplot2::get_guide_data(p, "colour")$.label,
+    c("BQC", "TQC", "SPL", "LTR")
+  )
+  expect_identical(ggplot2::get_labs(p)$x, "QC metric: rt_median")
+  # the autoscaled x (rt_median) gets 10% room; the CV y axis is pinned at 0 and
+  # kept tight at 5% (the old 20% left a large empty band below 0)
+  expect_equal(p$scales$get_scales("x")$expand, ggplot2::expansion(mult = 0.1))
+  expect_equal(p$scales$get_scales("y")$expand, ggplot2::expansion(mult = 0.05))
+  expect_doppelganger_cond("plot_qcmetrics_comparison multiple qc types", p)
+})
+
 # this comparison doesnt make sense, but it tests the plotting function
 test_that("plot_qcmetrics_comparison plot looks as expected", {
   p <- plot_qcmetrics_comparison(
