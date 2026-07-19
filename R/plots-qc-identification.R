@@ -86,6 +86,15 @@ plot_rt_vs_chain <- function(
 
   x_var <- rlang::arg_match(x_var, c("total_c", "total_db", "ecn"))
 
+  # The documented default `qc_types = NA` plots the non-blank QC types; `%in% NA`
+  # would otherwise match nothing. Use the canonical env list, not a local copy.
+  if (all(is.na(qc_types))) {
+    qc_types <- intersect(
+      data@dataset$qc_type,
+      pkg.env$qc_type_annotation$qc_type_levels_nonblank
+    )
+  }
+
   d_lipid_info <- data@dataset |>
     dplyr::select(
       "analysis_id",

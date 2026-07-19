@@ -109,6 +109,20 @@ pkg.env$qc_type_annotation <- list(
     "SST",
     "MBLK"
   ),
+  # Study samples + routine QC types (excludes blanks, calibrators, and response
+  # curves). Single source for the `qc_types = NA` default of the QC overview
+  # plots; documented in the shared `qc_types` roxygen template.
+  qc_type_levels_nonblank = c(
+    "SPL",
+    "TQC",
+    "BQC",
+    "HQC",
+    "MQC",
+    "LQC",
+    "QC",
+    "NIST",
+    "LTR"
+  ),
   qc_type_col = c(
     "SBLK" = "#1854f9",
     "TBLK" = "#db0202",

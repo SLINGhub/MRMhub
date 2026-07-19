@@ -115,6 +115,20 @@ test_that("plot_rt_vs_chain no outlier report", {
   expect_doppelganger_cond(" plot_rtr_vs_chain tibble data", p)
 })
 
+# Regression: the documented default `qc_types = NA` (@template qc_types: "plots
+# any of the non-blank QC types") used to filter to zero rows -- `%in% NA` is
+# FALSE -- and then crash in the lipid-class grouping. It must plot the present
+# non-blank QC types instead, as the sibling QC plots already do.
+test_that("plot_rt_vs_chain plots data on the default qc_types = NA", {
+  expect_no_error(
+    p <- suppressMessages(suppressWarnings(
+      plot_rt_vs_chain(mexp, x_var = "total_c")
+    ))
+  )
+  b <- ggplot2::ggplot_build(p)
+  expect_gt(sum(vapply(b$data, nrow, integer(1))), 0)
+})
+
 test_that("plot_rt_vs_chain draws a single merged colour/fill legend", {
   # The points map colour and fill to the same variable; the two scales must
   # share identical breaks/values so ggplot merges them into ONE legend instead
