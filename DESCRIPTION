@@ -15,7 +15,7 @@ License: AGPL-3
 URL: https://github.com/SLINGhub/MRMhub,
     https://slinghub.github.io/MRMhub/quant/
 BugReports: https://github.com/SLINGhub/MRMhub/issues
-Depends: R (>= 4.2)
+Depends: R (>= 4.1)
 Imports:
     assertr,
     methods,

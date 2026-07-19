@@ -12,7 +12,7 @@ library(mrmhub)
 options(shiny.maxRequestSize = 500 * 1024^2)
 
 # `%||%` is a base operator only from R 4.4; define it for older R (mrmhub
-# supports >= 4.2 and does not export its internal copy).
+# supports >= 4.1 and does not export its internal copy).
 `%||%` <- function(x, y) if (is.null(x) || length(x) == 0) y else x
 
 importer_choices <- c(

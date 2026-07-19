@@ -130,7 +130,7 @@ Resources ───────────────────────�
 ### Phase 1: Foundation (Critical — do first)
 
 **Step 1.** Create `check_setup()` function in [`R/`](R/)
-- Validates: R version ≥ 4.2, key dependencies installed & loadable, no namespace conflicts
+- Validates: R version ≥ 4.1, key dependencies installed & loadable, no namespace conflicts
 - Reports: clear pass/fail messages via `cli` with fix suggestions
 - Pattern: similar to `devtools::session_info()` but prescriptive
 

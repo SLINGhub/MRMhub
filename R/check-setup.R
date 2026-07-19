@@ -22,7 +22,7 @@ check_setup <- function(verbose = TRUE) {
 
   # --- R version check ---
   r_ver <- getRversion()
-  min_ver <- "4.2.0"
+  min_ver <- "4.1.0"
   r_ok <- r_ver >= min_ver
   results$r_version <- list(pass = r_ok, version = as.character(r_ver))
 

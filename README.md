@@ -22,7 +22,7 @@ Open-source toolchain for targeted Multiple Reaction Monitoring (MRM) mass spect
 ## Install
 
 - **INTEGRATOR:** download from [Releases](https://github.com/SLINGhub/MRMhub/releases), unzip, double-click. macOS/Windows security setup: see [INTEGRATOR Manual](https://slinghub.github.io/MRMhub/integrator/).
-- **QUANT (R ≥ 4.2):** quit RStudio/Positron entirely first (locked dependencies cause most failures), then in a fresh R session:
+- **QUANT (R ≥ 4.1):** quit RStudio/Positron entirely first (locked dependencies cause most failures), then in a fresh R session:
 
   ```r
   if (!require("pak")) install.packages("pak")
@@ -48,7 +48,7 @@ Open-source toolchain for targeted Multiple Reaction Monitoring (MRM) mass spect
 ---
 
 <small>
-**Requirements:** macOS (Apple Silicon) or Windows 11, 16 GB RAM recommended; R ≥ 4.2 for QUANT and INTEGRATOR PDF plotting.&nbsp;|&nbsp;
+**Requirements:** macOS (Apple Silicon) or Windows 11, 16 GB RAM recommended; R ≥ 4.1 for QUANT and INTEGRATOR PDF plotting.&nbsp;|&nbsp;
 **Contributing:** open an issue on [GitHub](https://github.com/SLINGhub/MRMhub/issues). Project follows the [Contributor Code of Conduct](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html).&nbsp;|&nbsp;
 **Licence:** dual-licensed — non-commercial under [GNU AGPLv3](https://www.gnu.org/licenses/agpl-3.0.en.html); for commercial use contact Jonathan Tan (jonathan_tan@nus.edu.sg).
 </small>

@@ -25,7 +25,7 @@ options(dplyr.print_max = 10)
 
 ## Requirements
 
-- **R ≥ 4.2** — install from [CRAN](https://cran.r-project.org)
+- **R ≥ 4.1** — install from [CRAN](https://cran.r-project.org)
 - **An IDE** — [Positron](https://positron.posit.co), [RStudio](https://posit.co/download/rstudio-desktop/), or [VS Code](https://code.visualstudio.com)
 
 MRMhub's core functionality requires no R coding skills, but basic familiarity with R and an IDE is needed to run and adapt the workflows.
