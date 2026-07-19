@@ -461,6 +461,39 @@ test_that("filter_features_qc works with istd and qualifier subsetting", {
 })
 
 
+# Regression: the S/B ratio is computed against the process blank (PBLK), into
+# which ISTDs are spiked, so an ISTD's S/B-vs-PBLK is ~1 by construction. When
+# the user keeps ISTDs (`include_istd = TRUE`), a PBLK-based S/B threshold must
+# not exclude them. Operator precedence had made the exemption fire only for
+# `include_istd = FALSE` (where ISTDs are already removed), so every kept ISTD
+# was wrongly dropped by the S/B filter.
+test_that("ISTDs are exempt from the S/B filter when kept (include_istd = TRUE)", {
+  istd_ids <- mexp_proc@metrics_qc |>
+    dplyr::filter(.data$is_istd) |>
+    dplyr::pull(.data$feature_id)
+  # a non-ISTD below the same threshold, to guard against over-exemption
+  low_sb_quant <- mexp_proc@metrics_qc |>
+    dplyr::filter(!.data$is_istd, .data$sb_ratio_pblk < 100) |>
+    dplyr::pull(.data$feature_id)
+  expect_gt(length(low_sb_quant), 0)
+
+  mexp_res <- filter_features_qc(
+    mexp_proc,
+    clear_existing = TRUE,
+    include_qualifier = FALSE,
+    include_istd = TRUE,
+    min.signalblank.median.spl.pblk = 100
+  )
+  kept <- unique(mexp_res@dataset_filtered$feature_id)
+
+  # every kept ISTD survives the S/B filter ...
+  expect_true(all(istd_ids %in% kept))
+  expect_equal(sum(istd_ids %in% kept), 9L)
+  # ... while non-ISTDs below the threshold are still dropped
+  expect_false(any(low_sb_quant %in% kept))
+})
+
+
 test_that("filter_features_qc works on selected criteria", {
   mexp_res <- filter_features_qc(
     mexp_proc,

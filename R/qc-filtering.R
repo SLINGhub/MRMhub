@@ -1082,21 +1082,21 @@ filter_features_qc <- function(
             min.signalblank.median.spl.pblk,
             ">"
           ) |
-            .data$is_istd & !include_istd,
+            .data$is_istd,
           compare_values(
             metrics_qc_local,
             "sb_ratio_ublk",
             min.signalblank.median.spl.ublk,
             ">"
           ) |
-            .data$is_istd & !include_istd,
+            .data$is_istd,
           compare_values(
             metrics_qc_local,
             "sb_ratio_sblk",
             min.signalblank.median.spl.sblk,
             ">"
           ) |
-            .data$is_istd & !include_istd
+            .data$is_istd
         ),
         .operator = "AND"
       ),
