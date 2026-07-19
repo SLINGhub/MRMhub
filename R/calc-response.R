@@ -88,13 +88,26 @@ get_response_curve_stats <- function(
 
   n_diff <- setdiff(data@annot_responsecurves$analysis_id, d_stats$analysis_id)
 
-  if (length(n_diff) > 0) {
+  # A subset of missing curve points/series must not void every response metric:
+  # warn (naming the missing analysis IDs and their curves), then fit whatever
+  # series remain. Abort/NULL only when nothing matches (`nrow(d_stats) == 0`).
+  if (nrow(d_stats) == 0) {
     if (!silent_invalid_data) {
       cli::cli_abort(col_red(
-        "One or more analysis IDs in the response curve metadata do not match the dataset. Please verify your metadata."
+        "No analysis IDs in the response curve metadata match the dataset. Please verify your metadata."
       ))
     }
     return(NULL)
+  }
+
+  if (length(n_diff) > 0 && !silent_invalid_data) {
+    missing_curves <- data@annot_responsecurves |>
+      dplyr::filter(.data$analysis_id %in% n_diff)
+    cli::cli_warn(c(
+      "Some response curve analyses in the metadata are absent from the dataset and are skipped.",
+      "i" = "Affected curve{?s}: {.val {sort(unique(missing_curves$curve_id))}}.",
+      "i" = "Missing analysis ID{?s}: {.val {sort(n_diff)}}."
+    ))
   }
 
   d_stats <- d_stats |>

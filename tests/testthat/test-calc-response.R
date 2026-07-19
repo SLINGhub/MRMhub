@@ -30,12 +30,35 @@ test_that("get_response_curve_stats missing data correctly handled", {
   expect_error(get_response_curve_stats(mexp_temp),
                "No response curve metadata found")
 
+  # A response-curve analysis_id missing from the data no longer aborts: the
+  # present series are still fitted and a warning names the missing IDs + curves.
   mexp_temp <- mexp
   mexp_temp@annot_responsecurves$analysis_id[1] <- "unknown1"
   mexp_temp@annot_responsecurves$analysis_id[3] <- "unknown2"
 
-  expect_error(get_response_curve_stats(mexp_temp),
-               "One or more analysis IDs")
+  expect_warning(
+    res <- get_response_curve_stats(mexp_temp),
+    "absent from the dataset"
+  )
+  expect_s3_class(res, "tbl_df")
+  # Curve B is intact; curve A lost 2 of its 6 points but is still fitted.
+  expect_true(all(c("r2_rqc_A", "r2_rqc_B") %in% names(res)))
+  expect_false(any(is.na(res$r2_rqc_B)))
+
+  # silent_invalid_data suppresses the warning and still returns present series.
+  expect_no_warning(
+    res <- get_response_curve_stats(mexp_temp, silent_invalid_data = TRUE)
+  )
+  expect_s3_class(res, "tbl_df")
+
+  # No matching series at all still aborts.
+  mexp_temp2 <- mexp
+  mexp_temp2@annot_responsecurves$analysis_id <-
+    paste0("unknown_", seq_len(nrow(mexp_temp2@annot_responsecurves)))
+  expect_error(
+    get_response_curve_stats(mexp_temp2),
+    "match the dataset"
+  )
 
   mexp_temp <- mexp
   mexp_temp@dataset <-  mexp_temp@dataset |>

@@ -397,8 +397,10 @@ test_that("calc_qc_metrics handles missing/missmatching info for response curve 
     "MRMhubExperiment"
   )
 
-  expect_error(
-    calc_qc_metrics(
+  # A partly-mismatched response-curve series warns and computes present-series
+  # metrics rather than aborting the whole QC metric calculation.
+  expect_warning(
+    mexp_resp <- calc_qc_metrics(
       mexp_temp,
       use_batch_medians = TRUE,
       include_norm_intensity_stats = TRUE,
@@ -406,8 +408,10 @@ test_that("calc_qc_metrics handles missing/missmatching info for response curve 
       include_response_stats = TRUE,
       include_calibration_results = NA
     ),
-    "One or more analysis IDs"
+    "absent from the dataset"
   )
+  expect_s4_class(mexp_resp, "MRMhubExperiment")
+  expect_true("r2_rqc_B" %in% names(mexp_resp@metrics_qc))
 })
 
 test_that("filter_features_qc works with istd and qualifier subsetting", {
