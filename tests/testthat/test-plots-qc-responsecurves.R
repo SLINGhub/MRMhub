@@ -830,3 +830,31 @@ test_that("plot_responsecurves rejects an invalid page_orientation", {
     "page_orientation"
   )
 })
+
+# Branch 5: shared pretty-axis helper -> >=3 non-empty labels per facet axis.
+test_that("plot_responsecurves axes render >=3 non-empty labels", {
+  mexp <- lipidomics_dataset
+  mexp <- normalize_by_istd(mexp)
+  mexp <- calc_qc_metrics(mexp)
+
+  axis_labels <- function(p, axis) {
+    b <- ggplot2::ggplot_build(p)
+    lbl <- b$layout$panel_params[[1]][[axis]]$get_labels()
+    lbl[!vapply(
+      lbl,
+      function(x) is.null(x) || (length(x) == 1 && is.na(x)) ||
+        (is.character(x) && !nzchar(x)),
+      logical(1)
+    )]
+  }
+
+  p <- plot_responsecurves(
+    data = mexp,
+    variable = "intensity",
+    rows_page = 3,
+    cols_page = 4,
+    return_plots = TRUE
+  )
+  expect_gte(length(axis_labels(p[[1]], "x")), 3)
+  expect_gte(length(axis_labels(p[[1]], "y")), 3)
+})

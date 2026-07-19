@@ -855,15 +855,19 @@ plot_calibcurves_page <- function(
       ) |>
       arrange(.data$feature_id, .data$curve_id)
 
-    trans_txt <- if (log_scale) "log10" else "identity"
-
     facet_limits$feature_id <- factor(facet_limits$feature_id)
+
+    n_breaks <- pretty_n_breaks(rows_page * cols_page)
 
     x_scales <- purrr::set_names(
       purrr::map2(
         facet_limits$xmin,
         facet_limits$xmax,
-        ~ scale_x_continuous(transform = trans_txt, limits = c(.x, .y))
+        ~ scale_pretty_x(
+          log = log_scale,
+          n = n_breaks,
+          limits = c(.x, .y)
+        )
       ),
       facet_limits$feature_id
     )
@@ -872,7 +876,11 @@ plot_calibcurves_page <- function(
       purrr::map2(
         facet_limits$ymin,
         facet_limits$ymax,
-        ~ scale_y_continuous(transform = trans_txt, limits = c(.x, .y))
+        ~ scale_pretty_y(
+          log = log_scale,
+          n = n_breaks,
+          limits = c(.x, .y)
+        )
       ),
       facet_limits$feature_id
     )
@@ -1100,5 +1108,8 @@ plot_calibcurves_page <- function(
       )
   }
   p <- p + ggh4x::facetted_pos_scales(x = x_scales, y = y_scales)
+  if (log_scale) {
+    p <- p + pretty_logticks("bl")
+  }
   p
 }

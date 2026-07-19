@@ -576,3 +576,42 @@ test_that("plot_calibrationcurves rejects an invalid page_orientation", {
     "page_orientation"
   )
 })
+
+# Branch 5: shared pretty-axis helper -> >=3 non-empty labels per facet axis.
+test_that("plot_calibrationcurves axes render >=3 non-empty labels", {
+  axis_labels <- function(p, axis) {
+    b <- ggplot2::ggplot_build(p)
+    lbl <- b$layout$panel_params[[1]][[axis]]$get_labels()
+    lbl[!vapply(
+      lbl,
+      function(x) is.null(x) || (length(x) == 1 && is.na(x)) ||
+        (is.character(x) && !nzchar(x)),
+      logical(1)
+    )]
+  }
+
+  p <- plot_calibrationcurves(
+    data = mexp,
+    fit_overwrite = TRUE,
+    fit_model = "quadratic",
+    fit_weighting = "1/x",
+    rows_page = 2,
+    cols_page = 2,
+    return_plots = TRUE
+  )
+  expect_gte(length(axis_labels(p[[1]], "x")), 3)
+  expect_gte(length(axis_labels(p[[1]], "y")), 3)
+
+  p_log <- plot_calibrationcurves(
+    data = mexp,
+    fit_overwrite = TRUE,
+    fit_model = "quadratic",
+    fit_weighting = "1/x",
+    log_scale = TRUE,
+    rows_page = 2,
+    cols_page = 2,
+    return_plots = TRUE
+  )
+  expect_gte(length(axis_labels(p_log[[1]], "x")), 3)
+  expect_gte(length(axis_labels(p_log[[1]], "y")), 3)
+})

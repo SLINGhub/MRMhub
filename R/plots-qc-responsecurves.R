@@ -377,6 +377,10 @@ plot_responsecurves_page <- function(
   plot_var <- rlang::sym(response_variable)
   dataset$curve_id <- as.character(dataset$curve_id)
 
+  # Shared pretty-axis settings: panel-aware tick count. Labels adapt to the
+  # data (plain numbers; superscript scientific only for extreme magnitudes).
+  n_breaks <- pretty_n_breaks(rows_page * cols_page)
+
   # Subset dataset for current page
   features <- unique(dataset$feature_id)
 
@@ -468,11 +472,8 @@ plot_responsecurves_page <- function(
         rsquared.conf.level = NA,
         n.min = 3
       ) +
-      scale_y_continuous(limits = c(0, NA)) +
-      scale_x_continuous(
-        limits = c(0, NA),
-        breaks = scales::breaks_extended(6)
-      ) +
+      scale_pretty_y(n = n_breaks, limits = c(0, NA)) +
+      scale_pretty_x(n = n_breaks, limits = c(0, NA)) +
       geom_point(
         size = point_size,
         shape = 21,
@@ -533,7 +534,8 @@ plot_responsecurves_page <- function(
       y_scale_list <- unlist(
         lapply(seq_len(n_curves), function(r) {
           lapply(seq_len(n_feats), function(c) {
-            ggplot2::scale_y_continuous(
+            scale_pretty_y(
+              n = n_breaks,
               limits = c(0, feat_ymax$ymax[c])
             )
           })
@@ -575,11 +577,8 @@ plot_responsecurves_page <- function(
         rsquared.conf.level = NA,
         n.min = 3
       ) +
-      scale_y_continuous(limits = c(0, NA)) +
-      scale_x_continuous(
-        limits = c(0, NA),
-        breaks = scales::breaks_extended(6)
-      ) +
+      scale_pretty_y(n = n_breaks, limits = c(0, NA)) +
+      scale_pretty_x(n = n_breaks, limits = c(0, NA)) +
       geom_point(
         size = point_size,
         shape = 21,
@@ -657,11 +656,8 @@ plot_responsecurves_page <- function(
       ) +
       scale_color_manual(values = color_curves) +
       scale_fill_manual(values = fill_curves) +
-      scale_y_continuous(limits = c(0, NA)) +
-      scale_x_continuous(
-        limits = c(0, NA),
-        breaks = scales::breaks_extended(6)
-      ) +
+      scale_pretty_y(n = n_breaks, limits = c(0, NA)) +
+      scale_pretty_x(n = n_breaks, limits = c(0, NA)) +
       geom_point(size = point_size, shape = 21, na.rm = TRUE) +
       labs(
         x = x_axis_title,
