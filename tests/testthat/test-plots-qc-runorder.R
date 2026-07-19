@@ -117,6 +117,34 @@ test_that("plot_runsequence timestamp works", {
 
 # RLA plot tests
 
+# Regression: `outlier_method = "fold"` with the default `outlier_k = NULL` used
+# to crash with `object 'outlier_bounds' not found` -- neither the length-1 nor
+# length-2 branch fires for NULL. A fold fence needs a value, so require it with
+# an informative error instead of crashing.
+test_that("plot_rla_boxplot rejects outlier_method = 'fold' without outlier_k", {
+  expect_error(
+    plot_rla_boxplot(
+      mexp,
+      variable = "intensity",
+      rla_type_batch = "within",
+      outlier_method = "fold",
+      show_plot = FALSE
+    ),
+    "outlier_k"
+  )
+  # supplying a fold value works
+  expect_no_error(
+    suppressMessages(plot_rla_boxplot(
+      mexp,
+      variable = "intensity",
+      rla_type_batch = "within",
+      outlier_method = "fold",
+      outlier_k = 2,
+      show_plot = FALSE
+    ))
+  )
+})
+
 test_that("plot_rla_boxplot no data works", {
   expect_error(
     p <- plot_rla_boxplot(

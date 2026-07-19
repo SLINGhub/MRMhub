@@ -465,6 +465,14 @@ plot_rla_boxplot <- function(
     cli::cli_abort("{.arg outlier_k} must be of length 1 or 2.")
   }
 
+  # The "fold" method builds its fence directly from `outlier_k` (unlike the
+  # other methods, which derive one from the data), so a value is required.
+  if (outlier_method == "fold" && is.null(outlier_k)) {
+    cli::cli_abort(
+      "{.arg outlier_k} must be supplied when {.arg outlier_method} is {.val fold}."
+    )
+  }
+
   # Subset dataset according to arguments
   d_filt <- get_dataset_subset(
     data,
