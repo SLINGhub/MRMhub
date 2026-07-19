@@ -5208,16 +5208,16 @@
 <rect x='672.91' y='120.77' width='43.11' height='88.24' style='stroke-width: 0.78; stroke: none; fill: #FFFFFF;' />
 <text x='676.89' y='131.09' style='font-size: 8.00px; font-family: sans;' textLength='28.03px' lengthAdjust='spacingAndGlyphs'>qc_type</text>
 <rect x='676.89' y='135.90' width='17.28' height='17.28' style='stroke-width: 0.78; stroke: none; fill: #FFFFFF;' />
-<circle cx='685.53' cy='144.54' r='1.28' style='stroke-width: 0.43; stroke: #8E9B9E; stroke-opacity: 0.80;' />
+<polygon points='685.53,146.53 687.25,143.55 683.81,143.55 ' style='stroke-width: 0.43; stroke: #1854F9; stroke-opacity: 0.80; fill: #1854F9; fill-opacity: 0.80;' />
 <rect x='676.89' y='153.18' width='17.28' height='17.28' style='stroke-width: 0.78; stroke: none; fill: #FFFFFF;' />
-<polygon points='685.53,163.81 687.25,160.83 683.81,160.83 ' style='stroke-width: 0.43; stroke: #1854F9; stroke-opacity: 0.80; fill: #1854F9; fill-opacity: 0.80;' />
+<circle cx='685.53' cy='161.82' r='1.28' style='stroke-width: 0.43; stroke: #DB0202; stroke-opacity: 0.80; fill: #DB0202; fill-opacity: 0.80;' />
 <rect x='676.89' y='170.46' width='17.28' height='17.28' style='stroke-width: 0.78; stroke: none; fill: #FFFFFF;' />
-<circle cx='685.53' cy='179.10' r='1.28' style='stroke-width: 0.43; stroke: #DB0202; stroke-opacity: 0.80; fill: #DB0202; fill-opacity: 0.80;' />
+<polygon points='685.53,180.71 687.13,179.10 685.53,177.50 683.93,179.10 ' style='stroke-width: 0.43; stroke: #880391; stroke-opacity: 0.80; fill: #880391; fill-opacity: 0.80;' />
 <rect x='676.89' y='187.74' width='17.28' height='17.28' style='stroke-width: 0.78; stroke: none; fill: #FFFFFF;' />
-<polygon points='685.53,197.99 687.13,196.38 685.53,194.78 683.93,196.38 ' style='stroke-width: 0.43; stroke: #880391; stroke-opacity: 0.80; fill: #880391; fill-opacity: 0.80;' />
-<text x='698.16' y='146.75' style='font-size: 6.40px; font-family: sans;' textLength='12.10px' lengthAdjust='spacingAndGlyphs'>SPL</text>
-<text x='698.16' y='164.03' style='font-size: 6.40px; font-family: sans;' textLength='13.51px' lengthAdjust='spacingAndGlyphs'>TQC</text>
-<text x='698.16' y='181.31' style='font-size: 6.40px; font-family: sans;' textLength='13.87px' lengthAdjust='spacingAndGlyphs'>BQC</text>
-<text x='698.16' y='198.59' style='font-size: 6.40px; font-family: sans;' textLength='12.09px' lengthAdjust='spacingAndGlyphs'>LTR</text>
+<circle cx='685.53' cy='196.38' r='1.28' style='stroke-width: 0.43; stroke: #8E9B9E; stroke-opacity: 0.80;' />
+<text x='698.16' y='146.75' style='font-size: 6.40px; font-family: sans;' textLength='13.51px' lengthAdjust='spacingAndGlyphs'>TQC</text>
+<text x='698.16' y='164.03' style='font-size: 6.40px; font-family: sans;' textLength='13.87px' lengthAdjust='spacingAndGlyphs'>BQC</text>
+<text x='698.16' y='181.31' style='font-size: 6.40px; font-family: sans;' textLength='12.09px' lengthAdjust='spacingAndGlyphs'>LTR</text>
+<text x='698.16' y='198.59' style='font-size: 6.40px; font-family: sans;' textLength='12.10px' lengthAdjust='spacingAndGlyphs'>SPL</text>
 </g>
 </svg>
