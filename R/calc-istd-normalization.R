@@ -180,8 +180,12 @@ normalize_by_istd <- function(data = NULL, ignore_missing_annotation = FALSE) {
       by = c("analysis_id", "feature_id")
     )
 
-  # Print summary
-  n_features <- length(unique(d_temp$feature_id)) - nrow(features_no_istd)
+  # Print summary: count features that actually received a normalized intensity,
+  # measured from the result rather than inferred by subtraction.
+  n_features_normalized <- data@dataset |>
+    filter(!.data$is_istd, !is.na(.data$feature_norm_intensity)) |>
+    dplyr::distinct(.data$feature_id) |>
+    nrow()
 
   istds <- data@annot_features |>
     filter(.data$is_istd) |>
@@ -194,9 +198,9 @@ normalize_by_istd <- function(data = NULL, ignore_missing_annotation = FALSE) {
       unique()
   ))
 
-  cli_alert_success(col_green(glue::glue(
-    "{n_features - length(istds)} features normalized with {n_used_istds} ISTDs in {get_analysis_count(data)} analyses."
-  )))
+  cli_alert_success(col_green(
+    "{n_features_normalized} feature{?s} normalized with {n_used_istds} ISTD{?s} in {get_analysis_count(data)} analys{?is/es}."
+  ))
 
   # Update status
   data@status_processing <- "ISTD-normalized data"
@@ -519,8 +523,13 @@ quantify_by_istd <- function(
     analyte_unit
   )
 
+  n_analyses_with_conc <- data@dataset |>
+    filter(!.data$is_istd, !is.na(.data$feature_conc)) |>
+    dplyr::distinct(.data$analysis_id) |>
+    nrow()
+
   cli_alert_success(cli::col_green(
-    "{n_features_with_conc} feature concentrations calculated based on {n_istd} ISTDs and sample amounts of {get_analysis_count(data) - nrow(samples_no_amounts)} analyses."
+    "{n_features_with_conc} feature concentration{?s} calculated based on {n_istd} ISTD{?s} and sample amounts of {n_analyses_with_conc} analys{?is/es}."
   ))
   cli::cli_alert_info(col_green("Concentrations are given in {conc_unit}."))
 

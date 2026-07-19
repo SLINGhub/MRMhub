@@ -309,7 +309,8 @@ test_that("correct_interferences corrects overlapping interferences", {
       interference_contribution = NA,
       updated_feature_id = "S1P d18:0 [M>60] corrected"
     ),
-    "must be a number larger than 0", fixed = TRUE
+    "must be a number larger than 0",
+    fixed = TRUE
   )
 
   expect_error(
@@ -335,7 +336,7 @@ test_that("Handles corrections that lead to negative values", {
       interference_contribution = 0.1,
       updated_feature_id = "PC 28:0"
     ),
-    "Interference correction led to 478 negative or zero values in samples/QCs. Please verify",
+    "Interference correction led to 478 negative or zero values in 1 feature (samples/QCs). Please verify",
     fixed = TRUE
   )
 
@@ -355,7 +356,7 @@ test_that("Handles corrections that lead to negative values", {
       neg_to_na = TRUE,
       updated_feature_id = "PC 28:0"
     ),
-    "Interference correction led to 478 negative or zero values in samples/QCs. All negative/zero values",
+    "Interference correction led to 478 negative or zero values in 1 feature (samples/QCs). All negative/zero values",
     fixed = TRUE
   )
 
@@ -372,7 +373,7 @@ test_that("Handles corrections that lead to negative values", {
         variable = "feature_intensity",
         sequential_correction = TRUE
       ),
-    "Interference correction led to negative or zero values in 1 feature(s) in samples/QCs. Please verify ",
+    "Interference correction led to 495 negative or zero values in 1 feature (samples/QCs). Please verify ",
     fixed = TRUE
   )
 
@@ -384,7 +385,7 @@ test_that("Handles corrections that lead to negative values", {
         sequential_correction = TRUE,
         neg_to_na = TRUE
       ),
-    "Interference correction led to negative or zero values in 1 feature(s) in samples/QCs. All negative/zero values ",
+    "Interference correction led to 495 negative or zero values in 1 feature (samples/QCs). All negative/zero values ",
     fixed = TRUE
   )
 })

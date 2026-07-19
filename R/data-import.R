@@ -727,13 +727,25 @@ import_data_main <- function(
   # stopifnot(methods::validObject(data))
 
   if (!silent) {
+    n_analyses <- length(unique(data@dataset_orig$analysis_id))
+    # Assign each feature to a single bucket: a feature counts as a qualifier if
+    # any of its rows is flagged as one, so quantifier + qualifier == total even
+    # when a feature_id carries mixed `integration_qualifier` flags across rows.
+    feat_is_qual <- data@dataset_orig |>
+      dplyr::summarise(
+        is_qualifier = any(.data$integration_qualifier, na.rm = TRUE),
+        .by = "feature_id"
+      )
+    n_features <- nrow(feat_is_qual)
     if (!any(data@dataset_orig$integration_qualifier, na.rm = TRUE)) {
       cli_alert_success(cli::col_green(
-        "Imported {length(unique(data@dataset_orig$analysis_id))} analyses with {length(unique(data@dataset_orig$feature_id))} features"
+        "Imported {n_analyses} analys{?is/es} with {n_features} feature{?s}."
       ))
-    } else if (any(data@dataset_orig$integration_qualifier, na.rm = TRUE)) {
+    } else {
+      n_qual <- sum(feat_is_qual$is_qualifier)
+      n_quant <- n_features - n_qual
       cli_alert_success(cli::col_green(
-        "Imported {length(unique(data@dataset_orig$analysis_id))} analyses with {length(unique(data@dataset_orig$feature_id))} features ({length(unique(data@dataset_orig$feature_id[!data@dataset_orig$integration_qualifier]))} quantifiers, {length(unique(data@dataset_orig$feature_id[data@dataset_orig$integration_qualifier]))} qualifiers)"
+        "Imported {n_analyses} analys{?is/es} with {n_features} feature{?s} ({n_quant} quantifier{?s}, {n_qual} qualifier{?s})."
       ))
     }
   }

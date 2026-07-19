@@ -590,7 +590,7 @@ test_that("exclude_analyses excludes analyses", {
         analyses = c("Longit_LTR 01", "Longit_TQC-100%"),
         clear_existing = FALSE
       ),
-    "A total of 3 analyses are now excluded for downstream processing"
+    "3 analyses are now excluded for downstream processing"
   )
 
   expect_false(
@@ -702,7 +702,7 @@ test_that("exclude_features excludes features", {
         features = c("PC 40:6", "PC 32:1"),
         clear_existing = FALSE
       ),
-    "A total of 3 features are now excluded for downstream"
+    "3 features are now excluded for downstream"
   )
 
   expect_false(

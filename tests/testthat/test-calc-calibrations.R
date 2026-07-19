@@ -226,7 +226,7 @@ test_that("quantify_by_calibration works", {
       fit_model = "quadratic",
       fit_weighting = "1/x"
     ),
-    "Concentrations of these features were calculated for 25 analyses"
+    "Concentrations calculated for 8 features in 25 analyses"
   )
 
   res <- mexp_res@dataset |> filter(analysis_id == "CalE", !is_istd)
@@ -249,7 +249,7 @@ test_that("quantify_by_calibration works", {
       fit_model = "quadratic",
       fit_weighting = "1/x"
     ),
-    "Concentrations of these features were calculated for 25 analyses"
+    "Concentrations calculated for 4 features in 25 analyses"
   )
 
   res <- mexp_res@dataset |> filter(analysis_id == "CalE", !is_istd)
@@ -337,7 +337,7 @@ test_that("quantify_by_calibration handles errors", {
       fit_model = "quadratic",
       fit_weighting = "1/x"
     ),
-    "Concentrations of the other features were calculated"
+    "Concentrations calculated for 2 features in 24 analyses"
   )
 
   mexp_temp <- mexp_norm

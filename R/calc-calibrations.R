@@ -207,7 +207,7 @@ quantify_by_calibration <- function(
   )
   if (n_out_of_range > 0) {
     cli::cli_alert_info(cli::col_grey(
-      "{n_out_of_range} concentration value{?s} fall outside the calibrated range (retained, flagged in {.field feature_conc_out_of_range})."
+      "{n_out_of_range} concentration value{?s} {?falls/fall} outside the calibrated range (retained, flagged in {.field feature_conc_out_of_range})."
     ))
   }
 
@@ -241,8 +241,6 @@ quantify_by_calibration <- function(
       )
     )
 
-  n_features <- length(unique(d_stats_calc$feature_id))
-
   n_features_with_conc <- data@dataset |>
     filter(!.data$is_istd, !is.na(.data$feature_conc)) |>
     select("feature_id") |>
@@ -261,29 +259,14 @@ quantify_by_calibration <- function(
   data@conc_analyte_unit <- conc_unit
   conc_unit <- get_conc_unit(data@annot_analyses$sample_amount_unit, conc_unit)
 
-  samples_no_amounts <- data@annot_analyses |>
-    filter(
-      .data$valid_analysis,
-      is.na(.data$sample_amount) | is.na(.data$istd_volume)
-    ) |>
-    dplyr::semi_join(data@dataset, by = c("analysis_id"))
+  n_analyses_with_conc <- data@dataset |>
+    filter(!.data$is_istd, !is.na(.data$feature_conc)) |>
+    dplyr::distinct(.data$analysis_id) |>
+    nrow()
 
-  count_quant_pass <- sum(!d_calib$reg_failed_cal_1[d_calib$is_quantifier])
-  count_qual_pass <- sum(!d_calib$reg_failed_cal_1[!d_calib$is_quantifier])
-  count_quant_all <- sum(d_calib$is_quantifier)
-  count_qual_all <- sum(!d_calib$is_quantifier)
-
-  text_failed <- ifelse(features_failed_calib > 0, "the other", "these")
-
-  if (include_qualifier && any(!d_calib$is_quantifier)) {
-    cli_alert_success(cli::col_green(
-      "Concentrations of {text_failed} features were calculated for {get_analysis_count(data) - nrow(samples_no_amounts)} analyses."
-    ))
-  } else {
-    cli_alert_success(cli::col_green(
-      "Concentrations of {text_failed} features were calculated for {get_analysis_count(data) - nrow(samples_no_amounts)} analyses."
-    ))
-  }
+  cli_alert_success(cli::col_green(
+    "Concentrations calculated for {n_features_with_conc} feature{?s} in {n_analyses_with_conc} analys{?is/es}."
+  ))
 
   cli::cli_alert_info(col_green("Concentrations are given in {conc_unit}."))
 

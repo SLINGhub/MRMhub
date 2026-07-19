@@ -1091,14 +1091,28 @@ exclude_analyses <- function(data = NULL, analyses, clear_existing) {
         valid_analysis = !(.data$analysis_id %in% analyses) &
           .data$valid_analysis
       )
+    n_excluded <- intersect(
+      data@dataset_orig$analysis_id,
+      data@annot_analyses |>
+        filter(!.data$valid_analysis) |>
+        pull(.data$analysis_id)
+    ) |>
+      length()
     cli_alert_info(cli::col_green(
-      "A total of {data@annot_analyses |> filter(!.data$valid_analysis) |> nrow()} analyses are now excluded for downstream processing. Please reprocess data."
+      "{n_excluded} analys{?is/es} {?is/are} now excluded for downstream processing. Please reprocess data."
     ))
   } else {
     data@annot_analyses <- data@annot_analyses |>
       mutate(valid_analysis = !(.data$analysis_id %in% analyses))
+    n_excluded <- intersect(
+      data@dataset_orig$analysis_id,
+      data@annot_analyses |>
+        filter(!.data$valid_analysis) |>
+        pull(.data$analysis_id)
+    ) |>
+      length()
     cli_alert_info(cli::col_green(
-      "{data@annot_analyses |> filter(!.data$valid_analysis) |> nrow()} analyses were excluded for downstream processing. Please reprocess data."
+      "{n_excluded} analys{?is/es} {?was/were} excluded for downstream processing. Please reprocess data."
     ))
   }
 
@@ -1152,14 +1166,28 @@ exclude_features <- function(data = NULL, features, clear_existing) {
       mutate(
         valid_feature = !(.data$feature_id %in% features) & .data$valid_feature
       )
+    n_excluded <- intersect(
+      data@dataset_orig$feature_id,
+      data@annot_features |>
+        filter(!.data$valid_feature) |>
+        pull(.data$feature_id)
+    ) |>
+      length()
     cli_alert_info(cli::col_green(
-      "A total of {data@annot_features |> filter(!.data$valid_feature) |> nrow()} features are now excluded for downstream processing. Please reprocess data."
+      "{n_excluded} feature{?s} {?is/are} now excluded for downstream processing. Please reprocess data."
     ))
   } else {
     data@annot_features <- data@annot_features |>
       mutate(valid_feature = !(.data$feature_id %in% features))
+    n_excluded <- intersect(
+      data@dataset_orig$feature_id,
+      data@annot_features |>
+        filter(!.data$valid_feature) |>
+        pull(.data$feature_id)
+    ) |>
+      length()
     cli_alert_info(cli::col_green(
-      "{data@annot_features |> filter(!.data$valid_feature) |> nrow()} features were excluded for downstream processing. Please reprocess data."
+      "{n_excluded} feature{?s} {?was/were} excluded for downstream processing. Please reprocess data."
     ))
   }
 

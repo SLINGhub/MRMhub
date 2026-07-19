@@ -1204,10 +1204,16 @@ add_metadata <- function(
       "Analysis metadata associated with {n_match} analyses."
     )))
 
-    n_invalid <- data@annot_analyses |> filter(!.data$valid_analysis) |> nrow()
+    n_invalid <- intersect(
+      data@dataset_orig$analysis_id,
+      data@annot_analyses |>
+        filter(!.data$valid_analysis) |>
+        pull(.data$analysis_id)
+    ) |>
+      length()
     if (n_invalid > 0) {
       cli_alert_info(col_yellow(
-        "{n_invalid} invalid analyses (as defined in the metadata) were excluded"
+        "{n_invalid} invalid analys{?is/es} (as defined in the metadata) {?was/were} excluded."
       ))
     }
   }
@@ -1235,10 +1241,16 @@ add_metadata <- function(
       "Feature metadata associated with {n_match} features."
     )))
 
-    n_invalid <- data@annot_features |> filter(!.data$valid_feature) |> nrow()
+    n_invalid <- intersect(
+      data@dataset_orig$feature_id,
+      data@annot_features |>
+        filter(!.data$valid_feature) |>
+        pull(.data$feature_id)
+    ) |>
+      length()
     if (n_invalid > 0) {
       cli_alert_info(col_yellow(
-        "{n_invalid} invalid features (as defined in the metadata) were excluded"
+        "{n_invalid} invalid feature{?s} (as defined in the metadata) {?was/were} excluded."
       ))
     }
   }

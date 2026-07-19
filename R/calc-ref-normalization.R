@@ -351,6 +351,18 @@ calibrate_by_reference <- function(
         )
       )
 
+    # True "re-calibrated" count: distinct features that received a
+    # reference-derived value (a defined `ref_conc`), captured before `ref_conc`
+    # is dropped below. Excludes pass-through features kept as original under
+    # `undefined_conc_action = "original"`, and analyte-metadata rows that map to
+    # no feature in the data (which the old metadata-row count wrongly included).
+    # `ungroup()` first so a feature is counted once, not once per batch.
+    n_features_with_conc <- d_temp |>
+      dplyr::ungroup() |>
+      dplyr::filter(!is.na(.data$ref_conc)) |>
+      dplyr::distinct(.data$feature_id) |>
+      nrow()
+
     if (store_conc_ratio) {
       n_zero_refconc <- sum(!is.na(d_temp$ref_conc) & d_temp$ref_conc == 0)
       if (n_zero_refconc > 0) {
@@ -406,17 +418,13 @@ calibrate_by_reference <- function(
     } else {
       data@dataset <- data@dataset |> dplyr::select(-"var_normalized")
     }
-    n_features_with_conc <- data@annot_qcconcentrations |>
-      filter(.data$sample_id %in% reference_sample_id) |>
-      nrow()
-
     if (variable_strip == "conc") {
       cli_alert_success(cli::col_green(
-        "{n_features_with_conc} feature concentrations were {txt_batchwise}re-calibrated using the reference sample {ref_ids_txt}."
+        "{n_features_with_conc} feature concentration{?s} {?was/were} {txt_batchwise}re-calibrated using the reference sample {ref_ids_txt}."
       ))
     } else {
       cli_alert_success(cli::col_green(
-        "{n_features_with_conc} feature concentrations were {txt_batchwise}calculated using the defined reference sample concentrations."
+        "{n_features_with_conc} feature concentration{?s} {?was/were} {txt_batchwise}calculated using the defined reference sample concentrations."
       ))
     }
 

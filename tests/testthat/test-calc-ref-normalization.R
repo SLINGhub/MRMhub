@@ -173,7 +173,7 @@ test_that("calibrate_by_reference catches input errors and issues", {
       absolute_calibration = TRUE,
       undefined_conc_action = "na"
     ),
-    "3 feature concentrations were calculated using the defined reference sample concentrations",
+    "6 feature concentrations were calculated using the defined reference sample concentrations",
     fixed = TRUE
   )
 
@@ -185,7 +185,7 @@ test_that("calibrate_by_reference catches input errors and issues", {
       absolute_calibration = TRUE,
       undefined_conc_action = "na"
     ),
-    "3 feature concentrations were re-calibrated using the reference sample",
+    "6 feature concentrations were re-calibrated using the reference sample",
     fixed = TRUE
   )
 
@@ -464,7 +464,7 @@ test_that("calibrate_by_reference batch-wise works", {
       undefined_conc_action = "original",
       store_normalized = FALSE
     )),
-    "3 feature concentrations were batch-wise re-calibrated ",
+    "6 feature concentrations were batch-wise re-calibrated ",
     fixed = TRUE
   )
 

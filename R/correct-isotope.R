@@ -110,14 +110,19 @@ correct_interference_manual <- function(
     summarise(negative_count = sum(!!variable_var <= 0, na.rm = TRUE)) |>
     filter(!str_detect(.data$qc_type, "BLK"))
 
-  if (sum(neg_zero_sum$negative_count, na.rm = TRUE) > 0) {
+  n_neg_values <- sum(neg_zero_sum$negative_count, na.rm = TRUE)
+  n_neg_features <- neg_zero_sum |>
+    filter(.data$negative_count > 0) |>
+    dplyr::distinct(.data$feature_id) |>
+    nrow()
+  if (n_neg_values > 0) {
     if (neg_to_na) {
       cli_alert_warning(col_yellow(
-        "Interference correction led to {sum(neg_zero_sum$negative_count)} negative or zero values in samples/QCs. All negative/zero values (incl. in Blanks) were replaced with `NA`."
+        "Interference correction led to {n_neg_values} negative or zero value{?s} in {n_neg_features} feature{?s} (samples/QCs). All negative/zero values (incl. in Blanks) were replaced with `NA`."
       ))
     } else {
       cli_alert_warning(col_yellow(
-        "Interference correction led to {sum(neg_zero_sum$negative_count)} negative or zero values in samples/QCs. Please verify the correction, or set `neg_to_na = TRUE`"
+        "Interference correction led to {n_neg_values} negative or zero value{?s} in {n_neg_features} feature{?s} (samples/QCs). Please verify the correction, or set `neg_to_na = TRUE`."
       ))
     }
   }
@@ -405,14 +410,16 @@ correct_interferences <- function(
     summarise(negative_count = sum(.data$feature_intensity <= 0)) |>
     filter(.data$negative_count > 0)
 
-  if (sum(neg_zero_sum$negative_count) > 0) {
+  n_neg_values <- sum(neg_zero_sum$negative_count)
+  n_neg_features <- length(unique(neg_zero_sum$feature_id))
+  if (n_neg_values > 0) {
     if (neg_to_na) {
       cli_alert_warning(col_yellow(
-        "Interference correction led to negative or zero values in {length(unique(neg_zero_sum$feature_id))} feature(s) in samples/QCs. All negative/zero values (incl. in Blanks) were replaced with `NA`."
+        "Interference correction led to {n_neg_values} negative or zero value{?s} in {n_neg_features} feature{?s} (samples/QCs). All negative/zero values (incl. in Blanks) were replaced with `NA`."
       ))
     } else {
       cli_alert_warning(col_yellow(
-        "Interference correction led to negative or zero values in {length(unique(neg_zero_sum$feature_id))} feature(s) in samples/QCs. Please verify the correction, or set `neg_to_na = TRUE`"
+        "Interference correction led to {n_neg_values} negative or zero value{?s} in {n_neg_features} feature{?s} (samples/QCs). Please verify the correction, or set `neg_to_na = TRUE`."
       ))
     }
   }
