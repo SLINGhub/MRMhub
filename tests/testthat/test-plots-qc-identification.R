@@ -119,7 +119,7 @@ test_that("plot_rt_vs_chain draws a single merged colour/fill legend", {
   # The points map colour and fill to the same variable; the two scales must
   # share identical breaks/values so ggplot merges them into ONE legend instead
   # of drawing a duplicate (previously two same-titled legends whose order
-  # flipped between renders). Filled shapes (21/24) match the other QC plots.
+  # flipped between renders). Open shapes (circle 1 / asterisk 8) mark outliers.
   for (xv in c("total_c", "total_db", "ecn")) {
     p <- suppressMessages(suppressWarnings(
       plot_rt_vs_chain(mexp, qc_types = "SPL", x_var = xv)
@@ -131,7 +131,7 @@ test_that("plot_rt_vs_chain draws a single merged colour/fill legend", {
     # legend is sorted (colour otherwise trains on points + fitted lines)
     expect_false(is.unsorted(as.numeric(cd$.label)))
   }
-  # points use fillable shapes
+  # points use open shapes (circle 1 / asterisk 8)
   b <- ggplot2::ggplot_build(suppressMessages(suppressWarnings(
     plot_rt_vs_chain(mexp, qc_types = "SPL", x_var = "total_c")
   )))
@@ -139,5 +139,5 @@ test_that("plot_rt_vs_chain draws a single merged colour/fill legend", {
     b$data,
     function(d) if ("shape" %in% names(d)) d$shape
   ))))
-  expect_true(all(shapes %in% c(21, 24)))
+  expect_true(all(shapes %in% c(1, 8)))
 })

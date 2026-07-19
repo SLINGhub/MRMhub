@@ -397,9 +397,8 @@ plot_rt_vs_chain <- function(
       values = rep(alt_bright_dark_colors, length.out = n_colors_needed),
       limits = levels(d_plot[[col_var]])
     ) +
-    # Filled symbols (fillable shapes 21/24) for both outlier states, matching
-    # the other QC plots; outlier state is distinguished by shape.
-    scale_shape_manual(values = c("No" = 21, "Yes" = 24)) +
+    # Open circle for non-outlier, asterisk for outlier (distinguished by shape).
+    scale_shape_manual(values = c("No" = 1, "Yes" = 8)) +
     labs(x = x_title, y = "Median Retention Time", shape = "Outlier") +
     theme_bw(base_size = font_base_size) +
     theme(
