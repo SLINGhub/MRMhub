@@ -597,37 +597,40 @@ plot_qcmetrics_comparison <- function(
       drop = TRUE
     )
 
+  n_breaks <- pretty_n_breaks(if (facet_by_class) cols_page else 1L)
   if (log_scale) {
     g <- g +
-      ggplot2::scale_x_log10(
-        #labels = scientific_format_end,
-        #limits = c(0.1, NA),
+      scale_pretty_x(
+        log = TRUE,
+        n = n_breaks,
         name = x_label,
         limits = x_lim,
         expand = ggplot2::expansion(mult = c(0, 0.02))
       ) +
-      ggplot2::scale_y_log10(
-        #labels = scientific_format_end,
-        limits = y_lim,
+      scale_pretty_y(
+        log = TRUE,
+        n = n_breaks,
         name = y_label,
+        limits = y_lim,
         expand = ggplot2::expansion(mult = c(0, 0.02))
-      )
+      ) +
+      pretty_logticks("bl")
   } else {
     # More room on an autoscaled axis (0.1); keep an axis pinned at 0 (a CV floor)
     # tight (0.05) so no large empty band opens below 0.
     x_expand <- if (!is.na(x_lim[1]) && x_lim[1] == 0) 0.05 else 0.1
     y_expand <- if (!is.na(y_lim[1]) && y_lim[1] == 0) 0.05 else 0.1
     g <- g +
-      ggplot2::scale_x_continuous(
-        #labels = scientific_format_end,
+      scale_pretty_x(
+        n = n_breaks,
         name = x_label,
         limits = x_lim,
         expand = ggplot2::expansion(mult = x_expand)
       ) +
-      ggplot2::scale_y_continuous(
-        #labels = scientific_format_end,
-        limits = y_lim,
+      scale_pretty_y(
+        n = n_breaks,
         name = y_label,
+        limits = y_lim,
         expand = ggplot2::expansion(mult = y_expand)
       )
   }

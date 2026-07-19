@@ -661,3 +661,39 @@ test_that("plot_qcmetrics_comparison starts only CV scatter axes at 0", {
   expect_true(all(is.na(lower("diff", "intensity_cv_tqc", "intensity_cv_bqc"))))
   expect_true(all(is.na(lower("ratio", "intensity_cv_tqc", "intensity_cv_bqc"))))
 })
+
+# Branch 5: shared pretty-axis helper must render >=3 non-empty labels on both
+# axes, linear and log.
+test_that("plot_qcmetrics_comparison axes render >=3 non-empty labels", {
+  axis_labels <- function(p, axis) {
+    b <- ggplot2::ggplot_build(p)
+    lbl <- b$layout$panel_params[[1]][[axis]]$get_labels()
+    lbl[!vapply(
+      lbl,
+      function(x) is.null(x) || (length(x) == 1 && is.na(x)) ||
+        (is.character(x) && !nzchar(x)),
+      logical(1)
+    )]
+  }
+
+  p <- plot_qcmetrics_comparison(
+    data = mexp,
+    x_variable = "rt_median_bqc",
+    y_variable = "norm_intensity_cv_bqc",
+    plot_type = "scatter",
+    facet_by_class = FALSE
+  )
+  expect_gte(length(axis_labels(p, "x")), 3)
+  expect_gte(length(axis_labels(p, "y")), 3)
+
+  p_log <- plot_qcmetrics_comparison(
+    data = mexp,
+    x_variable = "intensity_median_bqc",
+    y_variable = "norm_intensity_median_bqc",
+    plot_type = "scatter",
+    log_scale = TRUE,
+    facet_by_class = FALSE
+  )
+  expect_gte(length(axis_labels(p_log, "x")), 3)
+  expect_gte(length(axis_labels(p_log, "y")), 3)
+})
