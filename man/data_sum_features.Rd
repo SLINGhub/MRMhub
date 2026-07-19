@@ -18,12 +18,9 @@ MRMhubExperiment object
 \description{
 This function sums up feature intensities per analyte_id.
 
-THis is is useful when you have multiple features (e.g. adducts, isotopes, in-source fragments) or isomers that you
-want to combine into a single analyte intensity value, such as LPC sn1 and sn2 species.
-
-NOTE: This is still an experimental function! It will overwrite the feature_id in the dataset and analysis metadata
-of featured that share same analyte_id. Currently the original feature_id is not backed up anywhere. Use with caution
-and check results carefully!
+This is useful when you have multiple features (e.g. adducts, isotopes, in-source
+fragments) or isomers that you want to combine into a single analyte intensity
+value, such as LPC sn1 and sn2 species.
 }
 \details{
 Only raw signal variables are aggregated across the transitions of an analyte:
@@ -49,3 +46,13 @@ analyte is a quantifier if any of its constituents is one. A quantifier
 combined with either a qualifier or another quantifier therefore yields a
 quantifier, whereas qualifiers merged among themselves remain a qualifier.
 }
+\section{Experimental}{
+
+This function is \strong{experimental} and its behaviour may change. It overwrites the
+\code{feature_id} of features sharing an \code{analyte_id} in both the dataset and the
+analysis metadata, and the original \code{feature_id} is not backed up anywhere. It is
+intended to run early (before normalization/quantitation); running it on a
+processed object drops the derived variables (see Details). Use with caution and
+check the results carefully.
+}
+
