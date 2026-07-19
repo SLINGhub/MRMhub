@@ -466,26 +466,29 @@ plot_runscatter <- function(
       ))
     }
 
-    if (is.na(cap_sample_k_mad)) {
-      cap_sample_k_mad <- Inf
-    }
-    if (is.na(cap_qc_k_mad)) {
-      cap_qc_k_mad <- Inf
-    }
+    # An unset MAD cap stays NA (not Inf): its per-feature threshold is then NA and
+    # `pmax(..., na.rm = TRUE)` ignores it, so each cap constrains independently.
+    # Setting it to Inf used to make that threshold Inf, which won the `pmax` and
+    # pushed `value_max` to Inf -> nothing was capped even though another cap was
+    # set (a silent no-op unless both MAD caps were given).
 
     if (!is.na(cap_top_n_outliers) && cap_top_n_outliers > 0) {
+      # Cap the n highest points per feature to just above the highest kept value
+      # (its (n+1)th-largest value x outlier_offset_ratio), so extreme outliers do
+      # not dominate the y-scale -- the same "compress for display" behaviour as
+      # the MAD caps below. Thresholding on the (n+1)th value is robust to ties and
+      # leaves a feature with n or fewer points uncapped (its cap_ref is NA).
       d_filt <- d_filt |>
         dplyr::group_by(.data$feature_id) |>
-        dplyr::arrange(desc(.data$value)) |>
-        mutate(
+        dplyr::mutate(
+          cap_ref = sort(.data$value, decreasing = TRUE)[cap_top_n_outliers + 1],
           value = ifelse(
-            dplyr::row_number() <= cap_top_n_outliers,
-            .data$value[row_number() > cap_top_n_outliers] *
-              outlier_offset_ratio,
+            !is.na(.data$cap_ref) & .data$value > .data$cap_ref,
+            .data$cap_ref * outlier_offset_ratio,
             .data$value
           )
         ) |>
-        dplyr::arrange(.data$feature_id, .data$analysis_order) |>
+        dplyr::select(-"cap_ref") |>
         dplyr::ungroup()
     }
 
@@ -513,8 +516,11 @@ plot_runscatter <- function(
     d_filt <- d_filt |>
       left_join(thresholds, by = "feature_id") |>
       mutate(
+        # No MAD threshold for this feature (no MAD cap set, or the QC type is
+        # absent) -> NA/Inf value_max means "no MAD cap": fall back to `value` so
+        # nothing is capped here (any cap_top_n adjustment is already in `value`).
         value_max = ifelse(
-          is.infinite(.data$value_max),
+          is.infinite(.data$value_max) | is.na(.data$value_max),
           .data$value,
           .data$value_max
         ),

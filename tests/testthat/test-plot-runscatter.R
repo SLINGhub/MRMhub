@@ -958,7 +958,7 @@ test_that("plot_runscatter  error cap logscale", {
     cols_page = 4,
     return_plots = TRUE,
     cap_outliers = TRUE,
-    cap_sample_k_mad = 1,
+    cap_sample_k_mad = 4,
     cap_qc_k_mad = NA,
     log_scale = TRUE
   )
@@ -974,7 +974,7 @@ test_that("plot_runscatter specific_page gried", {
     cols_page = 4,
     return_plots = TRUE,
     cap_outliers = TRUE,
-    cap_sample_k_mad = 1,
+    cap_sample_k_mad = 4,
     cap_qc_k_mad = NA,
     log_scale = TRUE,
     show_gridlines = TRUE,
@@ -1340,4 +1340,76 @@ test_that("plot_runscatter reference band SD uses uncapped values", {
     sort(round(stats$h_raw, 2)),
     sort(round(stats$h_cap, 2))
   )))
+})
+
+# Helper: run plot_runscatter with capping and return all plotted rows.
+capped_runscatter_data <- function(...) {
+  p <- suppressMessages(suppressWarnings(plot_runscatter(
+    data = mexp,
+    variable = "intensity",
+    cap_outliers = TRUE,
+    rows_page = 3,
+    cols_page = 4,
+    return_plots = TRUE,
+    ...
+  )))
+  do.call(rbind, lapply(p, function(x) x$data))
+}
+
+test_that("cap_top_n_outliers caps the n highest points per feature to one value", {
+  # The n highest points per feature are pulled to just above the highest kept
+  # value (its (n+1)th-largest x offset), so they collapse to a single value.
+  # The former ifelse-recycling gave each capped point a different value.
+  d <- capped_runscatter_data(
+    cap_top_n_outliers = 3,
+    cap_sample_k_mad = NA,
+    cap_qc_k_mad = NA
+  )
+  per_feat <- d |>
+    dplyr::group_by(.data$feature_id) |>
+    dplyr::summarise(
+      top3_one_value = dplyr::n_distinct(
+        utils::head(sort(.data$value_mod, decreasing = TRUE), 3)
+      ) == 1,
+      .groups = "drop"
+    )
+  # Capping collapses the top 3 of a feature to a single value (was 3 distinct).
+  expect_true(any(per_feat$top3_one_value))
+  # Capping must not introduce NA (the recycling could, for large n).
+  expect_false(any(is.na(d$value_mod)))
+})
+
+test_that("each MAD cap constrains independently of the other and of cap_top_n", {
+  # A single MAD cap must cap on its own. Previously an unset cap was set to Inf,
+  # which won the pmax and pushed value_max to Inf -> nothing capped unless BOTH
+  # cap_sample_k_mad and cap_qc_k_mad were given (a silent no-op).
+  n_mad_capped <- function(d) sum(d$value_mod != d$value, na.rm = TRUE)
+
+  s_only <- capped_runscatter_data(
+    cap_sample_k_mad = 2,
+    cap_qc_k_mad = NA,
+    cap_top_n_outliers = NA
+  )
+  q_only <- capped_runscatter_data(
+    cap_sample_k_mad = NA,
+    cap_qc_k_mad = 2,
+    cap_top_n_outliers = NA
+  )
+  both <- capped_runscatter_data(
+    cap_sample_k_mad = 2,
+    cap_qc_k_mad = 1,
+    cap_top_n_outliers = NA
+  )
+  expect_gt(n_mad_capped(s_only), 0)
+  expect_gt(n_mad_capped(q_only), 0)
+  expect_gt(n_mad_capped(both), 0)
+  # No cap combination introduces NA in the plotted values.
+  expect_false(any(is.na(s_only$value_mod)))
+  expect_false(any(is.na(q_only$value_mod)))
+  expect_false(any(is.na(both$value_mod)))
+  expect_false(any(is.na(capped_runscatter_data(
+    cap_sample_k_mad = 3,
+    cap_qc_k_mad = 3,
+    cap_top_n_outliers = 2
+  )$value_mod)))
 })

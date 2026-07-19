@@ -798,3 +798,26 @@ test_that("plot_responsecurves keeps the R2 label when a curve point is NA", {
   m@dataset$feature_intensity[k[1]] <- NA_real_
   expect_equal(label_rows(m), base_n)
 })
+
+test_that("overlay pagination keeps each feature on a single page (non-uniform rows)", {
+  # Make one feature short so features have non-uniform row counts. Row-index
+  # pagination then straddled a page boundary and split a feature across pages;
+  # feature-based pagination keeps each feature whole.
+  mexp_rc <- lipidomics_dataset |> normalize_by_istd() |> calc_qc_metrics()
+  rqc <- mexp_rc@dataset$qc_type == "RQC"
+  f1 <- sort(unique(mexp_rc@dataset$feature_id[rqc]))[1]
+  drop <- which(mexp_rc@dataset$feature_id == f1 & rqc)[1:3]
+  mexp_rc@dataset <- mexp_rc@dataset[-drop, ]
+
+  p <- suppressMessages(suppressWarnings(plot_responsecurves(
+    mexp_rc,
+    variable = "intensity",
+    curve_layout = "overlay",
+    rows_page = 2,
+    cols_page = 2,
+    return_plots = TRUE
+  )))
+  page_features <- lapply(p, function(x) unique(x$data$feature_id))
+  # every feature appears on exactly one page (no feature split across pages)
+  expect_false(any(duplicated(unlist(page_features))))
+})

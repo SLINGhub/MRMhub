@@ -197,7 +197,13 @@ plot_qc_summary_byclass <- function(data = NULL, font_base_size = 8) {
 
   p <- ggplot(
     d_qc_sum,
-    aes(x = as.numeric(rev(.data$feature_class)), y = .data$count_pass)
+    # Reverse the discrete axis by each row's own class code (not by row order):
+    # `as.numeric(rev(feature_class))` reversed the data vector, so a class landed
+    # under the wrong label whenever the rows were not in level order.
+    aes(
+      x = nlevels(.data$feature_class) + 1 - as.numeric(.data$feature_class),
+      y = .data$count_pass
+    )
   ) +
     ggplot2::geom_bar(
       aes(fill = .data$qc_criteria),

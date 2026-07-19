@@ -377,7 +377,6 @@ plot_responsecurves_page <- function(
   dataset$curve_id <- as.character(dataset$curve_id)
 
   # Subset dataset for current page
-  n_samples <- length(unique(dataset$analysis_id))
   features <- unique(dataset$feature_id)
 
   dat_subset <- if (curve_layout == "cols") {
@@ -401,12 +400,17 @@ plot_responsecurves_page <- function(
       group_by(.data$feature_id) |>
       mutate(not_zero = sum(!!plot_var != 0, na.rm = TRUE) > 2)
   } else {
-    # overlay: original slice-based pagination
-    row_start <- n_samples * cols_page * rows_page * (specific_page - 1) + 1
-    row_end <- n_samples * cols_page * rows_page * specific_page
+    # overlay: paginate by feature (cols_page * rows_page features per page) so a
+    # feature is never split across a page boundary. The former row-index slice
+    # assumed a uniform row count per feature and cut features mid-panel when a
+    # feature had fewer/more rows (missing curve points, extra replicates).
+    features_per_page <- cols_page * rows_page
+    feature_start <- features_per_page * (specific_page - 1) + 1
+    feature_end <- min(features_per_page * specific_page, length(features))
+    selected_features <- features[feature_start:feature_end]
     dataset |>
+      filter(.data$feature_id %in% selected_features) |>
       arrange(.data$feature_id, .data$curve_id) |>
-      slice(row_start:row_end) |>
       group_by(.data$feature_id) |>
       mutate(not_zero = sum(!!plot_var != 0, na.rm = TRUE) > 2)
   }
