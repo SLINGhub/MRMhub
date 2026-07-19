@@ -460,10 +460,7 @@ print_assertion_summary <- function(
     ) {
       if ("annot_analyses" %in% names(metadata_new)) {
         cli::cli_abort(
-          message = cli::col_red(
-            "Not all analyses in the data have corresponding metadata. Please verify data or set `excl_unmatched_analyses = TRUE`"
-          ),
-          trace = NULL,
+          "Not all analyses in the data have corresponding metadata. Please verify the data, or set {.code excl_unmatched_analyses = TRUE}.",
           call = caller_env()
         )
       }
@@ -481,41 +478,16 @@ print_assertion_summary <- function(
       )
     ) |>
     select(-"ignore_warn_flag")
-  if (any(t_all$Type == "D")) {
-    cli::cli_alert_warning(
-      text = cli::col_red(glue::glue(
-        "Metadata is invalid with following defects:"
-      ))
-    )
-    print(as_assertr_tibble(t_all_print))
+  # Render the full report (severity-count summary + table + legend) as one
+  # block through the print method, then raise any abort separately with a short
+  # message pointing back to it (keeping the trace collapsed but reachable).
+  print(as_assertr_tibble(t_all_print))
+
+  if (any(t_all$Type %in% c("D", "E"))) {
     cli::cli_abort(
-      message = cli::col_yellow(
-        " Please verify corresponding metadata tables and try again."
-      ),
-      trace = NULL,
+      "Metadata validation failed \u2014 see the report above.",
       call = caller_env()
     )
-  } else if (any(t_all$Type == "E")) {
-    cli::cli_alert_warning(
-      text = cli::col_red(glue::glue(
-        "Metadata has following errors{ifelse(any(t_all$Type == 'W'), ' and warnings', '')}:"
-      ))
-    )
-    print(as_assertr_tibble(t_all_print))
-    cli::cli_abort(
-      message = cli::col_yellow(
-        "Please verify corresponding metadata and try again."
-      ),
-      trace = NULL,
-      call = caller_env()
-    )
-  } else if (any(t_all$Type == "W" | t_all$Type == "N")) {
-    cli::cli_alert_warning(
-      text = cli::col_yellow(glue::glue(
-        "Metadata has following warnings and notifications:"
-      ))
-    )
-    print(as_assertr_tibble(t_all_print))
   }
 
   if (
@@ -523,10 +495,7 @@ print_assertion_summary <- function(
       any(t_all |> filter(!.data$ignore_warn_flag) |> pull(.data$Type) == "W")
   ) {
     cli::cli_abort(
-      message = cli::col_red(
-        "Please verify warnings in corresponding metadata. Use `ignore_warnings`= TRUE to ignore warnings."
-      ),
-      trace = NULL,
+      "Please verify warnings in corresponding metadata. Use {.code ignore_warnings = TRUE} to ignore warnings.",
       call = caller_env()
     )
   }

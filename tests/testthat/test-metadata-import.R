@@ -682,7 +682,7 @@ test_that("assert_metadata rejects duplicated analysis_id keys", {
       table = analyses_dup,
       excl_unmatched_analyses = TRUE
     ),
-    "verify corresponding metadata"
+    "Metadata validation failed"
   )
 })
 
@@ -710,7 +710,7 @@ test_that("assert_metadata rejects duplicated (sample_id, analyte_id) in QC conc
       ignore_warnings = FALSE,
       excl_unmatched_analyses = FALSE
     ),
-    "verify corresponding metadata"
+    "Metadata validation failed"
   )
 })
 

@@ -37,10 +37,13 @@ as_assertr_tibble <- function(x, ...) {
 
 #' Print method for validation-report tibbles
 #'
-#' Replaces the standard tibble header (`# A tibble: N x M`) with a black
-#' divider line, hides the column-type chip row (`<chr> <int> ...`), and adds
-#' an italic legend explaining the E / W / W* / N severity codes used by
-#' `assert_metadata()`. Implemented with `cli` only (no pillar dependency).
+#' Replaces the standard tibble header (`# A tibble: N x M`) with a pluralized
+#' severity-count summary line and a divider, hides the column-type chip row
+#' (`<chr> <int> ...`), and adds an italic legend explaining the E / W / W* / N
+#' severity codes used by `assert_metadata()`. The summary and divider replace
+#' the separate `cli_alert` banner that previously printed on a different stream,
+#' so the whole report (summary, table, legend) now renders as one block.
+#' Implemented with `cli` only (no pillar dependency).
 #'
 #' @param x An `assertr_tibble`.
 #' @param n,width Forwarded to the underlying tibble print method.
@@ -59,7 +62,27 @@ print.assertr_tibble <- function(x, n = NULL, width = NULL, ...) {
   body <- body[!grepl("^# A tibble:", body)]
   body <- body[!grepl("^\\s*<[a-z0-9_]+>(?:\\s+<[a-z0-9_]+>)*\\s*$", body)]
 
-  cat(cli::col_black(divider), "\n", sep = "")
+  # Pluralized severity-count headline, derived from the Type column (W* is a
+  # suppressed warning, still a warning). The letters remain the primary,
+  # colour-independent severity signal.
+  if ("Type" %in% names(x)) {
+    nD <- sum(x$Type == "D")
+    nE <- sum(x$Type == "E")
+    nW <- sum(x$Type %in% c("W", "W*"))
+    nN <- sum(x$Type == "N")
+    summary_line <- if (nD > 0) {
+      cli::format_inline(
+        "Found {cli::no(nD)} defect{?s}, {cli::no(nE)} error{?s}, {cli::no(nW)} warning{?s}, and {cli::no(nN)} note{?s} in the metadata."
+      )
+    } else {
+      cli::format_inline(
+        "Found {cli::no(nE)} error{?s}, {cli::no(nW)} warning{?s}, and {cli::no(nN)} note{?s} in the metadata."
+      )
+    }
+    cat(summary_line, "\n", sep = "")
+  }
+
+  cat(divider, "\n", sep = "")
   cat(body, sep = "\n")
   cat("\n", cli::style_italic(.assertr_legend(divider)), "\n", sep = "")
 

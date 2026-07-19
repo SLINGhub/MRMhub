@@ -787,6 +787,28 @@ calc_qc_metrics <- function(
     }
   }
 
+  # Summarize what was computed. Metric-group membership is measured from the
+  # output columns, so the report reflects what actually landed in metrics_qc.
+  n_features <- length(features_in_dataset)
+  n_types <- length(setdiff(unique(as.character(data@dataset$qc_type)), "RQC"))
+  metric_groups <- c(
+    if (any(startsWith(names(data@metrics_qc), "norm_intensity_"))) {
+      "normalized-intensity"
+    },
+    if (any(startsWith(names(data@metrics_qc), "conc_"))) "concentration",
+    if (any(grepl("_rqc_", names(data@metrics_qc)))) "response-curve",
+    if (any(endsWith(names(data@metrics_qc), "_cal"))) "calibration"
+  )
+  if (length(metric_groups) > 0) {
+    mh_success(
+      "QC metrics calculated for {n_features} feature{?s} across {n_types} sample type{?s}, including {metric_groups} statistics."
+    )
+  } else {
+    mh_success(
+      "QC metrics calculated for {n_features} feature{?s} across {n_types} sample type{?s}."
+    )
+  }
+
   # Return the updated data object with the calculated QC metrics
   data
 }

@@ -14,9 +14,17 @@
 #' @export
 data_load_example <- function(data = NULL, dataset = 1) {
   if (dataset != 1) {
-    stop("Only dataset 1 is currently available")
+    cli::cli_abort(
+      "{.arg dataset} must be {.val {1}}; only dataset 1 is currently available."
+    )
   }
   data <- lipidomics_dataset
   check_data(data)
+
+  n_analyses <- dplyr::n_distinct(data@dataset_orig$analysis_id)
+  n_features <- dplyr::n_distinct(data@dataset_orig$feature_id)
+  mh_success(
+    "Loaded example dataset {dataset}: {n_analyses} analys{?is/es} and {n_features} feature{?s}."
+  )
   data
 }

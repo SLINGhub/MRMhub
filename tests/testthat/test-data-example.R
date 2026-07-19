@@ -6,6 +6,6 @@ test_that("data_load_example works", {
 
   expect_error(
     mexp <- data_load_example(dataset = 2),
-    "Only dataset 1 is currently available"
+    "only dataset 1 is currently available"
   )
 })

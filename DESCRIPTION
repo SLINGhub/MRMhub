@@ -47,6 +47,7 @@ Suggests:
     ggpmisc,
     ggnewscale,
     covr,
+    fansi,
     lancer,
     rgoslin,
     knitr,
@@ -108,6 +109,7 @@ Collate:
     'helper.R'
     'lipidomics.R'
     'metadata-import.R'
+    'mrmhub-cli.R'
     'mrmhub-package.R'
     'plot-featureprofile.R'
     'plot-qc-correlations.R'
