@@ -183,6 +183,12 @@ primary identifier.
 |  | `istd_feature_id` | The `feature_id` of the internal standard used to normalize raw intensities. |
 |  | `analyte_id` | Unique identifier of the analyte. |
 
+All identifiers are whitespace-normalized on import — leading/trailing spaces
+removed and internal runs collapsed — and raw-data file extensions are stripped
+from `analysis_id`, using the same rules for data and metadata so the two join
+reliably. See [Importing Analytical Data](manual-04-data-import.html#identifier-normalization)
+for details.
+
 The `qc_type` field categorizes samples by their analytical purpose and is used
 throughout the package. It combines standardized terms introduced by
 @broadhurst2018GuidelinesConsiderationsUse (SPL, BQC, TQC, LTR, RQC) with

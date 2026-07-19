@@ -264,6 +264,30 @@ produce separate result files. The merged data is checked for consistency, so th
 each `analysis_id`–`feature_id` pair is unique and the same feature cannot be
 reported more than once within an analysis.
 
+## Identifier normalization
+
+All identifiers are normalized as they are imported. Leading and trailing spaces
+are removed and internal runs of whitespace are collapsed to a single space, so
+`"QC  01"` and `"QC 01"` become the same value. Raw-data file extensions
+(`.mzML`, `.d`, `.raw`, `.wiff`, `.wiff2`, `.lcd`, `.chrom`, case-insensitive)
+are stripped from `analysis_id`, and only a genuine *trailing* extension is
+removed — a name such as `Study.data_01.d` keeps its internal `.data`.
+
+The identical normalization is applied when metadata is imported. This is what
+lets an `analysis_id` typed into a metadata sheet match the one derived from a
+data-file name; without it, a stray space would cause the analysis to be dropped
+silently when data and metadata are joined.
+
+::: {.callout .callout-note}
+This normalization is **always** applied, on both data and metadata, and **no
+warning is issued** when whitespace is removed — it is silent by design.
+Stray spaces are a common and hard-to-trace cause of identifiers failing to map
+between data and metadata, so they are removed rather than reported. The one
+visible consequence is that two identifiers differing *only* by whitespace
+collapse to one and are then reported as a duplicate (for example, the same
+feature appearing to be measured twice in one analysis).
+:::
+
 ## Next steps
 
 - [Importing Metadata](manual-05-metadata.html) — attach and validate sample and feature annotations
