@@ -132,8 +132,8 @@ precision across different features and sample/QC types.</p>
 <span>  filter_data <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  include_qualifier <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  cv_threshold_value <span class="op">=</span> <span class="fl">25</span>,</span>
-<span>  x_lim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="cn">NA_real_</span><span class="op">)</span>,</span>
-<span>  y_lim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="cn">NA_real_</span><span class="op">)</span>,</span>
+<span>  x_lim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">NA_real_</span>, <span class="cn">NA_real_</span><span class="op">)</span>,</span>
+<span>  y_lim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">NA_real_</span>, <span class="cn">NA_real_</span><span class="op">)</span>,</span>
 <span>  cols_page <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  point_size <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  point_alpha <span class="op">=</span> <span class="fl">0.5</span>,</span>
@@ -199,12 +199,14 @@ lines in the plot (default is <code>25</code>).</p></dd>
 
 <dt id="arg-x-lim">x_lim<a class="anchor" aria-label="anchor" href="#arg-x-lim"></a></dt>
 <dd><p>Numeric vector of length 2 for x-axis limits. Use <code>NA</code> for
-auto-scaling (default is <code>c(0, NA)</code>).</p></dd>
+auto-scaling (default is <code>c(NA, NA)</code>).</p></dd>
 
 
 <dt id="arg-y-lim">y_lim<a class="anchor" aria-label="anchor" href="#arg-y-lim"></a></dt>
 <dd><p>Numeric vector of length 2 for y-axis limits. Use <code>NA</code> for
-auto-scaling (default is <code>c(0, NA)</code>).</p></dd>
+auto-scaling (default is <code>c(NA, NA)</code>). A fixed lower limit of <code>0</code> would clip
+the negative values of <code>plot_type = "diff"</code> and <code>"ratio"</code>, which are the
+features whose CV the normalization reduced.</p></dd>
 
 
 <dt id="arg-cols-page">cols_page<a class="anchor" aria-label="anchor" href="#arg-cols-page"></a></dt>

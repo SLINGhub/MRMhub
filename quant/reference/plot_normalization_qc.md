@@ -31,8 +31,8 @@ plot_normalization_qc(
   filter_data = FALSE,
   include_qualifier = FALSE,
   cv_threshold_value = 25,
-  x_lim = c(0, NA_real_),
-  y_lim = c(0, NA_real_),
+  x_lim = c(NA_real_, NA_real_),
+  y_lim = c(NA_real_, NA_real_),
   cols_page = 5,
   point_size = 1,
   point_alpha = 0.5,
@@ -100,12 +100,14 @@ plot_normalization_qc(
 - x_lim:
 
   Numeric vector of length 2 for x-axis limits. Use `NA` for
-  auto-scaling (default is `c(0, NA)`).
+  auto-scaling (default is `c(NA, NA)`).
 
 - y_lim:
 
   Numeric vector of length 2 for y-axis limits. Use `NA` for
-  auto-scaling (default is `c(0, NA)`).
+  auto-scaling (default is `c(NA, NA)`). A fixed lower limit of `0`
+  would clip the negative values of `plot_type = "diff"` and `"ratio"`,
+  which are the features whose CV the normalization reduced.
 
 - cols_page:
 
