@@ -513,6 +513,18 @@ check_var_in_dataset <- function(table, variable) {
       call = NULL
     ))
   }
+  # Catch-all: the special cases above only cover a subset of the variables
+  # callers arg_match (e.g. save_dataset_csv / save_report_xlsx accept
+  # conc_beforecal). Without this, an unhandled-but-absent variable passed here
+  # silently, then failed deep in dplyr. The `_before` family is excluded:
+  # plotting callers (e.g. plot_runscatter) validate it themselves with a more
+  # specific "run drift/batch correction first" message this would shadow.
+  if (!variable %in% names(table) && !grepl("_before$", variable)) {
+    cli_abort(cli::col_red(
+      "{.val {variable}} is not available in the dataset. Please process the data or choose another variable.",
+      call = NULL
+    ))
+  }
 }
 
 #' Get the start and end analysis numbers of specified batches

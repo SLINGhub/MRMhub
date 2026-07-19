@@ -824,3 +824,20 @@ test_that("link_data_metadata warns when valid_feature is NA (not silently dropp
     "valid_feature"
   )
 })
+
+# check_var_in_dataset special-cased only 8 variables and silently passed the
+# rest (rt, fwhm, conc_beforecal, ...) even when the column was absent, which
+# then failed deep in dplyr. It must now catch any absent variable.
+test_that("check_var_in_dataset catches an absent, non-special-cased variable", {
+  tbl <- data.frame(feature_intensity = 1, feature_rt = 2)
+  expect_error(
+    check_var_in_dataset(tbl, "feature_conc_beforecal"),
+    "conc_beforecal"
+  )
+  expect_error(
+    check_var_in_dataset(tbl, "feature_fwhm"),
+    "fwhm"
+  )
+  # a present variable still passes
+  expect_no_error(check_var_in_dataset(tbl, "feature_rt"))
+})
