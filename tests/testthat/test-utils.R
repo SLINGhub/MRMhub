@@ -119,3 +119,56 @@ test_that("check_single_pivot_value passes single values and aborts on duplicate
     "more than one value per cell"
   )
 })
+
+test_that("strip_raw_extension removes only a trailing raw-data extension", {
+  # Anchored: a genuine trailing extension is removed ...
+  expect_equal(strip_raw_extension("Study_01.d"), "Study_01")
+  expect_equal(strip_raw_extension("sample.mzML"), "sample")
+  expect_equal(strip_raw_extension("run.raw"), "run")
+  expect_equal(strip_raw_extension("a.wiff"), "a")
+  expect_equal(strip_raw_extension("a.lcd"), "a")
+  expect_equal(strip_raw_extension("a.chrom"), "a")
+  # ... but an extension-like substring earlier in the name is preserved.
+  expect_equal(strip_raw_extension("Study.data_01.d"), "Study.data_01")
+  expect_equal(strip_raw_extension("Study.data_01"), "Study.data_01")
+})
+
+test_that("strip_raw_extension handles .wiff2 (regression: metadata regex omitted it)", {
+  expect_equal(strip_raw_extension("sample.wiff2"), "sample")
+  # Not corrupted to "sample2" by an unanchored/short match.
+  expect_false(strip_raw_extension("sample.wiff2") == "sample2")
+})
+
+test_that("strip_raw_extension is case-insensitive and squish-order-independent", {
+  expect_equal(strip_raw_extension("run.MZML"), "run")
+  expect_equal(strip_raw_extension("run.D"), "run")
+  # A trailing space must not defeat the `$` anchor: squish happens first.
+  expect_equal(strip_raw_extension("Study_01.d "), "Study_01")
+  expect_equal(strip_raw_extension("  Study_01.d  "), "Study_01")
+  # Internal whitespace runs are collapsed too.
+  expect_equal(strip_raw_extension("Study  01.d"), "Study 01")
+})
+
+test_that("squish_ids normalizes named id columns and ignores absent ones", {
+  tbl <- tibble::tibble(
+    analysis_id = c(" QC  01 ", "QC 02"),
+    feature_id = c("PC  32:1", " PC 34:1"),
+    other = c("keep  me", "as is")
+  )
+  out <- squish_ids(tbl, c("analysis_id", "feature_id", "not_a_column"))
+  expect_equal(out$analysis_id, c("QC 01", "QC 02"))
+  expect_equal(out$feature_id, c("PC 32:1", "PC 34:1"))
+  # A non-id column is untouched, and an absent column name is silently skipped.
+  expect_equal(out$other, c("keep  me", "as is"))
+})
+
+test_that("squish_ids coerces non-character id columns and is a no-op on empty selection", {
+  tbl <- tibble::tibble(
+    batch_id = c(1L, 2L),
+    feature_id = factor(c("a ", " a"))
+  )
+  out <- squish_ids(tbl, c("batch_id", "feature_id"))
+  expect_equal(out$batch_id, c("1", "2"))
+  expect_equal(out$feature_id, c("a", "a")) # both collapse to one value
+  expect_identical(squish_ids(tbl, character(0)), tbl)
+})

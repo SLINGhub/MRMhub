@@ -113,6 +113,70 @@ coerce_logical_checked <- function(x, column = NULL) {
   out
 }
 
+#' Whitespace-normalize identifier columns of a table
+#'
+#' Applies [stringr::str_squish()] (trim leading/trailing, collapse internal
+#' runs) to the named identifier columns, coercing to character first so
+#' factor/numeric IDs are handled uniformly. Columns absent from `tbl` are
+#' silently skipped, so one call can cover the full ID set of any importer's
+#' table. A whitespace-only difference between an ID in the data and the same ID
+#' in the metadata otherwise causes a silent join mismatch; normalizing both
+#' sides identically is what makes `"QC  01"` match `"QC 01"` instead of failing
+#' to join. Use as a backstop -- it does not substitute for squishing the parts
+#' of a *composite* key before they are pasted together (a space adjacent to an
+#' internal separator cannot be removed after the fact).
+#'
+#' @param tbl A tibble/data.frame.
+#' @param cols Character vector of identifier column names to normalize.
+#' @return `tbl` with the present `cols` whitespace-normalized.
+#' @keywords internal
+#' @noRd
+squish_ids <- function(tbl, cols) {
+  cols <- intersect(cols, names(tbl))
+  if (length(cols) == 0) {
+    return(tbl)
+  }
+  dplyr::mutate(
+    tbl,
+    dplyr::across(
+      dplyr::all_of(cols),
+      \(x) stringr::str_squish(as.character(x))
+    )
+  )
+}
+
+#' Normalize an analysis identifier by stripping a raw-data file extension
+#'
+#' Removes a trailing raw-data extension (`.mzML`, `.d`, `.raw`, `.wiff`,
+#' `.wiff2`, `.lcd`, `.chrom`, case-insensitive) from an identifier so that IDs derived
+#' from a data-file name match those typed into metadata. The regex is
+#' **anchored** (`$`): only a genuine trailing extension is removed, never a
+#' substring such as the `.d` inside `Study.data_01.d`, which an unanchored
+#' first-match replace would corrupt into `Studyata_01.d`. The value is squished
+#' first, so a trailing space (`"Study_01.d "`) does not defeat the anchor and
+#' the strip/squish order is irrelevant.
+#'
+#' The data and metadata import paths must both route through this single helper:
+#' only identical cleaning on both sides makes the `analysis_id` inner join match
+#' instead of silently dropping rows (the metadata side historically used an
+#' unanchored regex missing `.wiff2`).
+#'
+#' @param x A character (or coercible) vector of identifiers.
+#' @return A character vector, whitespace-normalized with any trailing raw-data
+#'   extension removed.
+#' @keywords internal
+#' @noRd
+strip_raw_extension <- function(x) {
+  x <- stringr::str_squish(as.character(x))
+  stringr::str_remove(
+    x,
+    stringr::regex(
+      "\\.mzML$|\\.d$|\\.raw$|\\.wiff$|\\.wiff2$|\\.lcd$|\\.chrom$",
+      ignore_case = TRUE
+    )
+  )
+}
+
 #' Abort on a duplicated join key before it can fan out a join
 #'
 #' Defense-in-depth guard placed immediately before a join whose key must be
@@ -144,7 +208,7 @@ assert_unique_ids <- function(ids, field, table) {
 
 #' Abort when a per-key attribute lookup carries conflicting values
 #'
-#' Sibling of [assert_unique_ids()] for the importers, which build small
+#' Sibling of `assert_unique_ids()` for the importers, which build small
 #' per-analysis / per-feature attribute lookups with [dplyr::distinct()] and join
 #' them back onto every data row. A key whose attributes disagree between rows of
 #' the raw file survives `distinct()` as more than one row, so the join then
