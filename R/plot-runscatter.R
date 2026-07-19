@@ -462,7 +462,7 @@ plot_runscatter <- function(
         is.na(cap_qc_k_mad)
     ) {
       cli::cli_abort(col_red(
-        "One or more of `cap_sample_k_mad`, `cap_qc_k_mad`, and  `cap_top_n_outliers` must be a positive number when `cap_outlier = TRUE`, o."
+        "One or more of `cap_sample_k_mad`, `cap_qc_k_mad`, and `cap_top_n_outliers` must be a positive number when `cap_outliers = TRUE`."
       ))
     }
 
