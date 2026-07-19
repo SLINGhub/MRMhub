@@ -593,6 +593,15 @@ import_data_main <- function(
     ) |>
     relocate("analysis_id", "data_source")
 
+  # A file that parses (right columns) but holds no data rows would otherwise be
+  # reported as a successful import of 0 analyses. Reject it up front.
+  if (nrow(d_raw) == 0) {
+    cli::cli_abort(col_red(c(
+      "The imported {cli::qty(length(file_paths))}file{?s} contained no data rows.",
+      "i" = "Please verify the file content and that it is not empty."
+    )))
+  }
+
   d_raw$analysis_id <- str_squish(as.character(d_raw$analysis_id))
   d_raw$feature_id <- str_squish(as.character(d_raw$feature_id))
 
@@ -1385,6 +1394,17 @@ parse_plain_long_csv <- function(
 
   d_raw <- d_raw |> dplyr::rename_with(tolower)
 
+  # A ;-delimited "CSV" (common from European locales) is read as a single column
+  # with the comma delimiter, so every real column name lands in that one header.
+  # Detect it and say so, instead of failing later as "analysis_id is missing".
+  if (ncol(d_raw) == 1 && grepl("[;\t]", names(d_raw)[1])) {
+    other <- if (grepl(";", names(d_raw)[1])) "semicolon (;)" else "tab"
+    cli::cli_abort(col_red(c(
+      "The file was read as a single column using the {.val {sep}} delimiter.",
+      "i" = "It appears to be {other}-delimited. Please re-export it as a comma-delimited UTF-8 CSV (e.g. {.val CSV UTF-8 (Comma delimited)} in Excel, or the equivalent in your tool)."
+    )))
+  }
+
   if (is.null(column_mapping)) {
     column_mapping <- c(
       "analysis_id" = "analysis_id",
@@ -1683,8 +1703,27 @@ parse_plain_wide_csv <- function(
     name_repair = "minimal"
   )
 
+  # Drop stray columns with a blank header (e.g. a trailing comma from an Excel
+  # export). `name_repair = "minimal"` keeps them as "", which would otherwise
+  # become an empty-named feature or crash the later column subsetting.
+  blank_cols <- which(is.na(names(d)) | trimws(names(d)) == "")
+  if (length(blank_cols) > 0) {
+    cli::cli_alert_warning(col_yellow(
+      "Dropped {length(blank_cols)} column{?s} with an empty header from the data file."
+    ))
+    d <- d[-blank_cols]
+  }
+
   if (!is.null(analysis_id_col) && !is.na(analysis_id_col)) {
-    # a column name was provided as analysis_id
+    # a column name or index was provided as analysis_id
+    if (is.numeric(analysis_id_col)) {
+      if (analysis_id_col < 1 || analysis_id_col > ncol(d)) {
+        cli::cli_abort(col_red(
+          "Column index set via `analysis_id_col` is out of range. Please verify the value or use the column name."
+        ))
+      }
+      analysis_id_col <- names(d)[analysis_id_col]
+    }
     if (!analysis_id_col %in% names(d)) {
       cli::cli_abort(col_red(
         "No column with the name `{analysis_id_col}` found in the data file."

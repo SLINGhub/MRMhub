@@ -940,6 +940,50 @@ test_that("Returns error when plain csv file with analysis_id_col  = NA and no a
 })
 
 
+test_that("A ;-delimited CSV is rejected with a clear delimiter message", {
+  f <- withr::local_tempfile(fileext = ".csv")
+  writeLines(c("analysis_id;feature_id;feature_area", "A1;PC 32:1;100"), f)
+  expect_error(
+    parse_plain_long_csv(f, silent = TRUE),
+    regexp = "semicolon"
+  )
+})
+
+test_that("A file with no data rows is rejected instead of reported as a success", {
+  f <- withr::local_tempfile(fileext = ".csv")
+  writeLines("analysis_id,feature_id,feature_area", f) # header only, no data
+  expect_error(
+    import_data_csv_long(MRMhubExperiment(), path = f),
+    regexp = "no\\s+data\\s+rows"
+  )
+})
+
+test_that("parse_plain_wide_csv accepts a numeric analysis_id_col index", {
+  f <- withr::local_tempfile(fileext = ".csv")
+  writeLines(c("sample,PC 32:1,PC 34:1", "A1,10,20", "A2,30,40"), f)
+  d <- parse_plain_wide_csv(f, variable_name = "feature_area", analysis_id_col = 1)
+  expect_setequal(unique(d$analysis_id), c("A1", "A2"))
+  expect_setequal(unique(d$feature_id), c("PC 32:1", "PC 34:1"))
+  # an out-of-range index gives a clear message, not a "column not found"
+  expect_error(
+    parse_plain_wide_csv(f, variable_name = "feature_area", analysis_id_col = 99),
+    regexp = "out\\s+of\\s+range"
+  )
+})
+
+test_that("parse_plain_wide_csv drops a stray empty-header column with a warning", {
+  f <- withr::local_tempfile(fileext = ".csv")
+  writeLines(c("analysis_id,PC 32:1,PC 34:1,", "A1,10,20,", "A2,30,40,"), f)
+  expect_message(
+    d <- suppressWarnings(
+      parse_plain_wide_csv(f, variable_name = "feature_area")
+    ),
+    regexp = "empty\\s+header"
+  )
+  expect_setequal(unique(d$feature_id), c("PC 32:1", "PC 34:1"))
+  expect_false("" %in% d$feature_id)
+})
+
 test_that("Parses plain csv file with metadata and defined analysis_id_col, with correct data types", {
   d <- parse_plain_wide_csv(
     test_path("testdata/batch-effect/batch_effect-simdata-diff_firstcol.csv"),
