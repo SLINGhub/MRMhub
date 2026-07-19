@@ -455,7 +455,7 @@ print_assertion_summary <- function(
       if ("annot_analyses" %in% names(metadata_new)) {
         cli::cli_abort(
           message = cli::col_red(
-            "Not all analyses listed in metadata are present in the data. Please verify data or set `excl_unmatched_analyses = TRUE`"
+            "Not all analyses in the data have corresponding metadata. Please verify data or set `excl_unmatched_analyses = TRUE`"
           ),
           trace = NULL,
           call = caller_env()
@@ -1167,6 +1167,14 @@ add_metadata <- function(
         pull(.data$analysis_id)
     ) |>
       length()
+    # Zero matches means the metadata belongs to a different dataset (or the
+    # `analysis_id`s are formatted differently); with excl_unmatched_analyses it
+    # would otherwise silently exclude every analysis and report "0 analyses".
+    if (n_match == 0) {
+      cli::cli_abort(col_red(
+        "None of the analyses in the data match the imported analysis metadata. Please verify the `analysis_id`s and that the correct metadata file was used."
+      ))
+    }
     cli_alert_success(col_green(glue::glue(
       "Analysis metadata associated with {n_match} analyses."
     )))

@@ -171,8 +171,32 @@ test_that("Raise data assertion warning and stops with not all analyses defined 
       ),
       excl_unmatched_analyses = FALSE
     ),
-    "Not all analyses listed"
+    "Not all analyses in the data have corresponding metadata"
   )
+})
+
+test_that("Metadata matching zero analyses errors instead of reporting green 0-match success (bug 3.3)", {
+  mexp <- mrmhub::MRMhubExperiment()
+  mexp <- mrmhub::import_data_masshunter(
+    mexp,
+    path = testthat::test_path(
+      "testdata/masshunter/23_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq_notimestamp.csv"
+    ),
+    import_metadata = FALSE
+  )
+  mexp_ok <- mrmhub::import_metadata_msorganiser(
+    mexp,
+    path = testthat::test_path(
+      "testdata/metadata/MRMhub_Metadata_Template_191_20240226_MHQuant_S1P_V1.xlsx"
+    ),
+    excl_unmatched_analyses = FALSE
+  )
+  # Rename every metadata analysis_id so none matches the data (100% unmatched).
+  meta <- list(
+    annot_analyses = mexp_ok@annot_analyses |>
+      dplyr::mutate(analysis_id = paste0("nomatch_", .data$analysis_id))
+  )
+  expect_error(add_metadata(mexp, meta), "None of the analyses in the data match")
 })
 
 test_that("Shows analyses defined in metadata but missing in data as Note in assertion table, instead of Warning and proceeds", {
