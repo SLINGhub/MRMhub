@@ -98,6 +98,21 @@ file pair should appear only once to avoid duplication.
 The \code{na_strings} parameter allows specifying character strings that should
 be interpreted as \code{NA}, ensuring proper handling of missing values.
 }
+\section{Identifier normalization}{
+
+All imported identifiers are whitespace-normalized on import: leading and
+trailing spaces are removed and internal runs of whitespace are collapsed to
+a single space (for example \code{"QC  01"} becomes \code{"QC 01"}). Raw-data file
+extensions (\code{.mzML}, \code{.d}, \code{.raw}, \code{.wiff}, \code{.wiff2}, \code{.lcd}, \code{.chrom},
+case-insensitive) are stripped from \code{analysis_id}.
+
+The same normalization is applied to both the data and the metadata, which is
+what lets an \code{analysis_id} typed into metadata match the one derived from a
+data-file name instead of silently failing to join. A consequence is that two
+identifiers differing only by whitespace collapse to one and are then reported
+as duplicates.
+}
+
 \examples{
 file_path <- system.file("extdata", "plain_long_dataset.csv", package = "mrmhub")
 mexp <- MRMhubExperiment()

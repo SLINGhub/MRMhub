@@ -39,6 +39,7 @@
 #'
 #' print(mexp)
 #'
+#' @template id_squish
 #' @export
 
 import_data_masshunter <- function(
@@ -135,6 +136,7 @@ import_data_masshunter <- function(
 #'   import_metadata = TRUE
 #' )
 #' print(mexp)
+#' @template id_squish
 #' @export
 import_data_skyline <- function(
   data = NULL,
@@ -200,6 +202,7 @@ import_data_skyline <- function(
 #'   import_metadata = TRUE)
 #
 #' print(mexp)
+#' @template id_squish
 #' @export
 import_data_mrmhub <- function(
   data = NULL,
@@ -351,6 +354,7 @@ import_data_csv <- function(
 #' )
 #' print(mexp)
 #'
+#' @template id_squish
 #' @export
 
 import_data_csv_wide <- function(
@@ -497,6 +501,7 @@ import_data_csv_wide <- function(
 #'
 #' print(mexp)
 #'
+#' @template id_squish
 #' @export
 
 import_data_csv_long <- function(
@@ -602,8 +607,28 @@ import_data_main <- function(
     )))
   }
 
-  d_raw$analysis_id <- str_squish(as.character(d_raw$analysis_id))
-  d_raw$feature_id <- str_squish(as.character(d_raw$feature_id))
+  # Backstop: whitespace-normalize every id/category column an importer may
+  # carry, so a stray internal or trailing space cannot silently split a group
+  # or fail a downstream join. `squish_ids()` skips columns not present, so the
+  # metadata-only ids listed here are simply no-ops at this stage. This does NOT
+  # replace squishing composite-key parts before they are pasted (Skyline unite).
+  d_raw <- squish_ids(
+    d_raw,
+    c(
+      "analysis_id",
+      "feature_id",
+      "raw_data_filename",
+      "qc_type",
+      "batch_id",
+      "feature_class",
+      "sample_id",
+      "analyte_id",
+      "curve_id",
+      "istd_feature_id",
+      "quant_istd_feature_id",
+      "interference_feature_id"
+    )
+  )
 
   if (!"analysis_order" %in% names(d_raw)) {
     d_runorder <- d_raw |>
@@ -1093,14 +1118,11 @@ parse_masshunter_csv <- function(
       )
     ) |>
     dplyr::mutate(
-      # Strip only a trailing `.d` extension (case-insensitive). The previous
-      # unanchored first-match str_replace corrupted any name containing ".d"
-      # earlier in the string (e.g. "Study.data_01.d"), producing a wrong
-      # analysis_id and even collisions between distinct files.
-      raw_data_filename = stringr::str_remove(
-        .data$raw_data_filename,
-        stringr::regex("\\.d$", ignore_case = TRUE)
-      )
+      # Squish-then-strip a trailing raw-data extension via the shared helper.
+      # An unanchored first-match replace corrupted any name containing ".d"
+      # earlier in the string (e.g. "Study.data_01.d"); squishing first also
+      # keeps a trailing space ("Study_01.d ") from defeating the `$` anchor.
+      raw_data_filename = strip_raw_extension(.data$raw_data_filename)
     ) |>
     dplyr::mutate(dplyr::across(where(is.character), stringr::str_squish)) |>
     dplyr::relocate(any_of("sample_name"), .after = "raw_data_filename")
@@ -1276,7 +1298,15 @@ apply_skyline_transition_ids <- function(d_raw, args) {
           !any(is.na(d_raw$method_precursor_name)) &&
           !any(is.na(d_raw$method_product_name))
       ) {
+        # Squish the components BEFORE unite(): a space adjacent to the internal
+        # "_" separator (e.g. "Cer_ 607.5_264.3") cannot be removed by squishing
+        # the composite afterwards, so whitespace variants would stay distinct.
         d_raw <- d_raw |>
+          squish_ids(c(
+            "feature_id",
+            "method_precursor_name",
+            "method_product_name"
+          )) |>
           unite(
             "feature_id",
             c("feature_id", "method_precursor_name", "method_product_name"),
@@ -1297,6 +1327,11 @@ apply_skyline_transition_ids <- function(d_raw, args) {
           !any(is.na(d_raw$method_product_mz))
       ) {
         d_raw <- d_raw |>
+          squish_ids(c(
+            "feature_id",
+            "method_precursor_mz",
+            "method_product_mz"
+          )) |>
           unite(
             "feature_id",
             c("feature_id", "method_precursor_mz", "method_product_mz"),
@@ -1469,13 +1504,7 @@ parse_plain_long_csv <- function(
 
   d_raw <- d_raw |>
     dplyr::mutate(
-      analysis_id = stringr::str_remove(
-        .data$analysis_id,
-        stringr::regex(
-          "\\.mzML$|\\.d$|\\.raw$|\\.wiff$|\\.wiff2$|\\.lcd$",
-          ignore_case = TRUE
-        )
-      )
+      analysis_id = strip_raw_extension(.data$analysis_id)
     )
 
   # 2. Check for unmapped columns
@@ -1567,12 +1596,10 @@ parse_plain_long_csv <- function(
       "feature_class",
       "istd_feature_id"
     ))) |>
-    dplyr::mutate(
-      dplyr::across(
-        any_of(c("feature_id", "istd_feature_id")),
-        ~ stringr::str_squish(as.character(.))
-      )
-    ) |>
+    # Squish ALL character columns before distinct(), as d_sample does above: a
+    # whitespace variant of feature_class (not just the ids) otherwise survives
+    # dedup as a second row for one feature_id and trips the consistency guard.
+    dplyr::mutate(dplyr::across(where(is.character), stringr::str_squish)) |>
     dplyr::distinct()
 
   # Both lookups are joined onto every data row below, so each must hold exactly

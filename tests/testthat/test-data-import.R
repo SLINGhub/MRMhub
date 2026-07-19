@@ -415,7 +415,9 @@ test_that("Parses nested MH Quant .csv file in UTF-8 format with different langu
 
 test_that("Parses nested MH Quant .csv file with target (expected) RT and peak RT and multiple Qualifier per analyte", {
   d <- parse_masshunter_csv(
-    test_path("testdata/masshunter/19_Testdata_MHQuant_MultipleQUAL_with_expectedRT.csv"),
+    test_path(
+      "testdata/masshunter/19_Testdata_MHQuant_MultipleQUAL_with_expectedRT.csv"
+    ),
     expand_qualifier_names = TRUE
   )
   expect_equal(d[[1, "feature_rt"]], 6.649)
@@ -424,7 +426,9 @@ test_that("Parses nested MH Quant .csv file with target (expected) RT and peak R
 
 test_that("Parses nested MH Quant .csv file with special characters (e.g. !@#$%^) in feature names", {
   d <- parse_masshunter_csv(
-    test_path("testdata/masshunter/20_Testdata_MHQuant_withSpecialCharsInFeatures.csv"),
+    test_path(
+      "testdata/masshunter/20_Testdata_MHQuant_withSpecialCharsInFeatures.csv"
+    ),
     expand_qualifier_names = TRUE
   )
   expect_equal(d[[1, "feature_rt"]], 6.649)
@@ -444,7 +448,9 @@ test_that("Parses nested MH Quant .csv file with special characters (e.g. !@#$%^
 
 test_that("Parses nested MH Quant .csv with . \ | in feature names", {
   d <- parse_masshunter_csv(
-    test_path("testdata/masshunter/21_Testdata_MHQuant_with_dots_InFeatures.csv"),
+    test_path(
+      "testdata/masshunter/21_Testdata_MHQuant_with_dots_InFeatures.csv"
+    ),
     expand_qualifier_names = TRUE
   )
   expect_equal(d[[1, "feature_rt"]], 3.422)
@@ -642,7 +648,9 @@ test_that("Imports MH with Calc. Conc or Final Conc. and Exp. Conc missing Name 
     expect_warning(
       mexp <- import_data_masshunter(
         mexp,
-        test_path("testdata/masshunter/QuantLCMS_Example_MassHunter_FinalConc.csv"),
+        test_path(
+          "testdata/masshunter/QuantLCMS_Example_MassHunter_FinalConc.csv"
+        ),
         expand_qualifier_names = TRUE,
         conc_column = "conc_calc"
       ),
@@ -662,7 +670,9 @@ test_that("Imports MH with Calc. Conc or Final Conc. and Exp. Conc missing Name 
     expect_warning(
       mexp <- import_data_masshunter(
         mexp,
-        test_path("testdata/masshunter/QuantLCMS_Example_MassHunter_CalcConc.csv"),
+        test_path(
+          "testdata/masshunter/QuantLCMS_Example_MassHunter_CalcConc.csv"
+        ),
         expand_qualifier_names = TRUE,
         conc_column = "conc_calc"
       ),
@@ -682,7 +692,9 @@ test_that("Imports MH with Calc. Conc or Final Conc. and Exp. Conc missing Name 
     expect_warning(
       mexp <- import_data_masshunter(
         mexp,
-        test_path("testdata/masshunter/QuantLCMS_Example_MassHunter-NoHdrSampleName.csv"),
+        test_path(
+          "testdata/masshunter/QuantLCMS_Example_MassHunter-NoHdrSampleName.csv"
+        ),
         expand_qualifier_names = TRUE
       ),
       "Unrecognized qc_type"
@@ -858,7 +870,9 @@ test_that("parse_masshunter_csv(expand_qualifier_names = FALSE) output is stable
 
 test_that("Parses plain csv file with metadata with correct column names and autodetecting analysis_id", {
   d <- parse_plain_wide_csv(
-    test_path("testdata/batch-effect/batch_effect-simdata-u1000-sd100_7batches.csv"),
+    test_path(
+      "testdata/batch-effect/batch_effect-simdata-u1000-sd100_7batches.csv"
+    ),
     variable_name = "conc",
     import_metadata = TRUE
   )
@@ -905,7 +919,9 @@ test_that("Returns error when parse_plain_csv imports other than csv", {
 test_that("Returns error when plain csv file with columns containing text is read, when import_metadata = FALSE", {
   expect_message(
     parse_plain_wide_csv(
-      test_path("testdata/batch-effect/batch_effect-simdata-u1000-sd100_7batches.csv"),
+      test_path(
+        "testdata/batch-effect/batch_effect-simdata-u1000-sd100_7batches.csv"
+      ),
       variable_name = "conc",
       import_metadata = FALSE
     ),
@@ -917,7 +933,9 @@ test_that("Returns error when plain csv file with columns containing text is rea
 test_that("Returns error when plain csv file with analysis_id_col set that does not exist", {
   expect_error(
     parse_plain_wide_csv(
-      test_path("testdata/batch-effect/batch_effect-simdata-u1000-sd100_7batches.csv"),
+      test_path(
+        "testdata/batch-effect/batch_effect-simdata-u1000-sd100_7batches.csv"
+      ),
       analysis_id_col = "sample_id",
       variable_name = "conc",
       import_metadata = TRUE
@@ -961,12 +979,20 @@ test_that("A file with no data rows is rejected instead of reported as a success
 test_that("parse_plain_wide_csv accepts a numeric analysis_id_col index", {
   f <- withr::local_tempfile(fileext = ".csv")
   writeLines(c("sample,PC 32:1,PC 34:1", "A1,10,20", "A2,30,40"), f)
-  d <- parse_plain_wide_csv(f, variable_name = "feature_area", analysis_id_col = 1)
+  d <- parse_plain_wide_csv(
+    f,
+    variable_name = "feature_area",
+    analysis_id_col = 1
+  )
   expect_setequal(unique(d$analysis_id), c("A1", "A2"))
   expect_setequal(unique(d$feature_id), c("PC 32:1", "PC 34:1"))
   # an out-of-range index gives a clear message, not a "column not found"
   expect_error(
-    parse_plain_wide_csv(f, variable_name = "feature_area", analysis_id_col = 99),
+    parse_plain_wide_csv(
+      f,
+      variable_name = "feature_area",
+      analysis_id_col = 99
+    ),
     regexp = "out\\s+of\\s+range"
   )
 })
@@ -1164,7 +1190,9 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
   expect_error(
     mexp <- import_data_csv(
       data = mexp,
-      path = test_path("testdata/plain-wide/plain_wide_dataset_duplicate_analysisid.csv"),
+      path = test_path(
+        "testdata/plain-wide/plain_wide_dataset_duplicate_analysisid.csv"
+      ),
       variable_name = "conc",
       analysis_id_col = "analysis_id",
       import_metadata = TRUE,
@@ -1226,7 +1254,9 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
   expect_error(
     mexp <- import_data_csv(
       data = mexp,
-      path = test_path("testdata/plain-wide/plain_wide_dataset_duplicate_orderid.csv"),
+      path = test_path(
+        "testdata/plain-wide/plain_wide_dataset_duplicate_orderid.csv"
+      ),
       variable_name = "conc",
       analysis_id_col = "analysis_id",
       import_metadata = TRUE
@@ -1238,7 +1268,9 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
   expect_error(
     mexp <- import_data_csv(
       data = mexp,
-      path = test_path("testdata/plain-wide/plain_wide_dataset_textorderid.csv"),
+      path = test_path(
+        "testdata/plain-wide/plain_wide_dataset_textorderid.csv"
+      ),
       variable_name = "conc",
       analysis_id_col = "analysis_id",
       import_metadata = TRUE
@@ -1279,7 +1311,9 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
   expect_message(
     mexp2 <- import_data_csv(
       data = mexp,
-      path = test_path("testdata/plain-wide/plain_wide_dataset2_10rows_orderid.csv"),
+      path = test_path(
+        "testdata/plain-wide/plain_wide_dataset2_10rows_orderid.csv"
+      ),
       variable_name = "area",
       import_metadata = TRUE
     ),
@@ -1322,7 +1356,9 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
   expect_error(
     mexp <- import_data_csv(
       data = mexp,
-      path = test_path("testdata/plain-wide/plain_wide_dataset2_10rows_orderidtext.csv"),
+      path = test_path(
+        "testdata/plain-wide/plain_wide_dataset2_10rows_orderidtext.csv"
+      ),
       variable_name = "conc",
       analysis_id_col = "analysis_id",
       import_metadata = TRUE,
@@ -1454,7 +1490,9 @@ test_that("Skyline long-format handles errors", {
     fixed = TRUE
   )
 
-  path <- test_path("testdata/skyline/Skyline_MoleculeTransitionResults_1_noMZ.csv")
+  path <- test_path(
+    "testdata/skyline/Skyline_MoleculeTransitionResults_1_noMZ.csv"
+  )
   mexp <- MRMhubExperiment()
   expect_error(
     mexp <- import_data_skyline(
@@ -1466,7 +1504,9 @@ test_that("Skyline long-format handles errors", {
     fixed = TRUE
   )
 
-  path <- test_path("testdata/skyline/Skyline_MoleculeTransitionResults_1_noNames.csv")
+  path <- test_path(
+    "testdata/skyline/Skyline_MoleculeTransitionResults_1_noNames.csv"
+  )
   mexp <- MRMhubExperiment()
   expect_error(
     mexp <- import_data_skyline(
@@ -1665,4 +1705,52 @@ test_that("an analysis_id with conflicting qc_type values aborts naming the real
 
   expect_error(mrmhub::parse_plain_long_csv(tmp, silent = TRUE), "qc_type")
   expect_error(mrmhub::parse_plain_long_csv(tmp, silent = TRUE), "S01")
+})
+
+test_that("apply_skyline_transition_ids squishes components before unite (bug 2.2)", {
+  # A leading/internal space in a component cannot be removed by squishing the
+  # composite AFTER unite() -- it sits next to the internal "_" separator. So the
+  # two rows below must collapse to ONE feature_id (they are the same transition).
+  d_raw <- tibble::tibble(
+    feature_id = c("Cer", "Cer"),
+    method_precursor_name = c("607.5", " 607.5"),
+    method_product_name = c("264.3", "264.3 "),
+    analysis_id = c("a1", "a2")
+  )
+  out <- apply_skyline_transition_ids(
+    d_raw,
+    list(transition_id_columns = "name")
+  )
+  expect_equal(unique(out$feature_id), "Cer_607.5_264.3")
+
+  # Same for the m/z branch.
+  d_mz <- tibble::tibble(
+    feature_id = c("Cer", "Cer"),
+    method_precursor_mz = c("607.5", "607.5 "),
+    method_product_mz = c("264.3", " 264.3"),
+    analysis_id = c("a1", "a2")
+  )
+  out_mz <- apply_skyline_transition_ids(
+    d_mz,
+    list(transition_id_columns = "mz")
+  )
+  expect_equal(unique(out_mz$feature_id), "Cer_607.5_264.3")
+})
+
+test_that("a feature_class differing only by internal whitespace does not fan out or abort (bug 2.3)", {
+  tmp <- withr::local_tempfile(fileext = ".csv")
+  writeLines(
+    c(
+      "analysis_id,qc_type,feature_id,feature_class,area",
+      "S01,SPL,PC 32:1,Lyso PC,100",
+      "S02,SPL,PC 32:1,Lyso  PC,200"
+    ),
+    tmp
+  )
+  # feature_id is squished but feature_class was not, so the internal double
+  # space survived distinct() -> two rows for one feature_id -> spurious
+  # "Inconsistent feature_id" abort. Squishing feature_class collapses them.
+  expect_no_error(res <- mrmhub::parse_plain_long_csv(tmp, silent = TRUE))
+  expect_equal(unique(res$feature_id), "PC 32:1")
+  expect_equal(unique(res$feature_class), "Lyso PC")
 })

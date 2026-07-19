@@ -67,6 +67,21 @@ and include \verb{Replicate Name}, \verb{Molecule Name}, and either
 \verb{Precursor Mz}/\verb{Product Mz} or \verb{Precursor Name}/\verb{Product Name} columns.
 At least one feature variable, such as \code{Area} or \code{RT}, must also be exported.
 }
+\section{Identifier normalization}{
+
+All imported identifiers are whitespace-normalized on import: leading and
+trailing spaces are removed and internal runs of whitespace are collapsed to
+a single space (for example \code{"QC  01"} becomes \code{"QC 01"}). Raw-data file
+extensions (\code{.mzML}, \code{.d}, \code{.raw}, \code{.wiff}, \code{.wiff2}, \code{.lcd}, \code{.chrom},
+case-insensitive) are stripped from \code{analysis_id}.
+
+The same normalization is applied to both the data and the metadata, which is
+what lets an \code{analysis_id} typed into metadata match the one derived from a
+data-file name instead of silently failing to join. A consequence is that two
+identifiers differing only by whitespace collapse to one and are then reported
+as duplicates.
+}
+
 \examples{
 mexp <- MRMhubExperiment()
 file_path <- system.file("extdata", "Skyline_MoleculeTransitionResults.csv", package = "mrmhub")

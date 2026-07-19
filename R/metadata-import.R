@@ -117,6 +117,7 @@ get_metadata_batches <- function(annot_analyses) {
 #'
 #' print(mexp)
 #'
+#' @template id_squish
 #' @export
 import_metadata_msorganiser <- function(
   data = NULL,
@@ -169,6 +170,7 @@ import_metadata_msorganiser <- function(
 #'   excl_unmatched_analyses = TRUE)
 #'
 #' print(mexp)
+#' @template id_squish
 #' @export
 #'
 import_metadata_analyses <- function(
@@ -206,6 +208,7 @@ import_metadata_analyses <- function(
 #' @param sheet Defines the sheet name in case an Excel file is provided.
 #' @param ignore_warnings Ignore warnings from data validation and proceed with importing metadata
 #' @return An updated `MRMhubExperiment` object
+#' @template id_squish
 #' @export
 #'
 import_metadata_features <- function(
@@ -243,6 +246,7 @@ import_metadata_features <- function(
 #' @param sheet Defines the sheet name in case an Excel file is provided.
 #' @param ignore_warnings Ignore warnings from data validation and proceed with importing metadata
 #' @return An updated `MRMhubExperiment` object
+#' @template id_squish
 #' @export
 #'
 import_metadata_istds <- function(
@@ -276,6 +280,7 @@ import_metadata_istds <- function(
 #' @param sheet Defines the sheet name in case an Excel file is provided.
 #' @param ignore_warnings Ignore warnings from data validation and proceed with importing metadata
 #' @return An updated `MRMhubExperiment` object
+#' @template id_squish
 #' @export
 #'
 import_metadata_responsecurves <- function(
@@ -308,6 +313,7 @@ import_metadata_responsecurves <- function(
 #' @param sheet Defines the sheet name in case an Excel file is provided.
 #' @param ignore_warnings Ignore warnings from data validation and proceed with importing metadata
 #' @return An updated `MRMhubExperiment` object
+#' @template id_squish
 #' @export
 #'
 import_metadata_qcconcentrations <- function(
@@ -1792,11 +1798,7 @@ clean_analysis_metadata <- function(d_analyses) {
     mutate(
       batch_id = str_squish(as.character(.data$batch_id)),
       remarks = str_squish(as.character(.data$remarks)),
-      analysis_id = stringr::str_squish(as.character(.data$analysis_id)),
-      analysis_id = stringr::str_remove(
-        .data$analysis_id,
-        stringr::regex("\\.mzML|\\.d|\\.raw|\\.wiff|\\.lcd", ignore_case = TRUE)
-      ),
+      analysis_id = strip_raw_extension(.data$analysis_id),
       sample_id = stringr::str_squish(as.character(.data$sample_id)),
       replicate_no = coerce_checked(
         .data$replicate_no,
@@ -1812,6 +1814,10 @@ clean_analysis_metadata <- function(d_analyses) {
         "no" = FALSE,
         "false" = FALSE
       )[tolower(stringr::str_squish(as.character(.data$valid_analysis)))]),
+      # Squish before the alias/known-set tests: the data side squishes qc_type,
+      # so an internal double space (" Sample", "B QC") must be collapsed here
+      # too or it fails the `== "Sample"` alias and drops to NA at factor().
+      qc_type = stringr::str_squish(as.character(.data$qc_type)),
       qc_type = if_else(
         .data$qc_type == "Sample" | is.na(.data$qc_type),
         "SPL",
@@ -1819,7 +1825,7 @@ clean_analysis_metadata <- function(d_analyses) {
       ),
       annot_order_num = dplyr::row_number()
     ) |>
-    mutate(across(where(is.character), str_trim)) |>
+    mutate(across(where(is.character), str_squish)) |>
     ungroup()
 
   # Warn about qc_type values outside the known set. Custom values are permitted
@@ -2004,7 +2010,7 @@ clean_feature_metadata <- function(d_features) {
       curve_fit_weighting = stringr::str_squish(.data$curve_fit_weighting),
       remarks = as.character(.data$remarks)
     ) |>
-    mutate(across(where(is.character), str_trim)) |>
+    mutate(across(where(is.character), str_squish)) |>
     dplyr::select(
       "feature_id",
       "feature_class",
@@ -2125,11 +2131,7 @@ clean_response_metadata <- function(d_rqc) {
 
   d_rqc <- d_rqc |>
     dplyr::mutate(
-      analysis_id = stringr::str_remove(
-        .data$analysis_id,
-        stringr::regex("\\.mzML|\\.d|\\.raw|\\.wiff|\\.lcd", ignore_case = TRUE)
-      ),
-      analysis_id = stringr::str_squish(as.character(.data$analysis_id)),
+      analysis_id = strip_raw_extension(.data$analysis_id),
       curve_id = stringr::str_squish(as.character(.data$curve_id)),
       analyzed_amount = coerce_checked(
         .data$analyzed_amount,
@@ -2143,7 +2145,8 @@ clean_response_metadata <- function(d_rqc) {
       "analyzed_amount",
       "analyzed_amount_unit",
       "remarks"
-    )
+    ) |>
+    dplyr::mutate(dplyr::across(where(is.character), stringr::str_squish))
   d_rqc <- dplyr::bind_rows(
     pkg.env$table_templates$annot_responsecurves_template,
     d_rqc
@@ -2185,11 +2188,7 @@ clean_qcconc_metadata <- function(d_cal) {
 
   d_cal <- d_cal |>
     dplyr::mutate(
-      sample_id = stringr::str_remove(
-        .data$sample_id,
-        stringr::regex("\\.mzML|\\.d|\\.raw|\\.wiff|\\.lcd", ignore_case = TRUE)
-      ),
-      sample_id = stringr::str_squish(as.character(.data$sample_id)),
+      sample_id = strip_raw_extension(.data$sample_id),
       analyte_id = stringr::str_squish(as.character(.data$analyte_id)),
       concentration = coerce_checked(.data$concentration, "concentration"),
       concentration_unit = stringr::str_squish(.data$concentration_unit),
@@ -2206,7 +2205,8 @@ clean_qcconc_metadata <- function(d_cal) {
       "concentration_unit",
       "include_in_analysis",
       "remarks"
-    )
+    ) |>
+    dplyr::mutate(dplyr::across(where(is.character), stringr::str_squish))
 
   if (all(is.na(d_cal$include_in_analysis))) {
     d_cal$include_in_analysis <- TRUE

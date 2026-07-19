@@ -30,3 +30,18 @@ An updated \code{MRMhubExperiment} object
 Imports response curve metadata (annotation) from a preloaded data frame or tibble via the \code{data} argument, or from data from a file (CSV or Excel) via the \code{path} argument.
 The analysis metadata must contain following columns: \code{analysis_id}, \code{curve_id}, \code{analyzed_amount} and \code{analyzed_amount_unit}.
 }
+\section{Identifier normalization}{
+
+All imported identifiers are whitespace-normalized on import: leading and
+trailing spaces are removed and internal runs of whitespace are collapsed to
+a single space (for example \code{"QC  01"} becomes \code{"QC 01"}). Raw-data file
+extensions (\code{.mzML}, \code{.d}, \code{.raw}, \code{.wiff}, \code{.wiff2}, \code{.lcd}, \code{.chrom},
+case-insensitive) are stripped from \code{analysis_id}.
+
+The same normalization is applied to both the data and the metadata, which is
+what lets an \code{analysis_id} typed into metadata match the one derived from a
+data-file name instead of silently failing to join. A consequence is that two
+identifiers differing only by whitespace collapse to one and are then reported
+as duplicates.
+}
+

@@ -684,13 +684,7 @@ parse_mztab <- function(path, silent = FALSE) {
   assays <- assays |>
     dplyr::mutate(
       raw_data_filename = .mztab_clean_location(.data$location),
-      analysis_id = stringr::str_remove(
-        .data$raw_data_filename,
-        stringr::regex(
-          "\\.(mzML|d|raw|wiff|wiff2|lcd|chrom)$",
-          ignore_case = TRUE
-        )
-      ),
+      analysis_id = strip_raw_extension(.data$raw_data_filename),
       analysis_id = dplyr::if_else(
         is.na(.data$analysis_id) | .data$analysis_id == "",
         paste0("assay_", .data$assay_no),
@@ -906,6 +900,7 @@ parse_mztab <- function(path, silent = FALSE) {
 #' mexp <- import_data_mztab(mexp, "LDA_export.mzTab")
 #' }
 #'
+#' @template id_squish
 #' @export
 import_data_mztab <- function(
   data = NULL,

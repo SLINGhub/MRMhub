@@ -196,7 +196,10 @@ test_that("Metadata matching zero analyses errors instead of reporting green 0-m
     annot_analyses = mexp_ok@annot_analyses |>
       dplyr::mutate(analysis_id = paste0("nomatch_", .data$analysis_id))
   )
-  expect_error(add_metadata(mexp, meta), "None of the analyses in the data match")
+  expect_error(
+    add_metadata(mexp, meta),
+    "None of the analyses in the data match"
+  )
 })
 
 test_that("Shows analyses defined in metadata but missing in data as Note in assertion table, instead of Warning and proceeds", {
@@ -405,6 +408,50 @@ test_that("Prepare qc concentration metadata from given table imported from an X
     clean_qcconc_metadata(tbl |> select(-"analyte_id")),
     regexp = "must have following columns"
   )
+})
+
+test_that("clean_analysis_metadata strips extensions like the data side (bug 2.1: silent join loss)", {
+  # Names the old unanchored, .wiff2-less metadata regex corrupted, so the
+  # analysis silently dropped out of the data<->metadata inner_join:
+  #  - a mid-name ".d" (inside ".data") -> "Studyata_01.d" -> no match
+  #  - ".wiff2" (absent from the metadata regex) -> "sample2"  -> no match
+  raw <- c("Study.data_01.d", "sample.wiff2", "Study_01.d ")
+  meta <- clean_analysis_metadata(data.frame(analysis_id = raw))
+
+  # Metadata side now equals what the data side produces (both route through
+  # strip_raw_extension) -> the join keys agree.
+  expect_equal(meta$analysis_id, strip_raw_extension(raw))
+  expect_equal(meta$analysis_id, c("Study.data_01", "sample", "Study_01"))
+
+  # The join no longer drops rows: data-side ids match metadata-side ids.
+  joined <- dplyr::inner_join(
+    tibble::tibble(analysis_id = strip_raw_extension(raw), x = 1:3),
+    tibble::tibble(analysis_id = meta$analysis_id, y = 1:3),
+    by = "analysis_id"
+  )
+  expect_equal(nrow(joined), 3L)
+})
+
+test_that("clean_response_metadata strips analysis_id extensions consistently (bug 2.1)", {
+  tbl <- data.frame(
+    analysis_id = c("Study.data_01.d", "sample.wiff2"),
+    curve_id = c("c1", "c1"),
+    analyzed_amount = c(1, 2),
+    analyzed_amount_unit = c("ng", "ng")
+  )
+  meta <- clean_response_metadata(tbl)
+  expect_equal(meta$analysis_id, c("Study.data_01", "sample"))
+})
+
+test_that("clean_qcconc_metadata strips sample_id extensions consistently (bug 2.1)", {
+  tbl <- data.frame(
+    sample_id = c("Study.data_01.d", "sample.wiff2"),
+    analyte_id = c("a1", "a2"),
+    concentration = c(0.1, 0.2),
+    concentration_unit = c("uM", "uM")
+  )
+  meta <- clean_qcconc_metadata(tbl)
+  expect_equal(meta$sample_id, c("Study.data_01", "sample"))
 })
 
 test_that("Add indidual metadata types to data, first analyses then features", {
@@ -835,7 +882,11 @@ test_that("metadata validation warns (overridably) on <=0 divisors, notes on mis
   )
   expect_no_error(
     suppressMessages(
-      mrmhub::import_metadata_analyses(mexp, table = df_neg, ignore_warnings = TRUE)
+      mrmhub::import_metadata_analyses(
+        mexp,
+        table = df_neg,
+        ignore_warnings = TRUE
+      )
     )
   )
 
