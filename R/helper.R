@@ -570,13 +570,13 @@ pretty_n_breaks <- function(n_panels = 1L) {
 #' Pretty continuous x/y scale
 #'
 #' Returns a ggplot2 scale (composable with `+` or `ggh4x::facetted_pos_scales`)
-#' with panel-aware break counts, adaptive labels ([.pretty_labels]: plain
+#' with panel-aware break counts, adaptive labels (`.pretty_labels()`: plain
 #' numbers, superscript scientific only for extreme magnitudes), and minor ticks.
-#' Log axes use decade breaks; add [pretty_logticks()] for the log tick marks.
+#' Log axes use decade breaks; add `pretty_logticks()` for the log tick marks.
 #' `expand` is passed straight through so callers keep their tuned axis expansion.
 #'
 #' @param log Log10 axis if `TRUE`, else linear.
-#' @param n Target number of breaks (see [pretty_n_breaks()]).
+#' @param n Target number of breaks (see `pretty_n_breaks()`).
 #' @param limits,expand,name Passed to the underlying scale unchanged.
 #' @param minor_ticks Add minor tick marks on linear axes.
 #' @keywords internal
