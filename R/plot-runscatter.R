@@ -1207,8 +1207,16 @@ runscatter_plot_pages <- function(
     if (use_index_axis && !is.null(order_map)) {
       # Compute pretty breaks in ORIGINAL analysis_order space (round numbers)
       # then map each to the nearest index for placement on the re-indexed axis.
-      orig_range <- range(order_map$analysis_order)
-      orig_breaks <- scales::breaks_pretty(n = 10)(orig_range)
+      # When plot_range zooms the axis, generate breaks over the VISIBLE window,
+      # otherwise breaks computed on the full run fall outside the zoom and the
+      # axis renders no ticks. Run-order is one wide axis, so keep ~8 ticks
+      # (a facet-panel count is too sparse to read the start/range).
+      orig_range <- if (!all(is.na(plot_range))) {
+        plot_range
+      } else {
+        range(order_map$analysis_order)
+      }
+      orig_breaks <- scales::breaks_pretty(n = 8L)(orig_range)
       orig_breaks <- orig_breaks[
         orig_breaks >= orig_range[1] & orig_breaks <= orig_range[2]
       ]
@@ -1225,7 +1233,8 @@ runscatter_plot_pages <- function(
         ggplot2::scale_x_continuous(
           breaks = idx_breaks,
           labels = orig_breaks,
-          expand = c(0.02, 0.02)
+          expand = c(0.02, 0.02),
+          guide = ggplot2::guide_axis(minor.ticks = TRUE)
         )
     }
 
@@ -1288,10 +1297,16 @@ runscatter_plot_pages <- function(
       ggplot2::ylab(label = y_label)
 
     if (log_scale) {
-      p <- p + scale_y_log10(expand = ggplot2::expansion(mult = c(0.02, 0.03)))
+      p <- p +
+        scale_y_log10(
+          labels = .pretty_labels,
+          expand = ggplot2::expansion(mult = c(0.02, 0.03))
+        ) +
+        pretty_logticks("l")
     } else {
       p <- p +
         scale_y_continuous(
+          labels = .pretty_labels,
           limits = c(y_min, y_max),
           expand = ggplot2::expansion(mult = c(0.02, 0.03))
         ) +

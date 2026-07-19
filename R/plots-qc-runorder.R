@@ -377,7 +377,6 @@ plot_runsequence <- function(
 #' @family QC plots
 #' @export
 
-# TODO: Add minor ticks to x-axis
 plot_rla_boxplot <- function(
   data = NULL,
   variable,
@@ -565,7 +564,7 @@ plot_rla_boxplot <- function(
     n_samples <- max(d_filt$analysis_order) - min(d_filt$analysis_order) + 1
     n_ticks <- n_samples / (plot_range[2] - plot_range[1]) * 10
   } else {
-    n_ticks <- 10
+    n_ticks <- 8
   }
 
   # When only remove_gaps = TRUE (not collapse_excluded), build order_map
@@ -812,7 +811,8 @@ plot_rla_boxplot <- function(
       # } else {
       #   range(d_filt$analysis_order)
       # },
-      expand = c(0.02, 0.02)
+      expand = c(0.02, 0.02),
+      guide = ggplot2::guide_axis(minor.ticks = TRUE)
     )
 
   if (show_batches) {
