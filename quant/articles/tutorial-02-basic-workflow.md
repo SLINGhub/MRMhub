@@ -242,7 +242,7 @@ for the full list of plotting functions grouped by workflow stage.
 # Detailed Excel report with multiple sheets
 save_report_xlsx(myexp, path = tempfile(fileext = ".xlsx"))
 #> Saving report to disk - please wait...
-#> ✔ The data processing report has been saved to '/tmp/Rtmpb04LRe/file2c303e3b6cf8.xlsx'.
+#> ✔ The data processing report has been saved to '/tmp/Rtmp8QVzsx/file2d7417d199d0.xlsx'.
 
 # Flat CSV with concentration values that passed QC
 save_dataset_csv(
@@ -253,7 +253,7 @@ save_dataset_csv(
   include_qualifier = FALSE,
   filter_data = TRUE
 )
-#> ✔ Concentration values for 378 analyses and 181 features have been exported to '/tmp/Rtmpb04LRe/file2c3037490e0f.csv'.
+#> ✔ Concentration values for 378 analyses and 181 features have been exported to '/tmp/Rtmp8QVzsx/file2d743ab82ad.csv'.
 
 # Save the complete object for reproducibility or sharing
 saveRDS(myexp, file = tempfile(fileext = ".rds"), compress = TRUE)
