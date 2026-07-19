@@ -145,3 +145,8 @@ test_that("Object check: include_feature_filter correctly filters the data layer
   expect_length(x_axis_labels, 1)
   expect_equal(x_axis_labels, "S1P d18:0 [M>60]")
 })
+
+# Missing check_data() let a non-MRMhubExperiment fail cryptically downstream.
+test_that("plot_qc_interferences validates the data object", {
+  expect_error(plot_qc_interferences(data = 42), "MRMhubExperiment")
+})

@@ -104,3 +104,8 @@ test_that("Object check: only_istd = FALSE correctly adds non-ISTD features to a
   # Assert that a known ISTD is also still present
   expect_true("CE 18:1 d7 (ISTD)" %in% x_axis_labels)
 })
+
+# Missing check_data() let a non-MRMhubExperiment fail cryptically downstream.
+test_that("plot_qc_matrixeffects validates the data object", {
+  expect_error(plot_qc_matrixeffects(data = 42), "MRMhubExperiment")
+})

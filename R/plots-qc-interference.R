@@ -28,6 +28,7 @@ plot_qc_interferences <- function(
   font_base_size = 8,
   angle_x = 45
 ) {
+  check_data(data)
   if (all(is.na(qc_types))) {
     qc_types <- intersect(
       data$dataset$qc_type,

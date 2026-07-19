@@ -49,6 +49,7 @@ plot_qc_matrixeffects <- function(
   font_base_size = 8,
   angle_x = 45
 ) {
+  check_data(data)
   variable <- str_remove(variable, "feature_")
   rlang::arg_match(
     variable,
