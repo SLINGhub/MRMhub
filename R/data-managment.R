@@ -833,6 +833,30 @@ link_data_metadata <- function(data = NULL, minimal_info = TRUE) {
       filter(.data$valid_feature)
   }
 
+  # Keep the exclusion slots in sync with the metadata: an analysis/feature is
+  # excluded whenever its `valid_*` flag is FALSE, regardless of how that flag was
+  # set (imported metadata or `exclude_*()`). NA when nothing is excluded, which
+  # `show()` renders as the empty-state marker. This is the single source of
+  # truth for the slots, so `exclude_*()` need not set them separately.
+  excluded_analyses <- data@annot_analyses$analysis_id[
+    !is.na(data@annot_analyses$valid_analysis) &
+      !data@annot_analyses$valid_analysis
+  ]
+  data@analyses_excluded <- if (length(excluded_analyses) > 0) {
+    excluded_analyses
+  } else {
+    NA
+  }
+  excluded_features <- data@annot_features$feature_id[
+    !is.na(data@annot_features$valid_feature) &
+      !data@annot_features$valid_feature
+  ]
+  data@features_excluded <- if (length(excluded_features) > 0) {
+    excluded_features
+  } else {
+    NA
+  }
+
   data@dataset <- dplyr::bind_rows(
     pkg.env$table_templates$dataset_template,
     data@dataset
@@ -1038,7 +1062,6 @@ exclude_analyses <- function(data = NULL, analyses, clear_existing) {
       cli::cli_alert_info(cli::col_green(
         "All exclusions removed, and thus all analyses are now included for subsequent steps. Please reprocess data."
       ))
-      data@analyses_excluded <- NA
       data@annot_analyses <- data@annot_analyses |>
         mutate(valid_analysis = TRUE)
       data <- link_data_metadata(data)
@@ -1059,20 +1082,15 @@ exclude_analyses <- function(data = NULL, analyses, clear_existing) {
     cli_alert_info(cli::col_green(
       "A total of {data@annot_analyses |> filter(!.data$valid_analysis) |> nrow()} analyses are now excluded for downstream processing. Please reprocess data."
     ))
-    data@analyses_excluded <- data@annot_analyses |>
-      filter(!.data$valid_analysis) |>
-      pull(.data$analysis_id)
   } else {
     data@annot_analyses <- data@annot_analyses |>
       mutate(valid_analysis = !(.data$analysis_id %in% analyses))
     cli_alert_info(cli::col_green(
       "{data@annot_analyses |> filter(!.data$valid_analysis) |> nrow()} analyses were excluded for downstream processing. Please reprocess data."
     ))
-    data@analyses_excluded <- data@annot_analyses |>
-      filter(!.data$valid_analysis) |>
-      pull(.data$analysis_id)
   }
 
+  # @analyses_excluded is derived from `valid_analysis` in link_data_metadata().
   data <- link_data_metadata(data)
 
   data
@@ -1107,7 +1125,6 @@ exclude_features <- function(data = NULL, features, clear_existing) {
       cli::cli_alert_info(cli::col_green(
         "All exlusions were removed, i.e. all features are included. Please reprocess data."
       ))
-      data@features_excluded <- NA
       data@annot_features <- data@annot_features |> mutate(valid_feature = TRUE)
       data <- link_data_metadata(data)
       return(data)
@@ -1126,20 +1143,15 @@ exclude_features <- function(data = NULL, features, clear_existing) {
     cli_alert_info(cli::col_green(
       "A total of {data@annot_features |> filter(!.data$valid_feature) |> nrow()} features are now excluded for downstream processing. Please reprocess data."
     ))
-    data@features_excluded <- data@annot_features |>
-      filter(!.data$valid_feature) |>
-      pull(.data$feature_id)
   } else {
     data@annot_features <- data@annot_features |>
       mutate(valid_feature = !(.data$feature_id %in% features))
     cli_alert_info(cli::col_green(
       "{data@annot_features |> filter(!.data$valid_feature) |> nrow()} features were excluded for downstream processing. Please reprocess data."
     ))
-    data@features_excluded <- data@annot_features |>
-      filter(!.data$valid_feature) |>
-      pull(.data$feature_id)
   }
 
+  # @features_excluded is derived from `valid_feature` in link_data_metadata().
   data <- link_data_metadata(data)
 
   data

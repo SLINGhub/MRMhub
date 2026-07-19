@@ -666,6 +666,30 @@ test_that("exclude_analyses excludes analyses", {
 })
 
 
+test_that("exclusion slots reflect valid_* flags set outside exclude_*()", {
+  # An exclusion applied via a metadata flag (not via exclude_analyses/
+  # exclude_features) must still populate @analyses_excluded / @features_excluded
+  # so that show() reports it (bug 3.6).
+  mexp_temp <- mexp
+  mexp_temp@annot_analyses[
+    mexp_temp@annot_analyses$analysis_id == "Longit_TQC-80%",
+  ]$valid_analysis <- FALSE
+  mexp_temp@annot_features[
+    mexp_temp@annot_features$feature_id == "PC 40:8",
+  ]$valid_feature <- FALSE
+
+  mexp_temp <- link_data_metadata(mexp_temp)
+
+  expect_equal(mexp_temp@analyses_excluded, "Longit_TQC-80%")
+  expect_equal(mexp_temp@features_excluded, "PC 40:8")
+
+  # No exclusions -> slots reset to NA.
+  mexp_none <- link_data_metadata(mexp)
+  expect_true(all(is.na(mexp_none@analyses_excluded)))
+  expect_true(all(is.na(mexp_none@features_excluded)))
+})
+
+
 test_that("exclude_features excludes features", {
   mexp_temp <- mexp
   mexp_temp@annot_features[
