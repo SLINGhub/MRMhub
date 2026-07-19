@@ -689,7 +689,7 @@ test_that("plot_qcmetrics_comparison axes render >=3 non-empty labels", {
   p_log <- plot_qcmetrics_comparison(
     data = mexp,
     x_variable = "intensity_median_bqc",
-    y_variable = "norm_intensity_median_bqc",
+    y_variable = "intensity_median_tqc",
     plot_type = "scatter",
     log_scale = TRUE,
     facet_by_class = FALSE
