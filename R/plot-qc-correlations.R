@@ -414,27 +414,24 @@ plot_feature_correlations_page <- function(d_plot, ...) {
       drop = TRUE
     )
 
+  n_breaks <- pretty_n_breaks(args$cols_page * args$rows_page)
+  axis_expand <- ggplot2::expansion(mult = c(0.01, 0.05))
   if (args$log_scale) {
     p <- p +
-      ggplot2::scale_x_log10(
-        labels = scientific_format_end,
-        expand = ggplot2::expansion(mult = c(0.01, 0.05))
-      ) +
-      ggplot2::scale_y_log10(
-        labels = scientific_format_end,
-        expand = ggplot2::expansion(mult = c(0.01, 0.05))
-      )
+      scale_pretty_x(log = TRUE, n = n_breaks, expand = axis_expand) +
+      scale_pretty_y(log = TRUE, n = n_breaks, expand = axis_expand) +
+      pretty_logticks("bl")
   } else {
     p <- p +
-      ggplot2::scale_x_continuous(
-        labels = scientific_format_end,
+      scale_pretty_x(
+        n = n_breaks,
         limits = function(x) c(0, max(x)),
-        expand = ggplot2::expansion(mult = c(0.01, 0.05))
+        expand = axis_expand
       ) +
-      ggplot2::scale_y_continuous(
-        labels = scientific_format_end,
+      scale_pretty_y(
+        n = n_breaks,
         limits = function(x) c(0, max(x)),
-        expand = ggplot2::expansion(mult = c(0.01, 0.05))
+        expand = axis_expand
       )
   }
 

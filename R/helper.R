@@ -407,66 +407,217 @@ order_chained_columns_tbl <- function(
 }
 
 
-#' Custom axis formatting function
+# ---- Shared pretty-axis helper -------------------------------------------
+# One place every plot builds its continuous axes, so break counts adapt to
+# panel size and labels stay legible instead of each plot rolling its own.
+# `plot_abundanceprofile` (plot-featureprofile.R) is the log-axis template.
+
+#' Panel-size-aware tick count
 #'
+#' More facets per page -> fewer ticks per panel, so faceted plots don't crowd
+#' or blank. Floored at 3 to keep the ">=3 non-empty labels" guarantee.
+#'
+#' @param n_panels Number of panels on the page (`rows_page * cols_page`).
 #' @keywords internal
-# scientific_format_end <- function(x) {
-#   if (length(x) == 0) return(x)
-#
-#   # Remove NAs for determining max value
-#   x_clean <- x[!is.na(x)]
-#   if (length(x_clean) == 0) return(x)
-#
-#   # Function to format with one digit
-#   format_one_digit <- function(value) {
-#     if (is.na(value)) return("")
-#     if (value == 0) return("0")
-#     # Get exponent
-#     exp <- floor(log10(abs(value)))
-#     # Get mantissa with one digit
-#     mantissa <- round(value / 10^exp, 1)
-#   }
-#
-#   # Convert to scientific notation with one digit
-#   formatted <- sapply(x, format_one_digit)
-#   formatted <- as.character(formatted)
-#   print(formatted)
-#   # Show only 0 and the highest value
-#   formatted[!(x == 0 | x == max(x_clean, na.rm = TRUE))] <- ""
-#
-#   formatted
-# }
-scientific_format_end <- function(x) {
-  if (length(x) == 0) {
-    return(character(0))
+pretty_n_breaks <- function(n_panels = 1L) {
+  if (n_panels <= 1L) {
+    6L
+  } else if (n_panels <= 4L) {
+    5L
+  } else if (n_panels <= 12L) {
+    4L
+  } else {
+    3L
   }
+}
 
-  # Remove NAs for max value check
-  x_clean <- x[!is.na(x)]
-  if (length(x_clean) == 0) {
-    return(as.character(x))
+# Adaptive axis labels: plain comma numbers, switching the *whole* axis to
+# superscript scientific (`10^n` / `m %*% 10^n`) only when a break reaches ~1e5
+# or ~1e-4. Keyed on the break VALUES, not the variable -- a CV/RT never trips
+# it, a raw intensity does -- so one formatter serves every plot and there is no
+# per-axis "is this scientific" bookkeeping to drift. Returns a list of plotmath
+# expressions in the scientific case so ggplot renders real superscripts.
+.pretty_labels <- function(x) {
+  # Switch the whole axis to superscript once a break reaches these magnitudes.
+  # 1e4 keeps CV / RT / concentration / run-order (all < 1e4) as plain numbers
+  # while high intensity/response axes (>= 1e4) read as 10^n. Tune here.
+  hi <- 1e4
+  lo <- 1e-4
+  ax <- abs(x[is.finite(x) & x != 0])
+  extreme <- length(ax) > 0L && (max(ax) >= hi || min(ax) < lo)
+  if (!extreme) {
+    return(scales::label_comma()(x))
   }
-
-  # Function to format with one-digit mantissa in scientific notation
-  format_one_digit <- function(value) {
-    if (is.na(value)) {
-      return("")
+  lapply(x, function(v) {
+    if (is.na(v)) {
+      return(NA)
     }
-    if (value == 0) {
-      return("0")
+    if (v == 0) {
+      return(0)
     }
-    exp <- floor(log10(abs(value)))
-    mantissa <- round(value / 10^exp, 1)
-    paste0(mantissa, "e", ifelse(exp >= 0, "+", ""), exp)
+    e <- floor(log10(abs(v)))
+    m <- round(v / 10^e, 1)
+    if (isTRUE(all.equal(m, 1))) {
+      bquote(10^.(e))
+    } else {
+      # centered dot (%.%) is narrower than the times sign (%*%)
+      bquote(.(m) %.% 10^.(e))
+    }
+  })
+}
+
+# Decade exponent range covering the positive limits.
+.log_decade_range <- function(limits) {
+  limits <- limits[is.finite(limits) & limits > 0]
+  if (length(limits) < 1) {
+    return(NULL)
   }
+  c(floor(log10(min(limits))), ceiling(log10(max(limits))))
+}
 
-  # Apply formatting
-  formatted <- vapply(x, format_one_digit, character(1))
+# Decade breaks (10^n) spanning the axis limits — the featureprofile template.
+.pretty_log_breaks <- function(limits) {
+  rng <- .log_decade_range(limits)
+  if (is.null(rng)) {
+    return(numeric(0))
+  }
+  10^(rng[1]:rng[2])
+}
 
-  # Show only 0 and max value
-  formatted[!(x == 0 | x == max(x_clean, na.rm = TRUE))] <- ""
+# 1:9 subdivisions between decades -> faint log gridlines.
+.pretty_log_minor <- function(limits) {
+  rng <- .log_decade_range(limits)
+  if (is.null(rng)) {
+    return(numeric(0))
+  }
+  as.vector(outer(1:9, 10^(rng[1]:rng[2])))
+}
 
-  formatted
+# Decade-padded limits guaranteeing >=3 decade breaks (>=2 decade span), so a
+# narrow-range log panel still renders >=3 clean 10^n labels. Used only when the
+# caller supplies no limits of its own.
+.pretty_log_limits <- function(limits) {
+  rng <- .log_decade_range(limits)
+  if (is.null(rng)) {
+    return(c(NA_real_, NA_real_))
+  }
+  if (rng[2] - rng[1] < 2) {
+    rng[2] <- rng[1] + 2
+  }
+  c(10^rng[1], 10^rng[2])
+}
+
+# breaks_extended targets `n`, but bumps up until >=3 breaks land in range so a
+# small panel still honours the >=3-label guarantee.
+.pretty_lin_breaks <- function(n) {
+  function(limits) {
+    for (k in seq.int(n, n + 3L)) {
+      b <- scales::breaks_extended(k)(limits)
+      if (sum(b >= limits[1] & b <= limits[2], na.rm = TRUE) >= 3L) {
+        return(b)
+      }
+    }
+    scales::breaks_extended(max(n + 3L, 5L))(limits)
+  }
+}
+
+# Builds one continuous scale for either axis; x/y differ only in the scale fn.
+.scale_pretty <- function(axis,
+                          log = FALSE,
+                          n = 5L,
+                          limits = NULL,
+                          expand = ggplot2::waiver(),
+                          name = ggplot2::waiver(),
+                          minor_ticks = TRUE) {
+  if (log) {
+    scale_fn <- if (axis == "x") {
+      ggplot2::scale_x_log10
+    } else {
+      ggplot2::scale_y_log10
+    }
+    # A fully-NA (or NULL) limits vector means "no caller limits": decade-pad so
+    # a narrow-range panel still renders >=3 clean decade labels.
+    caller_limits <- !is.null(limits) && !(is.numeric(limits) && all(is.na(limits)))
+    scale_fn(
+      name = name,
+      breaks = .pretty_log_breaks,
+      minor_breaks = .pretty_log_minor,
+      labels = .pretty_labels,
+      limits = if (caller_limits) limits else .pretty_log_limits,
+      expand = expand
+    )
+  } else {
+    scale_fn <- if (axis == "x") {
+      ggplot2::scale_x_continuous
+    } else {
+      ggplot2::scale_y_continuous
+    }
+    scale_fn(
+      name = name,
+      breaks = .pretty_lin_breaks(n),
+      labels = .pretty_labels,
+      guide = if (minor_ticks) {
+        ggplot2::guide_axis(minor.ticks = TRUE)
+      } else {
+        ggplot2::waiver()
+      },
+      limits = limits,
+      expand = expand
+    )
+  }
+}
+
+#' Pretty continuous x/y scale
+#'
+#' Returns a ggplot2 scale (composable with `+` or `ggh4x::facetted_pos_scales`)
+#' with panel-aware break counts, adaptive labels ([.pretty_labels]: plain
+#' numbers, superscript scientific only for extreme magnitudes), and minor ticks.
+#' Log axes use decade breaks; add [pretty_logticks()] for the log tick marks.
+#' `expand` is passed straight through so callers keep their tuned axis expansion.
+#'
+#' @param log Log10 axis if `TRUE`, else linear.
+#' @param n Target number of breaks (see [pretty_n_breaks()]).
+#' @param limits,expand,name Passed to the underlying scale unchanged.
+#' @param minor_ticks Add minor tick marks on linear axes.
+#' @keywords internal
+scale_pretty_x <- function(log = FALSE,
+                           n = 5L,
+                           limits = NULL,
+                           expand = ggplot2::waiver(),
+                           name = ggplot2::waiver(),
+                           minor_ticks = TRUE) {
+  .scale_pretty("x", log, n, limits, expand, name, minor_ticks)
+}
+
+#' @rdname scale_pretty_x
+#' @keywords internal
+scale_pretty_y <- function(log = FALSE,
+                           n = 5L,
+                           limits = NULL,
+                           expand = ggplot2::waiver(),
+                           name = ggplot2::waiver(),
+                           minor_ticks = TRUE) {
+  .scale_pretty("y", log, n, limits, expand, name, minor_ticks)
+}
+
+#' Styled log-tick marks for a log axis
+#'
+#' `ggh4x` (0.3.1) has no `guide_axis_logticks`, so log tick marks use
+#' [ggplot2::annotation_logticks()] as in `plot_abundanceprofile`. Add once per
+#' plot when the log scale is global.
+#'
+#' @param sides Which axes carry the ticks, e.g. `"b"`, `"l"`, `"bl"`.
+#' @keywords internal
+pretty_logticks <- function(sides = "bl") {
+  ggplot2::annotation_logticks(
+    base = 10,
+    sides = sides,
+    linewidth = 0.3,
+    colour = "grey80",
+    long = ggplot2::unit(1, "mm"),
+    mid = ggplot2::unit(0.5, "mm"),
+    short = ggplot2::unit(0.5, "mm")
+  )
 }
 
 

@@ -255,9 +255,12 @@ test_that("plot_feature_correlations  logscale", {
     return_plot = TRUE
   )
 
-  # Check that only QC samples are included
-  plot_data <- ggplot2::ggplot_build(p[[1]])$data[[3]]
-  expect_equal(plot_data[1, "label"], "r = 0.969")
+  # Check that only QC samples are included. Find the r-label layer by its
+  # column (the log branch now adds an annotation_logticks layer, so a hard
+  # index is fragile) -- see dev-notes 11d.
+  b <- ggplot2::ggplot_build(p[[1]])
+  label_layer <- which(vapply(b$data, \(x) "label" %in% names(x), logical(1)))
+  expect_equal(b$data[[label_layer]][1, "label"], "r = 0.969")
 
   expect_doppelganger_cond("plot_feature_correlations logscale", p)
 })
@@ -287,15 +290,6 @@ test_that("plot aesthetics are correctly set", {
 
   # Check line color
   expect_equal(plot_build$data[[2]]$colour[1], "blue")
-})
-
-test_that("scientific notation formatting works", {
-  x <- c(0, 10, 100, 10000)
-  formatted <- scientific_format_end(x)
-
-  expect_equal(formatted[1], "0")
-  expect_equal(formatted[2:3], c("", ""))
-  expect_match(formatted[4], "1e\\+4")
 })
 
 test_that("save plots", {
@@ -344,4 +338,42 @@ test_that("plot_feature_correlations rejects an invalid page_orientation", {
     plot_feature_correlations(mexp, page_orientation = "landscape"),
     "page_orientation"
   )
+})
+
+# Branch 5: the shared pretty-axis helper must give >=3 non-empty labels on
+# every facet axis (old scientific_format_end blanked all but 0/max).
+test_that("plot_feature_correlations axes render >=3 non-empty labels", {
+  axis_labels <- function(p, axis) {
+    b <- ggplot2::ggplot_build(p)
+    lbl <- b$layout$panel_params[[1]][[axis]]$get_labels()
+    lbl[!vapply(
+      lbl,
+      function(x) is.null(x) || (length(x) == 1 && is.na(x)) ||
+        (is.character(x) && !nzchar(x)),
+      logical(1)
+    )]
+  }
+
+  p <- plot_feature_correlations(
+    mexp,
+    variable = "area",
+    qc_types = c("BQC", "SPL", "RQC"),
+    cor_min = 0.8,
+    cor_min_neg = -0.9,
+    return_plots = TRUE
+  )
+  expect_gte(length(axis_labels(p[[1]], "x")), 3)
+  expect_gte(length(axis_labels(p[[1]], "y")), 3)
+
+  p <- plot_feature_correlations(
+    mexp,
+    variable = "area",
+    qc_types = c("BQC", "SPL", "RQC"),
+    cor_min = 0.8,
+    cor_min_neg = -0.9,
+    log_scale = TRUE,
+    return_plots = TRUE
+  )
+  expect_gte(length(axis_labels(p[[1]], "x")), 3)
+  expect_gte(length(axis_labels(p[[1]], "y")), 3)
 })

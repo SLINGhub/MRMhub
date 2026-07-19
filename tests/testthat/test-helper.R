@@ -387,3 +387,79 @@ test_that("order_chained_columns_tbl fails on duplicate from-key", {
     "Duplicate keys"
   )
 })
+
+# ---- pretty-axis helper (Branch 5) ---------------------------------------
+
+test_that("pretty_n_breaks scales tick count down as panels grow", {
+  expect_equal(pretty_n_breaks(1), 6L)
+  expect_equal(pretty_n_breaks(4), 5L)
+  expect_equal(pretty_n_breaks(9), 4L)
+  expect_equal(pretty_n_breaks(20), 3L)
+  # never below the >=3-label floor
+  expect_gte(pretty_n_breaks(100), 3L)
+})
+
+# helper: non-empty axis labels a built plot actually renders. get_labels() may
+# return character labels or `10^n` language objects (math_format), so count any
+# element that is not a lone NA.
+built_labels <- function(p, axis = "x") {
+  b <- ggplot2::ggplot_build(p)
+  lbl <- b$layout$panel_params[[1]][[axis]]$get_labels()
+  keep <- !vapply(
+    lbl,
+    function(x) is.null(x) || (length(x) == 1 && is.na(x)) ||
+      (is.character(x) && !nzchar(x)),
+    logical(1)
+  )
+  lbl[keep]
+}
+
+test_that(".pretty_labels keys on the break VALUES, not a variable name", {
+  # typical CV / RT / conc ranges -> plain comma numbers
+  expect_equal(.pretty_labels(c(0, 10, 20, 30)), c("0", "10", "20", "30"))
+  expect_equal(.pretty_labels(c(0, 30, 60, 90)), c("0", "30", "60", "90"))
+  expect_equal(.pretty_labels(c(1, 10, 100, 1000)), c("1", "10", "100", "1,000"))
+  # extreme magnitude -> superscript scientific expressions, not "e+05" strings
+  sci <- .pretty_labels(c(0, 5e5, 1e6))
+  expect_type(sci, "list")
+  expect_true(any(vapply(sci, is.call, logical(1))))
+  expect_false(any(grepl("e\\+", format(sci))))
+})
+
+test_that("scale_pretty linear labels are plain numbers for small ranges", {
+  d <- data.frame(x = c(0, 40), y = c(2, 7))
+  p <- ggplot2::ggplot(d, ggplot2::aes(x, y)) +
+    ggplot2::geom_point() +
+    scale_pretty_x(n = 5) +
+    scale_pretty_y(n = 5)
+  expect_gte(length(built_labels(p, "x")), 3)
+  expect_gte(length(built_labels(p, "y")), 3)
+  # plain numbers, no scientific "e"
+  expect_false(any(grepl("e\\+|e-", as.character(built_labels(p, "x")))))
+})
+
+test_that("scale_pretty linear labels go superscript for extreme magnitudes", {
+  d <- data.frame(x = c(0, 5e5), y = c(0, 8e5))
+  p <- ggplot2::ggplot(d, ggplot2::aes(x, y)) +
+    ggplot2::geom_point() +
+    scale_pretty_x(n = 5) +
+    scale_pretty_y(n = 5)
+  expect_gte(length(built_labels(p, "x")), 3)
+  expect_gte(length(built_labels(p, "y")), 3)
+  # rendered as plotmath expressions (superscript), not "e+05" strings
+  expect_true(any(vapply(built_labels(p, "x"), is.call, logical(1))))
+})
+
+test_that("scale_pretty_x/y give >=3 non-empty labels on a log range", {
+  d <- data.frame(x = c(10, 1e5), y = c(1, 1e4))
+  p <- ggplot2::ggplot(d, ggplot2::aes(x, y)) +
+    ggplot2::geom_point() +
+    scale_pretty_x(log = TRUE) +
+    scale_pretty_y(log = TRUE)
+  expect_gte(length(built_labels(p, "x")), 3)
+  expect_gte(length(built_labels(p, "y")), 3)
+})
+
+test_that("pretty_logticks returns an annotation_logticks layer", {
+  expect_s3_class(pretty_logticks("bl"), "ggproto")
+})
