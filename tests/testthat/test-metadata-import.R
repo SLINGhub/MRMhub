@@ -248,6 +248,38 @@ test_that("Ignores warnings after metadata import and proceeds", {
 })
 
 
+test_that("Stale assertr warnings on pre-existing tables are not carried into a partial re-validation (bug 3.4)", {
+  mexp <- mrmhub::MRMhubExperiment()
+  mexp <- mrmhub::import_data_masshunter(
+    mexp,
+    path = testthat::test_path(
+      "testdata/masshunter/22_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq-noalphafeat.csv"
+    ),
+    import_metadata = FALSE
+  )
+  # First import leaves a real "Analyses without metadata" note as an
+  # assertr_errors attribute on annot_analyses.
+  mexp <- mrmhub::import_metadata_msorganiser(
+    mexp,
+    path = testthat::test_path(
+      "testdata/metadata/MRMhub_Metadata_Template_191_20240226_MHQuant_S1P_analysissubset.xlsx"
+    ),
+    excl_unmatched_analyses = TRUE
+  )
+  expect_false(is.null(attr(mexp@annot_analyses, "assertr_errors")))
+
+  # A later validation that does NOT re-provide annot_analyses must not restore
+  # (and re-report) its stale attribute.
+  res <- assert_metadata(
+    mexp,
+    metadata = list(annot_features = mexp@annot_features),
+    ignore_warnings = FALSE,
+    excl_unmatched_analyses = TRUE
+  )
+  expect_null(attr(res$annot_analyses, "assertr_errors"))
+})
+
+
 test_that("Reads metadata from csv file", {
   path <- testthat::test_path("testdata/metadata/sperfect_metadata_tables.csv")
   tbl <- get_metadata_table(path = path)

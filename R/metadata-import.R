@@ -554,21 +554,34 @@ assert_metadata <- function(
 
   metadata_new <- metadata
 
+  # Pre-existing tables are pulled in as validation context when the caller only
+  # provides some of them (single-annotation adds / plain re-import). Drop their
+  # cached `assertr_errors` first, or warnings from an earlier import get
+  # re-emitted for tables the caller never touched this time.
+  drop_assertr_errors <- function(x) {
+    attr(x, "assertr_errors") <- NULL
+    x
+  }
+
   # retrieve vom data if available and if not provided as metadata (for single annot adding)
   if (is.null(metadata$annot_analyses)) {
-    metadata$annot_analyses <- data@annot_analyses
+    metadata$annot_analyses <- drop_assertr_errors(data@annot_analyses)
   }
   if (is.null(metadata$annot_features)) {
-    metadata$annot_features <- data@annot_features
+    metadata$annot_features <- drop_assertr_errors(data@annot_features)
   }
   if (is.null(metadata$annot_istds)) {
-    metadata$annot_istds <- data@annot_istds
+    metadata$annot_istds <- drop_assertr_errors(data@annot_istds)
   }
   if (is.null(metadata$annot_responsecurves)) {
-    metadata$annot_responsecurves <- data@annot_responsecurves
+    metadata$annot_responsecurves <- drop_assertr_errors(
+      data@annot_responsecurves
+    )
   }
   if (is.null(metadata$annot_qcconcentrations)) {
-    metadata$annot_qcconcentrations <- data@annot_qcconcentrations
+    metadata$annot_qcconcentrations <- drop_assertr_errors(
+      data@annot_qcconcentrations
+    )
   }
 
   # ANALYSES METADATA ====================
@@ -1110,21 +1123,27 @@ assert_metadata <- function(
     }
   }
 
-  # retrieve vom data if available and if not provide as metadata (for single annot adding)
+  # Restore the tables the caller did not provide this time (see above): use the
+  # pre-existing ones, minus their stale `assertr_errors`, so the summary reports
+  # only issues from tables validated in this call.
   if (is.null(metadata_new$annot_analyses)) {
-    metadata$annot_analyses <- data@annot_analyses
+    metadata$annot_analyses <- drop_assertr_errors(data@annot_analyses)
   }
   if (is.null(metadata_new$annot_features)) {
-    metadata$annot_features <- data@annot_features
+    metadata$annot_features <- drop_assertr_errors(data@annot_features)
   }
   if (is.null(metadata_new$annot_istds)) {
-    metadata$annot_istds <- data@annot_istds
+    metadata$annot_istds <- drop_assertr_errors(data@annot_istds)
   }
   if (is.null(metadata_new$annot_responsecurves)) {
-    metadata$annot_responsecurves <- data@annot_responsecurves
+    metadata$annot_responsecurves <- drop_assertr_errors(
+      data@annot_responsecurves
+    )
   }
   if (is.null(metadata_new$annot_qcconcentrations)) {
-    metadata$annot_qcconcentrations <- data@annot_qcconcentrations
+    metadata$annot_qcconcentrations <- drop_assertr_errors(
+      data@annot_qcconcentrations
+    )
   }
 
   print_assertion_summary(
