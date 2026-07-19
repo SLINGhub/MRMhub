@@ -821,3 +821,12 @@ test_that("overlay pagination keeps each feature on a single page (non-uniform r
   # every feature appears on exactly one page (no feature split across pages)
   expect_false(any(duplicated(unlist(page_features))))
 })
+
+# page_orientation was never validated -> a typo silently produced a portrait PDF.
+test_that("plot_responsecurves rejects an invalid page_orientation", {
+  mexp <- calc_qc_metrics(normalize_by_istd(lipidomics_dataset))
+  expect_error(
+    plot_responsecurves(mexp, page_orientation = "landscape"),
+    "page_orientation"
+  )
+})

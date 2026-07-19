@@ -119,6 +119,7 @@ plot_responsecurves <- function(
   # Validate arguments and corresponding data
   # -------------------------------------------
   check_data(data)
+  rlang::arg_match(page_orientation, c("LANDSCAPE", "PORTRAIT"))
   variable_strip <- str_remove(variable, "feature_") # Clean variable name
   rlang::arg_match(
     variable_strip,

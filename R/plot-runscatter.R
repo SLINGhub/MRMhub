@@ -214,6 +214,7 @@ plot_runscatter <- function(
 ) {
   # Check the validity of input data
   check_data(data)
+  rlang::arg_match(page_orientation, c("LANDSCAPE", "PORTRAIT"))
 
   if (nrow(data@dataset) < 1) {
     cli::cli_abort(col_red(

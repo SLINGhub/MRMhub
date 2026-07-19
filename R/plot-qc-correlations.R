@@ -125,6 +125,7 @@ plot_feature_correlations <- function(
   show_progress = TRUE
 ) {
   check_data(data)
+  rlang::arg_match(page_orientation, c("LANDSCAPE", "PORTRAIT"))
 
   variable <- str_remove(variable, "feature_")
   rlang::arg_match(

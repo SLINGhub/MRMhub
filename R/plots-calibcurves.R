@@ -133,6 +133,7 @@ plot_calibrationcurves <- function(
   show_progress = TRUE
 ) {
   check_data(data)
+  rlang::arg_match(page_orientation, c("LANDSCAPE", "PORTRAIT"))
 
   variable_strip <- str_remove(variable, "feature_")
   rlang::arg_match(

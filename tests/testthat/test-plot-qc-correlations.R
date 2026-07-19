@@ -337,3 +337,11 @@ test_that("plot_feature_correlations keeps QC types outside the legacy level set
   expect_true(all(c("HQC", "LQC") %in% as.character(qc)))
   expect_false(any(is.na(qc)))
 })
+
+# page_orientation was never validated -> a typo silently produced a portrait PDF.
+test_that("plot_feature_correlations rejects an invalid page_orientation", {
+  expect_error(
+    plot_feature_correlations(mexp, page_orientation = "landscape"),
+    "page_orientation"
+  )
+})

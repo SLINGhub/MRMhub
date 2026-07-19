@@ -568,3 +568,11 @@ test_that("plot_responsecurves generates a plot with some calib concs is NA ", {
   )
   expect_doppelganger_cond("plot_calibration somecal na", p[[1]])
 })
+
+# page_orientation was never validated -> a typo silently produced a portrait PDF.
+test_that("plot_calibrationcurves rejects an invalid page_orientation", {
+  expect_error(
+    plot_calibrationcurves(mexp, page_orientation = "landscape"),
+    "page_orientation"
+  )
+})

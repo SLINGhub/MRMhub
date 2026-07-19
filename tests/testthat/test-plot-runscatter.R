@@ -1413,3 +1413,11 @@ test_that("each MAD cap constrains independently of the other and of cap_top_n",
     cap_top_n_outliers = 2
   )$value_mod)))
 })
+
+# page_orientation was never validated -> a typo silently produced a portrait PDF.
+test_that("plot_runscatter rejects an invalid page_orientation", {
+  expect_error(
+    plot_runscatter(mexp, page_orientation = "landscape"),
+    "page_orientation"
+  )
+})
