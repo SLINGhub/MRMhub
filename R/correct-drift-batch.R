@@ -177,9 +177,12 @@ fun_loess <- function(tbl, ref_qc_types, log_transform_internal, ...) {
             surface = surface,
             data = tbl_train
           )
+          # Predict at the actual run-order positions, not a gapless
+          # seq(min, max): with non-contiguous batches the latter is longer than
+          # the data, so the ratio-scale correction below recycles and crashes.
           y_fit <- stats::predict(
             res_fit,
-            dplyr::tibble(x = seq(min(tbl$x), max(tbl$x), 1))
+            dplyr::tibble(x = tbl$x)
           ) |>
             as.numeric()
 
@@ -271,9 +274,11 @@ fun_cspline <- function(tbl, ref_qc_types, log_transform_internal, ...) {
             )
           }
 
-          # Predict smoothed values across the full range of x values
+          # Predict at the actual run-order positions, not a gapless
+          # seq(min, max): non-contiguous batches make the latter longer than the
+          # data, so the ratio-scale correction below recycles and crashes.
           y_fit <- as.vector(
-            predict(res_fit, x = seq(min(tbl$x), max(tbl$x), 1))$y
+            predict(res_fit, x = tbl$x)$y
           )
 
           # Adjust predictions based on log transformation if applied

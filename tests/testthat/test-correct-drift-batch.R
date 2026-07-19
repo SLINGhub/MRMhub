@@ -35,6 +35,46 @@ mexp_err2@dataset$feature_conc[611] <- 0
 mexp_err2@dataset$feature_conc[1123] <- 0
 
 
+test_that("drift correction handles non-contiguous (interleaved) batches (bug 3.5)", {
+  # Interleave batch_id across run order so each batch's run-order positions are
+  # gapped. The loess/cspline prediction grid must follow the actual x, not a
+  # gapless seq(min, max) -- otherwise y_fit is longer than the batch and the
+  # ratio-scale correction recycles and crashes in bind_rows().
+  ord <- mexp@dataset |>
+    dplyr::distinct(analysis_id, analysis_order) |>
+    dplyr::arrange(analysis_order) |>
+    dplyr::mutate(new_batch = paste0("B", dplyr::row_number() %% 2))
+  mexp_il <- mexp
+  mexp_il@dataset <- mexp_il@dataset |>
+    dplyr::select(-"batch_id") |>
+    dplyr::left_join(
+      ord |> dplyr::select("analysis_id", batch_id = "new_batch"),
+      by = "analysis_id"
+    )
+
+  expect_no_error(
+    m_lo <- correct_drift_loess(
+      mexp_il,
+      variable = "conc",
+      ref_qc_types = "SPL",
+      batch_wise = TRUE,
+      show_progress = FALSE
+    )
+  )
+  expect_equal(nrow(m_lo@dataset), nrow(mexp_il@dataset))
+
+  expect_no_error(
+    m_cs <- correct_drift_cubicspline(
+      mexp_il,
+      variable = "conc",
+      ref_qc_types = "SPL",
+      batch_wise = TRUE,
+      show_progress = FALSE
+    )
+  )
+  expect_equal(nrow(m_cs@dataset), nrow(mexp_il@dataset))
+})
+
 test_that("correct_drift_gaussiankernel works", {
   expect_message(
     mexp_drift <- correct_drift_gaussiankernel(
