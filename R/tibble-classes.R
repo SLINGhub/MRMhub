@@ -59,6 +59,10 @@ print.assertr_tibble <- function(x, n = NULL, width = NULL, ...) {
   body <- utils::capture.output(
     print(tibble::as_tibble(unclass(x)), n = n, width = width)
   )
+  # Strip pillar's ANSI styling so the header/chip-row filters match (a coloured
+  # `# A tibble:` line is ANSI-prefixed) and the report stays plain text in a
+  # notebook render, where the E / W / N letters carry the severity.
+  body <- cli::ansi_strip(body)
   body <- body[!grepl("^# A tibble:", body)]
   body <- body[!grepl("^\\s*<[a-z0-9_]+>(?:\\s+<[a-z0-9_]+>)*\\s*$", body)]
 
@@ -79,12 +83,12 @@ print.assertr_tibble <- function(x, n = NULL, width = NULL, ...) {
         "Found {cli::no(nE)} error{?s}, {cli::no(nW)} warning{?s}, and {cli::no(nN)} note{?s} in the metadata."
       )
     }
-    cat(summary_line, "\n", sep = "")
+    cat(cli::ansi_strip(summary_line), "\n", sep = "")
   }
 
   cat(divider, "\n", sep = "")
   cat(body, sep = "\n")
-  cat("\n", cli::style_italic(.assertr_legend(divider)), "\n", sep = "")
+  cat("\n", .assertr_legend(divider), "\n", sep = "")
 
   invisible(x)
 }

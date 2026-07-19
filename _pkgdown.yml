@@ -101,6 +101,8 @@ navbar:
         href: articles/manual-05-metadata.html
       - text: Drift and Batch Correction
         href: articles/manual-07-corrections.html
+      - text: Quarto Workflows
+        href: articles/manual-11-quarto-workflows.html
       - text: '-------'
       - text: Results and downstream use
       - text: Visualisation Functions

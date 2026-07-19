@@ -22,6 +22,15 @@ test_that("generate_workflow_qmd emits a runnable, tutorial-faithful workflow", 
   expect_match(qmd, "format:", fixed = TRUE)
   expect_match(qmd, "html: default", fixed = TRUE)
 
+  # Hidden setup chunk enabling coloured console output in HTML renders, and
+  # labelled step chunks (documented in manual-11-quarto-workflows).
+  expect_match(qmd, "#| label: setup", fixed = TRUE)
+  expect_match(qmd, "#| include: false", fixed = TRUE)
+  expect_match(qmd, "mrmhub_enable_cli_color()", fixed = TRUE)
+  expect_match(qmd, "#| label: import-data", fixed = TRUE)
+  expect_match(qmd, "#| label: normalize-istd", fixed = TRUE)
+  expect_match(qmd, "#| label: export", fixed = TRUE)
+
   # Real API calls with correct argument names (guards against the old app's
   # fictional correct_drift()/calibrate_external()/export_xlsx()).
   expect_match(qmd, "mexp <- MRMhubExperiment()", fixed = TRUE)

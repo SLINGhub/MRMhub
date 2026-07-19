@@ -14,9 +14,12 @@
 \item{...}{Forwarded.}
 }
 \description{
-Replaces the standard tibble header (\verb{# A tibble: N x M}) with a black
-divider line, hides the column-type chip row (\verb{<chr> <int> ...}), and adds
-an italic legend explaining the E / W / W* / N severity codes used by
-\code{assert_metadata()}. Implemented with \code{cli} only (no pillar dependency).
+Replaces the standard tibble header (\verb{# A tibble: N x M}) with a pluralized
+severity-count summary line and a divider, hides the column-type chip row
+(\verb{<chr> <int> ...}), and adds an italic legend explaining the E / W / W* / N
+severity codes used by \code{assert_metadata()}. The summary and divider replace
+the separate \code{cli_alert} banner that previously printed on a different stream,
+so the whole report (summary, table, legend) now renders as one block.
+Implemented with \code{cli} only (no pillar dependency).
 }
 \keyword{internal}

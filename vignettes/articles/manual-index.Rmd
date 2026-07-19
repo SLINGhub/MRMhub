@@ -32,6 +32,7 @@ full argument reference for every function is in the
 - **[Importing Analytical Data](manual-04-data-import.html)** — choosing an importer and the file layout each one expects.
 - **[Importing Metadata](manual-05-metadata.html)** — attaching sample, feature, and internal-standard annotations.
 - **[Drift and Batch Correction](manual-07-corrections.html)** — correcting signal drift within runs and offsets between batches.
+- **[Quarto Workflows](manual-11-quarto-workflows.html)** — recording a pipeline as a `.qmd` notebook, coloured console output, and rendering to HTML, PDF, and Word.
 
 ## Results and downstream use
 

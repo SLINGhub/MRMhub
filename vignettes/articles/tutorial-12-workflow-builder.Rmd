@@ -131,6 +131,12 @@ format:
 ---
 ```
 
+The document then opens with a hidden setup chunk (`#| include: false`) that
+loads the package and calls `mrmhub_enable_cli_color()`, so mrmhub's coloured
+console feedback renders in the HTML output. See
+[Quarto Workflows](manual-11-quarto-workflows.html) for the reporting options and
+output-format details.
+
 Each selected step then becomes its own `##` section with an `{r}` chunk. For
 the demo dataset with normalisation, ISTD quantification, drift and batch
 correction, and QC filtering selected, and a project folder set, the emitted
@@ -187,3 +193,5 @@ passing a specification list to `generate_workflow_qmd()`.
   importer decision tree
 - [Importing Metadata](manual-05-metadata.html) — metadata tables and their
   required columns
+- [Quarto Workflows](manual-11-quarto-workflows.html) — the setup chunk, coloured
+  console output, and rendering to HTML, PDF, and Word
