@@ -82,6 +82,17 @@ pkg.env$table_templates <- list(
     "batch_no" = numeric(),
     "id_batch_start" = numeric(),
     "id_batch_end" = numeric()
+  ),
+  # Derived (auto) + manual interference relationships in one long table feeding
+  # the correction engine. `overlap_type` records the kind (m2_front / m2_back /
+  # ms1_m2 / manual); `source` is "auto" (from derive_interferences()) or
+  # "manual". Two rows per feature carry a front+back pair.
+  annot_interferences_template = dplyr::tibble(
+    "feature_id" = character(),
+    "interference_feature_id" = character(),
+    "interference_contribution" = numeric(),
+    "overlap_type" = character(),
+    "source" = character()
   )
 )
 

@@ -252,126 +252,147 @@ correct_interferences <- function(
       )
   }
 
-  # Join with feature metadata for interference information
-  d_correct <- data@dataset |>
-    left_join(
-      data@annot_features |>
-        select(
-          "feature_id",
-          "interference_feature_id",
-          "interference_contribution"
-        ),
-      by = "feature_id"
-    )
+  # Assemble the interference edge list (long): the derived (auto) table unioned
+  # with the legacy per-feature manual columns on annot_features. Both feed the
+  # same engine; `source` gates the LICAR-style negative handling below. A
+  # feature can carry two edges (front + back), so this is not a 1:1 join.
+  legacy_edges <- data@annot_features |>
+    filter(!is.na(.data$interference_feature_id)) |>
+    select(
+      "feature_id",
+      "interference_feature_id",
+      "interference_contribution"
+    ) |>
+    mutate(overlap_type = "manual", source = "manual")
+  edges <- bind_rows(data@annot_interferences, legacy_edges) |>
+    distinct()
 
-  # Get a table with features to correct this table is ordered based on chained
-  # relationships between feature_id and interference_feature_id, starting with
-  # the most downstream feature in the chain. If the corrections are
-  # independent, the order will be based on the order of the features in the
-  # dataset. This code also checks for circular dependencies in the interference
-  # correction, like LPC 18:2 > LPC 18:1 > LPC 18:0 > LPC 18:2
-  # order_chained_columns_tbl() is where a circular interference chain is
-  # detected (it stop()s), so the friendly handler must wrap this call, not the
-  # arrange() below.
+  if (nrow(edges) == 0) {
+    mh_warn(
+      "No interferences are defined (neither derived nor in the feature metadata). Nothing to correct."
+    )
+    return(data)
+  }
+
+  # Warn when a feature carries both an auto-derived and a manual edge -- the
+  # manual M+2 may now be redundant with the derived correction.
+  both_src <- edges |>
+    group_by(.data$feature_id) |>
+    filter(any(.data$source == "auto") & any(.data$source == "manual")) |>
+    ungroup()
+  if (nrow(both_src) > 0) {
+    mh_warn(
+      "{length(unique(both_src$feature_id))} feature(s) have both auto-derived and manual interference edges; both are subtracted. Please verify a manual M+2 is not redundant."
+    )
+  }
+
+  # Order the edges so every interferer that is itself corrected is processed
+  # before the feature(s) depending on it (upstream-first). Detects circular
+  # chains (e.g. LPC 18:2 > 18:1 > 18:0 > 18:2). The friendly abort message must
+  # survive the tryCatch grep.
   features_to_correct <- tryCatch(
-    d_correct |>
-      filter(!is.na(.data$interference_feature_id)) |>
-      select(
-        "feature_id",
-        "interference_feature_id",
-        "interference_contribution"
-      ) |>
-      distinct() |>
-      order_chained_columns_tbl(
-        "feature_id",
-        "interference_feature_id",
-        include_chain_id = FALSE,
-        disconnected_action = "keep"
-      ),
+    order_interference_edges(edges),
     error = function(e) {
       if (grepl("Circular dependency", conditionMessage(e), fixed = TRUE)) {
         cli_abort(
-          "One or more circular correction(s) detected. Please verify the interference correction details defined in feature metadata."
+          "One or more circular correction(s) detected. Please verify the interference correction details."
         )
       }
       stop(e)
     }
   )
 
-  # Check if there are incomplete interference data
-  if (!all(stats::complete.cases(features_to_correct))) {
+  # Check for incomplete interference data
+  if (
+    !all(stats::complete.cases(features_to_correct[, c(
+      "feature_id",
+      "interference_feature_id",
+      "interference_contribution"
+    )]))
+  ) {
     cli_abort(
-      "Some features have incomplete interference information (i.e., `interference_contribution` or `interference_contribution` missing. Please verify feature metadata."
+      "Some interferences have incomplete information (`interference_feature_id` or `interference_contribution` missing). Please verify the interference metadata."
     )
   }
 
   if (any(features_to_correct$interference_contribution <= 0)) {
     cli_abort(
-      "`interference_contribution` in the feature metadata must be greater than 0. Please verify feature metadata."
+      "`interference_contribution` must be greater than 0. Please verify the interference metadata."
     )
   }
   if (any(features_to_correct$interference_contribution > 1)) {
     mh_warn(
-      "{sum(features_to_correct$interference_contribution > 1)} feature(s) have an `interference_contribution` greater than 1. Values above 1 are unusual; please verify feature metadata."
+      "{sum(features_to_correct$interference_contribution > 1)} interference(s) have a contribution greater than 1. Values above 1 are unusual; please verify."
     )
   }
 
-  has_overlapping_interferences <- any(
-    features_to_correct$interference_feature_id %in%
-      features_to_correct$feature_id
+  # Interferers must exist as features in the dataset.
+  missing_interferers <- setdiff(
+    features_to_correct$interference_feature_id,
+    unique(data@dataset$feature_id)
   )
+  if (length(missing_interferers) > 0) {
+    cli_abort(
+      "Interfering feature(s) not present in the dataset: {glue::glue_collapse(missing_interferers, sep = ', ')}. Please verify the interference metadata."
+    )
+  }
 
-  # if sequential_correction is TRUE, reorder features_to_correct to ensure that
-  # the most downstream feature is corrected first
-  if (sequential_correction) {
+  # sequential_correction = TRUE: correct each feature using its already-corrected
+  # interferer (propagate along the chain) = the upstream-first order from
+  # order_interference_edges(). FALSE: correct from the raw interferer =
+  # downstream-first (reverse), so an interferer is still raw when its dependent
+  # is processed.
+  if (!sequential_correction) {
     features_to_correct <- features_to_correct |>
       arrange(desc(row_number()))
   }
 
-  # Function to apply correction for each feature set in features_to_correct
+  # Apply the correction for one edge in features_to_correct. `is_auto` (an
+  # auto-derived M+2 edge) enables LICAR-parity negative handling: skip the
+  # subtraction when the (running-corrected) interferer is <= 0, then clamp the
+  # corrected value to 0. The manual path keeps its original unclamped behaviour.
   correct_feature_intensity <- function(data, features_to_correct, i) {
-    d <- data |>
+    fid <- features_to_correct$feature_id[i]
+    iid <- features_to_correct$interference_feature_id[i]
+    fac <- features_to_correct$interference_contribution[i]
+    is_auto <- identical(features_to_correct$source[i], "auto")
+    data |>
       group_by(.data$analysis_id) |>
       mutate(
         raw_target = if_else(
-          .data$feature_id == features_to_correct$feature_id[i],
-          .data$feature_intensity_orig[
-            .data$feature_id == features_to_correct$feature_id[i]
-          ],
+          .data$feature_id == fid,
+          .data$feature_intensity_orig[.data$feature_id == fid],
           NA_real_
         ),
         raw_source = if_else(
-          .data$feature_id == features_to_correct$feature_id[i],
-          .data$feature_intensity_orig[
-            .data$feature_id == features_to_correct$interference_feature_id[i]
-          ],
-          NA_real_
-        ),
-        rel_interference = if_else(
-          .data$feature_id == features_to_correct$feature_id[i],
-          features_to_correct$interference_contribution[i],
+          .data$feature_id == fid,
+          .data$feature_intensity_orig[.data$feature_id == iid],
           NA_real_
         ),
         corr_intensity = if_else(
-          .data$feature_id == features_to_correct$feature_id[i],
-          .data$raw_target - .data$raw_source * .data$rel_interference,
+          .data$feature_id == fid,
+          {
+            src <- if (is_auto) pmax(.data$raw_source, 0) else .data$raw_source
+            v <- .data$raw_target - src * fac
+            if (is_auto) pmax(v, 0) else v
+          },
           NA_real_
         )
       ) |>
       ungroup() |>
-      select(-"raw_target", -"raw_source", -"rel_interference") |>
+      select(-"raw_target", -"raw_source") |>
       mutate(
         feature_intensity_orig = if_else(
           !is.na(.data$corr_intensity),
           .data$corr_intensity,
           .data$feature_intensity_orig
         )
-      )
-    d
+      ) |>
+      select(-"corr_intensity")
   }
 
   # Apply corrections iteratively, using the result from the previous iteration
-  d_corrected <- d_correct
+  d_corrected <- data@dataset
   for (i in seq_len(nrow(features_to_correct))) {
     d_corrected <- correct_feature_intensity(
       d_corrected,
@@ -453,10 +474,56 @@ correct_interferences <- function(
   data@is_filtered <- FALSE
   data@metrics_qc <- data@metrics_qc[FALSE, ]
 
-  n_corr <- nrow(features_to_correct)
+  n_corr <- length(unique(features_to_correct$feature_id))
   mh_success(
     "Interference-correction has been applied to {n_corr} of the {get_feature_count(data)} features."
   )
 
   data
+}
+
+
+#' Order interference edges upstream-first (topological sort)
+#'
+#' @description Orders a long interference edge table so that every interferer
+#' that is itself corrected appears before the feature(s) depending on it, so a
+#' sequential correction propagates along the chain. Tolerates two parents per
+#' feature (front + back) and detects circular chains via Kahn's algorithm.
+#'
+#' @param edges A tibble with at least `feature_id` (the corrected feature) and
+#'   `interference_feature_id` (its interferer).
+#' @return `edges`, row-reordered upstream-first. Errors with a message
+#'   containing "Circular dependency" if the graph has a cycle.
+#' @keywords internal
+#' @noRd
+order_interference_edges <- function(edges) {
+  nodes <- unique(edges$feature_id)
+  # Dependency among corrected features: an interferer that is itself corrected
+  # (a node) must be processed first. parent = interferer, child = dependent.
+  dep <- edges |>
+    filter(.data$interference_feature_id %in% nodes) |>
+    distinct(
+      parent = .data$interference_feature_id,
+      child = .data$feature_id
+    )
+  indeg <- stats::setNames(rep(0L, length(nodes)), nodes)
+  for (ch in dep$child) indeg[[ch]] <- indeg[[ch]] + 1L
+  children <- split(dep$child, dep$parent)
+  queue <- nodes[indeg[nodes] == 0L]
+  ordered <- character(0)
+  while (length(queue) > 0) {
+    n <- queue[[1]]
+    queue <- queue[-1]
+    ordered <- c(ordered, n)
+    for (ch in children[[n]]) {
+      indeg[[ch]] <- indeg[[ch]] - 1L
+      if (indeg[[ch]] == 0L) {
+        queue <- c(queue, ch)
+      }
+    }
+  }
+  if (length(ordered) < length(nodes)) {
+    stop("Circular dependency detected in the interference chain.")
+  }
+  edges[order(match(edges$feature_id, ordered)), , drop = FALSE]
 }

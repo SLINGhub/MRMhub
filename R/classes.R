@@ -26,6 +26,7 @@
 #' @slot annot_qcconcentrations Annotation of calibration curves. Required fields
 #' @slot annot_studysamples Annotation of study samples. Required fields:
 #' @slot annot_batches Annotation of batches. Required fields:
+#' @slot annot_interferences Interference relationships (`feature_id`, `interference_feature_id`, `interference_contribution`, `overlap_type`, `source`) feeding the correction engine; derived (auto) and/or manual.
 #' @slot metrics_qc QC information for each measured feature
 #' @slot metrics_calibration Calibration metrics calculated from external calibration curves for each measured feature
 #' @slot status_processing Status within the data processing workflow
@@ -59,6 +60,7 @@ setClass(
     annot_qcconcentrations = "tbl_df",
     annot_studysamples = "tbl_df",
     annot_batches = "tbl_df",
+    annot_interferences = "tbl_df",
     metrics_qc = "tbl_df",
     metrics_calibration = "tbl_df",
     status_processing = "character",
@@ -87,6 +89,7 @@ setClass(
     annot_qcconcentrations = pkg.env$table_templates$annot_qcconcentrations_template,
     annot_studysamples = dplyr::tibble(),
     annot_batches = dplyr::tibble(),
+    annot_interferences = pkg.env$table_templates$annot_interferences_template,
     metrics_qc = dplyr::tibble(),
     metrics_calibration = dplyr::tibble(),
     status_processing = "No Data",
@@ -255,6 +258,7 @@ setMethod(
       "annot_studysamples",
       "metrics_qc",
       "annot_batches",
+      "annot_interferences",
       "dataset_filtered",
       "is_istd_normalized",
       "var_drift_corrected",
@@ -335,6 +339,9 @@ setMethod("show", "MRMhubExperiment", function(object) {
   )
   cli::cli_li(
     "Study samples:  {.strong {get_status_flag(nrow(object@annot_studysamples) > 0)}}"
+  )
+  cli::cli_li(
+    "Interferences:  {.strong {get_status_flag(nrow(object@annot_interferences) > 0)}}"
   )
   cli::cli_end(id = "B")
 
