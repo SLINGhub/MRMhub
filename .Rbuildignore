@@ -37,6 +37,8 @@
 # Build hygiene: dir placeholders + stray rendered-article output (knitr/Quarto _files)
 \.gitkeep$
 ^vignettes/articles/.*_files
+# Stray default-device plot dump produced by base-graphics tests/examples
+Rplots\.pdf$
 
 # Local, non-package share doc (INTEGRATOR fork review)
 ^integrator-fork-review\.html$
