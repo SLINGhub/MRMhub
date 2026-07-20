@@ -1149,6 +1149,20 @@ add_metadata <- function(
   excl_unmatched_analyses = FALSE
 ) {
   check_data(data)
+  # `metadata` must be a bundle of annotation tables (as returned by
+  # `import_metadata()`): a non-list or a list without any `annot_*` member would
+  # otherwise skip every branch below and silently return `data` unchanged.
+  if (missing(metadata) || !is.list(metadata) || is.data.frame(metadata)) {
+    cli::cli_abort(
+      "{.arg metadata} must be a list of annotation tables, as returned by {.fn import_metadata}."
+    )
+  }
+  if (!any(startsWith(names(metadata), "annot_"))) {
+    cli::cli_abort(c(
+      "x" = "{.arg metadata} does not contain any annotation tables.",
+      "i" = "Expected named elements such as {.field annot_analyses} or {.field annot_features}."
+    ))
+  }
   # ANALYSES METADATA ====================
   if (!is.null(metadata$annot_analyses) && nrow(metadata$annot_analyses) > 0) {
     data@annot_analyses <- metadata$annot_analyses

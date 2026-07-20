@@ -503,6 +503,11 @@ save_dataset_csv <- function(
   add_qctype = NA
 ) {
   check_data(data)
+  if (missing(path) || !rlang::is_string(path) || is.na(path)) {
+    cli::cli_abort(
+      "{.arg path} must be a single, non-missing file path (a string)."
+    )
+  }
   variable <- str_remove(variable, "feature_")
   variable_strip <- variable
   rlang::arg_match(
@@ -610,6 +615,11 @@ save_dataset_csv <- function(
 #'
 save_feature_qc_metrics <- function(data = NULL, path) {
   check_data(data)
+  if (missing(path) || !rlang::is_string(path) || is.na(path)) {
+    cli::cli_abort(
+      "{.arg path} must be a single, non-missing file path (a string)."
+    )
+  }
 
   # Verify that the QC metrics have been calculated
   if (nrow(data@metrics_qc) == 0) {

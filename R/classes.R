@@ -118,16 +118,12 @@ setClass(
 #' @return `MRMhubExperiment` object
 #' @export
 MRMhubExperiment <- function(title = "", analysis_type = NA_character_) {
-  valid_types <- c(
-    NA_character_,
-    "lipidomics",
-    "metabolomics",
-    "quantitative",
-    "others"
-  )
-  if (!is.na(analysis_type) && !analysis_type %in% valid_types) {
-    cli::cli_abort(
-      "Invalid analysis type. Please choose from 'lipidomics', 'metabolomics', 'quantitative', 'others', or 'NA_character_'."
+  # NA (unspecified) is allowed; a supplied value is matched against the set
+  # documented on @slot/@param. arg_match() supplies the "did you mean" hint.
+  if (!is.na(analysis_type)) {
+    analysis_type <- rlang::arg_match(
+      analysis_type,
+      c("lipidomics", "metabolomics", "externalcalib", "others")
     )
   }
 

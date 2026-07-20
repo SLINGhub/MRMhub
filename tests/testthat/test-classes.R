@@ -15,9 +15,13 @@ test_that("Construct MRMhubExperiments", {
   mexp <- MRMhubExperiment(title = "Test", analysis_type = "lipidomics")
   expect_equal(mexp@title, "Test")
   expect_equal(mexp@analysis_type, "lipidomics")
+  expect_equal(
+    MRMhubExperiment(analysis_type = "externalcalib")@analysis_type,
+    "externalcalib"
+  )
   expect_error(
     mexp <- MRMhubExperiment(title = "Test", analysis_type = "undefined"),
-    "Invalid analysis type"
+    "must be one of"
   )
 })
 
@@ -27,7 +31,7 @@ test_that(" MRMhubExperiments setter/getter work", {
 
   expect_error(
     mexp <- MRMhubExperiment(title = "Test", analysis_type = "undefined"),
-    "Invalid analysis type"
+    "must be one of"
   )
 })
 

@@ -113,3 +113,17 @@ test_that("add_metadata() rejects a NULL data argument", {
     "cannot be"
   )
 })
+
+test_that("add_metadata() rejects metadata that is not an annotation-table bundle", {
+  bare <- mrmhub::MRMhubExperiment()
+  bare@dataset_orig <- lipidomics_dataset@dataset_orig
+
+  expect_error(
+    add_metadata(bare, metadata = data.frame(x = 1)),
+    "list of annotation tables"
+  )
+  expect_error(
+    add_metadata(bare, metadata = list(foo = 1, bar = 2)),
+    "does not contain any annotation tables"
+  )
+})

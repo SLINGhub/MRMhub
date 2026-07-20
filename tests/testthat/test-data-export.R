@@ -349,3 +349,18 @@ test_that("save_report_xlsx aborts on duplicate (analysis, feature) rows", {
     )
   )
 })
+
+test_that("save_dataset_csv() / save_feature_qc_metrics() reject an invalid path", {
+  expect_error(
+    save_dataset_csv(mexp, path = c("a.csv", "b.csv"), variable = "intensity"),
+    "must be a single"
+  )
+  expect_error(
+    save_dataset_csv(mexp, path = NA_character_, variable = "intensity"),
+    "must be a single"
+  )
+  expect_error(
+    save_feature_qc_metrics(mexp, path = 42),
+    "must be a single"
+  )
+})

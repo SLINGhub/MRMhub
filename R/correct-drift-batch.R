@@ -461,6 +461,33 @@ correct_drift <- function(
 ) {
   check_data(data)
 
+  # Resolve/validate the smoother up front: a mistyped character name would
+  # otherwise reach `get(smooth_fun, mode = "function")` deep in the correction
+  # loop and fail with a cryptic "object not found".
+  if (missing(smooth_fun)) {
+    cli::cli_abort(
+      "{.arg smooth_fun} is required: a smoothing function or the name of one."
+    )
+  }
+  if (is.character(smooth_fun)) {
+    if (!exists(smooth_fun, mode = "function")) {
+      builtin_smoothers <- c(
+        "fun_loess",
+        "fun_cspline",
+        "fun_gam_smooth",
+        "fun_gauss.kernel.smooth"
+      )
+      cli::cli_abort(c(
+        "x" = "{.arg smooth_fun} {.val {smooth_fun}} is not a known smoothing function.",
+        "i" = "Built-in smoothers: {.val {builtin_smoothers}}, or pass a function directly."
+      ))
+    }
+  } else if (!is.function(smooth_fun)) {
+    cli::cli_abort(
+      "{.arg smooth_fun} must be a smoothing function or the name of one, not {.cls {class(smooth_fun)[1]}}."
+    )
+  }
+
   if (!all(ref_qc_types %in% unique(data@dataset$qc_type))) {
     cli::cli_abort(
       "One or more specified `qc_types` are not present in the dataset. Please verify data or analysis metadata."

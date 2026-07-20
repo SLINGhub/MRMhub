@@ -53,6 +53,7 @@ data_sum_features <- function(
   data,
   qualifier_action = "include"
 ) {
+  check_data(data)
   qualifier_action <- rlang::arg_match(
     qualifier_action,
     c("separate", "include", "exclude")

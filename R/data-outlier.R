@@ -32,6 +32,20 @@ detect_outlier_pca <- function(
 ) {
   check_data(data)
 
+  # Mirror the numeric-positive guards on `kernel_size` / `outlier_ksd` in
+  # correct_drift_gaussiankernel(); both args lack a default, so also catch the
+  # missing case before the obscure "argument ... is missing" further down.
+  if (missing(pca_component) || is.na(pca_component) || pca_component <= 0) {
+    cli::cli_abort("{.arg pca_component} must be greater than 0.")
+  }
+  if (
+    missing(fence_multiplicator) ||
+      is.na(fence_multiplicator) ||
+      fence_multiplicator <= 0
+  ) {
+    cli::cli_abort("{.arg fence_multiplicator} must be greater than 0.")
+  }
+
   variable <- str_remove(variable, "feature_")
   rlang::arg_match(
     variable,

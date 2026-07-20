@@ -4,8 +4,10 @@ mexp_orig <- lipidomics_dataset
 mexp_orig <- normalize_by_istd(mexp_orig)
 mexp_orig <- calc_qc_metrics(mexp_orig)
 
-mexp <- mexp_orig 
-mexp@annot_features[str_detect(mexp@annot_features$feature_id, "LPC 18:1 \\((a|b)\\)"), ]$analyte_id <- "LPC 18:1"
+mexp <- mexp_orig
+mexp@annot_features[
+  str_detect(mexp@annot_features$feature_id, "LPC 18:1 \\((a|b)\\)"),
+]$analyte_id <- "LPC 18:1"
 
 mexp <- mrmhub:::link_data_metadata(mexp)
 
@@ -14,16 +16,21 @@ test_that("Default plot_qc_matrixeffects looks as expected", {
   expect_true("LPC 18:1" %in% mexp_dedup@annot_features$feature_id)
   expect_false("LPC 18:1 (a)" %in% mexp_dedup@annot_features$feature_id)
   expect_false("LPC 18:1 (b)" %in% mexp_dedup@annot_features$feature_id)
-  expect_true("LPC 18:1 (ab) d7 (ISTD)" %in% mexp_dedup@annot_features$feature_id)
+  expect_true(
+    "LPC 18:1 (ab) d7 (ISTD)" %in% mexp_dedup@annot_features$feature_id
+  )
   expect_true("LPC 18:1" %in% unique(mexp_dedup@dataset$feature_id))
   expect_false("LPC 18:1 (a)" %in% unique(mexp_dedup@dataset$feature_id))
   expect_false("LPC 18:1 (ab)" %in% unique(mexp_dedup@dataset$feature_id))
-
 })
 
 mexp2 <- mexp_orig
-mexp2@annot_features[str_detect(mexp2@annot_features$feature_id, "^PC"), ]$analyte_id <- "PC"
-mexp2@annot_features[str_detect(mexp2@annot_features$feature_id, "^PC 4"), ]$is_quantifier <- FALSE
+mexp2@annot_features[
+  str_detect(mexp2@annot_features$feature_id, "^PC"),
+]$analyte_id <- "PC"
+mexp2@annot_features[
+  str_detect(mexp2@annot_features$feature_id, "^PC 4"),
+]$is_quantifier <- FALSE
 mexp2 <- mrmhub:::link_data_metadata(mexp2)
 
 test_that("Default plot_qc_matrixeffects looks as expected", {
@@ -32,9 +39,17 @@ test_that("Default plot_qc_matrixeffects looks as expected", {
   expect_false("PC 40:6" %in% unique(mexp2_dedup@dataset$feature_id))
   expect_false("PC 32:1" %in% unique(mexp2_dedup@dataset$feature_id))
 
-  sum_pc <-  sum(mexp2_dedup@dataset[mexp2_dedup@dataset$feature_id == "PC", ]$feature_intensity)
+  sum_pc <- sum(
+    mexp2_dedup@dataset[
+      mexp2_dedup@dataset$feature_id == "PC",
+    ]$feature_intensity
+  )
   expect_equal(sum_pc, 2937988066.1)
-  sum_pc <-  sum(mexp2_dedup@dataset[mexp2_dedup@dataset$feature_id == "PC_qual", ]$feature_intensity)
+  sum_pc <- sum(
+    mexp2_dedup@dataset[
+      mexp2_dedup@dataset$feature_id == "PC_qual",
+    ]$feature_intensity
+  )
   expect_equal(sum_pc, 1715685212.3)
 
   mexp2_dedup <- data_sum_features(mexp2, qualifier_action = "include")
@@ -42,7 +57,11 @@ test_that("Default plot_qc_matrixeffects looks as expected", {
   expect_false("PC 40:6" %in% unique(mexp2_dedup@dataset$feature_id))
   expect_false("PC 32:1" %in% unique(mexp2_dedup@dataset$feature_id))
 
-  sum_pc <-  sum(mexp2_dedup@dataset[mexp2_dedup@dataset$feature_id == "PC", ]$feature_intensity)
+  sum_pc <- sum(
+    mexp2_dedup@dataset[
+      mexp2_dedup@dataset$feature_id == "PC",
+    ]$feature_intensity
+  )
   expect_equal(sum_pc, 4653673278.4)
 
   mexp2_dedup <- data_sum_features(mexp2, qualifier_action = "exclude")
@@ -50,9 +69,12 @@ test_that("Default plot_qc_matrixeffects looks as expected", {
   expect_false("PC 40:6" %in% unique(mexp2_dedup@dataset$feature_id))
   expect_false("PC 32:1" %in% unique(mexp2_dedup@dataset$feature_id))
 
-  sum_pc <-  sum(mexp2_dedup@dataset[mexp2_dedup@dataset$feature_id == "PC", ]$feature_intensity)
+  sum_pc <- sum(
+    mexp2_dedup@dataset[
+      mexp2_dedup@dataset$feature_id == "PC",
+    ]$feature_intensity
+  )
   expect_equal(sum_pc, 2937988066.1)
-
 })
 
 test_that("data_sum_features sums feature_area and NAs the peak widths of merged analytes", {
@@ -72,7 +94,10 @@ test_that("data_sum_features sums feature_area and NAs the peak widths of merged
 
   # feature_area is an extensive signal variable and is summed like intensity /
   # height; previously it fell through the aggregation and became a silent NA.
-  expect_equal(merged$feature_area, sum(constituents$feature_area, na.rm = TRUE))
+  expect_equal(
+    merged$feature_area,
+    sum(constituents$feature_area, na.rm = TRUE)
+  )
   expect_equal(merged$feature_rt, mean(constituents$feature_rt, na.rm = TRUE))
 
   # a merged analyte is not a single chromatographic peak -> no meaningful width
@@ -118,9 +143,15 @@ test_that("a merged analyte quantifies if any constituent does", {
   merge_two <- function(q1, q2) {
     m <- mexp_orig
     af <- m@annot_features
-    f <- head(af$feature_id[!af$is_istd & !af$feature_id %in% af$istd_feature_id], 2)
+    f <- head(
+      af$feature_id[!af$is_istd & !af$feature_id %in% af$istd_feature_id],
+      2
+    )
     m@annot_features$analyte_id[m@annot_features$feature_id %in% f] <- "M"
-    m@annot_features$is_quantifier[m@annot_features$feature_id %in% f] <- c(q1, q2)
+    m@annot_features$is_quantifier[m@annot_features$feature_id %in% f] <- c(
+      q1,
+      q2
+    )
     m@dataset$analyte_id[m@dataset$feature_id %in% f] <- "M"
     m@dataset$is_quantifier[m@dataset$feature_id == f[1]] <- q1
     m@dataset$is_quantifier[m@dataset$feature_id == f[2]] <- q2
@@ -129,7 +160,9 @@ test_that("a merged analyte quantifies if any constituent does", {
     ))
   }
   quantifier_of <- function(ded) {
-    annot <- ded@annot_features$is_quantifier[ded@annot_features$feature_id == "M"]
+    annot <- ded@annot_features$is_quantifier[
+      ded@annot_features$feature_id == "M"
+    ]
     ds <- unique(ded@dataset$is_quantifier[ded@dataset$feature_id == "M"])
     expect_equal(annot, ds) # the two tables must not disagree
     annot
@@ -169,7 +202,10 @@ test_that("data_sum_features removes correction snapshots of the merged variable
   )))
   expect_true(any(grepl("^feature_norm_intensity_", names(drift@dataset))))
 
-  ded <- suppressMessages(data_sum_features(drift, qualifier_action = "include"))
+  ded <- suppressMessages(data_sum_features(
+    drift,
+    qualifier_action = "include"
+  ))
 
   # no stale `_before` / `_fit` / `_raw` columns survive the merge as all-NA
   expect_false(any(grepl(
@@ -186,7 +222,10 @@ test_that("data_sum_features warns when merged transitions disagree on feature m
   ] <- "CE 18:1 d7 (ISTD)"
 
   expect_warning(
-    suppressMessages(data_sum_features(mexp_conflict, qualifier_action = "include")),
+    suppressMessages(data_sum_features(
+      mexp_conflict,
+      qualifier_action = "include"
+    )),
     "differing feature metadata"
   )
 })
@@ -213,4 +252,8 @@ test_that("data_sum_features returns NA (not a fabricated 0) when all merged tra
   ]
   expect_length(v, 1)
   expect_true(is.na(v))
+})
+
+test_that("data_sum_features() rejects a non-MRMhubExperiment first arg", {
+  expect_error(data_sum_features(data.frame(x = 1)), "MRMhubExperiment")
 })

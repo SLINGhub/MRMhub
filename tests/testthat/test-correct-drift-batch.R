@@ -2442,3 +2442,14 @@ test_that("fun_gauss.kernel.smooth error branch returns a y_adj (NA) column", {
   expect_equal(nrow(bound), nrow(tbl))
   expect_true(all(is.na(bound$y_adj)))
 })
+
+test_that("correct_drift() fails friendly on an invalid smooth_fun", {
+  expect_error(
+    correct_drift(mexp, smooth_fun = "fun_nonexistent"),
+    "not a known smoothing function"
+  )
+  expect_error(
+    correct_drift(mexp, smooth_fun = 42),
+    "must be a smoothing function"
+  )
+})

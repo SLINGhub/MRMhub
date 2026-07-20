@@ -188,3 +188,26 @@ test_that("detect_outlier_pca works", {
     "The following specified QC types are missing in the dataset: \"XYZ\""
   )
 })
+
+test_that("detect_outlier_pca() rejects non-positive pca_component / fence_multiplicator", {
+  expect_error(
+    detect_outlier_pca(
+      mexp_proc,
+      variable = "intensity",
+      filter_data = FALSE,
+      pca_component = 0,
+      fence_multiplicator = 2
+    ),
+    "pca_component"
+  )
+  expect_error(
+    detect_outlier_pca(
+      mexp_proc,
+      variable = "intensity",
+      filter_data = FALSE,
+      pca_component = 1,
+      fence_multiplicator = -1
+    ),
+    "fence_multiplicator"
+  )
+})
