@@ -1133,7 +1133,7 @@ test_that("using filters without underlying data", {
       clear_existing = FALSE,
       max.cv.conc.bqc = 20
     ),
-    "Cannot filter by `max.cv.conc.bqc` because concentration data"
+    "Cannot filter by max.cv.conc.bqc because concentration data"
   )
 })
 
@@ -1171,7 +1171,7 @@ test_that("using filters correctly features when values are NA", {
       clear_existing = FALSE,
       max.cv.conc.bqc = 33
     ),
-    "The QC parameter `max.cv.conc.bqc` contains NAs for following features: PC 32:1.",
+    "The QC parameter max.cv.conc.bqc contains NAs for the following features: PC 32:1.",
     fixed = TRUE
   )
 })

@@ -162,9 +162,9 @@ parse_lipid_feature_names <- function(
     filter(.data$lipid_name %in% goslin_err) |>
     pull("feature_id")
   if (length(goslin_err_features) > 0) {
-    cli::cli_alert_warning(col_yellow(
-      "Lipid names could not be parsed for {length(goslin_err_features)} of {nrow(dat_temp)} feature{?s}: {glue::glue_collapse(goslin_err_features, sep = ', ')}."
-    ))
+    mh_warn(
+      "Lipid names could not be parsed for {length(goslin_err_features)} of {nrow(dat_temp)} feature{?s}: {.val {mh_vec(goslin_err_features)}}."
+    )
   }
 
   d_goslin <- d_goslin |>

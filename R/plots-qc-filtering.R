@@ -31,15 +31,15 @@ plot_qc_summary_byclass <- function(data = NULL, font_base_size = 8) {
   check_data(data)
 
   if (!data@is_filtered) {
-    cli_abort(col_red(
+    cli_abort(
       "Feature QC filter has not yet been applied, or data has changed. Please run `filter_features_qc()` first."
-    ))
+    )
   }
 
   if (all(is.na(data@metrics_qc$feature_class))) {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "This plot requires the `feature_class` to be defined in the data. Please define classes in the feature metadata or retrieve via corresponding functions."
-    ))
+    )
   }
 
   d_qc <- data@metrics_qc |>
@@ -289,9 +289,9 @@ plot_qc_summary_overall <- function(
   check_data(data)
 
   if (!data@is_filtered) {
-    cli_abort(col_red(
+    cli_abort(
       "Feature QC filter has not yet been applied, or data has changed. Please run `filter_features_qc()` first."
-    ))
+    )
   }
 
   d_qc <- data@metrics_qc |>

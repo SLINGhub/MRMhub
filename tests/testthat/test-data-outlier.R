@@ -185,6 +185,6 @@ test_that("detect_outlier_pca works", {
       fence_multiplicator = 2,
       log_transform = TRUE
     ),
-    "Following specified QC types are missing in the dataset: XYZ"
+    "The following specified QC types are missing in the dataset: \"XYZ\""
   )
 })

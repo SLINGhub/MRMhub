@@ -217,9 +217,9 @@ plot_runscatter <- function(
   rlang::arg_match(page_orientation, c("LANDSCAPE", "PORTRAIT"))
 
   if (nrow(data@dataset) < 1) {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "No data available. Please import data and metadata first."
-    ))
+    )
   }
 
   # Handle saving output to PDF
@@ -236,9 +236,9 @@ plot_runscatter <- function(
       reason = "to use multithreading for plot generation."
     )
     if (rlang::is_installed("mirai") && mirai::status()$daemons == 0) {
-      cli::cli_alert_warning(cli::col_yellow(
+      mh_warn(
         "To use multithreading for plot generation, please set `mirai::daemon(number_of_cores)` where `number_of_cores` is the number of CPU cores to use."
-      ))
+      )
     }
   }
 
@@ -272,7 +272,7 @@ plot_runscatter <- function(
   check_var_in_dataset(data@dataset, variable)
 
   if (!all(is.numeric(y_lim) || is.na(y_lim))) {
-    cli::cli_abort(cli::col_red("`y_lim` must have numeric values or `NA`s."))
+    cli::cli_abort("`y_lim` must have numeric values or `NA`s.")
   }
 
   if (show_reference_lines && all(is.na(ref_qc_types))) {
@@ -289,17 +289,17 @@ plot_runscatter <- function(
 
   if (str_detect(variable, "_before|_raw")) {
     if (!any(data@var_drift_corrected) && !any(data@var_batch_corrected)) {
-      cli::cli_abort(col_red(
+      cli::cli_abort(
         "Variables `_before` and `_raw` after only available after drift/batch corrections. Please set chose an other variable, or first apply drift/batch correction."
-      ))
+      )
     }
   }
 
   if (show_trend | str_detect(variable, "_before|_raw")) {
     if (!any(data@var_drift_corrected) && !any(data@var_batch_corrected)) {
-      cli::cli_abort(col_red(
+      cli::cli_abort(
         "Drift or batch correction is currently required to show trend lines. Please set `show_trend = FALSE`, or apply drift/batch correction first."
-      ))
+      )
     }
   }
 
@@ -462,9 +462,9 @@ plot_runscatter <- function(
         is.na(cap_sample_k_mad) &&
         is.na(cap_qc_k_mad)
     ) {
-      cli::cli_abort(col_red(
+      cli::cli_abort(
         "One or more of `cap_sample_k_mad`, `cap_qc_k_mad`, and `cap_top_n_outliers` must be a positive number when `cap_outliers = TRUE`."
-      ))
+      )
     }
 
     # An unset MAD cap stays NA (not Inf): its per-feature threshold is then NA and
@@ -482,7 +482,9 @@ plot_runscatter <- function(
       d_filt <- d_filt |>
         dplyr::group_by(.data$feature_id) |>
         dplyr::mutate(
-          cap_ref = sort(.data$value, decreasing = TRUE)[cap_top_n_outliers + 1],
+          cap_ref = sort(.data$value, decreasing = TRUE)[
+            cap_top_n_outliers + 1
+          ],
           value = ifelse(
             !is.na(.data$cap_ref) & .data$value > .data$cap_ref,
             .data$cap_ref * outlier_offset_ratio,
@@ -538,9 +540,9 @@ plot_runscatter <- function(
   if (log_scale) {
     # check if value_mod contains any negative or zero
     if (any(d_filt$value_mod <= 0)) {
-      cli::cli_alert_warning(cli::col_yellow(
+      mh_warn(
         "Zero or negative values were replaced with the minimum positive value divided by 5 to avoid log(0) errors."
-      ))
+      )
 
       d_filt <- d_filt |>
         dplyr::mutate(
@@ -826,9 +828,9 @@ runscatter_plot_pages <- function(
     )
 
     if (length(undefined_qctypes) > 0) {
-      cli_alert_warning(col_yellow(
+      mh_warn(
         "The QC types '{glue::glue_collapse(undefined_qctypes, sep = ', ')}' not predefined in MRMhub and will be displayed in black with auto-assigned shapes."
-      ))
+      )
     }
 
     extra_shapes <- c(8, 3, 4, 9, 21, 22, 23, 24, 25, 7, 10, 12, 13, 14, 11) # Extra distinct shapes

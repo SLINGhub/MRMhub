@@ -923,7 +923,7 @@ test_that("correct_drift_gaussiankernel fit error are handeled", {
       recalc_trend_after = TRUE,
       ignore_istd = TRUE
     ),
-    "Argument `kernel_size` must larger than 0",
+    "`kernel_size` must be greater than 0",
     fixed = TRUE
   )
 
@@ -939,7 +939,7 @@ test_that("correct_drift_gaussiankernel fit error are handeled", {
       recalc_trend_after = TRUE,
       ignore_istd = TRUE
     ),
-    "Argument `outlier_ksd` must larger than 0",
+    "`outlier_ksd` must be greater than 0",
     fixed = TRUE
   )
 
@@ -959,7 +959,7 @@ test_that("correct_drift_loess fit error are handeled", {
       recalc_trend_after = TRUE,
       ignore_istd = TRUE
     ),
-    "Argument `span` must larger than 0",
+    "`span` must be greater than 0",
     fixed = TRUE
   )
 
@@ -975,7 +975,7 @@ test_that("correct_drift_loess fit error are handeled", {
       recalc_trend_after = TRUE,
       ignore_istd = TRUE
     ),
-    "Argument `degree` must be 1 or 2",
+    "`degree` must be 1 or 2",
     fixed = TRUE
   )
 
@@ -1578,7 +1578,7 @@ test_that("correct_drift_gam works", {
       use_original_if_fail = FALSE,
       ignore_istd = TRUE
     ),
-    "Argument `sp` must be NULL or numeric",
+    "`sp` must be NULL or numeric",
     fixed = TRUE
   )
 })
@@ -2120,9 +2120,10 @@ test_that("correct_drift for specific feature_list", {
       ignore_istd = TRUE,
       feature_list = c("CE 18:1", "PC 40:8")
     ),
-    "2 of 20", 
-    fixed = TRUE)
-  
+    "2 of 20",
+    fixed = TRUE
+  )
+
   expect_message(
     mexp_drift1 <- correct_drift_cubicspline(
       mexp,
@@ -2135,8 +2136,9 @@ test_that("correct_drift for specific feature_list", {
       ignore_istd = TRUE,
       feature_list = c("CE 18:1", "PC 40:8")
     ),
-    "-3.29%", 
-    fixed = TRUE)
+    "-3.29%",
+    fixed = TRUE
+  )
 
   expect_message(
     mexp_drift1 <- correct_drift_cubicspline(
@@ -2150,9 +2152,10 @@ test_that("correct_drift for specific feature_list", {
       ignore_istd = TRUE,
       feature_list = c("PC")
     ),
-    "6 of 20", 
-    fixed = TRUE)
-    
+    "6 of 20",
+    fixed = TRUE
+  )
+
   expect_message(
     mexp_drift1 <- correct_drift_cubicspline(
       mexp,
@@ -2165,70 +2168,75 @@ test_that("correct_drift for specific feature_list", {
       ignore_istd = FALSE,
       feature_list = c("PC")
     ),
-    "8 of 29", 
-    fixed = TRUE)
+    "8 of 29",
+    fixed = TRUE
+  )
 })
-
 
 
 test_that("correct_batch for specific feature_list", {
   expect_message(
-  mexp_batch1 <- correct_batch_centering(
-        mexp,
-        correct_scale = FALSE,
-        ref_qc_types = "SPL",
-        variable = "conc",
-        feature_list = c("CE 18:1", "PC 40:8")
-      ),
-    "was applied to raw concentrations of the selected 2 features", 
-    fixed = TRUE)
-  
-  expect_message(
     mexp_batch1 <- correct_batch_centering(
-        mexp,
-        correct_scale = FALSE,
-        ref_qc_types = "SPL",
-        variable = "conc",
-        feature_list = c("CE 18:1", "PC 40:8")
-      ),
-    "-9.40% to -0.20%", 
-    fixed = TRUE)
+      mexp,
+      correct_scale = FALSE,
+      ref_qc_types = "SPL",
+      variable = "conc",
+      feature_list = c("CE 18:1", "PC 40:8")
+    ),
+    "was applied to raw concentrations of the selected 2 features",
+    fixed = TRUE
+  )
 
   expect_message(
     mexp_batch1 <- correct_batch_centering(
-        mexp,
-        correct_scale = FALSE,
-        ref_qc_types = "SPL",
-        variable = "conc",
-        feature_list = c("PC")
+      mexp,
+      correct_scale = FALSE,
+      ref_qc_types = "SPL",
+      variable = "conc",
+      feature_list = c("CE 18:1", "PC 40:8")
     ),
-    "selected 8", 
-    fixed = TRUE)
+    "-9.40% to -0.20%",
+    fixed = TRUE
+  )
+
+  expect_message(
+    mexp_batch1 <- correct_batch_centering(
+      mexp,
+      correct_scale = FALSE,
+      ref_qc_types = "SPL",
+      variable = "conc",
+      feature_list = c("PC")
+    ),
+    "selected 8",
+    fixed = TRUE
+  )
 })
 
 
 test_that("correct_batch correct var name in outputs", {
   expect_message(
     mexp_batch1 <- correct_batch_centering(
-        mexp,
-        correct_scale = FALSE,
-        ref_qc_types = "SPL",
-        variable = "intensity",
-        feature_list = c("CE 18:1", "PC 40:8")
-      ),
-    "applied to raw intensities of the selected 2 features", 
-    fixed = TRUE)
-  
+      mexp,
+      correct_scale = FALSE,
+      ref_qc_types = "SPL",
+      variable = "intensity",
+      feature_list = c("CE 18:1", "PC 40:8")
+    ),
+    "applied to raw intensities of the selected 2 features",
+    fixed = TRUE
+  )
+
   expect_message(
     mexp_batch1 <- correct_batch_centering(
-        mexp,
-        correct_scale = FALSE,
-        ref_qc_types = "SPL",
-        variable = "norm_intensity",
-        feature_list = c("CE 18:1", "PC 40:8")
-      ),
+      mexp,
+      correct_scale = FALSE,
+      ref_qc_types = "SPL",
+      variable = "norm_intensity",
+      feature_list = c("CE 18:1", "PC 40:8")
+    ),
     "applied to raw normalized intensities of the selected 2 features",
-    fixed = TRUE)
+    fixed = TRUE
+  )
 })
 
 test_that("batch correction keeps original study values when a batch lacks a reference-QC anchor", {
@@ -2271,7 +2279,9 @@ test_that("feature_list subset batch correction preserves non-selected features'
   feats <- unique(mexp@dataset$feature_id[!mexp@dataset$is_istd])
   not_selected <- setdiff(feats, selected)[1]
 
-  orig_conc <- mexp@dataset$feature_conc[mexp@dataset$feature_id == not_selected]
+  orig_conc <- mexp@dataset$feature_conc[
+    mexp@dataset$feature_id == not_selected
+  ]
 
   mexp_res <- suppressMessages(correct_batch_centering(
     mexp,

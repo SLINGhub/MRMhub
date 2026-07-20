@@ -1165,13 +1165,13 @@ add_metadata <- function(
     # `analysis_id`s are formatted differently); with excl_unmatched_analyses it
     # would otherwise silently exclude every analysis and report "0 analyses".
     if (n_match == 0) {
-      cli::cli_abort(col_red(
+      cli::cli_abort(
         "None of the analyses in the data match the imported analysis metadata. Please verify the `analysis_id`s and that the correct metadata file was used."
-      ))
+      )
     }
-    cli_alert_success(col_green(glue::glue(
+    mh_success(
       "Analysis metadata associated with {n_match} analyses."
-    )))
+    )
 
     n_invalid <- intersect(
       data@dataset_orig$analysis_id,
@@ -1181,9 +1181,9 @@ add_metadata <- function(
     ) |>
       length()
     if (n_invalid > 0) {
-      cli_alert_info(col_yellow(
+      mh_warn(
         "{n_invalid} invalid analys{?is/es} (as defined in the metadata) {?was/were} excluded."
-      ))
+      )
     }
   }
   # FEATURE METADATA ====================
@@ -1206,9 +1206,9 @@ add_metadata <- function(
         pull(.data$feature_id)
     ) |>
       length()
-    cli_alert_success(col_green(glue::glue(
+    mh_success(
       "Feature metadata associated with {n_match} features."
-    )))
+    )
 
     n_invalid <- intersect(
       data@dataset_orig$feature_id,
@@ -1218,9 +1218,9 @@ add_metadata <- function(
     ) |>
       length()
     if (n_invalid > 0) {
-      cli_alert_info(col_yellow(
+      mh_warn(
         "{n_invalid} invalid feature{?s} (as defined in the metadata) {?was/were} excluded."
-      ))
+      )
     }
   }
 
@@ -1245,9 +1245,9 @@ add_metadata <- function(
       data@annot_features$quant_istd_feature_id
     ) |>
       length()
-    cli_alert_success(col_green(glue::glue(
+    mh_success(
       "Internal Standard metadata associated with {n_match} ISTDs."
-    )))
+    )
   }
 
   # RQC METADATA ====================
@@ -1264,9 +1264,9 @@ add_metadata <- function(
       data@annot_responsecurves$analysis_id
     ) |>
       length()
-    cli_alert_success(col_green(glue::glue(
+    mh_success(
       "Response curve metadata associated with {n_match} annotated analyses."
-    )))
+    )
   }
 
   # lists of samples (sample_id) and analytes (analyte_id) in the dataset that are annotated
@@ -1298,9 +1298,9 @@ add_metadata <- function(
       unique(data@annot_qcconcentrations$analyte_id)
     ) |>
       length()
-    cli_alert_success(col_green(glue::glue(
+    mh_success(
       "QC concentration metadata associated with {n_match_samples} annotated samples and {n_match_analytes} annotated analytes"
-    )))
+    )
   }
 
   # ANALYSIS ORDER ---------
@@ -1337,21 +1337,21 @@ read_metadata_msorganiser <- function(path, trim_ws = TRUE) {
 
   # check if path exist
   if (!(fs::path_ext(path) %in% c("xlsm", "xlsx"))) {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "Invalid file type not. A MSOrganiser template file (*.xlsx) must be provided."
-    ))
+    )
   } else {
     if (!fs::file_exists(path)) {
-      cli::cli_abort(col_red("File not found. Please verify path."))
+      cli::cli_abort("File not found. Please verify path.")
     }
   }
 
   w_xlm <- openxlsx2::wb_load(path)
 
   if (!"About" %in% openxlsx2::wb_get_sheet_names(w_xlm)) {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "This appears to be an invalid or unsupported MSOrganiser template file, without `About` sheet. Please verify format and version."
-    ))
+    )
   }
 
   d_about <- openxlsx2::wb_to_df(
@@ -1371,9 +1371,9 @@ read_metadata_msorganiser <- function(path, trim_ws = TRUE) {
     !(isTRUE(str_detect(d_about[[1, 2]], "MSOrganiser")) &&
       isTRUE(str_detect(d_about[[3, 2]], "Version")))
   ) {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "This appears to be an invalid or unsupported MSOrganiser template file. Please verify format and version."
-    ))
+    )
   }
 
   # Template schema version lives in About!C3 (e.g. "0.2.1"). Parse it as a
@@ -1386,15 +1386,15 @@ read_metadata_msorganiser <- function(path, trim_ws = TRUE) {
     error = function(e) NULL
   )
   if (is.null(version) || is.na(raw_version)) {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "Invalid version number found in the template. Please use an MSOrganiser template v0.2 or higher."
-    ))
+    )
   }
 
   if (version < "0.2" || version >= "0.3") {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "Unsupported MSOrganiser template version. Please use an MSOrganiser template v0.2 or higher."
-    ))
+    )
   }
 
   w_xlm <- openxlsx2::wb_load(path)
@@ -1659,9 +1659,9 @@ clean_analysis_metadata <- function(d_analyses) {
   names(d_analyses) <- tolower(names(d_analyses))
 
   if (!all(c("analysis_id") %in% names(d_analyses))) {
-    cli::cli_abort(cli::col_red(
+    cli::cli_abort(
       "Analysis (Sample) metadata must have the `analysis_id` columnn. Please verify the input data. "
-    ))
+    )
   }
 
   d_analyses <- trim_stray_cells(d_analyses, "analysis_id", "analysis")
@@ -1851,9 +1851,9 @@ clean_feature_metadata <- function(d_features) {
   }
 
   if (!all(c("feature_id") %in% names(d_features))) {
-    cli::cli_abort(cli::col_red(
+    cli::cli_abort(
       "Feature metadata must have column: `feature_id`. Please verify the input data. "
-    ))
+    )
   }
 
   d_features <- trim_stray_cells(d_features, "feature_id", "feature")
@@ -2041,9 +2041,9 @@ clean_istd_metadata <- function(d_istds) {
     !all(c("istd_feature_id") %in% names(d_istds)) |
       !any(c("istd_conc_nmolar", "istd_conc_ngml") %in% names(d_istds))
   ) {
-    cli::cli_abort(cli::col_red(
+    cli::cli_abort(
       "ISTD metadata must have following columns: `istd_feature_id`, and `istd_conc_nmolar` or `istd_conc_ngml`. Please verify the input data. "
-    ))
+    )
   }
 
   d_istds <- trim_stray_cells(d_istds, "istd_feature_id", "ISTD")
@@ -2096,9 +2096,9 @@ clean_response_metadata <- function(d_rqc) {
         names(d_rqc)
     )
   ) {
-    cli::cli_abort(cli::col_red(
+    cli::cli_abort(
       "Response curves metadata must have following columns: `analysis_id`, `curve_id`, `analyzed_amount` and `analyzed_amount_unit`. Please verify the input data. "
-    ))
+    )
   }
 
   d_rqc <- trim_stray_cells(d_rqc, "analysis_id", "response curve")
@@ -2142,9 +2142,9 @@ clean_qcconc_metadata <- function(d_cal) {
         names(d_cal)
     )
   ) {
-    cli::cli_abort(cli::col_red(
+    cli::cli_abort(
       "QC concentration metadata must have following columns: `sample_id`, `analyte_id`, `concentration` and `concentration_unit`. Please verify the input data. "
-    ))
+    )
   }
 
   d_cal <- trim_stray_cells(

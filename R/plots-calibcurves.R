@@ -164,9 +164,9 @@ plot_calibrationcurves <- function(
         (zoom_n_points == Inf ||
           (zoom_n_points %% 1 == 0 && zoom_n_points > 1))))
   ) {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "`zoom_n_points` must be a positive integer greater than 1 or Inf."
-    ))
+    )
   }
 
   if (is.na(ci_show)) {
@@ -193,24 +193,18 @@ plot_calibrationcurves <- function(
   }
   if (nrow(data@dataset) < 1) {
     cli::cli_abort(
-      col_red(
-        "No data available in the dataset. Please import the necessary data and metadata before proceeding."
-      )
+      "No data available in the dataset. Please import the necessary data and metadata before proceeding."
     )
   }
 
   if (nrow(data@annot_qcconcentrations) < 1) {
     cli::cli_abort(
-      col_red(
-        "No QC-concentration metadata is available. Please import the corresponding metadata to proceed."
-      )
+      "No QC-concentration metadata is available. Please import the corresponding metadata to proceed."
     )
   }
   if (!"CAL" %in% unique(data@dataset$qc_type)) {
     cli::cli_abort(
-      col_red(
-        "No QC type {.strong 'CAL'} defined in the data. Please assign `CAL` as `qc_type` to corresponding calibration analyses/samples in the analysis metadata."
-      )
+      "No QC type {.strong 'CAL'} defined in the data. Please assign `CAL` as `qc_type` to corresponding calibration analyses/samples in the analysis metadata."
     )
   }
 
@@ -254,10 +248,8 @@ plot_calibrationcurves <- function(
     zoom_n_points <- Inf
   } else {
     if (zoom_n_points > n_cal) {
-      cli::cli_alert_warning(
-        col_yellow(
-          "`zoom_n_points` exceed of the number of calibration points ({n_cal}). All samples will be shown."
-        )
+      mh_warn(
+        "`zoom_n_points` exceed of the number of calibration points ({n_cal}). All samples will be shown."
       )
     }
   }
@@ -266,73 +258,73 @@ plot_calibrationcurves <- function(
     qc_types <- unique(d_calib$qc_type)
   } else {
     if (length(setdiff(qc_types, unique(d_calib$qc_type))) > 0) {
-      cli::cli_abort(cli::col_red(
+      cli::cli_abort(
         paste(
           "One or more selected `qc_types` have no defined analyte concentrations. Please verify the feature and QC-concentration metadata, or select other `qc_types`."
         )
-      ))
+      )
     }
   }
 
   # If color_curves is provided, check if it has enough colors
   num_levels <- length(unique(d_calib$qc_type))
   if (length(point_color) < num_levels) {
-    cli::cli_abort(cli::col_red(
+    cli::cli_abort(
       paste(
         "Insufficient colors in `point_colors`. Provide at least",
         num_levels,
         "unique colors for the number of selected `qc_types`"
       )
-    ))
+    )
   }
   if (length(point_fill) < num_levels) {
-    cli::cli_abort(cli::col_red(
+    cli::cli_abort(
       paste(
         "Insufficient fill colors in `point_fill`. Provide at least",
         num_levels,
         "unique colors for the number of selected `qc_types`"
       )
-    ))
+    )
   }
   if (length(point_shape) < num_levels) {
-    cli::cli_abort(cli::col_red(
+    cli::cli_abort(
       paste(
         "Insufficient shape codes in `point_shape`. Provide at least",
         num_levels,
         "unique shape codes for the number of selected `qc_types`"
       )
-    ))
+    )
   }
   qc_types <- unique(d_calib$qc_type)
   if (
     !is.null(names(point_color)) &&
       length(setdiff(qc_types, names(point_color))) > 0
   ) {
-    cli::cli_abort(cli::col_red(
+    cli::cli_abort(
       paste(
         "The names in `point_color` must match the `qc_types` in the dataset. Please verify, or provide only colors."
       )
-    ))
+    )
   }
   if (
     !is.null(names(point_fill)) &&
       length(setdiff(qc_types, names(point_fill))) > 0
   ) {
-    cli::cli_abort(cli::col_red(
+    cli::cli_abort(
       paste(
         "The names in `point_fill` must match the `qc_types` in the dataset. Please verify, or provide only fill colors."
       )
-    ))
+    )
   }
   if (
     !is.null(names(point_shape)) &&
       length(setdiff(qc_types, names(point_shape))) > 0
   ) {
-    cli::cli_abort(cli::col_red(
+    cli::cli_abort(
       paste(
         "The names in `point_shape` must match the `qc_types` in the dataset. Please verify, or provide only shapes codes."
       )
-    ))
+    )
   }
 
   d_calib$curve_id <- 1
@@ -385,9 +377,7 @@ plot_calibrationcurves <- function(
   x_axis_unit <- unique(d_calib$concentration_unit)
   if (length(x_axis_unit) > 1) {
     cli::cli_abort(
-      cli::col_red(
-        "The `concentration_unit` (x axis) must be identical for selected curves and data points. Please change selection of curves or update calibration curve metadata."
-      )
+      "The `concentration_unit` (x axis) must be identical for selected curves and data points. Please change selection of curves or update calibration curve metadata."
     )
   }
 
@@ -404,10 +394,8 @@ plot_calibrationcurves <- function(
 
   count_regfailed <- sum(data@metrics_calibration$reg_failed_cal_1)
   if (count_regfailed > 0) {
-    cli::cli_alert_info(
-      col_yellow(
-        "Regression failed for {count_regfailed} features, no curves shown for these."
-      )
+    mh_warn(
+      "Regression failed for {count_regfailed} features, no curves shown for these."
     )
   }
 
@@ -567,9 +555,7 @@ plot_calibrationcurves <- function(
     )
     if (specific_page > total_pages) {
       cli::cli_abort(
-        col_red(
-          "Selected page exceeds the total number of pages. Please select a page number between {.strong 1} and {.strong {total_pages}}."
-        )
+        "Selected page exceeds the total number of pages. Please select a page number between {.strong 1} and {.strong {total_pages}}."
       )
     }
     page_range <- specific_page
@@ -605,10 +591,8 @@ plot_calibrationcurves <- function(
     }
 
     if (txt != "") {
-      cli::cli_alert_info(
-        cli::col_yellow(
-          "Regions of the {txt} are partially <= 0 and will be omitted. {txt2}."
-        )
+      mh_warn(
+        "Regions of the {txt} are partially <= 0 and will be omitted. {txt2}."
       )
     }
 

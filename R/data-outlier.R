@@ -55,10 +55,9 @@ detect_outlier_pca <- function(
     missing_qc_types <- setdiff(qc_types, unique(data@dataset$qc_type))
 
     if (length(missing_qc_types) > 0) {
-      cli::cli_abort(col_red(
-        "Following specified QC types are missing in the dataset: {paste(missing_qc_types, collapse = ",
-        ")}"
-      ))
+      cli::cli_abort(
+        "The following specified QC types are missing in the dataset: {.val {missing_qc_types}}."
+      )
     }
   }
 

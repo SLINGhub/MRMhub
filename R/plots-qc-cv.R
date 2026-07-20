@@ -150,9 +150,9 @@ plot_normalization_qc <- function(
   }
 
   if (!all(qc_types %in% unique(data$dataset$qc_type))) {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "One or more specified `qc_types` are not present in the dataset. Please verify data or analysis metadata."
-    ))
+    )
   }
   start_regex <- paste(c(before_norm_var, after_norm_var), collapse = "|")
   middle_string <- "_cv_"
@@ -165,28 +165,28 @@ plot_normalization_qc <- function(
   y_variable <- stringr::str_c(after_norm_var, "_cv")
 
   if (x_variable == y_variable) {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "`before_norm_var` and `after_norm_var` cannot be the same."
-    ))
+    )
   }
 
   if (!data@is_istd_normalized) {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "Data has not yet been normalized. Please run `normalize_by_istd()` first."
-    ))
+    )
   } else {
     if (!data@is_quantitated & after_norm_var == "conc") {
-      cli::cli_abort(col_red(
+      cli::cli_abort(
         "Data has not yet been quantitated. Please run one of the`quantitate_...()` functions first."
-      ))
+      )
     }
   }
 
   # Check if QC metrics table is available
   if (nrow(data@metrics_qc) == 0) {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "No QC metrics available yet. Please run `calc_qc_metrics()`, or apply QC filters first."
-    ))
+    )
   }
 
   # Call plot_qcmetrics_comparison to generate the plot
@@ -329,9 +329,9 @@ plot_qcmetrics_comparison <- function(
         any(is.infinite(x_lim), na.rm = TRUE) ||
         any(is.infinite(y_lim), na.rm = TRUE))
   ) {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "Log scale cannot be used with zero, negative, infinite, or NA axis limits."
-    ))
+    )
   }
 
   # In the scatter plot a CV axis (a coefficient of variation, always >= 0)
@@ -346,10 +346,10 @@ plot_qcmetrics_comparison <- function(
 
   # Check if QC metrics table is available
   if (nrow(data@metrics_qc) == 0) {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "No QC metrics available yet. Please run
                            `calc_qc_metrics()`, or apply QC filters first."
-    ))
+    )
   }
 
   # Note: x_variable/y_variable are matched against the QC-metrics columns by
@@ -364,9 +364,9 @@ plot_qcmetrics_comparison <- function(
     facet_by_class &&
       (!"feature_class" %in% names(d_qc) || all(is.na(d_qc$feature_class)))
   ) {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "`feature_class` to be defined in the metadata. Please ammend metadata or set `facet_by_class = FALSE`."
-    ))
+    )
   }
 
   # Apply additional QC filtering if requested
@@ -374,9 +374,9 @@ plot_qcmetrics_comparison <- function(
     if (data@is_filtered) {
       d_qc <- d_qc |> filter(.data$all_filter_pass)
     } else {
-      cli_abort(cli::col_red(
+      cli_abort(
         "Data has not yet been QC-filtered. Apply filter, or set `filter_data = FALSE`."
-      ))
+      )
     }
   }
 
@@ -461,8 +461,10 @@ plot_qcmetrics_comparison <- function(
 
   # The QC type is shown in the legend for a single-type comparison, so drop the
   # now-redundant qc_type suffix (e.g. "_bqc") from the axis titles.
-  x_var_lab <- if (single_qc_type) str_remove(x_variable, "_[^_]+$") else x_variable
-  y_var_lab <- if (single_qc_type) str_remove(y_variable, "_[^_]+$") else y_variable
+  x_var_lab <- if (single_qc_type) str_remove(x_variable, "_[^_]+$") else
+    x_variable
+  y_var_lab <- if (single_qc_type) str_remove(y_variable, "_[^_]+$") else
+    y_variable
 
   x_label <- case_when(
     plot_type == "scatter" ~ paste("QC metric:", x_var_lab),

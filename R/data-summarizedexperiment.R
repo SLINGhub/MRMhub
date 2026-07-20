@@ -102,9 +102,9 @@ save_dataset_summarizedexperiment <- function(
   )
 
   if (nrow(data@dataset) == 0) {
-    cli_abort(col_red(
+    cli_abort(
       "No annotated data available. Import and process data before exporting."
-    ))
+    )
   }
 
   d <- get_dataset_subset(data, filter_data = filter_data)
@@ -124,9 +124,9 @@ save_dataset_summarizedexperiment <- function(
     }
     missing_vars <- str_remove(setdiff(variables, available), "^feature_")
     if (length(missing_vars) > 0) {
-      cli_abort(col_red(
+      cli_abort(
         "Feature variable {.val {missing_vars}} not available. Available variables: {.val {str_remove(available, '^feature_')}}."
-      ))
+      )
     }
   }
 
@@ -139,9 +139,9 @@ save_dataset_summarizedexperiment <- function(
   i <- match(d$feature_id, feature_ids)
   j <- match(d$analysis_id, analysis_ids)
   if (anyNA(i) || anyNA(j)) {
-    cli_abort(col_red(
+    cli_abort(
       "The data contain analyses or features that are missing from the metadata. Please verify the annotations."
-    ))
+    )
   }
 
   # Position of each long-format row in the (column-major) assay matrix. Filling
@@ -149,9 +149,9 @@ save_dataset_summarizedexperiment <- function(
   # construction, which is what SummarizedExperiment requires across assays.
   idx <- i + (j - 1L) * length(feature_ids)
   if (anyDuplicated(idx) > 0) {
-    cli_abort(col_red(
+    cli_abort(
       "More than one value per analysis and feature found. Please verify the data."
-    ))
+    )
   }
 
   assay_list <- lapply(variables, \(v) {
@@ -197,15 +197,15 @@ save_dataset_summarizedexperiment <- function(
     path <- paste0(path, ".rds")
   }
   if (fs::file_exists(path) && !overwrite) {
-    cli_abort(col_red(
+    cli_abort(
       "File '{path}' already exists. Use `overwrite = TRUE` to replace it."
-    ))
+    )
   }
   saveRDS(se, file = path)
 
-  cli_alert_success(col_green(
+  mh_success(
     "{as} with {nrow(se)} feature{?s} and {ncol(se)} analys{?is/es} was saved to '{path}'."
-  ))
+  )
   invisible(se)
 }
 
@@ -301,9 +301,9 @@ save_dataset_summarizedexperiment <- function(
   risky <- names(which(prop_sub_one > 0.5))
 
   if (length(risky) > 0) {
-    cli_alert_warning(col_yellow(
+    mh_warn(
       "Assay {.val {risky}} {?is/are} mostly < 1. `lipidr` clamps values < 1 to 1 before log-transforming, which would silently flatten {?it/them}."
-    ))
+    )
     cli_alert_info(
       "Use an assay on peak-area scale (e.g. {.val intensity}), pass {.code log = FALSE} to `lipidr`, or log-transform beforehand."
     )

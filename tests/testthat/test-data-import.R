@@ -1155,7 +1155,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
       import_metadata = TRUE,
       first_feature_column = "NotThere"
     ),
-    "Column `NotThere` not found in the data file",
+    "Column NotThere not found in the data file",
     fixed = TRUE
   )
 
@@ -1403,7 +1403,7 @@ test_that("import_data_csv_long handels errors", {
   path <- test_path("testdata/plain-long/data_plain_long_2.csv")
   expect_message(
     mexp <- import_data_csv_long(data = mexp, path = path),
-    "Following unrecognized columns present in the data and were ignored",
+    "The following unrecognized columns were present in the data and were ignored",
     fixed = TRUE
   )
 })

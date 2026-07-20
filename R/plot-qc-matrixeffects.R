@@ -108,13 +108,13 @@ plot_qc_matrixeffects <- function(
       ) |>
       filter(.data$median_signal >= min_median_value)
     if (nrow(d_minsignal) == 0) {
-      cli_abort(col_red(
+      cli_abort(
         "No features passed the `min_median_value` filter. Please review the filter value, `variable` and data."
-      ))
+      )
     } else if (nrow(d_minsignal) == 1) {
-      cli_abort(col_red(
+      cli_abort(
         "Only 1 feature passed the `min_median_value` filter. Please review the filter value, `variable`, and data."
-      ))
+      )
     }
 
     d_filt <- d_filt |> semi_join(d_minsignal, by = "feature_id")

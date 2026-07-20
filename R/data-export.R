@@ -108,15 +108,15 @@ save_report_xlsx <- function(
     normalized_variable <- normalized_variable[!is.na(normalized_variable)]
 
     if (length(normalized_variable) > 1) {
-      cli_abort(col_red(
+      cli_abort(
         "More than one normalized feature variable found in dataset. Please specify which one to include in the report via `normalized_variable`."
-      ))
+      )
     }
   } else {
     if (!paste0(normalized_variable, "_normalized") %in% names(data@dataset)) {
-      cli_abort(col_red(
+      cli_abort(
         "Normalized feature variable '{normalized_variable}' not found in dataset. Please check the name or modify `normalized_variable`."
-      ))
+      )
     }
   }
 
@@ -379,7 +379,7 @@ save_report_xlsx <- function(
 
   names(table_list)[4:5] <- c(name_filt_spl, name_filt_all)
 
-  message("\rSaving report to disk - please wait...")
+  message("Saving report to disk - please wait...")
   wb <- openxlsx2::write_xlsx(
     x = table_list,
     #file = path,
@@ -451,9 +451,9 @@ save_report_xlsx <- function(
   } else {
     " "
   }
-  cli_alert_success(col_green(glue::glue(
-    "\rThe data processing report{txtitle}has been saved to '{path}'."
-  )))
+  mh_success(
+    "The data processing report{txtitle}has been saved to {.file {path}}."
+  )
 }
 
 
@@ -593,9 +593,9 @@ save_dataset_csv <- function(
   if (variable_strip == "conc") {
     variable_strip <- "concentration"
   }
-  cli_alert_success(col_green(glue::glue(
+  mh_success(
     "{stringr::str_to_title(variable_strip)} values for {nrow(ds)} analyses and {length(unique(d_filt$feature_id))} features have been exported to '{path}'."
-  )))
+  )
 }
 
 #' Save feature QC metrics to CSV
@@ -613,17 +613,17 @@ save_feature_qc_metrics <- function(data = NULL, path) {
 
   # Verify that the QC metrics have been calculated
   if (nrow(data@metrics_qc) == 0) {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "Feature QC metrics has not yet been calculated. Please run 'calc_qc_metrics()' first."
-    ))
+    )
   }
 
   # Write the QC metrics to a CSV file
   readr::write_csv(data@metrics_qc, file = path, col_names = TRUE)
 
-  cli_alert_success(col_green(
+  mh_success(
     "Feature QC metrics table was saved to '{path}'."
-  ))
+  )
 
   # Return the QC metrics invisibly as a side-effect
   invisible(data@metrics_qc)
@@ -648,22 +648,22 @@ save_metadata_templates <- function(path = "metadata_template.xlsx") {
   )
 
   if (fs::file_exists(path)) {
-    cli_abort(col_red(
+    cli_abort(
       "A file with this name already exists at the specified location. Please delete it or choose a different filename or location."
-    ))
+    )
   }
 
   if (template_path == "") {
-    cli_abort(col_red(
+    cli_abort(
       "Template file not found in package data. Please re-install `mrmhub`."
-    ))
+    )
   }
 
   # Copy the template to the desired location
   fs::file_copy(template_path, path, overwrite = TRUE)
-  cli_alert_success(col_green(
+  mh_success(
     "Metadata table templates were saved to '{path}'."
-  ))
+  )
 }
 
 
@@ -688,20 +688,20 @@ save_metadata_msorganiser_template <- function(
   )
 
   if (fs::file_exists(path)) {
-    cli_abort(col_red(
+    cli_abort(
       "A file with this name already exists at the specified location. Please delete it or choose a different filename or location."
-    ))
+    )
   }
 
   if (template_path == "") {
-    cli_abort(col_red(
+    cli_abort(
       "Template file not found in package data. Please re-install `mrmhub`."
-    ))
+    )
   }
 
   # Copy the template to the desired location
   fs::file_copy(template_path, path, overwrite = TRUE)
-  cli_alert_success(col_green(
+  mh_success(
     "A MRMhub Metadata Organizer template was saved to '{path}'."
-  ))
+  )
 }

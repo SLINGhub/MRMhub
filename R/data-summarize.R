@@ -95,7 +95,7 @@ data_sum_features <- function(
         # The constituents are separate chromatographic peaks, so neither summing
         # nor averaging their widths describes the merged analyte. Set to NA
         # explicitly rather than reporting a meaningless aggregate.
-        dplyr::across(any_of(c("feature_fwhm", "feature_width")), ~ NA_real_),
+        dplyr::across(any_of(c("feature_fwhm", "feature_width")), ~NA_real_),
         # The merged analyte quantifies if any constituent does: quant + qual and
         # quant + quant give a quantifier, qual + qual stays a qualifier.
         dplyr::across(
@@ -278,7 +278,7 @@ warn_inconsistent_merged_metadata <- function(annot_features) {
   cli::cli_warn(c(
     "!" = "{length(analytes)} merged analyte{?s} {?has/have} transitions with differing feature metadata.",
     "i" = "{cli::qty(length(fields))}The first transition's value is used for {?this field/these fields}: {.field {fields}}",
-    "i" = "{cli::qty(length(analytes))}Affected analyte{?s}: {.val {utils::head(analytes, 5)}}"
+    "i" = "{cli::qty(length(analytes))}Affected analyte{?s}: {.val {mh_vec(analytes)}}"
   ))
   invisible(NULL)
 }

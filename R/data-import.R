@@ -272,9 +272,9 @@ import_data_csv <- function(
   first_feature_column = NA,
   na_strings = "NA"
 ) {
-  cli::cli_alert_warning(col_yellow(
+  mh_warn(
     "The function import_data_csv is deprecated. Please use import_data_csv_wide instead."
-  ))
+  )
   import_data_csv_wide(
     data = data,
     path = path,
@@ -563,21 +563,21 @@ import_data_main <- function(
   # An empty match (wrong/empty folder, or no file of the expected type) would
   # otherwise surface later as a cryptic "Can't subset columns ... analysis_id".
   if (length(file_paths) == 0) {
-    cli::cli_abort(col_red(c(
+    cli::cli_abort(c(
       "No files matching {.val {file_ext}} were found in {.path {path}}.",
       "i" = "Please verify the folder path and the expected file type."
-    )))
+    ))
   }
 
   if (!all(fs::file_exists(file_paths))) {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "One or more given files do not exist. Please verify file paths."
-    ))
+    )
   }
   if (any(duplicated(file_paths))) {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "One or more given files are duplicated. Please verify file paths."
-    ))
+    )
   }
 
   names(file_paths) <- file_paths
@@ -601,10 +601,10 @@ import_data_main <- function(
   # A file that parses (right columns) but holds no data rows would otherwise be
   # reported as a successful import of 0 analyses. Reject it up front.
   if (nrow(d_raw) == 0) {
-    cli::cli_abort(col_red(c(
+    cli::cli_abort(c(
       "The imported {cli::qty(length(file_paths))}file{?s} contained no data rows.",
       "i" = "Please verify the file content and that it is not empty."
-    )))
+    ))
   }
 
   # Backstop: whitespace-normalize every id/category column an importer may
@@ -702,14 +702,14 @@ import_data_main <- function(
     if (has_duplicated_values) {
       cli::cli_abort(c(
         "Imported data measures the same feature more than once in the same analysis.",
-        "x" = "{n_dup} analysis/feature pair{?s} {cli::qty(n_dup)}{?is/are} measured more than once, each time with {cli::style_italic('identical')} values: {.val {utils::head(dup_pairs$pair, 5)}}",
+        "x" = "{n_dup} analysis/feature pair{?s} {cli::qty(n_dup)}{?is/are} measured more than once, each time with {cli::style_italic('identical')} values: {.val {mh_vec(dup_pairs$pair)}}",
         "i" = "Identical values mean the same data was read twice: the same result file, or an overlapping part of it, imported more than once.",
         "i" = "A row or transition duplicated within a single file has the same effect."
       ))
     } else {
       cli::cli_abort(c(
         "Imported data measures the same feature more than once in the same analysis.",
-        "x" = "{n_dup} analysis/feature pair{?s} {cli::qty(n_dup)}{?is/are} measured more than once, with {cli::style_italic('differing')} values: {.val {utils::head(dup_pairs$pair, 5)}}",
+        "x" = "{n_dup} analysis/feature pair{?s} {cli::qty(n_dup)}{?is/are} measured more than once, with {cli::style_italic('differing')} values: {.val {mh_vec(dup_pairs$pair)}}",
         "i" = "Differing values mean two separate measurements carry the same ids: two transitions or two injections named identically, re-integrated results, or the wrong column mapped to {.field analysis_id} or {.field feature_id}.",
         "i" = "Please verify the imported file(s), including the analysis and feature names they report."
       ))
@@ -738,15 +738,15 @@ import_data_main <- function(
       )
     n_features <- nrow(feat_is_qual)
     if (!any(data@dataset_orig$integration_qualifier, na.rm = TRUE)) {
-      cli_alert_success(cli::col_green(
+      mh_success(
         "Imported {n_analyses} analys{?is/es} with {n_features} feature{?s}."
-      ))
+      )
     } else {
       n_qual <- sum(feat_is_qual$is_qualifier)
       n_quant <- n_features - n_qual
-      cli_alert_success(cli::col_green(
+      mh_success(
         "Imported {n_analyses} analys{?is/es} with {n_features} feature{?s} ({n_quant} quantifier{?s}, {n_qual} qualifier{?s})."
-      ))
+      )
     }
   }
 
@@ -845,15 +845,15 @@ parse_masshunter_csv <- function(
   }
 
   if ("Compound Method" == datWide[[1, 1]]) {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "Compound table format is currently not supported. Please re-export your data in MH with compounds as columns."
-    ))
+    )
   }
 
   if (!any(c("Data File") %in% unlist(datWide[3, ]))) {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "'Data File' column is required and used as a unique identifier, but is missing or the file is in an unsupported/corrupt format. Please re-export from MassHunter with 'Data File' included, samples in rows, and features in columns."
-    ))
+    )
   }
 
   if (datWide[1, 1] != "Sample") {
@@ -1291,15 +1291,15 @@ parse_mrmhub_result <- function(path, silent = FALSE) {
 apply_skyline_transition_ids <- function(d_raw, args) {
   if ("transition_id_columns" %in% names(args)) {
     if (!"analysis_id" %in% names(d_raw)) {
-      cli_abort(col_red(
+      cli_abort(
         "The `Replicate Name` column is missing in the data file. Please ensure it is included in the Skyline export."
-      ))
+      )
     }
 
     if (!"feature_id" %in% names(d_raw)) {
-      cli_abort(col_red(
+      cli_abort(
         "The `Molecule Name` column is missing in the data file. Please ensure it is included in the Skyline export."
-      ))
+      )
     }
 
     if (args$transition_id_columns == "name") {
@@ -1326,9 +1326,9 @@ apply_skyline_transition_ids <- function(d_raw, args) {
             remove = FALSE
           )
       } else {
-        cli_abort(col_red(
+        cli_abort(
           "`Precursor Name` and/or `Product Name` columns are missing or contain no/missing values. Ensure these are included in the Skyline export, or modify `transition_id_columns` argument"
-        ))
+        )
       }
     } else if (args$transition_id_columns == "mz") {
       if (
@@ -1351,9 +1351,9 @@ apply_skyline_transition_ids <- function(d_raw, args) {
             remove = FALSE
           )
       } else {
-        cli_abort(col_red(
+        cli_abort(
           "`Precursor Mz` and/or `Product Mz` columns are missing or contain no/missing values. Ensure these are included in the Skyline export, or modify `transition_id_columns` argument"
-        ))
+        )
       }
     } else if (args$transition_id_columns == "none") {
       # Do nothing, as Molecule Name was mapped to feature_id
@@ -1366,13 +1366,13 @@ apply_skyline_transition_ids <- function(d_raw, args) {
 
     if (nrow(duplicate_rows) > 0) {
       if (args$transition_id_columns == "none") {
-        cli::cli_abort(col_red(
+        cli::cli_abort(
           "`Molecule Name` is not unique identifier for each transition. To generate unique feature IDs, please set the `transition_id_columns` argument to either `name` or `mz`."
-        ))
+        )
       } else {
-        cli::cli_abort(col_red(
+        cli::cli_abort(
           "Feature IDs are not unique even with precursor/product ion details added. Please check Precursor/Product Name/Mz columns in the data file."
-        ))
+        )
       }
     }
   }
@@ -1428,7 +1428,7 @@ parse_plain_long_csv <- function(
     TRUE ~ NA_character_
   )
   if (is.na(sep)) {
-    cli::cli_abort(col_red("Data file type/extension not supported."))
+    cli::cli_abort("Data file type/extension not supported.")
   }
 
   d_raw <- readr::read_delim(
@@ -1446,10 +1446,10 @@ parse_plain_long_csv <- function(
   # Detect it and say so, instead of failing later as "analysis_id is missing".
   if (ncol(d_raw) == 1 && grepl("[;\t]", names(d_raw)[1])) {
     other <- if (grepl(";", names(d_raw)[1])) "semicolon (;)" else "tab"
-    cli::cli_abort(col_red(c(
+    cli::cli_abort(c(
       "The file was read as a single column using the {.val {sep}} delimiter.",
       "i" = "It appears to be {other}-delimited. Please re-export it as a comma-delimited UTF-8 CSV (e.g. {.val CSV UTF-8 (Comma delimited)} in Excel, or the equivalent in your tool)."
-    )))
+    ))
   }
 
   if (is.null(column_mapping)) {
@@ -1509,9 +1509,9 @@ parse_plain_long_csv <- function(
   # Check required IDs
   missing_ids <- setdiff("analysis_id", names(d_raw))
   if (length(missing_ids) > 0) {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "Required `analysis_id` column is missing. Please map column names via the `column_mapping` argument or verify data file."
-    ))
+    )
   }
 
   d_raw <- d_raw |>
@@ -1524,12 +1524,9 @@ parse_plain_long_csv <- function(
   unmapped <- setdiff(names(d_raw), c("analysis_id", names(column_mapping)))
   if (length(unmapped) > 0) {
     if (warn_unrecognized_columns) {
-      cli::cli_alert_warning(col_yellow(
-        "Following unrecognized columns present in the data and were ignored: {.val {unmapped}}."
-      ))
-      cli::cli_alert_warning(col_yellow(
-        "Use argument `column_mapping` to define column mapping."
-      ))
+      mh_warn(
+        "The following unrecognized columns were present in the data and were ignored: {.val {unmapped}}. Use {.arg column_mapping} to map them."
+      )
     }
     d_raw <- d_raw |> select(-!!unmapped)
   }
@@ -1597,9 +1594,9 @@ parse_plain_long_csv <- function(
 
   missing_ids <- setdiff("feature_id", names(d_raw))
   if (length(missing_ids) > 0) {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "Required `feature_id` column is missing. Please map column names via the `column_mapping` argument or verify data file."
-    ))
+    )
   }
 
   d_feature <- d_raw |>
@@ -1710,7 +1707,7 @@ parse_plain_wide_csv <- function(
   na_strings = "NA"
 ) {
   if (fs::path_ext(path) != "csv") {
-    cli::cli_abort(col_red("Only csv files are currently supported."))
+    cli::cli_abort("Only csv files are currently supported.")
   }
 
   variable_name <- str_remove(variable_name, "feature_")
@@ -1747,9 +1744,9 @@ parse_plain_wide_csv <- function(
   # become an empty-named feature or crash the later column subsetting.
   blank_cols <- which(is.na(names(d)) | trimws(names(d)) == "")
   if (length(blank_cols) > 0) {
-    cli::cli_alert_warning(col_yellow(
+    mh_warn(
       "Dropped {length(blank_cols)} column{?s} with an empty header from the data file."
-    ))
+    )
     d <- d[-blank_cols]
   }
 
@@ -1757,16 +1754,16 @@ parse_plain_wide_csv <- function(
     # a column name or index was provided as analysis_id
     if (is.numeric(analysis_id_col)) {
       if (analysis_id_col < 1 || analysis_id_col > ncol(d)) {
-        cli::cli_abort(col_red(
+        cli::cli_abort(
           "Column index set via `analysis_id_col` is out of range. Please verify the value or use the column name."
-        ))
+        )
       }
       analysis_id_col <- names(d)[analysis_id_col]
     }
     if (!analysis_id_col %in% names(d)) {
-      cli::cli_abort(col_red(
+      cli::cli_abort(
         "No column with the name `{analysis_id_col}` found in the data file."
-      ))
+      )
     }
   } else {
     # no column name provided, try to find analysis_id first
@@ -1774,17 +1771,17 @@ parse_plain_wide_csv <- function(
       analysis_id_col <- "analysis_id"
     } else {
       # no analysis_id column found
-      cli::cli_abort(col_red(
+      cli::cli_abort(
         "Column `analysis_id` not found in imported data. Please set the column to be used as `analysis_id` using the `analysis_id_col` argument"
-      ))
+      )
     }
   }
 
   n_dup <- sum(duplicated(names(d)))
   if (n_dup > 0) {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "{n_dup} duplicated column name(s) present in the data file. Please verify the data."
-    ))
+    )
   }
 
   analysis_metadata_cols <- c(
@@ -1801,14 +1798,14 @@ parse_plain_wide_csv <- function(
     if (import_metadata) {
       if ("analysis_order" %in% analysis_metadata_cols) {
         if (!is.numeric(d$analysis_order)) {
-          cli::cli_abort(col_red(
+          cli::cli_abort(
             "Column `analysis_order` must contain unique numbers. Please verify your data or use `import_metadata = FALSE`"
-          ))
+          )
         }
         if (any(duplicated(d$analysis_order))) {
-          cli::cli_abort(col_red(
+          cli::cli_abort(
             "`analysis_order` contains duplicated values. Please verify your data."
-          ))
+          )
         }
       }
 
@@ -1832,9 +1829,9 @@ parse_plain_wide_csv <- function(
           )
         )
 
-      cli::cli_alert_info(col_green(
+      mh_success(
         "Metadata column(s) '{txt}' imported. To ignore, set `import_metadata = FALSE`"
-      ))
+      )
     } else {
       d <- d |> select(-all_of(analysis_metadata_cols))
       cli::cli_alert_info(cli::col_grey(
@@ -1851,9 +1848,9 @@ parse_plain_wide_csv <- function(
 
   n_dup <- sum(duplicated(d[[analysis_id_col]]))
   if (n_dup > 0) {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "{n_dup} duplicated `analysis_id` present in the data file. Please verify the data."
-    ))
+    )
   }
 
   # Verify all data columns are numeric
@@ -1861,17 +1858,17 @@ parse_plain_wide_csv <- function(
   if (!is.na(first_feature_column)) {
     if (!is.numeric(first_feature_column)) {
       if (!first_feature_column %in% names(d)) {
-        cli::cli_abort(col_red(
-          "Column `{first_feature_column}` not found in the data file. Please very set argument `first_feature_column`"
-        ))
+        cli::cli_abort(
+          "Column {.field {first_feature_column}} not found in the data file. Please check {.arg first_feature_column}."
+        )
       } else {
         first_feature_column_ix <- which(names(d) == first_feature_column)
       }
     } else {
       if (first_feature_column > ncol(d) | first_feature_column < 2) {
-        cli::cli_abort(col_red(
+        cli::cli_abort(
           "Column index set via `first_feature_column` out of range. Please verify the set value or use the column name."
-        ))
+        )
       } else {
         first_feature_column_ix <- first_feature_column
       }
@@ -1888,9 +1885,9 @@ parse_plain_wide_csv <- function(
   analysis_cols <- setdiff(names(d), c(val_cols))
 
   if (!all(purrr::map_lgl(d[val_cols], is.numeric))) {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "All columns with feature values must be numeric. Check your data, or if metadata is present, use `first_feature_column` to set start of feature data. If missing values are present as text, use `na_strings` to set the values to be treated as missing."
-    ))
+    )
   }
 
   d_long <- d |>

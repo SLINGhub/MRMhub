@@ -173,13 +173,13 @@ plot_pca <- function(
       ) |>
       filter(.data$median_signal >= min_median_value)
     if (nrow(d_minsignal) == 0) {
-      cli_abort(col_red(
+      cli_abort(
         "No features passed the `min_median_value` filter. Please review the filter value, `variable` and data."
-      ))
+      )
     } else if (nrow(d_minsignal) == 1) {
-      cli_abort(col_red(
+      cli_abort(
         "Only 1 feature passed the `min_median_value` filter. Please review the filter value, `variable`, and data."
-      ))
+      )
     }
 
     d_filt <- d_filt |> semi_join(d_minsignal, by = "feature_id")
@@ -201,9 +201,9 @@ plot_pca <- function(
 
   n_removed <- ncol(d_wide) - ncol(d_clean)
   if (n_removed > 0) {
-    cli_alert_warning(col_yellow(
+    mh_warn(
       "{n_removed} features contained missing or non-numeric values and were exluded."
-    ))
+    )
   }
 
   d_metadata <- d_filt |>
@@ -227,9 +227,9 @@ plot_pca <- function(
   col_sd <- apply(m_raw, 2, stats::sd, na.rm = TRUE)
   constant <- !is.na(col_sd) & col_sd == 0
   if (any(constant)) {
-    cli_alert_warning(col_yellow(
+    mh_warn(
       "{sum(constant)} feature{?s} had zero variance across the selected samples and {?was/were} excluded from the PCA."
-    ))
+    )
     m_raw <- m_raw[, !constant, drop = FALSE]
   }
 
@@ -278,9 +278,9 @@ plot_pca <- function(
         label_outlier = str_remove(.data$label_outlier, shared_labeltext_hide)
       )
     if (any(duplicated(pca_annot$label_outlier, incomparables = NA))) {
-      cli_abort(cli::col_red(
+      cli_abort(
         "`shared_labeltext_hide` setting causes duplicate labels. Please adjust or set to `NA` to show full labels."
-      ))
+      )
     }
   }
 
@@ -293,9 +293,9 @@ plot_pca <- function(
         length(setdiff(ellipse_levels, unique(pca_annot[[ellipse_variable]]))) >
           0
       ) {
-        cli_abort(col_red(
+        cli_abort(
           "One or more levels in `ellipse_levels` are not present in `{ellipse_variable}`. Please verify the levels and `ellipse_variable`."
-        ))
+        )
       }
       pca_annot_ellipses <- pca_annot |>
         filter(.data[[ellipse_variable]] %in% ellipse_levels)
@@ -331,9 +331,7 @@ plot_pca <- function(
       num_levels <- length(unique(pca_annot_ellipses[[ellipse_variable]]))
       if (length(ellipse_fillcolor) < num_levels) {
         cli::cli_abort(
-          cli::col_red(
-            "Insufficient colors in `ellipse_fillcolor`. Provide at least {num_levels} unique colors for the number of {ellipse_variable}"
-          )
+          "Insufficient colors in `ellipse_fillcolor`. Provide at least {num_levels} unique colors for the number of {ellipse_variable}"
         )
       }
     }
@@ -473,9 +471,9 @@ plot_pca <- function(
     )
 
   txt <- if (log_transform) "log2-transformed" else "raw"
-  cli::cli_alert_info(col_green(
+  mh_success(
     "The PCA was calculated based on `{variable}` values of {length(unique(d_filt$feature_id))} features."
-  ))
+  )
 
   p
 }
@@ -576,13 +574,13 @@ plot_pca_loading <- function(
       ) |>
       filter(.data$median_signal >= min_median_value)
     if (nrow(d_minsignal) == 0) {
-      cli_abort(col_red(
+      cli_abort(
         "No features passed the `min_median_value` filter. Please review the filter value, `variable` and data."
-      ))
+      )
     } else if (nrow(d_minsignal) == 1) {
-      cli_abort(col_red(
+      cli_abort(
         "Only 1 feature passed the `min_median_value` filter. Please review the filter value, `variable`, and data."
-      ))
+      )
     }
 
     d_filt <- d_filt |> semi_join(d_minsignal, by = "feature_id")

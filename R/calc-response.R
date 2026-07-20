@@ -62,9 +62,9 @@ get_response_curve_stats <- function(
 
   if (nrow(data@annot_responsecurves) == 0) {
     if (!silent_invalid_data) {
-      cli::cli_abort(col_red(
+      cli::cli_abort(
         "No response curve metadata found. Please import the corresponding metadata first."
-      ))
+      )
     }
     return(NULL)
   }
@@ -74,9 +74,9 @@ get_response_curve_stats <- function(
       dplyr::filter(.data$qc_type == "RQC")
     if (nrow(d_stats) == 0) {
       if (!silent_invalid_data) {
-        cli::cli_abort(col_red(
+        cli::cli_abort(
           "No analyses/samples of QC type `RQC` found. Please verify the analysis metadata."
-        ))
+        )
       }
       return(NULL)
     }
@@ -93,9 +93,9 @@ get_response_curve_stats <- function(
   # series remain. Abort/NULL only when nothing matches (`nrow(d_stats) == 0`).
   if (nrow(d_stats) == 0) {
     if (!silent_invalid_data) {
-      cli::cli_abort(col_red(
+      cli::cli_abort(
         "No analysis IDs in the response curve metadata match the dataset. Please verify your metadata."
-      ))
+      )
     }
     return(NULL)
   }

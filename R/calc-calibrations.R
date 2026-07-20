@@ -77,13 +77,13 @@ quantify_by_calibration <- function(
   # Check if calibration curve data is missing for any feature
   if (length(features_no_calib) > 0) {
     if (ignore_missing_annotation) {
-      cli::cli_alert_warning(cli::col_yellow(
+      mh_warn(
         "Calibration curve annotations for {length(features_no_calib)} features are missing. Calculated concentrations for these features will be `NA`."
-      ))
+      )
     } else {
-      cli::cli_abort(cli::col_red(
+      cli::cli_abort(
         "Calibration curve annotations for {length(features_no_calib)} features are missing. Please verify data and QC-concentration metadata, or ignore by setting `ignore_missing_annotation = TRUE`."
-      ))
+      )
     }
   }
 
@@ -91,13 +91,13 @@ quantify_by_calibration <- function(
   # Check if calibration curve data is missing for any feature
   if (features_failed_calib > 0) {
     if (ignore_failed_calibration) {
-      cli::cli_alert_warning(cli::col_yellow(
+      mh_warn(
         "Calibration curve fit failed for {features_failed_calib} features. Calculated concentrations for these features will be `NA`."
-      ))
+      )
     } else {
-      cli::cli_abort(cli::col_red(
+      cli::cli_abort(
         "Calibration curve fit failed for {features_failed_calib} features. Please verify data and QC-concentration metadata, or ignore by setting `ignore_failed_calibration = TRUE`."
-      ))
+      )
     }
   }
 
@@ -226,7 +226,7 @@ quantify_by_calibration <- function(
     cli::cli_warn(c(
       "!" = "{nrow(d_backcalc_na)} concentration value{?s} could not be back-calculated from the calibration curve and {?was/were} set to {.val {NA_real_}}.",
       "i" = "This occurs when the response has no real solution on the curve or the slope is zero.",
-      "i" = "Affected feature{?s}: {.val {affected_features}}"
+      "i" = "Affected feature{?s}: {.val {mh_vec(affected_features)}}"
     ))
   }
 
@@ -249,9 +249,9 @@ quantify_by_calibration <- function(
 
   conc_unit <- unique(data@annot_qcconcentrations$concentration_unit)
   if (length(conc_unit) > 1) {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "Multiple concentration units found in `qc_concentrations` metadata. Please verify and correct QC-concentration metadata."
-    ))
+    )
   }
 
   # Calibrants already carry a concentration, so this is what `feature_conc` is
@@ -264,11 +264,11 @@ quantify_by_calibration <- function(
     dplyr::distinct(.data$analysis_id) |>
     nrow()
 
-  cli_alert_success(cli::col_green(
+  mh_success(
     "Concentrations calculated for {n_features_with_conc} feature{?s} in {n_analyses_with_conc} analys{?is/es}."
-  ))
+  )
 
-  cli::cli_alert_info(col_green("Concentrations are given in {conc_unit}."))
+  mh_success("Concentrations are given in {conc_unit}.")
 
   data@status_processing <- "Calibration-quantitated data"
 
@@ -633,9 +633,9 @@ calc_calibration_results <- function(
     filter(.data$fit_weighting != "none", .data$concentration == 0) |>
     dplyr::distinct(.data$feature_id)
   if (nrow(zero_cal_weighted) > 0) {
-    cli::cli_alert_info(cli::col_yellow(
+    mh_warn(
       "Zero-concentration calibrator excluded from the weighted fit for {nrow(zero_cal_weighted)} feature{?s} ({paste(zero_cal_weighted$feature_id, collapse = ', ')}); a blank cannot be inverse-weighted."
-    ))
+    )
   }
 
   d_calib <- d_calib |>
@@ -693,9 +693,9 @@ calc_calibration_results <- function(
   )
   # Check if calibration curve data is missing for any feature
   if (length(features_no_calib) > 0) {
-    cli::cli_alert_warning(cli::col_yellow(
+    mh_warn(
       "Calibration curve annotations for {length(features_no_calib)} features are missing."
-    ))
+    )
   }
 
   text_missing <- ifelse(
@@ -722,25 +722,21 @@ calc_calibration_results <- function(
 
   if (include_qualifier && any(!d_stats$is_quantifier)) {
     if (count_quant_pass == 0) {
-      cli::cli_abort(cli::col_red(
+      cli::cli_abort(
         "All calibration curve fits for quantifier features failed. Please check data, and feature/qc-concentration metadata."
-      ))
-    }
-    cli::cli_alert_success(
-      cli::col_green(
-        "Calibration curve fits calculated for {text_total_quant} quantifier and {text_total_qual} qualifier features. Average r-squared: {sprintf('%.4f', mean(d_stats$r2_cal_1[d_stats$is_quantifier], na.rm = TRUE))} and {sprintf('%.4f', mean(d_stats$r2_cal_1[!d_stats$is_quantifier], na.rm = TRUE))}."
       )
+    }
+    mh_success(
+      "Calibration curve fits calculated for {text_total_quant} quantifier and {text_total_qual} qualifier features. Average r-squared: {sprintf('%.4f', mean(d_stats$r2_cal_1[d_stats$is_quantifier], na.rm = TRUE))} and {sprintf('%.4f', mean(d_stats$r2_cal_1[!d_stats$is_quantifier], na.rm = TRUE))}."
     )
   } else {
     if (count_quant_pass == 0) {
-      cli::cli_abort(cli::col_red(
+      cli::cli_abort(
         "All calibration curve fits failed. Please check data, and feature/qc-concentration metadata."
-      ))
-    }
-    cli::cli_alert_success(
-      cli::col_green(
-        "Calibration curve fits calculated for {text_total_quant} quantifier features. Average r-squared: {sprintf('%.4f', mean(d_stats$r2_cal_1[d_stats$is_quantifier], na.rm = TRUE))}."
       )
+    }
+    mh_success(
+      "Calibration curve fits calculated for {text_total_quant} quantifier features. Average r-squared: {sprintf('%.4f', mean(d_stats$r2_cal_1[d_stats$is_quantifier], na.rm = TRUE))}."
     )
   }
   data
@@ -834,9 +830,9 @@ get_qc_bias_variability <- function(
     qc_types <- unique(d_qc_summary$qc_type)
   } else {
     if (length(setdiff(qc_types, unique(d_qc_summary$qc_type))) > 0) {
-      cli::cli_abort(cli::col_red(paste(
+      cli::cli_abort(paste(
         "One or more selected `qc_types` are not present in the data or have no defined analyte concentrations. Please verify the analyses, feature and QC-concentration metadata, or select other `qc_types`."
-      )))
+      ))
     }
   }
 
@@ -844,9 +840,9 @@ get_qc_bias_variability <- function(
 
   if (!all(is.na(sample_ids))) {
     if (length(setdiff(sample_ids, unique(d_qc_summary$qc_type))) > 0) {
-      cli::cli_abort(cli::col_red(paste(
+      cli::cli_abort(paste(
         "One or more selected `sample_id` are not present in the data or have no defined analyte concentrations. Please verify the analyses, feature and QC-concentration metadata, or select other `qc_types`."
-      )))
+      ))
     }
   }
 
@@ -854,9 +850,9 @@ get_qc_bias_variability <- function(
   if (!all(is.na(sample_ids))) {
     d_qc_summary <- d_qc_summary |> filter(.data$sample_id %in% sample_ids)
     if (nrow(d_qc_summary) == 0) {
-      cli::cli_abort(cli::col_red(paste(
+      cli::cli_abort(paste(
         "No analyses with the selected `sample_id` and `qc_types` were found. Please verify the argument values, and corresponding feature metadata."
-      )))
+      ))
     }
   }
 
@@ -1021,9 +1017,9 @@ get_calibration_metrics <- function(
 
   # Verify that the QC metrics have been calculated
   if (nrow(data@metrics_calibration) == 0) {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "Calibration metrics has not yet been calculated. Please run `calc_calibration_results()` first."
-    ))
+    )
   }
 
   cal <- data@metrics_calibration |>

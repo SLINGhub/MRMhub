@@ -149,8 +149,9 @@ get_outlier_bounds <- function(
   }
 
   if (outlier_log) {
-      if (any(x <= 0)) cli::cli_abort(col_red("All values must be positive for log transformation."))
-      x <- log10(x)
+    if (any(x <= 0))
+      cli::cli_abort("All values must be positive for log transformation.")
+    x <- log10(x)
   }
 
   lower <- upper <- NA_real_
@@ -203,7 +204,7 @@ get_outlier_bounds <- function(
     med <- median(x)
     mad_val <- mad(x, constant = 1)
     if (mad_val == 0) {
-        return(range(x))
+      return(range(x))
     }
     mod_z <- 0.6745 * (x - med) / mad_val
     lower <- min(x[abs(mod_z) <= k], na.rm = TRUE)
@@ -214,18 +215,17 @@ get_outlier_bounds <- function(
       k <- 2
     }
     med <- median(x)
-    
+
     if (length(k) == 1) {
       k <- c(k, k)
     } else if (length(k) != 2) {
-      cli::cli_abort(col_red("k must be a single number or a vector of length 2."))
+      cli::cli_abort("k must be a single number or a vector of length 2.")
     }
     # Data are assumed log10-transformed (see @description), so a k-fold change is
     # log10(k) on this scale, not log2(k).
     delta <- log10(abs(k))
     lower <- med - delta[1]
     upper <- med + delta[2]
-
   }
 
   vals_lo <- x[x >= lower]
@@ -253,29 +253,31 @@ get_mad_tails <- function(x, k, na.rm = FALSE) {
   if (na.rm) {
     x <- x[!is.na(x)]
   }
-  
+
   if (length(x) < 2) {
     return(c(NA_real_, NA_real_))
   }
 
   med <- median(x, na.rm = na.rm)
   mad_val <- mad(x, na.rm = na.rm)
-  
+
   if (is.na(med) || is.na(mad_val)) {
-      return(c(NA_real_, NA_real_))
+    return(c(NA_real_, NA_real_))
   }
 
   upper_fence <- med + k * mad_val
   lower_fence <- med - k * mad_val
 
   # Find values that are strictly inside the fences
-  vals_above_lower <- x[x > lower_fence] 
-  vals_below_upper <- x[x < upper_fence] 
+  vals_above_lower <- x[x > lower_fence]
+  vals_below_upper <- x[x < upper_fence]
 
   # If the resulting subsets are empty, return NA instead of Inf/-Inf
-  lo <- if (length(vals_above_lower) > 0) min(vals_above_lower, na.rm = TRUE) else NA_real_
-  up <- if (length(vals_below_upper) > 0) max(vals_below_upper, na.rm = TRUE) else NA_real_
-  
+  lo <- if (length(vals_above_lower) > 0)
+    min(vals_above_lower, na.rm = TRUE) else NA_real_
+  up <- if (length(vals_below_upper) > 0)
+    max(vals_below_upper, na.rm = TRUE) else NA_real_
+
   return(c(lo, up))
 }
 #' Get Tukey's IQR fences
@@ -301,7 +303,7 @@ get_iqr_tails <- function(x, k = 1.5, na.rm = FALSE) {
   if (na.rm) {
     x <- x[!is.na(x)]
   }
-  
+
   if (length(x) < 2) {
     return(c(NA_real_, NA_real_))
   }
@@ -314,7 +316,7 @@ get_iqr_tails <- function(x, k = 1.5, na.rm = FALSE) {
 
   # If IQR is NA (e.g., from a vector of NAs with na.rm=TRUE), return NA.
   if (is.na(iqr)) {
-      return(c(NA_real_, NA_real_))
+    return(c(NA_real_, NA_real_))
   }
 
   lower_fence <- q1 - k * iqr

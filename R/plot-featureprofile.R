@@ -227,9 +227,9 @@ plot_abundanceprofile <- function(
         add_transition_names = FALSE
       )
     } else {
-      cli_abort(col_red(
+      cli_abort(
         "Feature classes are not defined in the data. Please provide feature classes via metadata or use feature_map = 'lipidomics' to automatically map lipid classes from lipi species names."
-      ))
+      )
     }
   }
 
@@ -390,10 +390,8 @@ plot_abundanceprofile <- function(
 
       # Combine parts into a single string and issue the warning
       msg_body <- paste(msg_parts, collapse = " and ")
-      cli::cli_alert_warning(
-        col_yellow(
-          "Some data points fall outside the `x_lim` range and were removed: {msg_body}."
-        ),
+      mh_warn(
+        "Some data points fall outside the `x_lim` range and were removed: {msg_body}.",
         .envir = environment()
       )
     }

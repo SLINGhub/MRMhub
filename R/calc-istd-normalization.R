@@ -28,17 +28,17 @@ normalize_by_istd <- function(data = NULL, ignore_missing_annotation = FALSE) {
         !data@is_isotope_corr
     )
   ) {
-    cli::cli_alert_warning(cli::col_yellow(
+    mh_warn(
       "Interfering features defined in metadata, but no correction was applied. Use `correct_interferences()` to correct."
-    ))
+    )
   }
 
   # Check if data is already ISTD normalized
   if ("feature_norm_intensity" %in% names(data@dataset)) {
     if (!all(is.na(data@dataset$feature_norm_intensity))) {
-      cli::cli_alert_warning(cli::col_yellow(
+      mh_warn(
         "Replacing previously normalized feature intensities."
-      ))
+      )
     }
     data@dataset <- data@dataset |>
       select(
@@ -59,14 +59,14 @@ normalize_by_istd <- function(data = NULL, ignore_missing_annotation = FALSE) {
   if (!all(is.na(all_istds))) {
     istd_not_defined <- setdiff(all_istds, d_annot$feature_id)
     if (length(istd_not_defined) > 0) {
-      cli::cli_abort(cli::col_red(
+      cli::cli_abort(
         "{length(istd_not_defined)} ISTD(s) were not defined as individual feature(s). Please verify feature metadata."
-      ))
+      )
     }
   } else {
-    cli::cli_abort(cli::col_red(
+    cli::cli_abort(
       "No ISTDs defined in feature metadata. Please define ISTDs for each feature in feature metadata."
-    ))
+    )
   }
 
   # check if ISTDs are defined for all features (except ISTDs that are not defined for themselves)
@@ -76,13 +76,13 @@ normalize_by_istd <- function(data = NULL, ignore_missing_annotation = FALSE) {
 
   if (nrow(features_no_istd) > 0) {
     if (ignore_missing_annotation) {
-      cli::cli_alert_warning(cli::col_yellow(
+      mh_warn(
         "For {nrow(features_no_istd)} feature(s) no ISTD was defined, normalized intensities will be `NA` for these features. "
-      ))
+      )
     } else {
-      cli::cli_abort(cli::col_red(
+      cli::cli_abort(
         "For {nrow(features_no_istd)} feature(s) no ISTD was defined. Please ammend feature metadata or set `ignore_missing_annotation = TRUE`."
-      ))
+      )
     }
   }
 
@@ -198,9 +198,9 @@ normalize_by_istd <- function(data = NULL, ignore_missing_annotation = FALSE) {
       unique()
   ))
 
-  cli_alert_success(col_green(
+  mh_success(
     "{n_features_normalized} feature{?s} normalized with {n_used_istds} ISTD{?s} in {get_analysis_count(data)} analys{?is/es}."
-  ))
+  )
 
   # Update status
   data@status_processing <- "ISTD-normalized data"
@@ -280,24 +280,24 @@ quantify_by_istd <- function(
       all(is.na(d_features[!d_features$is_istd, ]$chem_formula)) &&
         all(is.na(d_features[!d_features$is_istd, ]$molecular_weight))
     ) {
-      cli::cli_abort(col_red(
+      cli::cli_abort(
         "Chemical formula or molecular weight is not defined for the features. Please ensure that one of these is provided in the feature metadata."
-      ))
+      )
     }
 
     # Error if no MW or chem formula is defined for at least one feature
 
     if (all(is.na(d_features[!d_features$is_istd, ]$chem_formula))) {
       if (any(is.na(d_features[!d_features$is_istd, ]$molecular_weight))) {
-        cli::cli_abort(col_red(
+        cli::cli_abort(
           "One or more molecular weights are missing. Please ensure that all features have a defined molecular weight in the feature metadata."
-        ))
+        )
       }
     } else {
       if (any(is.na(d_features[!d_features$is_istd, ]$chem_formula))) {
-        cli::cli_abort(col_red(
+        cli::cli_abort(
           "One or more chemical formulas are missing. Please ensure that all features have a defined chemical formula in the feature metadata."
-        ))
+        )
       }
 
       if (ignore_istds) {
@@ -321,13 +321,13 @@ quantify_by_istd <- function(
 
   if (nrow(samples_no_amounts) > 0) {
     if (ignore_missing_annotation) {
-      cli::cli_alert_warning(cli::col_yellow(
+      mh_warn(
         "Sample and/or ISTD solution amount(s) for {nrow(samples_no_amounts)} analyses missing, concentrations of all features for these analyses will be `NA`"
-      ))
+      )
     } else {
-      cli::cli_abort(cli::col_red(
+      cli::cli_abort(
         "Sample and/or ISTD amount(s) for {nrow(samples_no_amounts)} analyses missing. Please ammend analysis metadata or set `ignore_missing_annotation = TRUE`."
-      ))
+      )
     }
   }
 
@@ -340,9 +340,9 @@ quantify_by_istd <- function(
       has_ngml_column &&
       any(!is.na(d_istd$istd_conc_ngml))
   ) {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "ISTD concentrations are defined in both nmolar and ng/mL. Please specify ISTD concentrations as either nmol/L or ng/mL in ISTD metadata."
-    ))
+    )
   }
 
   if (has_ngml_column && any(!is.na(d_istd$istd_conc_ngml))) {
@@ -354,9 +354,9 @@ quantify_by_istd <- function(
       all(is.na(d_istd_mw$chem_formula)) &&
         all(is.na(d_istd_mw$molecular_weight))
     ) {
-      cli::cli_abort(col_red(
+      cli::cli_abort(
         "Chemical formula or molecular weight is missing for all ISTDs. Please provide one in feature metadata or use molar concentrations."
-      ))
+      )
     }
     if (any(!is.na(d_istd_mw$chem_formula))) {
       d_istd_mw <- d_istd_mw |>
@@ -364,14 +364,14 @@ quantify_by_istd <- function(
     } else if (
       !ignore_missing_annotation && any(is.na(d_istd_mw$molecular_weight))
     ) {
-      cli::cli_abort(col_red(
+      cli::cli_abort(
         "One or more ISTDs are missing both chemical formula and molecular weight. Ensure that at least one is defined in the feature metadata."
-      ))
+      )
     }
     if (any(d_istd_mw$molecular_weight <= 0, na.rm = TRUE)) {
-      cli::cli_abort(col_red(
+      cli::cli_abort(
         "One or more ISTD molecular weights are zero or negative. Please verify the molecular weights in the feature metadata."
-      ))
+      )
     }
     d_istd <- d_istd |>
       left_join(d_istd_mw, by = c("quant_istd_feature_id" = "feature_id"))
@@ -382,9 +382,9 @@ quantify_by_istd <- function(
           (.data$molecular_weight)
       )
   } else if (all(is.na(d_istd$istd_conc_nmolar))) {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "No ISTD concentrations defined. Please define ISTD concentrations in either nmol/L or ng/mL."
-    ))
+    )
   }
 
   # All three joins below are onto `@dataset`, so a duplicated key in any of
@@ -451,13 +451,13 @@ quantify_by_istd <- function(
   # Check if ISTD concentrations in spiked-in mix  are defined for all ISTDs
   if (length(istd_no_conc) > 0) {
     if (ignore_missing_annotation) {
-      cli::cli_alert_warning(cli::col_yellow(
+      mh_warn(
         "Spiked-in concentrations of {length(istd_no_conc)} ISTD(s) missing, calculated concentrations of affected features will be `NA`."
-      ))
+      )
     } else {
-      cli::cli_abort(cli::col_red(
+      cli::cli_abort(
         "Concentrations of {length(istd_no_conc)} ISTD(s) missing. Please ammend ISTD metadata or set `ignore_missing_annotation = TRUE`."
-      ))
+      )
     }
   }
 
@@ -486,9 +486,9 @@ quantify_by_istd <- function(
   if ("feature_conc" %in% names(data@dataset)) {
     data@dataset <- data@dataset |>
       select(-dplyr::any_of(c("feature_pmol_total", "feature_conc")))
-    cli::cli_alert_warning(cli::col_yellow(
+    mh_warn(
       "Replacing previously calculated concentrations."
-    ))
+    )
   }
   # Add calculated concentrations to dataset table
   data@dataset <- data@dataset |>
@@ -528,10 +528,10 @@ quantify_by_istd <- function(
     dplyr::distinct(.data$analysis_id) |>
     nrow()
 
-  cli_alert_success(cli::col_green(
+  mh_success(
     "{n_features_with_conc} feature concentration{?s} calculated based on {n_istd} ISTD{?s} and sample amounts of {n_analyses_with_conc} analys{?is/es}."
-  ))
-  cli::cli_alert_info(col_green("Concentrations are given in {conc_unit}."))
+  )
+  mh_success("Concentrations are given in {conc_unit}.")
 
   data@status_processing <- "ISTD-quantitated data"
 

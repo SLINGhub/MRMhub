@@ -95,7 +95,7 @@ test_that("compare_values works", {
       threshold = 5,
       operator = ">"
     ),
-    "QC parameter is not available. Please verify the argument "
+    "QC parameter is not available. Please verify `val`."
   )
 
   tbl_with_na <- dplyr::tibble(value1 = c(NA, NA, NA, NA))
@@ -407,8 +407,10 @@ built_labels <- function(p, axis = "x") {
   lbl <- b$layout$panel_params[[1]][[axis]]$get_labels()
   keep <- !vapply(
     lbl,
-    function(x) is.null(x) || (length(x) == 1 && is.na(x)) ||
-      (is.character(x) && !nzchar(x)),
+    function(x)
+      is.null(x) ||
+        (length(x) == 1 && is.na(x)) ||
+        (is.character(x) && !nzchar(x)),
     logical(1)
   )
   lbl[keep]
@@ -418,7 +420,10 @@ test_that(".pretty_labels keys on the break VALUES, not a variable name", {
   # typical CV / RT / conc ranges -> plain comma numbers
   expect_equal(.pretty_labels(c(0, 10, 20, 30)), c("0", "10", "20", "30"))
   expect_equal(.pretty_labels(c(0, 30, 60, 90)), c("0", "30", "60", "90"))
-  expect_equal(.pretty_labels(c(1, 10, 100, 1000)), c("1", "10", "100", "1,000"))
+  expect_equal(
+    .pretty_labels(c(1, 10, 100, 1000)),
+    c("1", "10", "100", "1,000")
+  )
   # extreme magnitude -> superscript scientific expressions, not "e+05" strings
   sci <- .pretty_labels(c(0, 5e5, 1e6))
   expect_type(sci, "list")

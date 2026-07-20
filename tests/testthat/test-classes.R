@@ -144,7 +144,7 @@ test_that("check_integrity_analyses works", {
       excl_unmatched_analyses = FALSE,
       silent = FALSE
     ),
-    "Following 2 analyses defined in the metadata are not present in the measurement data: Longit_B-ISTD 01 Extr, Longit_TQC-100%",
+    "The following 2 analyses defined in the metadata are not present in the measurement data: Longit_B-ISTD 01 Extr, Longit_TQC-100%",
     fixed = TRUE
   )
 

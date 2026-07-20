@@ -364,9 +364,9 @@ calc_qc_metrics <- function(
       filter(.data$n_rep >= 1L & .data$n_rep < min_cv_replicates)
     if (nrow(low_rep) > 0) {
       by_qc <- dplyr::count(low_rep, .data$qc_type)
-      cli::cli_alert_warning(cli::col_yellow(
+      mh_warn(
         "%CV not computed for {nrow(low_rep)} feature\u00d7QC-type\u00d7variable combination{?s} with fewer than {min_cv_replicates} replicates ({paste0(by_qc$qc_type, ': ', by_qc$n, collapse = ', ')})."
-      ))
+      )
     }
   }
 
@@ -542,9 +542,9 @@ calc_qc_metrics <- function(
   # table to collect all data
   if (!"feature_norm_intensity" %in% names(data@dataset)) {
     if (isTRUE(include_norm_intensity_stats)) {
-      cli::cli_abort(col_red(
+      cli::cli_abort(
         "Normalized intensity data is missing. Please normalize the data first using `normalize_by_*()` functions."
-      ))
+      )
     }
   } else if (
     is.na(include_norm_intensity_stats) || include_norm_intensity_stats
@@ -621,9 +621,9 @@ calc_qc_metrics <- function(
 
   if (!"feature_conc" %in% names(data@dataset)) {
     if (isTRUE(include_conc_stats)) {
-      cli::cli_abort(col_red(
+      cli::cli_abort(
         "Concentration data is missing. Please quantify the data first using `quantify_by_*()` functions."
-      ))
+      )
     }
   } else if (is.na(include_conc_stats) || include_conc_stats) {
     d_stats_var_conc <- d_stats_var |>
@@ -745,9 +745,9 @@ calc_qc_metrics <- function(
   # If response curve statistics are to be included and RQC data is available,
   if (!"feature_intensity" %in% names(data@dataset)) {
     if (isTRUE(include_response_stats)) {
-      cli::cli_abort(col_red(
+      cli::cli_abort(
         "Response curve data is missing. Please calculate response curves first using `calculate_response_curve()` function."
-      ))
+      )
     }
   } else if (is.na(include_response_stats) || include_response_stats) {
     d_rqc_stats <- get_response_curve_stats(
@@ -780,9 +780,9 @@ calc_qc_metrics <- function(
         )
     } else {
       if (isTRUE(include_calibration_results)) {
-        cli::cli_abort(col_red(
+        cli::cli_abort(
           "Calibration metrics are missing. Please calculate calibration results first using `calculate_calibration()` function."
-        ))
+        )
       }
     }
   }
@@ -928,15 +928,15 @@ filter_features_qc <- function(
   check_data(data)
 
   if (missing(include_qualifier)) {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "Argument {.arg include_qualifier} is missing. Please specify whether qualifier features should be included in the filtered data."
-    ))
+    )
   }
 
   if (missing(include_istd)) {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "Argument {.arg include_istd} is missing. Please specify whether internal standards should be included in the filtered data."
-    ))
+    )
   }
 
   # Check if response curve ID is defined when r2 is set. TODO: verify need and extend
@@ -948,9 +948,9 @@ filter_features_qc <- function(
         !is.na(max.yintercept.response) |
         !is.na(response.curves.summary)
     ) {
-      cli::cli_abort(cli::col_red(
+      cli::cli_abort(
         "No response curves selected. Please set the curves using `response.curves.selection`, or remove `response.___` arguments to proceed without response filters."
-      ))
+      )
     }
   } else {
     if (
@@ -959,20 +959,20 @@ filter_features_qc <- function(
         is.na(max.slope.response) &
         is.na(max.yintercept.response)
     ) {
-      cli::cli_abort(cli::col_red(
+      cli::cli_abort(
         "No response filters were defined. Please set the appropriate `response._x_` arguments, remove `response.curves.selection`, or set it to `NA`."
-      ))
+      )
     } else {
       if (length(unique(response.curves.selection)) > 1) {
         if (is.na(response.curves.summary)) {
-          cli::cli_abort(cli::col_red(
+          cli::cli_abort(
             "Please set `response.curves.summary` to define curve how the results from different curves should be summarized for filtered, Must be either either 'mean', 'median', 'best' or 'worst'."
-          ))
+          )
         }
         if (nrow(data@annot_responsecurves) == 0) {
-          cli::cli_abort(cli::col_red(
+          cli::cli_abort(
             "No response curves are defined in the metadata. Please either remove `response.curves.selection` and any response filters, or reprocess with updated metadata"
-          ))
+          )
         }
       } else if (is.na(response.curves.summary)) {
         # One curve has nothing to summarize across, so any reducer is a no-op
@@ -1030,9 +1030,9 @@ filter_features_qc <- function(
     )
     txt <- glue::glue_collapse(keepers_not_defined, sep = ", ", last = ", and ")
     if (length(keepers_not_defined) > 0) {
-      cli::cli_abort(col_red(
+      cli::cli_abort(
         "Following features defined via `features.to.keep` are not present in this dataset: {txt}"
-      ))
+      )
     }
   }
 
@@ -1277,9 +1277,9 @@ filter_features_qc <- function(
       rqc_y0_col <- rqc_y0_col_names[response.curves.selection]
 
       if (any(is.na(rqc_r2_col))) {
-        cli::cli_abort(cli::col_red(
+        cli::cli_abort(
           "The specified response curve index exceeds the available range. There are only {length(rqc_r2_col_names)} response curves in the dataset. Please adjust the indices set via `response.curves.selection`"
-        ))
+        )
       }
     } else if (is.character(response.curves.selection)) {
       rqc_r2_col <- paste0("r2_rqc_", response.curves.selection)
@@ -1289,14 +1289,14 @@ filter_features_qc <- function(
         !(rqc_r2_col %in% names(metrics_qc_local))
       ]
       if (length(missing_curves) > 0) {
-        cli::cli_abort(cli::col_red(
+        cli::cli_abort(
           "The following response curves are not defined in the metadata: {paste(missing_curves, collapse=', ')}. Please adjust the curve ids or ensure correct identifiers."
-        ))
+        )
       }
     } else {
-      cli::cli_abort(cli::col_red(
+      cli::cli_abort(
         "The `response.curves.selection` must be specified as either numeric indices or identifiers provided as strings, corresponding to the response curve(s)."
-      ))
+      )
     }
 
     # Summarize metrics across curves (columns) based on specified criteria
@@ -1494,9 +1494,9 @@ filter_features_qc <- function(
     }
 
     if (length(prev_filters) > 0) {
-      cli::cli_alert_warning(cli::col_yellow(glue::glue(
+      mh_warn(
         "Replaced following previously defined QC filters: {glue::glue_collapse(prev_filters, sep = ', ', last = ', and ')}"
-      )))
+      )
     }
   }
 
@@ -1518,9 +1518,9 @@ filter_features_qc <- function(
     features.to.keep
   )
   if (length(n_featured_forcedkeep) > 0) {
-    cli::cli_alert_warning(cli::col_yellow(glue::glue(
+    mh_warn(
       "The following features were forced to be retained despite not meeting filtering criteria: {glue::glue_collapse(n_featured_forcedkeep, sep = ', ', last = ', and ')}"
-    )))
+    )
   }
 
   metrics_qc_local <- metrics_qc_local |>
@@ -1616,34 +1616,34 @@ filter_features_qc <- function(
 
   if (include_qualifier) {
     if (!clear_existing && all("all_filter_pass" %in% names(data@metrics_qc))) {
-      cli::cli_alert_success(cli::col_green(
+      mh_success(
         "\rFeature QC filters were updated: {n_filt_quant} (before {n_filt_quant_before}) of {n_all_quant} quantifier and {n_filt_qual} of {n_all_qual} qualifier features meet QC criteria ({if_else(!include_istd, 'not including the', 'including the')} {n_istd_quant} quantifier and {n_istd_qual} qualifier ISTD features)"
-      ))
+      )
     } else {
       if (filter_cleared) {
-        cli::cli_alert_success(cli::col_green(
+        mh_success(
           "\r{.strong {.emph Cleared}}\u00A0all feature QC filters! All {n_all_quant} quantifier and all {n_all_qual} qualifier features are now selected ({if_else(!include_istd, 'not including the', 'including the')} {n_istd_quant} quantifier and {n_istd_qual} qualifier ISTD features)"
-        ))
+        )
       } else {
-        cli::cli_alert_success(cli::col_green(
+        mh_success(
           "\rNew feature QC filters were defined: {n_filt_quant} of {n_all_quant} quantifier and {n_filt_qual} of {n_all_qual} qualifier features meet QC criteria ({if_else(!include_istd, 'not including the', 'including the')} {n_istd_quant} quantifier and {n_istd_qual} qualifier ISTD features)"
-        ))
+        )
       }
     }
   } else {
     if (!clear_existing && all("all_filter_pass" %in% names(data@metrics_qc))) {
-      cli::cli_alert_success(cli::col_green(
+      mh_success(
         "\rFeature QC filters were updated: {n_filt_quant} (before {n_filt_quant_before}) of {n_all_quant} quantifier features meet QC criteria ({if_else(!include_istd, 'not including the', 'including the')} {n_istd_quant} quantifier ISTD features)"
-      ))
+      )
     } else {
       if (!filter_cleared) {
-        cli::cli_alert_success(cli::col_green(
+        mh_success(
           "\rNew feature QC filters were defined: {n_filt_quant} of {n_all_quant} quantifier features meet QC criteria ({if_else(!include_istd, 'not including the', 'including the')} {n_istd_quant} quantifier ISTD features)."
-        ))
+        )
       } else {
-        cli::cli_alert_success(cli::col_green(
+        mh_success(
           "{.strong {.emph Cleared all}} feature QC filters! All {n_all_quant} quantifier features are now selected ({if_else(!include_istd, 'not including the', 'including the')} {n_istd_quant} quantifier ISTD features)."
-        ))
+        )
       }
     }
   }

@@ -26,26 +26,30 @@
 #'
 #' @export
 
-
-
 calc_average_molweight <- function(formula) {
-
   # Use enviPat to calculate the molecular weight
 
-  if(length(formula) == 0)
-    cli_abort(col_red("No chemical formula provided. Please provide on or more valid chemical formula."))
+  if (length(formula) == 0)
+    cli_abort(
+      "No chemical formula provided. Please provide on or more valid chemical formula."
+    )
 
   rlang::check_installed("enviPat")
   # isotopes was obtained via data(isotopes, package = "enviPat") and saved as internal dataset
-  formula_checked <- enviPat::check_chemform(isotopes = isotopes, chemforms = formula)
+  formula_checked <- enviPat::check_chemform(
+    isotopes = isotopes,
+    chemforms = formula
+  )
 
-  if(any(formula_checked$warning))
-    cli_abort(col_red("Following invalid chemical formula defined: {glue::glue_collapse(formula_checked[formula_checked$warning, ]$new_formula, sep = ', ')}. Please verify feature metadata."))
+  if (any(formula_checked$warning))
+    cli_abort(
+      "Following invalid chemical formula defined: {glue::glue_collapse(formula_checked[formula_checked$warning, ]$new_formula, sep = ', ')}. Please verify feature metadata."
+    )
 
   # Calculate the molecular weight
   pattern <- enviPat::isopattern(
     isotopes = isotopes,
-    chemforms  = formula,
+    chemforms = formula,
     threshold = 0.0001,
     plotit = FALSE,
     verbose = FALSE,

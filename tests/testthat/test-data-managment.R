@@ -534,19 +534,19 @@ test_that("set_intensity_var returns correct messages", {
 
   expect_error(
     mexp_proc_temp <- set_intensity_var(mexp_proc_temp, "conc"),
-    "\\`feature_conc\\` is not present in the raw data"
+    "feature_conc is not present in the raw data"
   )
 
   expect_error(
     mexp_proc_temp <- set_intensity_var(mexp_proc_temp, "feature_conc"),
-    "\\`feature_conc\\` is not present in the raw data"
+    "feature_conc is not present in the raw data"
   )
 
   mexp_proc_temp_withconc <- mexp_proc
   mexp_proc_temp_withconc@dataset_orig$feature_conc <- mexp_proc_temp_withconc@dataset$feature_conc
   expect_message(
     res <- set_intensity_var(mexp_proc_temp_withconc, "feature_conc"),
-    "`conc` is not a typically used raw signal"
+    "conc is not a typically used raw signal"
   )
   expect_message(
     res <- set_intensity_var(mexp_proc_temp_withconc, "feature_conc"),

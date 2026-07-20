@@ -58,15 +58,15 @@ plot_rt_vs_chain <- function(
     check_data(data)
   } else if (inherits(data, "data.frame")) {
     if (length(unique(data[[1]])) < nrow(data)) {
-      cli::cli_abort(col_red(
+      cli::cli_abort(
         "The first column has one or more replicated feature identifier. Please check your data."
-      ))
+      )
     }
 
     if (!is.numeric(data[[2]])) {
-      cli::cli_abort(col_red(
+      cli::cli_abort(
         "All values in the second column must be numeric, as they are interpreted as retention times. Please check your data."
-      ))
+      )
     }
     data_new <- MRMhubExperiment()
     data_new@dataset <- tibble(

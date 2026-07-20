@@ -106,9 +106,9 @@ calibrate_by_reference <- function(
   check_data(data)
 
   if (absolute_calibration && is.null(undefined_conc_action)) {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "When using `absolute_calibration = TRUE`, then `undefined_conc_action` must be specified, as either 'original', 'na', or 'error'"
-    ))
+    )
   }
   if (!is.null(undefined_conc_action)) {
     undefined_conc_action <- rlang::arg_match(
@@ -119,9 +119,9 @@ calibrate_by_reference <- function(
 
   # Check if the reference sample is present in the dataset
   if (!any(data@dataset$sample_id %in% reference_sample_id)) {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "The specified `reference_sample_id` is not present in the dataset. Please verify `reference_sample_id` and analysis metadata (column `sample_id`)."
-    ))
+    )
   }
 
   # collapsed for user-facing messages (reference_sample_id may hold >1 id)
@@ -155,15 +155,15 @@ calibrate_by_reference <- function(
       !is.null(undefined_conc_action) &&
       undefined_conc_action == "original"
   ) {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "When using `undefined_conc_action = 'original'`, the variable 'conc' must be used as input. See the function's documentation for more details."
-    ))
+    )
   }
 
   if (store_conc_ratio && variable != "feature_conc") {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "When using `store_conc_ratio = TRUE`, the variable 'conc' must be used as input. See the function's documentation for more details."
-    ))
+    )
   }
 
   if (batch_wise) {
@@ -191,9 +191,9 @@ calibrate_by_reference <- function(
       all()
 
     if (!refs_present) {
-      cli::cli_abort(col_red(
+      cli::cli_abort(
         "The specified reference sample `{ref_ids_txt}` is missing from one or more batches. Please check the batch structure in analysis metadata."
-      ))
+      )
     }
   }
 
@@ -240,9 +240,9 @@ calibrate_by_reference <- function(
           reference_sample_id %in% unique(data@annot_qcconcentrations$sample_id)
         )
     ) {
-      cli::cli_abort(col_red(
+      cli::cli_abort(
         "No concentration values found for the reference sample `{ref_ids_txt}`. Please verify QC concentration metadata."
-      ))
+      )
     }
 
     # Check if the reference sample has the same concentration unit for all features
@@ -254,13 +254,13 @@ calibrate_by_reference <- function(
     )
 
     if (absolute_calibration && all(is.na(ref_feature_conc_unit))) {
-      cli::cli_abort(col_red(
+      cli::cli_abort(
         "No concentration units found for features of reference sample '{ref_ids_txt}'. Please check concentration units in QC concentration metadata."
-      ))
+      )
     } else if (absolute_calibration && length(ref_feature_conc_unit) > 1) {
-      cli::cli_abort(col_red(
+      cli::cli_abort(
         "Different unit used for feature concentrations in reference sample '{ref_ids_txt}'. Please check concentration units in QC concentration metadata."
-      ))
+      )
     }
 
     if (
@@ -281,30 +281,30 @@ calibrate_by_reference <- function(
       )
     ) {
       if (undefined_conc_action == "error") {
-        cli::cli_abort(col_red(
+        cli::cli_abort(
           "One or more feature concentration are not defined in the reference sample {ref_ids_txt}. Please verify QC concentration metadata or modify `undefined_conc_action` argument"
-        ))
+        )
       } else if (undefined_conc_action == "na") {
-        cli::cli_alert_warning(col_yellow(
+        mh_warn(
           "One or more feature concentration are not defined in the reference sample {ref_ids_txt}. `NA` will be returned for these features. To change this, modify `undefined_conc_action` argument."
-        ))
+        )
       } else if (undefined_conc_action == "original") {
-        cli::cli_alert_warning(col_yellow(
+        mh_warn(
           "One or more feature concentration are not defined in the reference sample {ref_ids_txt}. Original values will be returned for these. To change this, modify `undefined_conc_action` argument."
-        ))
+        )
       } else {
-        cli::cli_abort(col_red(
+        cli::cli_abort(
           "Invalid value for `undefined_conc_action`. Must be one of: 'original', 'na', or 'error'"
-        ))
+        )
       }
     }
 
     # Get the reference sample concentrations
 
     if (data@is_filtered) {
-      cli::cli_alert_warning(col_yellow(
+      mh_warn(
         "Previously filtered dataset is no longer valid and has been cleared. Please re-apply feature filtering."
-      ))
+      )
       data@is_filtered <- FALSE
       data@metrics_qc <- data@metrics_qc[FALSE, ]
     }
@@ -329,11 +329,11 @@ calibrate_by_reference <- function(
       dplyr::count(.data$analyte_id) |>
       dplyr::filter(.data$n > 1)
     if (nrow(conflicting_conc) > 0) {
-      cli::cli_abort(col_red(c(
+      cli::cli_abort(c(
         "Conflicting reference concentrations for {nrow(conflicting_conc)} analyte{?s} across reference sample{?s} {ref_ids_txt}.",
         "i" = "Affected analyte{?s}: {.val {conflicting_conc$analyte_id}}",
         "i" = "Each analyte must have a single reference concentration. Please verify QC concentration metadata."
-      )))
+      ))
     }
 
     d_temp <- d_temp |>
@@ -419,18 +419,18 @@ calibrate_by_reference <- function(
       data@dataset <- data@dataset |> dplyr::select(-"var_normalized")
     }
     if (variable_strip == "conc") {
-      cli_alert_success(cli::col_green(
+      mh_success(
         "{n_features_with_conc} feature concentration{?s} {?was/were} {txt_batchwise}re-calibrated using the reference sample {ref_ids_txt}."
-      ))
+      )
     } else {
-      cli_alert_success(cli::col_green(
+      mh_success(
         "{n_features_with_conc} feature concentration{?s} {?was/were} {txt_batchwise}calculated using the defined reference sample concentrations."
-      ))
+      )
     }
 
-    cli::cli_alert_info(col_green(
+    mh_success(
       "Concentrations are given in {ref_feature_conc_unit}."
-    ))
+    )
 
     data <- update_after_quantitation(data, is_quantitated = TRUE)
 
@@ -452,12 +452,12 @@ calibrate_by_reference <- function(
       mutate(!!variable_norm_sym := .data$var_normalized) |>
       dplyr::select(-"var_normalized")
 
-    cli_alert_success(cli::col_green(
+    mh_success(
       "All features were {txt_batchwise}normalized with reference sample {ref_ids_txt} features."
-    ))
-    cli::cli_alert_info(col_green(
+    )
+    mh_success(
       "Unit is: sample [{variable_strip}] / {ref_ids_txt} [{variable_strip}]"
-    ))
+    )
 
     data@status_processing <- paste0(
       "Reference sample normalized",

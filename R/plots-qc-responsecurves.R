@@ -147,21 +147,17 @@ plot_responsecurves <- function(
   }
   if (nrow(data@dataset) < 1) {
     cli::cli_abort(
-      col_red(
-        "No data available in the dataset. Please import the necessary data and metadata before proceeding."
-      )
+      "No data available in the dataset. Please import the necessary data and metadata before proceeding."
     )
   }
   if (nrow(data@annot_responsecurves) < 1) {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "No response curve metadata is available. Please import the corresponding metadata to proceed."
-    ))
+    )
   }
   if (!"RQC" %in% unique(data@dataset$qc_type)) {
     cli::cli_abort(
-      col_red(
-        "No QC type {.strong 'RQC'} defined in the data. Please assign `RQC` as `qc_type` to corresponding analyses in the analysis metadata."
-      )
+      "No QC type {.strong 'RQC'} defined in the data. Please assign `RQC` as `qc_type` to corresponding analyses in the analysis metadata."
     )
   }
 
@@ -183,18 +179,18 @@ plot_responsecurves <- function(
     inner_join(data@annot_responsecurves, by = "analysis_id", keep = FALSE)
 
   if (nrow(d_rqc) == 0) {
-    cli_abort(col_red(
+    cli_abort(
       "Missmatch between data and response curve metadata. Please verify if `analysis_id` in response curve metadata match the data."
-    ))
+    )
   }
 
   # Ensure consistent units for analyzed_amount (x-axis)
   x_axis_unit <- unique(d_rqc$analyzed_amount_unit)
   if (length(x_axis_unit) > 1) {
-    cli::cli_abort(cli::col_red(
+    cli::cli_abort(
       "The `analyzed_amount_unit` (x axis) must be
                                 identical across all curves."
-    ))
+    )
   }
 
   # Set max regression value, use all data if NA
@@ -224,13 +220,11 @@ plot_responsecurves <- function(
     num_levels <- length(unique(d_rqc$curve_id))
     fill_curves <- desaturate_colors(color_curves, 0.3)
     if (length(color_curves) < num_levels) {
-      cli::cli_abort(
-        cli::col_red(paste(
-          "Insufficient colors in `color_curves`. Provide at least",
-          num_levels,
-          "unique colors for the number of curves."
-        ))
-      )
+      cli::cli_abort(paste(
+        "Insufficient colors in `color_curves`. Provide at least",
+        num_levels,
+        "unique colors for the number of curves."
+      ))
     }
   }
 
@@ -273,9 +267,9 @@ plot_responsecurves <- function(
 
   if (!is.na(specific_page)) {
     if (specific_page > total_pages) {
-      cli::cli_abort(col_red(
+      cli::cli_abort(
         "Selected page exceeds the total number of pages. Please select a page number between {.strong 1} and {.strong {total_pages}}."
-      ))
+      )
     }
     page_range <- specific_page
   } else {

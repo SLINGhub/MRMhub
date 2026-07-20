@@ -39,44 +39,44 @@ correct_interference_manual <- function(
 
   # Validate input
   if (is.na(feature) | !feature %in% data@annot_features$feature_id) {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "Selected feature is not present in the dataset. Please verify data and `feature` argument."
-    ))
+    )
   }
   if (
     is.na(interfering_feature) |
       !interfering_feature %in% data@annot_features$feature_id
   ) {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "Selected interfering feature is not present in the dataset. Please verify data and `feature` argument."
-    ))
+    )
   }
   if (is.na(variable) | !variable %in% names(data@dataset)) {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "Variable `{variable}` is not defined in the dataset"
-    ))
+    )
   }
   if (
     is.na(interference_contribution) |
       !is.numeric(interference_contribution) |
       interference_contribution <= 0
   ) {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "`interference_contribution` must be a number larger than 0"
-    ))
+    )
   }
   if (interference_contribution > 1) {
-    cli_alert_warning(col_yellow(
+    mh_warn(
       "`interference_contribution` is {interference_contribution}, i.e. greater than 1. Values above 1 are unusual for a signal-contribution factor; please verify."
-    ))
+    )
   }
   if (
     !is.na(updated_feature_id) &&
       updated_feature_id %in% data@annot_features$feature_id
   ) {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "Selected new feature id `{updated_feature_id}` is already present in the dataset. Please chose a new unique ID."
-    ))
+    )
   }
 
   if (!"interference_corrected" %in% names(data@dataset)) {
@@ -117,13 +117,13 @@ correct_interference_manual <- function(
     nrow()
   if (n_neg_values > 0) {
     if (neg_to_na) {
-      cli_alert_warning(col_yellow(
+      mh_warn(
         "Interference correction led to {n_neg_values} negative or zero value{?s} in {n_neg_features} feature{?s} (samples/QCs). All negative/zero values (incl. in Blanks) were replaced with `NA`."
-      ))
+      )
     } else {
-      cli_alert_warning(col_yellow(
+      mh_warn(
         "Interference correction led to {n_neg_values} negative or zero value{?s} in {n_neg_features} feature{?s} (samples/QCs). Please verify the correction, or set `neg_to_na = TRUE`."
-      ))
+      )
     }
   }
 
@@ -168,9 +168,9 @@ correct_interference_manual <- function(
   data@is_filtered <- FALSE
   data@metrics_qc <- data@metrics_qc[FALSE, ]
 
-  cli_alert_success(col_green(glue::glue(
+  mh_success(
     "Interference-correction was manually applied to the feature `{variable}`."
-  )))
+  )
 
   data
 }
@@ -235,9 +235,9 @@ correct_interferences <- function(
     data@is_isotope_corr &&
       (c("feature_intensity_orig") %in% names(data@dataset))
   ) {
-    cli_alert_info(cli::col_yellow(
+    mh_warn(
       "Data was already interference-corrected. Corrections will be reapplied to raw intensities."
-    ))
+    )
     data@dataset <- data@dataset |>
       mutate(
         feature_intensity = .data$feature_intensity_orig,
@@ -290,9 +290,9 @@ correct_interferences <- function(
       ),
     error = function(e) {
       if (grepl("Circular dependency", conditionMessage(e), fixed = TRUE)) {
-        cli_abort(col_red(
+        cli_abort(
           "One or more circular correction(s) detected. Please verify the interference correction details defined in feature metadata."
-        ))
+        )
       }
       stop(e)
     }
@@ -306,14 +306,14 @@ correct_interferences <- function(
   }
 
   if (any(features_to_correct$interference_contribution <= 0)) {
-    cli_abort(col_red(
+    cli_abort(
       "`interference_contribution` in the feature metadata must be greater than 0. Please verify feature metadata."
-    ))
+    )
   }
   if (any(features_to_correct$interference_contribution > 1)) {
-    cli_alert_warning(col_yellow(
+    mh_warn(
       "{sum(features_to_correct$interference_contribution > 1)} feature(s) have an `interference_contribution` greater than 1. Values above 1 are unusual; please verify feature metadata."
-    ))
+    )
   }
 
   has_overlapping_interferences <- any(
@@ -414,13 +414,13 @@ correct_interferences <- function(
   n_neg_features <- length(unique(neg_zero_sum$feature_id))
   if (n_neg_values > 0) {
     if (neg_to_na) {
-      cli_alert_warning(col_yellow(
+      mh_warn(
         "Interference correction led to {n_neg_values} negative or zero value{?s} in {n_neg_features} feature{?s} (samples/QCs). All negative/zero values (incl. in Blanks) were replaced with `NA`."
-      ))
+      )
     } else {
-      cli_alert_warning(col_yellow(
+      mh_warn(
         "Interference correction led to {n_neg_values} negative or zero value{?s} in {n_neg_features} feature{?s} (samples/QCs). Please verify the correction, or set `neg_to_na = TRUE`."
-      ))
+      )
     }
   }
 
@@ -454,9 +454,9 @@ correct_interferences <- function(
   data@metrics_qc <- data@metrics_qc[FALSE, ]
 
   n_corr <- nrow(features_to_correct)
-  cli_alert_success(col_green(glue::glue(
+  mh_success(
     "Interference-correction has been applied to {n_corr} of the {get_feature_count(data)} features."
-  )))
+  )
 
   data
 }

@@ -55,26 +55,26 @@ compare_values <- function(tbl, val, threshold, operator, na_replace = FALSE) {
         var_name,
         "conc"
       ) ~
-        "Cannot filter by `{var_name}` because concentration data is unavailable. Please quantify the data first using `quantify_by_*()` functions.",
+        "Cannot filter by {.field {var_name}} because concentration data is unavailable. Please quantify the data first using `quantify_by_*()` functions.",
       str_detect(
         var_name,
         "normint"
       ) ~
-        "Cannot filter by `{var_name}` because normalized data is unavailable. Please normalize the data first using `normalize_by_*()` functions.",
+        "Cannot filter by {.field {var_name}} because normalized data is unavailable. Please normalize the data first using `normalize_by_*()` functions.",
       str_detect(
         var_name,
         "response"
       ) ~
-        "Cannot filter by `{var_name}` because response curve data is unavailable. Please verify the corresponding data and metadata.",
-      TRUE ~ "QC parameter is not available. Please verify the argument `val`."
+        "Cannot filter by {.field {var_name}} because response curve data is unavailable. Please verify the corresponding data and metadata.",
+      TRUE ~ "QC parameter is not available. Please verify {.arg val}."
     )
-    cli_abort(col_red(error_message))
+    cli_abort(error_message)
   }
 
   if (all(is.na(tbl[[val]])) && !is.na(threshold)) {
     var_name <- deparse(substitute(threshold))
     cli_abort(
-      "The QC parameter {.var {var_name}} is not available. Please verify that the data were processed accordingly and that the selected QC type is present and contains results."
+      "The QC parameter {.field {var_name}} is not available. Please verify that the data were processed accordingly and that the selected QC type is present and contains results."
     )
   }
 
@@ -89,10 +89,9 @@ compare_values <- function(tbl, val, threshold, operator, na_replace = FALSE) {
       last = ", and "
     )
 
-    cli::cli_alert_warning(cli::col_yellow(
-      "The QC parameter {.var {var_name}} contains NAs for following features: {features_with_na}. 
-     These features failed QC."
-    ))
+    mh_warn(
+      "The QC parameter {.field {var_name}} contains NAs for the following features: {features_with_na}. These features failed QC."
+    )
   }
   v_val <- tbl[[val]]
   if (is.na(threshold)) {
@@ -297,7 +296,7 @@ order_chained_columns_tbl <- function(
     dup_keys <- unique(df[[from_col]][duplicated(df[[from_col]])])
     cli::cli_abort(c(
       "Duplicate keys in column {.field {from_col}}: the chain cannot be ordered unambiguously.",
-      "x" = "Duplicated value{?s}: {.val {dup_keys}}"
+      "x" = "Duplicated value{?s}: {.val {mh_vec(dup_keys)}}"
     ))
   }
 
@@ -522,13 +521,15 @@ pretty_n_breaks <- function(n_panels = 1L) {
 }
 
 # Builds one continuous scale for either axis; x/y differ only in the scale fn.
-.scale_pretty <- function(axis,
-                          log = FALSE,
-                          n = 5L,
-                          limits = NULL,
-                          expand = ggplot2::waiver(),
-                          name = ggplot2::waiver(),
-                          minor_ticks = TRUE) {
+.scale_pretty <- function(
+  axis,
+  log = FALSE,
+  n = 5L,
+  limits = NULL,
+  expand = ggplot2::waiver(),
+  name = ggplot2::waiver(),
+  minor_ticks = TRUE
+) {
   if (log) {
     scale_fn <- if (axis == "x") {
       ggplot2::scale_x_log10
@@ -537,7 +538,8 @@ pretty_n_breaks <- function(n_panels = 1L) {
     }
     # A fully-NA (or NULL) limits vector means "no caller limits": decade-pad so
     # a narrow-range panel still renders >=3 clean decade labels.
-    caller_limits <- !is.null(limits) && !(is.numeric(limits) && all(is.na(limits)))
+    caller_limits <- !is.null(limits) &&
+      !(is.numeric(limits) && all(is.na(limits)))
     scale_fn(
       name = name,
       breaks = .pretty_log_breaks,
@@ -580,23 +582,27 @@ pretty_n_breaks <- function(n_panels = 1L) {
 #' @param limits,expand,name Passed to the underlying scale unchanged.
 #' @param minor_ticks Add minor tick marks on linear axes.
 #' @keywords internal
-scale_pretty_x <- function(log = FALSE,
-                           n = 5L,
-                           limits = NULL,
-                           expand = ggplot2::waiver(),
-                           name = ggplot2::waiver(),
-                           minor_ticks = TRUE) {
+scale_pretty_x <- function(
+  log = FALSE,
+  n = 5L,
+  limits = NULL,
+  expand = ggplot2::waiver(),
+  name = ggplot2::waiver(),
+  minor_ticks = TRUE
+) {
   .scale_pretty("x", log, n, limits, expand, name, minor_ticks)
 }
 
 #' @rdname scale_pretty_x
 #' @keywords internal
-scale_pretty_y <- function(log = FALSE,
-                           n = 5L,
-                           limits = NULL,
-                           expand = ggplot2::waiver(),
-                           name = ggplot2::waiver(),
-                           minor_ticks = TRUE) {
+scale_pretty_y <- function(
+  log = FALSE,
+  n = 5L,
+  limits = NULL,
+  expand = ggplot2::waiver(),
+  name = ggplot2::waiver(),
+  minor_ticks = TRUE
+) {
   .scale_pretty("y", log, n, limits, expand, name, minor_ticks)
 }
 

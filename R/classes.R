@@ -126,9 +126,9 @@ MRMhubExperiment <- function(title = "", analysis_type = NA_character_) {
     "others"
   )
   if (!is.na(analysis_type) && !analysis_type %in% valid_types) {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "Invalid analysis type. Please choose from 'lipidomics', 'metabolomics', 'quantitative', 'others', or 'NA_character_'."
-    ))
+    )
   }
 
   methods::new("MRMhubExperiment", title = title, analysis_type = analysis_type)
@@ -164,20 +164,20 @@ check_integrity_analyses <- function(
       }
       if (!excl_unmatched_analyses) {
         if (!silent) {
+          unmatched <- unique(setdiff(
+            unique(data@dataset_orig$analysis_id),
+            data@annot_analyses$analysis_id
+          ))
+          n_total <- length(unique(data@dataset_orig$analysis_id))
           if (d_xy < max_num_print) {
-            writeLines(glue::glue(""))
             cli::cli_abort(
               call = NULL,
-              glue::glue(
-                "No metadata present for {d_xy} of {data@dataset_orig$analysis_id |> unique() |> length()} analyses: {stringr::str_flatten_comma(unique(setdiff(data@dataset_orig$analysis_id |> unique(), data@annot_analyses$analysis_id)))}."
-              )
+              "No metadata present for {d_xy} of {n_total} analyses: {stringr::str_flatten_comma(unmatched)}."
             )
           } else {
             cli::cli_abort(
               call = NULL,
-              glue::glue(
-                "{d_xy} of {data@dataset_orig$analysis_id |> unique() |> length()} analyses have no matching metadata."
-              )
+              "{d_xy} of {n_total} analyses have no matching metadata."
             )
           }
         } else {
@@ -188,19 +188,23 @@ check_integrity_analyses <- function(
       }
     } else if (d_yx > 0) {
       if (!silent) {
+        missing_in_data <- unique(setdiff(
+          data@annot_analyses$analysis_id,
+          unique(data@dataset_orig$analysis_id)
+        ))
+        n_meta <- length(unique(data@annot_analyses$analysis_id))
         if (d_yx < max_num_print) {
-          cli::cli_abort(glue::glue(
-            "Following {d_yx} analyses defined in the metadata are not present in the measurement data: {stringr::str_flatten_comma(unique(setdiff(data@annot_analyses$analysis_id, data@dataset_orig$analysis_id |> unique())))}."
-          ))
+          cli::cli_abort(
+            "The following {d_yx} analyses defined in the metadata are not present in the measurement data: {stringr::str_flatten_comma(missing_in_data)}."
+          )
         } else {
-          cli::cli_abort(glue::glue(
-            "{d_yx} of {data@annot_analyses$analysis_id |> unique() |> length()} analyses defined in the metadata are not present in the measurement data."
-          ))
+          cli::cli_abort(
+            "{d_yx} of {n_meta} analyses defined in the metadata are not present in the measurement data."
+          )
         }
       } else {
         return(FALSE)
       }
-      cli::cli_abort(glue::glue(""))
     } else {
       data@status_processing <- "check_integrity_analyses pass"
       return(TRUE)

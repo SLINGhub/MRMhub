@@ -68,7 +68,7 @@ coerce_checked <- function(
     bad <- unique(chr[failed])
     cli::cli_warn(c(
       "!" = "{sum(failed)} value{?s} in column {.field {column}} could not be parsed as {if (integer) 'a whole number' else 'a number'} and {cli::qty(sum(failed))}{?was/were} set to {.val {NA}}.",
-      "i" = "Unparseable value{?s}: {.val {utils::head(bad, 5)}}"
+      "i" = "Unparseable value{?s}: {.val {mh_vec(bad)}}"
     ))
   }
   out
@@ -106,7 +106,7 @@ coerce_logical_checked <- function(x, column = NULL) {
     bad <- unique(orig[failed])
     cli::cli_warn(c(
       "!" = "{sum(failed)} value{?s} in column {.field {column}} could not be interpreted as TRUE/FALSE and {cli::qty(sum(failed))}{?was/were} set to {.val {NA}}.",
-      "i" = "Unrecognized value{?s}: {.val {utils::head(bad, 5)}}",
+      "i" = "Unrecognized value{?s}: {.val {mh_vec(bad)}}",
       "i" = "Recognized (case-insensitive): {.val {c('TRUE', 'FALSE', 'yes', 'no', 'y', 'n', '1', '0')}}."
     ))
   }
@@ -200,7 +200,7 @@ assert_unique_ids <- function(ids, field, table) {
     cli::cli_abort(c(
       "Duplicated {field} in {table}.",
       "x" = "{length(dups)} value{?s} occur{?s/} more than once; a join on this key would fan out and silently corrupt results.",
-      "i" = "Duplicated value{?s}: {.val {utils::head(dups, 5)}}"
+      "i" = "Duplicated value{?s}: {.val {mh_vec(dups)}}"
     ))
   }
   invisible(ids)
@@ -240,7 +240,7 @@ assert_consistent_attributes <- function(d_lookup, key, table) {
   n <- length(dup_keys)
   cli::cli_abort(c(
     "Inconsistent {.field {key}} metadata in {table}.",
-    "x" = "{n} {.field {key}} value{cli::qty(n)}{?s} {cli::qty(n)}{?carries/carry} more than one {.field {conflicting}}: {.val {utils::head(dup_keys, 5)}}",
+    "x" = "{n} {.field {key}} value{cli::qty(n)}{?s} {cli::qty(n)}{?carries/carry} more than one {.field {conflicting}}: {.val {mh_vec(dup_keys)}}",
     "i" = "Each {.field {key}} must carry the same {.field {conflicting}} in every row, otherwise every measurement of it is duplicated."
   ))
 }

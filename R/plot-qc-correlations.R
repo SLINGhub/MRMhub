@@ -184,13 +184,13 @@ plot_feature_correlations <- function(
       ) |>
       filter(.data$median_signal >= min_median_value)
     if (nrow(d_minsignal) == 0) {
-      cli_abort(col_red(
+      cli_abort(
         "No features passed the `min_median_value` filter. Please review the filter value, `variable` and data."
-      ))
+      )
     } else if (nrow(d_minsignal) == 1) {
-      cli_abort(col_red(
+      cli_abort(
         "Only 1 feature passed the `min_median_value` filter. Please review the filter value, `variable`, and data."
-      ))
+      )
     }
 
     d_filt <- d_filt |> semi_join(d_minsignal, by = "feature_id")
@@ -204,9 +204,9 @@ plot_feature_correlations <- function(
     )
 
   if (cor_min_neg >= cor_min) {
-    cli_abort(col_red(
+    cli_abort(
       "Lower correlation threshold must be less than upper threshold"
-    ))
+    )
   }
 
   # Generate correlation matrix
@@ -283,9 +283,9 @@ plot_feature_correlations <- function(
         (cols_page * rows_page)
     )
     if (specific_page > total_pages) {
-      cli::cli_abort(col_red(
+      cli::cli_abort(
         "Selected page exceeds the total number of pages. Please select a page number between {.strong 1} and {.strong {total_pages}}."
-      ))
+      )
     }
     page_range <- specific_page
   } else {

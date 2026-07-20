@@ -462,9 +462,9 @@ correct_drift <- function(
   check_data(data)
 
   if (!all(ref_qc_types %in% unique(data@dataset$qc_type))) {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "One or more specified `qc_types` are not present in the dataset. Please verify data or analysis metadata."
-    ))
+    )
   }
 
   variable_strip <- str_remove(variable, "feature_")
@@ -509,14 +509,14 @@ correct_drift <- function(
     data@var_drift_corrected[[variable]] | data@var_batch_corrected[[variable]]
   ) {
     if (!replace_previous) {
-      cli::cli_alert_info(col_yellow(
+      mh_warn(
         "Adding correction on top of previous '{.emph {variable_strip}}' {txt} corrections."
-      ))
+      )
     } else {
       # make a copy of the original data
-      cli::cli_alert_info(col_yellow(
+      mh_warn(
         "Replacing previous `{variable_strip}` {txt} corrections..."
-      ))
+      )
       data@var_drift_corrected <- c(
         feature_intensity = FALSE,
         feature_norm_intensity = FALSE,
@@ -533,9 +533,9 @@ correct_drift <- function(
     # data was not corrected before, make a copy of the original data as "_raw"
     is_first_correction <- TRUE
     data@dataset[[variable_raw]] <- data@dataset[[variable]]
-    cli::cli_alert_info(cli::col_green(glue::glue(
+    mh_success(
       "Applying `{variable_strip}` drift correction..."
-    )))
+    )
   }
 
   # Subset features
@@ -554,15 +554,15 @@ correct_drift <- function(
       ds <- ds |>
         dplyr::filter(stringr::str_detect(.data$feature_id, feature_list))
       if (nrow(ds) == 0) {
-        cli::cli_abort(col_red(
+        cli::cli_abort(
           "The feature filter set via `feature_list` does not match any feature in the dataset."
-        ))
+        )
       }
     } else {
       if (!all(feature_list %in% unique(ds$feature_id))) {
-        cli::cli_abort(col_red(
+        cli::cli_abort(
           "One or more feature(s) specified with `feature_list` are not present in the dataset."
-        ))
+        )
       }
 
       ds <- ds |> dplyr::filter(.data$feature_id %in% feature_list)
@@ -586,10 +586,8 @@ correct_drift <- function(
       filter(.data$count > 0)
     if (nrow(count_negative_or_zero) > 0) {
       ds$y[ds$y <= 0] <- NA_real_
-      cli::cli_alert_info(
-        col_yellow(
-          "{nrow(count_negative_or_zero)} feature(s) contain one or more zero or negative `{variable_strip}` values. Verify your data or use `log_transform_internal = FALSE`."
-        )
+      mh_warn(
+        "{nrow(count_negative_or_zero)} feature(s) contain one or more zero or negative `{variable_strip}` values. Verify your data or use `log_transform_internal = FALSE`."
       )
     }
   }
@@ -775,13 +773,13 @@ correct_drift <- function(
 
   if (invariant_features > 0) {
     txt <- if (!ignore_istd && any(ds$is_istd)) {
-      "To ignore ISTDs set argument `ignore_istd = TRUE`."
+      "Set {.arg ignore_istd} to {.val TRUE} to ignore ISTDs."
     } else {
       ""
     }
-    cli_alert_warning(cli::col_yellow(
+    mh_warn(
       "{invariant_features} features showed no variation in the study sample's original values across analyses. {txt}"
-    ))
+    )
   }
 
   if (sum(!d_smooth_summary$cv_change_valid > 0)) {
@@ -791,9 +789,9 @@ correct_drift <- function(
       "NA will be be returned for all values of these faetures. Set `use_original_if_fail = FALSE to return orginal values."
     }
 
-    cli_alert_warning(cli::col_yellow(
+    mh_warn(
       "{sum(!d_smooth_summary$cv_change_valid)} features have invalid values after smoothing. {txt}."
-    ))
+    )
   }
 
   # Prepare info/texts for command line output
@@ -808,9 +806,9 @@ correct_drift <- function(
     nrow()
 
   if (features_with_fit_errors_allbatches > 0) {
-    cli_alert_warning(cli::col_yellow(
+    mh_warn(
       "Smoothing failed for {features_with_fit_errors_allbatches} feature(s) in all batches. Please check data, metadata, and fit parameters."
-    ))
+    )
   }
   features_with_fit_errors_text <- glue::glue_collapse(
     d_smooth_summary$feature_id[d_smooth_summary$any_fit_error_summary],
@@ -827,19 +825,19 @@ correct_drift <- function(
   )
 
   if (features_with_fit_errors > 0) {
-    cli_alert_warning(col_yellow(
+    mh_warn(
       "Smoothing failed for {features_with_fit_errors} feature(s) in at least one batch: {features_with_fit_errors_text}. Please check data, metadata and fit parameters."
-    ))
+    )
   }
   if (features_with_fit_warnings > 0) {
     if (features_with_fit_warnings == features_corrected) {
-      cli_alert_warning(col_yellow(
+      mh_warn(
         "Issues (warnings) occured during smoothing of all features in at least one batch. Please inspect arguments and data, and consider plotting with `plot_runscatter()`."
-      ))
+      )
     } else {
-      cli_alert_warning(col_yellow(
+      mh_warn(
         "Issues (warnings) occured during the smoothing of {features_with_fit_warnings} feature(s) in at least one batch: {features_with_fit_warnings_text}. Please inspect argument and data, and consider plotting with `plot_runscatter()`."
-      ))
+      )
     }
   }
 
@@ -985,9 +983,9 @@ correct_drift <- function(
     txt_final <- paste(txt_parts, collapse = ", ")
     if (txt_final != "") {
       txt <- glue::glue_collapse(ref_qc_types, sep = ", ", last = ", and ")
-      cli_alert_warning(col_yellow(
+      mh_warn(
         "{txt_final} were excluded from correction as they fall outside the regions spanned by the QCs/samples used for smoothing ({.emph {txt}})."
-      ))
+      )
     }
   }
 
@@ -1019,11 +1017,9 @@ correct_drift <- function(
 
   text_batchwise <- if (batch_wise) " across batches " else " "
 
-  cli_alert_success(
-    col_green(
-      c(
-        "{text_start} correction was applied to {count_feature_text} {mode_text}."
-      )
+  mh_success(
+    c(
+      "{text_start} correction was applied to {count_feature_text} {mode_text}."
     )
   )
 
@@ -1153,17 +1149,17 @@ correct_drift_gaussiankernel <- function(
   check_data(data)
 
   if (is.na(kernel_size) || kernel_size <= 0) {
-    cli_abort(col_red("Argument `kernel_size` must larger than 0."))
+    cli_abort("{.arg kernel_size} must be greater than 0.")
   }
 
   if (is.na(outlier_ksd) || outlier_ksd <= 0) {
-    cli_abort(col_red("Argument `outlier_ksd` must larger than 0."))
+    cli_abort("{.arg outlier_ksd} must be greater than 0.")
   }
 
   if (!log_transform_internal) {
-    cli_abort(col_red(
+    cli_abort(
       "Currently only `log_transform_internal = TRUE` is supported."
-    ))
+    )
   }
 
   correct_drift(
@@ -1289,13 +1285,13 @@ correct_drift_loess <- function(
   check_data(data)
 
   if (is.na(span) || span <= 0) {
-    cli_abort(col_red(
-      "Argument `span` must larger than 0, typically between 0.25 and 1.0."
-    ))
+    cli_abort(
+      "{.arg span} must be greater than 0, typically between 0.25 and 1.0."
+    )
   }
 
   if (is.na(degree) || degree < 1 || degree > 2) {
-    cli_abort(col_red("Argument `degree` must be 1 or 2."))
+    cli_abort("{.arg degree} must be {.val {1}} or {.val {2}}.")
   }
 
   correct_drift(
@@ -1428,13 +1424,13 @@ correct_drift_cubicspline <- function(
   check_data(data)
 
   if (!is.null(spar) && !(is.numeric(spar))) {
-    cli_abort(col_red(
-      "Argument `spar` must be NULL or numeric, typically between 0 and 1."
-    ))
+    cli_abort(
+      "{.arg spar} must be NULL or numeric, typically between 0 and 1."
+    )
   }
 
   if (!is.null(spar) && !(is.null(lambda))) {
-    cli_abort(col_red("Either `spar` or `lambda` can be specified, not both."))
+    cli_abort("Either `spar` or `lambda` can be specified, not both.")
   }
 
   correct_drift(
@@ -1549,7 +1545,7 @@ correct_drift_gam <- function(
   check_data(data)
 
   if (!is.null(sp) && !(is.numeric(sp))) {
-    cli_abort(col_red("Argument `sp` must be NULL or numeric."))
+    cli_abort("{.arg sp} must be NULL or numeric.")
   }
 
   correct_drift(
@@ -1627,15 +1623,15 @@ correct_batch_centering <- function(
   check_data(data)
 
   if (!all(ref_qc_types %in% unique(data@dataset$qc_type))) {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "One or more specified `qc_types` are not present in the dataset. Please verify data or analysis metadata."
-    ))
+    )
   }
 
   if (!log_transform_internal && correct_scale) {
-    cli_abort(col_red(
+    cli_abort(
       "Currently data must be log-transformed for batch scaling. Please set `log_transform_internal = TRUE`"
-    ))
+    )
   }
 
   variable_strip <- str_remove(variable, "feature_")
@@ -1666,18 +1662,18 @@ correct_batch_centering <- function(
     if (data@var_batch_corrected[[variable]]) {
       # Drift  AND batch-corrected data
       if (replace_previous) {
-        cli_alert_info(col_yellow(glue::glue(
+        mh_warn(
           "Replacing previous `{variable_strip}` batch correction of drift-corrected data."
-        )))
+        )
         # use drift corrected data and apply correction on top, replacing any previous batch correction
         data@dataset[[variable]] <- data@dataset[[variable_smoothed]]
         data@dataset[[variable_fit_after]] <- data@dataset[[
           variable_smoothed_fit_after
         ]]
       } else {
-        cli_alert_info(col_yellow(glue::glue(
+        mh_warn(
           "Adding batch correction on top of previous `{variable_strip}` drift and batch corrections."
-        )))
+        )
         # use main variable (e.g. conc) and add correction on top
         #data@dataset[[variable]] <- data@dataset[[variable]]
       }
@@ -1690,33 +1686,33 @@ correct_batch_centering <- function(
         variable_fit_after
       ]]
 
-      cli_alert_info(col_yellow(glue::glue(
+      mh_warn(
         "Adding batch correction on top of `{variable_strip}` drift-correction."
-      )))
+      )
     }
   } else {
     # Data is NOT drift corrected
     if (data@var_batch_corrected[[variable]]) {
       # Only batch-corrected data (no previous drift correction)
       if (replace_previous) {
-        cli_alert_info(col_yellow(glue::glue(
+        mh_warn(
           "Replacing previous `{variable_strip}` batch correction."
-        )))
+        )
         # use drift corrected data and apply correction on top, replacing any previous batch correction
         data@dataset[[variable]] <- data@dataset[[variable_before]]
         data@dataset[[variable_fit_after]] <- data@dataset[[variable_fit]]
       } else {
-        cli_alert_info(col_yellow(glue::glue(
+        mh_warn(
           "Adding batch correction on top of previous `{variable_strip}` batch correction."
-        )))
+        )
         # use main variable (e.g. conc) and add correction on top
         #data@dataset[[variable]] <- data@dataset[[variable]]
       }
     } else {
       # Uncorrected data (raw)
-      cli_alert_info(col_yellow(glue::glue(
+      mh_warn(
         "Adding batch correction to `{variable_strip}` data."
-      )))
+      )
       #Store raw data
       is_first_correction <- TRUE
       data@dataset[[variable_raw]] <- data@dataset[[variable]]
@@ -1761,15 +1757,15 @@ correct_batch_centering <- function(
       ds <- ds |>
         dplyr::filter(stringr::str_detect(.data$feature_id, feature_list))
       if (nrow(ds) == 0) {
-        cli::cli_abort(col_red(
+        cli::cli_abort(
           "The feature filter set via `feature_list` does not match any feature in the dataset."
-        ))
+        )
       }
     } else {
       if (!all(feature_list %in% unique(ds$feature_id))) {
-        cli::cli_abort(col_red(
+        cli::cli_abort(
           "One or more feature(s) specified with `feature_list` are not present in the dataset."
-        ))
+        )
       }
 
       ds <- ds |> dplyr::filter(.data$feature_id %in% feature_list)
@@ -1786,19 +1782,17 @@ correct_batch_centering <- function(
       filter(.data$count > 0)
     if (nrow(count_negative_or_zero) > 0) {
       ds$y[ds$y <= 0] <- NA_real_
-      cli::cli_alert_info(
-        col_yellow(
-          "{nrow(count_negative_or_zero)} feature(s) contain one or more zero or negative `{variable_strip}` values. Verify your data or use `log_transform_internal = FALSE`."
-        )
+      mh_warn(
+        "{nrow(count_negative_or_zero)} feature(s) contain one or more zero or negative `{variable_strip}` values. Verify your data or use `log_transform_internal = FALSE`."
       )
     }
   }
 
   nbatches <- length(unique(ds$batch_id))
   if (nbatches < 2) {
-    cli_abort(col_red(glue::glue(
+    cli_abort(
       "Batch correction was not applied as there is only one batch."
-    )))
+    )
   }
 
   d_res <- ds |>
@@ -1868,13 +1862,13 @@ correct_batch_centering <- function(
   )
 
   if (data@var_drift_corrected[[variable]]) {
-    cli_alert_success(col_green(glue::glue(
+    mh_success(
       "Batch median-centering of {nbatches} batches was applied to drift-corrected {var_names} of {if_else(all(is.na(feature_list)), 'all', 'the selected')} {nfeat} features."
-    )))
+    )
   } else {
-    cli_alert_success(col_green(glue::glue(
+    mh_success(
       "Batch median-centering of {nbatches} batches was applied to raw {var_names} of {if_else(all(is.na(feature_list)), 'all', 'the selected')} {nfeat} features."
-    )))
+    )
   }
   # Print stats
 
@@ -2067,9 +2061,9 @@ fun_batch.correction = function(
           row_corrected[id] <- FALSE
         }
       } else {
-        cli_abort(col_red(
+        cli_abort(
           "Currently data must be log-transformed for batch scaling. Please set `log_transform_internal = TRUE`"
-        ))
+        )
       }
     }
   }

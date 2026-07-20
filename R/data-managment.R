@@ -70,9 +70,7 @@ get_dataset_subset <- function(
     )
     if (length(overlapping_features) > 0) {
       cli::cli_abort(
-        col_red(
-          "The include_feature_filter and exclude_feature_filter contain overlapping features: {overlapping_features}"
-        )
+        "The include_feature_filter and exclude_feature_filter contain overlapping features: {overlapping_features}"
       )
     }
   }
@@ -80,9 +78,9 @@ get_dataset_subset <- function(
   # Apply filtering if specified
   if (filter_data) {
     if (!data@is_filtered) {
-      cli::cli_abort(col_red(
+      cli::cli_abort(
         "Data has not been QC-filtered. Please run `filter_features_qc`."
-      ))
+      )
     }
     d_filt <- data@dataset_filtered |> dplyr::ungroup()
   } else {
@@ -100,18 +98,18 @@ get_dataset_subset <- function(
       if (any(str_detect(d_filt$qc_type, qc_types), na.rm = TRUE)) {
         d_filt <- d_filt |> dplyr::filter(str_detect(.data$qc_type, qc_types))
       } else {
-        cli::cli_abort(col_red(
+        cli::cli_abort(
           "The defined `qc_type` filter criteria resulted in no analyses to plot. Please verify the criteria set in the arguments."
-        ))
+        )
       }
     } else {
       # Multiple QC types: check if all are in the dataset
       if (all(qc_types %in% d_filt$qc_type)) {
         d_filt <- d_filt |> dplyr::filter(.data$qc_type %in% qc_types)
       } else {
-        cli::cli_abort(col_red(
+        cli::cli_abort(
           "One or more specified `qc_types` are not present in the dataset. Please verify data or analysis metadata."
-        ))
+        )
       }
     }
   }
@@ -162,10 +160,10 @@ get_dataset_subset <- function(
 
   # Ensure there is data to plot after filtering
   if (nrow(d_filt) < 1) {
-    cli::cli_abort(col_red(
+    cli::cli_abort(
       "The defined feature filter criteria resulted in no selected features to plot.
                        Please verify the criteria set in the arguments."
-    ))
+    )
   }
 
   # return data
@@ -420,15 +418,15 @@ update_after_normalization <- function(
     if (data@is_quantitated) {
       data <- update_after_quantitation(data, FALSE, FALSE)
       if (with_message) {
-        cli_alert_info(cli::col_yellow(
+        mh_warn(
           "The normalized intensities and concentrations are no longer valid. Please reprocess the data."
-        ))
+        )
       }
     } else {
       if (with_message) {
-        cli_alert_info(cli::col_yellow(
+        mh_warn(
           "Normalized intensities are no longer valid. Please reprocess the data."
-        ))
+        )
       }
     }
   }
@@ -455,9 +453,9 @@ update_after_quantitation <- function(
         ))
       )
     if (with_message) {
-      cli_alert_info(cli::col_yellow(
+      mh_warn(
         "Concentrations are no longer valid. Please reprocess the data."
-      ))
+      )
     }
     data@conc_analyte_unit <- NA_character_
   }
@@ -469,36 +467,36 @@ update_after_quantitation <- function(
 
 check_var_in_dataset <- function(table, variable) {
   if (variable == "feature_conc" & !"feature_conc" %in% names(table)) {
-    cli_abort(cli::col_red(
+    cli_abort(
       "Concentration data are not available, please process data or choose another variable.",
       call = NULL
-    ))
+    )
   }
   if (variable == "feature_area" & !"feature_area" %in% names(table)) {
-    cli_abort(cli::col_red(
+    cli_abort(
       "Peak area data are not available, please choose another variable.",
       call = NULL
-    ))
+    )
   }
   if (variable == "feature_response" & !"feature_response" %in% names(table)) {
-    cli_abort(cli::col_red(
+    cli_abort(
       "Response is not available, please choose another variable.",
       call = NULL
-    ))
+    )
   }
   if (
     variable == "feature_norm_intensity" &
       !"feature_norm_intensity" %in% names(table)
   ) {
-    cli_abort(cli::col_red(
+    cli_abort(
       "Normalized intensities not available, please process data, or choose another variable.",
       call = NULL
-    ))
+    )
   }
   if (variable == "feature_height" & !"feature_height" %in% names(table)) {
-    cli_abort(cli::col_red(
-      "Peak height data are not available, please choose another variable.",
-    ))
+    cli_abort(
+      "Peak height data are not available, please choose another variable."
+    )
   }
   if (
     variable == "feature_conc_raw" &
@@ -508,10 +506,10 @@ check_var_in_dataset <- function(table, variable) {
       variable == "feature_intensity_raw" &
         !"feature_intensity_raw" %in% names(table)
   ) {
-    cli_abort(cli::col_red(
+    cli_abort(
       "Raw feature abundance data is only available after drift and/or batch correction.",
       call = NULL
-    ))
+    )
   }
   # Catch-all: the special cases above only cover a subset of the variables
   # callers arg_match (e.g. save_dataset_csv / save_report_xlsx accept
@@ -520,10 +518,10 @@ check_var_in_dataset <- function(table, variable) {
   # plotting callers (e.g. plot_runscatter) validate it themselves with a more
   # specific "run drift/batch correction first" message this would shadow.
   if (!variable %in% names(table) && !grepl("_before$", variable)) {
-    cli_abort(cli::col_red(
+    cli_abort(
       "{.val {variable}} is not available in the dataset. Please process the data or choose another variable.",
       call = NULL
-    ))
+    )
   }
 }
 
@@ -669,10 +667,7 @@ set_analysis_order_analysismetadata <- function(
     "timestamp" = {
       if (all(is.na(d_temp$acquisition_time_stamp))) {
         cli::cli_abort(
-          col_red(
-            "Acquisition timestamps are not present in analysis results.
-           Please set argument `order_by` to either `resultfile` or `metadata`."
-          ),
+          "Acquisition timestamps are not present in analysis results. Set {.arg order_by} to {.val resultfile} or {.val metadata}.",
           call = NULL
         )
       }
@@ -758,9 +753,9 @@ set_analysis_order <- function(
   data <- set_analysis_order_analysismetadata(data, order_by)
   data <- link_data_metadata(data)
 
-  cli::cli_alert_success(cli::col_green(
+  mh_success(
     "Analysis order set to {.val {order_by}}"
-  ))
+  )
 
   if (
     data@is_isotope_corr |
@@ -770,10 +765,10 @@ set_analysis_order <- function(
       any(data@var_batch_corrected) |
       any(data@var_drift_corrected)
   ) {
-    cli::cli_alert_info(col_yellow(c(
+    mh_warn(c(
       "All data processing has been reset. ",
       "i" = "Please rerun processing steps"
-    )))
+    ))
   }
   data
 }
@@ -807,7 +802,7 @@ link_data_metadata <- function(data = NULL, minimal_info = TRUE) {
         cli::cli_warn(c(
           "!" = "{length(dropped)} analys{?is/es} {?was/were} dropped because {.field valid_analysis} is {.val {NA}} in the analysis metadata.",
           "i" = "{cli::qty(length(dropped))}Set {.field valid_analysis} to {.code TRUE}/{.code FALSE} to keep or exclude {?it/them} deliberately.",
-          "i" = "Affected: {.val {utils::head(dropped, 5)}}"
+          "i" = "Affected: {.val {mh_vec(dropped)}}"
         ))
       }
     }
@@ -831,7 +826,7 @@ link_data_metadata <- function(data = NULL, minimal_info = TRUE) {
         cli::cli_warn(c(
           "!" = "{length(dropped)} feature{?s} {?was/were} dropped because {.field valid_feature} is {.val {NA}} in the feature metadata.",
           "i" = "{cli::qty(length(dropped))}Set {.field valid_feature} to {.code TRUE}/{.code FALSE} to keep or exclude {?it/them} deliberately.",
-          "i" = "Affected: {.val {utils::head(dropped, 5)}}"
+          "i" = "Affected: {.val {mh_vec(dropped)}}"
         ))
       }
     }
@@ -978,17 +973,13 @@ set_intensity_var <- function(
     idx <- which(is_usable)[1]
     if (!is.na(idx)) {
       data@feature_intensity_var = var_list[idx]
-      cli_alert_info(
-        text = cli::col_grey(
-          "{.var {var_list[idx]}} selected as default feature intensity. Modify with {.fn set_intensity_var}."
-        )
+      mh_info(
+        "{.field {var_list[idx]}} selected as default feature intensity. Modify with {.fn set_intensity_var}."
       )
       variable_name <- var_list[idx]
     } else {
-      cli_alert_warning(
-        text = cli::col_yellow(
-          "No typical feature intensity variable found in the data. Use {.fn set_intensity_var} to set it.}}."
-        )
+      mh_warn(
+        "No typical feature intensity variable found in the data. Use {.fn set_intensity_var} to set it."
       )
       return(data)
     }
@@ -996,7 +987,7 @@ set_intensity_var <- function(
     #TODO: Double check behavior if there a feature_intensity in the raw data file
     if (!variable_name %in% names(data@dataset_orig)) {
       cli_abort(c(
-        "x" = "{.var {variable_name}} is not present in the raw data."
+        "x" = "{.field {variable_name}} is not present in the raw data."
       ))
     }
 
@@ -1010,9 +1001,9 @@ set_intensity_var <- function(
         )
     ) {
       if (warnings) {
-        cli_alert_warning(cli::col_yellow(
-          "Note: {.var {variable_strip}} is not a typically used raw signal (i.e., area, height, intensity)."
-        ))
+        mh_warn(
+          "{.field {variable_strip}} is not a typically used raw signal (i.e., area, height, or intensity)."
+        )
       }
     }
   }
@@ -1028,13 +1019,13 @@ set_intensity_var <- function(
     )
     if (any(calc_cols %in% names(data@dataset))) {
       data@dataset <- data@dataset |> select(-any_of(calc_cols))
-      cli_alert_info(cli::col_yellow(
+      mh_warn(
         "New feature intensity variable (`{variable_name}`) defined, please reprocess data."
-      ))
+      )
     } else {
-      cli::cli_alert_success(cli::col_green(
+      mh_success(
         "Default feature intensity variable set to {.val {variable_name}}"
-      ))
+      )
     }
     data <- link_data_metadata(data)
   }
@@ -1067,13 +1058,13 @@ exclude_analyses <- function(data = NULL, analyses, clear_existing) {
 
   if (all(is.na(analyses)) | length(analyses) == 0) {
     if (!clear_existing) {
-      cli_abort(cli::col_red(
+      cli_abort(
         "No `analysis_id` provided. To (re)include all analyses, use `analysis_ids_exlude = NA` and `clear_existing = TRUE`."
-      ))
+      )
     } else {
-      cli::cli_alert_info(cli::col_green(
+      mh_success(
         "All exclusions removed, and thus all analyses are now included for subsequent steps. Please reprocess data."
-      ))
+      )
       data@annot_analyses <- data@annot_analyses |>
         mutate(valid_analysis = TRUE)
       data <- link_data_metadata(data)
@@ -1081,9 +1072,9 @@ exclude_analyses <- function(data = NULL, analyses, clear_existing) {
     }
   }
   if (any(!c(analyses) %in% data@annot_analyses$analysis_id)) {
-    cli_abort(cli::col_red(
+    cli_abort(
       "One or more provided `analysis_id` to exclude are not present. Please verify the analysis metadata."
-    ))
+    )
   }
   if (!clear_existing) {
     data@annot_analyses <- data@annot_analyses |>
@@ -1098,9 +1089,9 @@ exclude_analyses <- function(data = NULL, analyses, clear_existing) {
         pull(.data$analysis_id)
     ) |>
       length()
-    cli_alert_info(cli::col_green(
+    mh_success(
       "{n_excluded} analys{?is/es} {?is/are} now excluded for downstream processing. Please reprocess data."
-    ))
+    )
   } else {
     data@annot_analyses <- data@annot_analyses |>
       mutate(valid_analysis = !(.data$analysis_id %in% analyses))
@@ -1111,9 +1102,9 @@ exclude_analyses <- function(data = NULL, analyses, clear_existing) {
         pull(.data$analysis_id)
     ) |>
       length()
-    cli_alert_info(cli::col_green(
+    mh_success(
       "{n_excluded} analys{?is/es} {?was/were} excluded for downstream processing. Please reprocess data."
-    ))
+    )
   }
 
   # @analyses_excluded is derived from `valid_analysis` in link_data_metadata().
@@ -1144,22 +1135,22 @@ exclude_features <- function(data = NULL, features, clear_existing) {
 
   if (all(is.na(features)) | length(features) == 0) {
     if (!clear_existing) {
-      cli_abort(cli::col_red(
+      cli_abort(
         "No `feature_id` provided. To (re)include all analyses, use `feature_ids_exlude = NA` and `clear_existing = TRUE`."
-      ))
+      )
     } else {
-      cli::cli_alert_info(cli::col_green(
+      mh_success(
         "All exlusions were removed, i.e. all features are included. Please reprocess data."
-      ))
+      )
       data@annot_features <- data@annot_features |> mutate(valid_feature = TRUE)
       data <- link_data_metadata(data)
       return(data)
     }
   }
   if (any(!c(features) %in% data@annot_features$feature_id)) {
-    cli_abort(cli::col_red(
+    cli_abort(
       "One or more provided `feature_id` are not present. Please verify the feature metadata."
-    ))
+    )
   }
   if (!clear_existing) {
     data@annot_features <- data@annot_features |>
@@ -1173,9 +1164,9 @@ exclude_features <- function(data = NULL, features, clear_existing) {
         pull(.data$feature_id)
     ) |>
       length()
-    cli_alert_info(cli::col_green(
+    mh_success(
       "{n_excluded} feature{?s} {?is/are} now excluded for downstream processing. Please reprocess data."
-    ))
+    )
   } else {
     data@annot_features <- data@annot_features |>
       mutate(valid_feature = !(.data$feature_id %in% features))
@@ -1186,9 +1177,9 @@ exclude_features <- function(data = NULL, features, clear_existing) {
         pull(.data$feature_id)
     ) |>
       length()
-    cli_alert_info(cli::col_green(
+    mh_success(
       "{n_excluded} feature{?s} {?was/were} excluded for downstream processing. Please reprocess data."
-    ))
+    )
   }
 
   # @features_excluded is derived from `valid_feature` in link_data_metadata().

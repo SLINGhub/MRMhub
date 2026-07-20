@@ -267,9 +267,9 @@ save_dataset_mztab <- function(
   check_data(data)
 
   if (nrow(data@dataset) == 0) {
-    cli_abort(col_red(
+    cli_abort(
       "No annotated data available. Import and process data before exporting to mzTab-M."
-    ))
+    )
   }
 
   # --- resolve abundance variable (with fallback) ---------------------------
@@ -285,9 +285,9 @@ save_dataset_mztab <- function(
       all(is.na(data@dataset[[variable_col]]))
   ) {
     if (variable != "intensity") {
-      cli_alert_warning(col_yellow(glue::glue(
+      mh_warn(
         "'{variable_col}' not available - falling back to raw 'feature_intensity'."
-      )))
+      )
     }
     variable <- "intensity"
     variable_col <- "feature_intensity"
@@ -298,9 +298,9 @@ save_dataset_mztab <- function(
     path <- paste0(path, ".mzTab")
   }
   if (fs::file_exists(path) && !overwrite) {
-    cli_abort(col_red(
+    cli_abort(
       "File '{path}' already exists. Use `overwrite = TRUE` to replace it."
-    ))
+    )
   }
 
   # --- quantification unit --------------------------------------------------
@@ -583,9 +583,9 @@ save_dataset_mztab <- function(
   } else {
     ""
   }
-  cli_alert_success(col_green(glue::glue(
+  mh_success(
     "mzTab-M export{txtitle} ({nrow(smf_tbl)} features x {nrow(assays)} analyses) saved to '{path}'."
-  )))
+  )
   invisible(path)
 }
 
@@ -721,9 +721,9 @@ parse_mztab <- function(path, silent = FALSE) {
   # --- SMF (features) + SML (analyte names) ---------------------------------
   smf <- .mztab_read_section(parts, prefixes, "SFH", "SMF")
   if (is.null(smf)) {
-    cli_abort(col_red(
+    cli_abort(
       "No small molecule feature (SMF) section found in '{path}'. mzTab import requires SMF rows."
-    ))
+    )
   }
   smf <- dplyr::mutate(smf, SMF_ID = stringr::str_squish(.data$SMF_ID))
   sml <- .mztab_read_section(parts, prefixes, "SMH", "SML")
@@ -798,9 +798,9 @@ parse_mztab <- function(path, silent = FALSE) {
     "^abundance_assay\\[\\d+\\]$"
   )]
   if (length(abund_cols) == 0) {
-    cli_abort(col_red(
+    cli_abort(
       "No 'abundance_assay[n]' columns found in the SMF section of '{path}'."
-    ))
+    )
   }
 
   long <- smf |>
@@ -835,9 +835,9 @@ parse_mztab <- function(path, silent = FALSE) {
     )
 
   if (!silent) {
-    cli_alert_info(glue::glue(
+    cli_alert_info(
       "Parsed mzTab-M: {dplyr::n_distinct(long$analysis_id)} analyses x {dplyr::n_distinct(long$feature_id)} features."
-    ))
+    )
   }
   long
 }
