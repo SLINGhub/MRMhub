@@ -4,7 +4,7 @@ mexp <- mrmhub::MRMhubExperiment()
 mexp <- mrmhub::import_data_masshunter(
   mexp,
   path = testthat::test_path(
-    "testdata/masshunter/MRMhub_TestData_MHQuant_S1P_DefaultSampleInfo_RT-Areas-FWHM.csv"
+    "testdata/masshunter/MRMhub_MHQuant_S1P.csv"
   ),
   import_metadata = FALSE
 )

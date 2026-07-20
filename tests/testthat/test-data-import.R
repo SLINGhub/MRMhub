@@ -182,7 +182,7 @@ test_that("Parses nested Agilent MH-Quant .csv file with detailed sample info an
 
 test_that("Parses nested MH Quant .csv file with detailed method info and different peak parameters", {
   d <- parse_masshunter_csv(test_path(
-    "testdata/masshunter/4_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_DetailedMethods.csv"
+    "testdata/masshunter/4_MHQuant_DetailedMethods.csv"
   ))
 
   expect_identical(
@@ -264,7 +264,7 @@ test_that("Parses nested MH Quant .csv file with detailed method info and differ
 
 test_that("Parses nested MH Quant .csv without the 'outlier' column", {
   d <- parse_masshunter_csv(test_path(
-    "testdata/masshunter/6_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM-NoOutlierSum.csv"
+    "testdata/masshunter/6_MHQuant_NoOutlierSum.csv"
   ))
   expect_equal(ncol(d), 12)
   expect_equal(nrow(d), 1040)
@@ -300,7 +300,7 @@ test_that("Parsing nested MH Quant .csv without 'outlier'/'quant message' column
 test_that("Parses nested MH Quant .csv file containing QUALIFIER peak info", {
   d <- parse_masshunter_csv(
     test_path(
-      "testdata/masshunter/9_Testdata_MHQuant_withQuantMethods_withQualifierMethResults.csv"
+      "testdata/masshunter/9_MHQuant_withQuantMethods_withQualifierMethResults.csv"
     ),
     expand_qualifier_names = TRUE
   )
@@ -317,7 +317,7 @@ test_that("Parses nested MH Quant .csv file containing QUALIFIER peak info", {
 
 test_that("Parses nested MH Quant .csv without Quant Message Summary", {
   d <- parse_masshunter_csv(test_path(
-    "testdata/masshunter/10_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM-NoQuantMsgSum.csv"
+    "testdata/masshunter/10_MHQuant_NoQuantMsgSum.csv"
   ))
   expect_equal(ncol(d), 12)
   expect_equal(nrow(d), 1040)
@@ -328,7 +328,7 @@ test_that("Parses nested MH Quant .csv without Quant Message Summary", {
 
 test_that("Parses nested MH Quant .csv without acquistion time stamp", {
   d <- parse_masshunter_csv(test_path(
-    "testdata/masshunter/11_Testdata_MHQuant_DefaultSampleInfo-noAcqDataTime_RT-Areas-FWHM.csv"
+    "testdata/masshunter/11_MHQuant_noAcqDataTime.csv"
   ))
   expect_false(c("acquisition_time_stamp") %in% names(d))
   expect_equal(ncol(d), 11)
@@ -340,7 +340,7 @@ test_that("Parses nested MH Quant .csv without acquistion time stamp", {
 test_that("Returns a defined error when reading nested MH Quant .csv containg a 'Quantitation Message' is imported", {
   expect_error(
     parse_masshunter_csv(test_path(
-      "testdata/masshunter/12_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM-withQuantMsg.csv"
+      "testdata/masshunter/12_MHQuant_withQuantMsg.csv"
     )),
     regexp = "Field \\'Quantitation Message\\' currently not supported"
   )
@@ -349,7 +349,7 @@ test_that("Returns a defined error when reading nested MH Quant .csv containg a 
 test_that("Returns a defined error when reading MH Quant .csv with analytes/features as rows (Compound Table) is imported", {
   expect_error(
     parse_masshunter_csv(test_path(
-      "testdata/masshunter/13_Testdata_MHQuant_CompoundTable_DefaultSampleInfo_RT-Areas-FWHM.csv"
+      "testdata/masshunter/13_MHQuant_CompoundTable.csv"
     )),
     regexp = "Compound table format is currently not supported",
     fixed = TRUE
@@ -359,7 +359,7 @@ test_that("Returns a defined error when reading MH Quant .csv with analytes/feat
 test_that("Returns a defined error when reading MH Quant .csv with analytes/features as rows (Compound Table) is imported", {
   expect_error(
     parse_masshunter_csv(test_path(
-      "testdata/masshunter/24_Testdata_MHQuant_DefaultSampleInfo_noRawdatafilename.csv"
+      "testdata/masshunter/24_MHQuant_noRawdatafilename.csv"
     )),
     regexp = "'Data File' column is required and used as a unique identifier, but is missing or the file",
     fixed = TRUE
@@ -399,7 +399,7 @@ test_that("Parses nested MH Quant .csv file exported from German Windows system 
 
 test_that("Parses nested MH Quant .csv file in UTF-8 format with different languages/characters", {
   d <- parse_masshunter_csv(test_path(
-    "testdata/lipidomics/18_Testdata_Lipidomics_MultiLanguageCharactersSamplenamesFeatures.csv"
+    "testdata/lipidomics/18_MultiLanguageCharactersSamplenamesFeatures.csv"
   ))
   expect_equal(d[[1, "feature_rt"]], 9.754)
   expect_equal(d[[1, "feature_id"]], "谷氨酰胺")
@@ -465,7 +465,7 @@ test_that("Imports nested MH Quant .csv file containing QUALIFIER peak info into
   mexp <- import_data_masshunter(
     mexp,
     test_path(
-      "testdata/masshunter/9_Testdata_MHQuant_withQuantMethods_withQualifierMethResults.csv"
+      "testdata/masshunter/9_MHQuant_withQuantMethods_withQualifierMethResults.csv"
     ),
     import_metadata = TRUE,
     expand_qualifier_names = TRUE
@@ -777,29 +777,29 @@ test_that("parse_masshunter_csv() output is stable across all valid fixtures", {
   fixtures <- c(
     "testdata/masshunter/1_Testdata_MHQuant_DefaultSampleInfo_AreaOnly.csv",
     "testdata/masshunter/3_Testdata_MHQuant_DefaultSampleInfo_DetailedResults.csv",
-    "testdata/masshunter/4_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_DetailedMethods.csv",
+    "testdata/masshunter/4_MHQuant_DetailedMethods.csv",
     "testdata/masshunter/5_Testdata_MHQuant_DetailedSampleInfo-RT-Areas-FWHM.csv",
-    "testdata/masshunter/6_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM-NoOutlierSum.csv",
+    "testdata/masshunter/6_MHQuant_NoOutlierSum.csv",
     "testdata/masshunter/7_Testdata_MHQuant_NoOutlierSum-noQuantMsgSum.csv",
     "testdata/masshunter/8_Testdata_MHQuant_Corrupt_OutlierQuantMsgSumDeleted.csv",
-    "testdata/masshunter/9_Testdata_MHQuant_withQuantMethods_withQualifierMethResults.csv",
-    "testdata/masshunter/10_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM-NoQuantMsgSum.csv",
-    "testdata/masshunter/11_Testdata_MHQuant_DefaultSampleInfo-noAcqDataTime_RT-Areas-FWHM.csv",
+    "testdata/masshunter/9_MHQuant_withQuantMethods_withQualifierMethResults.csv",
+    "testdata/masshunter/10_MHQuant_NoQuantMsgSum.csv",
+    "testdata/masshunter/11_MHQuant_noAcqDataTime.csv",
     "testdata/masshunter/15_Testdata_MHQuant_Corrupt_ExtraTopLine.csv",
     "testdata/masshunter/19_Testdata_MHQuant_MultipleQUAL_with_expectedRT.csv",
     "testdata/masshunter/20_Testdata_MHQuant_withSpecialCharsInFeatures.csv",
     "testdata/masshunter/21_Testdata_MHQuant_with_dots_InFeatures.csv",
-    "testdata/masshunter/22_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq.csv",
-    "testdata/masshunter/22_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq-noalphafeat.csv",
-    "testdata/masshunter/23_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq_notimestamp.csv",
+    "testdata/masshunter/22_MHQuant_notInSeq.csv",
+    "testdata/masshunter/22_MHQuant_notInSeq-noalphafeat.csv",
+    "testdata/masshunter/23_MHQuant_notInSeq_notimestamp.csv",
     "testdata/masshunter/MHQuant_demo.csv",
-    "testdata/masshunter/MRMhub_TestData_MHQuant_S1P_DefaultSampleInfo_RT-Areas-FWHM.csv",
+    "testdata/masshunter/MRMhub_MHQuant_S1P.csv",
     "testdata/masshunter/QuantLCMS_Example_MassHunter.csv",
     "testdata/masshunter/QuantLCMS_Example_MassHunter_CalcConc.csv",
     "testdata/masshunter/QuantLCMS_Example_MassHunter_FinalConc.csv",
     "testdata/masshunter/QuantLCMS_Example_MassHunter-NoHdrSampleName.csv",
     "testdata/lipidomics/17_Testdata_Lipidomics_GermanSystem.csv",
-    "testdata/lipidomics/18_Testdata_Lipidomics_MultiLanguageCharactersSamplenamesFeatures.csv"
+    "testdata/lipidomics/18_MultiLanguageCharactersSamplenamesFeatures.csv"
   )
 
   for (f in fixtures) {
@@ -815,7 +815,7 @@ test_that("parse_masshunter_csv() output is stable across all valid fixtures", {
 
 test_that("parse_masshunter_csv(expand_qualifier_names = FALSE) output is stable", {
   fixtures <- c(
-    "testdata/masshunter/9_Testdata_MHQuant_withQuantMethods_withQualifierMethResults.csv",
+    "testdata/masshunter/9_MHQuant_withQuantMethods_withQualifierMethResults.csv",
     "testdata/masshunter/19_Testdata_MHQuant_MultipleQUAL_with_expectedRT.csv"
   )
 
@@ -1589,7 +1589,7 @@ test_that("importing from a folder with no matching files gives a clear error", 
 
 test_that("MassHunter import strips only a trailing .d, not a '.d' in the middle of a name", {
   src <- testthat::test_path(
-    "testdata/masshunter/MRMhub_TestData_MHQuant_S1P_DefaultSampleInfo_RT-Areas-FWHM.csv"
+    "testdata/masshunter/MRMhub_MHQuant_S1P.csv"
   )
   lines <- readLines(src, warn = FALSE)
   # Give one sample a Data File name that also contains '.d' in the middle.

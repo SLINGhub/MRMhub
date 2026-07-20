@@ -411,7 +411,7 @@ test_that("validate_workflow_inputs ignores unknown step ids", {
 
 test_that("build_experiment attaches msorganiser metadata and surfaces tables mismatches", {
   data_csv <- test_path(
-    "testdata/masshunter/MRMhub_TestData_MHQuant_S1P_DefaultSampleInfo_RT-Areas-FWHM.csv"
+    "testdata/masshunter/MRMhub_MHQuant_S1P.csv"
   )
   msorg <- test_path(
     "testdata/metadata/MRMhub_Metadata_Template_191_20240226_MHQuant_S1P_V1.xlsx"

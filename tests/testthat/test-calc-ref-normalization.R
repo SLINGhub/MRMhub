@@ -2,7 +2,7 @@ mexp_raw <- mrmhub::MRMhubExperiment()
 mexp_raw <- mrmhub::import_data_masshunter(
   mexp_raw,
   path = testthat::test_path(
-    "testdata/masshunter/23_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq_notimestamp.csv"
+    "testdata/masshunter/23_MHQuant_notInSeq_notimestamp.csv"
   ),
   import_metadata = FALSE
 )

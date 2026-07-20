@@ -8,7 +8,7 @@ test_that("Imports/associates data and metadata, orders analyses by dataset (tim
   mexp <- mrmhub::import_data_masshunter(
     mexp,
     path = testthat::test_path(
-      "testdata/masshunter/23_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq_notimestamp.csv"
+      "testdata/masshunter/23_MHQuant_notInSeq_notimestamp.csv"
     ),
     import_metadata = FALSE
   )
@@ -44,7 +44,7 @@ test_that("import_metadata_msorganiser handles missing / invalid files", {
   mexp <- mrmhub::import_data_masshunter(
     mexp,
     path = testthat::test_path(
-      "testdata/masshunter/22_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq-noalphafeat.csv"
+      "testdata/masshunter/22_MHQuant_notInSeq-noalphafeat.csv"
     ),
     import_metadata = FALSE
   )
@@ -61,7 +61,7 @@ test_that("import_metadata_msorganiser handles missing / invalid files", {
     mexp <- mrmhub::import_metadata_msorganiser(
       mexp,
       path = testthat::test_path(
-        "testdata/masshunter/MRMhub_TestData_MHQuant_S1P_DefaultSampleInfo_RT-Areas-FWHM.csv"
+        "testdata/masshunter/MRMhub_MHQuant_S1P.csv"
       ),
       excl_unmatched_analyses = FALSE
     ),
@@ -135,7 +135,7 @@ test_that("Imports/associates data and metadata, orders features by default acco
   mexp <- mrmhub::import_data_masshunter(
     mexp,
     path = testthat::test_path(
-      "testdata/masshunter/22_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq-noalphafeat.csv"
+      "testdata/masshunter/22_MHQuant_notInSeq-noalphafeat.csv"
     ),
     import_metadata = FALSE
   )
@@ -159,7 +159,7 @@ test_that("Raise data assertion warning and stops with not all analyses defined 
   mexp <- mrmhub::import_data_masshunter(
     mexp,
     path = testthat::test_path(
-      "testdata/masshunter/22_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq-noalphafeat.csv"
+      "testdata/masshunter/22_MHQuant_notInSeq-noalphafeat.csv"
     ),
     import_metadata = FALSE
   )
@@ -167,7 +167,7 @@ test_that("Raise data assertion warning and stops with not all analyses defined 
     mexp <- mrmhub::import_metadata_msorganiser(
       mexp,
       path = testthat::test_path(
-        "testdata/metadata/MRMhub_Metadata_Template_191_20240226_MHQuant_S1P_analysissubset.xlsx"
+        "testdata/metadata/MRMhub_Metadata_191_MHQuant_S1P_analysissubset.xlsx"
       ),
       excl_unmatched_analyses = FALSE
     ),
@@ -180,7 +180,7 @@ test_that("Metadata matching zero analyses errors instead of reporting green 0-m
   mexp <- mrmhub::import_data_masshunter(
     mexp,
     path = testthat::test_path(
-      "testdata/masshunter/23_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq_notimestamp.csv"
+      "testdata/masshunter/23_MHQuant_notInSeq_notimestamp.csv"
     ),
     import_metadata = FALSE
   )
@@ -207,14 +207,14 @@ test_that("Shows analyses defined in metadata but missing in data as Note in ass
   mexp <- mrmhub::import_data_masshunter(
     mexp,
     path = testthat::test_path(
-      "testdata/masshunter/22_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq-noalphafeat.csv"
+      "testdata/masshunter/22_MHQuant_notInSeq-noalphafeat.csv"
     ),
     import_metadata = FALSE
   )
   mexp <- mrmhub::import_metadata_msorganiser(
     mexp,
     path = testthat::test_path(
-      "testdata/metadata/MRMhub_Metadata_Template_191_20240226_MHQuant_S1P_analysissubset.xlsx"
+      "testdata/metadata/MRMhub_Metadata_191_MHQuant_S1P_analysissubset.xlsx"
     ),
     excl_unmatched_analyses = TRUE
   )
@@ -231,14 +231,14 @@ test_that("Ignores warnings after metadata import and proceeds", {
   mexp <- mrmhub::import_data_masshunter(
     mexp,
     path = testthat::test_path(
-      "testdata/masshunter/22_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq-noalphafeat.csv"
+      "testdata/masshunter/22_MHQuant_notInSeq-noalphafeat.csv"
     ),
     import_metadata = FALSE
   )
   mexp <- mrmhub::import_metadata_msorganiser(
     mexp,
     path = testthat::test_path(
-      "testdata/metadata/MRMhub_Metadata_Template_191_20240226_MHQuant_S1P_analysissubset.xlsx"
+      "testdata/metadata/MRMhub_Metadata_191_MHQuant_S1P_analysissubset.xlsx"
     ),
     ignore_warnings = TRUE
   )
@@ -256,7 +256,7 @@ test_that("Stale assertr warnings on pre-existing tables are not carried into a 
   mexp <- mrmhub::import_data_masshunter(
     mexp,
     path = testthat::test_path(
-      "testdata/masshunter/22_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq-noalphafeat.csv"
+      "testdata/masshunter/22_MHQuant_notInSeq-noalphafeat.csv"
     ),
     import_metadata = FALSE
   )
@@ -265,7 +265,7 @@ test_that("Stale assertr warnings on pre-existing tables are not carried into a 
   mexp <- mrmhub::import_metadata_msorganiser(
     mexp,
     path = testthat::test_path(
-      "testdata/metadata/MRMhub_Metadata_Template_191_20240226_MHQuant_S1P_analysissubset.xlsx"
+      "testdata/metadata/MRMhub_Metadata_191_MHQuant_S1P_analysissubset.xlsx"
     ),
     excl_unmatched_analyses = TRUE
   )
@@ -459,7 +459,7 @@ test_that("Add indidual metadata types to data, first analyses then features", {
   mexp <- mrmhub::import_data_masshunter(
     mexp,
     path = testthat::test_path(
-      "testdata/masshunter/MRMhub_TestData_MHQuant_S1P_DefaultSampleInfo_RT-Areas-FWHM.csv"
+      "testdata/masshunter/MRMhub_MHQuant_S1P.csv"
     ),
     import_metadata = FALSE
   )
@@ -499,7 +499,7 @@ test_that("Add indidual metadata types to data, first features then analyses", {
   mexp <- mrmhub::import_data_masshunter(
     mexp,
     path = testthat::test_path(
-      "testdata/masshunter/MRMhub_TestData_MHQuant_S1P_DefaultSampleInfo_RT-Areas-FWHM.csv"
+      "testdata/masshunter/MRMhub_MHQuant_S1P.csv"
     ),
     import_metadata = FALSE
   )
@@ -537,7 +537,7 @@ test_that("Check import of inconsitent metadata", {
   mexp <- mrmhub::import_data_masshunter(
     mexp,
     path = testthat::test_path(
-      "testdata/masshunter/MRMhub_TestData_MHQuant_S1P_DefaultSampleInfo_RT-Areas-FWHM.csv"
+      "testdata/masshunter/MRMhub_MHQuant_S1P.csv"
     ),
     import_metadata = FALSE
   )
@@ -599,7 +599,7 @@ test_that("Replacing specific undefined metadata", {
   mexp <- mrmhub::import_data_masshunter(
     mexp,
     path = testthat::test_path(
-      "testdata/masshunter/MRMhub_TestData_MHQuant_S1P_DefaultSampleInfo_RT-Areas-FWHM.csv"
+      "testdata/masshunter/MRMhub_MHQuant_S1P.csv"
     ),
     import_metadata = FALSE
   )
@@ -654,7 +654,7 @@ test_that("assert_metadata rejects duplicated analysis_id keys", {
   mexp <- mrmhub::import_data_masshunter(
     mexp,
     path = testthat::test_path(
-      "testdata/masshunter/MRMhub_TestData_MHQuant_S1P_DefaultSampleInfo_RT-Areas-FWHM.csv"
+      "testdata/masshunter/MRMhub_MHQuant_S1P.csv"
     ),
     import_metadata = FALSE
   )
@@ -719,7 +719,7 @@ test_that("missing qc_type and valid_analysis are filled with forgiving defaults
   mexp <- mrmhub::import_data_masshunter(
     mexp,
     path = testthat::test_path(
-      "testdata/masshunter/MRMhub_TestData_MHQuant_S1P_DefaultSampleInfo_RT-Areas-FWHM.csv"
+      "testdata/masshunter/MRMhub_MHQuant_S1P.csv"
     ),
     import_metadata = FALSE
   )
@@ -776,7 +776,7 @@ test_that("an unrecognized qc_type is warned about and preserved, then drops to 
   mexp <- mrmhub::import_data_masshunter(
     mexp,
     path = testthat::test_path(
-      "testdata/masshunter/MRMhub_TestData_MHQuant_S1P_DefaultSampleInfo_RT-Areas-FWHM.csv"
+      "testdata/masshunter/MRMhub_MHQuant_S1P.csv"
     ),
     import_metadata = FALSE
   )
@@ -865,7 +865,7 @@ test_that("metadata validation warns (overridably) on <=0 divisors, notes on mis
   mexp <- mrmhub::import_data_masshunter(
     mrmhub::MRMhubExperiment(),
     testthat::test_path(
-      "testdata/masshunter/MRMhub_TestData_MHQuant_S1P_DefaultSampleInfo_RT-Areas-FWHM.csv"
+      "testdata/masshunter/MRMhub_MHQuant_S1P.csv"
     ),
     import_metadata = FALSE
   )

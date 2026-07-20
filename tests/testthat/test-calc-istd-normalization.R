@@ -8,7 +8,7 @@ test_that("Add metadata table by table, the normalize and quantify based on ISTD
   mexp <- mrmhub::import_data_masshunter(
     mexp,
     path = testthat::test_path(
-      "testdata/masshunter/MRMhub_TestData_MHQuant_S1P_DefaultSampleInfo_RT-Areas-FWHM.csv"
+      "testdata/masshunter/MRMhub_MHQuant_S1P.csv"
     ),
     import_metadata = FALSE
   )
@@ -217,7 +217,7 @@ test_that("quantify_by_istd with mass concentration", {
   mexp <- mrmhub::import_data_masshunter(
     mexp,
     path = testthat::test_path(
-      "testdata/masshunter/23_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq_notimestamp.csv"
+      "testdata/masshunter/23_MHQuant_notInSeq_notimestamp.csv"
     ),
     import_metadata = FALSE
   )
@@ -358,7 +358,7 @@ test_that("quantify_by_istd with mass concentration", {
   mexp <- mrmhub::import_data_masshunter(
     mexp,
     path = testthat::test_path(
-      "testdata/masshunter/23_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq_notimestamp.csv"
+      "testdata/masshunter/23_MHQuant_notInSeq_notimestamp.csv"
     ),
     import_metadata = FALSE
   )
