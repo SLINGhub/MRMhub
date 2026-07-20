@@ -283,17 +283,15 @@ plot_responsecurves <- function(
   } else {
     glue::glue("{max(page_range)} page")
   }
-  progress_suffix <- if (show_progress) ":" else "..."
-
-  # Output formatted message
-  message(
-    glue::glue("{action_text} ({page_suffix}){progress_suffix}"),
-    appendLF = FALSE
-  )
-
-  # Initialize progress bar if requested
+  # Progress feedback: a cli progress bar collapses to a single line and stays
+  # quiet in non-interactive (Quarto/knitr) renders, unlike txtProgressBar.
   if (show_progress) {
-    pb <- txtProgressBar(min = 0, max = max(page_range), width = 30, style = 3)
+    cli::cli_progress_bar(
+      name = glue::glue("{action_text} ({page_suffix})"),
+      total = max(page_range)
+    )
+  } else {
+    mh_info(glue::glue("{action_text} ({page_suffix})..."))
   }
 
   p_list <- list() # List to store plots for each page
@@ -325,18 +323,18 @@ plot_responsecurves <- function(
     dev.flush() # Flush the plot
     flush.console() # Ensure plot is rendered
     if (show_progress) {
-      setTxtProgressBar(pb, i)
-    } # Update progress bar
+      cli::cli_progress_update(set = i)
+    }
     p_list[[i]] <- p
   }
 
   if (output_pdf) {
     dev.off()
   } # Close PDF device
-  message("  done!") # Completion message
   if (show_progress) {
-    close(pb)
-  } # Close progress bar if open
+    cli::cli_progress_done()
+  }
+  mh_success("Done")
 
   # Return plot list or invisible
   if (return_plots) {

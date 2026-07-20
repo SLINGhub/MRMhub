@@ -669,10 +669,6 @@ plot_runscatter <- function(
     )),
     appendLF = FALSE
   )
-  # if (show_progress) {
-  #   pb <- txtProgressBar(min = 0, max = max(page_range), width = 30, style = 3)
-  # }
-  # flush.console()
 
   if (multithreading) {
     p_list <- purrr::map2(
@@ -714,12 +710,6 @@ plot_runscatter <- function(
     qpdf::pdf_combine(page_group_files, output = path)
     fs::dir_delete(tmp_dir)
   }
-
-  # if (show_progress) {
-  #   close(pb)
-  # }
-
-  # flush.console()
 
   if (return_plots) {
     return(p_list[page_range])

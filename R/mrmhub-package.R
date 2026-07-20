@@ -17,7 +17,7 @@
 #' @importFrom stats as.formula lm median na.exclude sd quantile na.omit setNames p.adjust t.test IQR dnorm mad reorder prcomp model.matrix predict smooth.spline
 #' @importFrom stringr str_remove str_replace str_replace_all str_detect str_trim str_extract str_squish fixed
 #' @importFrom tidyr unite drop_na pivot_wider nest unnest replace_na
-#' @importFrom utils tail txtProgressBar setTxtProgressBar head flush.console
+#' @importFrom utils tail head flush.console
 ## usethis namespace: end
 NULL
 
