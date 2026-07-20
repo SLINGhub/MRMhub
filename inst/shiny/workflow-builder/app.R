@@ -115,6 +115,17 @@ ui <- page_sidebar(
   sidebar = sidebar(
     width = 400,
 
+    tags$head(tags$style(HTML("
+      /* Workflow Builder -- compact sidebar rhythm */
+      .sidebar hr { margin-top: .55rem; margin-bottom: .55rem; }
+      /* processing-step checkbox list: drop per-row form-group margins */
+      #steps_ui .shiny-input-container,
+      #steps_ui .checkbox { margin-bottom: 0; }
+      #steps_ui .mb-1 { margin-bottom: .1rem !important; }
+      /* Browse row: flush the input box so align-items-end lines the button up */
+      #browse_row .shiny-input-container { margin-bottom: 0; }
+    "))),
+
     tags$strong("1 · Data source"),
     selectInput("importer", "Where does your data come from?", choices = importer_choices),
     helpText("Pick the tool or file format that produced your data — this selects the matching importer."),
@@ -130,7 +141,7 @@ ui <- page_sidebar(
     hr(),
     tags$strong("3 · Project folder"),
     div(
-      class = "d-flex align-items-end gap-2",
+      id = "browse_row", class = "d-flex align-items-end gap-2",
       div(class = "flex-grow-1",
         textInput("project_dir", "Analysis project folder (optional)", placeholder = "/path/to/project")),
       actionButton("browse_project", "Browse…", class = "btn-outline-secondary")
@@ -144,14 +155,13 @@ ui <- page_sidebar(
     hr(),
     tags$strong("4 · Processing steps"),
     uiOutput("steps_ui"),
-
-    hr(),
     uiOutput("drift_method_ui"),
     uiOutput("ref_qc_ui"),
     uiOutput("reference_sample_ui"),
 
     hr(),
-    checkboxGroupInput("formats", "Output format(s)",
+    tags$strong("5 · Output formats"),
+    checkboxGroupInput("formats", NULL,
       choices = c("HTML" = "html", "Word (.docx)" = "docx", "PDF (sans-serif)" = "pdf"),
       selected = "html")
   ),
@@ -224,7 +234,11 @@ server <- function(input, output, session) {
         fileInput("metadata_features", "Features metadata (.csv)", accept = c(".csv", ".tsv")),
         fileInput("metadata_istds", "ISTDs metadata (.csv)", accept = c(".csv", ".tsv"))
       ),
-      NULL # embedded / none: metadata comes from the data file, or none
+      embedded = helpText(
+        "Analysis and feature metadata are read from the data file. ",
+        "Additional metadata tables can still be added to the generated script."
+      ),
+      NULL # none: no metadata
     )
   })
 
@@ -374,7 +388,7 @@ server <- function(input, output, session) {
     } else {
       tagList(
         textInput("data_path_override", "Data file path (as written in the code)",
-          value = default_data_path()),
+          value = "data/"),
         helpText(
           "Goes into the generated ", tags$code("import_data_*()"),
           " call — set it to where the data file will sit relative to the .qmd, ",
