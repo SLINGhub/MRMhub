@@ -358,14 +358,43 @@ calc_qc_metrics <- function(
     }
   }
 
-  # Summarize intensity statistics by group, feature (see before0)
-  d_stats_var_final <- d_stats_var |> select(all_of(grp)) |> distinct()
+  # Decide which variable blocks to compute. The norm/conc blocks additionally
+  # honour the include flags and error when a block is explicitly requested
+  # (`include_* = TRUE`) while its underlying data is missing.
+  do_rt <- "feature_rt" %in% names(data@dataset)
+  do_int <- "feature_intensity" %in% names(data@dataset)
 
-  if ("feature_rt" %in% names(data@dataset)) {
-    d_stats_var_rt <- d_stats_var |>
-      summarise(
-        .by = all_of(grp),
+  if (!"feature_norm_intensity" %in% names(data@dataset)) {
+    if (isTRUE(include_norm_intensity_stats)) {
+      cli::cli_abort(
+        "Normalized intensity data is missing. Please normalize the data first using `normalize_by_*()` functions."
+      )
+    }
+    do_norm <- FALSE
+  } else {
+    do_norm <- is.na(include_norm_intensity_stats) ||
+      include_norm_intensity_stats
+  }
 
+  if (!"feature_conc" %in% names(data@dataset)) {
+    if (isTRUE(include_conc_stats)) {
+      cli::cli_abort(
+        "Concentration data is missing. Please quantify the data first using `quantify_by_*()` functions."
+      )
+    }
+    do_conc <- FALSE
+  } else {
+    do_conc <- is.na(include_conc_stats) || include_conc_stats
+  }
+
+  # Compute every requested per-(feature[, batch]) metric in a SINGLE grouped
+  # pass over d_stats_var, rather than one pass per variable block joined
+  # together. The expression lists below are identical to the former per-block
+  # summaries; only the number of grouping passes changes. Signal-to-blank
+  # ratios (which derive from the intensity medians) are added afterwards.
+  stat_exprs <- c(
+    if (do_rt) {
+      rlang::exprs(
         rt_min_spl = safe_min(
           .data$feature_rt[.data$qc_type == "SPL"],
           na.rm = TRUE
@@ -407,15 +436,9 @@ calc_qc_metrics <- function(
           na.rm = TRUE
         )
       )
-    d_stats_var_final <- d_stats_var_final |>
-      left_join(d_stats_var_rt, by = grp)
-  }
-
-  if ("feature_intensity" %in% names(data@dataset)) {
-    d_stats_var_int <- d_stats_var |>
-      summarise(
-        .by = all_of(grp),
-
+    },
+    if (do_int) {
+      rlang::exprs(
         intensity_min_spl = safe_min(
           .data$feature_intensity[.data$qc_type == "SPL"],
           na.rm = TRUE
@@ -424,7 +447,6 @@ calc_qc_metrics <- function(
           .data$feature_intensity[.data$qc_type == "SPL"],
           na.rm = TRUE
         ),
-
         intensity_min_bqc = safe_min(
           .data$feature_intensity[.data$qc_type == "BQC"],
           na.rm = TRUE
@@ -441,7 +463,6 @@ calc_qc_metrics <- function(
           .data$feature_intensity[.data$qc_type == "TQC"],
           na.rm = TRUE
         ),
-
         intensity_median_pblk = median(
           .data$feature_intensity[.data$qc_type == "PBLK"],
           na.rm = TRUE
@@ -474,7 +495,6 @@ calc_qc_metrics <- function(
           .data$feature_intensity[.data$qc_type == "LTR"],
           na.rm = TRUE
         ),
-
         intensity_cv_tqc = cv(
           .data$feature_intensity[.data$qc_type == "TQC"],
           na.rm = TRUE,
@@ -505,41 +525,16 @@ calc_qc_metrics <- function(
           use_robust_cv,
           min_n = min_cv_replicates
         ),
-
-        # Calculate quantiles within summarise
         intensity_q10_spl = quantile(
           .data$feature_intensity[.data$qc_type == "SPL"],
           probs = 0.1,
           na.rm = TRUE,
           names = FALSE
         )
-      ) |>
-      mutate(
-        sb_ratio_q10_pbk = .data$intensity_q10_spl /
-          .data$intensity_median_pblk,
-        sb_ratio_pblk = .data$intensity_median_spl /
-          .data$intensity_median_pblk,
-        sb_ratio_ublk = .data$intensity_median_spl /
-          .data$intensity_median_ublk,
-        sb_ratio_sblk = .data$intensity_median_spl / .data$intensity_median_sblk
       )
-    d_stats_var_final <- d_stats_var_final |>
-      left_join(d_stats_var_int, by = grp)
-  }
-
-  # table to collect all data
-  if (!"feature_norm_intensity" %in% names(data@dataset)) {
-    if (isTRUE(include_norm_intensity_stats)) {
-      cli::cli_abort(
-        "Normalized intensity data is missing. Please normalize the data first using `normalize_by_*()` functions."
-      )
-    }
-  } else if (
-    is.na(include_norm_intensity_stats) || include_norm_intensity_stats
-  ) {
-    d_stats_var_norm_int <- d_stats_var |>
-      summarise(
-        .by = all_of(grp),
+    },
+    if (do_norm) {
+      rlang::exprs(
         norm_intensity_cv_tqc = cv(
           .data$feature_norm_intensity[.data$qc_type == "TQC"],
           na.rm = TRUE,
@@ -603,20 +598,9 @@ calc_qc_metrics <- function(
             na.rm = TRUE
           )
       )
-    d_stats_var_final <- d_stats_var_final |>
-      left_join(d_stats_var_norm_int, by = grp)
-  }
-
-  if (!"feature_conc" %in% names(data@dataset)) {
-    if (isTRUE(include_conc_stats)) {
-      cli::cli_abort(
-        "Concentration data is missing. Please quantify the data first using `quantify_by_*()` functions."
-      )
-    }
-  } else if (is.na(include_conc_stats) || include_conc_stats) {
-    d_stats_var_conc <- d_stats_var |>
-      summarise(
-        .by = all_of(grp),
+    },
+    if (do_conc) {
+      rlang::exprs(
         conc_median_tqc = median(
           .data$feature_conc[.data$qc_type == "TQC"],
           na.rm = TRUE
@@ -637,7 +621,6 @@ calc_qc_metrics <- function(
           .data$feature_conc[.data$qc_type == "LTR"],
           na.rm = TRUE
         ),
-
         conc_cv_tqc = cv(
           .data$feature_conc[.data$qc_type == "TQC"],
           na.rm = TRUE,
@@ -689,8 +672,27 @@ calc_qc_metrics <- function(
         ) /
           mad(.data$feature_conc[.data$qc_type == "SPL"], na.rm = TRUE)
       )
+    }
+  )
+
+  d_stats_var_final <- d_stats_var |>
+    summarise(.by = all_of(grp), !!!stat_exprs)
+
+  # Signal-to-blank ratios derive from the intensity medians just computed.
+  # Restore their original position (directly after the intensity block) so the
+  # metrics_qc column order is unchanged.
+  if (do_int) {
     d_stats_var_final <- d_stats_var_final |>
-      left_join(d_stats_var_conc, by = grp)
+      mutate(
+        sb_ratio_q10_pbk = .data$intensity_q10_spl /
+          .data$intensity_median_pblk,
+        sb_ratio_pblk = .data$intensity_median_spl /
+          .data$intensity_median_pblk,
+        sb_ratio_ublk = .data$intensity_median_spl /
+          .data$intensity_median_ublk,
+        sb_ratio_sblk = .data$intensity_median_spl / .data$intensity_median_sblk
+      ) |>
+      relocate(dplyr::starts_with("sb_ratio"), .after = "intensity_q10_spl")
   }
 
   # If batch medians are requested, calculate the median of all columns (except ID columns) for each feature
