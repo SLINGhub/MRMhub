@@ -205,8 +205,44 @@ Rendering is performed with Quarto once the document is saved:
 quarto render mrmhub_workflow.qmd
 ```
 
-For parameterised reports — the same notebook rendered once per batch or per
-project — see [Custom QC Report](recipe-02-custom-qc-report.html).
+## Parameters
+
+A workflow document hard-codes its input paths, so processing a second batch
+means editing the file. Declaring those values as Quarto *parameters* instead
+lets the same notebook render unchanged against different inputs — one report per
+batch or per project. Parameters are listed in the YAML front matter with their
+defaults:
+
+```yaml
+params:
+  data_path: "data/batch01/"
+```
+
+The setup chunk then reads from `params` rather than a string literal:
+
+```r
+mexp <- import_data_mrmhub(params$data_path)
+```
+
+Rendering with no override reproduces the default report; a different batch is
+produced by overriding the parameter on the command line,
+
+```bash
+quarto render mrmhub_workflow.qmd -P data_path:data/batch02/
+```
+
+or from R, where the output file can also be named per run:
+
+```r
+quarto::quarto_render(
+  "mrmhub_workflow.qmd",
+  execute_params = list(data_path = "data/batch02/"),
+  output_file = "batch02.html"
+)
+```
+
+For a fuller worked example — a standalone report template rendered from a saved
+results object — see [Custom QC Report](recipe-02-custom-qc-report.html).
 
 ## Slides
 
