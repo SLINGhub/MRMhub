@@ -230,26 +230,14 @@ calc_qc_metrics <- function(
       bind_rows(d_method_template)
   }
 
-  # Summarize missing value statistics for different QC types
+  # Summarize missing value statistics for different QC types. Scope to the
+  # canonical sample types minus RQC (response-curve samples), matching the RQC
+  # exclusion used for the main metric summaries below. Sourced from the global
+  # list so this never drifts from the package-wide QC-type set.
   d_stats_missingval <- data@dataset |>
     dplyr::filter(
       .data$qc_type %in%
-        c(
-          "SPL",
-          "NIST",
-          "LTR",
-          "BQC",
-          "TQC",
-          "PBLK",
-          "SBLK",
-          "UBLK",
-          "IBLK",
-          "CAL",
-          "STD",
-          "LQC",
-          "MQC",
-          "UQC"
-        )
+        setdiff(pkg.env$qc_type_annotation$qc_type_levels, "RQC")
     ) |>
     dplyr::summarise(
       .by = "feature_id",

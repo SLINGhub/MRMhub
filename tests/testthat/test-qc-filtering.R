@@ -67,6 +67,28 @@ test_that("calc_qc_metrics works for all qc groups", {
   expect_equal(min(mexp_res@metrics_qc$slopenorm_rqc_B), 0.65001359)
 })
 
+test_that("na_in_all is scoped by the canonical QC-type list (regression)", {
+  # The missing-value QC-type scope used to be a hardcoded subset that omitted
+  # valid canonical types (e.g. "QC"). A feature whose only signal falls in such
+  # a type must not be flagged all-missing. Relabel a few analyses to "QC" and
+  # keep the feature's signal only there.
+  feat <- unique(mexp@dataset$feature_id)[[1]]
+  qc_ids <- unique(mexp@dataset$analysis_id[mexp@dataset$qc_type == "RQC"])[1:5]
+
+  mexp_qc <- mexp
+  ds <- mexp_qc@dataset
+  ds$qc_type <- as.character(ds$qc_type)
+  ds$qc_type[ds$analysis_id %in% qc_ids] <- "QC"
+  ds$feature_intensity[ds$feature_id == feat] <- NA_real_
+  ds$feature_intensity[
+    ds$feature_id == feat & ds$analysis_id %in% qc_ids
+  ] <- 1000
+  mexp_qc@dataset <- ds
+
+  res <- calc_qc_metrics(mexp_qc)
+  expect_false(res@metrics_qc$na_in_all[res@metrics_qc$feature_id == feat])
+})
+
 test_that("calc_qc_metrics floors QC %CV below 3 replicates and surfaces it", {
   # Reduce TQC to 2 non-missing intensity replicates per feature: a %CV over
   # fewer than 3 values is not a meaningful precision estimate, so it must be
