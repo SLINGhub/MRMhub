@@ -63,12 +63,12 @@ the analysis timeline.
 \seealso{
 Other QC plots:
 \code{\link[=plot_feature_correlations]{plot_feature_correlations()}},
+\code{\link[=plot_interference_correction]{plot_interference_correction()}},
+\code{\link[=plot_matrixeffects]{plot_matrixeffects()}},
 \code{\link[=plot_normalization_qc]{plot_normalization_qc()}},
 \code{\link[=plot_pca]{plot_pca()}},
 \code{\link[=plot_pca_loading]{plot_pca_loading()}},
 \code{\link[=plot_qc_interference_impact]{plot_qc_interference_impact()}},
-\code{\link[=plot_qc_interferences]{plot_qc_interferences()}},
-\code{\link[=plot_qc_matrixeffects]{plot_qc_matrixeffects()}},
 \code{\link[=plot_qc_summary_byclass]{plot_qc_summary_byclass()}},
 \code{\link[=plot_qc_summary_overall]{plot_qc_summary_overall()}},
 \code{\link[=plot_qcmetrics_comparison]{plot_qcmetrics_comparison()}},
