@@ -2004,10 +2004,6 @@ clean_feature_metadata <- function(d_features) {
         lkp <- c("yes" = TRUE, "true" = TRUE, "no" = FALSE, "false" = FALSE)
         unname(lkp[tolower(.data$valid_feature)])
       },
-      valid_feature = {
-        lkp <- c("yes" = TRUE, "true" = TRUE, "no" = FALSE, "false" = FALSE)
-        unname(lkp[tolower(.data$valid_feature)])
-      },
       mrm_pattern = stringr::str_squish(.data$mrm_pattern),
       interference_feature_id = stringr::str_squish(
         .data$interference_feature_id
@@ -2026,6 +2022,8 @@ clean_feature_metadata <- function(d_features) {
       "analyte_id",
       "istd_feature_id",
       "quant_istd_feature_id",
+      "is_quantifier",
+      "valid_feature",
       "response_factor",
       "mrm_pattern",
       "interference_feature_id",

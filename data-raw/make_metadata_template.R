@@ -113,7 +113,7 @@ wb$set_col_widths(
 # Hover notes on the two new headers.
 notes <- c(
   "polarity (optional): Pos or Neg. If set, it narrows the mrm_pattern choices. Leave blank to see all patterns.",
-  "mrm_pattern: the class + MRM pattern for this feature, used by derive_interferences(). Pick from the dropdown; choices narrow with polarity if set. A name/pattern class mismatch is highlighted and warned about on import."
+  "mrm_pattern: the class + MRM pattern for this feature, used by calc_isotopic_interferences(). Pick from the dropdown; choices narrow with polarity if set. A name/pattern class mismatch is highlighted and warned about on import."
 )
 wb$add_comment(
   "Features",

@@ -359,6 +359,20 @@ test_that("Prepare feature metadata from given table imported from an XLSX sheet
   )
 })
 
+test_that("clean_feature_metadata preserves user-set is_quantifier / valid_feature (not reset to TRUE)", {
+  # Regression: a select() dropped both flag columns, so the post-select
+  # `all(is.na())` fallback silently re-set every feature to TRUE.
+  tbl <- dplyr::tibble(
+    feature_id = c("A", "B", "C"),
+    is_quantifier = c("yes", "no", "yes"),
+    valid_feature = c("true", "true", "false")
+  )
+  metadata <- clean_feature_metadata(tbl)
+  metadata <- metadata[!is.na(metadata$feature_id), ]
+  expect_equal(metadata$is_quantifier, c(TRUE, FALSE, TRUE))
+  expect_equal(metadata$valid_feature, c(TRUE, TRUE, FALSE))
+})
+
 test_that("Prepare istd metadata from given table imported from an XLSX sheet", {
   path <- testthat::test_path("testdata/metadata/sperfect_metadata_tables.xlsx")
   tbl <- get_metadata_table(path = path, sheet = "ISTDs")
