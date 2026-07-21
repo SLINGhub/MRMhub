@@ -90,11 +90,14 @@ raw data. Default is \code{FALSE}.}
 
 \item{include_istd}{Logical, whether to include internal standard (ISTD) features. Default is \code{TRUE}.}
 
-\item{include_feature_filter}{Regex pattern to include features. If omitted,
-considers all features.}
+\item{include_feature_filter}{Feature(s) to include by \code{feature_id}, as a
+character vector. Each element is matched exactly when it names an existing
+feature, otherwise treated as a regex; elements combine with OR. A full ID
+(e.g. \code{"S1P d18:0 [M>60]"}) needs no escaping, while patterns like \code{"PC|PE"}
+still work. \code{NA} or \code{""} ignores the filter.}
 
-\item{exclude_feature_filter}{Regex pattern to exclude features. If omitted,
-excludes none.}
+\item{exclude_feature_filter}{Feature(s) to exclude by \code{feature_id}, matched
+the same way as \code{include_feature_filter}. \code{NA} or \code{""} ignores the filter.}
 
 \item{output_pdf}{Logical, if \code{TRUE}, saves plots as a PDF file. Default is
 \code{FALSE}.}

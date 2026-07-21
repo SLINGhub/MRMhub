@@ -44,17 +44,14 @@ QC-filtered data (filtered via \code{\link[=filter_features_qc]{filter_features_
 
 \item{include_istd}{Logical, whether to include internal standard (ISTD) features. Default is \code{TRUE}.}
 
-\item{include_feature_filter}{A regex pattern or a vector of feature names
-used to filter features by \code{feature_id}. If \code{NA} or an empty string (\code{""})
-is provided, the filter is ignored. When a vector of length > 1 is
-supplied, only features with exactly these names are selected (applied
-individually as OR conditions).}
+\item{include_feature_filter}{Feature(s) to include by \code{feature_id}, as a
+character vector. Each element is matched exactly when it names an existing
+feature, otherwise treated as a regex; elements combine with OR. A full ID
+(e.g. \code{"S1P d18:0 [M>60]"}) needs no escaping, while patterns like \code{"PC|PE"}
+still work. \code{NA} or \code{""} ignores the filter.}
 
-\item{exclude_feature_filter}{A regex pattern or a vector of feature names
-used to exclude features by \code{feature_id}. If \code{NA} or an empty string
-(\code{""}) is provided, the filter is ignored. When a vector of length > 1 is
-supplied, only features with exactly these names are excluded (applied
-individually as OR conditions).}
+\item{exclude_feature_filter}{Feature(s) to exclude by \code{feature_id}, matched
+the same way as \code{include_feature_filter}. \code{NA} or \code{""} ignores the filter.}
 
 \item{max_regression_value}{The maximum sample_amount (x) value for fitting
 the regression line. If \code{NA}, regression is based on all data points.}

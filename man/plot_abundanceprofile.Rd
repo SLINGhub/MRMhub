@@ -67,11 +67,14 @@ or only QC-filtered data (\code{TRUE}, via \code{\link[=filter_features_qc]{filt
 
 \item{include_istd}{A logical value indicating whether to include internal standard (ISTD) features. Default is \code{FALSE}.}
 
-\item{include_feature_filter}{A character or regex pattern to filter features by \code{feature_id}.
-If a vector is supplied, features matching any pattern will be included.}
+\item{include_feature_filter}{Feature(s) to include by \code{feature_id}, as a
+character vector. Each element is matched exactly when it names an existing
+feature, otherwise treated as a regex; elements combine with OR. A full ID
+(e.g. \code{"S1P d18:0 [M>60]"}) needs no escaping, while patterns like \code{"PC|PE"}
+still work. \code{NA} or \code{""} ignores the filter.}
 
-\item{exclude_feature_filter}{A character or regex pattern to exclude features by \code{feature_id}.
-If a vector is supplied, features matching any pattern will be excluded.}
+\item{exclude_feature_filter}{Feature(s) to exclude by \code{feature_id}, matched
+the same way as \code{include_feature_filter}. \code{NA} or \code{""} ignores the filter.}
 
 \item{analysis_range}{A numeric vector of length 2 specifying the inclusive range of \code{analysis_order}. If \code{NA} (default), all analyses are included.}
 

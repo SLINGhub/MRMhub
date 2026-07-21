@@ -81,6 +81,7 @@ Other QC plots:
 \code{\link[=plot_normalization_qc]{plot_normalization_qc()}},
 \code{\link[=plot_pca]{plot_pca()}},
 \code{\link[=plot_pca_loading]{plot_pca_loading()}},
+\code{\link[=plot_qc_interference_impact]{plot_qc_interference_impact()}},
 \code{\link[=plot_qc_interferences]{plot_qc_interferences()}},
 \code{\link[=plot_qc_matrixeffects]{plot_qc_matrixeffects()}},
 \code{\link[=plot_qc_summary_byclass]{plot_qc_summary_byclass()}},

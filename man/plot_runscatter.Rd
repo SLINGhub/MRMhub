@@ -78,17 +78,14 @@ variable name to plot the raw uncorrected feature values (e.g., \code{conc_raw})
 
 \item{include_istd}{Logical, whether to include internal standard (ISTD) features. Default is \code{TRUE}.}
 
-\item{include_feature_filter}{A regex pattern or a vector of feature names
-used to filter features by \code{feature_id}. If \code{NA} or an empty string (\code{""})
-is provided, the filter is ignored. When a vector of length > 1 is
-supplied, only features with exactly these names are selected (applied
-individually as OR conditions).}
+\item{include_feature_filter}{Feature(s) to include by \code{feature_id}, as a
+character vector. Each element is matched exactly when it names an existing
+feature, otherwise treated as a regex; elements combine with OR. A full ID
+(e.g. \code{"S1P d18:0 [M>60]"}) needs no escaping, while patterns like \code{"PC|PE"}
+still work. \code{NA} or \code{""} ignores the filter.}
 
-\item{exclude_feature_filter}{A regex pattern or a vector of feature names
-used to exclude features by \code{feature_id}. If \code{NA} or an empty string
-(\code{""}) is provided, the filter is ignored. When a vector of length > 1 is
-supplied, only features with exactly these names are excluded (applied
-individually as OR conditions).}
+\item{exclude_feature_filter}{Feature(s) to exclude by \code{feature_id}, matched
+the same way as \code{include_feature_filter}. \code{NA} or \code{""} ignores the filter.}
 
 \item{plot_range}{Numeric vector of length 2, specifying the start and end indices of the analysis order to be plotted. \code{NA} plots all samples.}
 
@@ -250,6 +247,7 @@ Other QC plots:
 \code{\link[=plot_normalization_qc]{plot_normalization_qc()}},
 \code{\link[=plot_pca]{plot_pca()}},
 \code{\link[=plot_pca_loading]{plot_pca_loading()}},
+\code{\link[=plot_qc_interference_impact]{plot_qc_interference_impact()}},
 \code{\link[=plot_qc_interferences]{plot_qc_interferences()}},
 \code{\link[=plot_qc_matrixeffects]{plot_qc_matrixeffects()}},
 \code{\link[=plot_qc_summary_byclass]{plot_qc_summary_byclass()}},
