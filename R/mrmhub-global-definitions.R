@@ -54,6 +54,7 @@ pkg.env$table_templates <- list(
     "is_quantifier" = logical(),
     "valid_feature" = logical(),
     "response_factor" = numeric(),
+    "mrm_pattern" = character(),
     "interference_feature_id" = character(),
     "interference_contribution" = numeric(),
     "curve_fit_model" = character(),

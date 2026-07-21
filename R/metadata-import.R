@@ -842,6 +842,10 @@ assert_metadata <- function(
     metadata$annot_features <- metadata$annot_features |>
       assertr::chain_end(error_fun = assertr::error_append)
 
+    # mrm_pattern: valid-label (error) + name/pattern consistency + chain
+    # resolution (warnings). Only touches features that declare an mrm_pattern.
+    validate_mrm_pattern(metadata$annot_features)
+
     if ("annot_features" %in% names(metadata_new)) {
       attr(metadata$annot_features, "ignore_warnings") <- ignore_warnings
     }
@@ -1941,6 +1945,12 @@ clean_feature_metadata <- function(d_features) {
     )
   d_features <- d_features |>
     add_missing_column(
+      col_name = "mrm_pattern",
+      init_value = NA_character_,
+      make_lowercase = FALSE
+    )
+  d_features <- d_features |>
+    add_missing_column(
       col_name = "interference_feature_id",
       init_value = NA_character_,
       make_lowercase = FALSE
@@ -1998,6 +2008,7 @@ clean_feature_metadata <- function(d_features) {
         lkp <- c("yes" = TRUE, "true" = TRUE, "no" = FALSE, "false" = FALSE)
         unname(lkp[tolower(.data$valid_feature)])
       },
+      mrm_pattern = stringr::str_squish(.data$mrm_pattern),
       interference_feature_id = stringr::str_squish(
         .data$interference_feature_id
       ),
@@ -2016,8 +2027,7 @@ clean_feature_metadata <- function(d_features) {
       "istd_feature_id",
       "quant_istd_feature_id",
       "response_factor",
-      "is_quantifier",
-      "valid_feature",
+      "mrm_pattern",
       "interference_feature_id",
       "interference_contribution",
       "curve_fit_model",

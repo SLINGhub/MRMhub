@@ -101,6 +101,8 @@ navbar:
         href: articles/manual-05-metadata.html
       - text: Drift and Batch Correction
         href: articles/manual-07-corrections.html
+      - text: Isotopic Interference Correction
+        href: articles/manual-12-interference-correction.html
       - text: Quarto Workflows
         href: articles/manual-11-quarto-workflows.html
       - text: '-------'
@@ -219,10 +221,12 @@ reference:
   - add_metadata
 - title: Isotope correction
   description: |
-    Functions to perform type II isotopic correction
+    Functions to perform type II isotopic interference correction
   contents:
+  - derive_interferences
   - correct_interferences
   - correct_interference_manual
+  - licar_pattern_choices
 - title: External Calibration
   description: |
     Function to plot and analyze external calibration curves
@@ -319,3 +323,4 @@ reference:
   - get_iqr_tails
   - get_outlier_bounds
   - order_chained_columns_tbl
+  - mrmhub_enable_cli_color

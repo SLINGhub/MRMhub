@@ -43,6 +43,8 @@ set when the data are quantitated. \code{"pmol"} or \code{"ng"} for ISTD quantit
 
 \item{\code{annot_batches}}{Annotation of batches. Required fields:}
 
+\item{\code{annot_interferences}}{Interference relationships (\code{feature_id}, \code{interference_feature_id}, \code{interference_contribution}, \code{overlap_type}, \code{source}) feeding the correction engine; derived (auto) and/or manual.}
+
 \item{\code{metrics_qc}}{QC information for each measured feature}
 
 \item{\code{metrics_calibration}}{Calibration metrics calculated from external calibration curves for each measured feature}

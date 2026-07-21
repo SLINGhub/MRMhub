@@ -1,0 +1,185 @@
+---
+title: "Isotopic Interference Correction"
+output:
+  rmarkdown::html_vignette:
+    fig_width: 7
+    fig_height: 4
+description: |
+  Reference for MRMhub's isotopic interference correction: the fragment-based
+  (MRM) and whole-molecule (MS1) derivation levels, the co-elution requirement,
+  and the provenance of the derived contribution factors.
+vignette: >
+  %\VignetteIndexEntry{Isotopic Interference Correction}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+editor_options:
+  markdown:
+    wrap: 100
+bibliography: references.bib
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", eval = FALSE)
+```
+
+<p class="page-kind page-kind-manual">Manual</p>
+
+In targeted assays that measure many species of one lipid class under a shared precursor or product
+scan, the natural-abundance heavy isotopologues (chiefly M+2 from two `¹³C`) of a lighter species can
+fall into the transition window of a species two mass units heavier. The heavier species' measured
+area is then inflated by a fixed fraction of the lighter species' area. MRMhub removes this bias with
+a contribution-based subtraction ported from the LICAR method [@gao2021LICARApplicationIsotopic]:
+for each affected (*victim*) feature it subtracts a proportion `K` of each *interfering* feature's
+area, where `K` is the interferer's theoretical M+2 relative abundance.
+
+This page is the conceptual reference for the correction. The step-by-step workflow — annotating
+`mrm_pattern`, deriving relationships, inspecting them, and applying the subtraction — is covered in
+the [Interference correction tutorial](tutorial-11-interference-correction.html).
+
+## Two derivation levels, one subtraction engine
+
+Interference relationships are discovered by [`derive_interferences()`](../reference/derive_interferences.html)
+and stored in the `annot_interferences` slot as a long table of edges
+`(feature_id, interference_feature_id, interference_contribution, overlap_type, source)`. A single
+engine, [`correct_interferences()`](../reference/correct_interferences.html), then applies every
+edge — auto-derived or manually annotated — in one pass. Two derivation *levels* feed that engine:
+
+| | **MRM** (`level = "MRM"`) | **MS1** (`level = "MS1"`) |
+|---|---|---|
+| Intended data | Class-based LC-MRM (precursor **and** product m/z) | Genuine MS1 / full-scan (precursor m/z only) |
+| Correction basis | Fragment-level (front + back) | Whole-molecule precursor formula |
+| Overlaps per feature | Up to two (front and back) | One |
+| Factor source | Ported LICAR per-class fragment offsets → `enviPat::isowrap` M+2 | `mrmhub` native `isopattern` M+2 of the molecular formula |
+| Pairing scope | Within an `mrm_pattern` | Within a `feature_class` |
+| Chain chemistry | rgoslin-parsed per-chain C / double bonds | Not required (formula only) |
+
+The MRM level is lipid-scoped because it needs the class fragmentation chemistry; the MS1 level is
+purely formula-based and therefore extends to non-lipids. Interferences beyond the reach of either
+level are handled through the manual annotation path (see the tutorial).
+
+## Why MRM needs front *and* back
+
+Under class-based separation a victim transition `(m, p)` can be perturbed by **two different**
+interferers, each one M+2 lighter at the precursor. Their M+2 isotopologue reaches the victim's
+precursor window, but they differ in where that +2 sits relative to the product ion:
+
+- a **front** interferer shares the product ion (`ΔQ3 = 0`) — the +2 is on the neutral loss;
+- a **back** interferer carries the +2 on the product ion itself (`ΔQ3 = +2`).
+
+Each contributes its own M+2 factor, so a victim can carry a front edge and a back edge
+simultaneously. The engine composes them as `X − front − back`.
+
+<svg viewBox="0 0 460 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="m/z scatter of front and back interferers overlapping the victim transition">
+  <defs><marker id="ah" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#2C3E50"/></marker></defs>
+  <line x1="55" y1="205" x2="425" y2="205" stroke="#2C3E50" stroke-width="1.2"/>
+  <line x1="55" y1="205" x2="55" y2="30" stroke="#2C3E50" stroke-width="1.2"/>
+  <text x="240" y="235" font-family="sans-serif" font-size="11" fill="#2C3E50" text-anchor="middle">Q1 precursor m/z →</text>
+  <text x="20" y="120" font-family="sans-serif" font-size="11" fill="#2C3E50" text-anchor="middle" transform="rotate(-90 20 120)">Q3 product m/z →</text>
+  <line x1="250" y1="110" x2="332" y2="110" stroke="#2C3E50" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#ah)"/>
+  <line x1="252" y1="178" x2="333" y2="118" stroke="#2C3E50" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#ah)"/>
+  <circle cx="340" cy="110" r="8" fill="#5B8FA8" stroke="#2C3E50" stroke-width="1.5"/>
+  <circle cx="250" cy="110" r="6" fill="#C27171" stroke="#9c4a4a" stroke-width="1"/>
+  <circle cx="250" cy="178" r="6" fill="#D4914E" stroke="#9a6427" stroke-width="1"/>
+  <text x="352" y="107" font-family="sans-serif" font-size="11" fill="#2C3E50">victim B (m, p)</text>
+  <text x="150" y="107" font-family="sans-serif" font-size="10" fill="#9c4a4a">front (m−2, p)</text>
+  <text x="150" y="182" font-family="sans-serif" font-size="10" fill="#9a6427">back (m−2, p−2)</text>
+  <text x="292" y="102" font-family="sans-serif" font-size="9" fill="#2C3E50" text-anchor="middle">M+2 · ΔQ3=0</text>
+  <text x="300" y="152" font-family="sans-serif" font-size="9" fill="#2C3E50" text-anchor="middle">M+2 · ΔQ3=+2</text>
+</svg>
+
+## MRM correction is fragment-based — MS1 is not a fallback
+
+::: {.callout .callout-caution}
+**MS1 is never a substitute for MRM correction.** For MRM data the isotopic correction must be
+*fragment-based*: the contribution of a heavy isotope to a transition depends on whether that isotope
+ends up on the retained product ion or on the neutral loss [@gao2021LICARApplicationIsotopic]. The
+whole-molecule (`level = "MS1"`) factor ignores that split and is valid **only** for genuine
+MS1 / full-scan measurements. It must **not** be used for MRM data that merely happens to lack a
+recorded product m/z — use `level = "MRM"` (and supply the product m/z) there. `derive_interferences()`
+warns when MS1 derivation is run on data that carry product m/z.
+:::
+
+Because the front and back fragments carry different numbers of carbons, their M+2 abundances differ,
+and a single precursor-level factor would be wrong for at least one of the two overlaps. This is the
+core reason the MRM level reproduces the class fragment chemistry rather than falling back to the
+molecular formula.
+
+## Co-elution decides validity
+
+An M+2 isotopologue elutes at the monoisotopic apex of its own species. An m/z match between a
+lighter interferer and a heavier victim is therefore a real interference **only if the two co-elute**:
+the correction subtracts `K ×` the interferer's *full* area, so it is justified only when the victim's
+integration window captures essentially all of that interferer's M+2 peak.
+
+<svg viewBox="0 0 720 210" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="three chromatogram panels: co-eluting valid, partial overlap over-subtracts, resolved do not correct">
+  <rect x="75" y="55" width="80" height="110" fill="#2C3E50" opacity="0.05"/>
+  <line x1="75" y1="55" x2="75" y2="165" stroke="#2C3E50" stroke-width="1" stroke-dasharray="4 3" opacity="0.6"/>
+  <line x1="155" y1="55" x2="155" y2="165" stroke="#2C3E50" stroke-width="1" stroke-dasharray="4 3" opacity="0.6"/>
+  <path d="M70 165 C94.75 165 92.5 65 115 65 C137.5 65 135.25 165 160 165 Z" fill="#5B8FA8" fill-opacity="0.3" stroke="#2C3E50" stroke-width="1.5"/>
+  <path d="M70 165 C94.75 165 92.5 123 115 123 C137.5 123 135.25 165 160 165 Z" fill="#C27171" fill-opacity="0.55" stroke="#9c4a4a" stroke-width="1"/>
+  <line x1="15" y1="165" x2="225" y2="165" stroke="#2C3E50" stroke-width="1"/>
+  <text x="120" y="30" font-family="sans-serif" font-size="12" fill="#2C3E50" text-anchor="middle" font-weight="bold">Co-eluting</text>
+  <text x="120" y="46" font-family="sans-serif" font-size="10" fill="#2C3E50" text-anchor="middle">apexes coincide</text>
+  <text x="120" y="188" font-family="sans-serif" font-size="11" fill="#6B9E5E" text-anchor="middle" font-weight="bold">✓ correct (full K·A)</text>
+  <rect x="320" y="55" width="80" height="110" fill="#2C3E50" opacity="0.05"/>
+  <line x1="320" y1="55" x2="320" y2="165" stroke="#2C3E50" stroke-width="1" stroke-dasharray="4 3" opacity="0.6"/>
+  <line x1="400" y1="55" x2="400" y2="165" stroke="#2C3E50" stroke-width="1" stroke-dasharray="4 3" opacity="0.6"/>
+  <path d="M315 165 C339.75 165 337.5 65 360 65 C382.5 65 380.25 165 405 165 Z" fill="#5B8FA8" fill-opacity="0.3" stroke="#2C3E50" stroke-width="1.5"/>
+  <path d="M273 165 C297.75 165 295.5 113 318 113 C340.5 113 338.25 165 363 165 Z" fill="#C27171" fill-opacity="0.55" stroke="#9c4a4a" stroke-width="1"/>
+  <line x1="255" y1="165" x2="465" y2="165" stroke="#2C3E50" stroke-width="1"/>
+  <text x="360" y="30" font-family="sans-serif" font-size="12" fill="#2C3E50" text-anchor="middle" font-weight="bold">Partial / apex offset</text>
+  <text x="360" y="46" font-family="sans-serif" font-size="10" fill="#2C3E50" text-anchor="middle">window catches only A's tail</text>
+  <text x="360" y="188" font-family="sans-serif" font-size="11" fill="#C27171" text-anchor="middle" font-weight="bold">⚠ over-subtracts → drop</text>
+  <rect x="575" y="55" width="80" height="110" fill="#2C3E50" opacity="0.05"/>
+  <line x1="575" y1="55" x2="575" y2="165" stroke="#2C3E50" stroke-width="1" stroke-dasharray="4 3" opacity="0.6"/>
+  <line x1="655" y1="55" x2="655" y2="165" stroke="#2C3E50" stroke-width="1" stroke-dasharray="4 3" opacity="0.6"/>
+  <path d="M573 165 C596.1 165 594 65 615 65 C636 65 633.9 165 657 165 Z" fill="#5B8FA8" fill-opacity="0.3" stroke="#2C3E50" stroke-width="1.5"/>
+  <path d="M497 165 C519.9 165 517 113 535 113 C553 113 550.1 165 573 165 Z" fill="#C27171" fill-opacity="0.55" stroke="#9c4a4a" stroke-width="1"/>
+  <line x1="495" y1="165" x2="705" y2="165" stroke="#2C3E50" stroke-width="1"/>
+  <text x="600" y="30" font-family="sans-serif" font-size="12" fill="#2C3E50" text-anchor="middle" font-weight="bold">Resolved</text>
+  <text x="600" y="46" font-family="sans-serif" font-size="10" fill="#2C3E50" text-anchor="middle">A's M+2 outside window</text>
+  <text x="600" y="188" font-family="sans-serif" font-size="11" fill="#C27171" text-anchor="middle" font-weight="bold">✗ don't correct</text>
+</svg>
+
+*Blue = victim peak; rose = the interferer's M+2 contribution; dashed = the victim integration window.*
+
+The co-elution gate (`check_coelution = TRUE`, the default when retention data are present) keeps an
+edge only when the interferer's apex falls inside the victim's integration window
+(`feature_int_start`..`feature_int_end`, from the imported integration borders, or `feature_rt ± FWHM`
+where borders are absent). Chromatographically resolved pairs are dropped and reported, because
+subtracting a full `K·A` there would delete real victim signal. Border overlap alone is
+necessary but not sufficient — apex coincidence is the test. When no retention data are available the
+gate cannot be evaluated, a warning is emitted, and all m/z-matched edges are kept. This gate is a
+deliberate enhancement over LICAR, which assumes class co-elution with no per-pair retention check.
+
+## Provenance and reproducibility
+
+The derived factors are theoretical isotope abundances and depend on the abundance engine:
+
+- **MRM** uses LICAR's `enviPat::isowrap` centroided M+2 (`resolution_list[[7]]`, `charge = 1`),
+  which reproduces the published LICAR factors; the native `isopattern` differs by ~0.4 % and is not
+  used at this level.
+- **MS1** uses `mrmhub`'s native `isopattern` M+2 of the molecular formula, appropriate for a
+  full-scan measurement.
+
+Both engines are pinned to **`enviPat` version 2.8** [@loos2015NontargetEnviPat], the reference used
+for the golden parity tests; `derive_interferences()` warns when a different version is installed.
+Because derivation is deterministic under that pin, re-importing the `mrm_pattern` annotation and
+re-running `derive_interferences()` regenerates identical edges — the metadata alone reproduces the
+correction. The exact factors additionally survive an `enviPat` upgrade because the derived
+`annot_interferences` table travels with the saved object and is written to the report workbook as a
+human-readable factor archive.
+
+Only the LICAR *data* — the per-class fragment offsets and the pattern labels — is vendored; the
+abundance calculation, name parsing (rgoslin), and subtraction are `mrmhub`'s own. This correction is
+distinct from `¹³C`/`¹⁵N` natural-abundance metabolic-flux (MID) correction, which MRMhub does not
+perform.
+
+## Next steps
+
+- [Interference correction](tutorial-11-interference-correction.html) — the step-by-step workflow
+- [Drift and Batch Correction](manual-07-corrections.html) — apply after interference correction
+- [The MRMhubExperiment Data Object](manual-02-data-object.html#feature-variables) — how `_orig` postfixes preserve raw values
+- [`derive_interferences()`](../reference/derive_interferences.html) · [`correct_interferences()`](../reference/correct_interferences.html) — function reference
+
+## References

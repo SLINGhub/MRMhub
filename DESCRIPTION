@@ -107,6 +107,8 @@ Collate:
     'functions-math.R'
     'functions-plot.R'
     'helper.R'
+    'isotope-derive.R'
+    'isotope-licar.R'
     'lipidomics.R'
     'metadata-import.R'
     'mrmhub-cli.R'

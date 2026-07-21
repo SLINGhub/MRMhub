@@ -66,3 +66,66 @@ calc_average_molweight <- function(formula) {
 
   unname(weighted_means)
 }
+
+
+#' Relative abundance of the M+n isotopologue
+#'
+#' @description Computes the abundance of the nominal M+`n` isotopologue relative
+#' to the monoisotopic (M0) peak for one or more chemical formulas, using the
+#' \pkg{enviPat} `isopattern` calculation. This is the isotopic-interference
+#' correction factor: an interfering species contributes `mN_rel_abundance()` of
+#' its own signal into the transition/precursor of the species `n` mass units
+#' heavier. Being a ratio, it is independent of the pattern normalization.
+#'
+#' @param formula Character vector of chemical formulas (neutral).
+#' @param n Integer isotopologue offset (default 2, the dominant M+2 overlap).
+#' @return Numeric vector of M+n / M0 relative abundances; `NA` for invalid or
+#'   missing formulas (a warning names the invalid ones).
+#' @keywords internal
+#' @noRd
+mN_rel_abundance <- function(formula, n = 2L) {
+  rlang::check_installed("enviPat")
+  out <- rep(NA_real_, length(formula))
+  ok <- !is.na(formula) & nzchar(formula)
+  if (!any(ok)) {
+    return(out)
+  }
+
+  checked <- enviPat::check_chemform(isotopes = isotopes, chemforms = formula[ok])
+  # Guard the primitive against invalid formulas (which would abort isopattern
+  # obscurely): warn and leave them NA rather than failing the whole derivation.
+  if (any(checked$warning)) {
+    mh_warn(
+      "Invalid chemical formula(s) skipped in the isotope calculation: {glue::glue_collapse(formula[ok][checked$warning], sep = ', ')}."
+    )
+  }
+  valid <- !checked$warning
+  idx <- which(ok)[valid]
+  if (!length(idx)) {
+    return(out)
+  }
+
+  pattern <- enviPat::isopattern(
+    isotopes = isotopes,
+    chemforms = checked$new_formula[valid],
+    threshold = 0.001,
+    plotit = FALSE,
+    verbose = FALSE,
+    charge = FALSE,
+    algo = 1
+  )
+
+  out[idx] <- vapply(
+    pattern,
+    function(mat) {
+      m <- as.data.frame(mat)
+      mass <- m[[1]]
+      ab <- m[[2]]
+      m0 <- min(mass)
+      # Sum the peaks in the nominal +n mass bin, relative to the M0 peak.
+      sum(ab[abs(mass - (m0 + n)) < 0.5]) / ab[which.min(mass)]
+    },
+    numeric(1)
+  )
+  out
+}
