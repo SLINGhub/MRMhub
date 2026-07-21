@@ -58,7 +58,7 @@
     Code
       cat("== ", basename(f), " ==\n", sep = "")
     Output
-      == 4_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_DetailedMethods.csv ==
+      == 4_MHQuant_DetailedMethods.csv ==
     Code
       print(mh_fingerprint(d), n = Inf, width = Inf)
     Output
@@ -170,7 +170,7 @@
     Code
       cat("== ", basename(f), " ==\n", sep = "")
     Output
-      == 6_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM-NoOutlierSum.csv ==
+      == 6_MHQuant_NoOutlierSum.csv ==
     Code
       print(mh_fingerprint(d), n = Inf, width = Inf)
     Output
@@ -245,7 +245,7 @@
     Code
       cat("== ", basename(f), " ==\n", sep = "")
     Output
-      == 9_Testdata_MHQuant_withQuantMethods_withQualifierMethResults.csv ==
+      == 9_MHQuant_withQuantMethods_withQualifierMethResults.csv ==
     Code
       print(mh_fingerprint(d), n = Inf, width = Inf)
     Output
@@ -276,7 +276,7 @@
     Code
       cat("== ", basename(f), " ==\n", sep = "")
     Output
-      == 10_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM-NoQuantMsgSum.csv ==
+      == 10_MHQuant_NoQuantMsgSum.csv ==
     Code
       print(mh_fingerprint(d), n = Inf, width = Inf)
     Output
@@ -301,7 +301,7 @@
     Code
       cat("== ", basename(f), " ==\n", sep = "")
     Output
-      == 11_Testdata_MHQuant_DefaultSampleInfo-noAcqDataTime_RT-Areas-FWHM.csv ==
+      == 11_MHQuant_noAcqDataTime.csv ==
     Code
       print(mh_fingerprint(d), n = Inf, width = Inf)
     Output
@@ -449,7 +449,7 @@
     Code
       cat("== ", basename(f), " ==\n", sep = "")
     Output
-      == 22_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq.csv ==
+      == 22_MHQuant_notInSeq.csv ==
     Code
       print(mh_fingerprint(d), n = Inf, width = Inf)
     Output
@@ -474,7 +474,7 @@
     Code
       cat("== ", basename(f), " ==\n", sep = "")
     Output
-      == 22_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq-noalphafeat.csv ==
+      == 22_MHQuant_notInSeq-noalphafeat.csv ==
     Code
       print(mh_fingerprint(d), n = Inf, width = Inf)
     Output
@@ -499,7 +499,7 @@
     Code
       cat("== ", basename(f), " ==\n", sep = "")
     Output
-      == 23_Testdata_MHQuant_DefaultSampleInfo_RT-Areas-FWHM_notInSeq_notimestamp.csv ==
+      == 23_MHQuant_notInSeq_notimestamp.csv ==
     Code
       print(mh_fingerprint(d), n = Inf, width = Inf)
     Output
@@ -554,7 +554,7 @@
     Code
       cat("== ", basename(f), " ==\n", sep = "")
     Output
-      == MRMhub_TestData_MHQuant_S1P_DefaultSampleInfo_RT-Areas-FWHM.csv ==
+      == MRMhub_MHQuant_S1P.csv ==
     Code
       print(mh_fingerprint(d), n = Inf, width = Inf)
     Output
@@ -754,7 +754,7 @@
     Code
       cat("== ", basename(f), " ==\n", sep = "")
     Output
-      == 18_Testdata_Lipidomics_MultiLanguageCharactersSamplenamesFeatures.csv ==
+      == 18_MultiLanguageCharactersSamplenamesFeatures.csv ==
     Code
       print(mh_fingerprint(d), n = Inf, width = Inf)
     Output
@@ -779,7 +779,7 @@
     Code
       cat("== ", basename(f), " (expand_qualifier_names = FALSE) ==\n", sep = "")
     Output
-      == 9_Testdata_MHQuant_withQuantMethods_withQualifierMethResults.csv (expand_qualifier_names = FALSE) ==
+      == 9_MHQuant_withQuantMethods_withQualifierMethResults.csv (expand_qualifier_names = FALSE) ==
     Code
       print(mh_fingerprint(d), n = Inf, width = Inf)
     Output

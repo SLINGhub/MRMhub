@@ -148,7 +148,7 @@ test_that("MS1 derivation warns and names features missing a precursor m/z", {
     mexp@dataset_orig$feature_id == "PC 34:1"
   ] <- NA
   expect_message(
-    derive_isotopic_interferences(mexp, level = "MS1"),
+    calc_isotopic_interferences(mexp, level = "MS1"),
     "No precursor m/z.*PC 34:1"
   )
 })
