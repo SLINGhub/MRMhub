@@ -1,0 +1,358 @@
+"feature_id","feature_class","mrm_pattern","is_istd"
+"PC 28:1","PC","PC (Pos) Pro=184.1",FALSE
+"PC 28:0","PC","PC (Pos) Pro=184.1",FALSE
+"PC 29:1","PC","PC (Pos) Pro=184.1",FALSE
+"PC 29:0","PC","PC (Pos) Pro=184.1",FALSE
+"PC 30:0","PC","PC (Pos) Pro=184.1",FALSE
+"PC 31:2","PC","PC (Pos) Pro=184.1",FALSE
+"PC 31:1","PC","PC (Pos) Pro=184.1",FALSE
+"PC 31:0","PC","PC (Pos) Pro=184.1",FALSE
+"PC 32:3","PC","PC (Pos) Pro=184.1",FALSE
+"PC 32:2","PC","PC (Pos) Pro=184.1",FALSE
+"PC 32:1","PC","PC (Pos) Pro=184.1",FALSE
+"PC 32:0","PC","PC (Pos) Pro=184.1",FALSE
+"PC 33:4","PC","PC (Pos) Pro=184.1",FALSE
+"PC 33:3","PC","PC (Pos) Pro=184.1",FALSE
+"PC 33:2","PC","PC (Pos) Pro=184.1",FALSE
+"PC 33:1","PC","PC (Pos) Pro=184.1",FALSE
+"PC 33:0","PC","PC (Pos) Pro=184.1",FALSE
+"PC 34:5","PC","PC (Pos) Pro=184.1",FALSE
+"PC 34:4","PC","PC (Pos) Pro=184.1",FALSE
+"PC 34:3","PC","PC (Pos) Pro=184.1",FALSE
+"PC 34:2","PC","PC (Pos) Pro=184.1",FALSE
+"PC 34:1","PC","PC (Pos) Pro=184.1",FALSE
+"PC 34:0","PC","PC (Pos) Pro=184.1",FALSE
+"PC 35:6","PC","PC (Pos) Pro=184.1",FALSE
+"PC 35:5","PC","PC (Pos) Pro=184.1",FALSE
+"PC 35:4","PC","PC (Pos) Pro=184.1",FALSE
+"PC 35:3","PC","PC (Pos) Pro=184.1",FALSE
+"PC 35:2","PC","PC (Pos) Pro=184.1",FALSE
+"PC 35:1","PC","PC (Pos) Pro=184.1",FALSE
+"PC 35:0","PC","PC (Pos) Pro=184.1",FALSE
+"PC 36:6","PC","PC (Pos) Pro=184.1",FALSE
+"PC 36:5","PC","PC (Pos) Pro=184.1",FALSE
+"PC 36:4","PC","PC (Pos) Pro=184.1",FALSE
+"PC 36:3","PC","PC (Pos) Pro=184.1",FALSE
+"PC 36:2","PC","PC (Pos) Pro=184.1",FALSE
+"PC 36:1","PC","PC (Pos) Pro=184.1",FALSE
+"PC 36:0","PC","PC (Pos) Pro=184.1",FALSE
+"PC 37:6","PC","PC (Pos) Pro=184.1",FALSE
+"PC 37:5","PC","PC (Pos) Pro=184.1",FALSE
+"PC 37:4","PC","PC (Pos) Pro=184.1",FALSE
+"PC 37:3","PC","PC (Pos) Pro=184.1",FALSE
+"PC 37:2","PC","PC (Pos) Pro=184.1",FALSE
+"PC 37:1","PC","PC (Pos) Pro=184.1",FALSE
+"PC 37:0","PC","PC (Pos) Pro=184.1",FALSE
+"PC 38:6","PC","PC (Pos) Pro=184.1",FALSE
+"PC 38:5","PC","PC (Pos) Pro=184.1",FALSE
+"PC 38:4","PC","PC (Pos) Pro=184.1",FALSE
+"PC 38:3","PC","PC (Pos) Pro=184.1",FALSE
+"PC 38:2","PC","PC (Pos) Pro=184.1",FALSE
+"PC 39:8","PC","PC (Pos) Pro=184.1",FALSE
+"PC 39:7","PC","PC (Pos) Pro=184.1",FALSE
+"PC 39:6","PC","PC (Pos) Pro=184.1",FALSE
+"PC 39:5","PC","PC (Pos) Pro=184.1",FALSE
+"PC 40:8","PC","PC (Pos) Pro=184.1",FALSE
+"PC 40:7","PC","PC (Pos) Pro=184.1",FALSE
+"PC 40:6","PC","PC (Pos) Pro=184.1",FALSE
+"PC 40:5","PC","PC (Pos) Pro=184.1",FALSE
+"PC 40:4","PC","PC (Pos) Pro=184.1",FALSE
+"PC 40:3","PC","PC (Pos) Pro=184.1",FALSE
+"PC 40:2","PC","PC (Pos) Pro=184.1",FALSE
+"PC 40:1","PC","PC (Pos) Pro=184.1",FALSE
+"PC 40:0","PC","PC (Pos) Pro=184.1",FALSE
+"SM 30:1 (IS)","SM","SM (Pos) Pro=184.1",TRUE
+"SM 34:2","SM","SM (Pos) Pro=184.1",FALSE
+"SM 34:1","SM","SM (Pos) Pro=184.1",FALSE
+"SM 34:0","SM","SM (Pos) Pro=184.1",FALSE
+"SM 35:1","SM","SM (Pos) Pro=184.1",FALSE
+"SM 35:0","SM","SM (Pos) Pro=184.1",FALSE
+"SM 36:3","SM","SM (Pos) Pro=184.1",FALSE
+"SM 36:2","SM","SM (Pos) Pro=184.1",FALSE
+"SM 36:1","SM","SM (Pos) Pro=184.1",FALSE
+"SM 36:0","SM","SM (Pos) Pro=184.1",FALSE
+"SM 37:3","SM","SM (Pos) Pro=184.1",FALSE
+"SM 37:2","SM","SM (Pos) Pro=184.1",FALSE
+"SM 37:1","SM","SM (Pos) Pro=184.1",FALSE
+"SM 37:0","SM","SM (Pos) Pro=184.1",FALSE
+"SM 38:4","SM","SM (Pos) Pro=184.1",FALSE
+"SM 38:3","SM","SM (Pos) Pro=184.1",FALSE
+"SM 38:2","SM","SM (Pos) Pro=184.1",FALSE
+"SM 38:1","SM","SM (Pos) Pro=184.1",FALSE
+"SM 38:0","SM","SM (Pos) Pro=184.1",FALSE
+"SM 39:5","SM","SM (Pos) Pro=184.1",FALSE
+"SM 39:4","SM","SM (Pos) Pro=184.1",FALSE
+"SM 39:3","SM","SM (Pos) Pro=184.1",FALSE
+"SM 39:2","SM","SM (Pos) Pro=184.1",FALSE
+"SM 39:1","SM","SM (Pos) Pro=184.1",FALSE
+"SM 39:0","SM","SM (Pos) Pro=184.1",FALSE
+"SM 40:6","SM","SM (Pos) Pro=184.1",FALSE
+"SM 40:5","SM","SM (Pos) Pro=184.1",FALSE
+"SM 40:4","SM","SM (Pos) Pro=184.1",FALSE
+"SM 40:3","SM","SM (Pos) Pro=184.1",FALSE
+"SM 40:2","SM","SM (Pos) Pro=184.1",FALSE
+"SM 40:1","SM","SM (Pos) Pro=184.1",FALSE
+"SM 40:0","SM","SM (Pos) Pro=184.1",FALSE
+"SM 41:4","SM","SM (Pos) Pro=184.1",FALSE
+"SM 41:3","SM","SM (Pos) Pro=184.1",FALSE
+"SM 41:2","SM","SM (Pos) Pro=184.1",FALSE
+"SM 41:1","SM","SM (Pos) Pro=184.1",FALSE
+"SM 41:0","SM","SM (Pos) Pro=184.1",FALSE
+"SM 42:6","SM","SM (Pos) Pro=184.1",FALSE
+"SM 42:5","SM","SM (Pos) Pro=184.1",FALSE
+"SM 42:4","SM","SM (Pos) Pro=184.1",FALSE
+"SM 42:3","SM","SM (Pos) Pro=184.1",FALSE
+"SM 42:2","SM","SM (Pos) Pro=184.1",FALSE
+"SM 42:1","SM","SM (Pos) Pro=184.1",FALSE
+"SM 42:0","SM","SM (Pos) Pro=184.1",FALSE
+"SM 43:6","SM","SM (Pos) Pro=184.1",FALSE
+"SM 43:5","SM","SM (Pos) Pro=184.1",FALSE
+"SM 43:4","SM","SM (Pos) Pro=184.1",FALSE
+"SM 43:3","SM","SM (Pos) Pro=184.1",FALSE
+"SM 43:2","SM","SM (Pos) Pro=184.1",FALSE
+"SM 43:1","SM","SM (Pos) Pro=184.1",FALSE
+"SM 43:0","SM","SM (Pos) Pro=184.1",FALSE
+"SM 44:6","SM","SM (Pos) Pro=184.1",FALSE
+"SM 44:5","SM","SM (Pos) Pro=184.1",FALSE
+"SM 44:4","SM","SM (Pos) Pro=184.1",FALSE
+"SM 44:3","SM","SM (Pos) Pro=184.1",FALSE
+"SM 44:2","SM","SM (Pos) Pro=184.1",FALSE
+"SM 44:1","SM","SM (Pos) Pro=184.1",FALSE
+"SM 44:0","SM","SM (Pos) Pro=184.1",FALSE
+"Cer d16:1/16:0","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d16:1/18:0","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d16:1/20:0","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d16:1/22:0","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d16:1/23:0","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d16:1/24:0","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d16:1/24:1","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d17:1/16:0","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d17:1/18:0","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d17:1/20:0","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d17:1/22:0","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d17:1/23:0","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d17:1/24:0","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d17:1/24:1","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d18:1/16:0","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d18:1/18:0","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d18:1/19:0","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d18:1/20:0","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d18:1/21:0","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d18:1/22:0","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d18:1/23:0","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d18:1/24:0","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d18:1/24:1","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d18:1/26:1","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d18:2/16:0","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d18:2/17:0","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d18:2/18:0","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d18:2/19:0","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d18:2/20:0","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d18:2/21:0","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d18:2/22:0","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d18:2/23:0","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d18:2/24:0","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d18:2/24:1","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d18:2/26:1","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d19:1/16:0","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d19:1/18:0","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d19:1/20:0","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d19:1/22:0","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d19:1/23:0","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d19:1/24:0","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d19:1/24:1","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d20:1/16:0","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d20:1/18:0","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d20:1/20:0","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d20:1/22:0","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d20:1/23:0","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d20:1/24:0","Cer","Cer (Pos) SphB-2H2O",FALSE
+"Cer d20:1/24:1","Cer","Cer (Pos) SphB-2H2O",FALSE
+"dhCer d18:0/16:0","dhCer","dhCer (Pos) SphB-H2O",FALSE
+"dhCer d18:0/18:0","dhCer","dhCer (Pos) SphB-H2O",FALSE
+"dhCer d18:0/20:0","dhCer","dhCer (Pos) SphB-H2O",FALSE
+"dhCer d18:0/22:0","dhCer","dhCer (Pos) SphB-H2O",FALSE
+"dhCer d18:0/23:0","dhCer","dhCer (Pos) SphB-H2O",FALSE
+"dhCer d18:0/24:0","dhCer","dhCer (Pos) SphB-H2O",FALSE
+"dhCer d18:0/24:1","dhCer","dhCer (Pos) SphB-H2O",FALSE
+"PC 14:0/16:0","PC","PC (Neg, FA) FA",FALSE
+"PC 14:0/20:4","PC","PC (Neg, FA) FA",FALSE
+"PC 14:0/22:6","PC","PC (Neg, FA) FA",FALSE
+"PC 15:0/16:0","PC","PC (Neg, FA) FA",FALSE
+"PC 15:0/18:1","PC","PC (Neg, FA) FA",FALSE
+"PC 15:0/18:2","PC","PC (Neg, FA) FA",FALSE
+"PC 15:1/16:0","PC","PC (Neg, FA) FA",FALSE
+"PC 15:1/18:0","PC","PC (Neg, FA) FA",FALSE
+"PC 15:1/18:1","PC","PC (Neg, FA) FA",FALSE
+"PC 16:0/14:0","PC","PC (Neg, FA) FA",FALSE
+"PC 16:0/15:0","PC","PC (Neg, FA) FA",FALSE
+"PC 16:0/16:0","PC","PC (Neg, FA) FA",FALSE
+"PC 16:0/16:1","PC","PC (Neg, FA) FA",FALSE
+"PC 16:0/17:0","PC","PC (Neg, FA) FA",FALSE
+"PC 16:0/18:0","PC","PC (Neg, FA) FA",FALSE
+"PC 16:0/18:1","PC","PC (Neg, FA) FA",FALSE
+"PC 16:0/20:1","PC","PC (Neg, FA) FA",FALSE
+"PC 16:0/20:3","PC","PC (Neg, FA) FA",FALSE
+"PC 16:0/20:4","PC","PC (Neg, FA) FA",FALSE
+"PC 16:0/22:1","PC","PC (Neg, FA) FA",FALSE
+"PC 16:0/22:4","PC","PC (Neg, FA) FA",FALSE
+"PC 16:0/22:5","PC","PC (Neg, FA) FA",FALSE
+"PC 16:0/22:6","PC","PC (Neg, FA) FA",FALSE
+"PC 16:1/16:0","PC","PC (Neg, FA) FA",FALSE
+"PC 16:1/16:1","PC","PC (Neg, FA) FA",FALSE
+"PC 16:1/18:1","PC","PC (Neg, FA) FA",FALSE
+"PC 16:1/18:2","PC","PC (Neg, FA) FA",FALSE
+"PC 16:1/20:4","PC","PC (Neg, FA) FA",FALSE
+"PC 17:0/16:0","PC","PC (Neg, FA) FA",FALSE
+"PC 17:0/18:2","PC","PC (Neg, FA) FA",FALSE
+"PC 17:1/18:1","PC","PC (Neg, FA) FA",FALSE
+"PC 18:0/16:0","PC","PC (Neg, FA) FA",FALSE
+"PC 18:0/18:0","PC","PC (Neg, FA) FA",FALSE
+"PC 18:0/18:1","PC","PC (Neg, FA) FA",FALSE
+"PC 18:0/18:2","PC","PC (Neg, FA) FA",FALSE
+"PC 18:0/20:1","PC","PC (Neg, FA) FA",FALSE
+"PC 18:0/20:2","PC","PC (Neg, FA) FA",FALSE
+"PC 18:0/20:3","PC","PC (Neg, FA) FA",FALSE
+"PC 18:0/20:4","PC","PC (Neg, FA) FA",FALSE
+"PC 18:0/22:6","PC","PC (Neg, FA) FA",FALSE
+"PC 18:1/15:1","PC","PC (Neg, FA) FA",FALSE
+"PC 18:1/16:0","PC","PC (Neg, FA) FA",FALSE
+"PC 18:1/16:1","PC","PC (Neg, FA) FA",FALSE
+"PC 18:1/17:1","PC","PC (Neg, FA) FA",FALSE
+"PC 18:1/18:0","PC","PC (Neg, FA) FA",FALSE
+"PC 18:1/18:1","PC","PC (Neg, FA) FA",FALSE
+"PC 18:1/18:2","PC","PC (Neg, FA) FA",FALSE
+"PC 18:1/20:1","PC","PC (Neg, FA) FA",FALSE
+"PC 18:1/20:4","PC","PC (Neg, FA) FA",FALSE
+"PC 18:1/22:6","PC","PC (Neg, FA) FA",FALSE
+"PC 18:2/16:1","PC","PC (Neg, FA) FA",FALSE
+"PC 18:2/18:0","PC","PC (Neg, FA) FA",FALSE
+"PC 18:2/18:1","PC","PC (Neg, FA) FA",FALSE
+"PC 18:2/22:2","PC","PC (Neg, FA) FA",FALSE
+"PC 18:2/22:6","PC","PC (Neg, FA) FA",FALSE
+"PC 20:0/20:4","PC","PC (Neg, FA) FA",FALSE
+"PC 20:1/16:0","PC","PC (Neg, FA) FA",FALSE
+"PC 20:1/18:0","PC","PC (Neg, FA) FA",FALSE
+"PC 20:1/18:1","PC","PC (Neg, FA) FA",FALSE
+"PC 20:1/20:4","PC","PC (Neg, FA) FA",FALSE
+"PC 20:2/18:0","PC","PC (Neg, FA) FA",FALSE
+"PC 20:3/16:0","PC","PC (Neg, FA) FA",FALSE
+"PC 20:3/18:0","PC","PC (Neg, FA) FA",FALSE
+"PC 20:3/22:6","PC","PC (Neg, FA) FA",FALSE
+"PC 20:4/14:0","PC","PC (Neg, FA) FA",FALSE
+"PC 20:4/16:0","PC","PC (Neg, FA) FA",FALSE
+"PC 20:4/16:1","PC","PC (Neg, FA) FA",FALSE
+"PC 20:4/18:0","PC","PC (Neg, FA) FA",FALSE
+"PC 20:4/18:1","PC","PC (Neg, FA) FA",FALSE
+"PC 20:4/20:0","PC","PC (Neg, FA) FA",FALSE
+"PC 20:4/20:1","PC","PC (Neg, FA) FA",FALSE
+"PC 20:4/20:4","PC","PC (Neg, FA) FA",FALSE
+"PC 20:4/22:6","PC","PC (Neg, FA) FA",FALSE
+"PC 22:1/16:0","PC","PC (Neg, FA) FA",FALSE
+"PC 22:2/18:2","PC","PC (Neg, FA) FA",FALSE
+"PC 22:4/16:0","PC","PC (Neg, FA) FA",FALSE
+"PC 22:5/16:0","PC","PC (Neg, FA) FA",FALSE
+"PC 22:6/14:0","PC","PC (Neg, FA) FA",FALSE
+"PC 22:6/16:0","PC","PC (Neg, FA) FA",FALSE
+"PC 22:6/18:0","PC","PC (Neg, FA) FA",FALSE
+"PC 22:6/18:1","PC","PC (Neg, FA) FA",FALSE
+"PC 22:6/18:2","PC","PC (Neg, FA) FA",FALSE
+"PC 22:6/20:3","PC","PC (Neg, FA) FA",FALSE
+"PC 22:6/20:4","PC","PC (Neg, FA) FA",FALSE
+"PC 22:6/22:6","PC","PC (Neg, FA) FA",FALSE
+"PE 15:0/20:4","PE","PE (Neg) FA",FALSE
+"PE 15:0/22:6","PE","PE (Neg) FA",FALSE
+"PE 15:1/20:1","PE","PE (Neg) FA",FALSE
+"PE 15:1/20:4","PE","PE (Neg) FA",FALSE
+"PE 15:1/22:4","PE","PE (Neg) FA",FALSE
+"PE 15:1/22:6","PE","PE (Neg) FA",FALSE
+"PE 16:0/16:1","PE","PE (Neg) FA",FALSE
+"PE 16:0/18:0","PE","PE (Neg) FA",FALSE
+"PE 16:0/18:1","PE","PE (Neg) FA",FALSE
+"PE 16:0/18:2","PE","PE (Neg) FA",FALSE
+"PE 16:0/20:1","PE","PE (Neg) FA",FALSE
+"PE 16:0/20:2","PE","PE (Neg) FA",FALSE
+"PE 16:0/20:3","PE","PE (Neg) FA",FALSE
+"PE 16:0/20:4","PE","PE (Neg) FA",FALSE
+"PE 16:0/22:4","PE","PE (Neg) FA",FALSE
+"PE 16:0/22:5","PE","PE (Neg) FA",FALSE
+"PE 16:0/22:6","PE","PE (Neg) FA",FALSE
+"PE 16:1/16:0","PE","PE (Neg) FA",FALSE
+"PE 16:1/18:1","PE","PE (Neg) FA",FALSE
+"PE 16:1/22:6","PE","PE (Neg) FA",FALSE
+"PE 17:0/20:1","PE","PE (Neg) FA",FALSE
+"PE 17:0/20:4","PE","PE (Neg) FA",FALSE
+"PE 17:0/22:6","PE","PE (Neg) FA",FALSE
+"PE 17:0/24:6","PE","PE (Neg) FA",FALSE
+"PE 17:1/16:1","PE","PE (Neg) FA",FALSE
+"PE 17:1/18:1","PE","PE (Neg) FA",FALSE
+"PE 17:1/20:0","PE","PE (Neg) FA",FALSE
+"PE 17:1/20:1","PE","PE (Neg) FA",FALSE
+"PE 17:1/20:3","PE","PE (Neg) FA",FALSE
+"PE 17:1/20:4","PE","PE (Neg) FA",FALSE
+"PE 17:1/22:4","PE","PE (Neg) FA",FALSE
+"PE 17:1/22:6","PE","PE (Neg) FA",FALSE
+"PE 17:1/24:5","PE","PE (Neg) FA",FALSE
+"PE 17:1/24:6","PE","PE (Neg) FA",FALSE
+"PE 17:2/16:0","PE","PE (Neg) FA",FALSE
+"PE 18:0/16:0","PE","PE (Neg) FA",FALSE
+"PE 18:0/18:1","PE","PE (Neg) FA",FALSE
+"PE 18:0/19:0","PE","PE (Neg) FA",FALSE
+"PE 18:0/20:1","PE","PE (Neg) FA",FALSE
+"PE 18:0/20:3","PE","PE (Neg) FA",FALSE
+"PE 18:0/20:4","PE","PE (Neg) FA",FALSE
+"PE 18:0/22:4","PE","PE (Neg) FA",FALSE
+"PE 18:0/22:6","PE","PE (Neg) FA",FALSE
+"PE 18:1/16:0","PE","PE (Neg) FA",FALSE
+"PE 18:1/16:1","PE","PE (Neg) FA",FALSE
+"PE 18:1/17:1","PE","PE (Neg) FA",FALSE
+"PE 18:1/18:0","PE","PE (Neg) FA",FALSE
+"PE 18:1/18:1","PE","PE (Neg) FA",FALSE
+"PE 18:1/20:1","PE","PE (Neg) FA",FALSE
+"PE 18:1/20:2","PE","PE (Neg) FA",FALSE
+"PE 18:1/20:4","PE","PE (Neg) FA",FALSE
+"PE 18:1/22:4","PE","PE (Neg) FA",FALSE
+"PE 18:1/22:6","PE","PE (Neg) FA",FALSE
+"PE 18:2/16:0","PE","PE (Neg) FA",FALSE
+"PE 18:2/20:0","PE","PE (Neg) FA",FALSE
+"PE 18:2/20:1","PE","PE (Neg) FA",FALSE
+"PE 18:2/22:6","PE","PE (Neg) FA",FALSE
+"PE 19:1/18:0","PE","PE (Neg) FA",FALSE
+"PE 19:1/22:6","PE","PE (Neg) FA",FALSE
+"PE 20:0/20:3","PE","PE (Neg) FA",FALSE
+"PE 20:0/22:4","PE","PE (Neg) FA",FALSE
+"PE 20:0/22:6","PE","PE (Neg) FA",FALSE
+"PE 20:1/15:1","PE","PE (Neg) FA",FALSE
+"PE 20:1/16:0","PE","PE (Neg) FA",FALSE
+"PE 20:1/18:0","PE","PE (Neg) FA",FALSE
+"PE 20:1/18:1","PE","PE (Neg) FA",FALSE
+"PE 20:1/20:2","PE","PE (Neg) FA",FALSE
+"PE 20:1/22:4","PE","PE (Neg) FA",FALSE
+"PE 20:1/22:6","PE","PE (Neg) FA",FALSE
+"PE 20:2/16:0","PE","PE (Neg) FA",FALSE
+"PE 20:2/18:0","PE","PE (Neg) FA",FALSE
+"PE 20:2/18:1","PE","PE (Neg) FA",FALSE
+"PE 20:2/20:1","PE","PE (Neg) FA",FALSE
+"PE 20:3/16:0","PE","PE (Neg) FA",FALSE
+"PE 20:3/18:0","PE","PE (Neg) FA",FALSE
+"PE 20:3/20:0","PE","PE (Neg) FA",FALSE
+"PE 20:4/16:0","PE","PE (Neg) FA",FALSE
+"PE 20:4/18:0","PE","PE (Neg) FA",FALSE
+"PE 20:4/18:1","PE","PE (Neg) FA",FALSE
+"PE 20:4/20:0","PE","PE (Neg) FA",FALSE
+"PE 22:4/16:0","PE","PE (Neg) FA",FALSE
+"PE 22:4/18:0","PE","PE (Neg) FA",FALSE
+"PE 22:4/18:1","PE","PE (Neg) FA",FALSE
+"PE 22:4/20:1","PE","PE (Neg) FA",FALSE
+"PE 22:4/22:6","PE","PE (Neg) FA",FALSE
+"PE 22:5/16:0","PE","PE (Neg) FA",FALSE
+"PE 22:6/16:0","PE","PE (Neg) FA",FALSE
+"PE 22:6/16:1","PE","PE (Neg) FA",FALSE
+"PE 22:6/17:1","PE","PE (Neg) FA",FALSE
+"PE 22:6/18:0","PE","PE (Neg) FA",FALSE
+"PE 22:6/18:1","PE","PE (Neg) FA",FALSE
+"PE 22:6/18:2","PE","PE (Neg) FA",FALSE
+"PE 22:6/20:0","PE","PE (Neg) FA",FALSE
+"PE 22:6/20:1","PE","PE (Neg) FA",FALSE
+"PE 22:6/22:4","PE","PE (Neg) FA",FALSE
+"PE 22:6/22:6","PE","PE (Neg) FA",FALSE
