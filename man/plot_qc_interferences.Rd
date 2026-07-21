@@ -13,6 +13,8 @@ plot_qc_interferences(
   exclude_feature_filter = NA,
   min_median_value = NA,
   min_correction_pct = NA,
+  sort_by_effect = c("none", "desc", "asc"),
+  top_n = NA,
   y_lim = c(-NA, NA),
   point_size = 0.5,
   dodge_width = 0.6,
@@ -46,15 +48,23 @@ still work. \code{NA} or \code{""} ignores the filter.}
 \item{exclude_feature_filter}{Feature(s) to exclude by \code{feature_id}, matched
 the same way as \code{include_feature_filter}. \code{NA} or \code{""} ignores the filter.}
 
-\item{min_median_value}{Minimum median feature value across the selected
-QC-type samples required for a feature to be included. \code{NA} (default)
-applies no filtering. This is a fast way to exclude noisy features; for
-principled QC-based filtering use \code{\link[=filter_features_qc]{filter_features_qc()}}.}
+\item{min_median_value}{Median raw-signal abundance floor: drop features whose
+median \code{feature_intensity} across the selected QC types is below this value.
+\code{NA} (default) applies no threshold. Use to hide low-signal features.}
 
 \item{min_correction_pct}{Keep only features whose median correction (percent
 of raw signal removed, across the selected QC types) is at least this value.
 \code{NA} (default) applies no threshold. Use to focus the plot on
 substantially-corrected features.}
+
+\item{sort_by_effect}{Order the x-axis by correction effect, defined per
+feature as the deviation of its median \% change from 100\% (pooled across the
+displayed QC-type points). One of \code{"none"} (default, alphabetical),
+\code{"desc"} (largest effect first) or \code{"asc"}.}
+
+\item{top_n}{Keep only the \code{top_n} features with the largest correction
+effect (see \code{sort_by_effect}). \code{NA} (default) keeps all. Applied after the
+\code{min_median_value} / \code{min_correction_pct} filters.}
 
 \item{y_lim}{A numeric vector of length 2 specifying the y-axis limits.}
 
