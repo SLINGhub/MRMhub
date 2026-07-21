@@ -390,7 +390,7 @@ for the interfering fragments were obtained using LICAR
 
 ```{r isotope-correction}
 myexp <- mrmhub::correct_custom_interferences(myexp)
-plot_qc_interferences(myexp, qc_types = c("BQC", "SPL", "TQC", "LTR"))
+plot_interference_correction(myexp, qc_types = c("BQC", "SPL", "TQC", "LTR"))
 ```
 
 ## 13. Normalization and quantification based on ISTDs

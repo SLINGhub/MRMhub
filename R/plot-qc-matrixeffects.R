@@ -30,7 +30,7 @@
 #' @export
 #'
 
-plot_qc_matrixeffects <- function(
+plot_matrixeffects <- function(
   data,
   variable = "intensity",
   qc_types = c("SPL", "TQC", "PBLK", "BQC"),

@@ -49,8 +49,8 @@ target_feature <- "S1P d18\\:0"
 
 
 # Baseline test
-test_that("Basic plot_qc_interferences looks as expected", {
-  p <- plot_qc_interferences(mexp_corrected)
+test_that("Basic plot_interference_correction looks as expected", {
+  p <- plot_interference_correction(mexp_corrected)
   # The name "qc-interferences-default" is more descriptive
   expect_doppelganger_cond("qc-interferences-default", p)
 })
@@ -60,20 +60,20 @@ test_that("Basic plot_qc_interferences looks as expected", {
 
 test_that("Filtering by qc_types works", {
   # The default includes "SPL". Let's plot only two.
-  p <- plot_qc_interferences(mexp_corrected, qc_types = c("SPL"))
+  p <- plot_interference_correction(mexp_corrected, qc_types = c("SPL"))
   expect_doppelganger_cond("qc-interferences-filter-qcs", p)
 })
 
 test_that("Excluding ISTDs works", {
   # The default is include_istd = TRUE. This should remove the ISTD features.
-  p <- plot_qc_interferences(mexp_corrected, include_istd = FALSE)
+  p <- plot_interference_correction(mexp_corrected, include_istd = FALSE)
   expect_doppelganger_cond("qc-interferences-no-istd", p)
 })
 
 test_that("Including a specific feature works", {
   # This should result in a plot with only one feature on the x-axis.
   # We pick a known corrected ISTD from the data.
-  p <- plot_qc_interferences(
+  p <- plot_interference_correction(
     mexp_corrected,
     include_feature_filter = target_feature
   )
@@ -82,7 +82,7 @@ test_that("Including a specific feature works", {
 
 test_that("Excluding a specific feature works", {
   # The plot should be missing the "LPC(17:0) (IS)" feature compared to the default.
-  p <- plot_qc_interferences(
+  p <- plot_interference_correction(
     mexp_corrected,
     exclude_feature_filter = target_feature
   )
@@ -92,14 +92,14 @@ test_that("Excluding a specific feature works", {
 test_that("min_median_value filter works visually", {
   # From inspecting the data, a value of 9000 will filter out some but not all features.
   # This tests that the filtering logic is applied correctly.
-  p <- plot_qc_interferences(mexp_corrected, min_median_value = 49000)
+  p <- plot_interference_correction(mexp_corrected, min_median_value = 49000)
   expect_doppelganger_cond("qc-interferences-min-median", p)
 })
 
 test_that("min_median_value throws error when no features remain", {
   # A very high value should filter out all features and trigger the error.
   expect_error(
-    plot_qc_interferences(mexp_corrected, min_median_value = 99999999),
+    plot_interference_correction(mexp_corrected, min_median_value = 99999999),
     "No features passed the `min_median_value` filter"
   )
 })
@@ -109,7 +109,7 @@ test_that("min_median_value throws error when no features remain", {
 
 test_that("Aesthetic parameters are applied correctly", {
   # Change several visual parameters at once to create a distinct plot.
-  p <- plot_qc_interferences(
+  p <- plot_interference_correction(
     mexp_corrected,
     y_lim = c(60, 105), # Zoom in on the y-axis (fits this dataset's spread)
     point_size = 2, # Larger points
@@ -123,7 +123,7 @@ test_that("Aesthetic parameters are applied correctly", {
 test_that("Plot works with NA qc_types to auto-detect", {
   # This tests the initial `if (all(is.na(qc_types)))` block.
   # The result should be identical to the default plot in this case.
-  p <- plot_qc_interferences(mexp_corrected, qc_types = NA)
+  p <- plot_interference_correction(mexp_corrected, qc_types = NA)
   expect_doppelganger_cond("qc-interferences-na-qcs", p)
 })
 
@@ -132,7 +132,7 @@ test_that("Object check: include_feature_filter correctly filters the data layer
   # Define the feature we want to isolate
 
   # Generate the plot
-  p <- plot_qc_interferences(
+  p <- plot_interference_correction(
     mexp_corrected,
     include_feature_filter = target_feature
   )
@@ -147,8 +147,8 @@ test_that("Object check: include_feature_filter correctly filters the data layer
 })
 
 # Missing check_data() let a non-MRMhubExperiment fail cryptically downstream.
-test_that("plot_qc_interferences validates the data object", {
-  expect_error(plot_qc_interferences(data = 42), "MRMhubExperiment")
+test_that("plot_interference_correction validates the data object", {
+  expect_error(plot_interference_correction(data = 42), "MRMhubExperiment")
 })
 
 
@@ -180,11 +180,11 @@ test_that("plot_qc_interference_impact renders a visible fill for SPL", {
 
 test_that("min_correction_pct filters features in the interference plots", {
   n_all <- length(unique(
-    plot_qc_interferences(mexp_corrected, qc_types = "SPL")$data$feature_id
+    plot_interference_correction(mexp_corrected, qc_types = "SPL")$data$feature_id
   ))
   n_thr <- length(unique(
     suppressWarnings(suppressMessages(
-      plot_qc_interferences(
+      plot_interference_correction(
         mexp_corrected,
         qc_types = "SPL",
         min_correction_pct = 10
@@ -216,24 +216,24 @@ effect_ranking <- function(p) {
 }
 
 test_that("top_n keeps the highest-effect features", {
-  ranked <- effect_ranking(plot_qc_interferences(mexp_corrected))
-  p_top <- plot_qc_interferences(mexp_corrected, top_n = 3)
+  ranked <- effect_ranking(plot_interference_correction(mexp_corrected))
+  p_top <- plot_interference_correction(mexp_corrected, top_n = 3)
   expect_setequal(unique(as.character(p_top$data$feature_id)), head(ranked, 3))
 })
 
 test_that("sort_by_effect orders the x-axis by correction effect", {
-  ranked <- effect_ranking(plot_qc_interferences(mexp_corrected))
+  ranked <- effect_ranking(plot_interference_correction(mexp_corrected))
 
-  p_desc <- plot_qc_interferences(mexp_corrected, sort_by_effect = "desc")
+  p_desc <- plot_interference_correction(mexp_corrected, sort_by_effect = "desc")
   expect_equal(levels(p_desc$data$feature_id), ranked)
 
-  p_asc <- plot_qc_interferences(mexp_corrected, sort_by_effect = "asc")
+  p_asc <- plot_interference_correction(mexp_corrected, sort_by_effect = "asc")
   expect_equal(levels(p_asc$data$feature_id), rev(ranked))
 })
 
 test_that("sort_by_effect rejects an invalid value", {
   expect_error(
-    plot_qc_interferences(mexp_corrected, sort_by_effect = "bogus"),
+    plot_interference_correction(mexp_corrected, sort_by_effect = "bogus"),
     "should be one of"
   )
 })

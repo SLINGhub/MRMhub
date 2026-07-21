@@ -3,7 +3,7 @@
 #' This function generates grouped standardized beeswarm plots to visualize the results of interference correction
 #' across different QC types.
 #'
-#' @inheritParams plot_qc_matrixeffects
+#' @inheritParams plot_matrixeffects
 #' @param include_istd A logical value indicating whether to include internal
 #' standards (ISTD) features.  Default is `TRUE`.
 #' @param min_median_value Median raw-signal abundance floor: drop features whose
@@ -25,7 +25,7 @@
 #' @family QC plots
 #' @export
 
-plot_qc_interferences <- function(
+plot_interference_correction <- function(
   data,
   qc_types = c("SPL", "TQC", "PBLK", "BQC"),
   include_qualifier = FALSE,
