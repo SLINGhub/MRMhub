@@ -1,4 +1,3 @@
-//import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 const { invoke, Channel } = window.__TAURI__.core;
 
 const utf8d = new TextDecoder();
@@ -29,18 +28,8 @@ const load_all = async function () {
   const mzml_l = d3.tsvParseRows(utf8d.decode(await invoke("mzml_tsv")));
   mzml_l.forEach((x) => (x[0] = x[0].slice(0, -5)));
 
-  //await call_plot(trans_Object, "r0", mzml_l, mzml_Object);
 
-  //const sample_loc = document.getElementById("sample_loc");
-  //sample_loc.innerHTML = "";
-  //sample_loc.options[0] = new Option("top", "");
-  //mzml_l.forEach((x, i) => {
-  //  sample_loc.options[sample_loc.options.length] = new Option(x[0], i);
-  //});
 
-  //sample_loc.onchange = function () {
-  //  scrollAdj(this.value);
-  //};
 
   trans_sel.onchange = async function () {
     const row2 = document.getElementById("row2");
@@ -80,12 +69,10 @@ const load_all = async function () {
           </div> `;
     }
     await call_plot(trans_Object, this.value, mzml_l, mzml_Object);
-    //scrollAdj(sample_loc.value);
   };
   const refreshb = document.getElementById("refreshb");
   refreshb.onclick = async function () {
     await call_plot(trans_Object, trans_sel.value, mzml_l, mzml_Object);
-    //scrollAdj(sample_loc.value);
   };
 };
 async function call_plot(trans_Object, val, mzml_l, mzml_Object) {
@@ -110,36 +97,7 @@ async function call_plot(trans_Object, val, mzml_l, mzml_Object) {
 window.onload = async function () {
   load_all();
 };
-//function scrollAdj(id) {
-//  const target = document.getElementById(id);
-//  if (target) {
-//    target.scrollIntoView({ behavior: "smooth", block: "center" });
-//    target.animate(
-//      {
-//        backgroundColor: ["red", "red", "white"],
-//        //borderWidth: ["1em 2px", "1em 2px", "1em 2px", "2px"],
-//        //border: ["solid", "solid"],
-//      },
-//      {
-//        //easing: "ease",
-//        //iterations: 3,
-//        duration: 2000,
-//      },
-//    );
-//  } else {
-//    window.scrollTo({ top: 0, behavior: "smooth" });
-//  }
-//}
-//const reload = document.getElementById("reload");
-//reload.onclick = function () {
-//  load_all();
-//  //window.location.reload();
-//};
 
-//refreshb.addEventListener("click", (e) => {
-//  e.preventDefault();
-//  gen(document.getElementById("trans_sel").value);
-//});
 
 async function gen_ref(mzml_id, trans_Object) {
   const sel_analyte = document.getElementById("sel_analyte");
@@ -157,7 +115,6 @@ async function gen_ref(mzml_id, trans_Object) {
 }
 async function gen(trans, mzml_l) {
   const sel_analyte = document.getElementById("sel_analyte");
-  //sel_analyte.innerHTML = `${trans[1]} | ${trans[2]}m/z | ${trans[3]}m/z`;
   sel_analyte.innerHTML = `${trans[1]} | ${trans[2]}m/z`;
   if (trans[3].length > 1) {
     sel_analyte.innerHTML += ` | ${trans[3]}m/z`;
@@ -200,16 +157,11 @@ function gen_qc_i(key, iso_name, qc_dat, mzml_l) {
     .scaleLinear()
     .domain([1, qc_dat.length])
     .range([marginLeft, width - marginRight]);
-  //const yext = d3.extent(qc_dat, (d) => d[key]);
   const yext = d3.extent(qc_dat);
   const y = key.startsWith("area")
     ? d3.scaleSymlog().domain([yext[0], yext[1]])
     : d3.scaleLinear().domain([yext[0] - 0.05, yext[1] + 0.05]);
   y.range([height - marginBottom, marginTop]);
-  //const y = d3
-  //  .scaleLinear()
-  //  .domain([yext[0] - 0.05, yext[1] + 0.05])
-  //  .range([height - marginBottom, marginTop]);
   const svg = d3
     .create("svg")
     .attr("width", width)
@@ -218,7 +170,6 @@ function gen_qc_i(key, iso_name, qc_dat, mzml_l) {
     .style("cursor", "crosshair")
     .style("border", "2px solid")
     .style("border-radius", "8px");
-  //macOS
   svg
     .append("rect")
     .attr("width", width)
@@ -267,13 +218,10 @@ function gen_qc_i(key, iso_name, qc_dat, mzml_l) {
   const gp = svg
     .append("g")
     .attr("class", "gp")
-    //.attr("stroke", "black")
     .selectAll("circle")
     .data(qc_dat)
     .join("circle")
-    //.attr("cy", (d) => y(d[key]))
     .attr("cy", (d) => y(d))
-    //.attr("fill", "none")
     .attr("r", 2);
   const line0 = d3.line().y((d) => y(d));
   const gtrace = svg
@@ -304,7 +252,6 @@ function gen_qc_i(key, iso_name, qc_dat, mzml_l) {
       delaunay = d3.Delaunay.from(
         qc_dat,
         (d, i) => xz(i + 1),
-        //(d) => y(d[key]),
         (d) => y(d),
       );
       line0.x((d, i) => xz(i + 1));
@@ -322,12 +269,6 @@ function gen_qc_i(key, iso_name, qc_dat, mzml_l) {
   svg
     .on("mousemove", (event) => {
       const ii = delaunay.find(...d3.pointer(event));
-      //const sel = d3.selectAll(".gp");
-      //sel.selectAll("circle").attr("fill", "none").attr("r", 3);
-      //sel
-      //  .select(`:nth-child(${ii + 1})`)
-      //  .attr("fill", "red")
-      //  .attr("r", 9);
       const cc = d3
         .selectAll(".gp")
         .select(`:nth-child(${ii + 1})`)
@@ -345,26 +286,8 @@ function gen_qc_i(key, iso_name, qc_dat, mzml_l) {
     .on("mouseout", () => {
       tt.style("display", "none");
       d3.selectAll(".samplec").attr("display", "none");
-      //d3.selectAll(".gp circle").attr("fill", "none").attr("r", 3);
     });
 
-  //gp.on("mousemove", (event, [, ii]) => {
-  //  tt.attr("opacity", 1);
-  //  //tt.select("text").text(mzml_l[ii][0] + ", " + a[key].toString());
-  //  tt.select("text").text(mzml_l[ii][0]);
-  //  //gp.attr("fill-opacity", (d, i) => (ii == i ? 1 : 0)).attr("r", (d, i) =>
-  //  //  ii == i ? 9 : 4,
-  //  //);
-  //  d3.selectAll(".gpoint" + ii)
-  //    .attr("fill", "red")
-  //    .attr("r", 9);
-  //}).on("mouseout", (event, [, ii]) => {
-  //  //gp.attr("fill-opacity", 0).attr("r", 4);
-  //  d3.selectAll(".gpoint" + ii)
-  //    .attr("fill", "none")
-  //    .attr("r", 3);
-  //  tt.attr("opacity", 0);
-  //});
 
   document.getElementById("qc").append(svg.node());
 }
@@ -392,7 +315,6 @@ function gen_svg({ sh, pos_l, bl, te }, id, ii, container) {
   const rti1 = rt1 == 0 ? te.length - 1 : bisect(te, rt1);
   const x = d3
     .scaleLinear()
-    //.domain([te[0].x, te[te.length - 1].x])
     .domain([te[rti0].x, te[rti1].x])
     .range([marginLeft, width - marginRight]);
   let int_region = te.slice(pos_l[0], pos_l[pos_l.length - 1]);
@@ -537,55 +459,6 @@ function gen_svg({ sh, pos_l, bl, te }, id, ii, container) {
       tt.style("display", "none");
       d3.selectAll(".tl").style("display", "none");
     });
-  //svg
-  //  .append("g")
-  //  .attr("fill", "none")
-  //  .attr("pointer-events", "all")
-  //  .selectAll("rect")
-  //  .data(d3.pairs(te))
-  //  .join("rect")
-  //  .attr("x", ([a]) => x(a.x))
-  //  .attr("y", y.range()[1])
-  //  .attr("height", height)
-  //  .attr("width", ([a, b]) => x(b.x) - x(a.x))
-  //  .on("mouseover", (event, [a]) => {
-  //    tt.select("text").text(d3.format(".3f")(a.x));
-  //    //event.target.setAttribute("style", "border-left: solid;");
-  //    //const cx = event.target.getAttribute("x");
-  //    const cx = x(a.x);
-  //    tt.attr("transform", `translate(${cx})`).attr("opacity", 1);
-  //    tt.select("circle").attr("cy", y(a.y));
-  //    d3.selectAll(".tl")
-  //      .filter((d, i) => Math.abs(i - ii) < 50)
-  //      .attr("opacity", 0.5)
-  //      .attr("x1", cx)
-  //      .attr("x2", cx);
-  //  })
-  //  .on("mouseout", () => {
-  //    tt.attr("opacity", 0);
-  //    d3.selectAll(".tl").attr("opacity", 0);
-  //  });
-  //const container = document.getElementById("container");
   container.append(svg.node());
 }
 
-//(async () => {
-//    const blob = new Blob([new Uint8Array([3]), new Float32Array([12, 13, 14])]);
-//    const ee = await blob.stream();
-//    const reader = ee.getReader({mode: 'byob'});
-//    let buffer = new ArrayBuffer(1);
-//    const {value: [len], done} = await reader.read(new Uint8Array(buffer, 0, 1));
-//    console.log(len, done);
-//    let buffer2 = new ArrayBuffer(4 * len);
-//    console.log(await reader.read(new Float32Array(buffer2, 0, len)));
-//
-//    console.log('==========')
-//
-//    {
-//        const blob = await new Blob([new Uint8Array([3]), new Float32Array([12, 13, 14])]).arrayBuffer();
-//        const view = new DataView(blob);
-//        const len = view.getUint8(0);
-//        for (let i = 0; i < len; i++)
-//            console.log(view.getFloat32(1 + i * 4, true));
-//    }
-//})();
