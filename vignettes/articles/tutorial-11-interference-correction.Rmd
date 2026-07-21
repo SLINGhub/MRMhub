@@ -128,29 +128,18 @@ A victim carrying both a `m2_front` and a `m2_back` row is corrected against two
 ## 4. Apply the correction
 
 [`correct_isotopic_interferences()`](../reference/correct_isotopic_interferences.html) subtracts the
-derived edges from the raw intensities in one pass:
-
-$$
-\text{Value}_\text{corrected} = \text{Value}_\text{target} -
-   \sum_i K_i \cdot \text{Value}_{\text{interfering}_i}
-$$
+derived edges from the raw intensities in one pass; its reference page gives the subtraction formula,
+chain ordering, and zero-clamping.
 
 ```{r}
 mexp <- correct_isotopic_interferences(mexp)
 ```
 
-If nothing has been derived yet the function stops with a reminder to run
-`calc_isotopic_interferences()` first. Declared interferences — in-source fragments, co-eluting
-isobars, or other overlaps you annotate yourself in the feature metadata — are applied with the
-sibling [`correct_custom_interferences()`](../reference/correct_custom_interferences.html).
-
-Upstream features in a chain (A ← B ← C) are corrected first via a topological ordering; circular
-dependencies are detected and aborted with an informative error. For auto-derived edges, a
-subtraction is skipped when the running-corrected interferer has already fallen to zero, and corrected
-values are clamped at zero (LICAR parity). The original raw values are preserved in
-`feature_intensity_orig`. Apply interference correction *before* ISTD normalisation, drift, and batch
-correction; running it later resets those steps (with a warning) because they must use the corrected
-raw signal.
+Run it **before** ISTD normalisation, drift, and batch correction — applied later it resets those
+steps (with a warning), since they must use the corrected raw signal. Raw values are preserved in
+`feature_intensity_orig`. Declared interferences (in-source fragments, co-eluting isobars, or other
+overlaps you annotate) are applied with the sibling
+[`correct_custom_interferences()`](../reference/correct_custom_interferences.html).
 
 ## 5. Manual correction of a single pair
 
@@ -170,11 +159,10 @@ mexp <- correct_interference_manual(
 )
 ```
 
-Setting `updated_feature_id` renames the corrected feature so raw and corrected channels can coexist
-under different IDs. Manual factors can be sourced from a theoretical isotopologue calculation
-(`enviPat`), an empirical pure-standard injection (which also captures Q1/Q3 transmission and
-in-source effects), or published class-level interference tables — verified empirically when moving a
-method between instruments.
+Setting `updated_feature_id` renames the corrected feature so raw and corrected channels can coexist.
+Manual factors can come from a theoretical isotopologue calculation (`enviPat`), an empirical
+pure-standard injection (which also captures Q1/Q3 transmission and in-source effects), or published
+class-level tables — verify empirically when moving a method between instruments.
 
 ## 6. Verifying the correction
 
@@ -221,16 +209,21 @@ samples:
 plot_qc_interference_impact(mexp, qc_types = "SPL")
 ```
 
-For a per-feature view, [`plot_qc_interferences()`](../reference/plot_qc_interferences.html) shows each
-corrected feature's residual signal as a percent of its uncorrected value, split by QC type. With many
-features corrected, `min_correction_pct` focuses the plot on the substantially-affected ones (here,
-those with at least 40 % of their signal removed); `include_feature_filter` / `exclude_feature_filter`
-narrow it to specific features or classes. When blanks are present, a blank approaching zero alongside
-study samples (`SPL`) retaining most of their signal is the expected pattern:
+For a per-feature view, [`plot_interference_correction()`](../reference/plot_interference_correction.html)
+shows each corrected feature's residual signal as a percent of its uncorrected value, split by QC type.
+`min_correction_pct` restricts it to substantially-affected features (here, ≥ 40 % removed);
+`sort_by_effect = "desc"` ranks them by correction magnitude and `top_n` keeps only the largest. A blank
+approaching zero alongside study samples (`SPL`) retaining most of their signal is the expected pattern:
 
 ```{r, eval = TRUE, message = FALSE, warning = FALSE}
-plot_qc_interferences(mexp, qc_types = "SPL", min_correction_pct = 40)
+plot_interference_correction(
+  mexp, qc_types = "SPL", min_correction_pct = 40, sort_by_effect = "desc",
+  point_size = 1.5, point_alpha = 0.8
+)
 ```
+
+Each point is one study sample; the box summarises all of them. `SPL` points have a transparent fill,
+so raise `point_size` / `point_alpha` when only a few are shown.
 
 ## Co-elution filtering (experimental)
 
@@ -246,17 +239,6 @@ mexp <- calc_isotopic_interferences(mexp, level = "MRM", check_coelution = TRUE)
 It is **off by default** while the gate is validated. When enabled, inspect `annot_interferences`
 carefully — resolved pairs it drops (and, when retention data are missing, pairs it cannot verify) are
 reported in the console.
-
-## Recommendations
-
-- Apply interference correction on raw `feature_intensity` *before* normalisation, drift, and batch
-  correction.
-- Prefer `level = "MRM"` for MRM data and supply the product m/z; reserve `level = "MS1"` for genuine
-  full-scan measurements.
-- Inspect `annot_interferences` (or `summarize_interferences()`) before applying.
-- Keep the `mrm_pattern` annotation with the project: it reproduces the derived factors under the
-  `enviPat` 2.8 pin.
-- After correction, verify that blank residual signal approaches zero.
 
 ## Next steps
 
