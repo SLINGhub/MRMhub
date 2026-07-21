@@ -131,8 +131,10 @@ mexp <- import_data_csv_wide(
   variable_name = "conc",
   import_metadata = TRUE
 )
-#> ℹ Metadata column(s) 'qc_type, batch_id' imported. To ignore, set `import_metadata = FALSE`
-#> ✔ Imported 87 analyses with 5 features
+#> ✔ Metadata column(s) 'qc_type, batch_id' imported. To ignore, set `import_metadata = FALSE`
+#> ✔ Imported 87 analyses with 5 features.
+#> Warning: Unknown or uninitialised column: `valid_feature`.
+#> Warning: Unknown or uninitialised column: `is_quantifier`.
 #> ✔ Analysis metadata associated with 87 analyses.
 #> ✔ Feature metadata associated with 5 features.
 #> ℹ Analysis order was based on `analysis_order` column of imported data. Use `set_analysis_order` to change the order.
@@ -157,6 +159,7 @@ print(mexp)
 #> • Response curves: ✖
 #> • Calibrants/QC concentrations: ✖
 #> • Study samples: ✖
+#> • Interferences: ✖
 #> 
 #> ── Processing Status ──
 #> 

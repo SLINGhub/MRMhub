@@ -69,8 +69,10 @@ mexp <- import_data_mrmhub(
   data = mexp,
   path = file_path,
   import_metadata = TRUE)
-#> ✔ Imported 499 analyses with 28 features
-#> ℹ `feature_area` selected as default feature intensity. Modify with `set_intensity_var()`.
+#> ✔ Imported 499 analyses with 28 features.
+#> ℹ feature_area selected as default feature intensity. Modify with `set_intensity_var()`.
+#> Warning: Unknown or uninitialised column: `valid_feature`.
+#> Warning: Unknown or uninitialised column: `is_quantifier`.
 #> ✔ Analysis metadata associated with 499 analyses.
 #> ✔ Feature metadata associated with 28 features.
 print(mexp)
@@ -94,6 +96,7 @@ print(mexp)
 #> • Response curves: ✖
 #> • Calibrants/QC concentrations: ✖
 #> • Study samples: ✖
+#> • Interferences: ✖
 #> 
 #> ── Processing Status ──
 #> 

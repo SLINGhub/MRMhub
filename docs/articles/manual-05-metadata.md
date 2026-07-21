@@ -54,6 +54,8 @@ mexp <- import_metadata_analyses(mexp,
 mexp <- import_metadata_features(mexp,
                                  path = "datasets/feature_metadata.csv",
                                  ignore_warnings= TRUE )
+#> Warning: Unknown or uninitialised column: `valid_feature`.
+#> Warning: Unknown or uninitialised column: `is_quantifier`.
 ```
 
 Metadata can also be imported from sheets of an Excel workbook, which
@@ -100,6 +102,8 @@ completed tables.
 mexp <- import_metadata_msorganiser(mexp,
                                     path = "datasets/sPerfect_Metadata.xlsx",
                                     ignore_warnings= TRUE)
+#> Warning: Unknown or uninitialised column: `valid_feature`.
+#> Warning: Unknown or uninitialised column: `is_quantifier`.
 ```
 
 ## Metadata table structures
@@ -142,10 +146,10 @@ One row per feature. Import with
 show_template("Features")
 ```
 
-| feature_id | istd_feature_id | feature_class | analyte_id | chem_formula | molecular_weight | feature_label | response_factor | is_quantifier | valid_integration | interference_feature_id | interference_proportion | remarks |
-|----|----|----|----|----|----|----|----|----|----|----|----|----|
+| feature_id | istd_feature_id | feature_class | analyte_id | chem_formula | molecular_weight | feature_label | response_factor | is_quantifier | valid_integration | polarity | mrm_pattern | interference_feature_id | interference_proportion | remarks |
+|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|
 
-Template sheet `Features` (column headers) {.table}
+Template sheet `Features` (column headers) {.table style="width:100%;"}
 
 ### Internal standards (ISTDs)
 

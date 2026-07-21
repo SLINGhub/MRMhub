@@ -159,9 +159,9 @@
   Correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-11-interference-correction.md):
 
   Annotate mrm_pattern, derive isotopic interference relationships
-  automatically with derive_interferences(), inspect them, and apply the
-  subtraction with correct_interferences(). Manual single-pair
-  correction is also covered.
+  automatically with calc_isotopic_interferences(), inspect them, and
+  apply the subtraction with correct_isotopic_interferences(). Declared
+  and single-pair manual corrections are also covered.
 
 - [Build a Workflow Without
   Code](https://slinghub.github.io/MRMhub/quant/articles/tutorial-12-workflow-builder.md):

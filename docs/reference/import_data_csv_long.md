@@ -152,10 +152,11 @@ mexp <- import_data_csv_long(
   column_mapping = col_map,
   import_metadata = TRUE
 )
-#> ! Following unrecognized columns present in the data and were ignored: "internal_standard", "time_stamp", "batch", "sample_type", "precursor_mz", "product_mz", "collision_energy", "polarity", "rt_apex", "area_normalized", "concentration", "height", "fwhm", "rt_int_start", and "rt_int_end".
-#> ! Use argument `column_mapping` to define column mapping.
-#> ✔ Imported 3 analyses with 4 features
-#> ℹ `feature_area` selected as default feature intensity. Modify with `set_intensity_var()`.
+#> ! The following unrecognized columns were present in the data and were ignored: "internal_standard", "time_stamp", "batch", "sample_type", "precursor_mz", "product_mz", "collision_energy", "polarity", "rt_apex", "area_normalized", "concentration", "height", "fwhm", "rt_int_start", and "rt_int_end". Use `column_mapping` to map them.
+#> ✔ Imported 3 analyses with 4 features.
+#> ℹ feature_area selected as default feature intensity. Modify with `set_intensity_var()`.
+#> Warning: Unknown or uninitialised column: `valid_feature`.
+#> Warning: Unknown or uninitialised column: `is_quantifier`.
 #> ✔ Analysis metadata associated with 3 analyses.
 #> ✔ Feature metadata associated with 4 features.
 #> ℹ Analysis order was based on `analysis_order` column of imported data. Use `set_analysis_order` to change the order.
@@ -181,6 +182,7 @@ print(mexp)
 #> • Response curves: ✖
 #> • Calibrants/QC concentrations: ✖
 #> • Study samples: ✖
+#> • Interferences: ✖
 #> 
 #> ── Processing Status ──
 #> 

@@ -30,6 +30,7 @@ MRMhubExperiment object
 ``` r
 myexp <- MRMhubExperiment()
 myexp <- data_load_example(myexp)
+#> ✔ Loaded example dataset 1: 499 analyses and 29 features.
 myexp
 #> 
 #> ── MRMhubExperiment ────────────────────────────────────────────────────────────
@@ -51,6 +52,7 @@ myexp
 #> • Response curves: ✔
 #> • Calibrants/QC concentrations: ✖
 #> • Study samples: ✖
+#> • Interferences: ✖
 #> 
 #> ── Processing Status ──
 #> 

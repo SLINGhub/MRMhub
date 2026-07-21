@@ -40,8 +40,10 @@ myexp <- mrmhub::MRMhubExperiment(title = "sPerfect")
 
 data_path <- "./datasets/sPerfect_MRMhub.tsv"
 myexp <- import_data_mrmhub(data = myexp, path = data_path, import_metadata = TRUE)
-#> ✔ Imported 499 analyses with 503 features
-#> ℹ `feature_area` selected as default feature intensity. Modify with `set_intensity_var()`.
+#> ✔ Imported 499 analyses with 503 features.
+#> ℹ feature_area selected as default feature intensity. Modify with `set_intensity_var()`.
+#> Warning: Unknown or uninitialised column: `valid_feature`.
+#> Warning: Unknown or uninitialised column: `is_quantifier`.
 #> ✔ Analysis metadata associated with 499 analyses.
 #> ✔ Feature metadata associated with 503 features.
 ```
@@ -213,11 +215,11 @@ Exercises
 
 file_path <- "datasets/sPerfect_Metadata.xlsx"
 myexp <- import_metadata_msorganiser(myexp, path = file_path, ignore_warnings = TRUE)
-#> ! Metadata has following warnings and notifications:
+#> Warning: Unknown or uninitialised column: `valid_feature`.
+#> Warning: Unknown or uninitialised column: `is_quantifier`.
+#> Found no errors, 4 warnings, and no notes in the metadata.
 #> --------------------------------------------------------------------------------
-#> # A tibble: 4 × 5
 #>   Type  Table    Column                Issue                           Count
-#>   <chr> <chr>    <chr>                 <chr>                           <int>
 #> 1 W*    Analyses analysis_id           Analyses not in analysis data      15
 #> 2 W*    Features feature_id            Feature(s) without metadata         1
 #> 3 W*    Features feature_id            Feature(s) not in analysis data     4
@@ -303,8 +305,8 @@ plot_pca(
   point_size = 2, point_alpha = 0.7, font_base_size = 8, ellipse_alpha = 0.3, 
   include_istd = FALSE)
 #> ! 2 features contained missing or non-numeric values and were exluded.
-#> ℹ The PCA was calculated based on `feature_intensity` values of 423 features.
-#> ggrepel: 10000 iterations in 0.002716s, 5 overlaps. Consider increasing 'max.iter'.
+#> ✔ The PCA was calculated based on `feature_intensity` values of 460 features.
+#> ggrepel: 10000 iterations in 0.004781s, 5 overlaps. Consider increasing 'max.iter'.
 ```
 
 ![PCA
@@ -325,7 +327,7 @@ Exercises
 
  # Exclude the sample from the processing
 myexp <- exclude_analyses(myexp, analyses = c("Longit_batch6_51"), clear_existing  = TRUE)
-#> ℹ 1 analyses were excluded for downstream processing. Please reprocess data.
+#> ✔ 1 analysis was excluded for downstream processing. Please reprocess data.
 
 # Replot the PCA
 plot_pca(
@@ -340,8 +342,8 @@ plot_pca(
   include_istd = FALSE,
   shared_labeltext_hide = NA)
 #> ! 2 features contained missing or non-numeric values and were exluded.
-#> ℹ The PCA was calculated based on `feature_intensity` values of 423 features.
-#> ggrepel: 10000 iterations in 0.006637s, 7 overlaps. Consider increasing 'max.iter'.
+#> ✔ The PCA was calculated based on `feature_intensity` values of 460 features.
+#> ggrepel: 10000 iterations in 0.009905s, 7 overlaps. Consider increasing 'max.iter'.
 ```
 
 ![PCA
@@ -375,9 +377,9 @@ myexp <- mrmhub::filter_features_qc(myexp,
                                    include_istd = TRUE,
                                    min.intensity.median.spl = 200)
 #> Calculating feature QC metrics - please wait...
-#> ! The QC parameter `min.intensity.median.spl` contains NAs for following features: LPC O-22:1, PC 34:5, PC 35:1, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC P-32:1 M+1. 
-#> These features failed QC.
-#> ✔ New feature QC filters were defined: 437 of 448 quantifier features meet QC criteria (including the 25 quantifier ISTD features).
+#> ✔ QC metrics calculated for 502 features across 7 sample types.
+#> ! The QC parameter min.intensity.median.spl contains NAs for the following features: LPC O-22:1, PC 34:5, PC 35:1, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC P-32:1 M+1. These features failed QC.
+#> ✔ New feature QC filters were defined: 486 of 502 quantifier features meet QC criteria (including the 42 quantifier ISTD features).
 plot_responsecurves(
   data = myexp,
   variable = "intensity",
@@ -390,15 +392,12 @@ plot_responsecurves(
 #>   method                  from   
 #>   heightDetails.titleGrob ggplot2
 #>   widthDetails.titleGrob  ggplot2
-#> Generating plots (1 page):
-#>   |                                      |                              |   0%
 ```
 
 ![Response curve
 plots](tutorial-03-lipidomics-workflow_files/figure-html/responsecurves-1.png)
 
-    #>   |                                      |==============================| 100%
-    #>   done!
+    #> ✔ Done
 
 ## 12. Isotope interference correction
 
@@ -418,9 +417,10 @@ Exercises
 
 ``` r
 
-myexp <- mrmhub::correct_interferences(myexp)
-#> ! Interference correction led to negative or zero values in 2 feature(s) in samples/QCs. Please verify the correction, or set `neg_to_na = TRUE`
-#> ✔ Interference-correction has been applied to 10 of the 502 features.
+myexp <- mrmhub::correct_custom_interferences(myexp)
+#> ! Interference correction led to 31 negative or zero values in 2 features (samples/QCs). Please verify the correction, or set `neg_to_na = TRUE`.
+#> ! 1 feature(s) became strongly negative (below -25% of raw) after correction: "PC 29:0|SM 33:1 M+3". This may indicate a mis-defined interference or an unmodeled effect; please verify.
+#> ✔ Interference correction applied to 11 of 502 feature(s) (0 isotopic, 11 custom edge(s)).
 plot_qc_interferences(myexp, qc_types = c("BQC", "SPL", "TQC", "LTR"))
 ```
 
@@ -446,7 +446,7 @@ myexp <- mrmhub::normalize_by_istd(myexp)
 #> ✔ 460 features normalized with 17 ISTDs in 498 analyses.
 myexp <- mrmhub::quantify_by_istd(myexp)
 #> ✔ 460 feature concentrations calculated based on 42 ISTDs and sample amounts of 498 analyses.
-#> ℹ Concentrations are given in μmol/L.
+#> ✔ Concentrations are given in μmol/L.
 ```
 
 ## 14. Examine the effects of class-wide ISTD normalization
@@ -478,9 +478,9 @@ myexp <- mrmhub::filter_features_qc(myexp,
                                    include_istd = TRUE,
                                    min.intensity.median.spl = 1000)
 #> Calculating feature QC metrics - please wait...
-#> ! The QC parameter `min.intensity.median.spl` contains NAs for following features: LPC O-22:1, PC 34:5, PC 35:1, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC P-32:1 M+1. 
-#> These features failed QC.
-#> ✔ New feature QC filters were defined: 413 of 448 quantifier features meet QC criteria (including the 25 quantifier ISTD features).
+#> ✔ QC metrics calculated for 502 features across 7 sample types, including normalized-intensity and concentration statistics.
+#> ! The QC parameter min.intensity.median.spl contains NAs for the following features: LPC O-22:1, PC 34:5, PC 35:1, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC P-32:1 M+1. These features failed QC.
+#> ✔ New feature QC filters were defined: 457 of 502 quantifier features meet QC criteria (including the 42 quantifier ISTD features).
 mrmhub::plot_normalization_qc(
   data = myexp, 
   before_norm_var = "intensity", 
@@ -526,8 +526,8 @@ myexp <- mrmhub::correct_drift_gaussiankernel(
   scale_smooth = FALSE, 
   show_progress = FALSE  # set to FALSE when rendering
 )
-#> ℹ Applying `conc` drift correction...
-#> ℹ 4 feature(s) contain one or more zero or negative `conc` values. Verify your data or use `log_transform_internal = FALSE`.
+#> ✔ Applying `conc` drift correction...
+#> ! 4 feature(s) contain one or more zero or negative `conc` values. Verify your data or use `log_transform_internal = FALSE`.
 #> ! 1 features showed no variation in the study sample's original values across analyses. 
 #> ! 1 features have invalid values after smoothing. NA will be be returned for all values of these faetures. Set `use_original_if_fail = FALSE to return orginal values..
 #> ! Smoothing failed for 1 feature(s) in all batches. Please check data, metadata, and fit parameters.
@@ -618,7 +618,7 @@ myexp <- mrmhub::correct_batch_centering(
   correct_location = TRUE, 
   correct_scale = TRUE, 
   log_transform_internal = TRUE)
-#> ℹ Adding batch correction on top of `conc` drift-correction.
+#> ! Adding batch correction on top of `conc` drift-correction.
 #> Warning: ! 102 feature/batch combinations had no usable reference-QC ("SPL") values and
 #>   were left uncorrected; original values were kept.
 #> ℹ Affected features: "CE 18:1 d7 (ISTD)", "Cer d18:1/25:0 (ISTD)", "COH d7
@@ -715,14 +715,12 @@ myexp <- filter_features_qc(
 )
 #> Calculating feature QC metrics - please wait...
 #> ! %CV not computed for 4440 feature×QC-type×variable combinations with fewer than 3 replicates (LTR: 4440).
-#> ! The QC parameter `min.intensity.median.spl` contains NAs for following features: LPC O-22:1, PC 34:5, PC 35:1, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC P-32:1 M+1. 
-#> These features failed QC.
-#> ! The QC parameter `min.signalblank.median.spl.pblk` contains NAs for following features: LPC O-22:1, PC 34:5, PC 35:1, PG 36:2, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC .... 
-#> These features failed QC.
-#> ! The QC parameter `max.cv.conc.bqc` contains NAs for following features: Cer d18:1/12:0 (ISTD) [M-H20>264], Cer d18:1/25:0 (ISTD) [M-H20>264], Hex2Cer.... 
-#> These features failed QC.
+#> ✔ QC metrics calculated for 502 features across 7 sample types, including normalized-intensity, concentration, and response-curve statistics.
+#> ! The QC parameter min.intensity.median.spl contains NAs for the following features: LPC O-22:1, PC 34:5, PC 35:1, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC P-32:1 M+1. These features failed QC.
+#> ! The QC parameter min.signalblank.median.spl.pblk contains NAs for the following features: LPC O-22:1, PC 34:5, PC 35:1, PG 36:2, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC .... These features failed QC.
+#> ! The QC parameter max.cv.conc.bqc contains NAs for the following features: Cer d18:1/12:0 (ISTD) [M-H20>264], Cer d18:1/25:0 (ISTD) [M-H20>264], Hex2Cer.... These features failed QC.
 #> ! The following features were forced to be retained despite not meeting filtering criteria: CE 16:0, CE 20:4, CE 22:5, and CE 22:6
-#> ✔ New feature QC filters were defined: 324 of 423 quantifier features meet QC criteria (not including the 25 quantifier ISTD features).
+#> ✔ New feature QC filters were defined: 352 of 460 quantifier features meet QC criteria (not including the 42 quantifier ISTD features).
 ```
 
 ## 19. Summary of the QC filtering
@@ -812,7 +810,7 @@ Exercises
 
 mrmhub::save_report_xlsx(myexp, path = tempfile(fileext = ".xlsx"))
 #> Saving report to disk - please wait...
-#> ✔ The data processing report of experiment 'sPerfect' has been saved to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//Rtmpnb2Rpi/file382254cc0f03.xlsx'.
+#> ✔ The data processing report of experiment 'sPerfect' has been saved to /var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpsjET9Z/file134a9e99a3a7.xlsx.
 ```
 
 Specific data subsets can also be saved as a clean flat, wide CSV file.
@@ -833,7 +831,7 @@ mrmhub::save_dataset_csv(
   qc_types = "SPL", 
   include_qualifier = FALSE,
   filter_data = TRUE)
-#> ✔ Concentration values for 377 analyses and 324 features have been exported to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//Rtmpnb2Rpi/file3822471b1c2f.csv'.
+#> ✔ Concentration values for 377 analyses and 352 features have been exported to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpsjET9Z/file134a974bfc67d.csv'.
 ```
 
 ## 22. Sharing the `MRMhubExperiment` dataset
@@ -876,6 +874,7 @@ print(myexp)
 #> • Response curves: ✔
 #> • Calibrants/QC concentrations: ✖
 #> • Study samples: ✖
+#> • Interferences: ✖
 #> 
 #> ── Processing Status ──
 #> 

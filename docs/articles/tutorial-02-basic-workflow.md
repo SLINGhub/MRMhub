@@ -72,8 +72,10 @@ myexp <- import_data_mrmhub(
   path = "datasets/sPerfect_MRMhub.tsv", 
   import_metadata = TRUE
 )
-#> ✔ Imported 499 analyses with 503 features
-#> ℹ `feature_area` selected as default feature intensity. Modify with `set_intensity_var()`.
+#> ✔ Imported 499 analyses with 503 features.
+#> ℹ feature_area selected as default feature intensity. Modify with `set_intensity_var()`.
+#> Warning: Unknown or uninitialised column: `valid_feature`.
+#> Warning: Unknown or uninitialised column: `is_quantifier`.
 #> ✔ Analysis metadata associated with 499 analyses.
 #> ✔ Feature metadata associated with 503 features.
 ```
@@ -104,11 +106,11 @@ myexp <- import_metadata_msorganiser(
   path = "datasets/sPerfect_Metadata.xlsx", 
   ignore_warnings = TRUE
 )
-#> ! Metadata has following warnings and notifications:
+#> Warning: Unknown or uninitialised column: `valid_feature`.
+#> Warning: Unknown or uninitialised column: `is_quantifier`.
+#> Found no errors, 4 warnings, and no notes in the metadata.
 #> --------------------------------------------------------------------------------
-#> # A tibble: 4 × 5
 #>   Type  Table    Column                Issue                           Count
-#>   <chr> <chr>    <chr>                 <chr>                           <int>
 #> 1 W*    Analyses analysis_id           Analyses not in analysis data      15
 #> 2 W*    Features feature_id            Feature(s) without metadata         1
 #> 3 W*    Features feature_id            Feature(s) not in analysis data     4
@@ -140,13 +142,13 @@ and QC filtering:
 
 # Normalize by internal standards
 myexp <- normalize_by_istd(myexp)
-#> ! Interfering features defined in metadata, but no correction was applied. Use `correct_interferences()` to correct.
+#> ! Interfering features defined in metadata, but no correction was applied. Use `correct_custom_interferences()` to correct.
 #> ✔ 460 features normalized with 17 ISTDs in 499 analyses.
 
 # Quantify using ISTD-based approach
 myexp <- quantify_by_istd(myexp)
 #> ✔ 460 feature concentrations calculated based on 42 ISTDs and sample amounts of 499 analyses.
-#> ℹ Concentrations are given in μmol/L.
+#> ✔ Concentrations are given in μmol/L.
 
 # Correct run-order drift (Gaussian kernel, sample-based)
 myexp <- correct_drift_gaussiankernel(
@@ -154,8 +156,8 @@ myexp <- correct_drift_gaussiankernel(
   variable = "conc",
   ref_qc_types = c("SPL")
 )
-#> ℹ Applying `conc` drift correction...
-#> ℹ 2 feature(s) contain one or more zero or negative `conc` values. Verify your data or use `log_transform_internal = FALSE`.
+#> ✔ Applying `conc` drift correction...
+#> ! 2 feature(s) contain one or more zero or negative `conc` values. Verify your data or use `log_transform_internal = FALSE`.
 #> ! 1 features showed no variation in the study sample's original values across analyses. 
 #> ! 1 features have invalid values after smoothing. NA will be be returned for all values of these faetures. Set `use_original_if_fail = FALSE to return orginal values..
 #> ! Smoothing failed for 1 feature(s) in all batches. Please check data, metadata, and fit parameters.
@@ -169,7 +171,7 @@ myexp <- correct_batch_centering(
   variable = "conc",
   ref_qc_types = "SPL"
 )
-#> ℹ Adding batch correction on top of `conc` drift-correction.
+#> ! Adding batch correction on top of `conc` drift-correction.
 #> ✔ Batch median-centering of 6 batches was applied to drift-corrected concentrations of all 502 features.
 #> ℹ The median CV change of all features in study samples was -0.44% (range: -27.90% to 10.30%).  The median absolute CV of all features decreased from 38.99% to 38.76%.
 
@@ -182,11 +184,10 @@ myexp <- filter_features_qc(
   max.cv.conc.bqc = 25
 )
 #> Calculating feature QC metrics - please wait...
-#> ! The QC parameter `min.signalblank.median.spl.sblk` contains NAs for following features: LPC O-22:1, PC 34:5, PC 35:1, PG 36:2, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC .... 
-#> These features failed QC.
-#> ! The QC parameter `max.cv.conc.bqc` contains NAs for following features: Cer d18:1/12:0 (ISTD) [M-H20>264], Cer d18:1/25:0 (ISTD) [M-H20>264], Hex2Cer.... 
-#> These features failed QC.
-#> ✔ New feature QC filters were defined: 181 of 423 quantifier features meet QC criteria (not including the 25 quantifier ISTD features).
+#> ✔ QC metrics calculated for 502 features across 7 sample types, including normalized-intensity and concentration statistics.
+#> ! The QC parameter min.signalblank.median.spl.sblk contains NAs for the following features: LPC O-22:1, PC 34:5, PC 35:1, PG 36:2, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC .... These features failed QC.
+#> ! The QC parameter max.cv.conc.bqc contains NAs for the following features: Cer d18:1/12:0 (ISTD) [M-H20>264], Cer d18:1/25:0 (ISTD) [M-H20>264], Hex2Cer.... These features failed QC.
+#> ✔ New feature QC filters were defined: 183 of 460 quantifier features meet QC criteria (not including the 42 quantifier ISTD features).
 ```
 
 Note that the drift correction above uses the study samples
@@ -242,7 +243,7 @@ for the full list of plotting functions grouped by workflow stage.
 # Detailed Excel report with multiple sheets
 save_report_xlsx(myexp, path = tempfile(fileext = ".xlsx"))
 #> Saving report to disk - please wait...
-#> ✔ The data processing report has been saved to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpAAiJ1U/file37fa15242249.xlsx'.
+#> ✔ The data processing report has been saved to /var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpbvTsg8/file13472432d9bdb.xlsx.
 
 # Flat CSV with concentration values that passed QC
 save_dataset_csv(
@@ -253,7 +254,7 @@ save_dataset_csv(
   include_qualifier = FALSE,
   filter_data = TRUE
 )
-#> ✔ Concentration values for 378 analyses and 181 features have been exported to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpAAiJ1U/file37fa24d28bcd.csv'.
+#> ✔ Concentration values for 378 analyses and 183 features have been exported to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpbvTsg8/file1347252afdb73.csv'.
 
 # Save the complete object for reproducibility or sharing
 saveRDS(myexp, file = tempfile(fileext = ".rds"), compress = TRUE)

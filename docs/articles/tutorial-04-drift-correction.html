@@ -160,7 +160,9 @@ from a CSV file. This file must contain a column with batch information
 <span>  <span class="va">myexp</span>,</span>
 <span>  path <span class="op">=</span> <span class="st">"smooth-testdata.csv"</span>,</span>
 <span>  variable_name <span class="op">=</span> <span class="st">"conc"</span>,</span>
-<span>  import_metadata <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<span>  import_metadata <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `valid_feature`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `is_quantifier`.</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="qc-based-smoothing">QC-based smoothing<a class="anchor" aria-label="anchor" href="#qc-based-smoothing"></a>
@@ -174,7 +176,7 @@ from a CSV file. This file must contain a column with batch information
 <span>  variable <span class="op">=</span> <span class="st">"conc"</span>,</span>
 <span>  ref_qc_types <span class="op">=</span> <span class="st">"BQC"</span>,</span>
 <span>  recalc_trend_after <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #00BB00;">Applying `conc` drift correction...</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Applying `conc` drift correction...</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Drift correction was applied to 3 of 3 features (across all batches).</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #555555;">The median CV change of all features in study samples was </span><span style="color: #555555; font-weight: bold;">-4.69%</span><span style="color: #555555;"> (range: -8.21% to 1.17%). The median absolute CV of all features </span><span style="color: #555555; font-weight: bold;">decreased from</span><span style="color: #555555;"> </span><span style="color: #555555; font-weight: bold;">30.56% to 28.52%</span><span style="color: #555555;">.</span></span></span></code></pre></div>
 <p>Next, we inspect the data before and after the correction. We observe
@@ -210,7 +212,7 @@ more information.</p>
 <span>  batch_wise <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  ref_qc_types <span class="op">=</span> <span class="st">"SPL"</span>,</span>
 <span>  recalc_trend_after <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #00BB00;">Applying `conc` drift correction...</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Applying `conc` drift correction...</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Drift correction was applied to 3 of 3 features (across all batches).</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #555555;">The median CV change of all features in study samples was </span><span style="color: #555555; font-weight: bold;">-6.18%</span><span style="color: #555555;"> (range: -11.46% to -1.49%). The median absolute CV of all features </span><span style="color: #555555; font-weight: bold;">decreased from</span><span style="color: #555555;"> </span><span style="color: #555555; font-weight: bold;">30.56% to 25.86%</span><span style="color: #555555;">.</span></span></span></code></pre></div>
 <p>Again, we inspect the data before and after the correction. We
@@ -247,7 +249,7 @@ gaussian kernel smoothing from above in this next example, by setting
 <span>  batch_wise <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  ref_qc_types <span class="op">=</span> <span class="st">"SPL"</span>,</span>
 <span>  recalc_trend_after <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #00BB00;">Applying `conc` drift correction...</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Applying `conc` drift correction...</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Drift correction was applied to 3 of 3 features (batch-wise).</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #555555;">The median CV change of all features in study samples was </span><span style="color: #555555; font-weight: bold;">-1.20%</span><span style="color: #555555;"> (range: -1.88% to -0.61%). The median absolute CV of all features across batches </span><span style="color: #555555; font-weight: bold;">decreased from</span><span style="color: #555555;"> </span><span style="color: #555555; font-weight: bold;">26.28% to 25.67%</span><span style="color: #555555;">.</span></span></span></code></pre></div>
 <p>Now, each batch has its own trendline corresponding the trend in each
@@ -276,7 +278,7 @@ median-centering, resulting in an alignment of the batches.</p>
 <span>  variable <span class="op">=</span> <span class="st">"conc"</span>,</span>
 <span>  correct_scale <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #BBBB00;">Adding batch correction on top of `conc` drift-correction.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">Adding batch correction on top of `conc` drift-correction.</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Batch median-centering of 6 batches was applied to drift-corrected concentrations of all 3 features.</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #555555;">The median CV change of all features in study samples was </span><span style="color: #555555; font-weight: bold;">-5.38%</span><span style="color: #555555;"> (range: -8.80% to -0.60%).  The median absolute CV of all features </span><span style="color: #555555; font-weight: bold;">decreased from</span><span style="color: #555555;"> </span><span style="color: #555555; font-weight: bold;">30.00% to 25.68%</span><span style="color: #555555;">.</span></span></span>
 <span></span>
@@ -299,7 +301,9 @@ separate dataset of seven batches to show the effect clearly.</p>
 <span>  <span class="va">myexp_batch</span>,</span>
 <span>  path <span class="op">=</span> <span class="st">"simdata-u1000-sd100_7batches.csv"</span>,</span>
 <span>  variable_name <span class="op">=</span> <span class="st">"conc"</span>,</span>
-<span>  import_metadata <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<span>  import_metadata <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `valid_feature`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `is_quantifier`.</span></span></code></pre></div>
 <p>The concentration values of each batch are centered on a reference QC
 type, here the study samples (<code>ref_qc_types = "SPL"</code>). The
 <code>correct_scale</code> parameter controls whether the batch-to-batch
@@ -313,7 +317,7 @@ batch is aligned.</p>
 <span>  ref_qc_types <span class="op">=</span> <span class="st">"SPL"</span>,</span>
 <span>  correct_scale <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #BBBB00;">Adding batch correction to `conc` data.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">Adding batch correction to `conc` data.</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Batch median-centering of 7 batches was applied to raw concentrations of all 1 features.</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #555555;">The median CV change of all features in study samples was </span><span style="color: #555555; font-weight: bold;">-30.49%</span><span style="color: #555555;"> (range: -30.50% to -30.50%).  The median absolute CV of all features </span><span style="color: #555555; font-weight: bold;">decreased from</span><span style="color: #555555;"> </span><span style="color: #555555; font-weight: bold;">44.05% to 13.56%</span><span style="color: #555555;">.</span></span></span></code></pre></div>
 <p>The data before and after batch correction are compared below; the
@@ -411,7 +415,7 @@ sensitive to individual outlier QC points than cubic spline. The
 <span>  batch_wise <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  ref_qc_types <span class="op">=</span> <span class="st">"BQC"</span>,</span>
 <span>  recalc_trend_after <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #00BB00;">Applying `conc` drift correction...</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Applying `conc` drift correction...</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">4 of 41 TQCs, 3 of 3 LTRs were excluded from correction as they fall outside the regions spanned by the QCs/samples used for smoothing (</span><span style="color: #BBBB00; font-style: italic;">BQC</span><span style="color: #BBBB00;">).</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Drift correction was applied to 3 of 3 features (batch-wise).</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #555555;">The median CV change of all features in study samples was </span><span style="color: #555555; font-weight: bold;">0.33%</span><span style="color: #555555;"> (range: 0.02% to 1.08%). The median absolute CV of all features across batches </span><span style="color: #555555; font-weight: bold;">increased from</span><span style="color: #555555;"> </span><span style="color: #555555; font-weight: bold;">26.28% to 27.36%</span><span style="color: #555555;">.</span></span></span></code></pre></div>

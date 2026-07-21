@@ -69,11 +69,13 @@
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/build_workflow.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/calc_average_molweight.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/calc_calibration_results.html</loc></url>
+<url><loc>https://slinghub.github.io/MRMhub/quant/reference/calc_isotopic_interferences.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/calc_qc_metrics.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/calibrate_by_reference.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/cash-MRMhubExperiment-method.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/check_setup.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/correct_batch_centering.html</loc></url>
+<url><loc>https://slinghub.github.io/MRMhub/quant/reference/correct_custom_interferences.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/correct_drift.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/correct_drift_cubicspline.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/correct_drift_gam.html</loc></url>
@@ -81,6 +83,7 @@
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/correct_drift_loess.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/correct_interference_manual.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/correct_interferences.html</loc></url>
+<url><loc>https://slinghub.github.io/MRMhub/quant/reference/correct_isotopic_interferences.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/cv.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/cv_log.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/data_load_example.html</loc></url>
@@ -147,6 +150,7 @@
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/plot_normalization_qc.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/plot_pca.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/plot_pca_loading.html</loc></url>
+<url><loc>https://slinghub.github.io/MRMhub/quant/reference/plot_qc_interference_impact.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/plot_qc_interferences.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/plot_qc_matrixeffects.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/plot_qc_summary_byclass.html</loc></url>
@@ -175,5 +179,6 @@
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/scientific_format_end.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/set_analysis_order.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/set_intensity_var.html</loc></url>
+<url><loc>https://slinghub.github.io/MRMhub/quant/reference/summarize_interferences.html</loc></url>
 </urlset>
 

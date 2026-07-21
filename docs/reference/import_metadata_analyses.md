@@ -75,8 +75,8 @@ mexp <- import_data_masshunter(
   data = mexp,
   path = file_path,
   import_metadata = FALSE)
-#> ✔ Imported 38 analyses with 31 features
-#> ℹ `feature_area` selected as default feature intensity. Modify with `set_intensity_var()`.
+#> ✔ Imported 38 analyses with 31 features.
+#> ℹ feature_area selected as default feature intensity. Modify with `set_intensity_var()`.
 
 meta_path = system.file("extdata", "MHQuant_demo_metadata_analyses.csv", package = "mrmhub")
 
@@ -107,6 +107,7 @@ print(mexp)
 #> • Response curves: ✖
 #> • Calibrants/QC concentrations: ✖
 #> • Study samples: ✖
+#> • Interferences: ✖
 #> 
 #> ── Processing Status ──
 #> 

@@ -18,12 +18,14 @@
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <meta property="og:title" content="Interference Correction">
 <meta name="description" content="Annotate mrm_pattern, derive isotopic interference relationships automatically
-with derive_interferences(), inspect them, and apply the subtraction with
-correct_interferences(). Manual single-pair correction is also covered.
+with calc_isotopic_interferences(), inspect them, and apply the subtraction
+with correct_isotopic_interferences(). Declared and single-pair manual
+corrections are also covered.
 ">
 <meta property="og:description" content="Annotate mrm_pattern, derive isotopic interference relationships automatically
-with derive_interferences(), inspect them, and apply the subtraction with
-correct_interferences(). Manual single-pair correction is also covered.
+with calc_isotopic_interferences(), inspect them, and apply the subtraction
+with correct_isotopic_interferences(). Declared and single-pair manual
+corrections are also covered.
 ">
 <meta property="og:image" content="https://slinghub.github.io/MRMhub/quant/logo.svg">
 </head>
@@ -145,43 +147,104 @@ isotopologues of one species can overlap the transition of a species two
 mass units heavier, inflating its measured area. MRMhub derives these
 isotopic (M+2) interference relationships automatically from a
 per-feature <code>mrm_pattern</code> annotation and removes them with a
-contribution-based subtraction ported from the LICAR method <span class="citation">(Gao et al. 2021)</span>. This tutorial walks through
-the end-to-end workflow; the concepts (front/back overlaps,
-fragment-based-for-MRM, the co-elution requirement) are documented in
-the <a href="manual-12-interference-correction.html">Isotopic
-interference correction</a> manual page.</p>
+contribution-based subtraction ported from the LICAR method <span class="citation">(Gao et al. 2021)</span>. Correction is worth
+considering whenever a blank shows non-zero signal in a feature that
+should be empty, a species and its M+2 shoulder correlate strongly
+across injections, or the theoretical M+2 contribution from an adjacent
+same-class species exceeds a few percent of the target signal. It runs
+on raw feature intensities (<code>feature_intensity</code>) and applies
+to <em>every</em> sample — unlike drift and batch correction, which are
+fitted on QC samples only.</p>
+<p>For MRM data the correction must be <em>fragment-based</em>: a heavy
+isotope’s contribution depends on whether it lands on the retained
+product ion or the neutral loss. The whole-molecule
+<code>level = "MS1"</code> path is therefore for genuine full-scan data
+only, <strong>never a fallback for MRM</strong> data that happens to
+lack a product m/z. The underlying concepts (front/back overlaps, the
+co-elution requirement) are covered in the <a href="manual-12-interference-correction.html">Isotopic interference
+correction</a> manual page.</p>
 <div class="callout callout-note">
 <p><strong>Time</strong> ~15 min  ·  <strong>Level</strong> Advanced  · 
 <strong>Prerequisites</strong> <a href="tutorial-02-basic-workflow.html">Basic workflow</a></p>
 </div>
 <div class="section level2">
-<h2 id="when-is-correction-needed">1. When is correction needed?<a class="anchor" aria-label="anchor" href="#when-is-correction-needed"></a>
+<h2 id="preparing-for-isotopic-correction">1. Preparing for isotopic correction<a class="anchor" aria-label="anchor" href="#preparing-for-isotopic-correction"></a>
 </h2>
-<p>Isotopic interference correction should be considered when:</p>
-<ol style="list-style-type: decimal">
-<li>blank injections show a non-zero signal in a feature that should be
-zero;</li>
-<li>a species and an M+2 “shoulder” two mass units heavier show strong
-injection-to-injection correlation, suggestive of isotopologue
-overlap;</li>
-<li>the theoretical M+2 contribution from an adjacent same-class species
-is large enough to bias the measurement (more than a few percent of the
-target signal).</li>
-</ol>
-<p>Correction operates on raw feature intensities
-(<code>feature_intensity</code>) and should be applied <em>before</em>
-ISTD normalisation, drift, and batch correction, so those downstream
-steps use corrected raw signals.</p>
-</div>
-<div class="section level2">
-<h2 id="annotate-mrm_pattern">2. Annotate <code>mrm_pattern</code><a class="anchor" aria-label="anchor" href="#annotate-mrm_pattern"></a>
-</h2>
-<p>Automatic derivation needs one input: the <code>mrm_pattern</code>
-column on the <code>Features</code> metadata sheet, giving each feature
-its class + MRM pattern (e.g. <code>PC (Pos) Pro=184.1</code>,
-<code>Cer (Pos) SphB-2H2O</code>, <code>PC (Neg, FA) FA</code>). The
-label encodes both the lipid class and the product-ion origin. The valid
-labels are listed by <a href="../reference/licar_pattern_choices.html"><code>licar_pattern_choices()</code></a>:</p>
+<p>Automatic derivation needs one annotation: the
+<code>mrm_pattern</code> column on the <code>Features</code> metadata
+sheet, giving each feature its class + MRM pattern. The label encodes
+both the lipid class and the product-ion origin, so
+<code><a href="../reference/calc_isotopic_interferences.html">calc_isotopic_interferences()</a></code> can build the correct
+fragment formula. The precursor and product m/z the derivation also
+needs — and the optional <code>polarity</code> that narrows the pattern
+choices — can come from the imported data (INTEGRATOR) <em>or</em> the
+metadata; only <code>mrm_pattern</code> must be annotated by hand. A
+<code>Features</code> sheet ready for correction looks like this —
+precursor/product m/z and <code>polarity</code> supplied by the import,
+with <code>mrm_pattern</code> added as the final column:</p>
+<table class="table">
+<caption>Example <code>Features</code> metadata
+(<code>mrm_pattern</code> is the added annotation).</caption>
+<colgroup>
+<col width="21%">
+<col width="16%">
+<col width="15%">
+<col width="12%">
+<col width="10%">
+<col width="23%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">feature_id</th>
+<th align="left">feature_class</th>
+<th align="right">precursor_mz</th>
+<th align="right">product_mz</th>
+<th align="left">polarity</th>
+<th align="left">mrm_pattern</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">PC 34:2</td>
+<td align="left">PC</td>
+<td align="right">758.6</td>
+<td align="right">184.1</td>
+<td align="left">Pos</td>
+<td align="left">PC (Pos) Pro=184.1</td>
+</tr>
+<tr class="even">
+<td align="left">PC 34:1</td>
+<td align="left">PC</td>
+<td align="right">760.6</td>
+<td align="right">184.1</td>
+<td align="left">Pos</td>
+<td align="left">PC (Pos) Pro=184.1</td>
+</tr>
+<tr class="odd">
+<td align="left">PC 34:0</td>
+<td align="left">PC</td>
+<td align="right">762.6</td>
+<td align="right">184.1</td>
+<td align="left">Pos</td>
+<td align="left">PC (Pos) Pro=184.1</td>
+</tr>
+<tr class="even">
+<td align="left">Cer 18:1;O2/16:0</td>
+<td align="left">Cer</td>
+<td align="right">538.5</td>
+<td align="right">264.3</td>
+<td align="left">Pos</td>
+<td align="left">Cer (Pos) SphB-2H2O</td>
+</tr>
+<tr class="odd">
+<td align="left">PC 34:1 [FA 16:0]</td>
+<td align="left">PC</td>
+<td align="right">804.6</td>
+<td align="right">255.2</td>
+<td align="left">Neg</td>
+<td align="left">PC (Neg, FA) FA</td>
+</tr>
+</tbody>
+</table>
+<p>The valid labels are listed by <a href="../reference/licar_pattern_choices.html"><code>licar_pattern_choices()</code></a>:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/SLINGhub/MRMhub" class="external-link">mrmhub</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/licar_pattern_choices.html">licar_pattern_choices</a></span><span class="op">(</span><span class="st">"Head Group"</span><span class="op">)</span></span></code></pre></div>
@@ -197,76 +260,82 @@ warning.</p>
 <code class="sourceCode R"><span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">"results/mexp_processed.rds"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="derive-interference-relationships">3. Derive interference relationships<a class="anchor" aria-label="anchor" href="#derive-interference-relationships"></a>
+<h2 id="derive-interference-relationships">2. Derive interference relationships<a class="anchor" aria-label="anchor" href="#derive-interference-relationships"></a>
 </h2>
-<p><a href="../reference/derive_interferences.html"><code>derive_interferences()</code></a>
+<p><a href="../reference/calc_isotopic_interferences.html"><code>calc_isotopic_interferences()</code></a>
 discovers the M+2 overlaps and stores them in the
 <code>annot_interferences</code> slot. Choose the derivation
 <code>level</code> to match the acquisition:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Class-based LC-MRM: fragment-level front/back correction (needs precursor + product m/z).</span></span>
-<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/derive_interferences.html">derive_interferences</a></span><span class="op">(</span><span class="va">mexp</span>, level <span class="op">=</span> <span class="st">"MRM"</span><span class="op">)</span></span>
+<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_isotopic_interferences.html">calc_isotopic_interferences</a></span><span class="op">(</span><span class="va">mexp</span>, level <span class="op">=</span> <span class="st">"MRM"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Genuine MS1 / full-scan: whole-molecule M+2 (needs precursor m/z only).</span></span>
-<span><span class="co"># mexp &lt;- derive_interferences(mexp, level = "MS1")</span></span></code></pre></div>
-<div class="callout callout-caution">
-<p><strong>MS1 is not a fallback for MRM.</strong> MRM correction must
-be fragment-based, because a heavy isotope’s contribution depends on
-whether it lands on the retained product ion or the neutral loss <span class="citation">(Gao et al. 2021)</span>. Use
-<code>level = "MS1"</code> only for genuine full-scan data — never as a
-substitute for MRM data missing a product m/z. See the <a href="manual-12-interference-correction.html">manual page</a> for the
-full rationale.</p>
-</div>
-<p>By default (<code>check_coelution = TRUE</code>) an m/z-matched edge
-is kept only when the interferer’s peak apex falls inside the victim’s
-integration window; chromatographically resolved pairs are dropped and
-reported. Derived factors are pinned to <code>enviPat</code> 2.8 <span class="citation">(Loos et al. 2015)</span> and are deterministic, so
-re-importing the annotation and re-deriving reproduces identical
-edges.</p>
+<span><span class="co"># mexp &lt;- calc_isotopic_interferences(mexp, level = "MS1")</span></span></code></pre></div>
+<p>Derived factors are pinned to <code>enviPat</code> 2.8 <span class="citation">(Loos et al. 2015)</span> and are deterministic, so
+re-importing the annotation and re-deriving reproduces identical edges.
+Raise <code>min_contribution</code> to drop negligible or borderline
+pairs, and see <a href="#co-elution-filtering-experimental">co-elution
+filtering</a> for the experimental option to keep only
+chromatographically co-eluting pairs.</p>
 </div>
 <div class="section level2">
-<h2 id="inspect-the-derived-relationships">4. Inspect the derived relationships<a class="anchor" aria-label="anchor" href="#inspect-the-derived-relationships"></a>
+<h2 id="inspect-the-derived-relationships">3. Inspect the derived relationships<a class="anchor" aria-label="anchor" href="#inspect-the-derived-relationships"></a>
 </h2>
-<p>The two-step API lets you review the derived edges before subtracting
-anything. Each row is one overlap, with its contribution factor
-<code>K</code> and an <code>overlap_type</code> (<code>m2_front</code>,
-<code>m2_back</code>, or <code>ms1_m2</code>):</p>
+<p>The two-stage API is a built-in <em>preview</em>: review the derived
+edges before subtracting anything. Each row of
+<code>annot_interferences</code> is one overlap, with its contribution
+factor <code>K</code> and an <code>overlap_type</code>
+(<code>m2_front</code>, <code>m2_back</code>, or
+<code>ms1_m2</code>):</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mexp</span><span class="op">@</span><span class="va">annot_interferences</span></span></code></pre></div>
+<p><a href="../reference/summarize_interferences.html"><code>summarize_interferences()</code></a>
+rolls this up — how many features are affected, split by source
+(auto-derived vs. declared) and overlap type, with the
+contribution-factor range:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/summarize_interferences.html">summarize_interferences</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span></span></code></pre></div>
 <p>A victim carrying both a <code>m2_front</code> and a
 <code>m2_back</code> row is corrected against two interferers. The
 <code>source</code> column distinguishes auto-derived
-(<code>"auto"</code>) from manually annotated (<code>"manual"</code>)
-edges; both are applied together.</p>
+(<code>"auto"</code>) from declared (<code>"manual"</code>) edges.</p>
 </div>
 <div class="section level2">
-<h2 id="apply-the-correction">5. Apply the correction<a class="anchor" aria-label="anchor" href="#apply-the-correction"></a>
+<h2 id="apply-the-correction">4. Apply the correction<a class="anchor" aria-label="anchor" href="#apply-the-correction"></a>
 </h2>
-<p><a href="../reference/correct_interferences.html"><code>correct_interferences()</code></a>
-reads <code>annot_interferences</code> (unioned with any legacy manual
-annotation columns) and subtracts every edge in one pass:</p>
+<p><a href="../reference/correct_isotopic_interferences.html"><code>correct_isotopic_interferences()</code></a>
+subtracts the derived edges from the raw intensities in one pass:</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mtext mathvariant="normal">Value</mtext><mtext mathvariant="normal">corrected</mtext></msub><mo>=</mo><msub><mtext mathvariant="normal">Value</mtext><mtext mathvariant="normal">target</mtext></msub><mo>−</mo><munder><mo>∑</mo><mi>i</mi></munder><msub><mi>K</mi><mi>i</mi></msub><mo>⋅</mo><msub><mtext mathvariant="normal">Value</mtext><msub><mtext mathvariant="normal">interfering</mtext><mi>i</mi></msub></msub></mrow><annotation encoding="application/x-tex">
 \text{Value}_\text{corrected} = \text{Value}_\text{target} -
    \sum_i K_i \cdot \text{Value}_{\text{interfering}_i}
 </annotation></semantics></math></p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/correct_interferences.html">correct_interferences</a></span><span class="op">(</span><span class="va">mexp</span>, variable <span class="op">=</span> <span class="st">"feature_intensity"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/correct_isotopic_interferences.html">correct_isotopic_interferences</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span></span></code></pre></div>
+<p>If nothing has been derived yet the function stops with a reminder to
+run <code><a href="../reference/calc_isotopic_interferences.html">calc_isotopic_interferences()</a></code> first. Declared
+interferences — in-source fragments, co-eluting isobars, or other
+overlaps you annotate yourself in the feature metadata — are applied
+with the sibling <a href="../reference/correct_custom_interferences.html"><code>correct_custom_interferences()</code></a>.</p>
 <p>Upstream features in a chain (A ← B ← C) are corrected first via a
 topological ordering; circular dependencies are detected and aborted
 with an informative error. For auto-derived edges, a subtraction is
 skipped when the running-corrected interferer has already fallen to
 zero, and corrected values are clamped at zero (LICAR parity). The
 original raw values are preserved in
-<code>feature_intensity_orig</code>.</p>
+<code>feature_intensity_orig</code>. Apply interference correction
+<em>before</em> ISTD normalisation, drift, and batch correction; running
+it later resets those steps (with a warning) because they must use the
+corrected raw signal.</p>
 </div>
 <div class="section level2">
-<h2 id="manual-correction-of-a-single-pair">6. Manual correction of a single pair<a class="anchor" aria-label="anchor" href="#manual-correction-of-a-single-pair"></a>
+<h2 id="manual-correction-of-a-single-pair">5. Manual correction of a single pair<a class="anchor" aria-label="anchor" href="#manual-correction-of-a-single-pair"></a>
 </h2>
 <p>For a one-off correction, or to validate a factor before trusting the
 automatic derivation, use <a href="../reference/correct_interference_manual.html"><code>correct_interference_manual()</code></a>.
 <code>variable</code> here is the actual <code>dataset</code> column
 name (<code>feature_intensity</code>).</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/correct_interference_manual.html">correct_interference_manual</a></span><span class="op">(</span></span>
 <span>  <span class="va">mexp</span>,</span>
 <span>  variable                  <span class="op">=</span> <span class="st">"feature_intensity"</span>,</span>
@@ -285,9 +354,9 @@ class-level interference tables — verified empirically when moving a
 method between instruments.</p>
 </div>
 <div class="section level2">
-<h2 id="verifying-the-correction">7. Verifying the correction<a class="anchor" aria-label="anchor" href="#verifying-the-correction"></a>
+<h2 id="verifying-the-correction">6. Verifying the correction<a class="anchor" aria-label="anchor" href="#verifying-the-correction"></a>
 </h2>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_analyticaldata.html">get_analyticaldata</a></span><span class="op">(</span><span class="va">mexp</span>, annotated <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">feature_id</span> <span class="op">==</span> <span class="st">"PC 32:0"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">analysis_id</span>, <span class="va">qc_type</span>,</span>
@@ -298,7 +367,40 @@ method between instruments.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">d</span><span class="op">$</span><span class="va">pct_change</span><span class="op">)</span></span></code></pre></div>
 <p>For blanks (<code>SBLK</code>/<code>PBLK</code>), residual signal
 after correction should approach zero. A non-zero blank median often
-indicates an underestimated contribution factor.</p>
+indicates an underestimated contribution factor. <a href="../reference/plot_qc_interference_impact.html"><code>plot_qc_interference_impact()</code></a>
+shows how many features were affected by which magnitude of correction
+(percent of signal removed) in the study samples:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_qc_interference_impact.html">plot_qc_interference_impact</a></span><span class="op">(</span><span class="va">mexp</span>, qc_types <span class="op">=</span> <span class="st">"SPL"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="tutorial-11-interference-correction_files/figure-html/unnamed-chunk-12-1.png" class="r-plt" alt="" width="100%"></p>
+<p>For a per-feature view, <a href="../reference/plot_qc_interferences.html"><code>plot_qc_interferences()</code></a>
+shows each corrected feature’s residual signal as a percent of its
+uncorrected value, split by QC type. With many features corrected,
+<code>min_correction_pct</code> focuses the plot on the
+substantially-affected ones (here, those with at least 40 % of their
+signal removed); <code>include_feature_filter</code> /
+<code>exclude_feature_filter</code> narrow it to specific features or
+classes. When blanks are present, a blank approaching zero alongside
+study samples (<code>SPL</code>) retaining most of their signal is the
+expected pattern:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_qc_interferences.html">plot_qc_interferences</a></span><span class="op">(</span><span class="va">mexp</span>, qc_types <span class="op">=</span> <span class="st">"SPL"</span>, min_correction_pct <span class="op">=</span> <span class="fl">40</span><span class="op">)</span></span></code></pre></div>
+<p><img src="tutorial-11-interference-correction_files/figure-html/unnamed-chunk-13-1.png" class="r-plt" alt="" width="100%"></p>
+</div>
+<div class="section level2">
+<h2 id="co-elution-filtering-experimental">Co-elution filtering (experimental)<a class="anchor" aria-label="anchor" href="#co-elution-filtering-experimental"></a>
+</h2>
+<p>An isotopologue elutes at its monoisotopic apex, so an interferer’s
+M+2 lands in a victim’s integrated area only if the two co-elute. The
+experimental <code>check_coelution</code> option keeps an m/z-matched
+edge only when the interferer’s apex falls inside the victim’s
+integration window, dropping chromatographically resolved pairs:</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_isotopic_interferences.html">calc_isotopic_interferences</a></span><span class="op">(</span><span class="va">mexp</span>, level <span class="op">=</span> <span class="st">"MRM"</span>, check_coelution <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p>It is <strong>off by default</strong> while the gate is validated.
+When enabled, inspect <code>annot_interferences</code> carefully —
+resolved pairs it drops (and, when retention data are missing, pairs it
+cannot verify) are reported in the console.</p>
 </div>
 <div class="section level2">
 <h2 id="recommendations">Recommendations<a class="anchor" aria-label="anchor" href="#recommendations"></a>
@@ -309,8 +411,8 @@ indicates an underestimated contribution factor.</p>
 <li>Prefer <code>level = "MRM"</code> for MRM data and supply the
 product m/z; reserve <code>level = "MS1"</code> for genuine full-scan
 measurements.</li>
-<li>Inspect <code>annot_interferences</code> before applying, especially
-any pairs the co-elution gate dropped.</li>
+<li>Inspect <code>annot_interferences</code> (or
+<code><a href="../reference/summarize_interferences.html">summarize_interferences()</a></code>) before applying.</li>
 <li>Keep the <code>mrm_pattern</code> annotation with the project: it
 reproduces the derived factors under the <code>enviPat</code> 2.8
 pin.</li>

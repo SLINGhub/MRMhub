@@ -35,6 +35,8 @@ myexp <- import_data_csv_wide(
   path = "smooth-testdata.csv",
   variable_name = "conc",
   import_metadata = TRUE)
+#> Warning: Unknown or uninitialised column: `valid_feature`.
+#> Warning: Unknown or uninitialised column: `is_quantifier`.
 ```
 
 ## QC-based smoothing
@@ -51,7 +53,7 @@ mexp_drift <- correct_drift_cubicspline(
   variable = "conc",
   ref_qc_types = "BQC",
   recalc_trend_after = TRUE)
-#> ℹ Applying `conc` drift correction...
+#> ✔ Applying `conc` drift correction...
 #> ✔ Drift correction was applied to 3 of 3 features (across all batches).
 #> ℹ The median CV change of all features in study samples was -4.69% (range: -8.21% to 1.17%). The median absolute CV of all features decreased from 30.56% to 28.52%.
 ```
@@ -100,7 +102,7 @@ mexp_drift <- correct_drift_gaussiankernel(
   batch_wise = FALSE,
   ref_qc_types = "SPL",
   recalc_trend_after = TRUE)
-#> ℹ Applying `conc` drift correction...
+#> ✔ Applying `conc` drift correction...
 #> ✔ Drift correction was applied to 3 of 3 features (across all batches).
 #> ℹ The median CV change of all features in study samples was -6.18% (range: -11.46% to -1.49%). The median absolute CV of all features decreased from 30.56% to 25.86%.
 ```
@@ -150,7 +152,7 @@ mexp_drift <- correct_drift_gaussiankernel(
   batch_wise = TRUE,
   ref_qc_types = "SPL",
   recalc_trend_after = TRUE)
-#> ℹ Applying `conc` drift correction...
+#> ✔ Applying `conc` drift correction...
 #> ✔ Drift correction was applied to 3 of 3 features (batch-wise).
 #> ℹ The median CV change of all features in study samples was -1.20% (range: -1.88% to -0.61%). The median absolute CV of all features across batches decreased from 26.28% to 25.67%.
 ```
@@ -192,7 +194,7 @@ mexp_drift <- mrmhub::correct_batch_centering(
   variable = "conc",
   correct_scale = TRUE
 )
-#> ℹ Adding batch correction on top of `conc` drift-correction.
+#> ! Adding batch correction on top of `conc` drift-correction.
 #> ✔ Batch median-centering of 6 batches was applied to drift-corrected concentrations of all 3 features.
 #> ℹ The median CV change of all features in study samples was -5.38% (range: -8.80% to -0.60%).  The median absolute CV of all features decreased from 30.00% to 25.68%.
 
@@ -220,6 +222,8 @@ myexp_batch <- import_data_csv_wide(
   path = "simdata-u1000-sd100_7batches.csv",
   variable_name = "conc",
   import_metadata = TRUE)
+#> Warning: Unknown or uninitialised column: `valid_feature`.
+#> Warning: Unknown or uninitialised column: `is_quantifier`.
 ```
 
 The concentration values of each batch are centered on a reference QC
@@ -237,7 +241,7 @@ myexp_batch <- correct_batch_centering(
   ref_qc_types = "SPL",
   correct_scale = FALSE
 )
-#> ℹ Adding batch correction to `conc` data.
+#> ! Adding batch correction to `conc` data.
 #> ✔ Batch median-centering of 7 batches was applied to raw concentrations of all 1 features.
 #> ℹ The median CV change of all features in study samples was -30.49% (range: -30.50% to -30.50%).  The median absolute CV of all features decreased from 44.05% to 13.56%.
 ```
@@ -316,7 +320,7 @@ mexp_drift_loess <- correct_drift_loess(
   batch_wise = TRUE,
   ref_qc_types = "BQC",
   recalc_trend_after = TRUE)
-#> ℹ Applying `conc` drift correction...
+#> ✔ Applying `conc` drift correction...
 #> ! 4 of 41 TQCs, 3 of 3 LTRs were excluded from correction as they fall outside the regions spanned by the QCs/samples used for smoothing (BQC).
 #> ✔ Drift correction was applied to 3 of 3 features (batch-wise).
 #> ℹ The median CV change of all features in study samples was 0.33% (range: 0.02% to 1.08%). The median absolute CV of all features across batches increased from 26.28% to 27.36%.

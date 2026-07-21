@@ -161,13 +161,17 @@ data files is discouraged.</p>
 <span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_data_mrmhub.html">import_data_mrmhub</a></span><span class="op">(</span><span class="va">mexp</span>, </span>
 <span>                           path <span class="op">=</span> <span class="st">"datasets/sPerfect_MRMhub.tsv"</span>, </span>
 <span>                           import_metadata <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `valid_feature`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `is_quantifier`.</span></span>
 <span></span>
 <span><span class="co"># Add analysis data from a CSV file (replaces all previous data)</span></span>
 <span><span class="va">mexp2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MRMhubExperiment.html">MRMhubExperiment</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">mexp2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_data_csv_wide.html">import_data_csv_wide</a></span><span class="op">(</span><span class="va">mexp2</span>,</span>
 <span>                        path <span class="op">=</span> <span class="st">"data/plain_wide_dataset.csv"</span>,</span>
 <span>                        variable_name <span class="op">=</span> <span class="st">"area"</span>,</span>
-<span>                        import_metadata <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<span>                        import_metadata <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `valid_feature`.</span></span>
+<span><span class="co">#&gt; Unknown or uninitialised column: `is_quantifier`.</span></span></code></pre></div>
 <p>See <a href="manual-04-data-import.html">Importing analytical
 data</a> for more details on importing analysis data.</p>
 </div>
@@ -215,7 +219,9 @@ obtained via:</p>
 <span></span>
 <span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_metadata_features.html">import_metadata_features</a></span><span class="op">(</span><span class="va">mexp</span>, </span>
 <span>                                 path <span class="op">=</span> <span class="st">"datasets/feature_metadata.csv"</span>,</span>
-<span>                                 ignore_warnings<span class="op">=</span> <span class="cn">TRUE</span> <span class="op">)</span></span></code></pre></div>
+<span>                                 ignore_warnings<span class="op">=</span> <span class="cn">TRUE</span> <span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `valid_feature`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `is_quantifier`.</span></span></code></pre></div>
 <p>Metadata can also be obtained from Excel workbook sheets, which
 allows to store all metadata in one file.<br>
 In this case below we add metadata on internal standard and response

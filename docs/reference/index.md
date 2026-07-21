@@ -117,12 +117,16 @@ MRMhub Excel template or CSV files.
 
 Functions to perform type II isotopic interference correction
 
-- [`derive_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/derive_interferences.md)
+- [`calc_isotopic_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/calc_isotopic_interferences.md)
   : Derive isotopic interference relationships
-- [`correct_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/correct_interferences.md)
-  : Apply interference correction
+- [`correct_isotopic_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/correct_isotopic_interferences.md)
+  : Correct automatically derived isotopic interferences
+- [`correct_custom_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/correct_custom_interferences.md)
+  : Correct declared (custom) interferences
 - [`correct_interference_manual()`](https://slinghub.github.io/MRMhub/quant/reference/correct_interference_manual.md)
   : Manual isotopic interference correction
+- [`summarize_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/summarize_interferences.md)
+  : Summarize interference relationships
 - [`licar_pattern_choices()`](https://slinghub.github.io/MRMhub/quant/reference/licar_pattern_choices.md)
   : Valid MRM-pattern labels
 
@@ -214,6 +218,8 @@ Functions to plots diverse QC visualizatios.
   : Comparison of two feature QC metrics variables
 - [`plot_qc_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_interferences.md)
   : Plot the results of interference correction
+- [`plot_qc_interference_impact()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_interference_impact.md)
+  : Plot the magnitude of interference correction as a histogram
 
 ## Response Curves
 

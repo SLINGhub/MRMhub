@@ -171,8 +171,10 @@ clicking it in the Environment panel on the top right.</p>
 <span></span>
 <span><span class="va">data_path</span> <span class="op">&lt;-</span> <span class="st">"./datasets/sPerfect_MRMhub.tsv"</span></span>
 <span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_data_mrmhub.html">import_data_mrmhub</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">myexp</span>, path <span class="op">=</span> <span class="va">data_path</span>, import_metadata <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Imported 499 analyses with 503 features</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #555555;">`feature_area` selected as default feature intensity. Modify with `set_intensity_var()`.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Imported 499 analyses with 503 features.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #00BB00;">feature_area</span> selected as default feature intensity. Modify with `set_intensity_var()`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `valid_feature`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `is_quantifier`.</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Analysis metadata associated with 499 analyses.</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Feature metadata associated with 503 features.</span></span></span></code></pre></div>
 </div>
@@ -328,19 +330,19 @@ to explore the metadata structure.</p>
 </details><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">file_path</span> <span class="op">&lt;-</span> <span class="st">"datasets/sPerfect_Metadata.xlsx"</span></span>
 <span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_metadata_msorganiser.html">import_metadata_msorganiser</a></span><span class="op">(</span><span class="va">myexp</span>, path <span class="op">=</span> <span class="va">file_path</span>, ignore_warnings <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">Metadata has following warnings and notifications:</span></span></span>
-<span><span class="co">#&gt; <span style="color: #000000;">--------------------------------------------------------------------------------</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 4 × 5</span></span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `valid_feature`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `is_quantifier`.</span></span>
+<span><span class="co">#&gt; Found no errors, 4 warnings, and no notes in the metadata.</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
 <span><span class="co">#&gt;   Type  Table    Column                Issue                           Count</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> W*    Analyses analysis_id           Analyses not in analysis data      15</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> W*    Features feature_id            Feature(s) without metadata         1</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> W*    Features feature_id            Feature(s) not in analysis data     4</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> W*    ISTDs    quant_istd_feature_id Internal standard(s) not used       1</span></span>
+<span><span class="co">#&gt; 1 W*    Analyses analysis_id           Analyses not in analysis data      15</span></span>
+<span><span class="co">#&gt; 2 W*    Features feature_id            Feature(s) without metadata         1</span></span>
+<span><span class="co">#&gt; 3 W*    Features feature_id            Feature(s) not in analysis data     4</span></span>
+<span><span class="co">#&gt; 4 W*    ISTDs    quant_istd_feature_id Internal standard(s) not used       1</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="font-style: italic;">--------------------------------------------------------------------------------</span></span></span>
-<span><span class="co"><span style="font-style: italic;">#&gt; E = Error, W = Warning, W* = Suppressed Warning, N = Note</span></span></span>
-<span><span class="co"><span style="font-style: italic;">#&gt; --------------------------------------------------------------------------------</span></span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; E = Error, W = Warning, W* = Suppressed Warning, N = Note</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Analysis metadata associated with 499 analyses.</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Feature metadata associated with 502 features.</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Internal Standard metadata associated with 17 ISTDs.</span></span></span>
@@ -416,8 +418,8 @@ think the resulting PCA plot suggests now?</p>
 <span>  point_size <span class="op">=</span> <span class="fl">2</span>, point_alpha <span class="op">=</span> <span class="fl">0.7</span>, font_base_size <span class="op">=</span> <span class="fl">8</span>, ellipse_alpha <span class="op">=</span> <span class="fl">0.3</span>, </span>
 <span>  include_istd <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">2 features contained missing or non-numeric values and were exluded.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #00BB00;">The PCA was calculated based on `feature_intensity` values of 423 features.</span></span></span>
-<span><span class="co">#&gt; ggrepel: 10000 iterations in 0.002716s, 5 overlaps. Consider increasing 'max.iter'.</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The PCA was calculated based on `feature_intensity` values of 460 features.</span></span></span>
+<span><span class="co">#&gt; ggrepel: 10000 iterations in 0.004781s, 5 overlaps. Consider increasing 'max.iter'.</span></span></code></pre></div>
 <p><img src="tutorial-03-lipidomics-workflow_files/figure-html/pca-before-1.png" class="r-plt" alt="PCA plot" width="100%"></p>
 </div>
 <div class="section level2">
@@ -435,7 +437,7 @@ dimensions (by modifying <code>pca_dims</code>).</p>
 </details><div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span> <span class="co"># Exclude the sample from the processing</span></span>
 <span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/exclude_analyses.html">exclude_analyses</a></span><span class="op">(</span><span class="va">myexp</span>, analyses <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Longit_batch6_51"</span><span class="op">)</span>, clear_existing  <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #00BB00;">1 analyses were excluded for downstream processing. Please reprocess data.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">1 analysis was excluded for downstream processing. Please reprocess data.</span></span></span>
 <span></span>
 <span><span class="co"># Replot the PCA</span></span>
 <span><span class="fu"><a href="../reference/plot_pca.html">plot_pca</a></span><span class="op">(</span></span>
@@ -450,8 +452,8 @@ dimensions (by modifying <code>pca_dims</code>).</p>
 <span>  include_istd <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  shared_labeltext_hide <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">2 features contained missing or non-numeric values and were exluded.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #00BB00;">The PCA was calculated based on `feature_intensity` values of 423 features.</span></span></span>
-<span><span class="co">#&gt; ggrepel: 10000 iterations in 0.006637s, 7 overlaps. Consider increasing 'max.iter'.</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The PCA was calculated based on `feature_intensity` values of 460 features.</span></span></span>
+<span><span class="co">#&gt; ggrepel: 10000 iterations in 0.009905s, 7 overlaps. Consider increasing 'max.iter'.</span></span></code></pre></div>
 <p><img src="tutorial-03-lipidomics-workflow_files/figure-html/outlier-removal-1.png" class="r-plt" alt="PCA plot" width="100%"></p>
 </div>
 <div class="section level2">
@@ -484,9 +486,9 @@ commenting out (add a <code>#</code> in front of)
 <span>                                   include_istd <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                                   min.intensity.median.spl <span class="op">=</span> <span class="fl">200</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Calculating feature QC metrics - please wait...</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">The QC parameter `min.intensity.median.spl` contains NAs for following features: LPC O-22:1, PC 34:5, PC 35:1, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC P-32:1 M+1. </span></span></span>
-<span><span class="co"><span style="color: #BBBB00;">#&gt; These features failed QC.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">New feature QC filters were defined: 437 of 448 quantifier features meet QC criteria (including the 25 quantifier ISTD features).</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">QC metrics calculated for 502 features across 7 sample types.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">The QC parameter </span><span style="color: #00BB00;">min.intensity.median.spl</span> contains NAs for the following features: LPC O-22:1, PC 34:5, PC 35:1, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC P-32:1 M+1. These features failed QC.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">New feature QC filters were defined: 486 of 502 quantifier features meet QC criteria (including the 42 quantifier ISTD features).</span></span></span>
 <span><span class="fu"><a href="../reference/plot_responsecurves.html">plot_responsecurves</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">myexp</span>,</span>
 <span>  variable <span class="op">=</span> <span class="st">"intensity"</span>,</span>
@@ -498,12 +500,9 @@ commenting out (add a <code>#</code> in front of)
 <span><span class="co">#&gt; Registered S3 methods overwritten by 'ggpp':</span></span>
 <span><span class="co">#&gt;   method                  from   </span></span>
 <span><span class="co">#&gt;   heightDetails.titleGrob ggplot2</span></span>
-<span><span class="co">#&gt;   widthDetails.titleGrob  ggplot2</span></span>
-<span><span class="co">#&gt; Generating plots (1 page):</span></span>
-<span><span class="co">#&gt;   |                                      |                              |   0%</span></span></code></pre></div>
+<span><span class="co">#&gt;   widthDetails.titleGrob  ggplot2</span></span></code></pre></div>
 <p><img src="tutorial-03-lipidomics-workflow_files/figure-html/responsecurves-1.png" class="r-plt" alt="Response curve plots" width="100%"></p>
-<pre><code><span><span class="co">#&gt;   |                                      |==============================| 100%</span></span>
-<span><span class="co">#&gt;   done!</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Done</span></span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="isotope-interference-correction">12. Isotope interference correction<a class="anchor" aria-label="anchor" href="#isotope-interference-correction"></a>
@@ -522,9 +521,10 @@ Exercises
 you need? Why should we correct for M+3 isotope interference?</p>
 </blockquote>
 </details><div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu">mrmhub</span><span class="fu">::</span><span class="fu"><a href="../reference/correct_interferences.html">correct_interferences</a></span><span class="op">(</span><span class="va">myexp</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">Interference correction led to negative or zero values in 2 feature(s) in samples/QCs. Please verify the correction, or set `neg_to_na = TRUE`</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Interference-correction has been applied to 10 of the 502 features.</span></span></span>
+<code class="sourceCode R"><span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu">mrmhub</span><span class="fu">::</span><span class="fu"><a href="../reference/correct_custom_interferences.html">correct_custom_interferences</a></span><span class="op">(</span><span class="va">myexp</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">Interference correction led to 31 negative or zero values in 2 features (samples/QCs). Please verify the correction, or set `neg_to_na = TRUE`.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">1 feature(s) became strongly negative (below -25% of raw) after correction: </span><span style="color: #0000BB;">"PC 29:0|SM 33:1 M+3"</span>. This may indicate a mis-defined interference or an unmodeled effect; please verify.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Interference correction applied to 11 of 502 feature(s) (0 isotopic, 11 custom edge(s)).</span></span></span>
 <span><span class="fu"><a href="../reference/plot_qc_interferences.html">plot_qc_interferences</a></span><span class="op">(</span><span class="va">myexp</span>, qc_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BQC"</span>, <span class="st">"SPL"</span>, <span class="st">"TQC"</span>, <span class="st">"LTR"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="tutorial-03-lipidomics-workflow_files/figure-html/isotope-correction-1.png" class="r-plt" alt="" width="100%"></p>
 </div>
@@ -548,7 +548,7 @@ can also try to re-run e.g. above RLA and PCA plots with
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">460 features normalized with 17 ISTDs in 498 analyses.</span></span></span>
 <span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu">mrmhub</span><span class="fu">::</span><span class="fu"><a href="../reference/quantify_by_istd.html">quantify_by_istd</a></span><span class="op">(</span><span class="va">myexp</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">460 feature concentrations calculated based on 42 ISTDs and sample amounts of 498 analyses.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #00BB00;">Concentrations are given in μmol/L.</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Concentrations are given in μmol/L.</span></span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="examine-the-effects-of-class-wide-istd-normalization">14. Examine the effects of class-wide ISTD normalization<a class="anchor" aria-label="anchor" href="#examine-the-effects-of-class-wide-istd-normalization"></a>
@@ -579,9 +579,9 @@ situation?</p>
 <span>                                   include_istd <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                                   min.intensity.median.spl <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Calculating feature QC metrics - please wait...</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">The QC parameter `min.intensity.median.spl` contains NAs for following features: LPC O-22:1, PC 34:5, PC 35:1, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC P-32:1 M+1. </span></span></span>
-<span><span class="co"><span style="color: #BBBB00;">#&gt; These features failed QC.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">New feature QC filters were defined: 413 of 448 quantifier features meet QC criteria (including the 25 quantifier ISTD features).</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">QC metrics calculated for 502 features across 7 sample types, including normalized-intensity and concentration statistics.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">The QC parameter </span><span style="color: #00BB00;">min.intensity.median.spl</span> contains NAs for the following features: LPC O-22:1, PC 34:5, PC 35:1, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC P-32:1 M+1. These features failed QC.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">New feature QC filters were defined: 457 of 502 quantifier features meet QC criteria (including the 42 quantifier ISTD features).</span></span></span>
 <span><span class="fu">mrmhub</span><span class="fu">::</span><span class="fu"><a href="../reference/plot_normalization_qc.html">plot_normalization_qc</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">myexp</span>, </span>
 <span>  before_norm_var <span class="op">=</span> <span class="st">"intensity"</span>, </span>
@@ -623,8 +623,8 @@ artefacts. An option to scale along the fit is available by setting
 <span>  scale_smooth <span class="op">=</span> <span class="cn">FALSE</span>, </span>
 <span>  show_progress <span class="op">=</span> <span class="cn">FALSE</span>  <span class="co"># set to FALSE when rendering</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #00BB00;">Applying `conc` drift correction...</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #BBBB00;">4 feature(s) contain one or more zero or negative `conc` values. Verify your data or use `log_transform_internal = FALSE`.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Applying `conc` drift correction...</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">4 feature(s) contain one or more zero or negative `conc` values. Verify your data or use `log_transform_internal = FALSE`.</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">1 features showed no variation in the study sample's original values across analyses. </span></span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">1 features have invalid values after smoothing. NA will be be returned for all values of these faetures. Set `use_original_if_fail = FALSE to return orginal values..</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">Smoothing failed for 1 feature(s) in all batches. Please check data, metadata, and fit parameters.</span></span></span>
@@ -699,7 +699,7 @@ to center the batches. What do you observe?</p>
 <span>  correct_location <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>  correct_scale <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>  log_transform_internal <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #BBBB00;">Adding batch correction on top of `conc` drift-correction.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">Adding batch correction on top of `conc` drift-correction.</span></span></span>
 <span><span class="co">#&gt; Warning: <span style="color: #BBBB00;">!</span> 102 feature/batch combinations had no usable reference-QC (<span style="color: #0000BB;">"SPL"</span>) values and</span></span>
 <span><span class="co">#&gt;   were left uncorrected; original values were kept.</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Affected features: <span style="color: #0000BB;">"CE 18:1 d7 (ISTD)"</span>, <span style="color: #0000BB;">"Cer d18:1/25:0 (ISTD)"</span>, <span style="color: #0000BB;">"COH d7</span></span></span>
@@ -788,14 +788,12 @@ the effects visually.</p>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Calculating feature QC metrics - please wait...</span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">%CV not computed for 4440 feature×QC-type×variable combinations with fewer than 3 replicates (LTR: 4440).</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">The QC parameter `min.intensity.median.spl` contains NAs for following features: LPC O-22:1, PC 34:5, PC 35:1, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC P-32:1 M+1. </span></span></span>
-<span><span class="co"><span style="color: #BBBB00;">#&gt; These features failed QC.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">The QC parameter `min.signalblank.median.spl.pblk` contains NAs for following features: LPC O-22:1, PC 34:5, PC 35:1, PG 36:2, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC .... </span></span></span>
-<span><span class="co"><span style="color: #BBBB00;">#&gt; These features failed QC.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">The QC parameter `max.cv.conc.bqc` contains NAs for following features: Cer d18:1/12:0 (ISTD) [M-H20&gt;264], Cer d18:1/25:0 (ISTD) [M-H20&gt;264], Hex2Cer.... </span></span></span>
-<span><span class="co"><span style="color: #BBBB00;">#&gt; These features failed QC.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">QC metrics calculated for 502 features across 7 sample types, including normalized-intensity, concentration, and response-curve statistics.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">The QC parameter </span><span style="color: #00BB00;">min.intensity.median.spl</span> contains NAs for the following features: LPC O-22:1, PC 34:5, PC 35:1, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC P-32:1 M+1. These features failed QC.</span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">The QC parameter </span><span style="color: #00BB00;">min.signalblank.median.spl.pblk</span> contains NAs for the following features: LPC O-22:1, PC 34:5, PC 35:1, PG 36:2, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC .... These features failed QC.</span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">The QC parameter </span><span style="color: #00BB00;">max.cv.conc.bqc</span> contains NAs for the following features: Cer d18:1/12:0 (ISTD) [M-H20&gt;264], Cer d18:1/25:0 (ISTD) [M-H20&gt;264], Hex2Cer.... These features failed QC.</span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">The following features were forced to be retained despite not meeting filtering criteria: CE 16:0, CE 20:4, CE 22:5, and CE 22:6</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">New feature QC filters were defined: 324 of 423 quantifier features meet QC criteria (not including the 25 quantifier ISTD features).</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">New feature QC filters were defined: 352 of 460 quantifier features meet QC criteria (not including the 42 quantifier ISTD features).</span></span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="summary-of-the-qc-filtering">19. Summary of the QC filtering<a class="anchor" aria-label="anchor" href="#summary-of-the-qc-filtering"></a>
@@ -875,7 +873,7 @@ folder.</p>
 </details><div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">mrmhub</span><span class="fu">::</span><span class="fu"><a href="../reference/save_report_xlsx.html">save_report_xlsx</a></span><span class="op">(</span><span class="va">myexp</span>, path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".xlsx"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Saving report to disk - please wait...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The data processing report of experiment 'sPerfect' has been saved to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//Rtmpnb2Rpi/file382254cc0f03.xlsx'.</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The data processing report of experiment 'sPerfect' has been saved to </span><span style="color: #0000BB;">/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpsjET9Z/file134a9e99a3a7.xlsx</span>.</span></span></code></pre></div>
 <p>Specific data subsets can also be saved as a clean flat, wide CSV
 file. This is the format used to share the data for the statistical
 analysis presented in the next part of this workshop.</p>
@@ -893,7 +891,7 @@ generated CSV files.</p>
 <span>  qc_types <span class="op">=</span> <span class="st">"SPL"</span>, </span>
 <span>  include_qualifier <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  filter_data <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Concentration values for 377 analyses and 324 features have been exported to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//Rtmpnb2Rpi/file3822471b1c2f.csv'.</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Concentration values for 377 analyses and 352 features have been exported to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpsjET9Z/file134a974bfc67d.csv'.</span></span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="sharing-the-mrmhubexperiment-dataset">22. Sharing the <code>MRMhubExperiment</code> dataset<a class="anchor" aria-label="anchor" href="#sharing-the-mrmhubexperiment-dataset"></a>
@@ -936,6 +934,7 @@ above (<code>mexp</code>)</p>
 <span><span class="co">#&gt; • Response curves: <span style="color: #00BB00; font-weight: bold;">✔</span></span></span>
 <span><span class="co">#&gt; • Calibrants/QC concentrations: <span style="color: #BB0000; font-weight: bold;">✖</span></span></span>
 <span><span class="co">#&gt; • Study samples: <span style="color: #BB0000; font-weight: bold;">✖</span></span></span>
+<span><span class="co">#&gt; • Interferences: <span style="color: #BB0000; font-weight: bold;">✖</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Processing Status</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>

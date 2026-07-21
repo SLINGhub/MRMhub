@@ -1,8 +1,14 @@
 # Manual isotopic interference correction
 
-The interference is subtracted using following formula:
-\$\$Value\_{Corrected} = Value\_{Feature} - Factor\_{Contribution} \*
-Value\_{Interfering Feature}\$\$
+Subtract a single, user-specified interference from one feature. Use
+this for a one-off correction or to validate a factor before trusting
+the automatic derivation; for the metadata-driven paths use
+[`correct_isotopic_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/correct_isotopic_interferences.md)
+(automatic, isotopic) or
+[`correct_custom_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/correct_custom_interferences.md)
+(declared). The interference is subtracted as: \$\$Value\_{Corrected} =
+Value\_{Feature} - Factor\_{Contribution} \* Value\_{Interfering
+Feature}\$\$
 
 ## Usage
 

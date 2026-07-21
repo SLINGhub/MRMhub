@@ -92,6 +92,11 @@ specified Excel file.
 - BatchInfo: Information on batches and positions of first and last
   analysis/sample in each batch
 
+- Interferences: Derived and declared interference relationships
+  (interfering feature, contribution factor, overlap type, source) with
+  the per-feature correction impact when the correction has been
+  applied.
+
 If certain data sets are not available, the function includes empty
 tables for the corresponding dataset.
 

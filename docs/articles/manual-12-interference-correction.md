@@ -22,13 +22,15 @@ tutorial](https://slinghub.github.io/MRMhub/quant/articles/tutorial-11-interfere
 ## Two derivation levels, one subtraction engine
 
 Interference relationships are discovered by
-[`derive_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/derive_interferences.md)
+[`calc_isotopic_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/calc_isotopic_interferences.md)
 and stored in the `annot_interferences` slot as a long table of edges
 `(feature_id, interference_feature_id, interference_contribution, overlap_type, source)`.
-A single engine,
-[`correct_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/correct_interferences.md),
-then applies every edge — auto-derived or manually annotated — in one
-pass. Two derivation *levels* feed that engine:
+A shared engine applies them:
+[`correct_isotopic_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/correct_isotopic_interferences.md)
+subtracts the auto-derived (isotopic) edges, and
+[`correct_custom_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/correct_custom_interferences.md)
+the ones you declared in the metadata. Two derivation *levels* feed the
+engine:
 
 |  | **MRM** (`level = "MRM"`) | **MS1** (`level = "MS1"`) |
 |----|----|----|
@@ -72,8 +74,9 @@ whole-molecule (`level = "MS1"`) factor ignores that split and is valid
 **only** for genuine MS1 / full-scan measurements. It must **not** be
 used for MRM data that merely happens to lack a recorded product m/z —
 use `level = "MRM"` (and supply the product m/z) there.
-[`derive_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/derive_interferences.md)
-warns when MS1 derivation is run on data that carry product m/z.
+[`calc_isotopic_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/calc_isotopic_interferences.md)
+warns when MS1 derivation is run on data whose product m/z differs from
+the precursor (i.e. real MRM transitions).
 
 Because the front and back fragments carry different numbers of carbons,
 their M+2 abundances differ, and a single precursor-level factor would
@@ -123,11 +126,11 @@ abundance engine:
 
 Both engines are pinned to **`enviPat` version 2.8** (Loos et al. 2015),
 the reference used for the golden parity tests;
-[`derive_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/derive_interferences.md)
+[`calc_isotopic_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/calc_isotopic_interferences.md)
 warns when a different version is installed. Because derivation is
 deterministic under that pin, re-importing the `mrm_pattern` annotation
 and re-running
-[`derive_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/derive_interferences.md)
+[`calc_isotopic_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/calc_isotopic_interferences.md)
 regenerates identical edges — the metadata alone reproduces the
 correction. The exact factors additionally survive an `enviPat` upgrade
 because the derived `annot_interferences` table travels with the saved
@@ -151,9 +154,9 @@ MRMhub does not perform.
 - [The MRMhubExperiment Data
   Object](https://slinghub.github.io/MRMhub/quant/articles/manual-02-data-object.html#feature-variables)
   — how `_orig` postfixes preserve raw values
-- [`derive_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/derive_interferences.md)
+- [`calc_isotopic_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/calc_isotopic_interferences.md)
   ·
-  [`correct_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/correct_interferences.md)
+  [`correct_isotopic_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/correct_isotopic_interferences.md)
   — function reference
 
 ## References

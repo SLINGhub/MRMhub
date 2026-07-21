@@ -177,7 +177,9 @@ peak areas are read.</p>
 <span></span>
 <span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_metadata_features.html">import_metadata_features</a></span><span class="op">(</span><span class="va">mexp</span>,</span>
 <span>                                 path <span class="op">=</span> <span class="st">"datasets/feature_metadata.csv"</span>,</span>
-<span>                                 ignore_warnings<span class="op">=</span> <span class="cn">TRUE</span> <span class="op">)</span></span></code></pre></div>
+<span>                                 ignore_warnings<span class="op">=</span> <span class="cn">TRUE</span> <span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `valid_feature`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `is_quantifier`.</span></span></code></pre></div>
 <p>Metadata can also be imported from sheets of an Excel workbook, which
 allows all metadata to be stored in one file. Here, metadata on internal
 standards and response curves is added to the MRMhubExperiment
@@ -211,7 +213,9 @@ completed tables.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_metadata_msorganiser.html">import_metadata_msorganiser</a></span><span class="op">(</span><span class="va">mexp</span>,</span>
 <span>                                    path <span class="op">=</span> <span class="st">"datasets/sPerfect_Metadata.xlsx"</span>,</span>
-<span>                                    ignore_warnings<span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<span>                                    ignore_warnings<span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `valid_feature`.</span></span>
+<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `is_quantifier`.</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="metadata-table-structures">Metadata table structures<a class="anchor" aria-label="anchor" href="#metadata-table-structures"></a>
@@ -293,22 +297,24 @@ page.</p>
 <p>One row per feature. Import with <a href="../reference/import_metadata_features.html"><code>import_metadata_features()</code></a>.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">show_template</span><span class="op">(</span><span class="st">"Features"</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
+<table style="width:100%;" class="table">
 <caption>Template sheet <code>Features</code> (column headers)</caption>
 <colgroup>
-<col width="5%">
-<col width="8%">
+<col width="4%">
 <col width="7%">
+<col width="6%">
+<col width="4%">
 <col width="5%">
+<col width="7%">
+<col width="6%">
+<col width="7%">
 <col width="6%">
 <col width="8%">
-<col width="7%">
-<col width="8%">
-<col width="7%">
-<col width="9%">
-<col width="12%">
-<col width="12%">
 <col width="4%">
+<col width="5%">
+<col width="10%">
+<col width="10%">
+<col width="3%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">feature_id</th>
@@ -321,6 +327,8 @@ page.</p>
 <th align="left">response_factor</th>
 <th align="left">is_quantifier</th>
 <th align="left">valid_integration</th>
+<th align="left">polarity</th>
+<th align="left">mrm_pattern</th>
 <th align="left">interference_feature_id</th>
 <th align="left">interference_proportion</th>
 <th align="left">remarks</th>

@@ -158,13 +158,14 @@ tutorial</a>.</p>
 <div class="section level2">
 <h2 id="two-derivation-levels-one-subtraction-engine">Two derivation levels, one subtraction engine<a class="anchor" aria-label="anchor" href="#two-derivation-levels-one-subtraction-engine"></a>
 </h2>
-<p>Interference relationships are discovered by <a href="../reference/derive_interferences.html"><code>derive_interferences()</code></a>
+<p>Interference relationships are discovered by <a href="../reference/calc_isotopic_interferences.html"><code>calc_isotopic_interferences()</code></a>
 and stored in the <code>annot_interferences</code> slot as a long table
 of edges
 <code>(feature_id, interference_feature_id, interference_contribution, overlap_type, source)</code>.
-A single engine, <a href="../reference/correct_interferences.html"><code>correct_interferences()</code></a>,
-then applies every edge — auto-derived or manually annotated — in one
-pass. Two derivation <em>levels</em> feed that engine:</p>
+A shared engine applies them: <a href="../reference/correct_isotopic_interferences.html"><code>correct_isotopic_interferences()</code></a>
+subtracts the auto-derived (isotopic) edges, and <a href="../reference/correct_custom_interferences.html"><code>correct_custom_interferences()</code></a>
+the ones you declared in the metadata. Two derivation <em>levels</em>
+feed the engine:</p>
 <table class="table">
 <colgroup>
 <col width="33%">
@@ -260,8 +261,9 @@ isotope ends up on the retained product ion or on the neutral loss <span class="
 <strong>only</strong> for genuine MS1 / full-scan measurements. It must
 <strong>not</strong> be used for MRM data that merely happens to lack a
 recorded product m/z — use <code>level = "MRM"</code> (and supply the
-product m/z) there. <code><a href="../reference/derive_interferences.html">derive_interferences()</a></code> warns when MS1
-derivation is run on data that carry product m/z.</p>
+product m/z) there. <code><a href="../reference/calc_isotopic_interferences.html">calc_isotopic_interferences()</a></code> warns
+when MS1 derivation is run on data whose product m/z differs from the
+precursor (i.e. real MRM transitions).</p>
 </div>
 <p>Because the front and back fragments carry different numbers of
 carbons, their M+2 abundances differ, and a single precursor-level
@@ -321,12 +323,12 @@ full-scan measurement.</li>
 <p>Both engines are pinned to <strong><code>enviPat</code> version
 2.8</strong> <span class="citation">(Loos et al. 2015)</span>, the
 reference used for the golden parity tests;
-<code><a href="../reference/derive_interferences.html">derive_interferences()</a></code> warns when a different version is
-installed. Because derivation is deterministic under that pin,
-re-importing the <code>mrm_pattern</code> annotation and re-running
-<code><a href="../reference/derive_interferences.html">derive_interferences()</a></code> regenerates identical edges — the
-metadata alone reproduces the correction. The exact factors additionally
-survive an <code>enviPat</code> upgrade because the derived
+<code><a href="../reference/calc_isotopic_interferences.html">calc_isotopic_interferences()</a></code> warns when a different
+version is installed. Because derivation is deterministic under that
+pin, re-importing the <code>mrm_pattern</code> annotation and re-running
+<code><a href="../reference/calc_isotopic_interferences.html">calc_isotopic_interferences()</a></code> regenerates identical edges —
+the metadata alone reproduces the correction. The exact factors
+additionally survive an <code>enviPat</code> upgrade because the derived
 <code>annot_interferences</code> table travels with the saved object and
 is written to the report workbook as a human-readable factor
 archive.</p>
@@ -352,8 +354,8 @@ correction</a> — the step-by-step workflow</li>
 MRMhubExperiment Data Object</a> — how <code>_orig</code> postfixes
 preserve raw values</li>
 <li>
-<a href="../reference/derive_interferences.html"><code>derive_interferences()</code></a>
-· <a href="../reference/correct_interferences.html"><code>correct_interferences()</code></a>
+<a href="../reference/calc_isotopic_interferences.html"><code>calc_isotopic_interferences()</code></a>
+· <a href="../reference/correct_isotopic_interferences.html"><code>correct_isotopic_interferences()</code></a>
 — function reference</li>
 </ul>
 </div>

@@ -61,8 +61,10 @@ mexp <- import_data_mrmhub(
   data = mexp,
   path = system.file("extdata", "MRMhub_demo.tsv", package = "mrmhub"),
   import_metadata = TRUE)
-#> ✔ Imported 499 analyses with 28 features
-#> ℹ `feature_area` selected as default feature intensity. Modify with `set_intensity_var()`.
+#> ✔ Imported 499 analyses with 28 features.
+#> ℹ feature_area selected as default feature intensity. Modify with `set_intensity_var()`.
+#> Warning: Unknown or uninitialised column: `valid_feature`.
+#> Warning: Unknown or uninitialised column: `is_quantifier`.
 #> ✔ Analysis metadata associated with 499 analyses.
 #> ✔ Feature metadata associated with 28 features.
 
@@ -71,11 +73,11 @@ mexp <- import_metadata_msorganiser(
  path = system.file("extdata", "Example_Metadata_1.xlsx", package = "mrmhub"),
  excl_unmatched_analyses = FALSE,
  ignore_warnings = TRUE)
-#> ! Metadata has following warnings and notifications:
+#> Warning: Unknown or uninitialised column: `valid_feature`.
+#> Warning: Unknown or uninitialised column: `is_quantifier`.
+#> Found no errors, 4 warnings, and no notes in the metadata.
 #> --------------------------------------------------------------------------------
-#> # A tibble: 4 × 5
 #>   Type  Table    Column                Issue                           Count
-#>   <chr> <chr>    <chr>                 <chr>                           <int>
 #> 1 W*    Analyses analysis_id           Analyses not in analysis data      15
 #> 2 W*    Features feature_id            Feature(s) without metadata         1
 #> 3 W*    Features feature_id            Feature(s) not in analysis data   321
@@ -110,6 +112,7 @@ print(mexp)
 #> • Response curves: ✔
 #> • Calibrants/QC concentrations: ✖
 #> • Study samples: ✖
+#> • Interferences: ✖
 #> 
 #> ── Processing Status ──
 #> 

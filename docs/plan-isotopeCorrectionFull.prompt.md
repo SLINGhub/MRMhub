@@ -119,14 +119,12 @@ is order- and intensity-independent.
 ### A. Metadata — persist the derived front/back interferers + factors
 
 **The only hard requirement:** the M+2 factors and the front/back
-interfering feature IDs that
-[`derive_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/derive_interferences.md)
-(item B) computes must be **persisted on the MRMhubExperiment** and read
-by the correction engine (item C). Both storage shapes below work;
-**long is preferred** because it also holds the manual M+1/M+3/RPLC
-interferences in the same table/engine (Decision 5). Wide is viable if
-you keep those manual kinds in MRMhub’s existing separate interference
-store.
+interfering feature IDs that `derive_interferences()` (item B) computes
+must be **persisted on the MRMhubExperiment** and read by the correction
+engine (item C). Both storage shapes below work; **long is preferred**
+because it also holds the manual M+1/M+3/RPLC interferences in the same
+table/engine (Decision 5). Wide is viable if you keep those manual kinds
+in MRMhub’s existing separate interference store.
 
 User-supplied input column (one, per feature): **`mrm_pattern`** — the
 LICAR **display label** (e.g. `"PC (Neg, FA) FA"`), matching the LICAR
@@ -223,10 +221,9 @@ alongside the siblings at `R/mrmhub-global-definitions.R#L63–L85`.
 
 ### D. Tests (`tests/testthat/`)
 
-- **Golden parity:**
-  [`derive_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/derive_interferences.md)
-  factors == LICAR `licar_rel_abundance` on the same names (pin PC
-  34:2→34:1 front/back and a few others; guards Table S1 drift).
+- **Golden parity:** `derive_interferences()` factors == LICAR
+  `licar_rel_abundance` on the same names (pin PC 34:2→34:1 front/back
+  and a few others; guards Table S1 drift).
 - **Two-parent correction:** extend
   `tests/testthat/test-correct-isotope.R` (fixtures at `#L1–L39`) with a
   feature that has a front + back interferer, assert `X − front − back`
@@ -261,14 +258,13 @@ handling:
 
 - **Auto M+2 (derived):** the reproducible **input** is `mrm_pattern`
   per feature (+ name + m/z, already in metadata) —
-  [`derive_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/derive_interferences.md)
-  regenerates identical edges given the ported code and a fixed enviPat
-  version. **But factors are enviPat-version-sensitive** (LICAR
-  KNOWN_ISSUES F1: 8.98%→8.9478% across enviPat versions; LICAR pins
-  observed values + records `golden/enviPat-version.txt`). So **also
-  persist a frozen snapshot** of the derived interference table
-  (interferer IDs + factors + kind/source) so the exact factors survive
-  an enviPat upgrade.
+  `derive_interferences()` regenerates identical edges given the ported
+  code and a fixed enviPat version. **But factors are
+  enviPat-version-sensitive** (LICAR KNOWN_ISSUES F1: 8.98%→8.9478%
+  across enviPat versions; LICAR pins observed values + records
+  `golden/enviPat-version.txt`). So **also persist a frozen snapshot**
+  of the derived interference table (interferer IDs + factors +
+  kind/source) so the exact factors survive an enviPat upgrade.
 - **Manual M+1/M+3/RPLC (primary data):** stored verbatim in the
   interference metadata table (imported) — not derivable, exactly like
   today’s `interference_feature_id`/`interference_contribution`.

@@ -30,6 +30,8 @@ mexp <- MRMhubExperiment()
 mexp <- import_data_mrmhub(mexp, 
                            path = "datasets/sPerfect_MRMhub.tsv", 
                            import_metadata = TRUE)
+#> Warning: Unknown or uninitialised column: `valid_feature`.
+#> Warning: Unknown or uninitialised column: `is_quantifier`.
 
 # Add analysis data from a CSV file (replaces all previous data)
 mexp2 <- MRMhubExperiment()
@@ -37,6 +39,8 @@ mexp2 <- import_data_csv_wide(mexp2,
                         path = "data/plain_wide_dataset.csv",
                         variable_name = "area",
                         import_metadata = TRUE)
+#> Warning: Unknown or uninitialised column: `valid_feature`.
+#> Unknown or uninitialised column: `is_quantifier`.
 ```
 
 See [Importing analytical
@@ -95,6 +99,8 @@ mexp <- import_metadata_analyses(mexp,
 mexp <- import_metadata_features(mexp, 
                                  path = "datasets/feature_metadata.csv",
                                  ignore_warnings= TRUE )
+#> Warning: Unknown or uninitialised column: `valid_feature`.
+#> Warning: Unknown or uninitialised column: `is_quantifier`.
 ```
 
 Metadata can also be obtained from Excel workbook sheets, which allows

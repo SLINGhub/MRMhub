@@ -251,6 +251,7 @@ metadata or retrieved via specific functions, e.g., <code><a href="parse_lipid_f
 <code><a href="plot_feature_correlations.html">plot_feature_correlations()</a></code>,
 <code><a href="plot_pca.html">plot_pca()</a></code>,
 <code><a href="plot_pca_loading.html">plot_pca_loading()</a></code>,
+<code><a href="plot_qc_interference_impact.html">plot_qc_interference_impact()</a></code>,
 <code><a href="plot_qc_interferences.html">plot_qc_interferences()</a></code>,
 <code><a href="plot_qc_matrixeffects.html">plot_qc_matrixeffects()</a></code>,
 <code><a href="plot_qc_summary_byclass.html">plot_qc_summary_byclass()</a></code>,
@@ -267,9 +268,10 @@ metadata or retrieved via specific functions, e.g., <code><a href="parse_lipid_f
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Example usage:</span></span></span>
 <span class="r-in"><span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="va">lipidomics_dataset</span></span></span>
 <span class="r-in"><span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="normalize_by_istd.html">normalize_by_istd</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">Interfering features defined in metadata, but no correction was applied. Use `correct_interferences()` to correct.</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">Interfering features defined in metadata, but no correction was applied. Use `correct_custom_interferences()` to correct.</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">20 features normalized with 9 ISTDs in 499 analyses.</span></span>
 <span class="r-in"><span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="calc_qc_metrics.html">calc_qc_metrics</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">QC metrics calculated for 29 features across 7 sample types, including normalized-intensity and response-curve statistics.</span></span>
 <span class="r-in"><span><span class="fu">plot_normalization_qc</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  data <span class="op">=</span> <span class="va">mexp</span>,</span></span>
 <span class="r-in"><span>  before_norm_var <span class="op">=</span> <span class="st">"intensity"</span>,</span></span>
