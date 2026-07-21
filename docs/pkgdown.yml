@@ -13,6 +13,8 @@ articles:
   articles/manual-08-visualization: manual-08-visualization.html
   articles/manual-09-ai-assistants: manual-09-ai-assistants.html
   articles/manual-10-troubleshooting: manual-10-troubleshooting.html
+  articles/manual-11-quarto-workflows: manual-11-quarto-workflows.html
+  articles/manual-12-interference-correction: manual-12-interference-correction.html
   articles/manual-index: manual-index.html
   mrmhub: mrmhub.html
   articles/recipe-01-ext-calibration-qc: recipe-01-ext-calibration-qc.html
@@ -29,7 +31,7 @@ articles:
   articles/tutorial-10-metadata-validation: tutorial-10-metadata-validation.html
   articles/tutorial-11-interference-correction: tutorial-11-interference-correction.html
   articles/tutorial-12-workflow-builder: tutorial-12-workflow-builder.html
-last_built: 2026-07-17T06:46Z
+last_built: 2026-07-20T12:30Z
 urls:
   reference: https://slinghub.github.io/MRMhub/quant/reference
   article: https://slinghub.github.io/MRMhub/quant/articles

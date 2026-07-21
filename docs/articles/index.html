@@ -58,6 +58,8 @@
     <li><a class="dropdown-item" href="../articles/manual-04-data-import.html">Importing Analytical Data</a></li>
     <li><a class="dropdown-item" href="../articles/manual-05-metadata.html">Importing Metadata</a></li>
     <li><a class="dropdown-item" href="../articles/manual-07-corrections.html">Drift and Batch Correction</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-12-interference-correction.html">Isotopic Interference Correction</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-11-quarto-workflows.html">Quarto Workflows</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
@@ -112,6 +114,10 @@
         <dd><p>How to use large language models (Claude, ChatGPT, or local models) to help write MRMhub QUANT pipelines – how to ground them in the real API, and how to verify what they produce.</p>
         </dd><dt><a href="manual-10-troubleshooting.html">Troubleshooting and FAQ</a></dt>
         <dd><p>Solutions to the most common errors and questions when using MRMhub QUANT.</p>
+        </dd><dt><a href="manual-11-quarto-workflows.html">Quarto Workflows</a></dt>
+        <dd><p>MRMhub: postprocessing and quality control of small molecule mass spectrometry data</p>
+        </dd><dt><a href="manual-12-interference-correction.html">Isotopic Interference Correction</a></dt>
+        <dd><p>Reference for MRMhub’s isotopic interference correction: the fragment-based (MRM) and whole-molecule (MS1) derivation levels, the co-elution requirement, and the provenance of the derived contribution factors.</p>
         </dd><dt><a href="manual-index.html">Manual</a></dt>
         <dd><p>Complete contents of the MRMhub-QUANT manual.</p>
         </dd><dt><a href="mrmhub.html">MRMhub</a></dt>
@@ -141,7 +147,7 @@
         </dd><dt><a href="tutorial-10-metadata-validation.html">Validating and Fixing Metadata</a></dt>
         <dd><p>How to validate analysis, feature, and ISTD annotations before processing, diagnose common defects, and generate a metadata template from your data.</p>
         </dd><dt><a href="tutorial-11-interference-correction.html">Interference Correction</a></dt>
-        <dd><p>Identify and correct isotopic or isobaric interferences between MRM transitions using a contribution-based subtraction model.</p>
+        <dd><p>Annotate mrm_pattern, derive isotopic interference relationships automatically with derive_interferences(), inspect them, and apply the subtraction with correct_interferences(). Manual single-pair correction is also covered.</p>
         </dd><dt><a href="tutorial-12-workflow-builder.html">Build a Workflow Without Code</a></dt>
         <dd><p>Use the point-and-click builder to validate your data and metadata and generate a runnable Quarto workflow.</p>
       </dd></dl></div>

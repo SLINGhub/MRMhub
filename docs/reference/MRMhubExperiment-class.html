@@ -60,6 +60,8 @@ It also includes processing results, details of the applied processing steps, an
     <li><a class="dropdown-item" href="../articles/manual-04-data-import.html">Importing Analytical Data</a></li>
     <li><a class="dropdown-item" href="../articles/manual-05-metadata.html">Importing Metadata</a></li>
     <li><a class="dropdown-item" href="../articles/manual-07-corrections.html">Drift and Batch Correction</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-12-interference-correction.html">Isotopic Interference Correction</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-11-quarto-workflows.html">Quarto Workflows</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
@@ -158,6 +160,10 @@ set when the data are quantitated. <code>"pmol"</code> or <code>"ng"</code> for 
 
 <dt><code>annot_batches</code></dt>
 <dd><p>Annotation of batches. Required fields:</p></dd>
+
+
+<dt><code>annot_interferences</code></dt>
+<dd><p>Interference relationships (<code>feature_id</code>, <code>interference_feature_id</code>, <code>interference_contribution</code>, <code>overlap_type</code>, <code>source</code>) feeding the correction engine; derived (auto) and/or manual.</p></dd>
 
 
 <dt><code>metrics_qc</code></dt>

@@ -115,12 +115,16 @@ MRMhub Excel template or CSV files.
 
 ## Isotope correction
 
-Functions to perform type II isotopic correction
+Functions to perform type II isotopic interference correction
 
+- [`derive_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/derive_interferences.md)
+  : Derive isotopic interference relationships
 - [`correct_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/correct_interferences.md)
   : Apply interference correction
 - [`correct_interference_manual()`](https://slinghub.github.io/MRMhub/quant/reference/correct_interference_manual.md)
   : Manual isotopic interference correction
+- [`licar_pattern_choices()`](https://slinghub.github.io/MRMhub/quant/reference/licar_pattern_choices.md)
+  : Valid MRM-pattern labels
 
 ## External Calibration
 
@@ -284,3 +288,5 @@ spectrometry is also available.
 - [`order_chained_columns_tbl()`](https://slinghub.github.io/MRMhub/quant/reference/order_chained_columns_tbl.md)
   : Reorder a data frame based on a chain of linked values in two
   columns
+- [`mrmhub_enable_cli_color()`](https://slinghub.github.io/MRMhub/quant/reference/mrmhub_enable_cli_color.md)
+  : Enable coloured mrmhub console output in notebooks

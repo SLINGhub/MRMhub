@@ -197,6 +197,31 @@ show_template("QCconcentrations")
 
 Template sheet `QCconcentrations` (column headers) {.table}
 
+## Identifier matching
+
+Metadata is linked to the data by identifier: `analysis_id` joins the
+sample metadata to the analyses, and `feature_id` joins the feature
+metadata to the measurements. For the join to succeed, an identifier in
+a metadata sheet must match the corresponding identifier in the data
+exactly.
+
+To make that robust, identifiers in metadata are normalized on import in
+the same way as in the data: leading and trailing spaces are removed,
+internal runs of whitespace are collapsed to a single space, and
+raw-data file extensions (`.mzML`, `.d`, `.raw`, `.wiff`, `.wiff2`,
+`.lcd`, `.chrom`) are stripped from `analysis_id`. So `"QC 01"` in a
+sample sheet still matches `"QC 01"` in the data.
+
+If analyses appear to be missing after
+[`add_metadata()`](https://slinghub.github.io/MRMhub/quant/reference/add_metadata.md),
+a difference in identifier spelling is the usual cause. Whitespace
+differences are always squished on both sides and no warning is issued
+for them — they are handled silently so a stray space cannot cause a
+hard-to-trace mapping failure. Other differences (a raw-data extension
+the import does not recognize, a typo, or a different naming scheme) are
+not normalized, and the affected analyses are dropped from the join with
+a warning.
+
 ## Next steps
 
 - [Importing Analytical

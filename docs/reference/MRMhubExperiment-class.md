@@ -69,6 +69,12 @@ processing steps, and the current status of the data.
 
   Annotation of batches. Required fields:
 
+- `annot_interferences`:
+
+  Interference relationships (`feature_id`, `interference_feature_id`,
+  `interference_contribution`, `overlap_type`, `source`) feeding the
+  correction engine; derived (auto) and/or manual.
+
 - `metrics_qc`:
 
   QC information for each measured feature

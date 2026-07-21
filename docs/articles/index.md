@@ -68,6 +68,20 @@
   Solutions to the most common errors and questions when using MRMhub
   QUANT.
 
+- [Quarto
+  Workflows](https://slinghub.github.io/MRMhub/quant/articles/manual-11-quarto-workflows.md):
+
+  MRMhub: postprocessing and quality control of small molecule mass
+  spectrometry data
+
+- [Isotopic Interference
+  Correction](https://slinghub.github.io/MRMhub/quant/articles/manual-12-interference-correction.md):
+
+  Reference for MRMhub’s isotopic interference correction: the
+  fragment-based (MRM) and whole-molecule (MS1) derivation levels, the
+  co-elution requirement, and the provenance of the derived contribution
+  factors.
+
 - [Manual](https://slinghub.github.io/MRMhub/quant/articles/manual-index.md):
 
   Complete contents of the MRMhub-QUANT manual.
@@ -144,8 +158,10 @@
 - [Interference
   Correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-11-interference-correction.md):
 
-  Identify and correct isotopic or isobaric interferences between MRM
-  transitions using a contribution-based subtraction model.
+  Annotate mrm_pattern, derive isotopic interference relationships
+  automatically with derive_interferences(), inspect them, and apply the
+  subtraction with correct_interferences(). Manual single-pair
+  correction is also covered.
 
 - [Build a Workflow Without
   Code](https://slinghub.github.io/MRMhub/quant/articles/tutorial-12-workflow-builder.md):

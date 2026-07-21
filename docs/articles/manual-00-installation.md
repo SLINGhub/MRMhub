@@ -4,7 +4,7 @@ Manual
 
 ## Requirements
 
-- **R ≥ 4.2** — install from [CRAN](https://cran.r-project.org)
+- **R ≥ 4.1** — install from [CRAN](https://cran.r-project.org)
 - **An IDE** — [Positron](https://positron.posit.co),
   [RStudio](https://posit.co/download/rstudio-desktop/), or [VS
   Code](https://code.visualstudio.com)

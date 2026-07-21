@@ -33,6 +33,8 @@
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/manual-08-visualization.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/manual-09-ai-assistants.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/manual-10-troubleshooting.html</loc></url>
+<url><loc>https://slinghub.github.io/MRMhub/quant/articles/manual-11-quarto-workflows.html</loc></url>
+<url><loc>https://slinghub.github.io/MRMhub/quant/articles/manual-12-interference-correction.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/manual-index.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/mrmhub.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/msconvert_manual.html</loc></url>
@@ -53,10 +55,12 @@
 <url><loc>https://slinghub.github.io/MRMhub/quant/authors.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/index.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/news/index.html</loc></url>
+<url><loc>https://slinghub.github.io/MRMhub/quant/plan-cliConsoleReview.prompt.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/plan-docsStructureReview.prompt.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/plan-documentationRevision.prompt.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/plan-fileRenaming.prompt.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/plan-integratorThemeAlignment.prompt.html</loc></url>
+<url><loc>https://slinghub.github.io/MRMhub/quant/plan-isotopeCorrectionFull.prompt.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/plan-workflowDiagrams.prompt.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment.html</loc></url>
@@ -81,6 +85,7 @@
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/cv_log.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/data_load_example.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/data_sum_features.html</loc></url>
+<url><loc>https://slinghub.github.io/MRMhub/quant/reference/derive_interferences.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/detect_outlier_pca.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/exclude_analyses.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/exclude_features.html</loc></url>
@@ -123,8 +128,10 @@
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/import_metadata_qcconcentrations.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/import_metadata_responsecurves.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/index.html</loc></url>
+<url><loc>https://slinghub.github.io/MRMhub/quant/reference/licar_pattern_choices.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/lipidomics_dataset.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/mrmhub-package.html</loc></url>
+<url><loc>https://slinghub.github.io/MRMhub/quant/reference/mrmhub_enable_cli_color.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/normalize_by_istd.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/order_chained_columns_tbl.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/parse_lipid_feature_names.html</loc></url>
@@ -150,6 +157,8 @@
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/plot_rt_vs_chain.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/plot_runsequence.html</loc></url>
+<url><loc>https://slinghub.github.io/MRMhub/quant/reference/pretty_logticks.html</loc></url>
+<url><loc>https://slinghub.github.io/MRMhub/quant/reference/pretty_n_breaks.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/print.assertr_tibble.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/quant_lcms_dataset.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/quantify_by_calibration.html</loc></url>
@@ -162,6 +171,7 @@
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/save_metadata_msorganiser_template.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/save_metadata_templates.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/save_report_xlsx.html</loc></url>
+<url><loc>https://slinghub.github.io/MRMhub/quant/reference/scale_pretty_x.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/scientific_format_end.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/set_analysis_order.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/set_intensity_var.html</loc></url>

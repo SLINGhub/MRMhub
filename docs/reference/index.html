@@ -58,6 +58,8 @@
     <li><a class="dropdown-item" href="../articles/manual-04-data-import.html">Importing Analytical Data</a></li>
     <li><a class="dropdown-item" href="../articles/manual-05-metadata.html">Importing Metadata</a></li>
     <li><a class="dropdown-item" href="../articles/manual-07-corrections.html">Drift and Batch Correction</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-12-interference-correction.html">Isotopic Interference Correction</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-11-quarto-workflows.html">Quarto Workflows</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
@@ -426,7 +428,7 @@
       </dl></div><div class="section level2">
       <h2 id="isotope-correction">Isotope correction<a class="anchor" aria-label="anchor" href="#isotope-correction"></a></h2>
 
-      <div class="section-desc"><p>Functions to perform type II isotopic correction</p></div>
+      <div class="section-desc"><p>Functions to perform type II isotopic interference correction</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -434,6 +436,13 @@
 
 
       <dl><dt>
+
+          <code><a href="derive_interferences.html">derive_interferences()</a></code>
+
+        </dt>
+        <dd>Derive isotopic interference relationships</dd>
+
+        <dt>
 
           <code><a href="correct_interferences.html">correct_interferences()</a></code>
 
@@ -446,6 +455,13 @@
 
         </dt>
         <dd>Manual isotopic interference correction</dd>
+
+        <dt>
+
+          <code><a href="licar_pattern_choices.html">licar_pattern_choices()</a></code>
+
+        </dt>
+        <dd>Valid MRM-pattern labels</dd>
       </dl></div><div class="section level2">
       <h2 id="external-calibration">External Calibration<a class="anchor" aria-label="anchor" href="#external-calibration"></a></h2>
 
@@ -907,6 +923,13 @@
 
         </dt>
         <dd>Reorder a data frame based on a chain of linked values in two columns</dd>
+
+        <dt>
+
+          <code><a href="mrmhub_enable_cli_color.html">mrmhub_enable_cli_color()</a></code>
+
+        </dt>
+        <dd>Enable coloured mrmhub console output in notebooks</dd>
       </dl></div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

@@ -199,12 +199,16 @@ MRMhub Excel template or CSV files.
 
 ## Isotope correction
 
-Functions to perform type II isotopic correction
+Functions to perform type II isotopic interference correction
 
+- [`derive_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/derive_interferences.md)
+  : Derive isotopic interference relationships
 - [`correct_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/correct_interferences.md)
   : Apply interference correction
 - [`correct_interference_manual()`](https://slinghub.github.io/MRMhub/quant/reference/correct_interference_manual.md)
   : Manual isotopic interference correction
+- [`licar_pattern_choices()`](https://slinghub.github.io/MRMhub/quant/reference/licar_pattern_choices.md)
+  : Valid MRM-pattern labels
 
 ## External Calibration
 
@@ -368,6 +372,8 @@ spectrometry is also available.
 - [`order_chained_columns_tbl()`](https://slinghub.github.io/MRMhub/quant/reference/order_chained_columns_tbl.md)
   : Reorder a data frame based on a chain of linked values in two
   columns
+- [`mrmhub_enable_cli_color()`](https://slinghub.github.io/MRMhub/quant/reference/mrmhub_enable_cli_color.md)
+  : Enable coloured mrmhub console output in notebooks
 
 # Articles
 
@@ -438,6 +444,20 @@ spectrometry is also available.
 
   Solutions to the most common errors and questions when using MRMhub
   QUANT.
+
+- [Quarto
+  Workflows](https://slinghub.github.io/MRMhub/quant/articles/manual-11-quarto-workflows.md):
+
+  MRMhub: postprocessing and quality control of small molecule mass
+  spectrometry data
+
+- [Isotopic Interference
+  Correction](https://slinghub.github.io/MRMhub/quant/articles/manual-12-interference-correction.md):
+
+  Reference for MRMhub’s isotopic interference correction: the
+  fragment-based (MRM) and whole-molecule (MS1) derivation levels, the
+  co-elution requirement, and the provenance of the derived contribution
+  factors.
 
 - [Manual](https://slinghub.github.io/MRMhub/quant/articles/manual-index.md):
 
@@ -515,8 +535,10 @@ spectrometry is also available.
 - [Interference
   Correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-11-interference-correction.md):
 
-  Identify and correct isotopic or isobaric interferences between MRM
-  transitions using a contribution-based subtraction model.
+  Annotate mrm_pattern, derive isotopic interference relationships
+  automatically with derive_interferences(), inspect them, and apply the
+  subtraction with correct_interferences(). Manual single-pair
+  correction is also covered.
 
 - [Build a Workflow Without
   Code](https://slinghub.github.io/MRMhub/quant/articles/tutorial-12-workflow-builder.md):
