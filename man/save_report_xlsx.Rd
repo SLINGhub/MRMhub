@@ -49,6 +49,9 @@ Following tables will be created as sheets in the EXCEL file:
 \item InternalStandards: Internal standards metadata with concentrations
 \item BatchInfo: Information on batches and positions of first and last analysis/sample
 in each batch
+\item Interferences: Derived and declared interference relationships (interfering
+feature, contribution factor, overlap type, source) with the per-feature
+correction impact when the correction has been applied.
 }
 
 If certain data sets are not available, the function includes empty tables for the corresponding dataset.

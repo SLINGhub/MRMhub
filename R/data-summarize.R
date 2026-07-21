@@ -213,7 +213,7 @@ data_sum_features <- function(
   # Summing transitions redefines `feature_intensity`, so every value derived
   # from the pre-merge intensities no longer describes the data. Invalidate them
   # (removes the columns and informs the user) instead of leaving stale or all-NA
-  # values behind, mirroring `correct_interferences()`.
+  # values behind, mirroring the interference-correction functions.
   data <- update_after_normalization(data, FALSE)
   data@var_drift_corrected <- c(
     feature_intensity = FALSE,
@@ -282,4 +282,89 @@ warn_inconsistent_merged_metadata <- function(annot_features) {
     "i" = "{cli::qty(length(analytes))}Affected analyte{?s}: {.val {mh_vec(analytes)}}"
   ))
   invisible(NULL)
+}
+
+
+#' Summarize interference relationships
+#'
+#' @description Prints and returns a rollup of the interference relationships
+#' defined for the experiment -- automatically derived
+#' ([calc_isotopic_interferences()]) and declared (custom) -- so they can be
+#' reviewed before, and after, applying a correction. Reports the affected
+#' features, a split by source and overlap type, the contribution-factor range
+#' and, once the data are corrected, the per-feature median impact.
+#'
+#' @param data A `MRMhubExperiment`.
+#' @return Invisibly, a tibble of the assembled, de-duplicated interference edges
+#'   (with a `pct_impact` column when the data are already corrected). Called
+#'   mainly for the printed summary.
+#' @seealso [calc_isotopic_interferences()], [correct_isotopic_interferences()],
+#'   [correct_custom_interferences()]
+#' @export
+summarize_interferences <- function(data = NULL) {
+  check_data(data)
+  edges <- assemble_interference_edges(data)
+  if (nrow(edges) == 0) {
+    mh_info("No interferences are defined (none derived or declared).")
+    return(invisible(edges))
+  }
+
+  n_total <- sum(!isTRUE_col(data@annot_features$is_istd))
+  n_affected <- dplyr::n_distinct(edges$feature_id)
+  n_interferers <- dplyr::n_distinct(edges$interference_feature_id)
+  n_auto <- sum(edges$source == "auto")
+  n_custom <- nrow(edges) - n_auto
+  k <- edges$interference_contribution[!is.na(edges$interference_contribution)]
+
+  # Per-feature median impact (% of raw signal removed), when correction ran.
+  pct <- NULL
+  if (
+    all(
+      c("feature_intensity_orig", "interference_corrected") %in%
+        names(data@dataset)
+    )
+  ) {
+    pct <- data@dataset |>
+      filter(
+        .data$interference_corrected,
+        !is.na(.data$feature_intensity_orig),
+        .data$feature_intensity_orig > 0
+      ) |>
+      mutate(
+        pct = 100 *
+          (.data$feature_intensity_orig - .data$feature_intensity) /
+          .data$feature_intensity_orig
+      ) |>
+      group_by(.data$feature_id) |>
+      summarise(
+        pct_impact = stats::median(.data$pct, na.rm = TRUE),
+        .groups = "drop"
+      )
+  }
+
+  bullets <- c(
+    "*" = "Affected features: {n_affected} of {n_total}",
+    "*" = "Edges: {nrow(edges)} ({n_auto} auto / {n_custom} custom){interference_type_breakdown(edges)}",
+    "*" = "Interferer features: {n_interferers}"
+  )
+  if (length(k) > 0) {
+    bullets <- c(
+      bullets,
+      "*" = "Contribution K: {signif(min(k), 2)}-{signif(max(k), 2)}"
+    )
+  }
+  if (!is.null(pct) && nrow(pct) > 0) {
+    bullets <- c(
+      bullets,
+      "*" = "Median impact: {round(stats::median(pct$pct_impact), 1)}% (max {round(max(pct$pct_impact), 1)}%)"
+    )
+  }
+  cli::cli_h3("Interference summary")
+  cli::cli_bullets(bullets)
+
+  out <- edges
+  if (!is.null(pct)) {
+    out <- left_join(out, pct, by = "feature_id")
+  }
+  invisible(out)
 }

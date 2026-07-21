@@ -223,9 +223,11 @@ reference:
   description: |
     Functions to perform type II isotopic interference correction
   contents:
-  - derive_interferences
-  - correct_interferences
+  - calc_isotopic_interferences
+  - correct_isotopic_interferences
+  - correct_custom_interferences
   - correct_interference_manual
+  - summarize_interferences
   - licar_pattern_choices
 - title: External Calibration
   description: |
@@ -281,6 +283,7 @@ reference:
   - plot_normalization_qc
   - plot_qcmetrics_comparison
   - plot_qc_interferences
+  - plot_qc_interference_impact
 - title: Response Curves
   description: |
     Functions to calculate and visualize response curves

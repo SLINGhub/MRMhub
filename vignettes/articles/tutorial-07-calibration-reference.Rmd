@@ -83,7 +83,7 @@ using the spiked-in ISTD concentration.
 #| message: true
 
 # Isotope correction
-mexp <- mrmhub::correct_interferences(mexp)
+mexp <- mrmhub::correct_custom_interferences(mexp)
 
 # Quantify the data
 mexp <- normalize_by_istd(mexp)

@@ -4,7 +4,10 @@
 # Factors are enviPat-version sensitive; the golden was produced with 2.8.
 
 golden_dir <- test_path("testdata/licar-golden")
-pinned_envipat <- trimws(readLines(file.path(golden_dir, "enviPat-version.txt")))
+pinned_envipat <- trimws(readLines(file.path(
+  golden_dir,
+  "enviPat-version.txt"
+)))
 
 # class file -> its mrm_pattern label (covering head-group, FA and LCB)
 golden_patterns <- list(
@@ -22,24 +25,35 @@ build_from_template <- function(name, pattern) {
     check.names = FALSE
   )
   samp <- names(raw)[4:ncol(raw)]
-  long <- do.call(rbind, lapply(samp, function(s) {
-    data.frame(
-      analysis_id = s, feature_id = raw$Name, qc_type = "SPL",
-      feature_intensity = raw[[s]], stringsAsFactors = FALSE
-    )
-  }))
+  long <- do.call(
+    rbind,
+    lapply(samp, function(s) {
+      data.frame(
+        analysis_id = s,
+        feature_id = raw$Name,
+        qc_type = "SPL",
+        feature_intensity = raw[[s]],
+        stringsAsFactors = FALSE
+      )
+    })
+  )
   mexp <- MRMhubExperiment()
-  mexp@dataset <- dplyr::as_tibble(long) |> dplyr::mutate(qc_type = factor(qc_type))
+  mexp@dataset <- dplyr::as_tibble(long) |>
+    dplyr::mutate(qc_type = factor(qc_type))
   mexp@dataset_orig <- dplyr::tibble(
-    analysis_id = "s1", raw_data_filename = "f",
+    analysis_id = "s1",
+    raw_data_filename = "f",
     acquisition_time_stamp = as.Date("2024-01-01"),
     feature_id = raw$Name,
     method_precursor_mz = as.character(raw$Precursor),
     method_product_mz = as.character(raw$Product)
   )
   mexp@annot_features <- dplyr::tibble(
-    feature_id = raw$Name, mrm_pattern = pattern, feature_class = name,
-    is_istd = FALSE, interference_feature_id = NA_character_,
+    feature_id = raw$Name,
+    mrm_pattern = pattern,
+    feature_class = name,
+    is_istd = FALSE,
+    interference_feature_id = NA_character_,
     interference_contribution = NA_real_
   )
   list(mexp = mexp, samp = samp)
@@ -59,20 +73,27 @@ for (nm in names(golden_patterns)) {
 
       b <- build_from_template(name, pattern)
       res <- suppressWarnings(suppressMessages(
-        derive_interferences(b$mexp, level = "MRM")
+        calc_isotopic_interferences(b$mexp, level = "MRM")
       ))
       res <- suppressWarnings(suppressMessages(
-        correct_interferences(res, sequential_correction = TRUE)
+        correct_isotopic_interferences(res, sequential_correction = TRUE)
       ))
 
       gold <- utils::read.csv(
         file.path(golden_dir, "golden", paste0(name, ".csv")),
-        check.names = FALSE, row.names = 1
+        check.names = FALSE,
+        row.names = 1
       )
       mine <- res@dataset
       mine <- reshape(
-        as.data.frame(mine[, c("analysis_id", "feature_id", "feature_intensity")]),
-        idvar = "feature_id", timevar = "analysis_id", direction = "wide"
+        as.data.frame(mine[, c(
+          "analysis_id",
+          "feature_id",
+          "feature_intensity"
+        )]),
+        idvar = "feature_id",
+        timevar = "analysis_id",
+        direction = "wide"
       )
       rownames(mine) <- mine$feature_id
 

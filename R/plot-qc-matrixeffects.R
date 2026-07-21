@@ -161,6 +161,12 @@ plot_qc_matrixeffects <- function(
     )
   ) +
     ggbeeswarm::geom_quasirandom(
+      # Shape 21 with a fixed dark border keeps points legible even when a QC
+      # type's palette fill is faint or transparent (e.g. SPL, whose fill is
+      # "NA"); the fill still encodes qc_type via `scale_fill_manual`.
+      shape = 21,
+      color = "grey25",
+      stroke = 0.3,
       dodge.width = dodge_width,
       alpha = point_alpha,
       size = point_size,

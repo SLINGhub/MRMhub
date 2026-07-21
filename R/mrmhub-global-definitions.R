@@ -86,7 +86,7 @@ pkg.env$table_templates <- list(
   ),
   # Derived (auto) + manual interference relationships in one long table feeding
   # the correction engine. `overlap_type` records the kind (m2_front / m2_back /
-  # ms1_m2 / manual); `source` is "auto" (from derive_interferences()) or
+  # ms1_m2 / manual); `source` is "auto" (from calc_isotopic_interferences()) or
   # "manual". Two rows per feature carry a front+back pair.
   annot_interferences_template = dplyr::tibble(
     "feature_id" = character(),

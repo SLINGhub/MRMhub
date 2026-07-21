@@ -574,9 +574,29 @@ derive_mrm_edges <- function(data, mz_tol = 0.5) {
       .groups = "drop"
     )
 
-  tbl <- feats |>
-    left_join(d_mz, by = "feature_id") |>
-    filter(!is.na(.data$precursor_mz))
+  joined <- feats |> left_join(d_mz, by = "feature_id")
+
+  # Features that pass the pattern filter but lack the m/z the pairing needs are
+  # dropped below; name them so the coverage gap is visible, not silent.
+  no_prec <- joined$feature_id[is.na(joined$precursor_mz)]
+  if (length(no_prec) > 0) {
+    mh_warn(
+      "No precursor m/z for {length(no_prec)} feature(s); excluded from MRM derivation: {.val {mh_vec(no_prec)}}."
+    )
+  }
+  no_prod <- joined$feature_id[
+    joined$kind %in%
+      c("fa", "lcb") &
+      !is.na(joined$precursor_mz) &
+      is.na(joined$product_mz)
+  ]
+  if (length(no_prod) > 0) {
+    mh_warn(
+      "No product m/z for {length(no_prod)} chain-resolved (FA/LCB) feature(s); their fragment-level edges cannot be derived: {.val {mh_vec(no_prod)}}."
+    )
+  }
+
+  tbl <- joined |> filter(!is.na(.data$precursor_mz))
 
   edge_cols <- c(
     "feature_id",

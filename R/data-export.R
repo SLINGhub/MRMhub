@@ -16,6 +16,9 @@
 #' - InternalStandards: Internal standards metadata with concentrations
 #' - BatchInfo: Information on batches and positions of first and last analysis/sample
 #' in each batch
+#' - Interferences: Derived and declared interference relationships (interfering
+#' feature, contribution factor, overlap type, source) with the per-feature
+#' correction impact when the correction has been applied.
 #'
 #'
 #' @param data A `MRMhubExperiment` object containing original and processed data and metadata.
@@ -243,6 +246,44 @@ save_report_xlsx <- function(
     ) |>
       tibble::add_row()
   }
+  # Interference relationships (derived + declared), with per-feature impact when
+  # the correction has been applied -- documents the correction in the report.
+  edges_report <- assemble_interference_edges(data)
+  if (nrow(edges_report) == 0) {
+    d_interferences <- tibble("No interferences defined." = NA) |>
+      tibble::add_row()
+  } else {
+    d_interferences <- edges_report
+    if (
+      all(
+        c("feature_intensity_orig", "interference_corrected") %in%
+          names(data@dataset)
+      )
+    ) {
+      pct_impact <- data@dataset |>
+        dplyr::filter(
+          .data$interference_corrected,
+          !is.na(.data$feature_intensity_orig),
+          .data$feature_intensity_orig > 0
+        ) |>
+        dplyr::mutate(
+          pct = 100 *
+            (.data$feature_intensity_orig - .data$feature_intensity) /
+            .data$feature_intensity_orig
+        ) |>
+        dplyr::group_by(.data$feature_id) |>
+        dplyr::summarise(
+          pct_impact = round(stats::median(.data$pct, na.rm = TRUE), 2),
+          .groups = "drop"
+        )
+      d_interferences <- dplyr::left_join(
+        d_interferences,
+        pct_impact,
+        by = "feature_id"
+      )
+    }
+  }
+
   d_info <- tibble::tribble(
     ~Info,
     ~Value,
@@ -339,7 +380,8 @@ save_report_xlsx <- function(
       tibble("No batches defined" = NA) |> tibble::add_row()
     } else {
       data@annot_batches
-    }
+    },
+    "Interferences" = d_interferences
   )
 
   if (length(normalized_variable) == 0) {
@@ -353,6 +395,7 @@ save_report_xlsx <- function(
       "#0A83ad",
       "#0313ad",
       "#7113ad",
+      "#c9c9c9",
       "#c9c9c9",
       "#c9c9c9",
       "#c9c9c9",
@@ -373,6 +416,7 @@ save_report_xlsx <- function(
       "#c9c9c9",
       "#c9c9c9",
       "#c9c9c9",
+      "#c9c9c9",
       "#c9c9c9"
     )
   }
@@ -384,55 +428,15 @@ save_report_xlsx <- function(
     x = table_list,
     #file = path,
     na.strings = "",
-    as_table = c(
-      TRUE,
-      TRUE,
-      TRUE,
-      TRUE,
-      TRUE,
-      TRUE,
-      TRUE,
-      TRUE,
-      TRUE,
-      TRUE,
-      TRUE,
-      TRUE,
-      TRUE
-    ),
+    # Length-based so adding a sheet needs no parallel-vector bookkeeping: every
+    # sheet is a table; only the "Info" sheet (first) omits the first row/col
+    # header styling.
+    as_table = rep(TRUE, length(table_list)),
     col_names = TRUE,
     grid_lines = FALSE,
     col_widths = "auto",
-    first_col = c(
-      FALSE,
-      TRUE,
-      TRUE,
-      TRUE,
-      TRUE,
-      TRUE,
-      TRUE,
-      TRUE,
-      TRUE,
-      TRUE,
-      TRUE,
-      TRUE,
-      TRUE
-    ),
-    first_row = c(
-      FALSE,
-      TRUE,
-      TRUE,
-      TRUE,
-      TRUE,
-      TRUE,
-      TRUE,
-      TRUE,
-      TRUE,
-      TRUE,
-      TRUE,
-      TRUE,
-      TRUE
-    ),
-    # with_filter = c(FALSE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE),
+    first_col = c(FALSE, rep(TRUE, length(table_list) - 1)),
+    first_row = c(FALSE, rep(TRUE, length(table_list) - 1)),
     tab_color = tab_color
   )
 

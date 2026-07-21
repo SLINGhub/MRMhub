@@ -389,7 +389,7 @@ for the interfering fragments were obtained using LICAR
 </details>
 
 ```{r isotope-correction}
-myexp <- mrmhub::correct_interferences(myexp)
+myexp <- mrmhub::correct_custom_interferences(myexp)
 plot_qc_interferences(myexp, qc_types = c("BQC", "SPL", "TQC", "LTR"))
 ```
 

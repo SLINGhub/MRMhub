@@ -38,7 +38,11 @@ then feature name will not change.}
 MRMhubExperiment object
 }
 \description{
-The interference is subtracted using following formula:
+Subtract a single, user-specified interference from one feature.
+Use this for a one-off correction or to validate a factor before trusting the
+automatic derivation; for the metadata-driven paths use
+\code{\link[=correct_isotopic_interferences]{correct_isotopic_interferences()}} (automatic, isotopic) or
+\code{\link[=correct_custom_interferences]{correct_custom_interferences()}} (declared). The interference is subtracted as:
 \deqn{Value_{Corrected} = Value_{Feature} - Factor_{Contribution} *
 Value_{Interfering Feature}}
 }

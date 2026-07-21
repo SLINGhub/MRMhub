@@ -29,7 +29,7 @@ normalize_by_istd <- function(data = NULL, ignore_missing_annotation = FALSE) {
     )
   ) {
     mh_warn(
-      "Interfering features defined in metadata, but no correction was applied. Use `correct_interferences()` to correct."
+      "Interfering features defined in metadata, but no correction was applied. Use `correct_custom_interferences()` to correct."
     )
   }
 

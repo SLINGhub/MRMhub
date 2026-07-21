@@ -37,17 +37,14 @@ if \code{variable} is \code{conc} or \code{conc_raw}, and \code{FALSE} otherwise
 standard (ISTD) features. Default is \code{NA}, which will be automatically set to \code{FALSE}
 if \code{variable} is ''norm_intensity\verb{, }conc\code{or}conc_raw\verb{, and }TRUE` otherwise.}
 
-\item{include_feature_filter}{A character or regex pattern used to filter
-features by \code{feature_id}. If \code{NA} or an empty string (\code{""}) is provided,
-the filter is ignored. When a vector of length > 1 is supplied, only
-features with exactly these names are selected (applied individually as
-OR conditions).}
+\item{include_feature_filter}{Feature(s) to include by \code{feature_id}, as a
+character vector. Each element is matched exactly when it names an existing
+feature, otherwise treated as a regex; elements combine with OR. A full ID
+(e.g. \code{"S1P d18:0 [M>60]"}) needs no escaping, while patterns like \code{"PC|PE"}
+still work. \code{NA} or \code{""} ignores the filter.}
 
-\item{exclude_feature_filter}{A character or regex pattern used to exclude
-features by \code{feature_id}. If \code{NA} or an empty string (\code{""}) is provided,
-the filter is ignored. When a vector of length > 1 is supplied, only
-features with exactly these names are excluded (applied individually as
-OR conditions).}
+\item{exclude_feature_filter}{Feature(s) to exclude by \code{feature_id}, matched
+the same way as \code{include_feature_filter}. \code{NA} or \code{""} ignores the filter.}
 
 \item{add_qctype}{Add the QC type as column}
 }

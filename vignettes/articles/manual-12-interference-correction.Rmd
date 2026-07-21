@@ -38,11 +38,12 @@ the [Interference correction tutorial](tutorial-11-interference-correction.html)
 
 ## Two derivation levels, one subtraction engine
 
-Interference relationships are discovered by [`derive_interferences()`](../reference/derive_interferences.html)
+Interference relationships are discovered by [`calc_isotopic_interferences()`](../reference/calc_isotopic_interferences.html)
 and stored in the `annot_interferences` slot as a long table of edges
-`(feature_id, interference_feature_id, interference_contribution, overlap_type, source)`. A single
-engine, [`correct_interferences()`](../reference/correct_interferences.html), then applies every
-edge — auto-derived or manually annotated — in one pass. Two derivation *levels* feed that engine:
+`(feature_id, interference_feature_id, interference_contribution, overlap_type, source)`. A shared
+engine applies them: [`correct_isotopic_interferences()`](../reference/correct_isotopic_interferences.html)
+subtracts the auto-derived (isotopic) edges, and [`correct_custom_interferences()`](../reference/correct_custom_interferences.html)
+the ones you declared in the metadata. Two derivation *levels* feed the engine:
 
 | | **MRM** (`level = "MRM"`) | **MS1** (`level = "MS1"`) |
 |---|---|---|
@@ -95,8 +96,9 @@ simultaneously. The engine composes them as `X − front − back`.
 ends up on the retained product ion or on the neutral loss [@gao2021LICARApplicationIsotopic]. The
 whole-molecule (`level = "MS1"`) factor ignores that split and is valid **only** for genuine
 MS1 / full-scan measurements. It must **not** be used for MRM data that merely happens to lack a
-recorded product m/z — use `level = "MRM"` (and supply the product m/z) there. `derive_interferences()`
-warns when MS1 derivation is run on data that carry product m/z.
+recorded product m/z — use `level = "MRM"` (and supply the product m/z) there.
+`calc_isotopic_interferences()` warns when MS1 derivation is run on data whose product m/z differs
+from the precursor (i.e. real MRM transitions).
 :::
 
 Because the front and back fragments carry different numbers of carbons, their M+2 abundances differ,
@@ -163,9 +165,9 @@ The derived factors are theoretical isotope abundances and depend on the abundan
   full-scan measurement.
 
 Both engines are pinned to **`enviPat` version 2.8** [@loos2015NontargetEnviPat], the reference used
-for the golden parity tests; `derive_interferences()` warns when a different version is installed.
-Because derivation is deterministic under that pin, re-importing the `mrm_pattern` annotation and
-re-running `derive_interferences()` regenerates identical edges — the metadata alone reproduces the
+for the golden parity tests; `calc_isotopic_interferences()` warns when a different version is
+installed. Because derivation is deterministic under that pin, re-importing the `mrm_pattern`
+annotation and re-running `calc_isotopic_interferences()` regenerates identical edges — the metadata alone reproduces the
 correction. The exact factors additionally survive an `enviPat` upgrade because the derived
 `annot_interferences` table travels with the saved object and is written to the report workbook as a
 human-readable factor archive.
@@ -180,6 +182,6 @@ perform.
 - [Interference correction](tutorial-11-interference-correction.html) — the step-by-step workflow
 - [Drift and Batch Correction](manual-07-corrections.html) — apply after interference correction
 - [The MRMhubExperiment Data Object](manual-02-data-object.html#feature-variables) — how `_orig` postfixes preserve raw values
-- [`derive_interferences()`](../reference/derive_interferences.html) · [`correct_interferences()`](../reference/correct_interferences.html) — function reference
+- [`calc_isotopic_interferences()`](../reference/calc_isotopic_interferences.html) · [`correct_isotopic_interferences()`](../reference/correct_isotopic_interferences.html) — function reference
 
 ## References

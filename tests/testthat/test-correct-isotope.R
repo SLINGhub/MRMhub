@@ -51,7 +51,7 @@ test_that("correct_interference_manual warns when interference_contribution > 1"
   )
 })
 
-test_that("correct_interferences corrects overlapping interferences", {
+test_that("correct_custom_interferences corrects overlapping interferences", {
   # d18:2 is interfering with d18:1, which in turn is interfering with d18:0
   # the code does not correct for M+4 isotope interference
 
@@ -91,12 +91,12 @@ test_that("correct_interferences corrects overlapping interferences", {
 
   expect_message(
     mexp_res <-
-      correct_interferences(
+      correct_custom_interferences(
         mexp,
         variable = "feature_intensity",
         sequential_correction = TRUE
       ),
-    "Interference-correction has been applied to 4 of the 15 features"
+    "applied to 4 of 15 feature"
   )
 
   expect_equal(
@@ -133,12 +133,12 @@ test_that("correct_interferences corrects overlapping interferences", {
   # reapply
   expect_message(
     mexp_res <-
-      correct_interferences(
+      correct_custom_interferences(
         mexp_res,
         variable = "feature_intensity",
         sequential_correction = TRUE
       ),
-    "Interference-correction has been applied to 4 of the 15 features"
+    "applied to 4 of 15 feature"
   )
 
   expect_equal(
@@ -166,12 +166,12 @@ test_that("correct_interferences corrects overlapping interferences", {
 
   expect_message(
     mexp_res <-
-      correct_interferences(
+      correct_custom_interferences(
         mexp,
         variable = "feature_intensity",
         sequential_correction = FALSE
       ),
-    "Interference-correction has been applied to 4 of the 15 features"
+    "applied to 4 of 15 feature"
   )
 
   expect_equal(
@@ -207,7 +207,7 @@ test_that("correct_interferences corrects overlapping interferences", {
 })
 
 
-test_that("correct_interferences corrects overlapping interferences", {
+test_that("correct_custom_interferences corrects overlapping interferences", {
   # d18:2 is interfering with d18:1, which in turn is interfering with d18:0
   # the code does not correct for M+4 isotope interference
 
@@ -368,7 +368,7 @@ test_that("Handles corrections that lead to negative values", {
 
   expect_message(
     mexp_res <-
-      correct_interferences(
+      correct_custom_interferences(
         mexp2,
         variable = "feature_intensity",
         sequential_correction = TRUE
@@ -379,7 +379,7 @@ test_that("Handles corrections that lead to negative values", {
 
   expect_message(
     mexp_res <-
-      correct_interferences(
+      correct_custom_interferences(
         mexp2,
         variable = "feature_intensity",
         sequential_correction = TRUE,
@@ -390,7 +390,7 @@ test_that("Handles corrections that lead to negative values", {
   )
 })
 
-test_that("correct_interferences does not crash when a corrected value is NA", {
+test_that("correct_custom_interferences does not crash when a corrected value is NA", {
   # If an interfering feature's intensity is NA in an analysis, the target's
   # corrected value becomes NA. The negative-value summary must tolerate that
   # (previously `sum(x <= 0)` without na.rm made `if (sum(...) > 0)` error).
@@ -401,7 +401,7 @@ test_that("correct_interferences does not crash when a corrected value is NA", {
   mexp_na@dataset$feature_intensity[msk] <- NA_real_
 
   expect_no_error(
-    suppressMessages(correct_interferences(
+    suppressMessages(correct_custom_interferences(
       mexp_na,
       variable = "feature_intensity",
       sequential_correction = TRUE
@@ -409,7 +409,7 @@ test_that("correct_interferences does not crash when a corrected value is NA", {
   )
 })
 
-test_that("correct_interferences reports a friendly error on a circular interference chain", {
+test_that("correct_custom_interferences reports a friendly error on a circular interference chain", {
   # Close the d18:2 -> d18:1 -> d18:0 chain into a cycle (d18:2 -> d18:0).
   mexp_circ <- mexp
   af <- mexp_circ@annot_features
@@ -419,7 +419,7 @@ test_that("correct_interferences reports a friendly error on a circular interfer
   mexp_circ@annot_features <- af
 
   expect_error(
-    suppressMessages(correct_interferences(
+    suppressMessages(correct_custom_interferences(
       mexp_circ,
       variable = "feature_intensity",
       sequential_correction = TRUE
@@ -443,7 +443,7 @@ test_that("interference correction is not discarded by a later batch correction"
   expect_true(b1@var_batch_corrected[["feature_intensity"]])
   expect_true("feature_intensity_before" %in% names(b1@dataset))
 
-  i1 <- suppressWarnings(suppressMessages(correct_interferences(b1)))
+  i1 <- suppressWarnings(suppressMessages(correct_custom_interferences(b1)))
   # the correction actually moves values, otherwise the test proves nothing
   expect_false(isTRUE(all.equal(getv(b1), getv(i1))))
   # rewriting feature_intensity invalidates the previous batch correction of it
@@ -455,4 +455,113 @@ test_that("interference correction is not discarded by a later batch correction"
   with_corr <- batch(i1)
   without_corr <- batch(b1)
   expect_false(isTRUE(all.equal(getv(with_corr), getv(without_corr))))
+})
+
+
+test_that("correct_isotopic_interferences aborts when nothing has been derived", {
+  expect_error(
+    suppressMessages(correct_isotopic_interferences(mexp)),
+    "No isotopic interferences"
+  )
+})
+
+test_that("correct_custom_interferences warns when no custom interferences are defined", {
+  mexp_none <- mexp
+  mexp_none@annot_features$interference_feature_id <- NA_character_
+  mexp_none@annot_features$interference_contribution <- NA_real_
+  expect_message(
+    correct_custom_interferences(mexp_none),
+    "No custom"
+  )
+})
+
+test_that("self-interference is rejected in the correction engine", {
+  mexp_self <- mexp
+  af <- mexp_self@annot_features
+  sel <- which(!is.na(af$interference_feature_id))[1]
+  af$interference_feature_id[sel] <- af$feature_id[sel]
+  mexp_self@annot_features <- af
+  expect_error(
+    suppressMessages(correct_custom_interferences(mexp_self)),
+    "cannot interfere with itself"
+  )
+})
+
+test_that("correct_interference_manual rejects self-interference", {
+  expect_error(
+    correct_interference_manual(
+      mexp_orig,
+      variable = "feature_intensity",
+      feature = "S1P d18:1 [M>60]",
+      interfering_feature = "S1P d18:1 [M>60]",
+      interference_contribution = 0.03
+    ),
+    "cannot interfere with itself"
+  )
+})
+
+test_that("correct_interference_manual warns when re-correcting a feature", {
+  m <- suppressMessages(correct_interference_manual(
+    mexp_orig,
+    variable = "feature_intensity",
+    feature = "S1P d18:1 [M>60]",
+    interfering_feature = "S1P d18:2 [M>60]",
+    interference_contribution = 0.03
+  ))
+  expect_message(
+    correct_interference_manual(
+      m,
+      variable = "feature_intensity",
+      feature = "S1P d18:1 [M>60]",
+      interfering_feature = "S1P d18:2 [M>60]",
+      interference_contribution = 0.03
+    ),
+    "already interference-corrected"
+  )
+})
+
+test_that("summarize_interferences returns the assembled edge rollup", {
+  res <- suppressMessages(summarize_interferences(mexp))
+  expect_s3_class(res, "tbl_df")
+  expect_gt(nrow(res), 0)
+  expect_true(
+    all(
+      c("feature_id", "interference_feature_id", "source") %in% names(res)
+    )
+  )
+})
+
+
+test_that("correction tolerates a feature absent from some analyses (ragged data)", {
+  # A corrected feature (or its interferer) missing from an analysis must not
+  # error via a length-0 `if_else()` recycle (e.g. blanks lacking a transition).
+  m <- MRMhubExperiment()
+  m@dataset <- dplyr::tibble(
+    analysis_id = c("a1", "a1", "a1", "a2", "a2"),
+    feature_id = c("F0", "F1", "F2", "F0", "F1"), # a2 lacks F2
+    qc_type = factor("SPL"),
+    feature_intensity = c(100, 50, 20, 80, 40)
+  )
+  m@dataset_orig <- dplyr::tibble(
+    analysis_id = "a1",
+    raw_data_filename = "f",
+    acquisition_time_stamp = as.Date("2024-01-01"),
+    feature_id = c("F0", "F1", "F2")
+  )
+  m@annot_features <- dplyr::tibble(
+    feature_id = c("F0", "F1", "F2"),
+    is_istd = FALSE,
+    interference_feature_id = c(NA, "F0", "F1"),
+    interference_contribution = c(NA, 0.1, 0.1)
+  )
+  expect_no_error(
+    res <- suppressWarnings(suppressMessages(correct_custom_interferences(m)))
+  )
+  # F1 in a1 corrected by F0: 50 - 0.1*100 = 40
+  expect_equal(
+    res@dataset$feature_intensity[
+      res@dataset$analysis_id == "a1" & res@dataset$feature_id == "F1"
+    ],
+    40
+  )
 })
