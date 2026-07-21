@@ -36,6 +36,7 @@
 ^.*\.tar\.gz$
 # Build hygiene: dir placeholders + stray rendered-article output (knitr/Quarto _files)
 \.gitkeep$
+^man/figures/screencasts$
 ^vignettes/articles/.*_files
 # Stray default-device plot dump produced by base-graphics tests/examples
 Rplots\.pdf$
