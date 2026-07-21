@@ -15,6 +15,7 @@ Rplots.pdf
 tests/testthat/Rplots.pdf
 tests/testthat/output.csv
 tests/testthat/testthat-problems.rds
+tests/testthat/_problems/
 vignettes/articles/*_files/
 vignettes/articles/output/
 inst/doc
