@@ -45,6 +45,7 @@ pkg.env$table_templates <- list(
   annot_features_template = dplyr::tibble(
     "feature_id" = character(),
     "feature_class" = character(),
+    "feature_label" = character(),
     "analyte_id" = character(),
     "chem_formula" = character(),
     "molecular_weight" = numeric(),
