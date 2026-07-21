@@ -34,8 +34,6 @@ mexp <- MRMhubExperiment()
 mexp <- import_data_masshunter(mexp, dat_file, import_metadata = FALSE)
 mexp <- import_metadata_analyses(mexp, path = meta_file, sheet = "Analyses")
 mexp <- import_metadata_features(mexp, path = meta_file, sheet = "Features")
-#> Warning: Unknown or uninitialised column: `valid_feature`.
-#> Warning: Unknown or uninitialised column: `is_quantifier`.
 mexp <- import_metadata_istds(mexp, path = meta_file, sheet = "ISTDs")
 ```
 
@@ -118,16 +116,16 @@ appear in the MRMhub XLSX report as concentrations.
 
 # Export absolute calibration concentrations
 save_dataset_csv(mexp, tempfile(fileext = ".csv"), variable = "conc")
-#> ✔ Concentration values for 65 analyses and 14 features have been exported to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpQ056DL/file135781fe93fef.csv'.
+#> ✔ Concentration values for 65 analyses and 7 features have been exported to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpvxMO4X/file596135c9ef3f.csv'.
   
 # Export non-calibrated concentrations
 save_dataset_csv(mexp_res, tempfile(fileext = ".csv"), variable = "conc_beforecal")
-#> ✔ Conc_beforecal values for 65 analyses and 16 features have been exported to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpQ056DL/file13578a647447.csv'.
+#> ✔ Conc_beforecal values for 65 analyses and 16 features have been exported to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpvxMO4X/file59615c7a2caf.csv'.
 
 # Create XLSX report with calibrated concentrations as filtered dataset
 save_report_xlsx(mexp_res, tempfile(fileext = ".xlsx"), filtered_variable = "conc")
 #> Saving report to disk - please wait...
-#> ✔ The data processing report has been saved to /var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpQ056DL/file13578490de6a5.xlsx.
+#> ✔ The data processing report has been saved to /var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpvxMO4X/file5961590bc497.xlsx.
 ```
 
 ## Normalization (relative calibration)
@@ -183,7 +181,7 @@ save_dataset_csv(mexp_res, "norm.csv", variable = "conc_normalized")
 # Create XLSX report with normalized concentrations as filtered dataset
 save_report_xlsx(mexp_res, path = tempfile(fileext = ".xlsx"), filtered_variable = "conc_normalized")
 #> Saving report to disk - please wait...
-#> ✔ The data processing report has been saved to /var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpQ056DL/file135783c52f419.xlsx.
+#> ✔ The data processing report has been saved to /var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpvxMO4X/file5961e1d0c74.xlsx.
 ```
 
 ## Batch-wise calibration
@@ -212,7 +210,7 @@ mexp_res <- calibrate_by_reference(
 #> ✔ Concentrations are given in umol/L.
 
 save_dataset_csv(mexp_res, tempfile(fileext = ".csv"), variable = "conc_beforecal")
-#> ✔ Conc_beforecal values for 65 analyses and 16 features have been exported to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpQ056DL/file135786b8a539c.csv'.
+#> ✔ Conc_beforecal values for 65 analyses and 16 features have been exported to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpvxMO4X/file5961286028e0.csv'.
 ```
 
 ## Concentration ratio and bias
@@ -250,24 +248,16 @@ tbl_ref_bias <- mexp_res$dataset |>
 gt::gt(tbl_ref_bias)
 ```
 
-| feature_id                         | bias_mean |
-|------------------------------------|-----------|
-| S1P d16:1 \[M\>113\]               | 0.4927230 |
-| S1P d16:1 \[M\>60\]                | 0.4323975 |
-| S1P d17:1 \[M\>113\]               | NA        |
-| S1P d17:1 \[M\>60\]                | 0.3452700 |
-| S1P d18:0 \[M\>113\]               | 0.8213940 |
-| S1P d18:0 \[M\>60\]                | 0.2917255 |
-| S1P d18:1 13C2D2 (ISTD) \[M\>113\] | NA        |
-| S1P d18:1 13C2D2 (ISTD) \[M\>60\]  | NA        |
-| S1P d18:1 \[M\>113\]               | 0.3560519 |
-| S1P d18:1 \[M\>60\]                | 0.3453086 |
-| S1P d18:2 \[M\>113\]               | 0.3723129 |
-| S1P d18:2 \[M\>60\]                | 0.3554366 |
-| S1P d19:1 \[M\>113\]               | NA        |
-| S1P d19:1 \[M\>60\]                | 0.3081062 |
-| S1P d20:1 \[M\>113\]               | NA        |
-| S1P d20:1 \[M\>60\]                | NA        |
+| feature_id                        | bias_mean |
+|-----------------------------------|-----------|
+| S1P d16:1 \[M\>60\]               | 0.4323975 |
+| S1P d17:1 \[M\>60\]               | 0.3452700 |
+| S1P d18:0 \[M\>60\]               | 0.2917255 |
+| S1P d18:1 13C2D2 (ISTD) \[M\>60\] | NA        |
+| S1P d18:1 \[M\>60\]               | 0.3453086 |
+| S1P d18:2 \[M\>60\]               | 0.3554366 |
+| S1P d19:1 \[M\>60\]               | 0.3081062 |
+| S1P d20:1 \[M\>60\]               | NA        |
 
 A ratio value of 1 indicates perfect agreement between the measured and
 expected concentrations.\
@@ -293,17 +283,11 @@ gt::gt(tbl) |> gt::fmt_number(decimals = 3)
 
 | feature_id | sample_id | qc_type | n | conc_target | conc_mean | conc_sd | cv_intra | bias |
 |----|----|----|----|----|----|----|----|----|
-| S1P d16:1 \[M\>113\] | SRM1950 | NIST | 2.000 | 0.107 | 0.107 | 0.013 | 12.388 | 0.000 |
 | S1P d16:1 \[M\>60\] | SRM1950 | NIST | 2.000 | 0.107 | 0.107 | 0.016 | 14.771 | 0.000 |
-| S1P d17:1 \[M\>113\] | SRM1950 | NIST | 1.000 | 0.028 | 0.028 | NA | NA | 0.000 |
 | S1P d17:1 \[M\>60\] | SRM1950 | NIST | 2.000 | 0.028 | 0.028 | 0.001 | 3.550 | 0.000 |
-| S1P d18:0 \[M\>113\] | SRM1950 | NIST | 2.000 | 0.149 | 0.149 | 0.002 | 1.116 | 0.000 |
 | S1P d18:0 \[M\>60\] | SRM1950 | NIST | 2.000 | 0.149 | 0.149 | 0.001 | 0.995 | 0.000 |
-| S1P d18:1 \[M\>113\] | SRM1950 | NIST | 2.000 | 0.985 | 0.985 | 0.054 | 5.516 | 0.000 |
 | S1P d18:1 \[M\>60\] | SRM1950 | NIST | 2.000 | 0.985 | 0.985 | 0.000 | 0.040 | 0.000 |
-| S1P d18:2 \[M\>113\] | SRM1950 | NIST | 2.000 | 0.290 | 0.290 | 0.031 | 10.843 | 0.000 |
 | S1P d18:2 \[M\>60\] | SRM1950 | NIST | 2.000 | 0.290 | 0.290 | 0.004 | 1.460 | 0.000 |
-| S1P d19:1 \[M\>113\] | SRM1950 | NIST | 1.000 | 0.025 | 0.025 | NA | NA | 0.000 |
 | S1P d19:1 \[M\>60\] | SRM1950 | NIST | 2.000 | 0.025 | 0.025 | 0.002 | 9.713 | 0.000 |
 
 The bias and concentration ratios before the re-calibration can be
@@ -318,17 +302,11 @@ gt::gt(tbl) |> gt::fmt_number(decimals = 3)
 
 | feature_id | sample_id | qc_type | n | conc_target | conc_mean | conc_sd | cv_intra | bias | conc_ratio |
 |----|----|----|----|----|----|----|----|----|----|
-| S1P d16:1 \[M\>113\] | SRM1950 | NIST | 2.000 | 0.107 | 0.053 | 0.007 | 12.388 | −50.728 | 0.493 |
 | S1P d16:1 \[M\>60\] | SRM1950 | NIST | 2.000 | 0.107 | 0.046 | 0.007 | 14.771 | −56.760 | 0.432 |
-| S1P d17:1 \[M\>113\] | SRM1950 | NIST | 1.000 | 0.028 | 0.019 | NA | NA | −32.875 | 0.671 |
 | S1P d17:1 \[M\>60\] | SRM1950 | NIST | 2.000 | 0.028 | 0.010 | 0.000 | 3.550 | −65.473 | 0.345 |
-| S1P d18:0 \[M\>113\] | SRM1950 | NIST | 2.000 | 0.149 | 0.122 | 0.001 | 1.116 | −17.861 | 0.821 |
 | S1P d18:0 \[M\>60\] | SRM1950 | NIST | 2.000 | 0.149 | 0.043 | 0.000 | 0.995 | −70.827 | 0.292 |
-| S1P d18:1 \[M\>113\] | SRM1950 | NIST | 2.000 | 0.985 | 0.351 | 0.019 | 5.516 | −64.395 | 0.356 |
 | S1P d18:1 \[M\>60\] | SRM1950 | NIST | 2.000 | 0.985 | 0.340 | 0.000 | 0.040 | −65.469 | 0.345 |
-| S1P d18:2 \[M\>113\] | SRM1950 | NIST | 2.000 | 0.290 | 0.108 | 0.012 | 10.843 | −62.769 | 0.372 |
 | S1P d18:2 \[M\>60\] | SRM1950 | NIST | 2.000 | 0.290 | 0.103 | 0.002 | 1.460 | −64.456 | 0.355 |
-| S1P d19:1 \[M\>113\] | SRM1950 | NIST | 1.000 | 0.025 | 0.005 | NA | NA | −81.541 | 0.185 |
 | S1P d19:1 \[M\>60\] | SRM1950 | NIST | 2.000 | 0.025 | 0.008 | 0.001 | 9.713 | −69.189 | 0.308 |
 
 ## Next steps

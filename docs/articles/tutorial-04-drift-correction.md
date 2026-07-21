@@ -35,8 +35,6 @@ myexp <- import_data_csv_wide(
   path = "smooth-testdata.csv",
   variable_name = "conc",
   import_metadata = TRUE)
-#> Warning: Unknown or uninitialised column: `valid_feature`.
-#> Warning: Unknown or uninitialised column: `is_quantifier`.
 ```
 
 ## QC-based smoothing
@@ -222,8 +220,6 @@ myexp_batch <- import_data_csv_wide(
   path = "simdata-u1000-sd100_7batches.csv",
   variable_name = "conc",
   import_metadata = TRUE)
-#> Warning: Unknown or uninitialised column: `valid_feature`.
-#> Warning: Unknown or uninitialised column: `is_quantifier`.
 ```
 
 The concentration values of each batch are centered on a reference QC

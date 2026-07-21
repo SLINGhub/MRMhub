@@ -157,19 +157,16 @@ QC-filtered data (filtered via <code><a href="filter_features_qc.html">filter_fe
 
 
 <dt id="arg-include-feature-filter">include_feature_filter<a class="anchor" aria-label="anchor" href="#arg-include-feature-filter"></a></dt>
-<dd><p>A regex pattern or a vector of feature names
-used to filter features by <code>feature_id</code>. If <code>NA</code> or an empty string (<code>""</code>)
-is provided, the filter is ignored. When a vector of length &gt; 1 is
-supplied, only features with exactly these names are selected (applied
-individually as OR conditions).</p></dd>
+<dd><p>Feature(s) to include by <code>feature_id</code>, as a
+character vector. Each element is matched exactly when it names an existing
+feature, otherwise treated as a regex; elements combine with OR. A full ID
+(e.g. <code>"S1P d18:0 [M&gt;60]"</code>) needs no escaping, while patterns like <code>"PC|PE"</code>
+still work. <code>NA</code> or <code>""</code> ignores the filter.</p></dd>
 
 
 <dt id="arg-exclude-feature-filter">exclude_feature_filter<a class="anchor" aria-label="anchor" href="#arg-exclude-feature-filter"></a></dt>
-<dd><p>A regex pattern or a vector of feature names
-used to exclude features by <code>feature_id</code>. If <code>NA</code> or an empty string
-(<code>""</code>) is provided, the filter is ignored. When a vector of length &gt; 1 is
-supplied, only features with exactly these names are excluded (applied
-individually as OR conditions).</p></dd>
+<dd><p>Feature(s) to exclude by <code>feature_id</code>, matched
+the same way as <code>include_feature_filter</code>. <code>NA</code> or <code>""</code> ignores the filter.</p></dd>
 
 
 <dt id="arg-max-regression-value">max_regression_value<a class="anchor" aria-label="anchor" href="#arg-max-regression-value"></a></dt>

@@ -305,28 +305,17 @@ contribution-factor range:</p>
 <h2 id="apply-the-correction">4. Apply the correction<a class="anchor" aria-label="anchor" href="#apply-the-correction"></a>
 </h2>
 <p><a href="../reference/correct_isotopic_interferences.html"><code>correct_isotopic_interferences()</code></a>
-subtracts the derived edges from the raw intensities in one pass:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mtext mathvariant="normal">Value</mtext><mtext mathvariant="normal">corrected</mtext></msub><mo>=</mo><msub><mtext mathvariant="normal">Value</mtext><mtext mathvariant="normal">target</mtext></msub><mo>−</mo><munder><mo>∑</mo><mi>i</mi></munder><msub><mi>K</mi><mi>i</mi></msub><mo>⋅</mo><msub><mtext mathvariant="normal">Value</mtext><msub><mtext mathvariant="normal">interfering</mtext><mi>i</mi></msub></msub></mrow><annotation encoding="application/x-tex">
-\text{Value}_\text{corrected} = \text{Value}_\text{target} -
-   \sum_i K_i \cdot \text{Value}_{\text{interfering}_i}
-</annotation></semantics></math></p>
+subtracts the derived edges from the raw intensities in one pass; its
+reference page gives the subtraction formula, chain ordering, and
+zero-clamping.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/correct_isotopic_interferences.html">correct_isotopic_interferences</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span></span></code></pre></div>
-<p>If nothing has been derived yet the function stops with a reminder to
-run <code><a href="../reference/calc_isotopic_interferences.html">calc_isotopic_interferences()</a></code> first. Declared
-interferences — in-source fragments, co-eluting isobars, or other
-overlaps you annotate yourself in the feature metadata — are applied
-with the sibling <a href="../reference/correct_custom_interferences.html"><code>correct_custom_interferences()</code></a>.</p>
-<p>Upstream features in a chain (A ← B ← C) are corrected first via a
-topological ordering; circular dependencies are detected and aborted
-with an informative error. For auto-derived edges, a subtraction is
-skipped when the running-corrected interferer has already fallen to
-zero, and corrected values are clamped at zero (LICAR parity). The
-original raw values are preserved in
-<code>feature_intensity_orig</code>. Apply interference correction
-<em>before</em> ISTD normalisation, drift, and batch correction; running
-it later resets those steps (with a warning) because they must use the
-corrected raw signal.</p>
+<p>Run it <strong>before</strong> ISTD normalisation, drift, and batch
+correction — applied later it resets those steps (with a warning), since
+they must use the corrected raw signal. Raw values are preserved in
+<code>feature_intensity_orig</code>. Declared interferences (in-source
+fragments, co-eluting isobars, or other overlaps you annotate) are
+applied with the sibling <a href="../reference/correct_custom_interferences.html"><code>correct_custom_interferences()</code></a>.</p>
 </div>
 <div class="section level2">
 <h2 id="manual-correction-of-a-single-pair">5. Manual correction of a single pair<a class="anchor" aria-label="anchor" href="#manual-correction-of-a-single-pair"></a>
@@ -346,12 +335,11 @@ name (<code>feature_intensity</code>).</p>
 <span>  updated_feature_id        <span class="op">=</span> <span class="cn">NA</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Setting <code>updated_feature_id</code> renames the corrected feature
-so raw and corrected channels can coexist under different IDs. Manual
-factors can be sourced from a theoretical isotopologue calculation
-(<code>enviPat</code>), an empirical pure-standard injection (which also
-captures Q1/Q3 transmission and in-source effects), or published
-class-level interference tables — verified empirically when moving a
-method between instruments.</p>
+so raw and corrected channels can coexist. Manual factors can come from
+a theoretical isotopologue calculation (<code>enviPat</code>), an
+empirical pure-standard injection (which also captures Q1/Q3
+transmission and in-source effects), or published class-level tables —
+verify empirically when moving a method between instruments.</p>
 </div>
 <div class="section level2">
 <h2 id="verifying-the-correction">6. Verifying the correction<a class="anchor" aria-label="anchor" href="#verifying-the-correction"></a>
@@ -373,19 +361,24 @@ shows how many features were affected by which magnitude of correction
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_qc_interference_impact.html">plot_qc_interference_impact</a></span><span class="op">(</span><span class="va">mexp</span>, qc_types <span class="op">=</span> <span class="st">"SPL"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="tutorial-11-interference-correction_files/figure-html/unnamed-chunk-12-1.png" class="r-plt" alt="" width="100%"></p>
-<p>For a per-feature view, <a href="../reference/plot_qc_interferences.html"><code>plot_qc_interferences()</code></a>
+<p>For a per-feature view, <a href="../reference/plot_interference_correction.html"><code>plot_interference_correction()</code></a>
 shows each corrected feature’s residual signal as a percent of its
-uncorrected value, split by QC type. With many features corrected,
-<code>min_correction_pct</code> focuses the plot on the
-substantially-affected ones (here, those with at least 40 % of their
-signal removed); <code>include_feature_filter</code> /
-<code>exclude_feature_filter</code> narrow it to specific features or
-classes. When blanks are present, a blank approaching zero alongside
-study samples (<code>SPL</code>) retaining most of their signal is the
-expected pattern:</p>
+uncorrected value, split by QC type. <code>min_correction_pct</code>
+restricts it to substantially-affected features (here, ≥ 40 % removed);
+<code>sort_by_effect = "desc"</code> ranks them by correction magnitude
+and <code>top_n</code> keeps only the largest. A blank approaching zero
+alongside study samples (<code>SPL</code>) retaining most of their
+signal is the expected pattern:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_qc_interferences.html">plot_qc_interferences</a></span><span class="op">(</span><span class="va">mexp</span>, qc_types <span class="op">=</span> <span class="st">"SPL"</span>, min_correction_pct <span class="op">=</span> <span class="fl">40</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_interference_correction.html">plot_interference_correction</a></span><span class="op">(</span></span>
+<span>  <span class="va">mexp</span>, qc_types <span class="op">=</span> <span class="st">"SPL"</span>, min_correction_pct <span class="op">=</span> <span class="fl">40</span>, sort_by_effect <span class="op">=</span> <span class="st">"desc"</span>,</span>
+<span>  point_size <span class="op">=</span> <span class="fl">1.5</span>, point_alpha <span class="op">=</span> <span class="fl">0.8</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p><img src="tutorial-11-interference-correction_files/figure-html/unnamed-chunk-13-1.png" class="r-plt" alt="" width="100%"></p>
+<p>Each point is one study sample; the box summarises all of them.
+<code>SPL</code> points have a transparent fill, so raise
+<code>point_size</code> / <code>point_alpha</code> when only a few are
+shown.</p>
 </div>
 <div class="section level2">
 <h2 id="co-elution-filtering-experimental">Co-elution filtering (experimental)<a class="anchor" aria-label="anchor" href="#co-elution-filtering-experimental"></a>
@@ -401,24 +394,6 @@ integration window, dropping chromatographically resolved pairs:</p>
 When enabled, inspect <code>annot_interferences</code> carefully —
 resolved pairs it drops (and, when retention data are missing, pairs it
 cannot verify) are reported in the console.</p>
-</div>
-<div class="section level2">
-<h2 id="recommendations">Recommendations<a class="anchor" aria-label="anchor" href="#recommendations"></a>
-</h2>
-<ul>
-<li>Apply interference correction on raw <code>feature_intensity</code>
-<em>before</em> normalisation, drift, and batch correction.</li>
-<li>Prefer <code>level = "MRM"</code> for MRM data and supply the
-product m/z; reserve <code>level = "MS1"</code> for genuine full-scan
-measurements.</li>
-<li>Inspect <code>annot_interferences</code> (or
-<code><a href="../reference/summarize_interferences.html">summarize_interferences()</a></code>) before applying.</li>
-<li>Keep the <code>mrm_pattern</code> annotation with the project: it
-reproduces the derived factors under the <code>enviPat</code> 2.8
-pin.</li>
-<li>After correction, verify that blank residual signal approaches
-zero.</li>
-</ul>
 </div>
 <div class="section level2">
 <h2 id="next-steps">Next steps<a class="anchor" aria-label="anchor" href="#next-steps"></a>

@@ -91,8 +91,6 @@ mexp <- import_data_masshunter(
   expand_qualifier_names = TRUE)
 #> ✔ Imported 38 analyses with 31 features.
 #> ℹ feature_area selected as default feature intensity. Modify with `set_intensity_var()`.
-#> Warning: Unknown or uninitialised column: `valid_feature`.
-#> Warning: Unknown or uninitialised column: `is_quantifier`.
 #> ✔ Analysis metadata associated with 38 analyses.
 #> ✔ Feature metadata associated with 31 features.
 

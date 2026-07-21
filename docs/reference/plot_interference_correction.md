@@ -1,29 +1,30 @@
-# Plot PCA loadings
+# Plot the results of interference correction
 
-Generates a plot of PCA loadings, illustrating the contribution of
-features to each principal component. This function can be used to
-investigate which feature (groups) are contributing to the variance seen
-in the plot and which need further investigation.
+This function generates grouped standardized beeswarm plots to visualize
+the results of interference correction across different QC types.
 
 ## Usage
 
 ``` r
-plot_pca_loading(
-  data = NULL,
-  variable,
-  qc_types = NA,
-  pca_dims = c(1, 2, 3, 4),
-  log_transform = TRUE,
-  top_n = 30,
-  vertical_bars = FALSE,
-  abs_loading = TRUE,
-  filter_data = FALSE,
+plot_interference_correction(
+  data,
+  qc_types = c("SPL", "TQC", "PBLK", "BQC"),
   include_qualifier = FALSE,
-  include_istd = FALSE,
+  include_istd = TRUE,
   include_feature_filter = NA,
   exclude_feature_filter = NA,
   min_median_value = NA,
-  font_base_size = 8
+  min_correction_pct = NA,
+  sort_by_effect = c("none", "desc", "asc"),
+  top_n = NA,
+  y_lim = c(-NA, NA),
+  point_size = 0.5,
+  dodge_width = 0.6,
+  point_alpha = 0.3,
+  box_alpha = 0.3,
+  box_linewidth = 0.5,
+  font_base_size = 8,
+  angle_x = 45
 )
 ```
 
@@ -33,49 +34,12 @@ plot_pca_loading(
 
   A `MRMhubExperiment` object.
 
-- variable:
-
-  A character string indicating the variable to use for PCA analysis.
-  Must be one of: "area", "height", "intensity", "norm_intensity",
-  "response", "conc", "conc_raw", "rt", "fwhm".
-
 - qc_types:
 
   A character vector specifying the QC types to plot. It must contain at
   least one element. The default `NA` plots any of the non-blank QC
   types ("SPL", "TQC", "BQC", "HQC", "MQC", "LQC", "NIST", "LTR")
   present in the dataset.
-
-- pca_dims:
-
-  A numeric vector indicating for which PCA dimensions to the loadings
-  should be shown. Default is c(1, 2, 3, 4).
-
-- log_transform:
-
-  A logical value indicating whether to log-transform the data before
-  the PCA. Default is `TRUE`.
-
-- top_n:
-
-  Number of top features with highest absolute loading that will be to
-  shown for each PC dimension. Default is 30.
-
-- vertical_bars:
-
-  Show vertical bars instead of horizontal bars in the plot. Default is
-  `FALSE`.
-
-- abs_loading:
-
-  Show absolute loading values instead of signed loadings. Default is
-  `TRUE`.
-
-- filter_data:
-
-  A logical value indicating whether to use all data (default) or only
-  QC-filtered data (filtered via
-  [`filter_features_qc()`](https://slinghub.github.io/MRMhub/quant/reference/filter_features_qc.md)).
 
 - include_qualifier:
 
@@ -84,8 +48,8 @@ plot_pca_loading(
 
 - include_istd:
 
-  A logical value indicating whether to include internal standard (ISTD)
-  features. Default is `TRUE`.
+  A logical value indicating whether to include internal standards
+  (ISTD) features. Default is `TRUE`.
 
 - include_feature_filter:
 
@@ -102,28 +66,76 @@ plot_pca_loading(
 
 - min_median_value:
 
-  Minimum median feature value across the selected QC-type samples
-  required for a feature to be included. `NA` (default) applies no
-  filtering. This is a fast way to exclude noisy features; for
-  principled QC-based filtering use
-  [`filter_features_qc()`](https://slinghub.github.io/MRMhub/quant/reference/filter_features_qc.md).
+  Median raw-signal abundance floor: drop features whose median
+  `feature_intensity` across the selected QC types is below this value.
+  `NA` (default) applies no threshold. Use to hide low-signal features.
+
+- min_correction_pct:
+
+  Keep only features whose median correction (percent of raw signal
+  removed, across the selected QC types) is at least this value. `NA`
+  (default) applies no threshold. Use to focus the plot on
+  substantially-corrected features.
+
+- sort_by_effect:
+
+  Order the x-axis by correction effect, defined per feature as the
+  deviation of its median % change from 100% (pooled across the
+  displayed QC-type points). One of `"none"` (default, alphabetical),
+  `"desc"` (largest effect first) or `"asc"`.
+
+- top_n:
+
+  Keep only the `top_n` features with the largest correction effect (see
+  `sort_by_effect`). `NA` (default) keeps all. Applied after the
+  `min_median_value` / `min_correction_pct` filters.
+
+- y_lim:
+
+  A numeric vector of length 2 specifying the y-axis limits.
+
+- point_size:
+
+  A numeric value indicating the size of points in millimeters. Default
+  is `0.5`.
+
+- dodge_width:
+
+  Numeric. Width used to dodge overlapping points by `qc_type`. Default
+  is `0.6`.
+
+- point_alpha:
+
+  Numeric. Transparency of the plotted points. Default is `0.3`.
+
+- box_alpha:
+
+  Numeric. Transparency of the boxplot. Default is `0.3`.
+
+- box_linewidth:
+
+  Numeric. Width of the boxplot lines. Default is `0.5`.
 
 - font_base_size:
 
   Numeric. Base font size (in points) for plot text. Default is 8.
 
+- angle_x:
+
+  Numeric. Angle of the x-axis text labels. Default is `45`.
+
 ## Value
 
-A `ggplot` object with PCA loadings plot
+A `ggplot` object showing the grouped standardized beeswarm plot.
 
 ## See also
 
 Other QC plots:
 [`plot_feature_correlations()`](https://slinghub.github.io/MRMhub/quant/reference/plot_feature_correlations.md),
-[`plot_interference_correction()`](https://slinghub.github.io/MRMhub/quant/reference/plot_interference_correction.md),
 [`plot_matrixeffects()`](https://slinghub.github.io/MRMhub/quant/reference/plot_matrixeffects.md),
 [`plot_normalization_qc()`](https://slinghub.github.io/MRMhub/quant/reference/plot_normalization_qc.md),
 [`plot_pca()`](https://slinghub.github.io/MRMhub/quant/reference/plot_pca.md),
+[`plot_pca_loading()`](https://slinghub.github.io/MRMhub/quant/reference/plot_pca_loading.md),
 [`plot_qc_interference_impact()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_interference_impact.md),
 [`plot_qc_summary_byclass()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_summary_byclass.md),
 [`plot_qc_summary_overall()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_summary_overall.md),

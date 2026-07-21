@@ -38,8 +38,6 @@ mexp <- import_data_masshunter(
 #> ℹ Standard values: "SBLK", "TBLK", "UBLK", "HQC", "MQC", "LQC", "QC", "PBLK",
 #>   "CAL", "EQA", "PQC", "TQC", "BQC", "RQC", "EQC", "NIST", "LTR", "SPL", "SST",
 #>   and "MBLK" ("Sample" is an alias for "SPL").
-#> Warning: Unknown or uninitialised column: `valid_feature`.
-#> Warning: Unknown or uninitialised column: `is_quantifier`.
 
 # Import metadata from an MSOrganiser template file
 mexp <- import_metadata_msorganiser(
@@ -52,8 +50,6 @@ mexp <- import_metadata_msorganiser(
 #> ℹ Standard values: "SBLK", "TBLK", "UBLK", "HQC", "MQC", "LQC", "QC", "PBLK",
 #>   "CAL", "EQA", "PQC", "TQC", "BQC", "RQC", "EQC", "NIST", "LTR", "SPL", "SST",
 #>   and "MBLK" ("Sample" is an alias for "SPL").
-#> Warning: Unknown or uninitialised column: `valid_feature`.
-#> Warning: Unknown or uninitialised column: `is_quantifier`.
 #> Found no errors, no warnings, and 1 note in the metadata.
 #> --------------------------------------------------------------------------------
 #>   Type  Table    Column    Issue                        Count
@@ -105,13 +101,13 @@ tbl_cal
 #>   feature_id   is_quantifier fit_model fit_weighting reg_failed    r2 lowest_cal
 #>   <chr>        <lgl>         <chr>     <chr>         <lgl>      <dbl>      <dbl>
 #> 1 Aldosterone  TRUE          quadratic 1/x           FALSE      0.980      0.277
-#> 2 Aldosterone… TRUE          quadratic 1/x           FALSE      0.981      0.277
+#> 2 Aldosterone… FALSE         quadratic 1/x           FALSE      0.981      0.277
 #> 3 Corticoster… TRUE          quadratic 1/x           FALSE      0.994      2.28 
-#> 4 Corticoster… TRUE          quadratic 1/x           FALSE      0.985      2.28 
+#> 4 Corticoster… FALSE         quadratic 1/x           FALSE      0.985      2.28 
 #> 5 Cortisol     TRUE          quadratic 1/x           FALSE      0.988      5.52 
-#> 6 Cortisol [Q… TRUE          quadratic 1/x           FALSE      0.995      5.52 
+#> 6 Cortisol [Q… FALSE         quadratic 1/x           FALSE      0.995      5.52 
 #> 7 Cortisone    TRUE          quadratic 1/x           FALSE      0.997      1.39 
-#> 8 Cortisone [… TRUE          quadratic 1/x           FALSE      0.984      1.39 
+#> 8 Cortisone [… FALSE         quadratic 1/x           FALSE      0.984      1.39 
 #> # ℹ 7 more variables: highest_cal <dbl>, coef_a <dbl>, coef_b <dbl>,
 #> #   coef_c <dbl>, lod <dbl>, loq <dbl>, sigma <dbl>
 ```
@@ -151,20 +147,17 @@ tbl <- get_qc_bias_variability(mexp, qc_types = c("HQC", "LQC"))
                    filter_data = FALSE)
  
  print(tbl)
-#> # A tibble: 16 × 10
-#>    feature_id     sample_id qc_type     n conc_target conc_mean conc_sd cv_intra
-#>    <chr>          <chr>     <chr>   <int>       <dbl>     <dbl>   <dbl>    <dbl>
-#>  1 Aldosterone    HQC       HQC         5       9.74      8.65    1.14     13.1 
-#>  2 Aldosterone    LQC       LQC         5       0.911     0.843   0.132    15.7 
-#>  3 Aldosterone [… HQC       HQC         5       9.74     11.1     4.09     36.9 
-#>  4 Aldosterone [… LQC       LQC         5       0.911     0.692   0.395    57.1 
-#>  5 Corticosterone HQC       HQC         5      77.5      75.5     2.98      3.95
-#>  6 Corticosterone LQC       LQC         5       4.11      3.64    0.378    10.4 
-#>  7 Corticosteron… HQC       HQC         5      77.5      93.8    10.2      10.9 
-#>  8 Corticosteron… LQC       LQC         5       4.11      3.59    0.705    19.6 
-#>  9 Cortisol       HQC       HQC         5     472       495.     68.3      13.8 
-#> 10 Cortisol       LQC       LQC         5      25.2      20.0     2.40     12.0 
-#> # ℹ 6 more rows
+#> # A tibble: 8 × 10
+#>   feature_id     sample_id qc_type     n conc_target conc_mean conc_sd cv_intra
+#>   <chr>          <chr>     <chr>   <int>       <dbl>     <dbl>   <dbl>    <dbl>
+#> 1 Aldosterone    HQC       HQC         5       9.74      8.65    1.14     13.1 
+#> 2 Aldosterone    LQC       LQC         5       0.911     0.843   0.132    15.7 
+#> 3 Corticosterone HQC       HQC         5      77.5      75.5     2.98      3.95
+#> 4 Corticosterone LQC       LQC         5       4.11      3.64    0.378    10.4 
+#> 5 Cortisol       HQC       HQC         5     472       495.     68.3      13.8 
+#> 6 Cortisol       LQC       LQC         5      25.2      20.0     2.40     12.0 
+#> 7 Cortisone      HQC       HQC         5     119.      114.      6.73      5.89
+#> 8 Cortisone      LQC       LQC         5       6.52      6.23    0.504     8.08
 #> # ℹ 2 more variables: bias <dbl>, frac_conc_out_of_range <dbl>
 ```
 

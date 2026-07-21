@@ -160,9 +160,7 @@ from a CSV file. This file must contain a column with batch information
 <span>  <span class="va">myexp</span>,</span>
 <span>  path <span class="op">=</span> <span class="st">"smooth-testdata.csv"</span>,</span>
 <span>  variable_name <span class="op">=</span> <span class="st">"conc"</span>,</span>
-<span>  import_metadata <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `valid_feature`.</span></span>
-<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `is_quantifier`.</span></span></code></pre></div>
+<span>  import_metadata <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="qc-based-smoothing">QC-based smoothing<a class="anchor" aria-label="anchor" href="#qc-based-smoothing"></a>
@@ -301,9 +299,7 @@ separate dataset of seven batches to show the effect clearly.</p>
 <span>  <span class="va">myexp_batch</span>,</span>
 <span>  path <span class="op">=</span> <span class="st">"simdata-u1000-sd100_7batches.csv"</span>,</span>
 <span>  variable_name <span class="op">=</span> <span class="st">"conc"</span>,</span>
-<span>  import_metadata <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `valid_feature`.</span></span>
-<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `is_quantifier`.</span></span></code></pre></div>
+<span>  import_metadata <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>The concentration values of each batch are centered on a reference QC
 type, here the study samples (<code>ref_qc_types = "SPL"</code>). The
 <code>correct_scale</code> parameter controls whether the batch-to-batch

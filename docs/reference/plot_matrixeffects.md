@@ -1,29 +1,31 @@
-# Plot PCA loadings
+# Plot standardized feature intensities grouped by QC type
 
-Generates a plot of PCA loadings, illustrating the contribution of
-features to each principal component. This function can be used to
-investigate which feature (groups) are contributing to the variance seen
-in the plot and which need further investigation.
+This function creates a grouped beeswarm plot of standardized feature
+intensities, where the y-axis represents intensity standardized such
+that the mean across all features is 100%. Points are grouped by
+`qc_type` and spread using quasirandom jitter.
 
 ## Usage
 
 ``` r
-plot_pca_loading(
-  data = NULL,
-  variable,
-  qc_types = NA,
-  pca_dims = c(1, 2, 3, 4),
-  log_transform = TRUE,
-  top_n = 30,
-  vertical_bars = FALSE,
-  abs_loading = TRUE,
-  filter_data = FALSE,
+plot_matrixeffects(
+  data,
+  variable = "intensity",
+  qc_types = c("SPL", "TQC", "PBLK", "BQC"),
+  batchwise_normalization = TRUE,
   include_qualifier = FALSE,
-  include_istd = FALSE,
+  only_istd = TRUE,
   include_feature_filter = NA,
   exclude_feature_filter = NA,
   min_median_value = NA,
-  font_base_size = 8
+  y_lim = c(-NA, NA),
+  point_size = 0.5,
+  dodge_width = 0.6,
+  point_alpha = 0.3,
+  box_alpha = 0.3,
+  box_linewidth = 0.5,
+  font_base_size = 8,
+  angle_x = 45
 )
 ```
 
@@ -35,9 +37,9 @@ plot_pca_loading(
 
 - variable:
 
-  A character string indicating the variable to use for PCA analysis.
-  Must be one of: "area", "height", "intensity", "norm_intensity",
-  "response", "conc", "conc_raw", "rt", "fwhm".
+  A character string indicating the signal variable to plot. Must be one
+  of: "area", "height", "intensity", "norm_intensity", "response",
+  "conc", "conc_raw", "rt", "fwhm".
 
 - qc_types:
 
@@ -46,46 +48,21 @@ plot_pca_loading(
   types ("SPL", "TQC", "BQC", "HQC", "MQC", "LQC", "NIST", "LTR")
   present in the dataset.
 
-- pca_dims:
+- batchwise_normalization:
 
-  A numeric vector indicating for which PCA dimensions to the loadings
-  should be shown. Default is c(1, 2, 3, 4).
-
-- log_transform:
-
-  A logical value indicating whether to log-transform the data before
-  the PCA. Default is `TRUE`.
-
-- top_n:
-
-  Number of top features with highest absolute loading that will be to
-  shown for each PC dimension. Default is 30.
-
-- vertical_bars:
-
-  Show vertical bars instead of horizontal bars in the plot. Default is
-  `FALSE`.
-
-- abs_loading:
-
-  Show absolute loading values instead of signed loadings. Default is
-  `TRUE`.
-
-- filter_data:
-
-  A logical value indicating whether to use all data (default) or only
-  QC-filtered data (filtered via
-  [`filter_features_qc()`](https://slinghub.github.io/MRMhub/quant/reference/filter_features_qc.md)).
+  A logical value indicating whether to normalize the signals by batch
+  instead of globally.
 
 - include_qualifier:
 
   A logical value indicating whether to include qualifier features.
   Default is `TRUE`.
 
-- include_istd:
+- only_istd:
 
-  A logical value indicating whether to include internal standard (ISTD)
-  features. Default is `TRUE`.
+  A logical value indicating whether to include features used as
+  internal standards (ISTD). Default is `TRUE`. Set to `FALSE` in
+  combination with feature_filter parameters to show other features.
 
 - include_feature_filter:
 
@@ -108,22 +85,52 @@ plot_pca_loading(
   principled QC-based filtering use
   [`filter_features_qc()`](https://slinghub.github.io/MRMhub/quant/reference/filter_features_qc.md).
 
+- y_lim:
+
+  A numeric vector of length 2 specifying the y-axis limits.
+
+- point_size:
+
+  A numeric value indicating the size of points in millimeters. Default
+  is `0.5`.
+
+- dodge_width:
+
+  Numeric. Width used to dodge overlapping points by `qc_type`. Default
+  is `0.6`.
+
+- point_alpha:
+
+  Numeric. Transparency of the plotted points. Default is `0.3`.
+
+- box_alpha:
+
+  Numeric. Transparency of the boxplot. Default is `0.3`.
+
+- box_linewidth:
+
+  Numeric. Width of the boxplot lines. Default is `0.5`.
+
 - font_base_size:
 
   Numeric. Base font size (in points) for plot text. Default is 8.
 
+- angle_x:
+
+  Numeric. Angle of the x-axis text labels. Default is `45`.
+
 ## Value
 
-A `ggplot` object with PCA loadings plot
+A `ggplot` object showing the grouped standardized beeswarm plot.
 
 ## See also
 
 Other QC plots:
 [`plot_feature_correlations()`](https://slinghub.github.io/MRMhub/quant/reference/plot_feature_correlations.md),
 [`plot_interference_correction()`](https://slinghub.github.io/MRMhub/quant/reference/plot_interference_correction.md),
-[`plot_matrixeffects()`](https://slinghub.github.io/MRMhub/quant/reference/plot_matrixeffects.md),
 [`plot_normalization_qc()`](https://slinghub.github.io/MRMhub/quant/reference/plot_normalization_qc.md),
 [`plot_pca()`](https://slinghub.github.io/MRMhub/quant/reference/plot_pca.md),
+[`plot_pca_loading()`](https://slinghub.github.io/MRMhub/quant/reference/plot_pca_loading.md),
 [`plot_qc_interference_impact()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_interference_impact.md),
 [`plot_qc_summary_byclass()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_summary_byclass.md),
 [`plot_qc_summary_overall()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_summary_overall.md),

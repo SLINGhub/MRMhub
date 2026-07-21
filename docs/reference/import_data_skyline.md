@@ -110,8 +110,6 @@ mexp <- import_data_skyline(
 )
 #> ✔ Imported 6 analyses with 21 features.
 #> ℹ feature_area selected as default feature intensity. Modify with `set_intensity_var()`.
-#> Warning: Unknown or uninitialised column: `valid_feature`.
-#> Warning: Unknown or uninitialised column: `is_quantifier`.
 #> ✔ Analysis metadata associated with 6 analyses.
 #> ✔ Feature metadata associated with 21 features.
 #> ℹ Analysis order was based on `analysis_order` column of imported data. Use `set_analysis_order` to change the order.

@@ -168,8 +168,6 @@ be obtained from <a href="https://github.com/SLINGhub/mrmhub/tree/main/data-raw"
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Standard values: <span style="color: #0000BB;">"SBLK"</span>, <span style="color: #0000BB;">"TBLK"</span>, <span style="color: #0000BB;">"UBLK"</span>, <span style="color: #0000BB;">"HQC"</span>, <span style="color: #0000BB;">"MQC"</span>, <span style="color: #0000BB;">"LQC"</span>, <span style="color: #0000BB;">"QC"</span>, <span style="color: #0000BB;">"PBLK"</span>,</span></span>
 <span><span class="co">#&gt;   <span style="color: #0000BB;">"CAL"</span>, <span style="color: #0000BB;">"EQA"</span>, <span style="color: #0000BB;">"PQC"</span>, <span style="color: #0000BB;">"TQC"</span>, <span style="color: #0000BB;">"BQC"</span>, <span style="color: #0000BB;">"RQC"</span>, <span style="color: #0000BB;">"EQC"</span>, <span style="color: #0000BB;">"NIST"</span>, <span style="color: #0000BB;">"LTR"</span>, <span style="color: #0000BB;">"SPL"</span>, <span style="color: #0000BB;">"SST"</span>,</span></span>
 <span><span class="co">#&gt;   and <span style="color: #0000BB;">"MBLK"</span> (<span style="color: #0000BB;">"Sample"</span> is an alias for <span style="color: #0000BB;">"SPL"</span>).</span></span>
-<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `valid_feature`.</span></span>
-<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `is_quantifier`.</span></span>
 <span></span>
 <span><span class="co"># Import metadata from an MSOrganiser template file</span></span>
 <span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_metadata_msorganiser.html">import_metadata_msorganiser</a></span><span class="op">(</span></span>
@@ -182,8 +180,6 @@ be obtained from <a href="https://github.com/SLINGhub/mrmhub/tree/main/data-raw"
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Standard values: <span style="color: #0000BB;">"SBLK"</span>, <span style="color: #0000BB;">"TBLK"</span>, <span style="color: #0000BB;">"UBLK"</span>, <span style="color: #0000BB;">"HQC"</span>, <span style="color: #0000BB;">"MQC"</span>, <span style="color: #0000BB;">"LQC"</span>, <span style="color: #0000BB;">"QC"</span>, <span style="color: #0000BB;">"PBLK"</span>,</span></span>
 <span><span class="co">#&gt;   <span style="color: #0000BB;">"CAL"</span>, <span style="color: #0000BB;">"EQA"</span>, <span style="color: #0000BB;">"PQC"</span>, <span style="color: #0000BB;">"TQC"</span>, <span style="color: #0000BB;">"BQC"</span>, <span style="color: #0000BB;">"RQC"</span>, <span style="color: #0000BB;">"EQC"</span>, <span style="color: #0000BB;">"NIST"</span>, <span style="color: #0000BB;">"LTR"</span>, <span style="color: #0000BB;">"SPL"</span>, <span style="color: #0000BB;">"SST"</span>,</span></span>
 <span><span class="co">#&gt;   and <span style="color: #0000BB;">"MBLK"</span> (<span style="color: #0000BB;">"Sample"</span> is an alias for <span style="color: #0000BB;">"SPL"</span>).</span></span>
-<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `valid_feature`.</span></span>
-<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `is_quantifier`.</span></span>
 <span><span class="co">#&gt; Found no errors, no warnings, and 1 note in the metadata.</span></span>
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
 <span><span class="co">#&gt;   Type  Table    Column    Issue                        Count</span></span>
@@ -225,13 +221,13 @@ curves are then calculated and plotted.</p>
 <span><span class="co">#&gt;   feature_id   is_quantifier fit_model fit_weighting reg_failed    r2 lowest_cal</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Aldosterone  TRUE          quadratic 1/x           FALSE      0.980      0.277</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Aldosterone… TRUE          quadratic 1/x           FALSE      0.981      0.277</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Aldosterone… FALSE         quadratic 1/x           FALSE      0.981      0.277</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Corticoster… TRUE          quadratic 1/x           FALSE      0.994      2.28 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Corticoster… TRUE          quadratic 1/x           FALSE      0.985      2.28 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Corticoster… FALSE         quadratic 1/x           FALSE      0.985      2.28 </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Cortisol     TRUE          quadratic 1/x           FALSE      0.988      5.52 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Cortisol [Q… TRUE          quadratic 1/x           FALSE      0.995      5.52 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Cortisol [Q… FALSE         quadratic 1/x           FALSE      0.995      5.52 </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span> Cortisone    TRUE          quadratic 1/x           FALSE      0.997      1.39 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">8</span> Cortisone [… TRUE          quadratic 1/x           FALSE      0.984      1.39 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">8</span> Cortisone [… FALSE         quadratic 1/x           FALSE      0.984      1.39 </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 7 more variables: highest_cal &lt;dbl&gt;, coef_a &lt;dbl&gt;, coef_b &lt;dbl&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   coef_c &lt;dbl&gt;, lod &lt;dbl&gt;, loq &lt;dbl&gt;, sigma &lt;dbl&gt;</span></span></span></code></pre></div>
 <p>The summary includes the limit of detection (<code>lod</code>) and
@@ -265,20 +261,17 @@ shown below. The final concentration data is saved to a CSV file.</p>
 <span>                   filter_data <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span> </span>
 <span> <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">tbl</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 16 × 10</span></span></span>
-<span><span class="co">#&gt;    feature_id     sample_id qc_type     n conc_target conc_mean conc_sd cv_intra</span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> Aldosterone    HQC       HQC         5       9.74      8.65    1.14     13.1 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> Aldosterone    LQC       LQC         5       0.911     0.843   0.132    15.7 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> Aldosterone [… HQC       HQC         5       9.74     11.1     4.09     36.9 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> Aldosterone [… LQC       LQC         5       0.911     0.692   0.395    57.1 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> Corticosterone HQC       HQC         5      77.5      75.5     2.98      3.95</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> Corticosterone LQC       LQC         5       4.11      3.64    0.378    10.4 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> Corticosteron… HQC       HQC         5      77.5      93.8    10.2      10.9 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> Corticosteron… LQC       LQC         5       4.11      3.59    0.705    19.6 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> Cortisol       HQC       HQC         5     472       495.     68.3      13.8 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> Cortisol       LQC       LQC         5      25.2      20.0     2.40     12.0 </span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 6 more rows</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 8 × 10</span></span></span>
+<span><span class="co">#&gt;   feature_id     sample_id qc_type     n conc_target conc_mean conc_sd cv_intra</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Aldosterone    HQC       HQC         5       9.74      8.65    1.14     13.1 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Aldosterone    LQC       LQC         5       0.911     0.843   0.132    15.7 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Corticosterone HQC       HQC         5      77.5      75.5     2.98      3.95</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Corticosterone LQC       LQC         5       4.11      3.64    0.378    10.4 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Cortisol       HQC       HQC         5     472       495.     68.3      13.8 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Cortisol       LQC       LQC         5      25.2      20.0     2.40     12.0 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span> Cortisone      HQC       HQC         5     119.      114.      6.73      5.89</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">8</span> Cortisone      LQC       LQC         5       6.52      6.23    0.504     8.08</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 2 more variables: bias &lt;dbl&gt;, frac_conc_out_of_range &lt;dbl&gt;</span></span></span></code></pre></div>
 <div class="section level2">
 <h2 id="next-steps">Next steps<a class="anchor" aria-label="anchor" href="#next-steps"></a>

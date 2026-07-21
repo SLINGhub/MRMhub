@@ -225,13 +225,16 @@ raw data. Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-include-feature-filter">include_feature_filter<a class="anchor" aria-label="anchor" href="#arg-include-feature-filter"></a></dt>
-<dd><p>Regex pattern to include features. If omitted,
-considers all features.</p></dd>
+<dd><p>Feature(s) to include by <code>feature_id</code>, as a
+character vector. Each element is matched exactly when it names an existing
+feature, otherwise treated as a regex; elements combine with OR. A full ID
+(e.g. <code>"S1P d18:0 [M&gt;60]"</code>) needs no escaping, while patterns like <code>"PC|PE"</code>
+still work. <code>NA</code> or <code>""</code> ignores the filter.</p></dd>
 
 
 <dt id="arg-exclude-feature-filter">exclude_feature_filter<a class="anchor" aria-label="anchor" href="#arg-exclude-feature-filter"></a></dt>
-<dd><p>Regex pattern to exclude features. If omitted,
-excludes none.</p></dd>
+<dd><p>Feature(s) to exclude by <code>feature_id</code>, matched
+the same way as <code>include_feature_filter</code>. <code>NA</code> or <code>""</code> ignores the filter.</p></dd>
 
 
 <dt id="arg-output-pdf">output_pdf<a class="anchor" aria-label="anchor" href="#arg-output-pdf"></a></dt>

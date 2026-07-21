@@ -16,6 +16,7 @@ plot_qc_interference_impact(
   include_istd = TRUE,
   include_feature_filter = NA,
   exclude_feature_filter = NA,
+  min_correction_pct = NA,
   binwidth = NA,
   font_base_size = 8
 )
@@ -40,10 +41,24 @@ plot_qc_interference_impact(
 
   Include internal standards. Default `TRUE`.
 
-- include_feature_filter, exclude_feature_filter:
+- include_feature_filter:
 
-  Optional feature include/ exclude filters (see
-  `get_dataset_subset()`).
+  Feature(s) to include by `feature_id`, as a character vector. Each
+  element is matched exactly when it names an existing feature,
+  otherwise treated as a regex; elements combine with OR. A full ID
+  (e.g. `"S1P d18:0 [M>60]"`) needs no escaping, while patterns like
+  `"PC|PE"` still work. `NA` or `""` ignores the filter.
+
+- exclude_feature_filter:
+
+  Feature(s) to exclude by `feature_id`, matched the same way as
+  `include_feature_filter`. `NA` or `""` ignores the filter.
+
+- min_correction_pct:
+
+  Keep only features whose median correction (percent of raw signal
+  removed) is at least this value. `NA` (default) keeps every feature
+  with a positive impact. Use to drop negligible corrections.
 
 - binwidth:
 
@@ -61,11 +76,11 @@ A `ggplot` object: feature count vs. percent of signal removed.
 
 Other QC plots:
 [`plot_feature_correlations()`](https://slinghub.github.io/MRMhub/quant/reference/plot_feature_correlations.md),
+[`plot_interference_correction()`](https://slinghub.github.io/MRMhub/quant/reference/plot_interference_correction.md),
+[`plot_matrixeffects()`](https://slinghub.github.io/MRMhub/quant/reference/plot_matrixeffects.md),
 [`plot_normalization_qc()`](https://slinghub.github.io/MRMhub/quant/reference/plot_normalization_qc.md),
 [`plot_pca()`](https://slinghub.github.io/MRMhub/quant/reference/plot_pca.md),
 [`plot_pca_loading()`](https://slinghub.github.io/MRMhub/quant/reference/plot_pca_loading.md),
-[`plot_qc_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_interferences.md),
-[`plot_qc_matrixeffects()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_matrixeffects.md),
 [`plot_qc_summary_byclass()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_summary_byclass.md),
 [`plot_qc_summary_overall()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_summary_overall.md),
 [`plot_qcmetrics_comparison()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qcmetrics_comparison.md),

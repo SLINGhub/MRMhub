@@ -54,8 +54,6 @@ mexp <- import_metadata_analyses(mexp,
 mexp <- import_metadata_features(mexp,
                                  path = "datasets/feature_metadata.csv",
                                  ignore_warnings= TRUE )
-#> Warning: Unknown or uninitialised column: `valid_feature`.
-#> Warning: Unknown or uninitialised column: `is_quantifier`.
 ```
 
 Metadata can also be imported from sheets of an Excel workbook, which
@@ -102,8 +100,6 @@ completed tables.
 mexp <- import_metadata_msorganiser(mexp,
                                     path = "datasets/sPerfect_Metadata.xlsx",
                                     ignore_warnings= TRUE)
-#> Warning: Unknown or uninitialised column: `valid_feature`.
-#> Warning: Unknown or uninitialised column: `is_quantifier`.
 ```
 
 ## Metadata table structures

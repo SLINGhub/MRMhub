@@ -74,8 +74,6 @@ myexp <- import_data_mrmhub(
 )
 #> ✔ Imported 499 analyses with 503 features.
 #> ℹ feature_area selected as default feature intensity. Modify with `set_intensity_var()`.
-#> Warning: Unknown or uninitialised column: `valid_feature`.
-#> Warning: Unknown or uninitialised column: `is_quantifier`.
 #> ✔ Analysis metadata associated with 499 analyses.
 #> ✔ Feature metadata associated with 503 features.
 ```
@@ -106,8 +104,6 @@ myexp <- import_metadata_msorganiser(
   path = "datasets/sPerfect_Metadata.xlsx", 
   ignore_warnings = TRUE
 )
-#> Warning: Unknown or uninitialised column: `valid_feature`.
-#> Warning: Unknown or uninitialised column: `is_quantifier`.
 #> Found no errors, 4 warnings, and no notes in the metadata.
 #> --------------------------------------------------------------------------------
 #>   Type  Table    Column                Issue                           Count
@@ -187,7 +183,7 @@ myexp <- filter_features_qc(
 #> ✔ QC metrics calculated for 502 features across 7 sample types, including normalized-intensity and concentration statistics.
 #> ! The QC parameter min.signalblank.median.spl.sblk contains NAs for the following features: LPC O-22:1, PC 34:5, PC 35:1, PG 36:2, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC .... These features failed QC.
 #> ! The QC parameter max.cv.conc.bqc contains NAs for the following features: Cer d18:1/12:0 (ISTD) [M-H20>264], Cer d18:1/25:0 (ISTD) [M-H20>264], Hex2Cer.... These features failed QC.
-#> ✔ New feature QC filters were defined: 183 of 460 quantifier features meet QC criteria (not including the 42 quantifier ISTD features).
+#> ✔ New feature QC filters were defined: 181 of 423 quantifier features meet QC criteria (not including the 25 quantifier ISTD features).
 ```
 
 Note that the drift correction above uses the study samples
@@ -243,7 +239,7 @@ for the full list of plotting functions grouped by workflow stage.
 # Detailed Excel report with multiple sheets
 save_report_xlsx(myexp, path = tempfile(fileext = ".xlsx"))
 #> Saving report to disk - please wait...
-#> ✔ The data processing report has been saved to /var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpbvTsg8/file13472432d9bdb.xlsx.
+#> ✔ The data processing report has been saved to /var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpPWCuce/file58496a9e0f16.xlsx.
 
 # Flat CSV with concentration values that passed QC
 save_dataset_csv(
@@ -254,7 +250,7 @@ save_dataset_csv(
   include_qualifier = FALSE,
   filter_data = TRUE
 )
-#> ✔ Concentration values for 378 analyses and 183 features have been exported to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpbvTsg8/file1347252afdb73.csv'.
+#> ✔ Concentration values for 378 analyses and 181 features have been exported to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpPWCuce/file58496b671ae9.csv'.
 
 # Save the complete object for reproducibility or sharing
 saveRDS(myexp, file = tempfile(fileext = ".rds"), compress = TRUE)

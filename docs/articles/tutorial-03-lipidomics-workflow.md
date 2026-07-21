@@ -42,8 +42,6 @@ data_path <- "./datasets/sPerfect_MRMhub.tsv"
 myexp <- import_data_mrmhub(data = myexp, path = data_path, import_metadata = TRUE)
 #> ✔ Imported 499 analyses with 503 features.
 #> ℹ feature_area selected as default feature intensity. Modify with `set_intensity_var()`.
-#> Warning: Unknown or uninitialised column: `valid_feature`.
-#> Warning: Unknown or uninitialised column: `is_quantifier`.
 #> ✔ Analysis metadata associated with 499 analyses.
 #> ✔ Feature metadata associated with 503 features.
 ```
@@ -215,8 +213,6 @@ Exercises
 
 file_path <- "datasets/sPerfect_Metadata.xlsx"
 myexp <- import_metadata_msorganiser(myexp, path = file_path, ignore_warnings = TRUE)
-#> Warning: Unknown or uninitialised column: `valid_feature`.
-#> Warning: Unknown or uninitialised column: `is_quantifier`.
 #> Found no errors, 4 warnings, and no notes in the metadata.
 #> --------------------------------------------------------------------------------
 #>   Type  Table    Column                Issue                           Count
@@ -305,8 +301,8 @@ plot_pca(
   point_size = 2, point_alpha = 0.7, font_base_size = 8, ellipse_alpha = 0.3, 
   include_istd = FALSE)
 #> ! 2 features contained missing or non-numeric values and were exluded.
-#> ✔ The PCA was calculated based on `feature_intensity` values of 460 features.
-#> ggrepel: 10000 iterations in 0.004781s, 5 overlaps. Consider increasing 'max.iter'.
+#> ✔ The PCA was calculated based on `feature_intensity` values of 423 features.
+#> ggrepel: 10000 iterations in 0.002847s, 5 overlaps. Consider increasing 'max.iter'.
 ```
 
 ![PCA
@@ -342,8 +338,8 @@ plot_pca(
   include_istd = FALSE,
   shared_labeltext_hide = NA)
 #> ! 2 features contained missing or non-numeric values and were exluded.
-#> ✔ The PCA was calculated based on `feature_intensity` values of 460 features.
-#> ggrepel: 10000 iterations in 0.009905s, 7 overlaps. Consider increasing 'max.iter'.
+#> ✔ The PCA was calculated based on `feature_intensity` values of 423 features.
+#> ggrepel: 10000 iterations in 0.006550s, 7 overlaps. Consider increasing 'max.iter'.
 ```
 
 ![PCA
@@ -379,7 +375,7 @@ myexp <- mrmhub::filter_features_qc(myexp,
 #> Calculating feature QC metrics - please wait...
 #> ✔ QC metrics calculated for 502 features across 7 sample types.
 #> ! The QC parameter min.intensity.median.spl contains NAs for the following features: LPC O-22:1, PC 34:5, PC 35:1, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC P-32:1 M+1. These features failed QC.
-#> ✔ New feature QC filters were defined: 486 of 502 quantifier features meet QC criteria (including the 42 quantifier ISTD features).
+#> ✔ New feature QC filters were defined: 437 of 448 quantifier features meet QC criteria (including the 25 quantifier ISTD features).
 plot_responsecurves(
   data = myexp,
   variable = "intensity",
@@ -421,7 +417,7 @@ myexp <- mrmhub::correct_custom_interferences(myexp)
 #> ! Interference correction led to 31 negative or zero values in 2 features (samples/QCs). Please verify the correction, or set `neg_to_na = TRUE`.
 #> ! 1 feature(s) became strongly negative (below -25% of raw) after correction: "PC 29:0|SM 33:1 M+3". This may indicate a mis-defined interference or an unmodeled effect; please verify.
 #> ✔ Interference correction applied to 11 of 502 feature(s) (0 isotopic, 11 custom edge(s)).
-plot_qc_interferences(myexp, qc_types = c("BQC", "SPL", "TQC", "LTR"))
+plot_interference_correction(myexp, qc_types = c("BQC", "SPL", "TQC", "LTR"))
 ```
 
 ![](tutorial-03-lipidomics-workflow_files/figure-html/isotope-correction-1.png)
@@ -480,7 +476,7 @@ myexp <- mrmhub::filter_features_qc(myexp,
 #> Calculating feature QC metrics - please wait...
 #> ✔ QC metrics calculated for 502 features across 7 sample types, including normalized-intensity and concentration statistics.
 #> ! The QC parameter min.intensity.median.spl contains NAs for the following features: LPC O-22:1, PC 34:5, PC 35:1, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC P-32:1 M+1. These features failed QC.
-#> ✔ New feature QC filters were defined: 457 of 502 quantifier features meet QC criteria (including the 42 quantifier ISTD features).
+#> ✔ New feature QC filters were defined: 413 of 448 quantifier features meet QC criteria (including the 25 quantifier ISTD features).
 mrmhub::plot_normalization_qc(
   data = myexp, 
   before_norm_var = "intensity", 
@@ -720,7 +716,7 @@ myexp <- filter_features_qc(
 #> ! The QC parameter min.signalblank.median.spl.pblk contains NAs for the following features: LPC O-22:1, PC 34:5, PC 35:1, PG 36:2, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC .... These features failed QC.
 #> ! The QC parameter max.cv.conc.bqc contains NAs for the following features: Cer d18:1/12:0 (ISTD) [M-H20>264], Cer d18:1/25:0 (ISTD) [M-H20>264], Hex2Cer.... These features failed QC.
 #> ! The following features were forced to be retained despite not meeting filtering criteria: CE 16:0, CE 20:4, CE 22:5, and CE 22:6
-#> ✔ New feature QC filters were defined: 352 of 460 quantifier features meet QC criteria (not including the 42 quantifier ISTD features).
+#> ✔ New feature QC filters were defined: 324 of 423 quantifier features meet QC criteria (not including the 25 quantifier ISTD features).
 ```
 
 ## 19. Summary of the QC filtering
@@ -810,7 +806,7 @@ Exercises
 
 mrmhub::save_report_xlsx(myexp, path = tempfile(fileext = ".xlsx"))
 #> Saving report to disk - please wait...
-#> ✔ The data processing report of experiment 'sPerfect' has been saved to /var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpsjET9Z/file134a9e99a3a7.xlsx.
+#> ✔ The data processing report of experiment 'sPerfect' has been saved to /var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//Rtmpv0nzin/file58a65d9bc651.xlsx.
 ```
 
 Specific data subsets can also be saved as a clean flat, wide CSV file.
@@ -831,7 +827,7 @@ mrmhub::save_dataset_csv(
   qc_types = "SPL", 
   include_qualifier = FALSE,
   filter_data = TRUE)
-#> ✔ Concentration values for 377 analyses and 352 features have been exported to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpsjET9Z/file134a974bfc67d.csv'.
+#> ✔ Concentration values for 377 analyses and 324 features have been exported to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//Rtmpv0nzin/file58a6f3eb953.csv'.
 ```
 
 ## 22. Sharing the `MRMhubExperiment` dataset

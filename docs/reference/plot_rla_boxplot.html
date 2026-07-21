@@ -234,19 +234,16 @@ Default is <code>1</code>. Increase (e.g. <code>2</code>) for wider gaps, decrea
 
 
 <dt id="arg-include-feature-filter">include_feature_filter<a class="anchor" aria-label="anchor" href="#arg-include-feature-filter"></a></dt>
-<dd><p>A regex pattern or a vector of feature names
-used to filter features by <code>feature_id</code>. If <code>NA</code> or an empty string (<code>""</code>)
-is provided, the filter is ignored. When a vector of length &gt; 1 is
-supplied, only features with exactly these names are selected (applied
-individually as OR conditions).</p></dd>
+<dd><p>Feature(s) to include by <code>feature_id</code>, as a
+character vector. Each element is matched exactly when it names an existing
+feature, otherwise treated as a regex; elements combine with OR. A full ID
+(e.g. <code>"S1P d18:0 [M&gt;60]"</code>) needs no escaping, while patterns like <code>"PC|PE"</code>
+still work. <code>NA</code> or <code>""</code> ignores the filter.</p></dd>
 
 
 <dt id="arg-exclude-feature-filter">exclude_feature_filter<a class="anchor" aria-label="anchor" href="#arg-exclude-feature-filter"></a></dt>
-<dd><p>A regex pattern or a vector of feature names
-used to exclude features by <code>feature_id</code>. If <code>NA</code> or an empty string
-(<code>""</code>) is provided, the filter is ignored. When a vector of length &gt; 1 is
-supplied, only features with exactly these names are excluded (applied
-individually as OR conditions).</p></dd>
+<dd><p>Feature(s) to exclude by <code>feature_id</code>, matched
+the same way as <code>include_feature_filter</code>. <code>NA</code> or <code>""</code> ignores the filter.</p></dd>
 
 
 <dt id="arg-show-timestamp">show_timestamp<a class="anchor" aria-label="anchor" href="#arg-show-timestamp"></a></dt>
@@ -336,12 +333,12 @@ De Livera et al. (2015) Statistical Methods for Handling Unwanted Variation in M
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>Other QC plots:
 <code><a href="plot_feature_correlations.html">plot_feature_correlations()</a></code>,
+<code><a href="plot_interference_correction.html">plot_interference_correction()</a></code>,
+<code><a href="plot_matrixeffects.html">plot_matrixeffects()</a></code>,
 <code><a href="plot_normalization_qc.html">plot_normalization_qc()</a></code>,
 <code><a href="plot_pca.html">plot_pca()</a></code>,
 <code><a href="plot_pca_loading.html">plot_pca_loading()</a></code>,
 <code><a href="plot_qc_interference_impact.html">plot_qc_interference_impact()</a></code>,
-<code><a href="plot_qc_interferences.html">plot_qc_interferences()</a></code>,
-<code><a href="plot_qc_matrixeffects.html">plot_qc_matrixeffects()</a></code>,
 <code><a href="plot_qc_summary_byclass.html">plot_qc_summary_byclass()</a></code>,
 <code><a href="plot_qc_summary_overall.html">plot_qc_summary_overall()</a></code>,
 <code><a href="plot_qcmetrics_comparison.html">plot_qcmetrics_comparison()</a></code>,

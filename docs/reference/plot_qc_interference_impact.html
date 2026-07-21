@@ -115,6 +115,7 @@ impact are excluded and reported.</p>
 <span>  include_istd <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  include_feature_filter <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  exclude_feature_filter <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  min_correction_pct <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  binwidth <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  font_base_size <span class="op">=</span> <span class="fl">8</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -141,9 +142,23 @@ to <code>NA</code> to use all non-blank sample/QC types.</p></dd>
 <dd><p>Include internal standards. Default <code>TRUE</code>.</p></dd>
 
 
-<dt id="arg-include-feature-filter-exclude-feature-filter">include_feature_filter, exclude_feature_filter<a class="anchor" aria-label="anchor" href="#arg-include-feature-filter-exclude-feature-filter"></a></dt>
-<dd><p>Optional feature include/
-exclude filters (see <code>get_dataset_subset()</code>).</p></dd>
+<dt id="arg-include-feature-filter">include_feature_filter<a class="anchor" aria-label="anchor" href="#arg-include-feature-filter"></a></dt>
+<dd><p>Feature(s) to include by <code>feature_id</code>, as a
+character vector. Each element is matched exactly when it names an existing
+feature, otherwise treated as a regex; elements combine with OR. A full ID
+(e.g. <code>"S1P d18:0 [M&gt;60]"</code>) needs no escaping, while patterns like <code>"PC|PE"</code>
+still work. <code>NA</code> or <code>""</code> ignores the filter.</p></dd>
+
+
+<dt id="arg-exclude-feature-filter">exclude_feature_filter<a class="anchor" aria-label="anchor" href="#arg-exclude-feature-filter"></a></dt>
+<dd><p>Feature(s) to exclude by <code>feature_id</code>, matched
+the same way as <code>include_feature_filter</code>. <code>NA</code> or <code>""</code> ignores the filter.</p></dd>
+
+
+<dt id="arg-min-correction-pct">min_correction_pct<a class="anchor" aria-label="anchor" href="#arg-min-correction-pct"></a></dt>
+<dd><p>Keep only features whose median correction (percent
+of raw signal removed) is at least this value. <code>NA</code> (default) keeps every
+feature with a positive impact. Use to drop negligible corrections.</p></dd>
 
 
 <dt id="arg-binwidth">binwidth<a class="anchor" aria-label="anchor" href="#arg-binwidth"></a></dt>
@@ -162,11 +177,11 @@ exclude filters (see <code>get_dataset_subset()</code>).</p></dd>
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>Other QC plots:
 <code><a href="plot_feature_correlations.html">plot_feature_correlations()</a></code>,
+<code><a href="plot_interference_correction.html">plot_interference_correction()</a></code>,
+<code><a href="plot_matrixeffects.html">plot_matrixeffects()</a></code>,
 <code><a href="plot_normalization_qc.html">plot_normalization_qc()</a></code>,
 <code><a href="plot_pca.html">plot_pca()</a></code>,
 <code><a href="plot_pca_loading.html">plot_pca_loading()</a></code>,
-<code><a href="plot_qc_interferences.html">plot_qc_interferences()</a></code>,
-<code><a href="plot_qc_matrixeffects.html">plot_qc_matrixeffects()</a></code>,
 <code><a href="plot_qc_summary_byclass.html">plot_qc_summary_byclass()</a></code>,
 <code><a href="plot_qc_summary_overall.html">plot_qc_summary_overall()</a></code>,
 <code><a href="plot_qcmetrics_comparison.html">plot_qcmetrics_comparison()</a></code>,

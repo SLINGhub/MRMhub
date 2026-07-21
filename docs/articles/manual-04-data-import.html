@@ -193,9 +193,7 @@ Specific metadata present in the data file is imported as well when
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">filepath</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/MRMhub_demo.tsv"</span>, package <span class="op">=</span> <span class="st">"mrmhub"</span><span class="op">)</span></span>
 <span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MRMhubExperiment.html">MRMhubExperiment</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_data_mrmhub.html">import_data_mrmhub</a></span><span class="op">(</span><span class="va">mexp</span>, <span class="va">filepath</span>, import_metadata <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `valid_feature`.</span></span>
-<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `is_quantifier`.</span></span></code></pre></div>
+<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_data_mrmhub.html">import_data_mrmhub</a></span><span class="op">(</span><span class="va">mexp</span>, <span class="va">filepath</span>, import_metadata <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="agilent-masshunter-quant">Agilent MassHunter Quant<a class="anchor" aria-label="anchor" href="#agilent-masshunter-quant"></a>
@@ -208,9 +206,7 @@ and result metadata present in the file can also be imported
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">filepath</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/MHQuant_demo.csv"</span>, package <span class="op">=</span> <span class="st">"mrmhub"</span><span class="op">)</span></span>
 <span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MRMhubExperiment.html">MRMhubExperiment</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_data_masshunter.html">import_data_masshunter</a></span><span class="op">(</span><span class="va">mexp</span>, <span class="va">filepath</span>, import_metadata <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `valid_feature`.</span></span>
-<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `is_quantifier`.</span></span></code></pre></div>
+<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_data_masshunter.html">import_data_masshunter</a></span><span class="op">(</span><span class="va">mexp</span>, <span class="va">filepath</span>, import_metadata <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="skyline">Skyline<a class="anchor" aria-label="anchor" href="#skyline"></a>
@@ -227,9 +223,7 @@ precursor/product names or <em>m/z</em> values, unless the
 <span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MRMhubExperiment.html">MRMhubExperiment</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_data_skyline.html">import_data_skyline</a></span><span class="op">(</span><span class="va">mexp</span>, <span class="va">filepath</span>,</span>
 <span>                            import_metadata <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>                            transition_id_columns <span class="op">=</span> <span class="st">"mz"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `valid_feature`.</span></span>
-<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `is_quantifier`.</span></span></code></pre></div>
+<span>                            transition_id_columns <span class="op">=</span> <span class="st">"mz"</span><span class="op">)</span></span></code></pre></div>
 <details><summary><strong>Exporting the report from Skyline</strong>
 </summary>
 Navigate to <em>File → Export</em> and select the <em>Molecule
@@ -254,9 +248,7 @@ The data type held in the table is declared with the
 <span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MRMhubExperiment.html">MRMhubExperiment</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_data_csv_wide.html">import_data_csv_wide</a></span><span class="op">(</span><span class="va">mexp</span>, path <span class="op">=</span> <span class="va">filepath</span>,</span>
 <span>                             variable_name <span class="op">=</span> <span class="st">"area"</span>,</span>
-<span>                             import_metadata <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `valid_feature`.</span></span>
-<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `is_quantifier`.</span></span></code></pre></div>
+<span>                             import_metadata <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="generic-long-format-csv">Generic long-format CSV<a class="anchor" aria-label="anchor" href="#generic-long-format-csv"></a>
@@ -281,9 +273,7 @@ mapping rules are given in <a href="../reference/import_data_csv_long.html"><cod
 <span>    <span class="st">"feature_class"</span>   <span class="op">=</span> <span class="st">"feature_class"</span>,</span>
 <span>    <span class="st">"istd_feature_id"</span> <span class="op">=</span> <span class="st">"istd_feature_id"</span>,</span>
 <span>    <span class="st">"feature_rt"</span>      <span class="op">=</span> <span class="st">"rt"</span>,</span>
-<span>    <span class="st">"feature_area"</span>    <span class="op">=</span> <span class="st">"area"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `valid_feature`.</span></span>
-<span><span class="co">#&gt; Warning: Unknown or uninitialised column: `is_quantifier`.</span></span></code></pre></div>
+<span>    <span class="st">"feature_area"</span>    <span class="op">=</span> <span class="st">"area"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="file-formats">File formats<a class="anchor" aria-label="anchor" href="#file-formats"></a>
