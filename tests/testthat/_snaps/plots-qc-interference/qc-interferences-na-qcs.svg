@@ -206,7 +206,7 @@
 <text transform='translate(220.27,525.56) rotate(-45)' text-anchor='end' style='font-size: 6.40px; fill: #4D4D4D; font-family: sans;' textLength='51.42px' lengthAdjust='spacingAndGlyphs'>S1P d18:0 [M&gt;60]</text>
 <text transform='translate(532.06,525.56) rotate(-45)' text-anchor='end' style='font-size: 6.40px; fill: #4D4D4D; font-family: sans;' textLength='51.42px' lengthAdjust='spacingAndGlyphs'>S1P d18:1 [M&gt;60]</text>
 <text x='373.05' y='570.35' text-anchor='middle' style='font-size: 8.00px; font-family: sans;' textLength='68.93px' lengthAdjust='spacingAndGlyphs'>Corrected Features</text>
-<text transform='translate(9.49,267.71) rotate(-90)' text-anchor='middle' style='font-size: 8.00px; font-family: sans;' textLength='147.21px' lengthAdjust='spacingAndGlyphs'>Standardized Intensity (% of uncorrected)</text>
+<text transform='translate(9.49,267.71) rotate(-90)' text-anchor='middle' style='font-size: 8.00px; font-family: sans;' textLength='129.39px' lengthAdjust='spacingAndGlyphs'>Signal after correction (% of original)</text>
 <rect x='370.89' y='456.27' width='141.49' height='24.71' style='stroke-width: 0.78; stroke: none; fill: #FFFFFF;' />
 <text x='374.88' y='470.83' style='font-size: 6.40px; font-family: sans;' textLength='22.42px' lengthAdjust='spacingAndGlyphs'>qc_type</text>
 <rect x='401.29' y='460.26' width='6.38' height='6.38' style='stroke-width: 0.78; stroke: none; fill: #FFFFFF;' />

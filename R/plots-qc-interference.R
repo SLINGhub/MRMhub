@@ -227,7 +227,7 @@ plot_qc_interferences <- function(
       }
     ) +
     ggplot2::theme_bw(base_size = font_base_size) +
-    ylab("Standardized Intensity (% of uncorrected)") +
+    ylab("Signal after correction (% of original)") +
     xlab("Corrected Features") +
     theme(
       axis.text.x = ggplot2::element_text(angle = angle_x, hjust = 1),

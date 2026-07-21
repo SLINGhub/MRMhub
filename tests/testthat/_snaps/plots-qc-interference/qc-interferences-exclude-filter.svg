@@ -103,7 +103,7 @@
 <polyline points='376.38,520.85 376.38,518.86 ' style='stroke-width: 0.78; stroke: #333333; stroke-linecap: butt;' />
 <text transform='translate(379.50,525.56) rotate(-45)' text-anchor='end' style='font-size: 6.40px; fill: #4D4D4D; font-family: sans;' textLength='51.42px' lengthAdjust='spacingAndGlyphs'>S1P d18:1 [M&gt;60]</text>
 <text x='376.38' y='570.35' text-anchor='middle' style='font-size: 8.00px; font-family: sans;' textLength='68.93px' lengthAdjust='spacingAndGlyphs'>Corrected Features</text>
-<text transform='translate(9.49,267.71) rotate(-90)' text-anchor='middle' style='font-size: 8.00px; font-family: sans;' textLength='147.21px' lengthAdjust='spacingAndGlyphs'>Standardized Intensity (% of uncorrected)</text>
+<text transform='translate(9.49,267.71) rotate(-90)' text-anchor='middle' style='font-size: 8.00px; font-family: sans;' textLength='129.39px' lengthAdjust='spacingAndGlyphs'>Signal after correction (% of original)</text>
 <rect x='372.49' y='461.45' width='143.63' height='14.35' style='stroke-width: 0.78; stroke: none; fill: #FFFFFF;' />
 <text x='376.48' y='470.83' style='font-size: 6.40px; font-family: sans;' textLength='22.42px' lengthAdjust='spacingAndGlyphs'>qc_type</text>
 <rect x='402.88' y='465.44' width='6.38' height='6.38' style='stroke-width: 0.78; stroke: none; fill: #FFFFFF;' />
