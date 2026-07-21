@@ -28,7 +28,7 @@ test_that("add_metadata() transfers all provided annotation tables into the matc
   )
 
   expect_equal(dim(out@annot_analyses), c(499, 13))
-  expect_equal(dim(out@annot_features), c(29, 17))
+  expect_equal(dim(out@annot_features), c(29, 18))
   expect_equal(dim(out@annot_istds), c(9, 5))
   expect_equal(dim(out@annot_responsecurves), c(12, 5))
   expect_equal(

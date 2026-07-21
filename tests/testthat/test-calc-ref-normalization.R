@@ -550,7 +550,8 @@ test_that("calibrate_by_reference results are exportable", {
     "SampleMetadata",
     "FeatureMetadata",
     "InternalStandards",
-    "BatchInfo"
+    "BatchInfo",
+    "Interferences"
   )
 
   expect_setequal(w_xlm$sheet_names, expected_sheets)
@@ -582,7 +583,8 @@ test_that("calibrate_by_reference results are exportable", {
     "SampleMetadata",
     "FeatureMetadata",
     "InternalStandards",
-    "BatchInfo"
+    "BatchInfo",
+    "Interferences"
   )
 
   expect_setequal(w_xlm$sheet_names, expected_sheets)

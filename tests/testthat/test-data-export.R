@@ -69,7 +69,8 @@ test_that("save_report_xlsx creates the correct sheets", {
     "SampleMetadata",
     "FeatureMetadata",
     "InternalStandards",
-    "BatchInfo"
+    "BatchInfo",
+    "Interferences"
   )
 
   expect_setequal(w_xlm$sheet_names, expected_sheets)
@@ -99,7 +100,8 @@ test_that("save_report_xlsx inluded feature-filtered data", {
     "SampleMetadata",
     "FeatureMetadata",
     "InternalStandards",
-    "BatchInfo"
+    "BatchInfo",
+    "Interferences"
   )
   expect_setequal(w_xlm$sheet_names, expected_sheets)
   tbl <- openxlsx2::wb_to_df(temp_file, sheet = "QCfilt_NormInt_StudySamples")
