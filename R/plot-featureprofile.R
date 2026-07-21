@@ -29,10 +29,13 @@
 #'   or only QC-filtered data (`TRUE`, via [filter_features_qc()]). This is ignored if `use_qc_metrics` is `TRUE`.
 #' @param include_qualifier A logical value indicating whether to include qualifier features. Default is `FALSE`.
 #' @param include_istd A logical value indicating whether to include internal standard (ISTD) features. Default is `FALSE`.
-#' @param include_feature_filter A character or regex pattern to filter features by `feature_id`.
-#'   If a vector is supplied, features matching any pattern will be included.
-#' @param exclude_feature_filter A character or regex pattern to exclude features by `feature_id`.
-#'   If a vector is supplied, features matching any pattern will be excluded.
+#' @param include_feature_filter Feature(s) to include by `feature_id`, as a
+#'   character vector. Each element is matched exactly when it names an existing
+#'   feature, otherwise treated as a regex; elements combine with OR. A full ID
+#'   (e.g. `"S1P d18:0 [M>60]"`) needs no escaping, while patterns like `"PC|PE"`
+#'   still work. `NA` or `""` ignores the filter.
+#' @param exclude_feature_filter Feature(s) to exclude by `feature_id`, matched
+#'   the same way as `include_feature_filter`. `NA` or `""` ignores the filter.
 #' @param analysis_range A numeric vector of length 2 specifying the inclusive range of `analysis_order`. If `NA` (default), all analyses are included.
 #' @param scale_factor A numeric value to scale the selected variable. Default is 1.
 #' @param x_lim A numeric vector of length 2 specifying the x-axis limits. If `log_scale` is `TRUE`,

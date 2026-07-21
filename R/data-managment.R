@@ -20,14 +20,13 @@ check_dataset_present <- function(data) {
 #' @param include_qualifier Logical. Whether to include qualifier features.
 #' @param include_istd Logical. Whether to include internal standard (ISTD) features.
 
-#' @param include_feature_filter A regex pattern or a vector of feature names
-#'   to include by `feature_id`. If `NA` or an empty string (`""`) is provided,
-#'   the filter is ignored. If a vector of length > 1 is supplied, only features
-#'   matching these names are selected (applied as OR conditions).
-#' @param exclude_feature_filter A regex pattern or a vector of feature names
-#'   to exclude by `feature_id`. If `NA` or an empty string (`""`) is provided,
-#'   the filter is ignored. If a vector of length > 1 is supplied, only features
-#'   matching these names are excluded (applied as OR conditions).
+#' @param include_feature_filter Feature(s) to include by `feature_id`, as a
+#'   character vector. Each element is matched exactly when it names an existing
+#'   feature, otherwise it is treated as a regex; elements combine with OR. A
+#'   full ID (e.g. `"S1P d18:0 [M>60]"`) thus needs no escaping, while patterns
+#'   like `"PC|PE"` still work. `NA` or `""` ignores the filter.
+#' @param exclude_feature_filter Feature(s) to exclude by `feature_id`, matched
+#'   the same way as `include_feature_filter`. `NA` or `""` ignores the filter.
 #' @param analysis_range Numeric vector of length 2, specifying the start
 #'   and end indices of the analysis order to be plotted. `NA` includes all
 #'   samples.
@@ -46,6 +45,18 @@ check_dataset_present <- function(data) {
 #' @note This function is for internal use only and is not exported (`@noRd`).
 #'
 #' @noRd
+
+# Resolve a feature filter to the matching `feature_id`s present in `ids`. Each
+# element is matched exactly when it names an existing feature, otherwise it is
+# treated as a regular expression (matched with OR semantics across elements).
+match_feature_filter <- function(ids, filter) {
+  is_exact <- filter %in% ids
+  matched <- ids %in% filter[is_exact]
+  for (pattern in filter[!is_exact]) {
+    matched <- matched | stringr::str_detect(ids, pattern)
+  }
+  ids[matched]
+}
 
 get_dataset_subset <- function(
   data,
@@ -124,22 +135,21 @@ get_dataset_subset <- function(
     d_filt <- d_filt |> filter(!.data$is_istd)
   }
 
-  # Apply feature inclusion and exclusion filters if provided
+  # Apply feature inclusion and exclusion filters if provided. Each filter
+  # element is matched exactly when it names an existing `feature_id`, otherwise
+  # it is treated as a regex -- so a full ID (which often carries regex
+  # metacharacters, e.g. "S1P d18:0 [M>60]") needs no escaping, while patterns
+  # like "PC|PE" still work.
   if (
     all(!is.na(include_feature_filter)) &&
       all(!is.null(include_feature_filter)) &&
       all(include_feature_filter != "")
   ) {
-    if (length(include_feature_filter) == 1) {
-      d_filt <- d_filt |>
-        dplyr::filter(stringr::str_detect(
-          .data$feature_id,
-          include_feature_filter
-        ))
-    } else {
-      d_filt <- d_filt |>
-        dplyr::filter(.data$feature_id %in% include_feature_filter)
-    }
+    keep <- match_feature_filter(
+      unique(d_filt$feature_id),
+      include_feature_filter
+    )
+    d_filt <- d_filt |> dplyr::filter(.data$feature_id %in% keep)
   }
 
   if (
@@ -147,15 +157,11 @@ get_dataset_subset <- function(
       all(!is.null(exclude_feature_filter)) &&
       all(exclude_feature_filter != "")
   ) {
-    if (length(exclude_feature_filter) == 1) {
-      d_filt <- d_filt |>
-        dplyr::filter(
-          !stringr::str_detect(.data$feature_id, exclude_feature_filter)
-        )
-    } else {
-      d_filt <- d_filt |>
-        dplyr::filter(!.data$feature_id %in% exclude_feature_filter)
-    }
+    drop <- match_feature_filter(
+      unique(d_filt$feature_id),
+      exclude_feature_filter
+    )
+    d_filt <- d_filt |> dplyr::filter(!.data$feature_id %in% drop)
   }
 
   # Ensure there is data to plot after filtering

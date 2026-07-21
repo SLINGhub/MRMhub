@@ -57,10 +57,13 @@
 #'   raw data. Default is `FALSE`.
 #' @param include_qualifier Logical, whether to include qualifier features. Default is `TRUE`.
 #' @param include_istd Logical, whether to include internal standard (ISTD) features. Default is `TRUE`.
-#' @param include_feature_filter Regex pattern to include features. If omitted,
-#'   considers all features.
-#' @param exclude_feature_filter Regex pattern to exclude features. If omitted,
-#'   excludes none.
+#' @param include_feature_filter Feature(s) to include by `feature_id`, as a
+#'   character vector. Each element is matched exactly when it names an existing
+#'   feature, otherwise treated as a regex; elements combine with OR. A full ID
+#'   (e.g. `"S1P d18:0 [M>60]"`) needs no escaping, while patterns like `"PC|PE"`
+#'   still work. `NA` or `""` ignores the filter.
+#' @param exclude_feature_filter Feature(s) to exclude by `feature_id`, matched
+#'   the same way as `include_feature_filter`. `NA` or `""` ignores the filter.
 #' @param output_pdf Logical, if `TRUE`, saves plots as a PDF file. Default is
 #'   `FALSE`.
 #' @param path File path for saving the PDF. Default is an empty string.
