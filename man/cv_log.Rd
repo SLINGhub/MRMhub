@@ -9,7 +9,7 @@ cv_log(x, na.rm = FALSE)
 \arguments{
 \item{x}{a numeric vector with untransformed data}
 
-\item{na.rm}{logical, if TRUE then NA values are stripped from x before
+\item{na.rm}{logical, if \code{TRUE} then NA values are stripped from x before
 computation takes place}
 }
 \value{

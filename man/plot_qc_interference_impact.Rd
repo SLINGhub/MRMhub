@@ -17,7 +17,7 @@ plot_qc_interference_impact(
 )
 }
 \arguments{
-\item{data}{A \code{MRMhubExperiment} (already interference-corrected).}
+\item{data}{A \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} (already interference-corrected).}
 
 \item{qc_types}{QC type(s) to summarize. Default \code{"SPL"} (study samples). Set
 to \code{NA} to use all non-blank sample/QC types.}

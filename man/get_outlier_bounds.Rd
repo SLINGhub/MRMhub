@@ -39,6 +39,8 @@ the smallest and largest observed values within the computed fences.
 }
 \description{
 Computes lower and upper bounds for a numeric vector using one of several methods:
+}
+\details{
 \itemize{
 \item \code{"iqr"}: Tukey's Interquartile Range fences
 \item \code{"mad"}: Median Absolute Deviation

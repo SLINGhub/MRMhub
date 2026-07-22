@@ -2,7 +2,7 @@
 % Please edit documentation in R/metadata-import.R
 \name{assert_metadata}
 \alias{assert_metadata}
-\title{Add metadata to an MRMhubExperiment object}
+\title{Add metadata to an \code{MRMhubExperiment} object}
 \usage{
 assert_metadata(
   data = NULL,
@@ -12,7 +12,7 @@ assert_metadata(
 )
 }
 \arguments{
-\item{data}{MRMhubExperiment object}
+\item{data}{\code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object}
 
 \item{metadata}{List of tibbles or data.frames containing analysis, feature, istd, response curve tables}
 
@@ -24,6 +24,6 @@ assert_metadata(
 metadata list
 }
 \description{
-Metadata provided as a list of tibbles will validates for consistency again loaded analysis data of the provided MRMhubExperiment object and then transfered.
+Metadata provided as a list of tibbles will validates for consistency again loaded analysis data of the provided \code{MRMhubExperiment} object and then transfered.
 }
 \keyword{internal}

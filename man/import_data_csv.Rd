@@ -15,7 +15,7 @@ import_data_csv(
 )
 }
 \arguments{
-\item{data}{MRMhubExperiment object}
+\item{data}{\code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object}
 
 \item{path}{One or more file names with path, or a folder path, which case all *.csv files in this folder will be read.}
 
@@ -23,15 +23,15 @@ import_data_csv(
 
 \item{analysis_id_col}{Column to be used as analysis_id. \code{NA} (default) used 'analysis_id' if present, or the first column if it contains unique values.}
 
-\item{import_metadata}{Import additional metadata columns (e.g. batch ID, sample type) and add to the \code{MRMhubExperiment} object.
-Only following metadata column names are supported: "qc_type", "batch_id", "is_quantifier", "is_istd", "analysis_order"}
+\item{import_metadata}{Import additional metadata columns (e.g. batch ID, sample type) and add to the \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object.
+Only following metadata column names are supported: \code{"qc_type"}, \code{"batch_id"}, \code{"is_quantifier"}, \code{"is_istd"}, \code{"analysis_order"}}
 
 \item{first_feature_column}{Column number of the first column representing the feature values}
 
 \item{na_strings}{A character vector of strings which are to be interpreted as NA values. Blank fields are also considered to be missing values.}
 }
 \value{
-MRMhubExperiment object
+\code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object
 }
 \description{
 (Deprecated) Import wide CSV files

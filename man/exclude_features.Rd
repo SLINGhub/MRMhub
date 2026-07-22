@@ -7,7 +7,7 @@
 exclude_features(data = NULL, features, clear_existing)
 }
 \arguments{
-\item{data}{A \code{MRMhubExperiment} object}
+\item{data}{A \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object}
 
 \item{features}{A character vector of feature IDs (case-sensitive) to be excluded from the dataset.
 If this is \code{NA} or an empty vector, the exclusion behavior will be handled as set via the \code{clear_existing} flag.}
@@ -16,7 +16,7 @@ If this is \code{NA} or an empty vector, the exclusion behavior will be handled 
 the exclusions will be appended, preserving any existing invalidated features}
 }
 \value{
-A modified \code{MRMhubExperiment} object with the specified analyses defined as excluded.
+A modified \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object with the specified analyses defined as excluded.
 }
 \description{
 This function excludes specified features from a \code{MRMhubExperiment} object, either by

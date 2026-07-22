@@ -13,7 +13,7 @@ import_data_skyline(
 )
 }
 \arguments{
-\item{data}{A \code{MRMhubExperiment} object.}
+\item{data}{A \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object.}
 
 \item{path}{One or more file paths, or a directory path from which all
 matching files will be imported.}
@@ -32,7 +32,7 @@ if it is not unique for each transition.}
 \item{silent}{Logical; whether to suppress most notifications.}
 }
 \value{
-A \code{MRMhubExperiment} object containing the imported data.
+A \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object containing the imported data.
 }
 \description{
 This function imports tabular data files (*.csv) exported from \code{Skyline},

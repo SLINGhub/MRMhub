@@ -15,7 +15,7 @@ import_data_csv_long(
 )
 }
 \arguments{
-\item{data}{A \code{MRMhubExperiment} object to which the imported data will be
+\item{data}{A \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object to which the imported data will be
 added.}
 
 \item{path}{A single file path, multiple file paths, or a directory path. If
@@ -42,7 +42,7 @@ warning when unknown columns are encountered in the dataset.}
 messages.}
 }
 \value{
-A \code{MRMhubExperiment} object containing the imported data.
+A \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object containing the imported data.
 }
 \description{
 This function imports analysis results from CSV files in long table format,

@@ -12,7 +12,7 @@ pooled_sd(x, group, na.rm = FALSE, min_n = 2L)
 \item{group}{a vector the same length as \code{x} giving the pooling group of each
 value (e.g. \code{batch_id})}
 
-\item{na.rm}{logical, if TRUE then NA values in \code{x} are stripped before
+\item{na.rm}{logical, if \code{TRUE} then NA values in \code{x} are stripped before
 pooling}
 
 \item{min_n}{integer, the minimum number of non-missing values a group must

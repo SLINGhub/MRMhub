@@ -26,7 +26,7 @@ correct_drift_gaussiankernel(
 )
 }
 \arguments{
-\item{data}{A MRMhubExperiment object.}
+\item{data}{A \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object.}
 
 \item{variable}{The target variable for drift correction; options include
 "intensity", "norm_intensity", or "conc".}
@@ -78,7 +78,7 @@ specific features for correction. Default is \code{NULL} for all features.}
 notebook rendering by setting to \code{FALSE}.}
 }
 \value{
-Returns a MRMhubExperiment object.
+Returns a \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object.
 }
 \description{
 Performs drift correction for run-order effects within or across batches

@@ -7,7 +7,7 @@
 summarize_interferences(data = NULL)
 }
 \arguments{
-\item{data}{A \code{MRMhubExperiment}.}
+\item{data}{A \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}}.}
 }
 \value{
 Invisibly, a tibble of the assembled, de-duplicated interference edges

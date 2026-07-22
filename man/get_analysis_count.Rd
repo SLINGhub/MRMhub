@@ -7,7 +7,7 @@
 get_analysis_count(data, qc_types = NULL)
 }
 \arguments{
-\item{data}{A \code{MRMhubExperiment} object}
+\item{data}{A \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object}
 
 \item{qc_types}{Defines the \code{qc_types} to be counted. If \code{NULL} or \code{NA},
 all analyses will be counted.}

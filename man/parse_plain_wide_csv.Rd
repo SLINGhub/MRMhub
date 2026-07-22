@@ -20,7 +20,7 @@ parse_plain_wide_csv(
 
 \item{analysis_id_col}{Column to be used as analysis_id}
 
-\item{import_metadata}{Import additional metadata columns (e.g. batch ID, sample type) and add to the \code{MRMhubExperiment} object}
+\item{import_metadata}{Import additional metadata columns (e.g. batch ID, sample type) and add to the \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object}
 
 \item{first_feature_column}{Column number of the first column representing the feature values}
 

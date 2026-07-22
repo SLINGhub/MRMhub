@@ -7,7 +7,7 @@
 get_feature_count(data, is_istd = NA, is_quantifier = NA)
 }
 \arguments{
-\item{data}{A \code{MRMhubExperiment} object}
+\item{data}{A \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object}
 
 \item{is_istd}{If set, then defines whether to include or exclude internal standard features. Default is \code{NA} means no filter for internal standards is applied.}
 

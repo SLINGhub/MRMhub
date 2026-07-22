@@ -7,13 +7,13 @@
 data_sum_features(data, qualifier_action = "include")
 }
 \arguments{
-\item{data}{MRMhubExperiment object}
+\item{data}{\code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object}
 
 \item{qualifier_action}{Character. How to handle qualifier features. To sum them up separately select "separate",
 to include them in the sum if quantifier select "include", to not sum them up select "exclude".}
 }
 \value{
-MRMhubExperiment object
+\code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object
 }
 \description{
 This function sums up feature intensities per analyte_id.

@@ -15,7 +15,7 @@ import_data_csv_wide(
 )
 }
 \arguments{
-\item{data}{A \code{MRMhubExperiment} object.}
+\item{data}{A \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object.}
 
 \item{path}{A file path or vector of file paths, or a directory path. If a directory is
 provided, all \code{.csv} files within it will be read.}
@@ -36,7 +36,7 @@ in which case \code{"analysis_id"} is used if present; otherwise, the first colu
 \item{na_strings}{Character vector of strings to interpret as NA values. Blank fields are also treated as NA.}
 }
 \value{
-A \code{MRMhubExperiment} object containing the imported dataset.
+A \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object containing the imported dataset.
 }
 \description{
 Imports analysis result data from wide-format \code{.csv} files, where each row corresponds

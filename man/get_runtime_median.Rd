@@ -7,7 +7,7 @@
 get_runtime_median(data)
 }
 \arguments{
-\item{data}{A \code{MRMhubExperiment} object}
+\item{data}{A \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object}
 }
 \value{
 A \code{lubridate} time period object, or \code{NA} if the dataset is empty.

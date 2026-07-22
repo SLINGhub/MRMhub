@@ -14,7 +14,7 @@ import_data_masshunter(
 )
 }
 \arguments{
-\item{data}{MRMhubExperiment object}
+\item{data}{\code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object}
 
 \item{path}{One or more file paths, or a directory path (in which case all
 matching files will be imported)}
@@ -32,7 +32,7 @@ Must be one of "conc_calc" or "conc_final" (default).}
 \item{silent}{Logical, whether to suppress most notifications}
 }
 \value{
-MRMhubExperiment object with the imported data
+\code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object with the imported data
 }
 \description{
 Imports .csv files exported from Agilent MassHunter Quantitative

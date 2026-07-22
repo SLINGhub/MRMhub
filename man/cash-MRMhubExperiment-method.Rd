@@ -2,20 +2,20 @@
 % Please edit documentation in R/classes.R
 \name{$,MRMhubExperiment-method}
 \alias{$,MRMhubExperiment-method}
-\title{Access slots of a MRMhubExperiment object via $ syntax}
+\title{Access slots of a \code{MRMhubExperiment} object via $ syntax}
 \usage{
 \S4method{$}{MRMhubExperiment}(x, name)
 }
 \arguments{
-\item{x}{MRMhubExperiment object}
+\item{x}{\code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object}
 
-\item{name}{MRMhubExperiment slot}
+\item{name}{\code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} slot}
 }
 \value{
 Value with a variable or a tibble
 }
 \description{
-$ syntax can be used to as a shortcut for getting specific variables and results from a MRMhubExperiment object
+$ syntax can be used to as a shortcut for getting specific variables and results from a \code{MRMhubExperiment} object
 }
 \examples{
 mexp <- MRMhubExperiment(title = "Test Experiment", analysis_type = "lipidomics")

@@ -7,7 +7,7 @@
 save_feature_qc_metrics(data = NULL, path)
 }
 \arguments{
-\item{data}{A MRMhubExperiment object containing the QC metrics.}
+\item{data}{A \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object containing the QC metrics.}
 
 \item{path}{A string specifying the file path where the CSV file will be saved.}
 }
@@ -16,5 +16,5 @@ A tibble with the QC metrics that have been exported.
 }
 \description{
 This function exports the feature information and QC (Quality Control) metrics
-from a MRMhubExperiment object to a CSV file.
+from a \code{MRMhubExperiment} object to a CSV file.
 }

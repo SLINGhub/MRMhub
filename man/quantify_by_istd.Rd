@@ -12,7 +12,7 @@ quantify_by_istd(
 )
 }
 \arguments{
-\item{data}{A \code{MRMhubExperiment} object}
+\item{data}{A \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object}
 
 \item{concentration_unit}{Character string indicating the type of concentration to calculate and export.
 Must be either \code{"molar"} for molar concentrations (e.g., µmol/L) or \code{"mass"} for mass concentrations (e.g., µg/L).}
@@ -23,7 +23,7 @@ If \code{TRUE}, missing annotations will be ignored, and resulting feature conce
 \item{ignore_istds}{If \code{TRUE}, ISTD features will be ignored in the concentration calculation and the resulting concentration will be \code{NA}. Default is \code{FALSE}.}
 }
 \value{
-A \code{MRMhubExperiment} object with the calculated analyte concentrations added to the
+A \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object with the calculated analyte concentrations added to the
 \code{dataset} table in the \code{feature_conc} column (and the intermediate \code{feature_pmol_total}).
 }
 \description{

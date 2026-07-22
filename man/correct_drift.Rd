@@ -23,9 +23,9 @@ correct_drift(
 )
 }
 \arguments{
-\item{data}{MRMhubExperiment object}
+\item{data}{\code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object}
 
-\item{smooth_fun}{Function that performs drift correction. Function need to have following parameter \code{data} (\code{MRMhubExperiment}), \code{ref_qc_types} (one or more strings), and \code{span_width} (numerical).
+\item{smooth_fun}{Function that performs drift correction. Function need to have following parameter \code{data} (\code{\link[=MRMhubExperiment-class]{MRMhubExperiment}}), \code{ref_qc_types} (one or more strings), and \code{span_width} (numerical).
 Function needs to return a numerical vector with the length of number of rows in \code{data}. In case functions fails a vector with NA_real_ needs be returned}
 
 \item{variable}{The variable to be corrected for drift effects. Must be one of "intensity", "norm_intensity", or "conc"}
@@ -44,7 +44,7 @@ when \code{TRUE}, only to features whose difference of sample CV before vs after
 \item{cv_diff_threshold}{This parameter defines the maximum allowable change (difference) in the coefficient of variation (CV) of samples before and after smoothing for the correction to be applied.
 A value of 0 (the default) requires the CV to improve, while a value above 0 allows the CV to also become worse by a maximum of the defined difference.}
 
-\item{use_original_if_fail}{Determines the action when smoothing fails or results in invalid values for a feature. If TRUE (default), the original data is used; if FALSE, the result for each analysis is NA.}
+\item{use_original_if_fail}{Determines the action when smoothing fails or results in invalid values for a feature. If \code{TRUE} (default), the original data is used; if \code{FALSE}, the result for each analysis is NA.}
 
 \item{ignore_istd}{Do not apply corrections to ISTDs}
 
@@ -52,12 +52,12 @@ A value of 0 (the default) requires the CV to improve, while a value above 0 all
 
 \item{recalc_trend_after}{Recalculate trend post-drift correction for \code{plot_qc_runscatter()}. This will double calculation time.}
 
-\item{show_progress}{Show progress bar. Default = `TRUE.}
+\item{show_progress}{Show progress bar. Default = \code{TRUE}.}
 
 \item{...}{Arguments specific for the smoothing function}
 }
 \value{
-MRMhubExperiment object
+\code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object
 }
 \description{
 Function to correct for run-order drifts within or across batches via a provided custom function

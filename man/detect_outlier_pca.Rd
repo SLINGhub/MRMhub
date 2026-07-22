@@ -17,7 +17,7 @@ detect_outlier_pca(
 )
 }
 \arguments{
-\item{data}{MRMhubExperiment object}
+\item{data}{\code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object}
 
 \item{variable}{Feature variable used for outlier detection}
 
@@ -36,7 +36,7 @@ detect_outlier_pca(
 \item{log_transform}{Log-transform data for outlier detection}
 }
 \value{
-MRMhubExperiment object
+\code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object
 }
 \description{
 Retrieves analysis IDs of data outliers based  the principal components PCA

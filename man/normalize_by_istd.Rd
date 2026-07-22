@@ -7,14 +7,14 @@
 normalize_by_istd(data = NULL, ignore_missing_annotation = FALSE)
 }
 \arguments{
-\item{data}{A \code{MRMhubExperiment} object.}
+\item{data}{A \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object.}
 
 \item{ignore_missing_annotation}{If \code{FALSE}, the function
 will raise an error when an ISTD is not defined for one or more features (excluding the ISTDs themselves).
 If \code{TRUE}, features with missing ISTD annotations will have NA values in the normalized intensities.}
 }
 \value{
-A \code{MRMhubExperiment} object with normalized feature intensities
+A \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object with normalized feature intensities
 }
 \description{
 Normalize feature intensities by dividing them by the intensities

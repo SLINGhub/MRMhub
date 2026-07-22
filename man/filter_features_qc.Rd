@@ -49,7 +49,7 @@ filter_features_qc(
 )
 }
 \arguments{
-\item{data}{MRMhubExperiment object.}
+\item{data}{\code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object.}
 
 \item{clear_existing}{Logical. If \code{TRUE}, replaces any existing filters; if \code{FALSE}, adds new filters on top of existing ones. Default is \code{TRUE}.}
 
@@ -132,7 +132,7 @@ filter_features_qc(
 \item{max.dratio.mad.normint.tqc}{Maximum allowed D-ratio (MAD of normalized intensity in TQC / MAD of SPL) using median absolute deviation. Default is \code{NA}.}
 }
 \value{
-The input MRMhubExperiment object with the feature filtering criteria applied.
+The input \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object with the feature filtering criteria applied.
 }
 \description{
 Filters a dataset based on quality control (QC) criteria, including intensity,

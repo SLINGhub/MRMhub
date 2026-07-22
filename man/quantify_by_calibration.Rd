@@ -16,7 +16,7 @@ quantify_by_calibration(
 )
 }
 \arguments{
-\item{data}{A \code{MRMhubExperiment} object}
+\item{data}{A \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object}
 
 \item{include_qualifier}{A logical value. If \code{TRUE}, the function will include qualifier features in the calibration curve calculations.}
 
@@ -49,7 +49,7 @@ default) or \code{"intercept"} (the standard error of the intercept). See
 \code{\link[=calc_calibration_results]{calc_calibration_results()}} for details.}
 }
 \value{
-A modified \code{MRMhubExperiment} object with updated concentration values.
+A modified \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object with updated concentration values.
 }
 \description{
 Concentrations of all features in all analyses are determined using ISTD-normalized intensities and corresponding external calibration curves.

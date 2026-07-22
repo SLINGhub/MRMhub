@@ -17,7 +17,7 @@ calibrate_by_reference(
 )
 }
 \arguments{
-\item{data}{A \code{MRMhubExperiment} object containing the metabolomics data to be normalized}
+\item{data}{A \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object containing the metabolomics data to be normalized}
 
 \item{variable}{Character string indicating which data type to calibrate Must be
 one of: "intensity", "norm_intensity", or "conc"}
@@ -28,9 +28,9 @@ whose \code{sample_id} matches any of them are pooled and summarized together
 (per feature, and per batch when \code{batch_wise = TRUE}).}
 
 \item{absolute_calibration}{Logical indicating whether to perform absolute calibration using
-known concentrations of the reference sample (TRUE) or relative calibration (FALSE).}
+known concentrations of the reference sample (\code{TRUE}) or relative calibration (\code{FALSE}).}
 
-\item{batch_wise}{Logical indicating whether to perform calibration for each batch seperately (TRUE) or for all samples together (FALSE).}
+\item{batch_wise}{Logical indicating whether to perform calibration for each batch seperately (\code{TRUE}) or for all samples together (\code{FALSE}).}
 
 \item{summarize_fun}{Either "mean" or "median". If \code{absolute_calibration = TRUE},
 this function is used to summarize the reference sample concentrations across analyses of specified \code{reference_sample_id}. Default is "mean".}
@@ -45,11 +45,11 @@ Must be one of \code{"original"} (keep original values), \code{"na"} (set to \co
 \code{"error"}. Required when \code{absolute_calibration = TRUE} (no default).}
 
 \item{store_normalized}{Logical indicating whether to keep the normalized values in the dataset
-when \code{absolute_calibration = TRUE}. Default is FALSE. These values are then stored
+when \code{absolute_calibration = TRUE}. Default is \code{FALSE}. These values are then stored
 as \verb{[VARIABLE]_normalized}, where \verb{[VARIABLE]} is the input variable, e.g., \code{conc}.}
 }
 \value{
-A \code{MRMhubExperiment} object with calibrated data
+A \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object with calibrated data
 }
 \description{
 This function calibrates feature abundances based on a specified reference sample.

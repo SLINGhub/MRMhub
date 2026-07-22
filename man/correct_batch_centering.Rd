@@ -17,7 +17,7 @@ correct_batch_centering(
 )
 }
 \arguments{
-\item{data}{A \code{MRMhubExperiment} object containing the data to be corrected.
+\item{data}{A \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object containing the data to be corrected.
 This object must include information about QC types and measurements.}
 
 \item{variable}{The variable to be corrected. Must be one of "intensity",
@@ -51,7 +51,7 @@ trend curves from previous corrections. This is only use for plotting using \cod
 function.}
 }
 \value{
-A \code{MRMhubExperiment} object containing the corrected data.
+A \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object containing the corrected data.
 }
 \description{
 This function performs batch centering correction on each feature.
@@ -63,5 +63,5 @@ correction can be applied to one of three variables: "intensity",
 on top of previous corrections or replace all prior batch corrections.
 }
 \seealso{
-\code{plot_runscatter} for visualizing the correction before and after.
+\code{\link[=plot_runscatter]{plot_runscatter()}} for visualizing the correction before and after; the \href{https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.html}{drift-correction tutorial} for a worked example.
 }

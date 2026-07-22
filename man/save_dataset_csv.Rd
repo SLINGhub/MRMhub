@@ -18,7 +18,7 @@ save_dataset_csv(
 )
 }
 \arguments{
-\item{data}{MRMhubExperiment object}
+\item{data}{\code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object}
 
 \item{path}{File name with path of exported CSV file}
 

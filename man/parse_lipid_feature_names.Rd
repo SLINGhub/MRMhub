@@ -14,14 +14,14 @@ parse_lipid_feature_names(
 \arguments{
 \item{tbl}{A data frame containing a \code{feature_id} column}
 
-\item{use_as_feature_class}{Set feature_class to lipid_class}
+\item{use_as_feature_class}{Set \code{feature_class} to \code{lipid_class}}
 
-\item{add_transition_names}{add transition name and transition group, based on information in square brackets in feature_id}
+\item{add_transition_names}{add transition name and transition group, based on information in square brackets in \code{feature_id}}
 
-\item{add_chain_composition}{add total_c and total_db to the dataset}
+\item{add_chain_composition}{add \code{total_c} and \code{total_db} to the dataset}
 }
 \value{
-MRMhubExperiment object
+\code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object
 }
 \description{
 This function retrieves lipid class, species and transition names from the \code{feature_id} column and adds them as columns to the dataset.

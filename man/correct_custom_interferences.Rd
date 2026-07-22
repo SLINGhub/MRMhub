@@ -12,7 +12,7 @@ correct_custom_interferences(
 )
 }
 \arguments{
-\item{data}{MRMhubExperiment object.}
+\item{data}{\code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object.}
 
 \item{variable}{Name of the variable to correct. Only \code{"feature_intensity"}
 (the raw intensity) is supported. Default: \code{"feature_intensity"}.}
@@ -27,7 +27,7 @@ propagation.}
 replaced with \code{NA}. Default: \code{FALSE}.}
 }
 \value{
-MRMhubExperiment object with feature intensities corrected.
+\code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object with feature intensities corrected.
 }
 \description{
 Applies the interference corrections you declared in the feature
@@ -39,5 +39,5 @@ co-eluting isobars or other non-isotopic interferences you know about. Warns
 and returns the data unchanged if none are defined.
 }
 \seealso{
-\code{\link[=correct_isotopic_interferences]{correct_isotopic_interferences()}}, \code{\link[=correct_interference_manual]{correct_interference_manual()}}
+\code{\link[=correct_isotopic_interferences]{correct_isotopic_interferences()}}, \code{\link[=correct_interference_manual]{correct_interference_manual()}}; the \href{https://slinghub.github.io/MRMhub/quant/articles/manual-12-interference-correction.html}{interference-correction guide}.
 }

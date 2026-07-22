@@ -13,7 +13,7 @@ set_intensity_var(
 )
 }
 \arguments{
-\item{data}{MRMhubExperiment object}
+\item{data}{\code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object}
 
 \item{variable_name}{Feature variable to be used as default feature intensity for downstream processing.}
 
@@ -24,7 +24,7 @@ set_intensity_var(
 \item{...}{Feature variables to best search for one-by-one when \code{auto-detect = TRUE}}
 }
 \value{
-MRMhubExperiment object
+\code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object
 }
 \description{
 Sets the raw signal variable used for calculations starting from raw signal

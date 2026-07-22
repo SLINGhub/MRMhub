@@ -25,7 +25,7 @@ correct_drift_cubicspline(
 )
 }
 \arguments{
-\item{data}{MRMhubExperiment object}
+\item{data}{\code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object}
 
 \item{variable}{The variable to be corrected for drift effects. Must be one of "intensity", "norm_intensity", or "conc"}
 
@@ -37,7 +37,7 @@ correct_drift_cubicspline(
 
 \item{replace_previous}{Logical. Replace existing correction (\code{TRUE}, default) or layer on top of it (\code{FALSE}).}
 
-\item{cv}{Ordinary leave-one-out (TRUE) or ‘generalized’ cross-validation (GCV) when FALSE; is used for smoothing parameter computation only when spar is not specified}
+\item{cv}{Ordinary leave-one-out (\code{TRUE}) or ‘generalized’ cross-validation (GCV) when \code{FALSE}; is used for smoothing parameter computation only when spar is not specified}
 
 \item{spar}{Smoothing parameter for cubic spline smoothing. If not specified or \code{NULL}, the smoothing parameter is computed using the specified cv method. Typically (but not necessarily)  (0,1].}
 
@@ -60,7 +60,7 @@ correct_drift_cubicspline(
 \item{show_progress}{Logical. Display progress bars if \code{TRUE}; disable for notebook rendering by setting to \code{FALSE}.}
 }
 \value{
-MRMhubExperiment object
+\code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object
 }
 \description{
 This function corrects for run-order drifts within or across batches using
@@ -127,5 +127,5 @@ batch variation in an automated direct infusion mass spectrometry (DIMS) metabol
 Anal Bioanal Chem 405, 5147–5157 (2013). https://doi-org.libproxy1.nus.edu.sg/10.1007/s00216-013-6856-7
 }
 \seealso{
-\code{\link[stats:smooth.spline]{stats::smooth.spline()}}
+\code{\link[stats:smooth.spline]{stats::smooth.spline()}}; the \href{https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.html}{drift-correction tutorial} for a worked example.
 }

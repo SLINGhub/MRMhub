@@ -11,7 +11,7 @@ get_mad_tails(x, k, na.rm = FALSE)
 
 \item{k}{multiplier for the MAD}
 
-\item{na.rm}{if TRUE then NA values are stripped from x before computation takes place.}
+\item{na.rm}{if \code{TRUE} then NA values are stripped from x before computation takes place.}
 }
 \value{
 a numeric vector of length 2 with the lower and upper boundaries.

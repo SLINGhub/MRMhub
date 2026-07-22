@@ -20,7 +20,7 @@ get_qc_bias_variability(
 )
 }
 \arguments{
-\item{data}{A \code{MRMhubExperiment} object containing the dataset and necessary annotations for calibration analysis.}
+\item{data}{A \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object containing the dataset and necessary annotations for calibration analysis.}
 
 \item{qc_types}{A character vector specifying the QC types to include in the results, in addition to \code{CAL}. If not specified, all applicable QC types are included by default.}
 

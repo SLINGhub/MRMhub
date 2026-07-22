@@ -7,7 +7,7 @@
 get_analyis_start(data)
 }
 \arguments{
-\item{data}{A \code{MRMhubExperiment} object}
+\item{data}{A \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object}
 }
 \value{
 A \code{POSIXct} timestamp, or \code{NA_POSIXct_} if the dataset is empty.

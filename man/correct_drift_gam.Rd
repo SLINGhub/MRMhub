@@ -24,7 +24,7 @@ correct_drift_gam(
 )
 }
 \arguments{
-\item{data}{MRMhubExperiment object}
+\item{data}{\code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object}
 
 \item{variable}{The variable to be corrected for drift effects. Must be one of "intensity", "norm_intensity", or "conc"}
 
@@ -57,7 +57,7 @@ correct_drift_gam(
 \item{show_progress}{Logical. Display progress bars if \code{TRUE}; disable for notebook rendering by setting to \code{FALSE}.}
 }
 \value{
-MRMhubExperiment object
+\code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object
 }
 \description{
 This function corrects for run-order drifts within or across batches using
@@ -104,5 +104,5 @@ change being the median of these batch medians across features.
 This smoothing is based on Generalized Additive Models (GAM) using penalized splines, implemented via \code{mgcv::gam()}.
 }
 \seealso{
-\code{\link[mgcv:gam]{mgcv::gam()}}
+\code{\link[mgcv:gam]{mgcv::gam()}}; the \href{https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.html}{drift-correction tutorial} for a worked example.
 }

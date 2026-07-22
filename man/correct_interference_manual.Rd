@@ -15,7 +15,7 @@ correct_interference_manual(
 )
 }
 \arguments{
-\item{data}{MRMhubExperiment object}
+\item{data}{\code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object}
 
 \item{variable}{Name of the variable to be corrected, e.g.
 \code{feature_intensity}.}
@@ -35,7 +35,7 @@ usually between 0 and 1, and values above 1 trigger a warning.}
 then feature name will not change.}
 }
 \value{
-MRMhubExperiment object
+\code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object
 }
 \description{
 Subtract a single, user-specified interference from one feature.

@@ -7,7 +7,7 @@
 get_analyticaldata(data = NULL, annotated)
 }
 \arguments{
-\item{data}{MRMhubExperiment object}
+\item{data}{\code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object}
 
 \item{annotated}{Boolean indicating whether to return the annotated data
 (\code{FALSE}) or the original imported data (\code{TRUE})}

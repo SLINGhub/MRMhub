@@ -7,7 +7,7 @@
 get_analysis_duration(data, estimate_sequence_end)
 }
 \arguments{
-\item{data}{A \code{MRMhubExperiment} object}
+\item{data}{A \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object}
 
 \item{estimate_sequence_end}{If \code{TRUE}, the function will estimate the end
 time of the analysis sequence based on the median runtime, added to the timestamp of the last analysis.

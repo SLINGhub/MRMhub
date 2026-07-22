@@ -13,7 +13,7 @@ save_report_xlsx(
 )
 }
 \arguments{
-\item{data}{A \code{MRMhubExperiment} object containing original and processed data and metadata.}
+\item{data}{A \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object containing original and processed data and metadata.}
 
 \item{path}{A character string specifying the file name and path for the Excel file.
 If the path does not include an \code{.xlsx} extension, it is added automatically.}

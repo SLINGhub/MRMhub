@@ -13,7 +13,7 @@ get_calibration_metrics(
 )
 }
 \arguments{
-\item{data}{A \code{MRMhubExperiment} object with QC metrics.}
+\item{data}{A \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object with QC metrics.}
 
 \item{with_lod}{Whether to include LoD in output. Default is \code{TRUE}.}
 

@@ -7,7 +7,7 @@
 get_batch_boundaries(data = NULL, batch_indices = NULL)
 }
 \arguments{
-\item{data}{MRMhubExperiment object}
+\item{data}{\code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object}
 
 \item{batch_indices}{A numeric vector with one or two elements, representing the first and/or last batch index (i.e., sequential batch number).
 If NULL or invalid, the function will abort.#' @return A vector with two elements: the lower and upper analysis number for the specified batch(es).}

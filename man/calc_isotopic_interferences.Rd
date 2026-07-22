@@ -13,7 +13,7 @@ calc_isotopic_interferences(
 )
 }
 \arguments{
-\item{data}{A \code{MRMhubExperiment} object.}
+\item{data}{A \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object.}
 
 \item{level}{Correction level, \code{"MRM"} or \code{"MS1"}. See description.}
 
@@ -32,7 +32,7 @@ Chromatographically resolved pairs are dropped. Default \code{FALSE} while the
 gate is validated.}
 }
 \value{
-The \code{MRMhubExperiment} with a populated \code{annot_interferences} slot.
+The \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} with a populated \code{annot_interferences} slot.
 }
 \description{
 Automatically discovers isotopic (M+2) interference relationships

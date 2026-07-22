@@ -14,7 +14,7 @@ save_dataset_summarizedexperiment(
 )
 }
 \arguments{
-\item{data}{An \code{MRMhubExperiment} object.}
+\item{data}{An \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object.}
 
 \item{path}{Optional file path. When given, the object is written there with
 \code{\link[=saveRDS]{saveRDS()}} and returned invisibly; a \code{.rds} extension is appended if

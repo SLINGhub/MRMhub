@@ -17,7 +17,7 @@ calc_calibration_results(
 )
 }
 \arguments{
-\item{data}{A \code{MRMhubExperiment} object containing the data to be used for
+\item{data}{A \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object containing the data to be used for
 calibration.}
 
 \item{variable}{A character string specifying the variable for calibration.
@@ -59,7 +59,7 @@ regression fit objects for each feature in the \code{metrics_calibration} table.
 is performed.}
 }
 \value{
-A modified \code{MRMhubExperiment} object with an updated
+A modified \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object with an updated
 \code{metrics_calibration} table containing the calibration curve results,
 including concentrations, LoD, and LoQ values for each feature.
 }

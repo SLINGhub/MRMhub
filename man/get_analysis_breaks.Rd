@@ -7,7 +7,7 @@
 get_analysis_breaks(data, break_duration_minutes)
 }
 \arguments{
-\item{data}{A \code{MRMhubExperiment} object}
+\item{data}{A \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object}
 
 \item{break_duration_minutes}{A numeric value specifying the minimum duration
 (in minutes) between two consecutive analyses that qualifies as an interruption.}

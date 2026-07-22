@@ -12,7 +12,7 @@ correct_isotopic_interferences(
 )
 }
 \arguments{
-\item{data}{MRMhubExperiment object.}
+\item{data}{\code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object.}
 
 \item{variable}{Name of the variable to correct. Only \code{"feature_intensity"}
 (the raw intensity) is supported. Default: \code{"feature_intensity"}.}
@@ -27,7 +27,7 @@ propagation.}
 replaced with \code{NA}. Default: \code{FALSE}.}
 }
 \value{
-MRMhubExperiment object with feature intensities corrected.
+\code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object with feature intensities corrected.
 }
 \description{
 Applies the isotopic (M+2) interference corrections previously
@@ -53,4 +53,7 @@ Gao L., Ji S, Burla B, Wenk MR, Torta F, & Cazenave-Gassiot A
 Data Acquired with Class-Based Chromatographic Separations Using Multiple
 Reaction Monitoring. \emph{Analytical Chemistry}, 93(6), 3163-3171.
 \url{https://doi.org/10.1021/acs.analchem.0c04565}
+}
+\seealso{
+The \href{https://slinghub.github.io/MRMhub/quant/articles/manual-12-interference-correction.html}{interference-correction guide}.
 }

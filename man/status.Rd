@@ -2,18 +2,18 @@
 % Please edit documentation in R/classes.R
 \name{status}
 \alias{status}
-\title{Detailed processing and metadata report for a MRMhubExperiment}
+\title{Detailed processing and metadata report for a \code{MRMhubExperiment}}
 \usage{
 status(object)
 }
 \arguments{
-\item{object}{A \code{MRMhubExperiment} object.}
+\item{object}{A \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object.}
 }
 \value{
 The \code{object}, invisibly.
 }
 \description{
-Prints the full status dashboard for a \link{MRMhubExperiment}: sample and feature
+Prints the full status dashboard for a \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}}: sample and feature
 composition, which metadata tables are populated, the state of each processing
 step, and any manually excluded analyses or features. Printing the object
 directly gives the compact one-screen overview instead.

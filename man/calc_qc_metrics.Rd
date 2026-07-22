@@ -15,13 +15,13 @@ calc_qc_metrics(
 )
 }
 \arguments{
-\item{data}{A \code{MRMhubExperiment} object containing data and metadata, whereby
+\item{data}{A \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object containing data and metadata, whereby
 data needs to be normalized and quantitated for specific QC metrics, such as
 statistics based on normalized intensities and concentrations.}
 
 \item{use_batch_medians}{Logical, whether to compute QC metrics using the
 median of batch-wise derived values instead of the full dataset. Default is
-FALSE.}
+\code{FALSE}.}
 
 \item{use_robust_cv}{Logical, whether to use robust coefficient of variation (MAD/median) or
 the standard coefficient of variation (SD/mean) for intensity, norm_intensity and concentration metrics.}
@@ -43,7 +43,7 @@ calibration results are incorporated into the QC metrics table if available.
 If \code{TRUE}, they are always incorporated.}
 }
 \value{
-A \code{MRMhubExperiment} object with an updated \code{metrics_qc} table
+A \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object with an updated \code{metrics_qc} table
 containing computed QC metrics for each feature.
 }
 \description{

@@ -12,14 +12,14 @@ get_response_curve_stats(
 )
 }
 \arguments{
-\item{data}{A \code{MRMhubExperiment} object containing the dataset and response curve annotations.}
+\item{data}{A \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object containing the dataset and response curve annotations.}
 
-\item{with_staturation_stats}{Logical, if TRUE, include additional statistics from the \code{lancer} package.
-Note: The \code{lancer} package must be installed when this argument is set to TRUE.}
+\item{with_staturation_stats}{Logical, if \code{TRUE}, include additional statistics from the \code{lancer} package.
+Note: The \code{lancer} package must be installed when this argument is set to \code{TRUE}.}
 
 \item{limit_to_rqc}{Logical, if \code{TRUE}, only include rows with \code{qc_type == "RQC"}. Default is \code{FALSE}.}
 
-\item{silent_invalid_data}{Logical, if TRUE suppresses raising an error when
+\item{silent_invalid_data}{Logical, if \code{TRUE} suppresses raising an error when
 required data or metadata are missing, or there is a mismatch between them.}
 }
 \value{
@@ -32,5 +32,5 @@ for each response curve in the provided \code{MRMhubExperiment} object. Before f
 analyzed sample amount (\code{x}) and feature intensity (\code{y}) of each curve are each scaled to their
 maximum (set to 1), so the returned \code{slopenorm} and \code{y0norm} are on this normalized scale.
 Optionally, it can include
-additional statistics from the \code{lancer} package (if installed) when \code{with_staturation_stats} is set to TRUE.
+additional statistics from the \code{lancer} package (if installed) when \code{with_staturation_stats} is set to \code{TRUE}.
 }

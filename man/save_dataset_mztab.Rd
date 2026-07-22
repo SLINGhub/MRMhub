@@ -16,7 +16,7 @@ save_dataset_mztab(
 )
 }
 \arguments{
-\item{data}{An \code{MRMhubExperiment} object.}
+\item{data}{An \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object.}
 
 \item{path}{Output file path. A \code{.mzTab} extension is appended if missing.}
 

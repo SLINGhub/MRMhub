@@ -7,7 +7,7 @@
 import_data_mztab(data = NULL, path, import_metadata = TRUE, silent = FALSE)
 }
 \arguments{
-\item{data}{An \code{MRMhubExperiment} object (e.g. from \code{\link[=MRMhubExperiment]{MRMhubExperiment()}}).}
+\item{data}{An \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object (e.g. from \code{\link[=MRMhubExperiment]{MRMhubExperiment()}}).}
 
 \item{path}{Path to a \code{.mzTab} file, or a directory of them.}
 
@@ -18,7 +18,7 @@ import_data_mztab(data = NULL, path, import_metadata = TRUE, silent = FALSE)
 \item{silent}{Suppress messages.}
 }
 \value{
-The updated \code{MRMhubExperiment}.
+The updated \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}}.
 }
 \description{
 Imports quantitative results from an

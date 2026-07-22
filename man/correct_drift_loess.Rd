@@ -24,7 +24,7 @@ correct_drift_loess(
 )
 }
 \arguments{
-\item{data}{MRMhubExperiment object}
+\item{data}{\code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object}
 
 \item{variable}{The variable to be corrected for drift effects. Must be one of "intensity", "norm_intensity", or "conc"}
 
@@ -62,7 +62,7 @@ A value of 0 (the default) requires the CV to improve, while a value above 0 all
 \item{show_progress}{Logical. Display progress bars if \code{TRUE}; disable for notebook rendering by setting to \code{FALSE}.}
 }
 \value{
-MRMhubExperiment object
+\code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object
 }
 \description{
 This function corrects for run-order drifts within or across batches using
@@ -117,4 +117,7 @@ features where the correction passed the defined CV difference threshold in
 case of conditional correction  (\code{conditional_correction = TRUE}).
 For batch-wise correction, the change is calculated per batch, with the final median CV
 change being the median of these batch medians across features.
+}
+\seealso{
+The \href{https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.html}{drift-correction tutorial} for a worked example.
 }

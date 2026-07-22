@@ -2,7 +2,7 @@
 % Please edit documentation in R/classes.R
 \name{MRMhubExperiment}
 \alias{MRMhubExperiment}
-\title{Constructor for the MRMhubExperiment object}
+\title{Constructor for the \code{MRMhubExperiment} object}
 \usage{
 MRMhubExperiment(title = "", analysis_type = NA_character_)
 }
@@ -12,8 +12,8 @@ MRMhubExperiment(title = "", analysis_type = NA_character_)
 \item{analysis_type}{Analysis type, one of "lipidomics", "metabolomics", "externalcalib", "others"}
 }
 \value{
-\code{MRMhubExperiment} object
+\code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object
 }
 \description{
-Constructor for the MRMhubExperiment object
+Constructor for the \code{MRMhubExperiment} object
 }

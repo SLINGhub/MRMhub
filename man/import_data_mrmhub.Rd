@@ -7,7 +7,7 @@
 import_data_mrmhub(data = NULL, path, import_metadata = TRUE, silent = FALSE)
 }
 \arguments{
-\item{data}{MRMhubExperiment object}
+\item{data}{\code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object}
 
 \item{path}{One or more file paths, or a directory path (in which case all matching files will be imported)}
 
@@ -16,7 +16,7 @@ import_data_mrmhub(data = NULL, path, import_metadata = TRUE, silent = FALSE)
 \item{silent}{Logical, whether to suppress most notifications}
 }
 \value{
-MRMhubExperiment object with the imported data
+\code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object with the imported data
 }
 \description{
 Imports tabular data files (*.tsv) generated from \code{MRMhub} containing peak

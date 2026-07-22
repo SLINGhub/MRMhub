@@ -14,7 +14,7 @@ import_metadata_analyses(
 )
 }
 \arguments{
-\item{data}{A \code{MRMhubExperiment} object}
+\item{data}{A \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object}
 
 \item{table}{A data frame or tibble with analysis (sample) metadata. If \code{path} is also provided, an error will be raised.}
 
@@ -27,7 +27,7 @@ import_metadata_analyses(
 \item{excl_unmatched_analyses}{Exclude analyses (samples) that have no matching metadata}
 }
 \value{
-An updated \code{MRMhubExperiment} object
+An updated \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object
 }
 \description{
 Imports analysis metadata (annotation) from a preloaded data frame or tibble via the \code{data} argument, or from data from a file (CSV or Excel) via the \code{path} argument.

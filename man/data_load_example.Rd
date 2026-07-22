@@ -2,20 +2,20 @@
 % Please edit documentation in R/data-example.R
 \name{data_load_example}
 \alias{data_load_example}
-\title{Load an example MRMhubExperiment dataset}
+\title{Load an example \code{MRMhubExperiment} dataset}
 \usage{
 data_load_example(data = NULL, dataset = 1)
 }
 \arguments{
-\item{data}{MRMhubExperiment object, optional. Data will be overwritten if provided.}
+\item{data}{\code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object, optional. Data will be overwritten if provided.}
 
 \item{dataset}{Dataset type. Either 1 or 2. Default is 1.}
 }
 \value{
-MRMhubExperiment object
+\code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object
 }
 \description{
-Load an example MRMhubExperiment dataset. Dataset 1 is a small dataset (Burla et al, 2024, see below) and Dataset 2 a larger dataset (Tan et al, 2022).See Details below.
+Load an example \code{MRMhubExperiment} dataset. Dataset 1 is a small dataset (Burla et al, 2024, see below) and Dataset 2 a larger dataset (Tan et al, 2022).See Details below.
 }
 \examples{
 myexp <- MRMhubExperiment()

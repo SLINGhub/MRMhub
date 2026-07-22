@@ -12,7 +12,7 @@ import_metadata_msorganiser(
 )
 }
 \arguments{
-\item{data}{A \code{MRMhubExperiment} object}
+\item{data}{A \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object}
 
 \item{path}{File name and path of the 'MRMhub Metadata Organizer' file (.xlsx) file}
 
@@ -21,7 +21,7 @@ import_metadata_msorganiser(
 \item{excl_unmatched_analyses}{Exclude analyses (samples) that have no matching metadata}
 }
 \value{
-An updated \code{MRMhubExperiment} object
+An updated \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object
 }
 \description{
 Imports metadata from a 'MRMhub Metadata Organizer' file (.xlsx) file and associates it with analysis data.

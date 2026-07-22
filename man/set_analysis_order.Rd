@@ -10,7 +10,7 @@ set_analysis_order(
 )
 }
 \arguments{
-\item{data}{A \code{MRMhubExperiment} object}
+\item{data}{A \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object}
 
 \item{order_by}{Character string specifying the ordering method.
 Must be one of "timestamp" (requires timestamp data in imported results),
@@ -18,7 +18,7 @@ Must be one of "timestamp" (requires timestamp data in imported results),
 "metadata" (uses order from analysis metadata)}
 }
 \value{
-An updated \code{MRMhubExperiment} object with ordered analyses
+An updated \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object with ordered analyses
 }
 \description{
 Determines the sequence of analyses using either instrument timestamps,
