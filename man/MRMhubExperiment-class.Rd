@@ -59,8 +59,6 @@ set when the data are quantitated. \code{"pmol"} or \code{"ng"} for ISTD quantit
 
 \item{\code{is_isotope_corr}}{Flag if one or more features have been isotope corrected}
 
-\item{\code{has_outliers_tech}}{Flag if data has technical analysis/sample outliers}
-
 \item{\code{analyses_excluded}}{Analyses excluded from processing, plots and reporting, unless explicitly requested}
 
 \item{\code{features_excluded}}{Features excluded from processing, plots and reporting, unless explicitly requested}
