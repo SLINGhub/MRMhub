@@ -999,7 +999,9 @@ filter_features_qc <- function(
   resp_criteria_defined <- any(str_detect(arg_names, "response"))
 
   if (recalc_metrics || nrow(data@metrics_qc) == 0) {
-    message("Calculating feature QC metrics - please wait...")
+    if (rlang::is_interactive()) {
+      message("Calculating feature QC metrics - please wait...")
+    }
     data_local <- calc_qc_metrics(
       data,
       use_batch_medians = use_batch_medians,
@@ -1643,6 +1645,7 @@ filter_features_qc <- function(
   #if (!include_istd) d_filt <- d_filt |> filter(!.data$is_istd)
 
   data@is_filtered <- TRUE
+  data@status_processing <- "Features filtered by QC"
   data@metrics_qc <- metrics_qc_local |> select(-dplyr::ends_with("before"))
 
   data@dataset_filtered <- data@dataset |>

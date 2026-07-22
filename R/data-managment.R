@@ -911,9 +911,11 @@ link_data_metadata <- function(data = NULL, minimal_info = TRUE) {
       mutate(feature_intensity = !!(sym(data@feature_intensity_var)))
   }
 
+  # @dataset is rebuilt from @dataset_orig (raw) above, so the derived
+  # feature_norm_intensity/feature_conc columns are gone; reset the flags to match.
   data@is_isotope_corr <- FALSE
-  #data@is_istd_normalized <- FALSE
-  #data@is_quantitated <- FALSE
+  data@is_istd_normalized <- FALSE
+  data@is_quantitated <- FALSE
   data@var_drift_corrected <- c(
     feature_intensity = FALSE,
     feature_norm_intensity = FALSE,

@@ -50,25 +50,21 @@ test_that("MRMhubExperiment $ accessor works correctly", {
 })
 
 
-test_that("show method displays correct title", {
-  # Create a MRMhubExperiment object with a specific title
+test_that("compact show method displays title and signal", {
   mexp <- MRMhubExperiment(
     title = "Test Experiment",
     analysis_type = "lipidomics"
   )
-  print(mexp)
-  # Capture the output of the show method
-  expect_message(show(mexp), "Title: Test Experiment")
+  compact <- toString(cli::cli_fmt(show(mexp)))
+  expect_match(compact, "Test Experiment")
+  expect_match(compact, "Normalized")
 })
 
-test_that("`show` method displays processing status", {
-  # Assuming status_processing is a slot you can set - set it for testing
+test_that("status() displays composition, metadata and exclusions", {
+  compact <- toString(cli::cli_fmt(print(mexp)))
+  expect_match(compact, "feature_area")
 
-  text_output <- toString(cli::cli_fmt(print(mexp)))
-
-  # Capture the output of the show method
-
-  expect_match(text_output, "feature_area")
+  text_output <- toString(cli::cli_fmt(status(mexp)))
   expect_match(text_output, "Analyses manually excluded")
   mexp <- exclude_analyses(
     mexp,
@@ -76,7 +72,7 @@ test_that("`show` method displays processing status", {
     clear_existing = TRUE
   )
   mexp <- exclude_features(mexp, c("PC 32:1", "PC 40:8"), clear_existing = TRUE)
-  text_output <- toString(cli::cli_fmt(print(mexp)))
+  text_output <- toString(cli::cli_fmt(status(mexp)))
   expect_match(text_output, "Longit_batch1_4", fixed = TRUE)
   expect_match(text_output, "PC 32:1, and PC 40:8", fixed = TRUE)
 })

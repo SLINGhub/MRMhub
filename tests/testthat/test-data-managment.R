@@ -807,6 +807,20 @@ test_that("link_data_metadata carries istd_feature_id into @dataset", {
   expect_false(any(grepl("istd_feature_id[.][xy]$", names(norm@dataset))))
 })
 
+test_that("link_data_metadata resets normalization/quantitation flags with the dropped columns", {
+  # @dataset is rebuilt from @dataset_orig (raw), so feature_norm_intensity and
+  # feature_conc are dropped; is_istd_normalized/is_quantitated must follow suit
+  # rather than claim data the object no longer holds.
+  expect_true(mexp_proc@is_istd_normalized)
+  expect_true(mexp_proc@is_quantitated)
+  relinked <- suppressMessages(mrmhub:::link_data_metadata(mexp_proc))
+  expect_false(any(
+    c("feature_norm_intensity", "feature_conc") %in% names(relinked@dataset)
+  ))
+  expect_false(relinked@is_istd_normalized)
+  expect_false(relinked@is_quantitated)
+})
+
 test_that("link_data_metadata warns when valid_analysis is NA (not silently dropped)", {
   mexp <- lipidomics_dataset
   mexp@annot_analyses$valid_analysis[1] <- NA
