@@ -243,7 +243,7 @@ import_data_mrmhub <- function(
 #' @param variable_name Variable type representing the values in the table. Must be one of "intensity", "norm_intensity", "conc", "area", "height", "response")
 #' @param analysis_id_col Column to be used as analysis_id. `NA` (default) used 'analysis_id' if present, or the first column if it contains unique values.
 #' @param import_metadata Import additional metadata columns (e.g. batch ID, sample type) and add to the [`MRMhubExperiment`][MRMhubExperiment-class] object.
-#' Only following metadata column names are supported: "qc_type", "batch_id", "is_quantifier", "is_istd", "analysis_order"
+#' Only following metadata column names are supported: `"qc_type"`, `"batch_id"`, `"is_quantifier"`, `"is_istd"`, `"analysis_order"`
 #' @param first_feature_column Column number of the first column representing the feature values
 #' @param na_strings A character vector of strings which are to be interpreted as NA values. Blank fields are also considered to be missing values.
 # #' @param silent Su ppress notifications

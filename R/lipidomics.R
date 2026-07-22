@@ -59,9 +59,9 @@ get_analyte_id <- function(transition_name, remove_nl_transitions) {
 #' This function retrieves lipid class, species and transition names from the `feature_id` column and adds them as columns to the dataset.
 #'
 #' @param tbl A data frame containing a `feature_id` column
-#' @param use_as_feature_class Set feature_class to lipid_class
-#' @param add_transition_names add transition name and transition group, based on information in square brackets in feature_id
-#' @param add_chain_composition add total_c and total_db to the dataset
+#' @param use_as_feature_class Set `feature_class` to `lipid_class`
+#' @param add_transition_names add transition name and transition group, based on information in square brackets in `feature_id`
+#' @param add_chain_composition add `total_c` and `total_db` to the dataset
 #' @return [`MRMhubExperiment`][MRMhubExperiment-class] object
 
 parse_lipid_feature_names <- function(

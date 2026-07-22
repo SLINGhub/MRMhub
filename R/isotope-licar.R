@@ -318,7 +318,7 @@ LICAR_LCB_OFFSETS <- list(
 #' Front/back follow LICAR's textual chain order: for glycerophospholipids
 #' (rgoslin category GP) front = FA1, back = FA2; for sphingolipids (SP) front =
 #' the sphingoid base (LCB), back = the N-acyl FA1.
-#' @return data.frame(feature_id, front_c, front_db, back_c, back_db).
+#' @return `data.frame(feature_id, front_c, front_db, back_c, back_db)`.
 #' @keywords internal
 #' @noRd
 licar_chain_annotation <- function(feature_ids) {

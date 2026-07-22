@@ -1,6 +1,6 @@
 #' Get FC and p values from a t test contrast
 #'
-#' @param d_FC  data.frame with feature_id, p and log2FC
+#' @param d_FC  data.frame with `feature_id`, `p` and `log2FC`
 #' @param p_adjust calculate and use FDR
 #' @param sig_FC_min |FC| treshold
 #' @param sig_p_value_min P value treshold
