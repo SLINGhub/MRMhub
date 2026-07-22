@@ -663,12 +663,14 @@ plot_runscatter <- function(
     page_group_files <- seq_along(page_group_list)
     action_text <- "Generating plots"
   }
-  message(
-    cli::col_green(glue::glue(
-      "{action_text} ({max(page_range)} {ifelse(max(page_range) > 1, 'pages', 'page')}){ifelse(show_progress, '...', '')}"
-    )),
-    appendLF = FALSE
-  )
+  if (rlang::is_interactive()) {
+    message(
+      cli::col_green(glue::glue(
+        "{action_text} ({max(page_range)} {ifelse(max(page_range) > 1, 'pages', 'page')}){ifelse(show_progress, '...', '')}"
+      )),
+      appendLF = FALSE
+    )
+  }
 
   if (multithreading) {
     p_list <- purrr::map2(
@@ -699,7 +701,7 @@ plot_runscatter <- function(
   p_list <- purrr::flatten(p_list)
   flush.console()
 
-  if (output_pdf) {
+  if (output_pdf && rlang::is_interactive()) {
     message(cli::col_green("  done!"))
   }
 

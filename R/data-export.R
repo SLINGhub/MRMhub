@@ -423,7 +423,9 @@ save_report_xlsx <- function(
 
   names(table_list)[4:5] <- c(name_filt_spl, name_filt_all)
 
-  message("Saving report to disk - please wait...")
+  if (rlang::is_interactive()) {
+    message("Saving report to disk - please wait...")
+  }
   wb <- openxlsx2::write_xlsx(
     x = table_list,
     #file = path,

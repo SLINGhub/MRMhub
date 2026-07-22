@@ -560,9 +560,11 @@ correct_drift <- function(
     # data was not corrected before, make a copy of the original data as "_raw"
     is_first_correction <- TRUE
     data@dataset[[variable_raw]] <- data@dataset[[variable]]
-    mh_info(
-      "Applying `{variable_strip}` drift correction..."
-    )
+    # Transient "starting" status: useful as live feedback interactively, noise
+    # in a non-interactive render where the completion message already reports.
+    if (rlang::is_interactive()) {
+      mh_info("Applying `{variable_strip}` drift correction...")
+    }
   }
 
   # Subset features

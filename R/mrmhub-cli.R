@@ -101,6 +101,18 @@ mrmhub_enable_cli_color <- function(num_colors = 256L) {
     knitr::knit_hooks$set(
       message = function(x, options) {
         if (knitr::is_html_output()) {
+          # knitr prepends the chunk `comment` (e.g. "#> ") to each line and the
+          # message carries a trailing newline; strip both so the styled console
+          # block is not a commented block and has no dangling blank line.
+          if (length(options$comment) && nzchar(options$comment)) {
+            x <- gsub(
+              paste0("(?m)^\\Q", options$comment, "\\E ?"),
+              "",
+              x,
+              perl = TRUE
+            )
+          }
+          x <- sub("[\r\n]+$", "", x)
           # Wrap the converted output in Quarto's own stderr cell-output div, so
           # it survives every HTML format — plain HTML *and* revealjs, which
           # drops raw HTML that is not inside a recognised cell-output block.
