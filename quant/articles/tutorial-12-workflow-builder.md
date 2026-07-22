@@ -124,6 +124,14 @@ format:
 ---
 ```
 
+The document then opens with a hidden setup chunk (`#| include: false`)
+that loads the package and calls
+[`mrmhub_enable_cli_color()`](https://slinghub.github.io/MRMhub/quant/reference/mrmhub_enable_cli_color.md),
+so mrmhub’s coloured console feedback renders in the HTML output. See
+[Quarto
+Workflows](https://slinghub.github.io/MRMhub/quant/articles/manual-11-quarto-workflows.md)
+for the reporting options and output-format details.
+
 Each selected step then becomes its own `##` section with an `{r}`
 chunk. For the demo dataset with normalisation, ISTD quantification,
 drift and batch correction, and QC filtering selected, and a project
@@ -186,3 +194,7 @@ application by passing a specification list to
 - [Importing
   Metadata](https://slinghub.github.io/MRMhub/quant/articles/manual-05-metadata.md)
   — metadata tables and their required columns
+- [Quarto
+  Workflows](https://slinghub.github.io/MRMhub/quant/articles/manual-11-quarto-workflows.md)
+  — the setup chunk, coloured console output, and rendering to HTML,
+  PDF, and Word

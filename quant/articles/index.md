@@ -31,11 +31,12 @@
   Importing analytical data from different sources into an
   MRMhubExperiment.
 
-- [Importing
-  Metadata](https://slinghub.github.io/MRMhub/quant/articles/manual-05-metadata.md):
+- [Metadata Tables &
+  Matching](https://slinghub.github.io/MRMhub/quant/articles/manual-05-metadata.md):
 
-  Attaching and validating sample, feature, ISTD and QC metadata on an
-  MRMhubExperiment.
+  The metadata tables MRMhub uses — analyses, features, ISTDs, response
+  curves and QC concentrations — their structure, and how identifiers
+  are matched to the data.
 
 - [Sample Types & QC
   Roles](https://slinghub.github.io/MRMhub/quant/articles/manual-06-sample-types.md):
@@ -67,6 +68,20 @@
 
   Solutions to the most common errors and questions when using MRMhub
   QUANT.
+
+- [Quarto
+  Workflows](https://slinghub.github.io/MRMhub/quant/articles/manual-11-quarto-workflows.md):
+
+  MRMhub: postprocessing and quality control of small molecule mass
+  spectrometry data
+
+- [Isotopic Interference
+  Correction](https://slinghub.github.io/MRMhub/quant/articles/manual-12-interference-correction.md):
+
+  Reference for MRMhub’s isotopic interference correction: the
+  fragment-based (MRM) and whole-molecule (MS1) derivation levels, the
+  co-elution requirement, and the provenance of the derived contribution
+  factors.
 
 - [Manual](https://slinghub.github.io/MRMhub/quant/articles/manual-index.md):
 
@@ -101,6 +116,13 @@
   SummarizedExperiment, and take it downstream: differential abundance
   with limma, or lipid-specific analysis with lipidr.
 
+- [Import Metadata from Files or a
+  Template](https://slinghub.github.io/MRMhub/quant/articles/recipe-05-import-metadata.md):
+
+  Attach sample, feature, ISTD and QC metadata to an MRMhubExperiment —
+  file by file, from Excel sheets, from a data.frame, or in one step
+  from an MSOrganiser template.
+
 - [Your First
   Analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md):
 
@@ -113,11 +135,11 @@
   How to prepare data files and import analytical data and metadata into
   MRMhub.
 
-- [Basic MRMhub
-  Workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md):
+- [A basic MRMhub
+  workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md):
 
-  A realistic end-to-end workflow covering project setup, metadata
-  import, drift/batch correction, QC filtering, and export.
+  A realistic end-to-end workflow, from project setup through drift and
+  batch correction, QC filtering, and export.
 
 - [Lipidomics Data
   Processing](https://slinghub.github.io/MRMhub/quant/articles/tutorial-03-lipidomics-workflow.md):
@@ -125,8 +147,11 @@
   MRMhub: Postprocessing and Quality Control of Small-Molecule Mass
   Spectrometry Data
 
-- [Drift and Batch
-  Correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.md):
+- [Drift and batch
+  correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.md):
+
+  Correct run-order signal drift and between-batch effects from QC
+  samples, and combine the two in the recommended order.
 
 - [Exploring QC: RunScatter and
   PCA](https://slinghub.github.io/MRMhub/quant/articles/tutorial-05-run-scatter.md):
@@ -144,8 +169,10 @@
 - [Interference
   Correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-11-interference-correction.md):
 
-  Identify and correct isotopic or isobaric interferences between MRM
-  transitions using a contribution-based subtraction model.
+  Annotate mrm_pattern, derive isotopic interference relationships
+  automatically with calc_isotopic_interferences(), inspect them, and
+  apply the subtraction with correct_isotopic_interferences(). Declared
+  and single-pair manual corrections are also covered.
 
 - [Build a Workflow Without
   Code](https://slinghub.github.io/MRMhub/quant/articles/tutorial-12-workflow-builder.md):

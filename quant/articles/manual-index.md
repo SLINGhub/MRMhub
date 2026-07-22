@@ -28,6 +28,10 @@ reference](https://slinghub.github.io/MRMhub/quant/reference/index.md).
 - **[Drift and Batch
   Correction](https://slinghub.github.io/MRMhub/quant/articles/manual-07-corrections.md)**
   — correcting signal drift within runs and offsets between batches.
+- **[Quarto
+  Workflows](https://slinghub.github.io/MRMhub/quant/articles/manual-11-quarto-workflows.md)**
+  — recording a pipeline as a `.qmd` notebook, coloured console output,
+  and rendering to HTML, PDF, and Word.
 
 ## Results and downstream use
 

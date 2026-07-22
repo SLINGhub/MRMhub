@@ -23,6 +23,8 @@ are the central data object in the MRMhub workflow.
   : S4 class representing the MRMhub dataset
 - [`` `$`( ``*`<MRMhubExperiment>`*`)`](https://slinghub.github.io/MRMhub/quant/reference/cash-MRMhubExperiment-method.md)
   : Access slots of a MRMhubExperiment object via \$ syntax
+- [`status()`](https://slinghub.github.io/MRMhub/quant/reference/status.md)
+  : Detailed processing and metadata report for a MRMhubExperiment
 - [`set_analysis_order()`](https://slinghub.github.io/MRMhub/quant/reference/set_analysis_order.md)
   : Set analysis order
 - [`get_batch_boundaries()`](https://slinghub.github.io/MRMhub/quant/reference/get_batch_boundaries.md)
@@ -115,12 +117,20 @@ MRMhub Excel template or CSV files.
 
 ## Isotope correction
 
-Functions to perform type II isotopic correction
+Functions to perform type II isotopic interference correction
 
-- [`correct_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/correct_interferences.md)
-  : Apply interference correction
+- [`calc_isotopic_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/calc_isotopic_interferences.md)
+  : Derive isotopic interference relationships
+- [`correct_isotopic_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/correct_isotopic_interferences.md)
+  : Correct automatically derived isotopic interferences
+- [`correct_custom_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/correct_custom_interferences.md)
+  : Correct declared (custom) interferences
 - [`correct_interference_manual()`](https://slinghub.github.io/MRMhub/quant/reference/correct_interference_manual.md)
   : Manual isotopic interference correction
+- [`summarize_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/summarize_interferences.md)
+  : Summarize interference relationships
+- [`licar_pattern_choices()`](https://slinghub.github.io/MRMhub/quant/reference/licar_pattern_choices.md)
+  : Valid MRM-pattern labels
 
 ## External Calibration
 
@@ -202,14 +212,16 @@ Functions to plots diverse QC visualizatios.
   : Plot highly correlated feature pairs
 - [`plot_rt_vs_chain()`](https://slinghub.github.io/MRMhub/quant/reference/plot_rt_vs_chain.md)
   : Plot retention time versus chain length and saturation
-- [`plot_qc_matrixeffects()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_matrixeffects.md)
+- [`plot_matrixeffects()`](https://slinghub.github.io/MRMhub/quant/reference/plot_matrixeffects.md)
   : Plot standardized feature intensities grouped by QC type
 - [`plot_normalization_qc()`](https://slinghub.github.io/MRMhub/quant/reference/plot_normalization_qc.md)
   : Compare feature variability before and after normalization
 - [`plot_qcmetrics_comparison()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qcmetrics_comparison.md)
   : Comparison of two feature QC metrics variables
-- [`plot_qc_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_interferences.md)
+- [`plot_interference_correction()`](https://slinghub.github.io/MRMhub/quant/reference/plot_interference_correction.md)
   : Plot the results of interference correction
+- [`plot_qc_interference_impact()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_interference_impact.md)
+  : Plot the magnitude of interference correction as a histogram
 
 ## Response Curves
 
@@ -263,6 +275,10 @@ spectrometry is also available.
   Percent coefficient of variation (%CV)
 - [`cv_log()`](https://slinghub.github.io/MRMhub/quant/reference/cv_log.md)
   : Percent coefficient of variation (%CV) based on log-transformation
+- [`pooled_sd()`](https://slinghub.github.io/MRMhub/quant/reference/pooled_sd.md)
+  : Pooled standard deviation across groups
+- [`pooled_rsd()`](https://slinghub.github.io/MRMhub/quant/reference/pooled_rsd.md)
+  : Pooled percent relative standard deviation (%RSD) across groups
 - [`calc_average_molweight()`](https://slinghub.github.io/MRMhub/quant/reference/calc_average_molweight.md)
   : Calculate average molecular weight from chemical formulas
 - [`correct_drift()`](https://slinghub.github.io/MRMhub/quant/reference/correct_drift.md)
@@ -284,3 +300,5 @@ spectrometry is also available.
 - [`order_chained_columns_tbl()`](https://slinghub.github.io/MRMhub/quant/reference/order_chained_columns_tbl.md)
   : Reorder a data frame based on a chain of linked values in two
   columns
+- [`mrmhub_enable_cli_color()`](https://slinghub.github.io/MRMhub/quant/reference/mrmhub_enable_cli_color.md)
+  : Enable coloured mrmhub console output in notebooks

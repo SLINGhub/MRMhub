@@ -25,7 +25,7 @@ A list (invisibly) with elements `r_version`, `required`, and
 
 ``` r
 check_setup()
-#> ✔ R version 4.6.1 (>= 4.2.0 required)
+#> ✔ R version 4.6.1 (>= 4.1.0 required)
 #> 
 #> ── Required packages ──
 #> 

@@ -141,7 +141,7 @@ section) 5. No cross-linking between related Manual/Tutorial articles
 **Step 1.** Create
 [`check_setup()`](https://slinghub.github.io/MRMhub/quant/reference/check_setup.md)
 function in [`R/`](https://slinghub.github.io/MRMhub/quant/R/) -
-Validates: R version ≥ 4.2, key dependencies installed & loadable, no
+Validates: R version ≥ 4.1, key dependencies installed & loadable, no
 namespace conflicts - Reports: clear pass/fail messages via `cli` with
 fix suggestions - Pattern: similar to `devtools::session_info()` but
 prescriptive

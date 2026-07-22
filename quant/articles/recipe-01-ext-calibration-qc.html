@@ -31,7 +31,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -73,6 +73,7 @@
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul>
 </li>
 <li class="nav-item dropdown">
@@ -86,8 +87,10 @@
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Preparing and running</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-04-data-import.html">Importing Analytical Data</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-05-metadata.html">Importing Metadata</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-05-metadata.html">Metadata Tables &amp; Matching</a></li>
     <li><a class="dropdown-item" href="../articles/manual-07-corrections.html">Drift and Batch Correction</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-12-interference-correction.html">Isotopic Interference Correction</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-11-quarto-workflows.html">Quarto Workflows</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
@@ -178,15 +181,14 @@ be obtained from <a href="https://github.com/SLINGhub/mrmhub/tree/main/data-raw"
 <span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Standard values: <span style="color: #0000BB;">"SBLK"</span>, <span style="color: #0000BB;">"TBLK"</span>, <span style="color: #0000BB;">"UBLK"</span>, <span style="color: #0000BB;">"HQC"</span>, <span style="color: #0000BB;">"MQC"</span>, <span style="color: #0000BB;">"LQC"</span>, <span style="color: #0000BB;">"QC"</span>, <span style="color: #0000BB;">"PBLK"</span>,</span></span>
 <span><span class="co">#&gt;   <span style="color: #0000BB;">"CAL"</span>, <span style="color: #0000BB;">"EQA"</span>, <span style="color: #0000BB;">"PQC"</span>, <span style="color: #0000BB;">"TQC"</span>, <span style="color: #0000BB;">"BQC"</span>, <span style="color: #0000BB;">"RQC"</span>, <span style="color: #0000BB;">"EQC"</span>, <span style="color: #0000BB;">"NIST"</span>, <span style="color: #0000BB;">"LTR"</span>, <span style="color: #0000BB;">"SPL"</span>, <span style="color: #0000BB;">"SST"</span>,</span></span>
 <span><span class="co">#&gt;   and <span style="color: #0000BB;">"MBLK"</span> (<span style="color: #0000BB;">"Sample"</span> is an alias for <span style="color: #0000BB;">"SPL"</span>).</span></span>
-<span><span class="co">#&gt; <span style="color: #000000;">--------------------------------------------------------------------------------</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 1 × 5</span></span></span>
+<span><span class="co">#&gt; Found no errors, no warnings, and 1 note in the metadata.</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
 <span><span class="co">#&gt;   Type  Table    Column    Issue                        Count</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> N     Analyses sample_id Not defined for all analyses     8</span></span>
+<span><span class="co">#&gt; 1 N     Analyses sample_id Not defined for all analyses     8</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="font-style: italic;">--------------------------------------------------------------------------------</span></span></span>
-<span><span class="co"><span style="font-style: italic;">#&gt; E = Error, W = Warning, W* = Suppressed Warning, N = Note</span></span></span>
-<span><span class="co"><span style="font-style: italic;">#&gt; --------------------------------------------------------------------------------</span></span></span></code></pre></div>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; E = Error, W = Warning, W* = Suppressed Warning, N = Note</span></span>
+<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span></code></pre></div>
 <p>Next, the raw peak areas are normalized with the corresponding
 internal standard, and the regression fits for the external calibration
 curves are then calculated and plotted.</p>

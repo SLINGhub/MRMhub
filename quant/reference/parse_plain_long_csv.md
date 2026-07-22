@@ -66,8 +66,7 @@ A tibble in the long format
 file_path = system.file("extdata", "plain_long_dataset.csv", package = "mrmhub")
 
 tbl <- parse_plain_long_csv(path = file_path)
-#> ! Following unrecognized columns present in the data and were ignored: "internal_standard", "batch", "sample_type", "rt_apex", "area_normalized", "concentration", "rt_int_start", and "rt_int_end".
-#> ! Use argument `column_mapping` to define column mapping.
+#> ! The following unrecognized columns were present in the data and were ignored: "internal_standard", "batch", "sample_type", "rt_apex", "area_normalized", "concentration", "rt_int_start", and "rt_int_end". Use `column_mapping` to map them.
 
 head(tbl)
 #> # A tibble: 6 × 12

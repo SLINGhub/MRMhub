@@ -113,11 +113,11 @@ Research*, 19(7), 2890-2897.
 
 ``` r
 mexp <- normalize_by_istd(lipidomics_dataset)
-#> ! Interfering features defined in metadata, but no correction was applied. Use `correct_interferences()` to correct.
+#> ! Interfering features defined in metadata, but no correction was applied. Use `correct_custom_interferences()` to correct.
 #> ✔ 20 features normalized with 9 ISTDs in 499 analyses.
 mexp <- quantify_by_istd(mexp)
 #> ✔ 20 feature concentrations calculated based on 9 ISTDs and sample amounts of 499 analyses.
-#> ℹ Concentrations are given in μmol/L.
+#> ✔ Concentrations are given in μmol/L.
 
 se <- save_dataset_summarizedexperiment(mexp)
 SummarizedExperiment::assayNames(se)
@@ -133,7 +133,7 @@ se[!SummarizedExperiment::rowData(se)$is_istd, se$qc_type == "SPL"]
 #>   mrmhub_version
 #> assays(9): rt area ... pmol_total conc
 #> rownames(20): CE 18:1 Cer d18:1/16:0 ... TG 48:2 [-18:1] TG 48:2 [SIM]
-#> rowData names(17): feature_id feature_class ... remarks feature_label
+#> rowData names(18): feature_id feature_class ... remarks feature_label
 #> colnames(374): Longit_batch1_1 Longit_batch1_2 ... Longit_batch6_52
 #>   Longit_batch6_53
 #> colData names(13): analysis_order analysis_id ... annot_order_num

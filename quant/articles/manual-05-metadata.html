@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Importing Metadata • mrmhub</title>
+<title>Metadata Tables &amp; Matching • mrmhub</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
@@ -16,10 +16,12 @@
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
-<meta property="og:title" content="Importing Metadata">
-<meta name="description" content="Attaching and validating sample, feature, ISTD and QC metadata on an MRMhubExperiment.
+<meta property="og:title" content="Metadata Tables &amp; Matching">
+<meta name="description" content="The metadata tables MRMhub uses — analyses, features, ISTDs, response curves and
+QC concentrations — their structure, and how identifiers are matched to the data.
 ">
-<meta property="og:description" content="Attaching and validating sample, feature, ISTD and QC metadata on an MRMhubExperiment.
+<meta property="og:description" content="The metadata tables MRMhub uses — analyses, features, ISTDs, response curves and
+QC concentrations — their structure, and how identifiers are matched to the data.
 ">
 <meta property="og:image" content="https://slinghub.github.io/MRMhub/quant/logo.svg">
 </head>
@@ -31,7 +33,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -73,6 +75,7 @@
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul>
 </li>
 <li class="active nav-item dropdown">
@@ -86,8 +89,10 @@
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Preparing and running</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-04-data-import.html">Importing Analytical Data</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-05-metadata.html">Importing Metadata</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-05-metadata.html">Metadata Tables &amp; Matching</a></li>
     <li><a class="dropdown-item" href="../articles/manual-07-corrections.html">Drift and Batch Correction</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-12-interference-correction.html">Isotopic Interference Correction</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-11-quarto-workflows.html">Quarto Workflows</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
@@ -122,7 +127,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.svg" class="logo" alt=""><h1>Importing Metadata</h1>
+      <img src="../logo.svg" class="logo" alt=""><h1>Metadata Tables &amp; Matching</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/development/vignettes/articles/manual-05-metadata.Rmd" class="external-link"><code>vignettes/articles/manual-05-metadata.Rmd</code></a></small>
@@ -135,82 +140,20 @@
 Manual
 </p>
 <p>Metadata in this context refers to analysis metadata, i.e., data that
-annotate the analytical data. Metadata can be retrieved from the
-imported analysis data file where available, or imported from separate
-files or R data frames. Integrity of metadata and data is essential for
-correct post-processing: MRMhub inspects imported data and metadata for
-completeness and for consistency of the IDs used across the different
-metadata tables, and after import a summary of the identified errors,
-warnings, and notes is printed to the console so that possible issues
-can be identified and addressed.</p>
-<div class="section level2">
-<h2 id="metadata-formats-and-templates">Metadata formats and templates<a class="anchor" aria-label="anchor" href="#metadata-formats-and-templates"></a>
-</h2>
-<p>The structure and the required and optional columns for each metadata
-type are described below under <a href="#metadata-table-structures">Metadata table structures</a> and in
-the help pages of the corresponding import functions. To obtain metadata
-templates, an Excel file containing all metadata table templates can be
-saved.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">mrmhub</span><span class="fu">::</span><span class="fu"><a href="../reference/save_metadata_templates.html">save_metadata_templates</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="importing-metadata-from-files-and-sheets">Importing metadata from files and sheets<a class="anchor" aria-label="anchor" href="#importing-metadata-from-files-and-sheets"></a>
-</h2>
-<p>The analysis data are first imported as outlined in <a href="manual-04-data-import.html">Importing Analytical Data</a>. In this
-case, metadata present in the analysis data is not imported; only the
-peak areas are read.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/SLINGhub/MRMhub" class="external-link">mrmhub</a></span><span class="op">)</span></span>
-<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu">mrmhub</span><span class="fu">::</span><span class="fu"><a href="../reference/MRMhubExperiment.html">MRMhubExperiment</a></span><span class="op">(</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">data_path</span> <span class="op">&lt;-</span> <span class="st">"datasets/sPerfect_MRMhub.tsv"</span></span>
-<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_data_mrmhub.html">import_data_mrmhub</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">mexp</span>, path <span class="op">=</span> <span class="va">data_path</span>, import_metadata <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<p>The corresponding metadata can then be added file by file.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_metadata_analyses.html">import_metadata_analyses</a></span><span class="op">(</span><span class="va">mexp</span>,</span>
-<span>                                 path <span class="op">=</span> <span class="st">"datasets/analysis_metadata.csv"</span>,</span>
-<span>                                 excl_unmatched_analyses <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>                                 ignore_warnings <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_metadata_features.html">import_metadata_features</a></span><span class="op">(</span><span class="va">mexp</span>,</span>
-<span>                                 path <span class="op">=</span> <span class="st">"datasets/feature_metadata.csv"</span>,</span>
-<span>                                 ignore_warnings<span class="op">=</span> <span class="cn">TRUE</span> <span class="op">)</span></span></code></pre></div>
-<p>Metadata can also be imported from sheets of an Excel workbook, which
-allows all metadata to be stored in one file. Here, metadata on internal
-standards and response curves is added to the MRMhubExperiment
-object.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_metadata_istds.html">import_metadata_istds</a></span><span class="op">(</span><span class="va">mexp</span>,</span>
-<span>                              path <span class="op">=</span> <span class="st">"datasets/metadata_tables.xlsx"</span>,</span>
-<span>                              sheet <span class="op">=</span> <span class="st">"ISTDs"</span>,</span>
-<span>                              ignore_warnings<span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p>Furthermore, metadata can be imported from R <code>data.frame</code>
-objects, which allows metadata to be obtained from additional sources,
-e.g. databases or a LIMS.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">df_qcinfo</span> <span class="op">&lt;-</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_table.html" class="external-link">read_table</a></span><span class="op">(</span>file <span class="op">=</span> <span class="st">"datasets/qc_metadata.txt"</span><span class="op">)</span></span>
-<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_metadata_qcconcentrations.html">import_metadata_qcconcentrations</a></span><span class="op">(</span><span class="va">mexp</span>, table <span class="op">=</span> <span class="va">df_qcinfo</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="importing-an-msorganiser-metadata-template">Importing an MSOrganiser metadata template<a class="anchor" aria-label="anchor" href="#importing-an-msorganiser-metadata-template"></a>
-</h2>
-<p>Another option to import metadata is via the MSOrganiser template
-file, an Excel file (<code>.xlsx</code>). This template provides tables
-for all metadata types supported by MRMhub, with options to check the
-validity and integrity of the metadata. The template can be obtained
-from <a href="https://github.com/SLINGhub/mrmhub" class="external-link uri">https://github.com/SLINGhub/mrmhub</a> or via a mrmhub
-function.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">mrmhub</span><span class="fu">::</span><span class="fu"><a href="../reference/save_metadata_msorganiser_template.html">save_metadata_msorganiser_template</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p>Only the metadata tables required by the intended processing workflow
-need to be completed. The following import function imports all
-completed tables.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_metadata_msorganiser.html">import_metadata_msorganiser</a></span><span class="op">(</span><span class="va">mexp</span>,</span>
-<span>                                    path <span class="op">=</span> <span class="st">"datasets/sPerfect_Metadata.xlsx"</span>,</span>
-<span>                                    ignore_warnings<span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-</div>
+annotate the analytical data. MRMhub stores it in five tables —
+analyses, features, internal standards, response curves, and
+calibration/QC concentrations — that are attached to an
+<code>MRMhubExperiment</code> and linked to the measurements by
+identifier. This page documents the structure of each table and how
+identifiers are matched. For the steps to obtain the templates and
+import metadata, see <a href="recipe-05-import-metadata.html">Import
+Metadata from Files or a Template</a>.</p>
+<p>Integrity of metadata and data is essential for correct
+post-processing: MRMhub inspects imported data and metadata for
+completeness and for consistency of the IDs used across the tables, and
+prints a summary of the identified errors, warnings, and notes to the
+console after import so that possible issues can be identified and
+addressed.</p>
 <div class="section level2">
 <h2 id="metadata-table-structures">Metadata table structures<a class="anchor" aria-label="anchor" href="#metadata-table-structures"></a>
 </h2>
@@ -227,7 +170,7 @@ page.</p>
 <h3 id="str-analyses">Analyses (samples)<a class="anchor" aria-label="anchor" href="#str-analyses"></a>
 </h3>
 <p>One row per analysis (injection). Import with <a href="../reference/import_metadata_analyses.html"><code>import_metadata_analyses()</code></a>.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">show_csv</span><span class="op">(</span><span class="st">"MHQuant_demo_metadata_analyses.csv"</span><span class="op">)</span></span></code></pre></div>
 <table style="width:100%;" class="table">
 <caption>Example file
@@ -289,24 +232,26 @@ page.</p>
 <h3 id="str-features">Features (analytes)<a class="anchor" aria-label="anchor" href="#str-features"></a>
 </h3>
 <p>One row per feature. Import with <a href="../reference/import_metadata_features.html"><code>import_metadata_features()</code></a>.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">show_template</span><span class="op">(</span><span class="st">"Features"</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
+<table style="width:100%;" class="table">
 <caption>Template sheet <code>Features</code> (column headers)</caption>
 <colgroup>
-<col width="5%">
-<col width="8%">
+<col width="4%">
 <col width="7%">
+<col width="6%">
+<col width="4%">
 <col width="5%">
+<col width="7%">
+<col width="6%">
+<col width="7%">
 <col width="6%">
 <col width="8%">
-<col width="7%">
-<col width="8%">
-<col width="7%">
-<col width="9%">
-<col width="12%">
-<col width="12%">
 <col width="4%">
+<col width="5%">
+<col width="10%">
+<col width="10%">
+<col width="3%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">feature_id</th>
@@ -319,6 +264,8 @@ page.</p>
 <th align="left">response_factor</th>
 <th align="left">is_quantifier</th>
 <th align="left">valid_integration</th>
+<th align="left">polarity</th>
+<th align="left">mrm_pattern</th>
 <th align="left">interference_feature_id</th>
 <th align="left">interference_proportion</th>
 <th align="left">remarks</th>
@@ -331,7 +278,7 @@ page.</p>
 </h3>
 <p>One row per internal standard, giving its known concentration. Import
 with <a href="../reference/import_metadata_istds.html"><code>import_metadata_istds()</code></a>.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">show_csv</span><span class="op">(</span><span class="st">"MRMhub_ISTDconc.csv"</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <caption>Example file <code>MRMhub_ISTDconc.csv</code>
@@ -364,7 +311,7 @@ with <a href="../reference/import_metadata_istds.html"><code>import_metadata_ist
 <h3 id="str-responsecurves">Response curves<a class="anchor" aria-label="anchor" href="#str-responsecurves"></a>
 </h3>
 <p>Maps response-curve injections to the amount analysed. Import with <a href="../reference/import_metadata_responsecurves.html"><code>import_metadata_responsecurves()</code></a>.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">show_template</span><span class="op">(</span><span class="st">"ResponseCurves"</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <caption>Template sheet <code>ResponseCurves</code> (column
@@ -383,7 +330,7 @@ headers)</caption>
 </h3>
 <p>Known analyte concentrations in calibration and QC samples. Import
 with <a href="../reference/import_metadata_qcconcentrations.html"><code>import_metadata_qcconcentrations()</code></a>.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">show_template</span><span class="op">(</span><span class="st">"QCconcentrations"</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <caption>Template sheet <code>QCconcentrations</code> (column
@@ -438,6 +385,9 @@ a warning.</p>
 </h2>
 <ul>
 <li>
+<a href="recipe-05-import-metadata.html">Import Metadata from Files
+or a Template</a> — the import steps</li>
+<li>
 <a href="manual-04-data-import.html">Importing Analytical Data</a> —
 importing the measurement data</li>
 <li>
@@ -446,9 +396,6 @@ Roles</a> — the <code>qc_type</code> values that drive QC logic</li>
 <li>
 <a href="manual-02-data-object.html">The MRMhubExperiment Data
 Object</a> — where the metadata is stored</li>
-<li>
-<a href="../reference/index.html">Function reference</a> — full
-arguments for every metadata importer</li>
 </ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

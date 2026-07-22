@@ -50,10 +50,9 @@ mexp <- import_metadata_msorganiser(
 #> ℹ Standard values: "SBLK", "TBLK", "UBLK", "HQC", "MQC", "LQC", "QC", "PBLK",
 #>   "CAL", "EQA", "PQC", "TQC", "BQC", "RQC", "EQC", "NIST", "LTR", "SPL", "SST",
 #>   and "MBLK" ("Sample" is an alias for "SPL").
+#> Found no errors, no warnings, and 1 note in the metadata.
 #> --------------------------------------------------------------------------------
-#> # A tibble: 1 × 5
 #>   Type  Table    Column    Issue                        Count
-#>   <chr> <chr>    <chr>     <chr>                        <int>
 #> 1 N     Analyses sample_id Not defined for all analyses     8
 #> 
 #> --------------------------------------------------------------------------------

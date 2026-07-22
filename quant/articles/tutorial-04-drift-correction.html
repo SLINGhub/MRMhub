@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Drift and Batch Correction • mrmhub</title>
+<title>Drift and batch correction • mrmhub</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
@@ -16,7 +16,12 @@
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
-<meta property="og:title" content="Drift and Batch Correction">
+<meta property="og:title" content="Drift and batch correction">
+<meta name="description" content="Correct run-order signal drift and between-batch effects from QC samples, and combine the two in the recommended order.
+">
+<meta property="og:description" content="Correct run-order signal drift and between-batch effects from QC samples, and combine the two in the recommended order.
+">
+<meta property="og:image" content="https://slinghub.github.io/MRMhub/quant/logo.svg">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -26,7 +31,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -68,6 +73,7 @@
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul>
 </li>
 <li class="nav-item dropdown">
@@ -81,8 +87,10 @@
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Preparing and running</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-04-data-import.html">Importing Analytical Data</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-05-metadata.html">Importing Metadata</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-05-metadata.html">Metadata Tables &amp; Matching</a></li>
     <li><a class="dropdown-item" href="../articles/manual-07-corrections.html">Drift and Batch Correction</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-12-interference-correction.html">Isotopic Interference Correction</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-11-quarto-workflows.html">Quarto Workflows</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
@@ -117,7 +125,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.svg" class="logo" alt=""><h1>Drift and Batch Correction</h1>
+      <img src="../logo.svg" class="logo" alt=""><h1>Drift and batch correction</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/development/vignettes/articles/tutorial-04-drift-correction.Rmd" class="external-link"><code>vignettes/articles/tutorial-04-drift-correction.Rmd</code></a></small>
@@ -126,309 +134,323 @@
 
     
     
-<p class="page-kind page-kind-tutorial">
-Tutorial
+<p class="page-meta">
+<span class="page-kind page-kind-tutorial">Tutorial</span> <span class="page-level">Intermediate</span> <span class="page-prereq">Prerequisites:
+<a href="tutorial-02-basic-workflow.html">Basic workflow</a></span>
 </p>
-<p>MRMhub provides functions for run-order drift correction, differing
-by the employed smoothing algorithm and suited to either QC- or
-study-sample-based correction, and for batch-effect correction by median
-centering. The data must be provided via an MRMhubExperiment object; raw
-data that was imported or processed data can be corrected, such as
-<code>intensity</code> or <code>conc</code> values. These functions have
-various options for customization; please refer to the manual page on <a href="manual-07-corrections.html">Drift and Batch Correction</a> for
-more details. This tutorial first demonstrates the drift-correction
-methods, then batch-effect correction and how the two are combined.</p>
-<div class="callout callout-note">
-<p><strong>Time</strong> ~20 min  ·  <strong>Level</strong> Intermediate
- ·  <strong>Prerequisites</strong> <a href="tutorial-02-basic-workflow.html">Basic workflow</a></p>
-</div>
+<p>Signal intensities in a mass-spectrometry run drift with injection
+order and shift between analytical batches. MRMhub corrects run-order
+drift by smoothing a trend through reference samples, and batch effects
+by median centering. Both operate on a data variable of an
+<code>MRMhubExperiment</code> — raw intensities, normalized intensities,
+or concentrations — and are fitted on QC or study samples only, never
+mixed. After this tutorial you can select an appropriate correction
+method for a given QC design and apply drift and batch correction in the
+correct order.</p>
 <div class="section level2">
-<h2 id="import-data">Import data<a class="anchor" aria-label="anchor" href="#import-data"></a>
+<h2 id="import-data">1. Import data<a class="anchor" aria-label="anchor" href="#import-data"></a>
 </h2>
-<p>In this tutorial, we import pre-calculated raw concentration values
-from a CSV file. This file must contain a column with batch information
-(<code>batch_id</code>) if batch-wise correction should be applied, see
-<code><a href="../reference/import_data_csv_wide.html">import_data_csv_wide()</a></code> for more information.</p>
+<p>We import pre-calculated raw concentration values from a CSV file.
+Batch-wise correction requires a <code>batch_id</code> column; see
+<code><a href="../reference/import_data_csv_wide.html">import_data_csv_wide()</a></code> for the expected format.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/SLINGhub/MRMhub" class="external-link">mrmhub</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu">mrmhub</span><span class="fu">::</span><span class="fu"><a href="../reference/MRMhubExperiment.html">MRMhubExperiment</a></span><span class="op">(</span><span class="op">)</span></span>
-<span></span>
+<span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MRMhubExperiment.html">MRMhubExperiment</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_data_csv_wide.html">import_data_csv_wide</a></span><span class="op">(</span></span>
 <span>  <span class="va">myexp</span>,</span>
 <span>  path <span class="op">=</span> <span class="st">"smooth-testdata.csv"</span>,</span>
 <span>  variable_name <span class="op">=</span> <span class="st">"conc"</span>,</span>
-<span>  import_metadata <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<span>  import_metadata <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="qc-based-smoothing">QC-based smoothing<a class="anchor" aria-label="anchor" href="#qc-based-smoothing"></a>
+<h2 id="qc-based-drift-correction">2. QC-based drift correction<a class="anchor" aria-label="anchor" href="#qc-based-drift-correction"></a>
 </h2>
-<p>We apply a QC-based drift correction using cubic spline. See
-<code><a href="../reference/correct_drift_cubicspline.html">correct_drift_cubicspline()</a></code> for more information.</p>
+<p>Apply a QC-based drift correction with a cubic spline fitted through
+the batch QC samples (<code>BQC</code>). The reported change in median
+CV summarises whether the correction improved analytical precision.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mexp_drift</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/correct_drift_cubicspline.html">correct_drift_cubicspline</a></span><span class="op">(</span></span>
 <span>  <span class="va">myexp</span>,</span>
-<span>  batch_wise <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  variable <span class="op">=</span> <span class="st">"conc"</span>,</span>
+<span>  batch_wise <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  ref_qc_types <span class="op">=</span> <span class="st">"BQC"</span>,</span>
-<span>  recalc_trend_after <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #00BB00;">Applying `conc` drift correction...</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Drift correction was applied to 3 of 3 features (across all batches).</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #555555;">The median CV change of all features in study samples was </span><span style="color: #555555; font-weight: bold;">-4.69%</span><span style="color: #555555;"> (range: -8.21% to 1.17%). The median absolute CV of all features </span><span style="color: #555555; font-weight: bold;">decreased from</span><span style="color: #555555;"> </span><span style="color: #555555; font-weight: bold;">30.56% to 28.52%</span><span style="color: #555555;">.</span></span></span></code></pre></div>
-<p>Next, we inspect the data before and after the correction. We observe
-that the green trendline follows the QC samples (in red). After the
-correction, the trend has been fully smoothed out, resulting in a
-straight line.</p>
+<span>  recalc_trend_after <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Drift correction was applied to 3 of 3 features (across all batches).</span></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #00BBBB;">ℹ</span> <span style="color: #555555;">The median per-feature CV change of all features in study samples was </span><span style="color: #555555; font-weight: bold;">-4.69%</span><span style="color: #555555;"> (range: -8.21% to 1.17%; a positive value means the CV increased). The median CV across all features </span><span style="color: #555555; font-weight: bold;">decreased from</span><span style="color: #555555;"> </span><span style="color: #555555; font-weight: bold;">30.56% to 28.52%</span><span style="color: #555555;">.</span></code></pre>
+</div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span><span class="va">mexp_drift</span>, variable <span class="op">=</span> <span class="st">"conc_before"</span>, qc_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BQC"</span>, <span class="st">"SPL"</span><span class="op">)</span>,</span>
-<span>                rows_page <span class="op">=</span> <span class="fl">1</span>, cols_page <span class="op">=</span> <span class="fl">3</span>, show_trend <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="tutorial-04-drift-correction_files/figure-html/unnamed-chunk-3-1.png" class="r-plt" alt="RunScatter plots before and after batch correction
-" width="700"></p>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span></span>
+<span>  <span class="va">mexp_drift</span>,</span>
+<span>  variable <span class="op">=</span> <span class="st">"conc_before"</span>,</span>
+<span>  qc_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BQC"</span>, <span class="st">"SPL"</span><span class="op">)</span>,</span>
+<span>  rows_page <span class="op">=</span> <span class="fl">1</span>, cols_page <span class="op">=</span> <span class="fl">3</span>, show_trend <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<img src="tutorial-04-drift-correction_files/figure-html/drift-cubicspline-before-1.png" class="r-plt" alt="RunScatter of concentrations before QC-based drift correction" width="700"><p class="caption">
+Figure 1. Concentrations before QC-based drift correction; the fitted
+trend (green) follows the BQC points (red).
+</p>
+</div>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span><span class="va">mexp_drift</span>, variable <span class="op">=</span> <span class="st">"conc"</span>, qc_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BQC"</span>, <span class="st">"SPL"</span><span class="op">)</span>,</span>
-<span>                rows_page <span class="op">=</span> <span class="fl">1</span>, cols_page <span class="op">=</span> <span class="fl">3</span>, show_trend <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="tutorial-04-drift-correction_files/figure-html/unnamed-chunk-3-2.png" class="r-plt" alt="RunScatter plots before and after batch correction
-" width="700"></p>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span></span>
+<span>  <span class="va">mexp_drift</span>,</span>
+<span>  variable <span class="op">=</span> <span class="st">"conc"</span>,</span>
+<span>  qc_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BQC"</span>, <span class="st">"SPL"</span><span class="op">)</span>,</span>
+<span>  rows_page <span class="op">=</span> <span class="fl">1</span>, cols_page <span class="op">=</span> <span class="fl">3</span>, show_trend <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<img src="tutorial-04-drift-correction_files/figure-html/drift-cubicspline-after-1.png" class="r-plt" alt="RunScatter of concentrations after QC-based drift correction" width="700"><p class="caption">
+Figure 2. Concentrations after QC-based drift correction; the BQC trend
+is flat.
+</p>
+</div>
+<p>The fitted trend (green) tracks the <code>BQC</code> points (red)
+before correction and is flat afterwards. Flattening the
+<code>BQC</code> trend does not, however, necessarily straighten the
+study-sample (<code>SPL</code>) trend, since pooled QCs can differ from
+the study samples in handling and matrix.</p>
 </div>
 <div class="section level2">
-<h2 id="sample-trend-based-smoothing">Sample trend-based smoothing<a class="anchor" aria-label="anchor" href="#sample-trend-based-smoothing"></a>
+<h2 id="sample-based-drift-correction">3. Sample-based drift correction<a class="anchor" aria-label="anchor" href="#sample-based-drift-correction"></a>
 </h2>
-<p>Above, we observe that the QC samples do not fully represent the
-trends of the study samples. This discrepancy can occur when the QC
-samples, which often based on pooled samples, differ in handling or
-properties from the study samples.</p>
-<p>We therefore apply a sample-based drift correction using gaussian
-kernel smoothing. See <code><a href="../reference/correct_drift_gaussiankernel.html">correct_drift_gaussiankernel()</a></code> for
-more information.</p>
+<p>When QC samples do not represent the study-sample trend, fit the
+drift on the study samples instead. Gaussian kernel smoothing is suited
+to this because study samples are numerous but individually noisy;
+<code>kernel_size</code> sets the smoothing window. The study-sample
+trend is then well corrected, though for this dataset the difference
+from the QC-based result above is modest.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mexp_drift</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/correct_drift_gaussiankernel.html">correct_drift_gaussiankernel</a></span><span class="op">(</span></span>
 <span>  <span class="va">myexp</span>,</span>
 <span>  variable <span class="op">=</span> <span class="st">"conc"</span>,</span>
-<span>  kernel_size <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  batch_wise <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  ref_qc_types <span class="op">=</span> <span class="st">"SPL"</span>,</span>
-<span>  recalc_trend_after <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #00BB00;">Applying `conc` drift correction...</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Drift correction was applied to 3 of 3 features (across all batches).</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #555555;">The median CV change of all features in study samples was </span><span style="color: #555555; font-weight: bold;">-6.18%</span><span style="color: #555555;"> (range: -11.46% to -1.49%). The median absolute CV of all features </span><span style="color: #555555; font-weight: bold;">decreased from</span><span style="color: #555555;"> </span><span style="color: #555555; font-weight: bold;">30.56% to 25.86%</span><span style="color: #555555;">.</span></span></span></code></pre></div>
-<p>Again, we inspect the data before and after the correction. We
-observe that the green trendline follows the samples (in grey). After
-the correction, the trend has been fully smoothed out, resulting in a
-straight line.</p>
+<span>  kernel_size <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  recalc_trend_after <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span><span class="va">mexp_drift</span>, variable <span class="op">=</span> <span class="st">"conc_before"</span>, qc_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BQC"</span>, <span class="st">"SPL"</span><span class="op">)</span>,</span>
-<span>                rows_page <span class="op">=</span> <span class="fl">1</span>, cols_page <span class="op">=</span> <span class="fl">3</span>, show_trend <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="tutorial-04-drift-correction_files/figure-html/unnamed-chunk-5-1.png" class="r-plt" alt="RunScatter plots before and after batch correction
-" width="700"></p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span><span class="va">mexp_drift</span>, variable <span class="op">=</span> <span class="st">"conc"</span>, qc_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BQC"</span>, <span class="st">"SPL"</span><span class="op">)</span>,</span>
-<span>                rows_page <span class="op">=</span> <span class="fl">1</span>, cols_page <span class="op">=</span> <span class="fl">3</span>, show_trend <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>    </span></code></pre></div>
-<p><img src="tutorial-04-drift-correction_files/figure-html/unnamed-chunk-6-1.png" class="r-plt" alt="RunScatter plots before and after batch correction
-" width="700"> Now, the trends of the study samples appear to be
-fairly well corrected. However, in this example, the differences
-compared to the previous QC-based smoothing are not very pronounced.</p>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span></span>
+<span>  <span class="va">mexp_drift</span>,</span>
+<span>  variable <span class="op">=</span> <span class="st">"conc"</span>,</span>
+<span>  qc_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BQC"</span>, <span class="st">"SPL"</span><span class="op">)</span>,</span>
+<span>  rows_page <span class="op">=</span> <span class="fl">1</span>, cols_page <span class="op">=</span> <span class="fl">3</span>, show_trend <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<img src="tutorial-04-drift-correction_files/figure-html/drift-gaussian-after-1.png" class="r-plt" alt="RunScatter after sample-based Gaussian-kernel drift correction" width="700"><p class="caption">
+Figure 3. Concentrations after sample-based Gaussian-kernel drift
+correction; the study-sample trend is flat.
+</p>
+</div>
 </div>
 <div class="section level2">
-<h2 id="within-batch-drift-correction">Within-batch drift correction<a class="anchor" aria-label="anchor" href="#within-batch-drift-correction"></a>
+<h2 id="within-batch-drift-correction">4. Within-batch drift correction<a class="anchor" aria-label="anchor" href="#within-batch-drift-correction"></a>
 </h2>
-<p>In the examples before we applied drift correction across all
-batches. However, if batch-effects are present that break the drifts, it
-is recommended to apply drift correction within each batch.</p>
-<p>We explore a within-batch drift correction using a sample-based
-gaussian kernel smoothing from above in this next example, by setting
+<p>The corrections above span all batches. When batch effects interrupt
+the drift, fit the trend within each batch by setting
 <code>batch_wise = TRUE</code>.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mexp_drift</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/correct_drift_gaussiankernel.html">correct_drift_gaussiankernel</a></span><span class="op">(</span></span>
 <span>  <span class="va">myexp</span>,</span>
 <span>  variable <span class="op">=</span> <span class="st">"conc"</span>,</span>
-<span>  kernel_size <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  batch_wise <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  ref_qc_types <span class="op">=</span> <span class="st">"SPL"</span>,</span>
-<span>  recalc_trend_after <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #00BB00;">Applying `conc` drift correction...</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Drift correction was applied to 3 of 3 features (batch-wise).</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #555555;">The median CV change of all features in study samples was </span><span style="color: #555555; font-weight: bold;">-1.20%</span><span style="color: #555555;"> (range: -1.88% to -0.61%). The median absolute CV of all features across batches </span><span style="color: #555555; font-weight: bold;">decreased from</span><span style="color: #555555;"> </span><span style="color: #555555; font-weight: bold;">26.28% to 25.67%</span><span style="color: #555555;">.</span></span></span></code></pre></div>
-<p>Now, each batch has its own trendline corresponding the trend in each
-batch of each feature. Contrary to the previous correction across
-batches, we now observe clear differences in the trends still present
-after the correction. This is an effect of the correction applied
-independently to each batch, due to different sample sizes and present
-batch effects. Therefore, it is often necessary to apply batch
-correction after batch-wise drift correction</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span><span class="va">mexp_drift</span>, variable <span class="op">=</span> <span class="st">"conc_before"</span>, qc_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BQC"</span>, <span class="st">"SPL"</span><span class="op">)</span>,</span>
-<span>                rows_page <span class="op">=</span> <span class="fl">1</span>, cols_page <span class="op">=</span> <span class="fl">3</span>, show_trend <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="tutorial-04-drift-correction_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" alt="RunScatter plots before and after batch correction
-" width="700"></p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span><span class="va">mexp_drift</span>, variable <span class="op">=</span> <span class="st">"conc"</span>, qc_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BQC"</span>, <span class="st">"SPL"</span><span class="op">)</span>,</span>
-<span>                rows_page <span class="op">=</span> <span class="fl">1</span>, cols_page <span class="op">=</span> <span class="fl">3</span>, show_trend <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="tutorial-04-drift-correction_files/figure-html/unnamed-chunk-8-2.png" class="r-plt" alt="RunScatter plots before and after batch correction
-" width="700"></p>
-<p>We therefore apply a subsequent batch correction using
-median-centering, resulting in an alignment of the batches.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mexp_drift</span> <span class="op">&lt;-</span> <span class="fu">mrmhub</span><span class="fu">::</span><span class="fu"><a href="../reference/correct_batch_centering.html">correct_batch_centering</a></span><span class="op">(</span></span>
-<span>  <span class="va">mexp_drift</span>, </span>
-<span>  ref_qc_types <span class="op">=</span> <span class="st">"SPL"</span>, </span>
+<span>  kernel_size <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  recalc_trend_after <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span></span>
+<span>  <span class="va">mexp_drift</span>,</span>
 <span>  variable <span class="op">=</span> <span class="st">"conc"</span>,</span>
+<span>  qc_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BQC"</span>, <span class="st">"SPL"</span><span class="op">)</span>,</span>
+<span>  rows_page <span class="op">=</span> <span class="fl">1</span>, cols_page <span class="op">=</span> <span class="fl">3</span>, show_trend <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<img src="tutorial-04-drift-correction_files/figure-html/drift-batchwise-after-1.png" class="r-plt" alt="RunScatter after within-batch drift correction, residual between-batch differences" width="700"><p class="caption">
+Figure 4. Concentrations after within-batch drift correction; residual
+trend differences remain between batches.
+</p>
+</div>
+<p>Clear trend differences remain between batches because each batch is
+fitted independently, so differing sample sizes and batch effects are
+not reconciled. A batch correction is therefore usually applied after
+batch-wise drift correction. Apply a subsequent batch correction by
+median centering to align the batches.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">mexp_drift</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/correct_batch_centering.html">correct_batch_centering</a></span><span class="op">(</span></span>
+<span>  <span class="va">mexp_drift</span>,</span>
+<span>  variable <span class="op">=</span> <span class="st">"conc"</span>,</span>
+<span>  ref_qc_types <span class="op">=</span> <span class="st">"SPL"</span>,</span>
 <span>  correct_scale <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #BBBB00;">Adding batch correction on top of `conc` drift-correction.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Batch median-centering of 6 batches was applied to drift-corrected concentrations of all 3 features.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #555555;">The median CV change of all features in study samples was </span><span style="color: #555555; font-weight: bold;">-5.38%</span><span style="color: #555555;"> (range: -8.80% to -0.60%).  The median absolute CV of all features </span><span style="color: #555555; font-weight: bold;">decreased from</span><span style="color: #555555;"> </span><span style="color: #555555; font-weight: bold;">30.00% to 25.68%</span><span style="color: #555555;">.</span></span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span><span class="va">mexp_drift</span>, variable <span class="op">=</span> <span class="st">"conc"</span>, qc_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BQC"</span>, <span class="st">"SPL"</span><span class="op">)</span>,</span>
-<span>                rows_page <span class="op">=</span> <span class="fl">1</span>, cols_page <span class="op">=</span> <span class="fl">3</span>, show_trend <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">Generating plots (1 page)...</span></span></span></code></pre></div>
-<p><img src="tutorial-04-drift-correction_files/figure-html/unnamed-chunk-9-1.png" class="r-plt" alt="RunScatter plots before and after batch correction
-" width="700"></p>
+<span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span></span>
+<span>  <span class="va">mexp_drift</span>,</span>
+<span>  variable <span class="op">=</span> <span class="st">"conc"</span>,</span>
+<span>  qc_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BQC"</span>, <span class="st">"SPL"</span><span class="op">)</span>,</span>
+<span>  rows_page <span class="op">=</span> <span class="fl">1</span>, cols_page <span class="op">=</span> <span class="fl">3</span>, show_trend <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<img src="tutorial-04-drift-correction_files/figure-html/drift-then-batch-1.png" class="r-plt" alt="RunScatter after within-batch drift correction and batch centering" width="700"><p class="caption">
+Figure 5. Concentrations after within-batch drift correction followed by
+median-centering batch correction; batches are aligned.
+</p>
+</div>
 </div>
 <div class="section level2">
-<h2 id="batch-effect-correction">Batch-effect correction<a class="anchor" aria-label="anchor" href="#batch-effect-correction"></a>
+<h2 id="batch-effect-correction">5. Batch-effect correction<a class="anchor" aria-label="anchor" href="#batch-effect-correction"></a>
 </h2>
 <p>Batch effects — systematic differences between analytical batches —
-are corrected by median centering with
-<code><a href="../reference/correct_batch_centering.html">correct_batch_centering()</a></code>. The following example uses a
-separate dataset of seven batches to show the effect clearly.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">myexp_batch</span> <span class="op">&lt;-</span> <span class="fu">mrmhub</span><span class="fu">::</span><span class="fu"><a href="../reference/MRMhubExperiment.html">MRMhubExperiment</a></span><span class="op">(</span><span class="op">)</span></span>
+are corrected on their own with <code><a href="../reference/correct_batch_centering.html">correct_batch_centering()</a></code>.
+The following uses a seven-batch dataset to show the effect clearly.
+Each batch is centered on a reference QC type, here the study samples
+(<code>ref_qc_types = "SPL"</code>).</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">myexp_batch</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MRMhubExperiment.html">MRMhubExperiment</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">myexp_batch</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_data_csv_wide.html">import_data_csv_wide</a></span><span class="op">(</span></span>
 <span>  <span class="va">myexp_batch</span>,</span>
 <span>  path <span class="op">=</span> <span class="st">"simdata-u1000-sd100_7batches.csv"</span>,</span>
 <span>  variable_name <span class="op">=</span> <span class="st">"conc"</span>,</span>
-<span>  import_metadata <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p>The concentration values of each batch are centered on a reference QC
-type, here the study samples (<code>ref_qc_types = "SPL"</code>). The
-<code>correct_scale</code> parameter controls whether the batch-to-batch
-differences in variance (scale) are also corrected; with
-<code>correct_scale = FALSE</code> only the median (location) of each
-batch is aligned.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<span>  import_metadata <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">myexp_batch</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/correct_batch_centering.html">correct_batch_centering</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">myexp_batch</span>,</span>
+<span>  <span class="va">myexp_batch</span>,</span>
 <span>  variable <span class="op">=</span> <span class="st">"conc"</span>,</span>
 <span>  ref_qc_types <span class="op">=</span> <span class="st">"SPL"</span>,</span>
 <span>  correct_scale <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #BBBB00;">Adding batch correction to `conc` data.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Batch median-centering of 7 batches was applied to raw concentrations of all 1 features.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #555555;">The median CV change of all features in study samples was </span><span style="color: #555555; font-weight: bold;">-30.49%</span><span style="color: #555555;"> (range: -30.50% to -30.50%).  The median absolute CV of all features </span><span style="color: #555555; font-weight: bold;">decreased from</span><span style="color: #555555;"> </span><span style="color: #555555; font-weight: bold;">44.05% to 13.56%</span><span style="color: #555555;">.</span></span></span></code></pre></div>
-<p>The data before and after batch correction are compared below; the
-batches are now aligned. If the study samples or other QC types do not
-follow the reference samples, they may not be corrected
-appropriately.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span><span class="va">myexp_batch</span>, variable <span class="op">=</span> <span class="st">"conc_before"</span>, rows_page <span class="op">=</span> <span class="fl">1</span>, cols_page <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="tutorial-04-drift-correction_files/figure-html/unnamed-chunk-12-1.png" class="r-plt" alt="RunScatter plots before and after batch correction
-" width="700"></p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span><span class="va">myexp_batch</span>, variable <span class="op">=</span> <span class="st">"conc"</span>, rows_page <span class="op">=</span> <span class="fl">1</span>, cols_page <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="tutorial-04-drift-correction_files/figure-html/unnamed-chunk-12-2.png" class="r-plt" alt="RunScatter plots before and after batch correction
-" width="700"></p>
-<div class="section level3">
-<h3 id="correcting-variance-as-well-as-location">Correcting variance as well as location<a class="anchor" aria-label="anchor" href="#correcting-variance-as-well-as-location"></a>
-</h3>
-<p>Although the batches are aligned, the spread (variance) of the points
-still varies considerably between batches. This is corrected by scaling
-the variance with <code>correct_scale = TRUE</code>, after which the
-spread is fairly consistent across batches.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">myexp_batch</span> <span class="op">&lt;-</span> <span class="fu">mrmhub</span><span class="fu">::</span><span class="fu"><a href="../reference/correct_batch_centering.html">correct_batch_centering</a></span><span class="op">(</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">Adding batch correction to `conc` data.</span></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Batch median-centering of 7 batches was applied to raw concentrations of all 1 features.</span></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #00BBBB;">ℹ</span> <span style="color: #555555;">The median per-feature CV change of all features in study samples was </span><span style="color: #555555; font-weight: bold;">-30.49%</span><span style="color: #555555;"> (range: -30.50% to -30.50%; a positive value means the CV increased).  The median CV across all features </span><span style="color: #555555; font-weight: bold;">decreased from</span><span style="color: #555555;"> </span><span style="color: #555555; font-weight: bold;">44.05% to 13.56%</span><span style="color: #555555;">.</span></code></pre>
+</div>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span></span>
 <span>  <span class="va">myexp_batch</span>,</span>
-<span>  ref_qc_types <span class="op">=</span> <span class="st">"SPL"</span>,</span>
+<span>  variable <span class="op">=</span> <span class="st">"conc_before"</span>,</span>
+<span>  rows_page <span class="op">=</span> <span class="fl">1</span>, cols_page <span class="op">=</span> <span class="fl">1</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<img src="tutorial-04-drift-correction_files/figure-html/batch-before-1.png" class="r-plt" alt="RunScatter before batch correction, batches offset" width="700"><p class="caption">
+Figure 6. Concentrations before batch correction; batch medians are
+offset from one another.
+</p>
+</div>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span></span>
+<span>  <span class="va">myexp_batch</span>,</span>
 <span>  variable <span class="op">=</span> <span class="st">"conc"</span>,</span>
+<span>  rows_page <span class="op">=</span> <span class="fl">1</span>, cols_page <span class="op">=</span> <span class="fl">1</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<img src="tutorial-04-drift-correction_files/figure-html/batch-after-1.png" class="r-plt" alt="RunScatter after median-centering batch correction, batches aligned" width="700"><p class="caption">
+Figure 7. Concentrations after median-centering batch correction; batch
+medians are aligned.
+</p>
+</div>
+<p>The batches are aligned in location, but their spread still differs.
+Setting <code>correct_scale = TRUE</code> also equalises the variance
+between batches.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">myexp_batch</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/correct_batch_centering.html">correct_batch_centering</a></span><span class="op">(</span></span>
+<span>  <span class="va">myexp_batch</span>,</span>
+<span>  variable <span class="op">=</span> <span class="st">"conc"</span>,</span>
+<span>  ref_qc_types <span class="op">=</span> <span class="st">"SPL"</span>,</span>
 <span>  correct_scale <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span><span class="va">myexp_batch</span>, variable <span class="op">=</span> <span class="st">"conc"</span>, rows_page <span class="op">=</span> <span class="fl">1</span>, cols_page <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="tutorial-04-drift-correction_files/figure-html/unnamed-chunk-13-1.png" class="r-plt" alt="RunScatter plot after batch correction with variance scaling
-" width="700"></p>
+<span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span></span>
+<span>  <span class="va">myexp_batch</span>,</span>
+<span>  variable <span class="op">=</span> <span class="st">"conc"</span>,</span>
+<span>  rows_page <span class="op">=</span> <span class="fl">1</span>, cols_page <span class="op">=</span> <span class="fl">1</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<img src="tutorial-04-drift-correction_files/figure-html/batch-scale-1.png" class="r-plt" alt="RunScatter after batch correction with variance scaling" width="700"><p class="caption">
+Figure 8. Concentrations after batch correction with variance scaling;
+both location and spread are consistent across batches.
+</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="method-comparison">Method comparison<a class="anchor" aria-label="anchor" href="#method-comparison"></a>
+<h2 id="choosing-a-drift-correction-method">6. Choosing a drift-correction method<a class="anchor" aria-label="anchor" href="#choosing-a-drift-correction-method"></a>
 </h2>
-<p><code>MRMhub</code> provides four drift correction methods. Loess and
-cubic spline are typically used with QC samples as the reference,
-gaussian kernel smoothing with study samples; a fourth method,
-generalized additive model (GAM) smoothing via
-<code><a href="../reference/correct_drift_gam.html">correct_drift_gam()</a></code>, is also available. The method
-comparison below summarises the typical use cases of the three most
-common — see the <a href="manual-07-corrections.html">Drift and Batch
+<p>MRMhub provides four drift-correction methods. Loess and cubic spline
+are typically fitted on QC samples, Gaussian kernel on study samples; a
+fourth, GAM smoothing via <code><a href="../reference/correct_drift_gam.html">correct_drift_gam()</a></code>, is also
+available. See <a href="manual-07-corrections.html">Drift and Batch
 Correction (reference)</a> for the full parameter description of all
 four.</p>
 <table class="table">
 <colgroup>
-<col width="16%">
-<col width="20%">
-<col width="38%">
+<col width="19%">
+<col width="23%">
 <col width="26%">
+<col width="30%">
 </colgroup>
 <thead><tr class="header">
 <th>Method</th>
 <th>Function</th>
-<th>Reference samples</th>
+<th>Reference</th>
 <th>Typical use</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
 <td>Loess</td>
 <td><code><a href="../reference/correct_drift_loess.html">correct_drift_loess()</a></code></td>
-<td>QC samples</td>
-<td>Frequent QC injections; smooth trends; robust to single-point
-outliers</td>
+<td>QC</td>
+<td>Frequent QC injections; robust to single outlier QCs</td>
 </tr>
 <tr class="even">
-<td>Cubic Spline</td>
+<td>Cubic spline</td>
 <td><code><a href="../reference/correct_drift_cubicspline.html">correct_drift_cubicspline()</a></code></td>
-<td>QC samples</td>
-<td>Frequent QC injections; flexible curves; sensitive to outlier QC
-points</td>
+<td>QC</td>
+<td>Frequent QC injections; flexible, sensitive to outlier QCs</td>
 </tr>
 <tr class="odd">
-<td>Gaussian Kernel</td>
+<td>Gaussian kernel</td>
 <td><code><a href="../reference/correct_drift_gaussiankernel.html">correct_drift_gaussiankernel()</a></code></td>
-<td>Study samples</td>
-<td>Sparse QCs; only suitable for large, well-randomised sample
-sets</td>
+<td>Study</td>
+<td>Sparse QCs; large, well-randomised sample sets only</td>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section level2">
-<h2 id="loess-drift-correction">Loess drift correction<a class="anchor" aria-label="anchor" href="#loess-drift-correction"></a>
-</h2>
-<p>Loess uses locally weighted polynomial regression and is less
-sensitive to individual outlier QC points than cubic spline. The
-<code>span</code> parameter controls smoothness (higher = smoother).</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<p>Loess uses locally weighted regression and is less sensitive to
+individual outlier QCs than a cubic spline; its <code>span</code>
+controls smoothness.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mexp_drift_loess</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/correct_drift_loess.html">correct_drift_loess</a></span><span class="op">(</span></span>
 <span>  <span class="va">myexp</span>,</span>
 <span>  variable <span class="op">=</span> <span class="st">"conc"</span>,</span>
 <span>  batch_wise <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  ref_qc_types <span class="op">=</span> <span class="st">"BQC"</span>,</span>
-<span>  recalc_trend_after <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #00BB00;">Applying `conc` drift correction...</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">4 of 41 TQCs, 3 of 3 LTRs were excluded from correction as they fall outside the regions spanned by the QCs/samples used for smoothing (</span><span style="color: #BBBB00; font-style: italic;">BQC</span><span style="color: #BBBB00;">).</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Drift correction was applied to 3 of 3 features (batch-wise).</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #555555;">The median CV change of all features in study samples was </span><span style="color: #555555; font-weight: bold;">0.33%</span><span style="color: #555555;"> (range: 0.02% to 1.08%). The median absolute CV of all features across batches </span><span style="color: #555555; font-weight: bold;">increased from</span><span style="color: #555555;"> </span><span style="color: #555555; font-weight: bold;">26.28% to 27.36%</span><span style="color: #555555;">.</span></span></span></code></pre></div>
-<p>Inspect the result with <code><a href="../reference/plot_runscatter.html">plot_runscatter()</a></code> before
-exporting.</p>
+<span>  recalc_trend_after <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="export-corrected-data">Export corrected data<a class="anchor" aria-label="anchor" href="#export-corrected-data"></a>
+<h2 id="export-corrected-data">7. Export corrected data<a class="anchor" aria-label="anchor" href="#export-corrected-data"></a>
 </h2>
-<p>Next, we can either continue to work with the corrected data using
-<code>MRMhub</code> functions or export the data.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<p>Continue processing the corrected object with MRMhub functions, or
+export the corrected variable to CSV.</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/save_dataset_csv.html">save_dataset_csv</a></span><span class="op">(</span></span>
-<span>  <span class="va">mexp_drift</span>, </span>
-<span>  path <span class="op">=</span> <span class="st">"drift-batch-corrected-conc-data.csv"</span>, </span>
-<span>  variable <span class="op">=</span> <span class="st">"conc"</span>, </span>
+<span>  <span class="va">mexp_drift</span>,</span>
+<span>  path <span class="op">=</span> <span class="st">"drift-batch-corrected-conc-data.csv"</span>,</span>
+<span>  variable <span class="op">=</span> <span class="st">"conc"</span>,</span>
 <span>  filter_data <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Concentration values for 498 analyses and 3 features have been exported to 'drift-batch-corrected-conc-data.csv'.</span></span></span></code></pre></div>
+<span><span class="op">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Concentration values for 498 analyses and 3 features have been exported to 'drift-batch-corrected-conc-data.csv'.</span></code></pre>
+</div>
 </div>
 <div class="section level2">
 <h2 id="next-steps">Next steps<a class="anchor" aria-label="anchor" href="#next-steps"></a>

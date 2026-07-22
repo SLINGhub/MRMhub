@@ -158,10 +158,11 @@ to visualize the results.
 
 Other QC plots:
 [`plot_feature_correlations()`](https://slinghub.github.io/MRMhub/quant/reference/plot_feature_correlations.md),
+[`plot_interference_correction()`](https://slinghub.github.io/MRMhub/quant/reference/plot_interference_correction.md),
+[`plot_matrixeffects()`](https://slinghub.github.io/MRMhub/quant/reference/plot_matrixeffects.md),
 [`plot_pca()`](https://slinghub.github.io/MRMhub/quant/reference/plot_pca.md),
 [`plot_pca_loading()`](https://slinghub.github.io/MRMhub/quant/reference/plot_pca_loading.md),
-[`plot_qc_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_interferences.md),
-[`plot_qc_matrixeffects()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_matrixeffects.md),
+[`plot_qc_interference_impact()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_interference_impact.md),
 [`plot_qc_summary_byclass()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_summary_byclass.md),
 [`plot_qc_summary_overall()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_summary_overall.md),
 [`plot_qcmetrics_comparison()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qcmetrics_comparison.md),
@@ -176,9 +177,10 @@ Other QC plots:
 # Example usage:
 mexp <- lipidomics_dataset
 mexp <- normalize_by_istd(mexp)
-#> ! Interfering features defined in metadata, but no correction was applied. Use `correct_interferences()` to correct.
+#> ! Interfering features defined in metadata, but no correction was applied. Use `correct_custom_interferences()` to correct.
 #> ✔ 20 features normalized with 9 ISTDs in 499 analyses.
 mexp <- calc_qc_metrics(mexp)
+#> ✔ QC metrics calculated for 29 features across 7 sample types, including normalized-intensity and response-curve statistics.
 plot_normalization_qc(
   data = mexp,
   before_norm_var = "intensity",

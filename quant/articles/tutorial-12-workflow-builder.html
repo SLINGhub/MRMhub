@@ -31,7 +31,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -73,6 +73,7 @@
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul>
 </li>
 <li class="nav-item dropdown">
@@ -86,8 +87,10 @@
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Preparing and running</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-04-data-import.html">Importing Analytical Data</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-05-metadata.html">Importing Metadata</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-05-metadata.html">Metadata Tables &amp; Matching</a></li>
     <li><a class="dropdown-item" href="../articles/manual-07-corrections.html">Drift and Batch Correction</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-12-interference-correction.html">Isotopic Interference Correction</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-11-quarto-workflows.html">Quarto Workflows</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
@@ -262,6 +265,11 @@ requested output formats:</p>
 <span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="fu">format</span><span class="kw">:</span></span>
 <span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="at">  </span><span class="fu">html</span><span class="kw">:</span><span class="at"> default</span></span>
 <span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="pp">---</span></span></code></pre></div>
+<p>The document then opens with a hidden setup chunk
+(<code>#| include: false</code>) that loads the package and calls
+<code><a href="../reference/mrmhub_enable_cli_color.html">mrmhub_enable_cli_color()</a></code>, so mrmhub’s coloured console
+feedback renders in the HTML output. See <a href="manual-11-quarto-workflows.html">Quarto Workflows</a> for the
+reporting options and output-format details.</p>
 <p>Each selected step then becomes its own <code>##</code> section with
 an <code>{r}</code> chunk. For the demo dataset with normalisation, ISTD
 quantification, drift and batch correction, and QC filtering selected,
@@ -321,6 +329,10 @@ file formats and the importer decision tree</li>
 <li>
 <a href="manual-05-metadata.html">Importing Metadata</a> — metadata
 tables and their required columns</li>
+<li>
+<a href="manual-11-quarto-workflows.html">Quarto Workflows</a> — the
+setup chunk, coloured console output, and rendering to HTML, PDF, and
+Word</li>
 </ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

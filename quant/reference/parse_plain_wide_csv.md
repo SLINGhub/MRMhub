@@ -60,7 +60,7 @@ tbl <- parse_plain_wide_csv(
  variable_name = "conc",
  analysis_id_col = "analysis_id",
  import_metadata = TRUE)
-#> ℹ Metadata column(s) 'qc_type, batch_id' imported. To ignore, set `import_metadata = FALSE`
+#> ✔ Metadata column(s) 'qc_type, batch_id' imported. To ignore, set `import_metadata = FALSE`
 
 head(tbl)
 #> # A tibble: 6 × 6

@@ -108,44 +108,16 @@ mexp <- import_data_skyline(
   transition_id_columns = "mz",
   import_metadata = TRUE
 )
-#> ✔ Imported 6 analyses with 21 features
-#> ℹ `feature_area` selected as default feature intensity. Modify with `set_intensity_var()`.
+#> ✔ Imported 6 analyses with 21 features.
+#> ℹ feature_area selected as default feature intensity. Modify with `set_intensity_var()`.
 #> ✔ Analysis metadata associated with 6 analyses.
 #> ✔ Feature metadata associated with 21 features.
 #> ℹ Analysis order was based on `analysis_order` column of imported data. Use `set_analysis_order` to change the order.
 print(mexp)
 #> 
-#> ── MRMhubExperiment ────────────────────────────────────────────────────────────
-#> Title:
-#> 
-#> Processing status: Annotated raw AREA values
-#> 
-#> ── Annotated Raw Data ──
-#> 
-#> • Analyses: 6
-#> • Features: 21
-#> • Raw signal used for processing: `feature_area`
-#> 
-#> ── Metadata ──
-#> 
-#> • Analyses/samples: ✔
-#> • Features/analytes: ✔
-#> • Internal standards: ✖
-#> • Response curves: ✖
-#> • Calibrants/QC concentrations: ✖
-#> • Study samples: ✖
-#> 
-#> ── Processing Status ──
-#> 
-#> • Isotope corrected: ✖
-#> • ISTD normalized: ✖
-#> • ISTD quantitated: ✖
-#> • Drift corrected variables: ✖
-#> • Batch corrected variables: ✖
-#> • Feature filtering applied: ✖
-#> 
-#> ── Exclusion of Analyses and Features ──
-#> 
-#> • Analyses manually excluded (`analysis_id`): ✖
-#> • Features manually excluded (`feature_id`): ✖
+#> ── MRMhubExperiment:  ──────────────────────────────────────────────────────────
+#> NA | 6 analyses and 21 features | signal: feature_area
+#> Last step: Annotated raw AREA values
+#> Normalized ✖ Quantitated ✖ Drift/batch ✖ Filtered ✖
+#> ℹ Use `status()` for the full processing and metadata report
 ```

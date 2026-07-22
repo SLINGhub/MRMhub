@@ -35,8 +35,8 @@ mexp <- readRDS("results/mexp_processed.rds")
 | [`plot_calibrationcurves()`](https://slinghub.github.io/MRMhub/quant/reference/plot_calibrationcurves.md) | External calibration | Calibration curves with fit and residuals |
 | [`plot_responsecurves()`](https://slinghub.github.io/MRMhub/quant/reference/plot_responsecurves.md) | Response curves | Linearity check from a dilution series |
 | [`plot_rt_vs_chain()`](https://slinghub.github.io/MRMhub/quant/reference/plot_rt_vs_chain.md) | Method check (lipidomics) | RT vs chain length / unsaturation |
-| [`plot_qc_matrixeffects()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_matrixeffects.md) | Method check | Matrix-effect QC |
-| [`plot_qc_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_interferences.md) | Interference correction | QC overview for interference annotations |
+| [`plot_matrixeffects()`](https://slinghub.github.io/MRMhub/quant/reference/plot_matrixeffects.md) | Method check | Matrix-effect QC |
+| [`plot_interference_correction()`](https://slinghub.github.io/MRMhub/quant/reference/plot_interference_correction.md) | Interference correction | QC overview for interference annotations |
 
 ## Acquisition design
 
@@ -267,17 +267,17 @@ linear relationship within a class point to mis-identified features.
 plot_rt_vs_chain(mexp)
 ```
 
-### `plot_qc_matrixeffects()` — matrix-effect overview
+### `plot_matrixeffects()` — matrix-effect overview
 
 Compares ISTD response in matrix-containing QCs against solvent-only
 injections to flag matrix-effect outliers.
 
 ``` r
 
-plot_qc_matrixeffects(mexp)
+plot_matrixeffects(mexp)
 ```
 
-### `plot_qc_interferences()` — interference annotations
+### `plot_interference_correction()` — interference annotations
 
 QC overview for features with interference annotations (see
 [Interference
@@ -285,7 +285,7 @@ Correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-11-interfe
 
 ``` r
 
-plot_qc_interferences(mexp)
+plot_interference_correction(mexp)
 ```
 
 ## Customisation and export

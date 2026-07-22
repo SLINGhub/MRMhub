@@ -40,8 +40,8 @@ myexp <- mrmhub::MRMhubExperiment(title = "sPerfect")
 
 data_path <- "./datasets/sPerfect_MRMhub.tsv"
 myexp <- import_data_mrmhub(data = myexp, path = data_path, import_metadata = TRUE)
-#> ✔ Imported 499 analyses with 503 features
-#> ℹ `feature_area` selected as default feature intensity. Modify with `set_intensity_var()`.
+#> ✔ Imported 499 analyses with 503 features.
+#> ℹ feature_area selected as default feature intensity. Modify with `set_intensity_var()`.
 #> ✔ Analysis metadata associated with 499 analyses.
 #> ✔ Feature metadata associated with 503 features.
 ```
@@ -183,7 +183,6 @@ plot_runscatter(
   path = "./output/runscatter_istd.pdf",
   cols_page = 4, rows_page = 3
 )
-#> Generating plots (3 pages)...
 ```
 
 ![RunScatter
@@ -213,11 +212,9 @@ Exercises
 
 file_path <- "datasets/sPerfect_Metadata.xlsx"
 myexp <- import_metadata_msorganiser(myexp, path = file_path, ignore_warnings = TRUE)
-#> ! Metadata has following warnings and notifications:
+#> Found no errors, 4 warnings, and no notes in the metadata.
 #> --------------------------------------------------------------------------------
-#> # A tibble: 4 × 5
 #>   Type  Table    Column                Issue                           Count
-#>   <chr> <chr>    <chr>                 <chr>                           <int>
 #> 1 W*    Analyses analysis_id           Analyses not in analysis data      15
 #> 2 W*    Features feature_id            Feature(s) without metadata         1
 #> 3 W*    Features feature_id            Feature(s) not in analysis data     4
@@ -303,8 +300,8 @@ plot_pca(
   point_size = 2, point_alpha = 0.7, font_base_size = 8, ellipse_alpha = 0.3, 
   include_istd = FALSE)
 #> ! 2 features contained missing or non-numeric values and were exluded.
-#> ℹ The PCA was calculated based on `feature_intensity` values of 423 features.
-#> ggrepel: 10000 iterations in 0.011446s, 3 overlaps. Consider increasing 'max.iter'.
+#> ✔ The PCA was calculated based on `feature_intensity` values of 423 features.
+#> ggrepel: 10000 iterations in 0.010915s, 3 overlaps. Consider increasing 'max.iter'.
 ```
 
 ![PCA
@@ -325,7 +322,7 @@ Exercises
 
  # Exclude the sample from the processing
 myexp <- exclude_analyses(myexp, analyses = c("Longit_batch6_51"), clear_existing  = TRUE)
-#> ℹ 1 analyses were excluded for downstream processing. Please reprocess data.
+#> ✔ 1 analysis was excluded for downstream processing. Please reprocess data.
 
 # Replot the PCA
 plot_pca(
@@ -340,8 +337,8 @@ plot_pca(
   include_istd = FALSE,
   shared_labeltext_hide = NA)
 #> ! 2 features contained missing or non-numeric values and were exluded.
-#> ℹ The PCA was calculated based on `feature_intensity` values of 423 features.
-#> ggrepel: 10000 iterations in 0.023693s, 7 overlaps. Consider increasing 'max.iter'.
+#> ✔ The PCA was calculated based on `feature_intensity` values of 423 features.
+#> ggrepel: 10000 iterations in 0.022822s, 7 overlaps. Consider increasing 'max.iter'.
 ```
 
 ![PCA
@@ -374,9 +371,8 @@ myexp <- mrmhub::filter_features_qc(myexp,
                                    include_qualifier = FALSE,
                                    include_istd = TRUE,
                                    min.intensity.median.spl = 200)
-#> Calculating feature QC metrics - please wait...
-#> ! The QC parameter `min.intensity.median.spl` contains NAs for following features: LPC O-22:1, PC 34:5, PC 35:1, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC P-32:1 M+1. 
-#> These features failed QC.
+#> ✔ QC metrics calculated for 502 features across 7 sample types.
+#> ! The QC parameter min.intensity.median.spl contains NAs for the following features: LPC O-22:1, PC 34:5, PC 35:1, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC P-32:1 M+1. These features failed QC.
 #> ✔ New feature QC filters were defined: 437 of 448 quantifier features meet QC criteria (including the 25 quantifier ISTD features).
 plot_responsecurves(
   data = myexp,
@@ -390,15 +386,12 @@ plot_responsecurves(
 #>   method                  from   
 #>   heightDetails.titleGrob ggplot2
 #>   widthDetails.titleGrob  ggplot2
-#> Generating plots (1 page):
-#>   |                                      |                              |   0%
 ```
 
 ![Response curve
 plots](tutorial-03-lipidomics-workflow_files/figure-html/responsecurves-1.png)
 
-    #>   |                                      |==============================| 100%
-    #>   done!
+    #> ✔ Done
 
 ## 12. Isotope interference correction
 
@@ -418,10 +411,11 @@ Exercises
 
 ``` r
 
-myexp <- mrmhub::correct_interferences(myexp)
-#> ! Interference correction led to negative or zero values in 2 feature(s) in samples/QCs. Please verify the correction, or set `neg_to_na = TRUE`
-#> ✔ Interference-correction has been applied to 10 of the 502 features.
-plot_qc_interferences(myexp, qc_types = c("BQC", "SPL", "TQC", "LTR"))
+myexp <- mrmhub::correct_custom_interferences(myexp)
+#> ! Interference correction led to 31 negative or zero values in 2 features (samples/QCs). Please verify the correction, or set `neg_to_na = TRUE`.
+#> ! 1 feature(s) became strongly negative (below -25% of raw) after correction: "PC 29:0|SM 33:1 M+3". This may indicate a mis-defined interference or an unmodeled effect; please verify.
+#> ✔ Interference correction applied to 11 of 502 feature(s) (0 isotopic, 11 custom edge(s)).
+plot_interference_correction(myexp, qc_types = c("BQC", "SPL", "TQC", "LTR"))
 ```
 
 ![](tutorial-03-lipidomics-workflow_files/figure-html/isotope-correction-1.png)
@@ -446,7 +440,7 @@ myexp <- mrmhub::normalize_by_istd(myexp)
 #> ✔ 460 features normalized with 17 ISTDs in 498 analyses.
 myexp <- mrmhub::quantify_by_istd(myexp)
 #> ✔ 460 feature concentrations calculated based on 42 ISTDs and sample amounts of 498 analyses.
-#> ℹ Concentrations are given in μmol/L.
+#> ✔ Concentrations are given in μmol/L.
 ```
 
 ## 14. Examine the effects of class-wide ISTD normalization
@@ -477,9 +471,8 @@ myexp <- mrmhub::filter_features_qc(myexp,
                                    include_qualifier = FALSE,
                                    include_istd = TRUE,
                                    min.intensity.median.spl = 1000)
-#> Calculating feature QC metrics - please wait...
-#> ! The QC parameter `min.intensity.median.spl` contains NAs for following features: LPC O-22:1, PC 34:5, PC 35:1, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC P-32:1 M+1. 
-#> These features failed QC.
+#> ✔ QC metrics calculated for 502 features across 7 sample types, including normalized-intensity and concentration statistics.
+#> ! The QC parameter min.intensity.median.spl contains NAs for the following features: LPC O-22:1, PC 34:5, PC 35:1, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC P-32:1 M+1. These features failed QC.
 #> ✔ New feature QC filters were defined: 413 of 448 quantifier features meet QC criteria (including the 25 quantifier ISTD features).
 mrmhub::plot_normalization_qc(
   data = myexp, 
@@ -526,14 +519,13 @@ myexp <- mrmhub::correct_drift_gaussiankernel(
   scale_smooth = FALSE, 
   show_progress = FALSE  # set to FALSE when rendering
 )
-#> ℹ Applying `conc` drift correction...
-#> ℹ 4 feature(s) contain one or more zero or negative `conc` values. Verify your data or use `log_transform_internal = FALSE`.
+#> ! 4 feature(s) contain one or more zero or negative `conc` values. Verify your data or use `log_transform_internal = FALSE`.
 #> ! 1 features showed no variation in the study sample's original values across analyses. 
 #> ! 1 features have invalid values after smoothing. NA will be be returned for all values of these faetures. Set `use_original_if_fail = FALSE to return orginal values..
 #> ! Smoothing failed for 1 feature(s) in all batches. Please check data, metadata, and fit parameters.
 #> ! Smoothing failed for 1 feature(s) in at least one batch: PG 36:2. Please check data, metadata and fit parameters.
 #> ✔ Drift correction was applied to 459 of 460 features (batch-wise).
-#> ℹ The median CV change of all features in study samples was -1.00% (range: -12.53% to 2.59%). The median absolute CV of all features across batches decreased from 39.00% to 37.71%.
+#> ℹ The median per-feature CV change of all features in study samples was -1.00% (range: -12.53% to 2.59%; a positive value means the CV increased). The median CV across all features across batches decreased from 39.00% to 37.71%.
 ```
 
 In order to demonstrate the correction, we will plot an example (PC
@@ -577,7 +569,6 @@ Exercises
 ``` r
 
 my_trend_plot("conc_before", "PC 40:8")
-#> Generating plots (1 page)...
 ```
 
 ![RunScatter plots with trends before after corrections
@@ -586,7 +577,6 @@ my_trend_plot("conc_before", "PC 40:8")
 ``` r
 
 my_trend_plot("conc", "PC 40:8")
-#> Generating plots (1 page)...
 ```
 
 ![RunScatter plots with trends before after corrections
@@ -618,7 +608,7 @@ myexp <- mrmhub::correct_batch_centering(
   correct_location = TRUE, 
   correct_scale = TRUE, 
   log_transform_internal = TRUE)
-#> ℹ Adding batch correction on top of `conc` drift-correction.
+#> ! Adding batch correction on top of `conc` drift-correction.
 #> Warning: ! 102 feature/batch combinations had no usable reference-QC ("SPL") values and
 #>   were left uncorrected; original values were kept.
 #> ℹ Affected features: "CE 18:1 d7 (ISTD)", "Cer d18:1/25:0 (ISTD)", "COH d7
@@ -628,10 +618,9 @@ myexp <- mrmhub::correct_batch_centering(
 #>   "PG 33:1 d7 (ISTD)", "PI 33:1 d7 (ISTD)", "PS 33:1 d7 (ISTD)", "SM 36:2 d9
 #>   (ISTD)", "TG 48:1 d7 (ISTD) [-15:0]", and "TG 48:1 d7 (ISTD) [SIM]"
 #> ✔ Batch median-centering of 6 batches was applied to drift-corrected concentrations of all 502 features.
-#> ℹ The median CV change of all features in study samples was -0.23% (range: -31.80% to 69.10%).  The median absolute CV of all features increased from 38.39% to 38.83%.
+#> ℹ The median per-feature CV change of all features in study samples was -0.23% (range: -31.80% to 69.10%; a positive value means the CV increased).  The median CV across all features increased from 38.39% to 38.83%.
 
 my_trend_plot("conc", "PC 40:8")
-#> Generating plots (1 page)...
 ```
 
 ![RunScatter plots with trends after
@@ -713,14 +702,11 @@ myexp <- filter_features_qc(
   max.cv.conc.bqc = 25,
   features.to.keep = c("CE 20:4", "CE 22:5", "CE 22:6", "CE 16:0", "CE 18:0")
 )
-#> Calculating feature QC metrics - please wait...
 #> ! %CV not computed for 4440 feature×QC-type×variable combinations with fewer than 3 replicates (LTR: 4440).
-#> ! The QC parameter `min.intensity.median.spl` contains NAs for following features: LPC O-22:1, PC 34:5, PC 35:1, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC P-32:1 M+1. 
-#> These features failed QC.
-#> ! The QC parameter `min.signalblank.median.spl.pblk` contains NAs for following features: LPC O-22:1, PC 34:5, PC 35:1, PG 36:2, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC .... 
-#> These features failed QC.
-#> ! The QC parameter `max.cv.conc.bqc` contains NAs for following features: Cer d18:1/12:0 (ISTD) [M-H20>264], Cer d18:1/25:0 (ISTD) [M-H20>264], Hex2Cer.... 
-#> These features failed QC.
+#> ✔ QC metrics calculated for 502 features across 7 sample types, including normalized-intensity, concentration, and response-curve statistics.
+#> ! The QC parameter min.intensity.median.spl contains NAs for the following features: LPC O-22:1, PC 34:5, PC 35:1, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC P-32:1 M+1. These features failed QC.
+#> ! The QC parameter min.signalblank.median.spl.pblk contains NAs for the following features: LPC O-22:1, PC 34:5, PC 35:1, PG 36:2, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC .... These features failed QC.
+#> ! The QC parameter max.cv.conc.bqc contains NAs for the following features: Cer d18:1/12:0 (ISTD) [M-H20>264], Cer d18:1/25:0 (ISTD) [M-H20>264], Hex2Cer.... These features failed QC.
 #> ! The following features were forced to be retained despite not meeting filtering criteria: CE 16:0, CE 20:4, CE 22:5, and CE 22:6
 #> ✔ New feature QC filters were defined: 324 of 423 quantifier features meet QC criteria (not including the 25 quantifier ISTD features).
 ```
@@ -811,8 +797,7 @@ Exercises
 ``` r
 
 mrmhub::save_report_xlsx(myexp, path = tempfile(fileext = ".xlsx"))
-#> Saving report to disk - please wait...
-#> ✔ The data processing report of experiment 'sPerfect' has been saved to '/tmp/Rtmpd8cStN/file2f5c385fd75.xlsx'.
+#> ✔ The data processing report of experiment 'sPerfect' has been saved to /tmp/RtmpJMcyve/file314b69129cd1.xlsx.
 ```
 
 Specific data subsets can also be saved as a clean flat, wide CSV file.
@@ -833,7 +818,7 @@ mrmhub::save_dataset_csv(
   qc_types = "SPL", 
   include_qualifier = FALSE,
   filter_data = TRUE)
-#> ✔ Concentration values for 377 analyses and 324 features have been exported to '/tmp/Rtmpd8cStN/file2f5c6c0ea8f.csv'.
+#> ✔ Concentration values for 377 analyses and 324 features have been exported to '/tmp/RtmpJMcyve/file314b1b9a270e.csv'.
 ```
 
 ## 22. Sharing the `MRMhubExperiment` dataset
@@ -857,39 +842,11 @@ saveRDS(myexp, file = path, compress = TRUE)
 my_saved_exp <- readRDS(file = path)
 print(myexp)
 #> 
-#> ── MRMhubExperiment ────────────────────────────────────────────────────────────
-#> Title: sPerfect
-#> 
-#> Processing status: Drift-Batch-corrected concentrations
-#> 
-#> ── Annotated Raw Data ──
-#> 
-#> • Analyses: 498
-#> • Features: 502
-#> • Raw signal used for processing: `feature_area`
-#> 
-#> ── Metadata ──
-#> 
-#> • Analyses/samples: ✔
-#> • Features/analytes: ✔
-#> • Internal standards: ✔
-#> • Response curves: ✔
-#> • Calibrants/QC concentrations: ✖
-#> • Study samples: ✖
-#> 
-#> ── Processing Status ──
-#> 
-#> • Isotope corrected: ✔
-#> • ISTD normalized: ✔
-#> • ISTD quantitated: ✔
-#> • Drift corrected variables: `feature_conc`
-#> • Batch corrected variables: `feature_conc`
-#> • Feature filtering applied: ✔
-#> 
-#> ── Exclusion of Analyses and Features ──
-#> 
-#> • Analyses manually excluded (`analysis_id`): Longit_batch6_51
-#> • Features manually excluded (`feature_id`): ✖
+#> ── MRMhubExperiment: sPerfect ──────────────────────────────────────────────────
+#> NA | 498 analyses and 502 features | signal: feature_area
+#> Last step: Features filtered by QC
+#> Normalized ✔ Quantitated ✔ Drift/batch ✔ Filtered ✔
+#> ℹ Use `status()` for the full processing and metadata report
 ```
 
 ## Next steps

@@ -47,7 +47,6 @@ absolute S1P concentrations in NIST SRM1950 may differ significantly.
 ``` r
 
 mexp <- import_metadata_qcconcentrations(mexp, path = meta_file, sheet = "QCconcentrations")
-#> ! Metadata has following warnings and notifications:
 #> ✔ Analysis metadata associated with 65 analyses.
 #> ✔ Feature metadata associated with 16 features.
 #> ✔ Internal Standard metadata associated with 2 ISTDs.
@@ -64,15 +63,15 @@ concentration.
 ``` r
 
 # Isotope correction
-mexp <- mrmhub::correct_interferences(mexp)
-#> ✔ Interference-correction has been applied to 4 of the 16 features.
+mexp <- mrmhub::correct_custom_interferences(mexp)
+#> ✔ Interference correction applied to 4 of 16 feature(s) (0 isotopic, 4 custom edge(s)).
 
 # Quantify the data
 mexp <- normalize_by_istd(mexp)
 #> ✔ 14 features normalized with 2 ISTDs in 65 analyses.
 mexp <- quantify_by_istd(mexp)
 #> ✔ 14 feature concentrations calculated based on 2 ISTDs and sample amounts of 65 analyses.
-#> ℹ Concentrations are given in μmol/L.
+#> ✔ Concentrations are given in μmol/L.
 ```
 
 ## Absolute calibration
@@ -101,8 +100,8 @@ mexp_res <- calibrate_by_reference(
     undefined_conc_action = "na"
   )
 #> ! One or more feature concentration are not defined in the reference sample SRM1950. `NA` will be returned for these features. To change this, modify `undefined_conc_action` argument.
-#> ✔ 6 feature concentrations were re-calibrated using the reference sample SRM1950.
-#> ℹ Concentrations are given in umol/L.
+#> ✔ 12 feature concentrations were re-calibrated using the reference sample SRM1950.
+#> ✔ Concentrations are given in umol/L.
 ```
 
 The re-calibrated concentrations are stored in the variable `conc` ,
@@ -117,16 +116,15 @@ appear in the MRMhub XLSX report as concentrations.
 
 # Export absolute calibration concentrations
 save_dataset_csv(mexp, tempfile(fileext = ".csv"), variable = "conc")
-#> ✔ Concentration values for 65 analyses and 7 features have been exported to '/tmp/RtmpRJA9Sd/file34c920d4fa8a.csv'.
+#> ✔ Concentration values for 65 analyses and 7 features have been exported to '/tmp/RtmpR9g8RK/file369a11aadbf8.csv'.
   
 # Export non-calibrated concentrations
 save_dataset_csv(mexp_res, tempfile(fileext = ".csv"), variable = "conc_beforecal")
-#> ✔ Conc_beforecal values for 65 analyses and 16 features have been exported to '/tmp/RtmpRJA9Sd/file34c9605c8328.csv'.
+#> ✔ Conc_beforecal values for 65 analyses and 16 features have been exported to '/tmp/RtmpR9g8RK/file369a16bdecdc.csv'.
 
 # Create XLSX report with calibrated concentrations as filtered dataset
 save_report_xlsx(mexp_res, tempfile(fileext = ".xlsx"), filtered_variable = "conc")
-#> Saving report to disk - please wait...
-#> ✔ The data processing report has been saved to '/tmp/RtmpRJA9Sd/file34c94db6217.xlsx'.
+#> ✔ The data processing report has been saved to /tmp/RtmpR9g8RK/file369a116789e4.xlsx.
 ```
 
 ## Normalization (relative calibration)
@@ -148,7 +146,7 @@ mexp_res <- calibrate_by_reference(
     summarize_fun = "mean"
   )
 #> ✔ All features were normalized with reference sample SRM1950 features.
-#> ℹ Unit is: sample [conc] / SRM1950 [conc]
+#> ✔ Unit is: sample [conc] / SRM1950 [conc]
 ```
 
 The results of the normalization are stored, unlike for the absolute
@@ -181,8 +179,7 @@ save_dataset_csv(mexp_res, "norm.csv", variable = "conc_normalized")
 
 # Create XLSX report with normalized concentrations as filtered dataset
 save_report_xlsx(mexp_res, path = tempfile(fileext = ".xlsx"), filtered_variable = "conc_normalized")
-#> Saving report to disk - please wait...
-#> ✔ The data processing report has been saved to '/tmp/RtmpRJA9Sd/file34c94170b924.xlsx'.
+#> ✔ The data processing report has been saved to /tmp/RtmpR9g8RK/file369a6b49e341.xlsx.
 ```
 
 ## Batch-wise calibration
@@ -207,11 +204,11 @@ mexp_res <- calibrate_by_reference(
     undefined_conc_action = "na"
   )
 #> ! One or more feature concentration are not defined in the reference sample SRM1950. `NA` will be returned for these features. To change this, modify `undefined_conc_action` argument.
-#> ✔ 6 feature concentrations were batch-wise re-calibrated using the reference sample SRM1950.
-#> ℹ Concentrations are given in umol/L.
+#> ✔ 12 feature concentrations were batch-wise re-calibrated using the reference sample SRM1950.
+#> ✔ Concentrations are given in umol/L.
 
 save_dataset_csv(mexp_res, tempfile(fileext = ".csv"), variable = "conc_beforecal")
-#> ✔ Conc_beforecal values for 65 analyses and 16 features have been exported to '/tmp/RtmpRJA9Sd/file34c943fc9c22.csv'.
+#> ✔ Conc_beforecal values for 65 analyses and 16 features have been exported to '/tmp/RtmpR9g8RK/file369a3d73233f.csv'.
 ```
 
 ## Concentration ratio and bias
@@ -238,8 +235,8 @@ mexp_res <- calibrate_by_reference(
     store_conc_ratio = TRUE
   )
 #> ! One or more feature concentration are not defined in the reference sample SRM1950. `NA` will be returned for these features. To change this, modify `undefined_conc_action` argument.
-#> ✔ 6 feature concentrations were re-calibrated using the reference sample SRM1950.
-#> ℹ Concentrations are given in umol/L.
+#> ✔ 12 feature concentrations were re-calibrated using the reference sample SRM1950.
+#> ✔ Concentrations are given in umol/L.
 
 tbl_ref_bias <- mexp_res$dataset |> 
   filter(sample_id == "SRM1950", is_quantifier) |> 

@@ -2,131 +2,157 @@
 
 Tutorial
 
-In targeted MRM assays, the signal of one transition can be perturbed by
-contributions from a co-eluting compound. The most common cause in
-lipidomics is overlap of natural-abundance isotopologues (M+1, M+2 from
-¹³C, ²H, ¹⁵N) with the precursor or product window of an adjacent
-species. MRMhub implements a contribution-based subtraction
-(LICAR-style) (Gao et al. 2021) that removes the proportional signal of
-an *interfering feature* from a *target feature* on a per-injection
-basis.
+In class-based targeted assays, the natural-abundance heavy
+isotopologues of one species can overlap the transition of a species two
+mass units heavier, inflating its measured area. MRMhub derives these
+isotopic (M+2) interference relationships automatically from a
+per-feature `mrm_pattern` annotation and removes them with a
+contribution-based subtraction ported from the LICAR method (Gao et al.
+2021). Correction is worth considering whenever a blank shows non-zero
+signal in a feature that should be empty, a species and its M+2 shoulder
+correlate strongly across injections, or the theoretical M+2
+contribution from an adjacent same-class species exceeds a few percent
+of the target signal. It runs on raw feature intensities
+(`feature_intensity`) and applies to *every* sample — unlike drift and
+batch correction, which are fitted on QC samples only.
 
-This tutorial covers when to apply interference correction, how to
-define interference relationships in the feature annotation, and how to
-apply both batch and manual corrections.
+For MRM data the correction must be *fragment-based*: a heavy isotope’s
+contribution depends on whether it lands on the retained product ion or
+the neutral loss. The whole-molecule `level = "MS1"` path is therefore
+for genuine full-scan data only, **never a fallback for MRM** data that
+happens to lack a product m/z. The underlying concepts (front/back
+overlaps, the co-elution requirement) are covered in the [Isotopic
+interference
+correction](https://slinghub.github.io/MRMhub/quant/articles/manual-12-interference-correction.md)
+manual page.
 
 **Time** ~15 min  ·  **Level** Advanced  ·  **Prerequisites** [Basic
 workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md)
 
-## 1. When is correction needed?
+## 1. Preparing for isotopic correction
 
-Interference correction should be considered when:
+Automatic derivation needs one annotation: the `mrm_pattern` column on
+the `Features` metadata sheet, giving each feature its class + MRM
+pattern. The label encodes both the lipid class and the product-ion
+origin, so
+[`calc_isotopic_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/calc_isotopic_interferences.md)
+can build the correct fragment formula. The precursor and product m/z
+the derivation also needs — and the optional `polarity` that narrows the
+pattern choices — can come from the imported data (INTEGRATOR) *or* the
+metadata; only `mrm_pattern` must be annotated by hand. A `Features`
+sheet ready for correction looks like this — precursor/product m/z and
+`polarity` supplied by the import, with `mrm_pattern` added as the final
+column:
 
-1.  blank injections show a non-zero signal in a feature that should be
-    zero;
-2.  two features that should be biologically uncorrelated show a strong
-    injection-to-injection correlation suggestive of cross-talk;
-3.  the theoretical M+1 / M+2 contribution from an adjacent species is
-    large enough to bias the measurement (typically more than a few
-    percent of the target signal at expected concentrations).
+| feature_id | feature_class | precursor_mz | product_mz | polarity | mrm_pattern |
+|:---|:---|---:|---:|:---|:---|
+| PC 34:2 | PC | 758.6 | 184.1 | Pos | PC (Pos) Pro=184.1 |
+| PC 34:1 | PC | 760.6 | 184.1 | Pos | PC (Pos) Pro=184.1 |
+| PC 34:0 | PC | 762.6 | 184.1 | Pos | PC (Pos) Pro=184.1 |
+| Cer 18:1;O2/16:0 | Cer | 538.5 | 264.3 | Pos | Cer (Pos) SphB-2H2O |
+| PC 34:1 \[FA 16:0\] | PC | 804.6 | 255.2 | Neg | PC (Neg, FA) FA |
 
-Small contributions (below ~1% of target signal) rarely justify
-correction; they should be documented but not necessarily subtracted,
-since the propagated uncertainty of the correction can exceed the bias
-removed.
+Example `Features` metadata (`mrm_pattern` is the added annotation).
+{.table}
 
-## 2. Setup
+The valid labels are listed by
+[`licar_pattern_choices()`](https://slinghub.github.io/MRMhub/quant/reference/licar_pattern_choices.md):
 
 ``` r
 
 library(mrmhub)
+licar_pattern_choices("Head Group")
+```
+
+The metadata template
+([`save_metadata_templates()`](https://slinghub.github.io/MRMhub/quant/reference/save_metadata_templates.md))
+provides `mrm_pattern` as a filtered dropdown on the `Features` sheet,
+with an optional `polarity` column that narrows the choices and colour
+warnings when a species name does not match the chosen pattern’s class.
+On import, MRMhub validates the column: an unknown label is an error,
+and a name/pattern class mismatch or a sum-only name under a
+chain-resolved (FA/LCB) pattern is a warning.
+
+``` r
 
 mexp <- readRDS("results/mexp_processed.rds")
 ```
 
-Interference correction operates on raw feature intensities
-(`feature_intensity`). Apply it before ISTD normalisation, drift, and
-batch correction, so that those downstream steps use corrected raw
-signals.
+## 2. Derive interference relationships
 
-## 3. Inspecting candidate pairs
-
-[`plot_qc_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_interferences.md)
-provides a visual overview of features flagged as potentially
-interfering. For an exploratory check, retrieve the long-format dataset
-and correlate suspect features across injections:
+[`calc_isotopic_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/calc_isotopic_interferences.md)
+discovers the M+2 overlaps and stores them in the `annot_interferences`
+slot. Choose the derivation `level` to match the acquisition:
 
 ``` r
 
-d <- get_analyticaldata(mexp, annotated = TRUE)
+# Class-based LC-MRM: fragment-level front/back correction (needs precursor + product m/z).
+mexp <- calc_isotopic_interferences(mexp, level = "MRM")
 
-d_wide <- d |>
-  dplyr::select(analysis_id, feature_id, feature_intensity) |>
-  tidyr::pivot_wider(names_from = feature_id, values_from = feature_intensity)
-
-# Pearson correlation across QC injections for a suspected pair
-suspect <- c("Cer 18:1;O2/16:0", "Cer 18:1;O2/16:0 M+2")
-cor(d_wide[, suspect], use = "pairwise.complete.obs")
+# Genuine MS1 / full-scan: whole-molecule M+2 (needs precursor m/z only).
+# mexp <- calc_isotopic_interferences(mexp, level = "MS1")
 ```
 
-A correlation close to 1 between a species and a `M+2` shoulder
-consistent with isotopologue overlap is a strong indicator that
-subtraction is warranted.
+Derived factors are pinned to `enviPat` 2.8 (Loos et al. 2015) and are
+deterministic, so re-importing the annotation and re-deriving reproduces
+identical edges. Raise `min_contribution` to drop negligible or
+borderline pairs, and see [co-elution
+filtering](#co-elution-filtering-experimental) for the experimental
+option to keep only chromatographically co-eluting pairs.
 
-## 4. Batch correction via feature annotation
+## 3. Inspect the derived relationships
 
-[`correct_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/correct_interferences.md)
-reads the interference relationships defined in `annot_features`. Two
-columns are consulted:
-
-| Column | Description |
-|----|----|
-| `interference_feature_id` | `feature_id` of the feature contributing to the target signal |
-| `interference_contribution` | Fraction (0–1) of the interfering feature’s intensity contributing to the target |
-
-Features without an interference assignment leave these columns empty
-(`NA`). When relationships are chained (A → B → C, i.e. C interferes
-with B which interferes with A), set `sequential_correction = TRUE`
-(default) so that downstream features are corrected first.
+The two-stage API is a built-in *preview*: review the derived edges
+before subtracting anything. Each row of `annot_interferences` is one
+overlap, with its contribution factor `K` and an `overlap_type`
+(`m2_front`, `m2_back`, or `ms1_m2`):
 
 ``` r
 
-mexp <- correct_interferences(mexp,
-                              variable = "feature_intensity",
-                              sequential_correction = TRUE,
-                              neg_to_na = FALSE)
+mexp@annot_interferences
 ```
 
-For each affected feature the correction subtracts the interfering
-contribution:
+[`summarize_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/summarize_interferences.md)
+rolls this up — how many features are affected, split by source
+(auto-derived vs. declared) and overlap type, with the
+contribution-factor range:
 
-``` math
-\text{Value}_\text{corrected} = \text{Value}_\text{target} -
-   f_\text{contribution} \cdot \text{Value}_\text{interfering}
+``` r
+
+summarize_interferences(mexp)
 ```
 
-Negative results are kept by default; setting `neg_to_na = TRUE`
-replaces them with `NA` and emits a warning. Circular dependencies in
-the interference graph (A → B → A) are detected and aborted with an
-informative error.
+A victim carrying both a `m2_front` and a `m2_back` row is corrected
+against two interferers. The `source` column distinguishes auto-derived
+(`"auto"`) from declared (`"manual"`) edges.
 
-**Required annotation column placement**
+## 4. Apply the correction
 
-Add `interference_feature_id` and `interference_contribution` to the
-`annot_features` table — the same table that defines feature classes and
-ISTD assignments. The `MRMhub Metadata Organizer` template includes
-these columns; the plain
-[`save_metadata_templates()`](https://slinghub.github.io/MRMhub/quant/reference/save_metadata_templates.md)
-output does as well in recent versions of the package.
+[`correct_isotopic_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/correct_isotopic_interferences.md)
+subtracts the derived edges from the raw intensities in one pass; its
+reference page gives the subtraction formula, chain ordering, and
+zero-clamping.
+
+``` r
+
+mexp <- correct_isotopic_interferences(mexp)
+```
+
+Run it **before** ISTD normalisation, drift, and batch correction —
+applied later it resets those steps (with a warning), since they must
+use the corrected raw signal. Raw values are preserved in
+`feature_intensity_orig`. Declared interferences (in-source fragments,
+co-eluting isobars, or other overlaps you annotate) are applied with the
+sibling
+[`correct_custom_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/correct_custom_interferences.md).
 
 ## 5. Manual correction of a single pair
 
-For one-off corrections, or when validating a contribution factor before
-adding it to the annotation, use
+For a one-off correction, or to validate a factor before trusting the
+automatic derivation, use
 [`correct_interference_manual()`](https://slinghub.github.io/MRMhub/quant/reference/correct_interference_manual.md).
-Note that `variable` here is the *actual* column name in `dataset`
-(`feature_intensity`), not the short form accepted by the plotting
-functions.
+`variable` here is the actual `dataset` column name
+(`feature_intensity`).
 
 ``` r
 
@@ -134,22 +160,21 @@ mexp <- correct_interference_manual(
   mexp,
   variable                  = "feature_intensity",
   feature                   = "PC 32:0",
-  interfering_feature       = "PC 32:0 | SM 36:1 M+3",
+  interfering_feature       = "SM 36:1 M+3",
   interference_contribution = 0.0107,
   neg_to_na                 = FALSE,
   updated_feature_id        = NA
 )
 ```
 
-Setting `updated_feature_id` renames the corrected feature so the
-original and corrected values can coexist in the dataset under different
-IDs — useful when reporting both raw and corrected channels.
+Setting `updated_feature_id` renames the corrected feature so raw and
+corrected channels can coexist. Manual factors can come from a
+theoretical isotopologue calculation (`enviPat`), an empirical
+pure-standard injection (which also captures Q1/Q3 transmission and
+in-source effects), or published class-level tables — verify empirically
+when moving a method between instruments.
 
 ## 6. Verifying the correction
-
-After correction the original raw values are preserved in
-`feature_intensity_orig` so that before/after comparisons remain
-available.
 
 ``` r
 
@@ -164,74 +189,71 @@ summary(d$pct_change)
 ```
 
 For blanks (`SBLK`/`PBLK`), residual signal after correction should
-approach zero. A non-zero median in blanks after correction often
-indicates that the contribution factor is underestimated.
-
-## 7. Sourcing contribution factors
-
-Contribution factors can be derived from three sources of varying
-confidence:
-
-1.  **Theoretical natural-abundance isotopologue calculation** — compute
-    the M+*n* fraction from the neutral formula using `enviPat` (Loos et
-    al. 2015) or comparable tools, then scale by any instrument-specific
-    transmission differences across the two transitions.
-2.  **Empirical measurement** — inject the pure standard of the
-    interfering species and measure the ratio of its signal in the
-    target transition to its signal in its own transition. This captures
-    instrument-specific effects (Q1/Q3 resolution, cross-talk, in-source
-    fragmentation) that the theoretical calculation omits.
-3.  **Published values** — class-level interference tables published for
-    lipid panels with shared precursor scans. Useful as a starting point
-    but should be verified empirically when migrating methods between
-    instruments.
-
-**Example: theoretical M+2 fraction with enviPat**
+approach zero. A non-zero blank median often indicates an underestimated
+contribution factor.
+[`plot_qc_interference_impact()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_interference_impact.md)
+shows how many features were affected by which magnitude of correction
+(percent of signal removed) in the study samples:
 
 ``` r
 
-library(enviPat)
-data(isotopes)
-
-# PC 32:0 — neutral formula C40H80NO8P
-pattern <- isopattern(isotopes, "C40H80NO8P", charge = 1, threshold = 0.01)
-
-# M+2 abundance relative to M+0
-m_plus_2 <- pattern[[1]]
-m_plus_2[, "abundance"] / max(m_plus_2[, "abundance"])
+plot_qc_interference_impact(mexp, qc_types = "SPL")
 ```
 
-The reported M+2 fraction is the theoretical isotopologue abundance
-only. A real interference factor also depends on Q1/Q3 transmission,
-in-source fragmentation, and chromatographic resolution of the two
-species. Validate against blank or pure-standard injections before
-applying broadly.
+![](tutorial-11-interference-correction_files/figure-html/unnamed-chunk-12-1.png)
 
-## 8. Recommendations
+For a per-feature view,
+[`plot_interference_correction()`](https://slinghub.github.io/MRMhub/quant/reference/plot_interference_correction.md)
+shows each corrected feature’s residual signal as a percent of its
+uncorrected value, split by QC type. `min_correction_pct` restricts it
+to substantially-affected features (here, ≥ 40 % removed);
+`sort_by_effect = "desc"` ranks them by correction magnitude and `top_n`
+keeps only the largest. A blank approaching zero alongside study samples
+(`SPL`) retaining most of their signal is the expected pattern:
 
-- Apply interference correction on raw `feature_intensity` *before*
-  normalisation, drift, and batch correction.
-- Document every contribution factor and its provenance (theoretical,
-  empirical, or published) in the annotation file or a companion
-  notebook.
-- Re-validate factors after any method change (Q1/Q3 resolution,
-  gradient, source temperature).
-- For small contributions (\< 1% of target signal) the propagated
-  uncertainty often exceeds the removed bias; document the relationship
-  but consider leaving it uncorrected.
-- After correction, verify blank residual signal approaches zero.
+``` r
+
+plot_interference_correction(
+  mexp, qc_types = "SPL", min_correction_pct = 40, sort_by_effect = "desc",
+  point_size = 1.5, point_alpha = 0.8
+)
+```
+
+![](tutorial-11-interference-correction_files/figure-html/unnamed-chunk-13-1.png)
+
+Each point is one study sample; the box summarises all of them. `SPL`
+points have a transparent fill, so raise `point_size` / `point_alpha`
+when only a few are shown.
+
+## Co-elution filtering (experimental)
+
+An isotopologue elutes at its monoisotopic apex, so an interferer’s M+2
+lands in a victim’s integrated area only if the two co-elute. The
+experimental `check_coelution` option keeps an m/z-matched edge only
+when the interferer’s apex falls inside the victim’s integration window,
+dropping chromatographically resolved pairs:
+
+``` r
+
+mexp <- calc_isotopic_interferences(mexp, level = "MRM", check_coelution = TRUE)
+```
+
+It is **off by default** while the gate is validated. When enabled,
+inspect `annot_interferences` carefully — resolved pairs it drops (and,
+when retention data are missing, pairs it cannot verify) are reported in
+the console.
 
 ## Next steps
 
+- [Isotopic interference
+  correction](https://slinghub.github.io/MRMhub/quant/articles/manual-12-interference-correction.md)
+  — the conceptual reference
 - [Drift and Batch
   Correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.md)
   — apply after interference correction
 - [Basic MRMhub
   Workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md)
   — full processing pipeline
-- [Design
-  Decisions](https://slinghub.github.io/MRMhub/quant/articles/manual-03-design-decisions.md)
-  — rationale for the processing order
 - [The MRMhubExperiment Data
   Object](https://slinghub.github.io/MRMhub/quant/articles/manual-02-data-object.html#feature-variables)
   — how `_orig` postfixes preserve raw values

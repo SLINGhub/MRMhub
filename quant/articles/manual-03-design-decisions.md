@@ -66,9 +66,9 @@ slotNames("MRMhubExperiment")
 #>  [4] "conc_analyte_unit"      "dataset_orig"           "dataset"
 #>  [7] "dataset_filtered"       "annot_analyses"         "annot_features"
 #> [10] "annot_istds"            "annot_responsecurves"   "annot_qcconcentrations"
-#> [13] "annot_studysamples"     "annot_batches"          "metrics_qc"
-#> [16] "metrics_calibration"    "status_processing"      "is_istd_normalized"
-#> [19] "is_quantitated"         "is_filtered"            "has_outliers_tech"
+#> [13] "annot_studysamples"     "annot_batches"          "annot_interferences"
+#> [16] "metrics_qc"             "metrics_calibration"    "status_processing"
+#> [19] "is_istd_normalized"     "is_quantitated"         "is_filtered"
 #> [22] "is_isotope_corr"        "analyses_excluded"      "features_excluded"
 #> [25] "var_drift_corrected"    "var_batch_corrected"
 ```

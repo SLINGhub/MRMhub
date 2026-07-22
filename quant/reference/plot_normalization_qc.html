@@ -27,7 +27,7 @@ precision across different features and sample/QC types."><meta property="og:ima
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -65,6 +65,7 @@ precision across different features and sample/QC types."><meta property="og:ima
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-manual" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Manual</button>
@@ -76,8 +77,10 @@ precision across different features and sample/QC types."><meta property="og:ima
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Preparing and running</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-04-data-import.html">Importing Analytical Data</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-05-metadata.html">Importing Metadata</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-05-metadata.html">Metadata Tables &amp; Matching</a></li>
     <li><a class="dropdown-item" href="../articles/manual-07-corrections.html">Drift and Batch Correction</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-12-interference-correction.html">Isotopic Interference Correction</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-11-quarto-workflows.html">Quarto Workflows</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
@@ -247,10 +250,11 @@ metadata or retrieved via specific functions, e.g., <code><a href="parse_lipid_f
     <div class="dont-index"><p><code><a href="plot_qcmetrics_comparison.html">plot_qcmetrics_comparison()</a></code>, <code><a href="calc_qc_metrics.html">calc_qc_metrics()</a></code>, <code><a href="filter_features_qc.html">filter_features_qc()</a></code>,</p>
 <p>Other QC plots:
 <code><a href="plot_feature_correlations.html">plot_feature_correlations()</a></code>,
+<code><a href="plot_interference_correction.html">plot_interference_correction()</a></code>,
+<code><a href="plot_matrixeffects.html">plot_matrixeffects()</a></code>,
 <code><a href="plot_pca.html">plot_pca()</a></code>,
 <code><a href="plot_pca_loading.html">plot_pca_loading()</a></code>,
-<code><a href="plot_qc_interferences.html">plot_qc_interferences()</a></code>,
-<code><a href="plot_qc_matrixeffects.html">plot_qc_matrixeffects()</a></code>,
+<code><a href="plot_qc_interference_impact.html">plot_qc_interference_impact()</a></code>,
 <code><a href="plot_qc_summary_byclass.html">plot_qc_summary_byclass()</a></code>,
 <code><a href="plot_qc_summary_overall.html">plot_qc_summary_overall()</a></code>,
 <code><a href="plot_qcmetrics_comparison.html">plot_qcmetrics_comparison()</a></code>,
@@ -265,9 +269,10 @@ metadata or retrieved via specific functions, e.g., <code><a href="parse_lipid_f
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Example usage:</span></span></span>
 <span class="r-in"><span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="va">lipidomics_dataset</span></span></span>
 <span class="r-in"><span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="normalize_by_istd.html">normalize_by_istd</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">Interfering features defined in metadata, but no correction was applied. Use `correct_interferences()` to correct.</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">Interfering features defined in metadata, but no correction was applied. Use `correct_custom_interferences()` to correct.</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">20 features normalized with 9 ISTDs in 499 analyses.</span></span>
 <span class="r-in"><span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="calc_qc_metrics.html">calc_qc_metrics</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">QC metrics calculated for 29 features across 7 sample types, including normalized-intensity and response-curve statistics.</span></span>
 <span class="r-in"><span><span class="fu">plot_normalization_qc</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  data <span class="op">=</span> <span class="va">mexp</span>,</span></span>
 <span class="r-in"><span>  before_norm_var <span class="op">=</span> <span class="st">"intensity"</span>,</span></span>
