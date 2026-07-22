@@ -14,7 +14,7 @@
 #' @importFrom methods is validObject
 #' @importFrom purrr map_dfr map
 #' @importFrom rlang .data ensym sym := arg_match is_na are_na caller_env check_installed
-#' @importFrom stats as.formula lm median na.exclude sd quantile na.omit setNames p.adjust t.test IQR dnorm mad reorder prcomp model.matrix predict smooth.spline
+#' @importFrom stats as.formula lm median na.exclude sd quantile na.omit setNames p.adjust t.test IQR dnorm mad reorder prcomp model.matrix predict smooth.spline var
 #' @importFrom stringr str_remove str_replace str_replace_all str_detect str_trim str_extract str_squish fixed
 #' @importFrom tidyr unite drop_na pivot_wider nest unnest replace_na
 #' @importFrom utils tail head flush.console

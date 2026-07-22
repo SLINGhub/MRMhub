@@ -48,6 +48,57 @@ test_that("cv_log works", {
 })
 
 
+test_that("pooled_sd pools within-group variances weighted by df", {
+  # two balanced groups, each var = 1 -> pooled var = 1, pooled sd = 1
+  x <- c(5, 6, 4, 15, 16, 14)
+  g <- c(1, 1, 1, 2, 2, 2)
+  expect_equal(pooled_sd(x, g), 1)
+
+  # unbalanced groups: A = {10,10,10} (var 0, n 3), B = {20,22} (var 2, n 2)
+  # pooled var = (2*0 + 1*2) / (2 + 1) = 2/3
+  expect_equal(
+    pooled_sd(c(10, 10, 10, 20, 22), c("a", "a", "a", "b", "b")),
+    sqrt(2 / 3)
+  )
+
+  # pooling is immune to between-group offsets that inflate a plain sd()
+  expect_lt(pooled_sd(x, g), sd(x))
+})
+
+test_that("pooled_sd drops groups below two / min_n and handles empties", {
+  # a singleton group has no within-group variance and is dropped
+  expect_equal(pooled_sd(c(5, 6, 4, 100), c(1, 1, 1, 2)), 1)
+  # every group a singleton -> nothing to pool -> NA
+  expect_equal(pooled_sd(c(1, 2, 3), c(1, 2, 3)), NA_real_)
+  # min_n raises the per-group floor
+  expect_equal(pooled_sd(c(10, 12, 5, 6, 4), c(1, 1, 2, 2, 2), min_n = 3L), 1)
+  # non-numeric input
+  expect_equal(pooled_sd(c("a", "b"), c(1, 1)), NA_real_)
+})
+
+test_that("pooled_sd na.rm strips NA, otherwise propagates", {
+  x <- c(5, 6, NA, 15, 16, 14)
+  g <- c(1, 1, 1, 2, 2, 2)
+  # na.rm = TRUE: group 1 -> {5,6} var 0.5 n 2; group 2 -> var 1 n 3
+  # pooled var = (1*0.5 + 2*1) / (1 + 2) = 2.5/3
+  expect_equal(pooled_sd(x, g, na.rm = TRUE), sqrt(2.5 / 3))
+  # na.rm = FALSE with any NA present -> NA
+  expect_equal(pooled_sd(x, g, na.rm = FALSE), NA_real_)
+})
+
+test_that("pooled_rsd is pooled_sd over the grand mean", {
+  x <- c(5, 6, 4, 15, 16, 14)
+  g <- c(1, 1, 1, 2, 2, 2)
+  # pooled sd = 1, grand mean = 10 -> 10%
+  expect_equal(pooled_rsd(x, g), 10)
+  expect_equal(pooled_rsd(x, g), pooled_sd(x, g) / mean(x) * 100)
+
+  # zero grand mean -> NA denominator
+  expect_equal(pooled_rsd(c(-1, -2, 1, 2), c(1, 1, 2, 2)), NA_real_)
+  # no poolable group -> NA
+  expect_equal(pooled_rsd(c(1, 2, 3), c(1, 2, 3)), NA_real_)
+})
+
 test_that("get_mad_tails returns correct values", {
   k <- 2
   x <- c(-100, 1, 1.2, 2, 3, 4, 5, 200)

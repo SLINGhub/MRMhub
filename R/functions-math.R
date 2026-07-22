@@ -76,6 +76,75 @@ cv_log <- function(x, na.rm = FALSE) {
 }
 
 
+#' Pooled standard deviation across groups
+#'
+#' Pools the within-group variances of `x` across the levels of `group`,
+#' weighting each group by its degrees of freedom (`n_i - 1`), and returns the
+#' square root. This is the within-group precision estimate: unlike a plain
+#' `sd(x)` it is not inflated by systematic shifts *between* groups (e.g. batch
+#' offsets or drift), so it is the appropriate spread for a batch-pooled %RSD.
+#'
+#' @param x a numeric vector
+#' @param group a vector the same length as `x` giving the pooling group of each
+#' value (e.g. `batch_id`)
+#' @param na.rm logical, if TRUE then NA values in `x` are stripped before
+#' pooling
+#' @param min_n integer, the minimum number of non-missing values a group must
+#' have to contribute. Groups with fewer than `min_n` are dropped; a group is
+#' always dropped below two values, which have no within-group variance. The
+#' default is `2`.
+#'
+#' @return a single numeric value. `NA_real_` if `x` is not numeric or no group
+#' has enough replicates to pool.
+#' @export
+#'
+#' @examples
+#' pooled_sd(c(5, 6, 4, 15, 16, 14), group = c(1, 1, 1, 2, 2, 2))
+pooled_sd <- function(x, group, na.rm = FALSE, min_n = 2L) {
+  if (!is.numeric(x)) {
+    return(NA_real_)
+  }
+  # match the get_outlier_bounds/cv convention: an NA anywhere makes the result
+  # NA unless the caller opts into dropping missing values.
+  if (!na.rm && anyNA(x)) {
+    return(NA_real_)
+  }
+  per_group <- tibble(x = x, group = group) |>
+    filter(if (na.rm) !is.na(x) else TRUE) |>
+    summarise(n = n(), var = var(x), .by = group) |>
+    # a group needs at least two (and at least min_n) values for a variance
+    filter(n >= max(min_n, 2L), !is.na(var))
+
+  if (nrow(per_group) == 0) {
+    return(NA_real_)
+  }
+  sqrt(sum((per_group$n - 1) * per_group$var) / sum(per_group$n - 1))
+}
+
+#' Pooled percent relative standard deviation (%RSD) across groups
+#'
+#' [pooled_sd()] expressed as a percentage of the grand mean of `x`, i.e. a
+#' batch-pooled %CV. The pooled SD weights each group by its degrees of freedom
+#' and the grand mean weights each value equally, so both are consistently
+#' weighted by group size. See [pooled_sd()] for how groups are pooled.
+#'
+#' @inheritParams pooled_sd
+#'
+#' @return a single numeric value. `NA_real_` if the grand mean is zero or NA,
+#' `x` is not numeric, or no group has enough replicates.
+#' @export
+#'
+#' @examples
+#' pooled_rsd(c(5, 6, 4, 15, 16, 14), group = c(1, 1, 1, 2, 2, 2))
+pooled_rsd <- function(x, group, na.rm = FALSE, min_n = 2L) {
+  spread <- pooled_sd(x, group, na.rm = na.rm, min_n = min_n)
+  center <- mean(x, na.rm = na.rm)
+  if (is.na(spread) || is.na(center) || center == 0) {
+    return(NA_real_)
+  }
+  spread / center * 100
+}
+
 #' Get outlier bounds via different methods
 #'
 #' Computes lower and upper bounds for a numeric vector using one of several methods:
