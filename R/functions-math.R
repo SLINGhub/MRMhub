@@ -1,12 +1,12 @@
 #' Percent coefficient of variation (%CV)
 #'
 #' This function computes the percent coefficient of variation  of the values in x.
-#' If na.rm is TRUE then missing values are removed before computation proceeds.
+#' If na.rm is `TRUE` then missing values are removed before computation proceeds.
 #'
 #' @param x a numeric vector with untransformed data
-#' @param na.rm logical, if TRUE then NA values are stripped from x before
+#' @param na.rm logical, if `TRUE` then NA values are stripped from x before
 #' computation takes place
-#' @param use_robust_cv logical, if TRUE the robust coefficient of variation
+#' @param use_robust_cv logical, if `TRUE` the robust coefficient of variation
 #' (scaled median absolute deviation / median) is computed instead of the
 #' standard CV (SD / mean)
 #' @param min_n integer, the minimum number of observations (non-missing ones
@@ -57,7 +57,7 @@ cv <- function(x, na.rm = FALSE, use_robust_cv = FALSE, min_n = 1L) {
 #' data is not normally distributed.
 #'
 #' @param x a numeric vector with untransformed data
-#' @param na.rm logical, if TRUE then NA values are stripped from x before
+#' @param na.rm logical, if `TRUE` then NA values are stripped from x before
 #' computation takes place
 #'
 #' @return a numeric value. If x contains a zero, then NaN is returned. If x is
@@ -87,7 +87,7 @@ cv_log <- function(x, na.rm = FALSE) {
 #' @param x a numeric vector
 #' @param group a vector the same length as `x` giving the pooling group of each
 #' value (e.g. `batch_id`)
-#' @param na.rm logical, if TRUE then NA values in `x` are stripped before
+#' @param na.rm logical, if `TRUE` then NA values in `x` are stripped before
 #' pooling
 #' @param min_n integer, the minimum number of non-missing values a group must
 #' have to contribute. Groups with fewer than `min_n` are dropped; a group is
@@ -313,7 +313,7 @@ get_outlier_bounds <- function(
 #'
 #' @param x a numeric vector
 #' @param k multiplier for the MAD
-#' @param na.rm if TRUE then NA values are stripped from x before computation takes place.
+#' @param na.rm if `TRUE` then NA values are stripped from x before computation takes place.
 #'
 #' @return a numeric vector of length 2 with the lower and upper boundaries.
 #'

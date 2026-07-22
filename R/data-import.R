@@ -761,7 +761,7 @@ import_data_main <- function(
 #'
 #' @param path File path of MassHunter Quant CSV file
 #' @param silent Suppress messages
-#' @param expand_qualifier_names If TRUE, original qualifier names will be renamed by adding the quantifier name in front and placing qualifier name into square brackets(e.g. `Qualifier (422.3 -> 113.0)` transition names of quantifier will be added to qualifier names
+#' @param expand_qualifier_names If `TRUE`, original qualifier names will be renamed by adding the quantifier name in front and placing qualifier name into square brackets(e.g. `Qualifier (422.3 -> 113.0)` transition names of quantifier will be added to qualifier names
 #' @param conc_column Which concentration field of the masshunter data to use, in
 #' case "Calc. Conc." and "Final. Conc." are present.  Default is "conc_final".
 #' @return A tibble with the parse results in the long format

@@ -1344,7 +1344,7 @@ add_metadata <- function(
 #'   MSOrganiser *tool* version (e.g. 1.9.x) that generated the file.
 #' NOTES
 #' - if no sample_type is defined then SPL will be assigned
-#' - if valid_analysis is left blank for all analyses then samples then it will be replace by TRUE
+#' - if valid_analysis is left blank for all analyses then samples then it will be replace by `TRUE`
 #' - if valid_analysis is undefined for one or more, but all all samples, then an error will be returned
 #' @param path File path of the msorganiser EXCEL template (*.xlm)
 #' @param trim_ws Trim all white spaces and double spaces

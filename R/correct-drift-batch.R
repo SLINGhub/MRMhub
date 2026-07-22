@@ -436,9 +436,9 @@ fun_gam_smooth <- function(
 #' A value of 0 (the default) requires the CV to improve, while a value above 0 allows the CV to also become worse by a maximum of the defined difference.
 #' @param ignore_istd Do not apply corrections to ISTDs
 #' @param feature_list Sets specific features for correction only. Can be character vector or a single string which is then interpreted as regular expression. Default is `NULL` which means all features are selected.
-#' @param use_original_if_fail Determines the action when smoothing fails or results in invalid values for a feature. If TRUE (default), the original data is used; if FALSE, the result for each analysis is NA.
+#' @param use_original_if_fail Determines the action when smoothing fails or results in invalid values for a feature. If `TRUE` (default), the original data is used; if `FALSE`, the result for each analysis is NA.
 #' @param recalc_trend_after Recalculate trend post-drift correction for `plot_qc_runscatter()`. This will double calculation time.
-#' @param show_progress Show progress bar. Default = `TRUE.
+#' @param show_progress Show progress bar. Default = `TRUE`.
 #' @param ... Arguments specific for the smoothing function
 #' @return [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @export
@@ -1407,7 +1407,7 @@ correct_drift_loess <- function(
 #' @param batch_wise Logical. Apply the correction to each batch separately (`TRUE`, default) or across all batches (`FALSE`).
 #' @param ignore_istd Logical. Exclude internal standards (ISTDs) from correction if `TRUE`.
 #' @param replace_previous Logical. Replace existing correction (`TRUE`, default) or layer on top of it (`FALSE`).
-#' @param cv Ordinary leave-one-out (TRUE) or ‘generalized’ cross-validation (GCV) when FALSE; is used for smoothing parameter computation only when spar is not specified
+#' @param cv Ordinary leave-one-out (`TRUE`) or ‘generalized’ cross-validation (GCV) when `FALSE`; is used for smoothing parameter computation only when spar is not specified
 #' @param spar Smoothing parameter for cubic spline smoothing. If not specified or `NULL`, the smoothing parameter is computed using the specified cv method. Typically (but not necessarily)  (0,1].
 #' @param lambda Regularization parameter for cubic spline smoothing. Default is `NULL`, which means no regularization.
 #' @param penalty The coefficient of the penalty for degrees of freedom in the GCV criterion.

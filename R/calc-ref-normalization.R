@@ -72,8 +72,8 @@
 #'   whose `sample_id` matches any of them are pooled and summarized together
 #'   (per feature, and per batch when `batch_wise = TRUE`).
 #' @param absolute_calibration Logical indicating whether to perform absolute calibration using
-#'   known concentrations of the reference sample (TRUE) or relative calibration (FALSE).
-#' @param batch_wise Logical indicating whether to perform calibration for each batch seperately (TRUE) or for all samples together (FALSE).
+#'   known concentrations of the reference sample (`TRUE`) or relative calibration (`FALSE`).
+#' @param batch_wise Logical indicating whether to perform calibration for each batch seperately (`TRUE`) or for all samples together (`FALSE`).
 #' @param summarize_fun Either "mean" or "median". If `absolute_calibration = TRUE`,
 #' this function is used to summarize the reference sample concentrations across analyses of specified `reference_sample_id`. Default is "mean".
 #' @param store_conc_ratio Logical. Whether to store the ratio of measured
@@ -84,7 +84,7 @@
 #'   Must be one of `"original"` (keep original values), `"na"` (set to `NA`), or
 #'   `"error"`. Required when `absolute_calibration = TRUE` (no default).
 #' @param store_normalized Logical indicating whether to keep the normalized values in the dataset
-#' when `absolute_calibration = TRUE`. Default is FALSE. These values are then stored
+#' when `absolute_calibration = TRUE`. Default is `FALSE`. These values are then stored
 #' as `[VARIABLE]_normalized`, where `[VARIABLE]` is the input variable, e.g., `conc`.
 #' @return A [`MRMhubExperiment`][MRMhubExperiment-class] object with calibrated data
 #' @seealso

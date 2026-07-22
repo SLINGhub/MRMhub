@@ -115,7 +115,7 @@
 #' statistics based on normalized intensities and concentrations.
 #' @param use_batch_medians Logical, whether to compute QC metrics using the
 #'   median of batch-wise derived values instead of the full dataset. Default is
-#'   FALSE.
+#'   `FALSE`.
 #' @param use_robust_cv Logical, whether to use robust coefficient of variation (MAD/median) or
 #' the standard coefficient of variation (SD/mean) for intensity, norm_intensity and concentration metrics.
 #' @param include_norm_intensity_stats Logical. If `NA` (default), statistics on
