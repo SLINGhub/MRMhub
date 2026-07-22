@@ -1,0 +1,124 @@
+---
+title: "Import Metadata from Files or a Template"
+output:
+  rmarkdown::html_vignette:
+    fig_width: 6
+    fig_height: 2
+description: |
+  Attach sample, feature, ISTD and QC metadata to an MRMhubExperiment — file by file,
+  from Excel sheets, from a data.frame, or in one step from an MSOrganiser template.
+vignette: >
+  %\VignetteIndexEntry{Import Metadata from Files or a Template}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+editor_options:
+  markdown:
+    wrap: 72
+---
+
+```{r, include = FALSE, echo = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, results = FALSE, message = FALSE, comment = "#>")
+set.seed(1041)
+options(dplyr.print_max = 10)
+library(mrmhub)
+
+if (fs::file_exists("metadata_template.xlsx")) fs::file_delete("metadata_template.xlsx")
+if (fs::file_exists("metadata_msorganiser_template.xlsx")) {
+  fs::file_delete("metadata_msorganiser_template.xlsx")
+}
+```
+
+<p class="page-kind page-kind-recipe">Recipe</p>
+
+MRMhub attaches sample, feature, ISTD, response-curve and QC metadata to an
+`MRMhubExperiment` after the analytical data has been imported. Metadata can be added
+table by table from individual files, from the sheets of a single Excel workbook, from R
+`data.frame` objects, or in one step from an MSOrganiser template. For the structure of
+each table, see [Metadata Tables & Matching](manual-05-metadata.html).
+
+## Obtain the templates
+
+Blank Excel templates for all metadata tables can be saved to the working directory:
+
+```{r}
+mrmhub::save_metadata_templates()
+```
+
+## Import from files and sheets
+
+The analytical data is imported first, as outlined in
+[Importing Analytical Data](manual-04-data-import.html), reading only the peak areas
+(`import_metadata = FALSE`).
+
+```{r}
+mexp <- MRMhubExperiment()
+mexp <- import_data_mrmhub(
+  data = mexp,
+  path = "datasets/sPerfect_MRMhub.tsv",
+  import_metadata = FALSE
+)
+```
+
+The metadata is then added table by table. Sample and feature metadata are read here from
+individual CSV files:
+
+```{r}
+mexp <- import_metadata_analyses(
+  mexp,
+  path = "datasets/analysis_metadata.csv",
+  excl_unmatched_analyses = TRUE,
+  ignore_warnings = TRUE
+)
+mexp <- import_metadata_features(
+  mexp,
+  path = "datasets/feature_metadata.csv",
+  ignore_warnings = TRUE
+)
+```
+
+Metadata can also be read from the sheets of a single Excel workbook, keeping all tables
+in one file — here the internal-standard metadata:
+
+```{r}
+mexp <- import_metadata_istds(
+  mexp,
+  path = "datasets/metadata_tables.xlsx",
+  sheet = "ISTDs",
+  ignore_warnings = TRUE
+)
+```
+
+Metadata can equally be supplied from an R `data.frame`, allowing it to come from other
+sources such as a database or a LIMS:
+
+```{r}
+df_qcinfo <- readr::read_table("datasets/qc_metadata.txt")
+mexp <- import_metadata_qcconcentrations(mexp, table = df_qcinfo)
+```
+
+## Import an MSOrganiser template
+
+Alternatively, all metadata can be imported in one step from an MSOrganiser template — an
+Excel file providing tables for every metadata type, with built-in validity and integrity
+checks. Obtain it from <https://github.com/SLINGhub/mrmhub> or save it directly:
+
+```{r}
+mrmhub::save_metadata_msorganiser_template()
+```
+
+Only the tables required by the intended workflow need to be completed; the import reads
+all completed tables:
+
+```{r}
+mexp <- import_metadata_msorganiser(
+  mexp,
+  path = "datasets/sPerfect_Metadata.xlsx",
+  ignore_warnings = TRUE
+)
+```
+
+## Next steps
+
+- [Metadata Tables & Matching](manual-05-metadata.html) — the structure of each metadata table
+- [Validating metadata](tutorial-10-metadata-validation.html) — checking metadata before processing
+- [Importing Analytical Data](manual-04-data-import.html) — importing the measurement data

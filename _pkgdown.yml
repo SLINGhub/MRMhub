@@ -82,6 +82,8 @@ navbar:
         href: articles/recipe-03-mztab-export.html
       - text: Export to Bioconductor (SummarizedExperiment)
         href: articles/recipe-04-summarizedexperiment.html
+      - text: Import metadata from files or a template
+        href: articles/recipe-05-import-metadata.html
     manual:
       text: Manual
       menu:
@@ -97,7 +99,7 @@ navbar:
       - text: Preparing and running
       - text: Importing Analytical Data
         href: articles/manual-04-data-import.html
-      - text: Importing Metadata
+      - text: Metadata Tables & Matching
         href: articles/manual-05-metadata.html
       - text: Drift and Batch Correction
         href: articles/manual-07-corrections.html

@@ -1,13 +1,14 @@
 ---
-title: "Importing Metadata"
+title: "Metadata Tables & Matching"
 output:
   rmarkdown::html_vignette:
     fig_width: 6
     fig_height: 2
 description: |
-  Attaching and validating sample, feature, ISTD and QC metadata on an MRMhubExperiment.
+  The metadata tables MRMhub uses — analyses, features, ISTDs, response curves and
+  QC concentrations — their structure, and how identifiers are matched to the data.
 vignette: >
-  %\VignetteIndexEntry{Importing Metadata}
+  %\VignetteIndexEntry{Metadata Tables & Matching}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 editor_options:
@@ -20,9 +21,6 @@ knitr::opts_chunk$set(collapse = TRUE, results = FALSE, message = FALSE, comment
 set.seed(1041)
 options(dplyr.print_max = 10)
 library(mrmhub)
-
-if(fs::file_exists("metadata_template.xlsx")) fs::file_delete("metadata_template.xlsx")
-if(fs::file_exists("metadata_msorganiser_template.xlsx")) fs::file_delete("metadata_msorganiser_template.xlsx")
 
 # First rows of a bundled example CSV.
 show_csv <- function(file, n = 4) {
@@ -41,104 +39,27 @@ show_template <- function(sheet) {
 
 <p class="page-kind page-kind-manual">Manual</p>
 
-Metadata in this context refers to analysis metadata, i.e., data that
-annotate the analytical data. Metadata can be retrieved from the
-imported analysis data file where available, or imported from separate
-files or R data frames. Integrity of metadata and data is essential for
-correct post-processing: MRMhub inspects imported data and metadata for
-completeness and for consistency of the IDs used across the different
-metadata tables, and after import a summary of the identified errors,
-warnings, and notes is printed to the console so that possible issues can
-be identified and addressed.
+Metadata in this context refers to analysis metadata, i.e., data that annotate the
+analytical data. MRMhub stores it in five tables — analyses, features, internal
+standards, response curves, and calibration/QC concentrations — that are attached to an
+`MRMhubExperiment` and linked to the measurements by identifier. This page documents the
+structure of each table and how identifiers are matched. For the steps to obtain the
+templates and import metadata, see
+[Import Metadata from Files or a Template](recipe-05-import-metadata.html).
 
-## Metadata formats and templates
-
-The structure and the required and optional columns for each metadata type
-are described below under [Metadata table structures](#metadata-table-structures)
-and in the help pages of the corresponding import functions. To obtain metadata
-templates, an Excel file containing all metadata table templates can be saved.
-
-```{r}
-mrmhub::save_metadata_templates()
-```
-
-## Importing metadata from files and sheets
-
-The analysis data are first imported as outlined in
-[Importing Analytical Data](manual-04-data-import.html). In this case,
-metadata present in the analysis data is not imported; only the peak areas
-are read.
-
-```{r}
-library(mrmhub)
-mexp <- mrmhub::MRMhubExperiment()
-
-data_path <- "datasets/sPerfect_MRMhub.tsv"
-mexp <- import_data_mrmhub(data = mexp, path = data_path, import_metadata = FALSE)
-```
-
-The corresponding metadata can then be added file by file.
-
-```{r}
-mexp <- import_metadata_analyses(mexp,
-                                 path = "datasets/analysis_metadata.csv",
-                                 excl_unmatched_analyses = TRUE,
-                                 ignore_warnings = TRUE)
-
-mexp <- import_metadata_features(mexp,
-                                 path = "datasets/feature_metadata.csv",
-                                 ignore_warnings= TRUE )
-```
-
-Metadata can also be imported from sheets of an Excel workbook, which
-allows all metadata to be stored in one file. Here, metadata on internal
-standards and response curves is added to the MRMhubExperiment object.
-
-```{r}
-mexp <- import_metadata_istds(mexp,
-                              path = "datasets/metadata_tables.xlsx",
-                              sheet = "ISTDs",
-                              ignore_warnings= TRUE)
-```
-
-Furthermore, metadata can be imported from R `data.frame` objects, which
-allows metadata to be obtained from additional sources, e.g. databases or
-a LIMS.
-
-```{r}
-df_qcinfo <- readr::read_table(file = "datasets/qc_metadata.txt")
-mexp <- import_metadata_qcconcentrations(mexp, table = df_qcinfo)
-```
-
-## Importing an MSOrganiser metadata template
-
-Another option to import metadata is via the MSOrganiser template file, an
-Excel file (`.xlsx`). This template provides tables for all metadata types
-supported by MRMhub, with options to check the validity and integrity of the
-metadata. The template can be obtained from
-<https://github.com/SLINGhub/mrmhub> or via a mrmhub function.
-
-```{r}
-mrmhub::save_metadata_msorganiser_template()
-```
-
-Only the metadata tables required by the intended processing workflow need
-to be completed. The following import function imports all completed tables.
-
-```{r}
-mexp <- import_metadata_msorganiser(mexp,
-                                    path = "datasets/sPerfect_Metadata.xlsx",
-                                    ignore_warnings= TRUE)
-```
+Integrity of metadata and data is essential for correct post-processing: MRMhub inspects
+imported data and metadata for completeness and for consistency of the IDs used across the
+tables, and prints a summary of the identified errors, warnings, and notes to the console
+after import so that possible issues can be identified and addressed.
 
 ## Metadata table structures
 
-The previews below show example rows or the blank template headers for each
-metadata table, so the tables can be prepared before import. Identifier columns
-must be consistent across tables: `analysis_id` / `sample_id` match the analysis
-metadata and the data, `analyte_id` links features to QC concentrations, and
-`istd_feature_id` and `feature_id` reference the feature metadata. The full
-column reference for each table is given on its linked function reference page.
+The previews below show example rows or the blank template headers for each metadata
+table, so the tables can be prepared before import. Identifier columns must be consistent
+across tables: `analysis_id` / `sample_id` match the analysis metadata and the data,
+`analyte_id` links features to QC concentrations, and `istd_feature_id` and `feature_id`
+reference the feature metadata. The full column reference for each table is given on its
+linked function reference page.
 
 ### Analyses (samples) {#str-analyses}
 
@@ -187,31 +108,29 @@ show_template("QCconcentrations")
 
 ## Identifier matching
 
-Metadata is linked to the data by identifier: `analysis_id` joins the sample
-metadata to the analyses, and `feature_id` joins the feature metadata to the
-measurements. For the join to succeed, an identifier in a metadata sheet must
-match the corresponding identifier in the data exactly.
+Metadata is linked to the data by identifier: `analysis_id` joins the sample metadata to
+the analyses, and `feature_id` joins the feature metadata to the measurements. For the
+join to succeed, an identifier in a metadata sheet must match the corresponding identifier
+in the data exactly.
 
-To make that robust, identifiers in metadata are normalized on import in the
-same way as in the data: leading and trailing spaces are removed, internal runs
-of whitespace are collapsed to a single space, and raw-data file extensions
-(`.mzML`, `.d`, `.raw`, `.wiff`, `.wiff2`, `.lcd`, `.chrom`) are stripped from
-`analysis_id`. So `"QC  01"` in a sample sheet still matches `"QC 01"` in the
-data.
+To make that robust, identifiers in metadata are normalized on import in the same way as
+in the data: leading and trailing spaces are removed, internal runs of whitespace are
+collapsed to a single space, and raw-data file extensions (`.mzML`, `.d`, `.raw`,
+`.wiff`, `.wiff2`, `.lcd`, `.chrom`) are stripped from `analysis_id`. So `"QC  01"` in a
+sample sheet still matches `"QC 01"` in the data.
 
 ::: {.callout .callout-caution}
-If analyses appear to be missing after `add_metadata()`, a difference in
-identifier spelling is the usual cause. Whitespace differences are always
-squished on both sides and no warning is issued for them — they are handled
-silently so a stray space cannot cause a hard-to-trace mapping failure. Other
-differences (a raw-data extension the import does not recognize, a typo, or a
-different naming scheme) are not normalized, and the affected analyses are
-dropped from the join with a warning.
+If analyses appear to be missing after `add_metadata()`, a difference in identifier
+spelling is the usual cause. Whitespace differences are always squished on both sides and
+no warning is issued for them — they are handled silently so a stray space cannot cause a
+hard-to-trace mapping failure. Other differences (a raw-data extension the import does not
+recognize, a typo, or a different naming scheme) are not normalized, and the affected
+analyses are dropped from the join with a warning.
 :::
 
 ## Next steps
 
+- [Import Metadata from Files or a Template](recipe-05-import-metadata.html) — the import steps
 - [Importing Analytical Data](manual-04-data-import.html) — importing the measurement data
 - [Sample Types & QC Roles](manual-06-sample-types.html) — the `qc_type` values that drive QC logic
 - [The MRMhubExperiment Data Object](manual-02-data-object.html) — where the metadata is stored
-- [Function reference](../reference/index.html) — full arguments for every metadata importer
