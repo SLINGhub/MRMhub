@@ -1634,7 +1634,7 @@ correct_drift_gam <- function(
 #' @param ... Additional arguments that can be passed to the batch correction
 #'   function.
 #' @return A [`MRMhubExperiment`][MRMhubExperiment-class] object containing the corrected data.
-#' @seealso `plot_runscatter` for visualizing the correction before and after.
+#' @seealso [plot_runscatter()] for visualizing the correction before and after.
 #' @export
 
 correct_batch_centering <- function(
