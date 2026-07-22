@@ -111,11 +111,11 @@ setClass(
 )
 
 
-#' Constructor for the MRMhubExperiment object
+#' Constructor for the `MRMhubExperiment` object
 #' @importFrom methods new
 #' @param title Title of experiment
 #' @param analysis_type Analysis type, one of "lipidomics", "metabolomics", "externalcalib", "others"
-#' @return `MRMhubExperiment` object
+#' @return [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @export
 MRMhubExperiment <- function(title = "", analysis_type = NA_character_) {
   # NA (unspecified) is allowed; a supplied value is matched against the set
@@ -224,12 +224,12 @@ get_status_flag <- function(x) {
 }
 
 
-#' Access slots of a MRMhubExperiment object via $ syntax
+#' Access slots of a `MRMhubExperiment` object via $ syntax
 #'
-#' $ syntax can be used to as a shortcut for getting specific variables and results from a MRMhubExperiment object
+#' $ syntax can be used to as a shortcut for getting specific variables and results from a `MRMhubExperiment` object
 #' @return Value with a variable or a tibble
-#' @param x MRMhubExperiment object
-#' @param name MRMhubExperiment slot
+#' @param x [`MRMhubExperiment`][MRMhubExperiment-class] object
+#' @param name [`MRMhubExperiment`][MRMhubExperiment-class] slot
 #' @examples
 #' mexp <- MRMhubExperiment(title = "Test Experiment", analysis_type = "lipidomics")
 #' mexp$analysis_type
@@ -274,13 +274,13 @@ setMethod(
 )
 
 
-#' Check integrity of MRMhubExperiment data object
+#' Check integrity of `MRMhubExperiment` data object
 #'
 #' @description
 #' Helper function that checks the structure and contents of
-#' a MRMhubExperiment object
+#' a `MRMhubExperiment` object
 #'
-#' @param data MRMhubExperiment object
+#' @param data [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @return silent on success, prints abort message on fail
 #' @noRd
 check_data <- function(data = NULL) {
@@ -326,15 +326,15 @@ setMethod("show", "MRMhubExperiment", function(object) {
   invisible(object)
 })
 
-#' Detailed processing and metadata report for a MRMhubExperiment
+#' Detailed processing and metadata report for a `MRMhubExperiment`
 #'
 #' @description
-#' Prints the full status dashboard for a [MRMhubExperiment]: sample and feature
+#' Prints the full status dashboard for a [`MRMhubExperiment`][MRMhubExperiment-class]: sample and feature
 #' composition, which metadata tables are populated, the state of each processing
 #' step, and any manually excluded analyses or features. Printing the object
 #' directly gives the compact one-screen overview instead.
 #'
-#' @param object A `MRMhubExperiment` object.
+#' @param object A [`MRMhubExperiment`][MRMhubExperiment-class] object.
 #' @return The `object`, invisibly.
 #' @examples
 #' status(MRMhubExperiment(title = "Test", analysis_type = "lipidomics"))

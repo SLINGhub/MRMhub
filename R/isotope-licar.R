@@ -445,7 +445,7 @@ licar_mCalc <- function(formula, n = 2L) {
 #' assignment inverted for LCB (LICAR). Classes without a working path
 #' (CLNFA / Neutral) are skipped with a note.
 #'
-#' @param data A `MRMhubExperiment`.
+#' @param data A [`MRMhubExperiment`][MRMhubExperiment-class].
 #' @param mz_tol Unused at MRM level (LICAR fixes the window at 2 +/- 0.2 Da).
 #' @return A long interference edge tibble (`source == "auto"`).
 #' @keywords internal

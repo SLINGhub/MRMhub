@@ -1,10 +1,10 @@
 ##### UNDER REVISION #####
 # Need overhaul due to all changes made
 
-#' Combines a list of MRMhubExperiments into one
+#' Combines a list of `MRMhubExperiment` objects into one
 #'
-#' @param ... MRMhubExperiment objects
-#' @param ordered_by_runsequence Boolean if list of provided MRMhubExperiment objects is in the run order
+#' @param ... [`MRMhubExperiment`][MRMhubExperiment-class] objects
+#' @param ordered_by_runsequence Boolean if list of provided [`MRMhubExperiment`][MRMhubExperiment-class] objects is in the run order
 #' @noRd
 
 combine_experiments <- function(..., ordered_by_runsequence) {

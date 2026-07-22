@@ -46,7 +46,7 @@
 #' criteria, use [filter_features_qc()] and export with `filter_data = TRUE`.
 #' [save_feature_qc_metrics()] exports the metrics themselves.
 #'
-#' @param data An `MRMhubExperiment` object.
+#' @param data An [`MRMhubExperiment`][MRMhubExperiment-class] object.
 #' @param path Optional file path. When given, the object is written there with
 #'   [saveRDS()] and returned invisibly; a `.rds` extension is appended if
 #'   missing. When `NULL` (default) the object is returned.

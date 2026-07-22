@@ -7,7 +7,7 @@
 #' Optionally, it can include
 #' additional statistics from the `lancer` package (if installed) when `with_staturation_stats` is set to TRUE.
 #'
-#' @param data A `MRMhubExperiment` object containing the dataset and response curve annotations.
+#' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] object containing the dataset and response curve annotations.
 #' @param with_staturation_stats Logical, if TRUE, include additional statistics from the `lancer` package.
 #'   Note: The `lancer` package must be installed when this argument is set to TRUE.
 #' @param limit_to_rqc Logical, if `TRUE`, only include rows with `qc_type == "RQC"`. Default is `FALSE`.

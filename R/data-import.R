@@ -14,7 +14,7 @@
 #' once across all source data files. Duplicate combinations will result in an
 #' error.
 #'
-#' @param data MRMhubExperiment object
+#' @param data [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @param path One or more file paths, or a directory path (in which case all
 #'   matching files will be imported)
 #' @param import_metadata Logical, whether to extract and add metadata from the
@@ -25,7 +25,7 @@
 #' case "Calc. Conc." and "Final. Conc." are present.  Default is "conc_final".
 #' Must be one of "conc_calc" or "conc_final" (default).
 #' @param silent Logical, whether to suppress most notifications
-#' @return MRMhubExperiment object with the imported data
+#' @return [`MRMhubExperiment`][MRMhubExperiment-class] object with the imported data
 #' @examples
 #' mexp <- MRMhubExperiment()
 
@@ -112,7 +112,7 @@ import_data_masshunter <- function(
 #' `Precursor Mz`/`Product Mz` or `Precursor Name`/`Product Name` columns.
 #' At least one feature variable, such as `Area` or `RT`, must also be exported.
 #'
-#' @param data A `MRMhubExperiment` object.
+#' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] object.
 #' @param path One or more file paths, or a directory path from which all
 #' matching files will be imported.
 #' @param transition_id_columns A character vector specifying the columns that
@@ -125,7 +125,7 @@ import_data_masshunter <- function(
 #' @param import_metadata Logical; whether to import additional metadata columns
 #' (e.g., precursor/product m/z values).
 #' @param silent Logical; whether to suppress most notifications.
-#' @return A `MRMhubExperiment` object containing the imported data.
+#' @return A [`MRMhubExperiment`][MRMhubExperiment-class] object containing the imported data.
 #' @examples
 #' mexp <- MRMhubExperiment()
 #' file_path <- system.file("extdata", "Skyline_MoleculeTransitionResults.csv", package = "mrmhub")
@@ -186,11 +186,11 @@ import_data_skyline <- function(
 #' unique combination of feature and raw data file must only occur once across
 #' all source data files. Duplicate combinations will result in an error.
 #'
-#' @param data MRMhubExperiment object
+#' @param data [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @param path One or more file paths, or a directory path (in which case all matching files will be imported)
 #' @param import_metadata Logical, whether to import additional metadata columns (e.g., `batch_id`, `qc_type`)
 #' @param silent Logical, whether to suppress most notifications
-#' @return MRMhubExperiment object with the imported data
+#' @return [`MRMhubExperiment`][MRMhubExperiment-class] object with the imported data
 #' @examples
 #' mexp <- MRMhubExperiment()
 #'
@@ -238,16 +238,16 @@ import_data_mrmhub <- function(
 #' This function is deprecated. Please use [import_data_csv_wide()] instead.
 
 #'
-#' @param data MRMhubExperiment object
+#' @param data [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @param path One or more file names with path, or a folder path, which case all *.csv files in this folder will be read.
 #' @param variable_name Variable type representing the values in the table. Must be one of "intensity", "norm_intensity", "conc", "area", "height", "response")
 #' @param analysis_id_col Column to be used as analysis_id. `NA` (default) used 'analysis_id' if present, or the first column if it contains unique values.
-#' @param import_metadata Import additional metadata columns (e.g. batch ID, sample type) and add to the `MRMhubExperiment` object.
+#' @param import_metadata Import additional metadata columns (e.g. batch ID, sample type) and add to the [`MRMhubExperiment`][MRMhubExperiment-class] object.
 #' Only following metadata column names are supported: "qc_type", "batch_id", "is_quantifier", "is_istd", "analysis_order"
 #' @param first_feature_column Column number of the first column representing the feature values
 #' @param na_strings A character vector of strings which are to be interpreted as NA values. Blank fields are also considered to be missing values.
 # #' @param silent Su ppress notifications
-#' @return MRMhubExperiment object
+#' @return [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @examples
 #' file_path <- system.file("extdata", "plain_wide_dataset.csv", package = "mrmhub")
 #'
@@ -327,7 +327,7 @@ import_data_csv <- function(
 #' The `na_strings` parameter allows specifying character strings to be interpreted as
 #' missing values (NA). Blank fields are also treated as missing.
 #'
-#' @param data A \code{MRMhubExperiment} object.
+#' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] object.
 #' @param path A file path or vector of file paths, or a directory path. If a directory is
 #'   provided, all `.csv` files within it will be read.
 #' @param variable_name A character string specifying the variable type contained in the
@@ -341,7 +341,7 @@ import_data_csv <- function(
 #' @param first_feature_column Integer indicating the column number where feature value columns start.
 #' @param na_strings Character vector of strings to interpret as NA values. Blank fields are also treated as NA.
 #'
-#' @return A \code{MRMhubExperiment} object containing the imported dataset.
+#' @return A [`MRMhubExperiment`][MRMhubExperiment-class] object containing the imported dataset.
 #'
 #' @examples
 #' file_path <- system.file("extdata", "plain_wide_dataset.csv", package = "mrmhub")
@@ -456,7 +456,7 @@ import_data_csv_wide <- function(
 #' The `na_strings` parameter allows specifying character strings that should
 #' be interpreted as `NA`, ensuring proper handling of missing values.
 #'
-#' @param data A `MRMhubExperiment` object to which the imported data will be
+#' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] object to which the imported data will be
 #'   added.
 #' @param path A single file path, multiple file paths, or a directory path. If
 #'   a directory is provided, all `*.csv` files within will be imported.
@@ -475,7 +475,7 @@ import_data_csv_wide <- function(
 #'   warning when unknown columns are encountered in the dataset.
 #' @param silent Logical indicating whether to suppress most notifications and
 #'   messages.
-#' @return A `MRMhubExperiment` object containing the imported data.
+#' @return A [`MRMhubExperiment`][MRMhubExperiment-class] object containing the imported data.
 #'
 #' @examples
 #' file_path <- system.file("extdata", "plain_long_dataset.csv", package = "mrmhub")
@@ -1683,7 +1683,7 @@ parse_plain_long_csv <- function(
 #' @param path path name and path of a plain long-format CSV file
 #' @param variable_name Name of the variable representing the values in the table. Must be one of "intensity", "norm_intensity", "conc", "area", "height", "response")
 #' @param analysis_id_col Column to be used as analysis_id
-#' @param import_metadata Import additional metadata columns (e.g. batch ID, sample type) and add to the `MRMhubExperiment` object
+#' @param import_metadata Import additional metadata columns (e.g. batch ID, sample type) and add to the [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @param first_feature_column Column number of the first column representing the feature values
 #' @param na_strings A character vector of strings which are to be interpreted as NA values. Blank fields are also considered to be missing values.
 #' @return A tibble in the long format

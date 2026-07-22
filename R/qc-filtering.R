@@ -110,7 +110,7 @@
 #'   - `sigma`: The residual standard error of the regression model.
 #'   - `reg_failed`: Boolean flag indicating if regression fitting failed.
 #'
-#' @param data A `MRMhubExperiment` object containing data and metadata, whereby
+#' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] object containing data and metadata, whereby
 #' data needs to be normalized and quantitated for specific QC metrics, such as
 #' statistics based on normalized intensities and concentrations.
 #' @param use_batch_medians Logical, whether to compute QC metrics using the
@@ -132,7 +132,7 @@
 #'   calibration results are incorporated into the QC metrics table if available.
 #'   If `TRUE`, they are always incorporated.
 #'
-#' @return A `MRMhubExperiment` object with an updated `metrics_qc` table
+#' @return A [`MRMhubExperiment`][MRMhubExperiment-class] object with an updated `metrics_qc` table
 #'   containing computed QC metrics for each feature.
 #' @export
 calc_qc_metrics <- function(
@@ -827,7 +827,7 @@ calc_qc_metrics <- function(
 #' applied in clinical studies. *Metabolomics*, 14(6), 72.
 #' \doi{10.1007/s11306-018-1367-3}
 #'
-#' @param data MRMhubExperiment object.
+#' @param data [`MRMhubExperiment`][MRMhubExperiment-class] object.
 #' @param clear_existing Logical. If `TRUE`, replaces any existing filters; if `FALSE`, adds new filters on top of existing ones. Default is `TRUE`.
 #' @param recalc_metrics Logical. If `TRUE`, recalculates QC metrics before filtering. Default is `FALSE`.
 #' @param use_batch_medians Logical. If `TRUE`, uses batch-wise median QC values for filtering. Default is `FALSE`.
@@ -869,7 +869,7 @@ calc_qc_metrics <- function(
 #' @param max.dratio.mad.normint.bqc Maximum allowed D-ratio (MAD of normalized intensity in BQC / MAD of SPL) using median absolute deviation. Default is `NA`.
 #' @param max.dratio.mad.normint.tqc Maximum allowed D-ratio (MAD of normalized intensity in TQC / MAD of SPL) using median absolute deviation. Default is `NA`.
 #'
-#' @return The input MRMhubExperiment object with the feature filtering criteria applied.
+#' @return The input [`MRMhubExperiment`][MRMhubExperiment-class] object with the feature filtering criteria applied.
 
 #' @export
 filter_features_qc <- function(

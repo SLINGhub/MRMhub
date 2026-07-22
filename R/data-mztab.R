@@ -229,7 +229,7 @@ write_mztab_sections <- function(path, mtd_lines, sml_tbl, smf_tbl, sme_tbl) {
 #' flagged via an `opt_global_is_internal_standard` column). See the
 #' *mzTab-M export* recipe article for the full mapping.
 #'
-#' @param data An `MRMhubExperiment` object.
+#' @param data An [`MRMhubExperiment`][MRMhubExperiment-class] object.
 #' @param path Output file path. A `.mzTab` extension is appended if missing.
 #' @param variable Feature variable used as abundance. One of `"conc"`,
 #'   `"intensity"`, `"norm_intensity"`, `"area"` or `"height"`. Default
@@ -883,14 +883,14 @@ parse_mztab <- function(path, silent = FALSE) {
 #' `study_variable` group membership is imported best-effort as `batch_id`
 #' (mzTab-M has no analytical-batch concept).
 #'
-#' @param data An `MRMhubExperiment` object (e.g. from [MRMhubExperiment()]).
+#' @param data An [`MRMhubExperiment`][MRMhubExperiment-class] object (e.g. from [MRMhubExperiment()]).
 #' @param path Path to a `.mzTab` file, or a directory of them.
 #' @param import_metadata If `TRUE` (default), derive analysis/feature metadata
 #'   (incl. `batch_id`, formula, neutral mass) from the imported data via
 #'   [import_metadata_from_data()].
 #' @param silent Suppress messages.
 #'
-#' @return The updated `MRMhubExperiment`.
+#' @return The updated [`MRMhubExperiment`][MRMhubExperiment-class].
 #'
 #' @seealso [import_data_mrmhub()], [save_dataset_mztab()], [add_metadata()]
 #'

@@ -39,11 +39,11 @@
 #' combined with either a qualifier or another quantifier therefore yields a
 #' quantifier, whereas qualifiers merged among themselves remain a qualifier.
 #'
-#' @param data MRMhubExperiment object
+#' @param data [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @param qualifier_action Character. How to handle qualifier features. To sum them up separately select "separate",
 #' to include them in the sum if quantifier select "include", to not sum them up select "exclude".
 #'
-#' @return MRMhubExperiment object
+#' @return [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @export
 #'
 # EXPERIMENTAL (see @section Experimental in the roxygen above): overwrites
@@ -294,7 +294,7 @@ warn_inconsistent_merged_metadata <- function(annot_features) {
 #' features, a split by source and overlap type, the contribution-factor range
 #' and, once the data are corrected, the per-feature median impact.
 #'
-#' @param data A `MRMhubExperiment`.
+#' @param data A [`MRMhubExperiment`][MRMhubExperiment-class].
 #' @return Invisibly, a tibble of the assembled, de-duplicated interference edges
 #'   (with a `pct_impact` column when the data are already corrected). Called
 #'   mainly for the printed summary.

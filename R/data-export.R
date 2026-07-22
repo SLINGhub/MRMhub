@@ -21,7 +21,7 @@
 #' correction impact when the correction has been applied.
 #'
 #'
-#' @param data A `MRMhubExperiment` object containing original and processed data and metadata.
+#' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] object containing original and processed data and metadata.
 #' @param path A character string specifying the file name and path for the Excel file.
 #' If the path does not include an `.xlsx` extension, it is added automatically.
 #' @param filtered_variable A character string specifying the variable name in the
@@ -468,7 +468,7 @@ save_report_xlsx <- function(
 #' This function exports specific unprocessed or pr ocessed feature variable
 #' (e.g. intensities or concentrations) from a `MRMhubExperiment` object to a CSV file.
 #' Allows selection of features and optional QC filtering.
-#' @param data MRMhubExperiment object
+#' @param data [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @param path File name with path of exported CSV file
 #' @param variable Variable to be exported, must be present in the data and any of "area", "height", "intensity", "norm_intensity", "response", "conc", "conc_raw", "rt", "fwhm".
 #' @param qc_types QC types to be plotted. Can be a vector of QC types or a regular expression pattern. `NA` (default) displays all available QC/Sample types.
@@ -609,9 +609,9 @@ save_dataset_csv <- function(
 #' Save feature QC metrics to CSV
 #'
 #' This function exports the feature information and QC (Quality Control) metrics
-#' from a MRMhubExperiment object to a CSV file.
+#' from a `MRMhubExperiment` object to a CSV file.
 #'
-#' @param data A MRMhubExperiment object containing the QC metrics.
+#' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] object containing the QC metrics.
 #' @param path A string specifying the file path where the CSV file will be saved.
 #' @return A tibble with the QC metrics that have been exported.
 #' @export

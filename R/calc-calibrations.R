@@ -9,7 +9,7 @@
 #'
 #' The concentrations are added to the `dataset` table as `feature_conc` column. The results of the regression and the calculated LoD and LoQ values are stored in the `metrics_calibration` table of the returned `MRMhubExperiment` object.
 
-#' @param data A `MRMhubExperiment` object
+#' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @param include_qualifier A logical value. If `TRUE`, the function will include qualifier features in the calibration curve calculations.
 #' @param fit_overwrite If `TRUE`,
 #'   the function will use the provided `fit_model` and `fit_weighting` values
@@ -33,7 +33,7 @@
 #'   `"residual"` (the residual standard error of the regression, Sy/x; the
 #'   default) or `"intercept"` (the standard error of the intercept). See
 #'   [calc_calibration_results()] for details.
-#' @return A modified `MRMhubExperiment` object with updated concentration values.
+#' @return A modified [`MRMhubExperiment`][MRMhubExperiment-class] object with updated concentration values.
 #'
 #' @seealso [calc_calibration_results()] for calculating the calibration curve results including LoD and LoQ.
 #' @seealso [quantify_by_istd()] for calculation of concentrations based on spiked-in internal standard concentration.
@@ -317,7 +317,7 @@ quantify_by_calibration <- function(
 #' stored in the `metrics_calibration` table of the returned `MRMhubExperiment`
 #' object.
 #'
-#' @param data A `MRMhubExperiment` object containing the data to be used for
+#' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] object containing the data to be used for
 #'   calibration.
 #' @param variable A character string specifying the variable for calibration.
 #'   Use `"feature_norm_intensity"` for typical scenarios involving internal
@@ -350,7 +350,7 @@ quantify_by_calibration <- function(
 #'   `"intercept"` (the standard error of the intercept). No averaging of the two
 #'   is performed.
 #'
-#' @return A modified `MRMhubExperiment` object with an updated
+#' @return A modified [`MRMhubExperiment`][MRMhubExperiment-class] object with an updated
 #'   `metrics_calibration` table containing the calibration curve results,
 #'   including concentrations, LoD, and LoQ values for each feature.
 #'
@@ -753,7 +753,7 @@ calc_calibration_results <- function(
 #'
 #' The standard deviation of concentration is also included unless the number of replicates was 1.
 #'
-#' @param data A `MRMhubExperiment` object containing the dataset and necessary annotations for calibration analysis.
+#' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] object containing the dataset and necessary annotations for calibration analysis.
 #' @param qc_types A character vector specifying the QC types to include in the results, in addition to `CAL`. If not specified, all applicable QC types are included by default.
 #' @param sample_ids A character vector specifying the sample IDs to include in the results. If not specified, all analyses regardless of their sample IDs are included by default.
 #' @param wide_format Format of the output table. Must be one of `"none"`, `"features"`, or `"samples"`.
@@ -998,7 +998,7 @@ get_qc_bias_variability <- function(
 #' concentrations themselves are unaffected.
 
 #'
-#' @param data A `MRMhubExperiment` object with QC metrics.
+#' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] object with QC metrics.
 #' @param with_lod Whether to include LoD in output. Default is `TRUE`.
 #' @param with_loq Whether to include LoQ in output. Default is `TRUE`.
 #' @param with_coefficients Whether to include regression coefficients. Default is `TRUE`.

@@ -257,7 +257,7 @@ plot_interference_correction <- function(
 #' default). The data must already be interference-corrected. Features with no
 #' impact are excluded and reported.
 #'
-#' @param data A `MRMhubExperiment` (already interference-corrected).
+#' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] (already interference-corrected).
 #' @param qc_types QC type(s) to summarize. Default `"SPL"` (study samples). Set
 #'   to `NA` to use all non-blank sample/QC types.
 #' @param include_qualifier Include qualifier features. Default `FALSE`.

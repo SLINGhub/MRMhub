@@ -64,7 +64,7 @@
 #'    will be included by default. To include filtered normalized feature abundances, set `filtered_variable = "[VARIABLE]_normalized"`.
 #'
 #'
-#' @param data A `MRMhubExperiment` object containing the metabolomics data to be normalized
+#' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] object containing the metabolomics data to be normalized
 #' @param variable Character string indicating which data type to calibrate Must be
 #'   one of: "intensity", "norm_intensity", or "conc"
 #' @param reference_sample_id Character vector specifying the sample ID(s) to use as
@@ -86,7 +86,7 @@
 #' @param store_normalized Logical indicating whether to keep the normalized values in the dataset
 #' when `absolute_calibration = TRUE`. Default is FALSE. These values are then stored
 #' as `[VARIABLE]_normalized`, where `[VARIABLE]` is the input variable, e.g., `conc`.
-#' @return A `MRMhubExperiment` object with calibrated data
+#' @return A [`MRMhubExperiment`][MRMhubExperiment-class] object with calibrated data
 #' @seealso
 #' [normalize_by_istd()], [quantify_by_istd()], [quantify_by_calibration()]
 #'

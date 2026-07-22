@@ -5,12 +5,12 @@
 #' must have a defined internal standard (ISTD) in the `feature` metadata.
 #'
 
-#' @param data A `MRMhubExperiment` object.
+#' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] object.
 #' @param ignore_missing_annotation If `FALSE`, the function
 #'   will raise an error when an ISTD is not defined for one or more features (excluding the ISTDs themselves).
 #'   If `TRUE`, features with missing ISTD annotations will have NA values in the normalized intensities.
 #'
-#' @return A `MRMhubExperiment` object with normalized feature intensities
+#' @return A [`MRMhubExperiment`][MRMhubExperiment-class] object with normalized feature intensities
 #'
 #' @export
 
@@ -238,13 +238,13 @@ normalize_by_istd <- function(data = NULL, ignore_missing_annotation = FALSE) {
 #' The calculated concentrations are added to the `dataset` table as a new column named `feature_conc`,
 #' along with the intermediate total amount per analysis in `feature_pmol_total`.
 #'
-#' @param data A `MRMhubExperiment` object
+#' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @param concentration_unit Character string indicating the type of concentration to calculate and export.
 #'   Must be either `"molar"` for molar concentrations (e.g., µmol/L) or `"mass"` for mass concentrations (e.g., µg/L).
 #' @param ignore_missing_annotation If `FALSE`, an error will be raised if any of the following information is missing: ISTD concentration, ISTD mix volume, and sample amounts for any feature.
 #'   If `TRUE`, missing annotations will be ignored, and resulting feature concentration will be `NA`
 #' @param ignore_istds If `TRUE`, ISTD features will be ignored in the concentration calculation and the resulting concentration will be `NA`. Default is `FALSE`.
-#' @return A `MRMhubExperiment` object with the calculated analyte concentrations added to the
+#' @return A [`MRMhubExperiment`][MRMhubExperiment-class] object with the calculated analyte concentrations added to the
 #'   `dataset` table in the `feature_conc` column (and the intermediate `feature_pmol_total`).
 #'
 #' @seealso [quantify_by_calibration()] for calculating concentrations based on external calibration curves.

@@ -7,7 +7,7 @@
 #' Retrieves analysis IDs of data outliers based  the principal components PCA
 #' with SD or MAD fences
 #'
-#' @param data MRMhubExperiment object
+#' @param data [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @param variable Feature variable used for outlier detection
 #' @param filter_data Use all (default) or qc-filtered data
 #' @param pca_component PCA component to be used
@@ -16,7 +16,7 @@
 #' @param summarize_fun Function used to summarize the features, either "pca" based on PCA, or "rma" based on mean relative abundance (RMA) of all features
 #' @param outlier_detection Outlier detection method, either based on "sd" or "mad"
 #' @param log_transform Log-transform data for outlier detection
-#' @return MRMhubExperiment object
+#' @return [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @export
 
 detect_outlier_pca <- function(

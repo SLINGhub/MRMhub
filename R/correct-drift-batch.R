@@ -422,8 +422,8 @@ fun_gam_smooth <- function(
 #' Function to correct for run-order drifts within or across batches via a provided custom function
 #' #' @details
 #' The drift correction function needs to be provided by the user. See `smooth_fun` for details.
-#' @param data MRMhubExperiment object
-#' @param smooth_fun Function that performs drift correction. Function need to have following parameter `data` (`MRMhubExperiment`), `ref_qc_types` (one or more strings), and `span_width` (numerical).
+#' @param data [`MRMhubExperiment`][MRMhubExperiment-class] object
+#' @param smooth_fun Function that performs drift correction. Function need to have following parameter `data` ([`MRMhubExperiment`][MRMhubExperiment-class]), `ref_qc_types` (one or more strings), and `span_width` (numerical).
 #' Function needs to return a numerical vector with the length of number of rows in `data`. In case functions fails a vector with NA_real_ needs be returned
 #' @param variable  The variable to be corrected for drift effects. Must be one of "intensity", "norm_intensity", or "conc"
 #' @param ref_qc_types QC types used for drift correction
@@ -440,7 +440,7 @@ fun_gam_smooth <- function(
 #' @param recalc_trend_after Recalculate trend post-drift correction for `plot_qc_runscatter()`. This will double calculation time.
 #' @param show_progress Show progress bar. Default = `TRUE.
 #' @param ... Arguments specific for the smoothing function
-#' @return MRMhubExperiment object
+#' @return [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @export
 correct_drift <- function(
   data = NULL,
@@ -1114,7 +1114,7 @@ correct_drift <- function(
 #' For batch-wise correction, the change is calculated per batch, with the final median CV
 #' change being the median of these batch medians across features.
 #'
-#' @param data A MRMhubExperiment object.
+#' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] object.
 #' @param variable The target variable for drift correction; options include
 #' "intensity", "norm_intensity", or "conc".
 #' @param ref_qc_types QC types used for drift correction, typically
@@ -1148,7 +1148,7 @@ correct_drift <- function(
 #' @param use_original_if_fail Determines the action when smoothing fails or results in invalid values for a feature. If `FALSE` (default), the result for each feature will `NA` for all batches, if `TRUE`, the original data is kept.
 #' @param show_progress Logical. Display progress bars if `TRUE`; disable for
 #' notebook rendering by setting to `FALSE`.
-#' @return Returns a MRMhubExperiment object.
+#' @return Returns a [`MRMhubExperiment`][MRMhubExperiment-class] object.
 #' @references
 #' Teo G., Chew WS, Burla B, Herr D, Tai ES, Wenk MR, Torta F, & Choi H
 #' (2020). MRMhub: Automated Data Processing for Large-Scale Targeted
@@ -1270,7 +1270,7 @@ correct_drift_gaussiankernel <- function(
 #' For batch-wise correction, the change is calculated per batch, with the final median CV
 #' change being the median of these batch medians across features.
 #'
-#' @param data MRMhubExperiment object
+#' @param data [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @param ref_qc_types QC types used for drift correction
 #' @param variable  The variable to be corrected for drift effects. Must be one of "intensity", "norm_intensity", or "conc"
 #' @param batch_wise Logical. Apply the correction to each batch separately
@@ -1291,7 +1291,7 @@ correct_drift_gaussiankernel <- function(
 #' @param feature_list Subset the features for correction whose names matches the specified text using regular expression. Default is `NULL` which means all features are selected.
 #' @param use_original_if_fail Determines the action when smoothing fails or results in invalid values for a feature. If `FALSE` (default), the result for each feature will `NA` for all batches, if `TRUE`, the original data is kept.
 #' @param show_progress Logical. Display progress bars if `TRUE`; disable for notebook rendering by setting to `FALSE`.
-#' @return MRMhubExperiment object
+#' @return [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @export
 correct_drift_loess <- function(
   data = NULL,
@@ -1401,7 +1401,7 @@ correct_drift_loess <- function(
 #'
 
 #'
-#' @param data MRMhubExperiment object
+#' @param data [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @param ref_qc_types QC types used for drift correction
 #' @param variable  The variable to be corrected for drift effects. Must be one of "intensity", "norm_intensity", or "conc"
 #' @param batch_wise Logical. Apply the correction to each batch separately (`TRUE`, default) or across all batches (`FALSE`).
@@ -1418,7 +1418,7 @@ correct_drift_loess <- function(
 #' @param feature_list Subset the features for correction whose names match the specified text using regular expression. Default is `NULL`.
 #' @param use_original_if_fail Determines the action when smoothing fails or results in invalid values for a feature. If `FALSE` (default), the result for each feature will `NA` for all batches, if `TRUE`, the original data is kept.
 #' @param show_progress Logical. Display progress bars if `TRUE`; disable for notebook rendering by setting to `FALSE`.
-#' @return MRMhubExperiment object
+#' @return [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @export
 #' @references  Dunn, W., Broadhurst, D., Begley, P. et al. Procedures for
 #' large-scale metabolic profiling of serum and plasma using gas chromatography
@@ -1530,7 +1530,7 @@ correct_drift_cubicspline <- function(
 #'
 #' This smoothing is based on Generalized Additive Models (GAM) using penalized splines, implemented via `mgcv::gam()`.
 #'
-#' @param data MRMhubExperiment object
+#' @param data [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @param ref_qc_types QC types used for drift correction
 #' @param variable  The variable to be corrected for drift effects. Must be one of "intensity", "norm_intensity", or "conc"
 #' @param batch_wise Logical. Apply the correction to each batch separately (`TRUE`, default) or across all batches (`FALSE`).
@@ -1546,7 +1546,7 @@ correct_drift_cubicspline <- function(
 #' @param feature_list Subset the features for correction whose names match the specified text using regular expression. Default is `NULL`.
 #' @param use_original_if_fail Determines the action when smoothing fails or results in invalid values for a feature. If `FALSE` (default), the result for each feature will `NA` for all batches, if `TRUE`, the original data is kept.
 #' @param show_progress Logical. Display progress bars if `TRUE`; disable for notebook rendering by setting to `FALSE`.
-#' @return MRMhubExperiment object
+#' @return [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @export
 #'
 #' @seealso [mgcv::gam()]
@@ -1609,7 +1609,7 @@ correct_drift_gam <- function(
 #' "norm_intensity", or "conc". The correction can either be applied
 #' on top of previous corrections or replace all prior batch corrections.
 #'
-#' @param data A `MRMhubExperiment` object containing the data to be corrected.
+#' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] object containing the data to be corrected.
 #'   This object must include information about QC types and measurements.
 #' @param variable The variable to be corrected. Must be one of "intensity",
 #'   "norm_intensity", or "conc".
@@ -1633,7 +1633,7 @@ correct_drift_gam <- function(
 #' trend curves from previous corrections. This is only use for plotting using `plot_runscatter()`. Default is `FALSE`.
 #' @param ... Additional arguments that can be passed to the batch correction
 #'   function.
-#' @return A `MRMhubExperiment` object containing the corrected data.
+#' @return A [`MRMhubExperiment`][MRMhubExperiment-class] object containing the corrected data.
 #' @seealso `plot_runscatter` for visualizing the correction before and after.
 #' @export
 

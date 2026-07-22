@@ -1,10 +1,10 @@
 #' Retrieve metadata from imported analysis data
 #' @description Retrieves available metadata from the imported analysis data and
-#'   associates it with the provided MRMhubExperiment object.
-#' @param data A `MRMhubExperiment` object
+#'   associates it with the provided `MRMhubExperiment` object.
+#' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @param qc_type_column_name Column name in the imported raw data representing
 #'   the `qc_type`
-#' @return An updated `MRMhubExperiment` object
+#' @return An updated [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @export
 
 import_metadata_from_data <- function(
@@ -95,11 +95,11 @@ get_metadata_batches <- function(annot_analyses) {
 
 #' Import metadata from a MRMhub Metadata Organizer file
 #' @description Imports metadata from a 'MRMhub Metadata Organizer' file (.xlsx) file and associates it with analysis data.
-#' @param data A `MRMhubExperiment` object
+#' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @param path File name and path of the 'MRMhub Metadata Organizer' file (.xlsx) file
 #' @param ignore_warnings Ignore warnings from data validation and proceed with importing metadata
 #' @param excl_unmatched_analyses Exclude analyses (samples) that have no matching metadata
-#' @return An updated `MRMhubExperiment` object
+#' @return An updated [`MRMhubExperiment`][MRMhubExperiment-class] object
 
 #' @examples
 #' mexp <- MRMhubExperiment()
@@ -146,13 +146,13 @@ import_metadata_msorganiser <- function(
 #' Import analysis metadata
 #' @description Imports analysis metadata (annotation) from a preloaded data frame or tibble via the `data` argument, or from data from a file (CSV or Excel) via the `path` argument.
 #' The analysis metadata must contain following columns: `analysis_id` and `qc_type`. Additional analysis metadata columns are described under details below.
-#' @param data A `MRMhubExperiment` object
+#' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @param table A data frame or tibble with analysis (sample) metadata. If `path` is also provided, an error will be raised.
 #' @param path A character string specifying the path to a CSV (.csv) or Excel (.xlsx) file. If `table` is also provided, an error will be raised.
 #' @param sheet Defines the sheet name in case an Excel file is provided.
 #' @param ignore_warnings Ignore warnings from data validation and proceed with importing metadata
 #' @param excl_unmatched_analyses Exclude analyses (samples) that have no matching metadata
-#' @return An updated `MRMhubExperiment` object
+#' @return An updated [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @examples
 #' mexp <- MRMhubExperiment()
 
@@ -202,12 +202,12 @@ import_metadata_analyses <- function(
 #' Import feature metadata
 #' @description Imports analysis metadata (annotation) from a preloaded data frame or tibble via the `data` argument,  or from data from a file (CSV or Excel) via the `path` argument.
 #' The analysis metadata must contain following columns: `analysis_id` and `qc_type`. Additional analysis metadata columns are described under details below.
-#' @param data A `MRMhubExperiment` object
+#' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @param table A data frame or tibble with analysis (sample) metadata. If `path` is also provided, an error will be raised.
 #' @param path A character string specifying the path to a CSV (.csv) or Excel (.xlsx) file. If `table` is also provided, an error will be raised.
 #' @param sheet Defines the sheet name in case an Excel file is provided.
 #' @param ignore_warnings Ignore warnings from data validation and proceed with importing metadata
-#' @return An updated `MRMhubExperiment` object
+#' @return An updated [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @template id_squish
 #' @export
 #'
@@ -240,12 +240,12 @@ import_metadata_features <- function(
 #' Import internal standards (ISTD) metadata
 #' @description Imports ISTD metadata (annotation) from a preloaded data frame or tibble via the `data` argument, or from data from a file (CSV or Excel) via the `path` argument.
 #' The analysis metadata must contain following columns: `istd_feature_id` and one of `istd_conc_nmolar` or `istd_conc_ngml`.
-#' @param data A `MRMhubExperiment` object
+#' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @param table A data frame or tibble with analysis (sample) metadata. If `path` is also provided, an error will be raised.
 #' @param path A character string specifying the path to a CSV (.csv) or Excel (.xlsx) file. If `table` is also provided, an error will be raised.
 #' @param sheet Defines the sheet name in case an Excel file is provided.
 #' @param ignore_warnings Ignore warnings from data validation and proceed with importing metadata
-#' @return An updated `MRMhubExperiment` object
+#' @return An updated [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @template id_squish
 #' @export
 #'
@@ -274,12 +274,12 @@ import_metadata_istds <- function(
 #' Import response curves metadata
 #' @description Imports response curve metadata (annotation) from a preloaded data frame or tibble via the `data` argument, or from data from a file (CSV or Excel) via the `path` argument.
 #' The analysis metadata must contain following columns: `analysis_id`, `curve_id`, `analyzed_amount` and `analyzed_amount_unit`.
-#' @param data A `MRMhubExperiment` object
+#' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @param table A data frame or tibble with response curve metadata. If `path` is also provided, an error will be raised.
 #' @param path A character string specifying the path to a CSV (.csv) or Excel (.xlsx) file. If `table` is also provided, an error will be raised.
 #' @param sheet Defines the sheet name in case an Excel file is provided.
 #' @param ignore_warnings Ignore warnings from data validation and proceed with importing metadata
-#' @return An updated `MRMhubExperiment` object
+#' @return An updated [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @template id_squish
 #' @export
 #'
@@ -307,12 +307,12 @@ import_metadata_responsecurves <- function(
 #' Import calibration curves metadata
 #' @description Imports calibration curve metadata (annotation) from a preloaded data frame or tibble via the `data` argument, or from data from a file (CSV or Excel) via the `path` argument.
 #' The analysis metadata must contain following columns: `analysis_id`, `curve_id`, `feature_id`, `concentration`, and `concentration_unit`.
-#' @param data A `MRMhubExperiment` object
+#' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @param table A data frame or tibble with calibration curve metadata. If `path` is also provided, an error will be raised.
 #' @param path A character string specifying the path to a CSV (.csv) or Excel (.xlsx) file. If `table` is also provided, an error will be raised.
 #' @param sheet Defines the sheet name in case an Excel file is provided.
 #' @param ignore_warnings Ignore warnings from data validation and proceed with importing metadata
-#' @return An updated `MRMhubExperiment` object
+#' @return An updated [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @template id_squish
 #' @export
 #'
@@ -502,9 +502,9 @@ print_assertion_summary <- function(
 }
 
 
-#' Add metadata to an MRMhubExperiment object
-#' @description Metadata provided as a list of tibbles will validates for consistency again loaded analysis data of the provided MRMhubExperiment object and then transfered.
-#' @param data MRMhubExperiment object
+#' Add metadata to an `MRMhubExperiment` object
+#' @description Metadata provided as a list of tibbles will validates for consistency again loaded analysis data of the provided `MRMhubExperiment` object and then transfered.
+#' @param data [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @param metadata List of tibbles or data.frames containing analysis, feature, istd, response curve tables
 #' @param ignore_warnings Ignore data validation warnings and proceed with adding metadata
 #' @param excl_unmatched_analyses Exclude analyses (samples) that have no matching metadata
@@ -1138,9 +1138,9 @@ assert_metadata <- function(
 }
 
 
-#' Add metadata to an MRMhubExperiment object
-#' @description Metadata provided as a list of tibbles will validates for consistency again loaded analysis data of the provided MRMhubExperiment object and then transfered.
-#' @param data MRMhubExperiment object
+#' Add metadata to an `MRMhubExperiment` object
+#' @description Metadata provided as a list of tibbles will validates for consistency again loaded analysis data of the provided `MRMhubExperiment` object and then transfered.
+#' @param data [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @param metadata List of tibbles or data.frames containing analysis, feature, istd, response curve tables
 #' @param excl_unmatched_analyses Exclude analyses (samples) that have no matching metadata
 #' @return metadata list

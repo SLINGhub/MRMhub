@@ -8,7 +8,7 @@
 #' \deqn{Value_{Corrected} = Value_{Feature} - Factor_{Contribution} *
 #' Value_{Interfering Feature}}
 #'
-#' @param data MRMhubExperiment object
+#' @param data [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @param variable Name of the variable to be corrected, e.g.
 #'   `feature_intensity`.
 #' @param feature Name of feature to be corrected
@@ -20,7 +20,7 @@
 #' @param neg_to_na If `TRUE`, negative or zero values after correction will be replaced with `NA`. Default: `FALSE`.
 #' @param updated_feature_id Optional. New name of corrected feature. If empty
 #'   then feature name will not change.
-#' @return MRMhubExperiment object
+#' @return [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @export
 
 #  Example:  mexp <- correct_interference_manual(mexp, "feature_intensity", "PC 32:0 | SM 36:1 M+3", "SM 36:1", 0.0106924, "PC 32:0")
@@ -240,7 +240,7 @@ correct_interference_manual <- function(
 #' raw signal is preserved in `feature_intensity_orig`, and the correction is
 #' idempotent (re-running restores from raw first).
 #'
-#' @param data MRMhubExperiment object.
+#' @param data [`MRMhubExperiment`][MRMhubExperiment-class] object.
 #' @param variable Name of the variable to correct. Only `"feature_intensity"`
 #'   (the raw intensity) is supported. Default: `"feature_intensity"`.
 #' @param sequential_correction Logical. If `TRUE` (default), a chain of
@@ -250,7 +250,7 @@ correct_interference_manual <- function(
 #'   propagation.
 #' @param neg_to_na If `TRUE`, negative or zero values after correction are
 #'   replaced with `NA`. Default: `FALSE`.
-#' @return MRMhubExperiment object with feature intensities corrected.
+#' @return [`MRMhubExperiment`][MRMhubExperiment-class] object with feature intensities corrected.
 #' @export
 #' @references Gao L., Ji S, Burla B, Wenk MR, Torta F, & Cazenave-Gassiot A
 #' (2021). LICAR: An Application for Isotopic Correction of Targeted Lipidomic
@@ -299,7 +299,7 @@ check_interference_variable <- function(variable) {
 #' and returns the data unchanged if none are defined.
 #'
 #' @inheritParams correct_isotopic_interferences
-#' @return MRMhubExperiment object with feature intensities corrected.
+#' @return [`MRMhubExperiment`][MRMhubExperiment-class] object with feature intensities corrected.
 #' @seealso [correct_isotopic_interferences()], [correct_interference_manual()]
 #' @export
 correct_custom_interferences <- function(
@@ -331,7 +331,7 @@ correct_custom_interferences <- function(
 #' defined twice with differing values the manual definition is kept (user
 #' override) and a warning is emitted.
 #'
-#' @param data A `MRMhubExperiment`.
+#' @param data A [`MRMhubExperiment`][MRMhubExperiment-class].
 #' @return A de-duplicated long interference edge tibble.
 #' @keywords internal
 #' @noRd
@@ -379,11 +379,11 @@ assemble_interference_edges <- function(data) {
 #' before re-applying). Shared by [correct_isotopic_interferences()] and
 #' [correct_custom_interferences()].
 #'
-#' @param data A `MRMhubExperiment`.
+#' @param data A [`MRMhubExperiment`][MRMhubExperiment-class].
 #' @param edges A de-duplicated interference edge tibble (see
 #'   `assemble_interference_edges()`).
 #' @param sequential_correction,neg_to_na See the public wrappers.
-#' @return The corrected `MRMhubExperiment`.
+#' @return The corrected [`MRMhubExperiment`][MRMhubExperiment-class].
 #' @keywords internal
 #' @noRd
 apply_interference_edges <- function(
@@ -667,7 +667,7 @@ apply_interference_edges <- function(
 
 #' Is a feature an internal standard?
 #'
-#' @param data A `MRMhubExperiment`.
+#' @param data A [`MRMhubExperiment`][MRMhubExperiment-class].
 #' @param feature_id A feature id.
 #' @return `TRUE`/`FALSE`/`NA` from `annot_features$is_istd`.
 #' @keywords internal

@@ -41,7 +41,7 @@
 #'   the neutral loss; FA/LCB species carry a front + back pair, and LCB inverts
 #'   the front/back assignment relative to FA.
 #'
-#' @param data A `MRMhubExperiment` object.
+#' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] object.
 #' @param level Correction level, `"MRM"` or `"MS1"`. See description.
 #' @param mz_tol Precursor m/z tolerance (Da) for matching interfering pairs at
 #'   the MS1 level (MRM uses a fixed 2 +/- 0.2 Da precursor window). Default `0.5`.
@@ -54,7 +54,7 @@
 #'   `feature_int_start`/`feature_int_end`, else `feature_rt +/- FWHM`).
 #'   Chromatographically resolved pairs are dropped. Default `FALSE` while the
 #'   gate is validated.
-#' @return The `MRMhubExperiment` with a populated `annot_interferences` slot.
+#' @return The [`MRMhubExperiment`][MRMhubExperiment-class] with a populated `annot_interferences` slot.
 #' @references Gao L. et al. (2021). LICAR: An Application for Isotopic Correction
 #'   of Targeted Lipidomic Data Acquired with Class-Based Chromatographic
 #'   Separations Using Multiple Reaction Monitoring. *Analytical Chemistry*,
@@ -150,7 +150,7 @@ interference_type_breakdown <- function(edges) {
 #' overlaps the monoisotopic precursor of a ~2 Da heavier species, and records the
 #' lighter species' whole-molecule M+2 abundance as the contribution.
 #'
-#' @param data A `MRMhubExperiment`.
+#' @param data A [`MRMhubExperiment`][MRMhubExperiment-class].
 #' @param mz_tol Precursor m/z tolerance (Da).
 #' @return A long interference edge tibble (`source == "auto"`).
 #' @keywords internal
@@ -302,7 +302,7 @@ derive_ms1_edges <- function(data, mz_tol = 0.5) {
 #' are absent). Chromatographically resolved pairs are dropped and reported. When
 #' no retention data exist, co-elution cannot be verified and edges are kept.
 #'
-#' @param data A `MRMhubExperiment`.
+#' @param data A [`MRMhubExperiment`][MRMhubExperiment-class].
 #' @param edges A long interference edge tibble.
 #' @return `edges` with resolved-pair rows removed.
 #' @keywords internal
