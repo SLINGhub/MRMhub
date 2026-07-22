@@ -31,7 +31,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -73,6 +73,7 @@
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul>
 </li>
 <li class="nav-item dropdown">
@@ -86,7 +87,7 @@
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Preparing and running</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-04-data-import.html">Importing Analytical Data</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-05-metadata.html">Importing Metadata</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-05-metadata.html">Metadata Tables &amp; Matching</a></li>
     <li><a class="dropdown-item" href="../articles/manual-07-corrections.html">Drift and Batch Correction</a></li>
     <li><a class="dropdown-item" href="../articles/manual-12-interference-correction.html">Isotopic Interference Correction</a></li>
     <li><a class="dropdown-item" href="../articles/manual-11-quarto-workflows.html">Quarto Workflows</a></li>
@@ -301,8 +302,7 @@ save the plots as PDF (see subfolder <code>output</code>).</p>
 <span>  output_pdf <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  path <span class="op">=</span> <span class="st">"./output/runscatter_istd.pdf"</span>,</span>
 <span>  cols_page <span class="op">=</span> <span class="fl">4</span>, rows_page <span class="op">=</span> <span class="fl">3</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">Generating plots (3 pages)...</span></span></span></code></pre></div>
+<span><span class="op">)</span></span></code></pre></div>
 <p><img src="tutorial-03-lipidomics-workflow_files/figure-html/runscatter-1.png" class="r-plt" alt="RunScatter plot" width="100%"><img src="tutorial-03-lipidomics-workflow_files/figure-html/runscatter-2.png" class="r-plt" alt="RunScatter plot" width="100%"><img src="tutorial-03-lipidomics-workflow_files/figure-html/runscatter-3.png" class="r-plt" alt="RunScatter plot" width="100%"></p>
 </div>
 <div class="section level2">
@@ -415,7 +415,7 @@ think the resulting PCA plot suggests now?</p>
 <span>  include_istd <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">2 features contained missing or non-numeric values and were exluded.</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The PCA was calculated based on `feature_intensity` values of 423 features.</span></span></span>
-<span><span class="co">#&gt; ggrepel: 10000 iterations in 0.002847s, 5 overlaps. Consider increasing 'max.iter'.</span></span></code></pre></div>
+<span><span class="co">#&gt; ggrepel: 10000 iterations in 0.002738s, 5 overlaps. Consider increasing 'max.iter'.</span></span></code></pre></div>
 <p><img src="tutorial-03-lipidomics-workflow_files/figure-html/pca-before-1.png" class="r-plt" alt="PCA plot" width="100%"></p>
 </div>
 <div class="section level2">
@@ -449,7 +449,7 @@ dimensions (by modifying <code>pca_dims</code>).</p>
 <span>  shared_labeltext_hide <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">2 features contained missing or non-numeric values and were exluded.</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The PCA was calculated based on `feature_intensity` values of 423 features.</span></span></span>
-<span><span class="co">#&gt; ggrepel: 10000 iterations in 0.006550s, 7 overlaps. Consider increasing 'max.iter'.</span></span></code></pre></div>
+<span><span class="co">#&gt; ggrepel: 10000 iterations in 0.006320s, 7 overlaps. Consider increasing 'max.iter'.</span></span></code></pre></div>
 <p><img src="tutorial-03-lipidomics-workflow_files/figure-html/outlier-removal-1.png" class="r-plt" alt="PCA plot" width="100%"></p>
 </div>
 <div class="section level2">
@@ -481,7 +481,6 @@ commenting out (add a <code>#</code> in front of)
 <span>                                   include_qualifier <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>                                   include_istd <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                                   min.intensity.median.spl <span class="op">=</span> <span class="fl">200</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Calculating feature QC metrics - please wait...</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">QC metrics calculated for 502 features across 7 sample types.</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">The QC parameter </span><span style="color: #00BB00;">min.intensity.median.spl</span> contains NAs for the following features: LPC O-22:1, PC 34:5, PC 35:1, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC P-32:1 M+1. These features failed QC.</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">New feature QC filters were defined: 437 of 448 quantifier features meet QC criteria (including the 25 quantifier ISTD features).</span></span></span>
@@ -574,7 +573,6 @@ situation?</p>
 <span>                                   include_qualifier <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>                                   include_istd <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                                   min.intensity.median.spl <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Calculating feature QC metrics - please wait...</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">QC metrics calculated for 502 features across 7 sample types, including normalized-intensity and concentration statistics.</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">The QC parameter </span><span style="color: #00BB00;">min.intensity.median.spl</span> contains NAs for the following features: LPC O-22:1, PC 34:5, PC 35:1, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC P-32:1 M+1. These features failed QC.</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">New feature QC filters were defined: 413 of 448 quantifier features meet QC criteria (including the 25 quantifier ISTD features).</span></span></span>
@@ -619,14 +617,13 @@ artefacts. An option to scale along the fit is available by setting
 <span>  scale_smooth <span class="op">=</span> <span class="cn">FALSE</span>, </span>
 <span>  show_progress <span class="op">=</span> <span class="cn">FALSE</span>  <span class="co"># set to FALSE when rendering</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Applying `conc` drift correction...</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">4 feature(s) contain one or more zero or negative `conc` values. Verify your data or use `log_transform_internal = FALSE`.</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">1 features showed no variation in the study sample's original values across analyses. </span></span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">1 features have invalid values after smoothing. NA will be be returned for all values of these faetures. Set `use_original_if_fail = FALSE to return orginal values..</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">Smoothing failed for 1 feature(s) in all batches. Please check data, metadata, and fit parameters.</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">Smoothing failed for 1 feature(s) in at least one batch: PG 36:2. Please check data, metadata and fit parameters.</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Drift correction was applied to 459 of 460 features (batch-wise).</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #555555;">The median CV change of all features in study samples was </span><span style="color: #555555; font-weight: bold;">-1.00%</span><span style="color: #555555;"> (range: -12.53% to 2.59%). The median absolute CV of all features across batches </span><span style="color: #555555; font-weight: bold;">decreased from</span><span style="color: #555555;"> </span><span style="color: #555555; font-weight: bold;">39.00% to 37.71%</span><span style="color: #555555;">.</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #555555;">The median per-feature CV change of all features in study samples was </span><span style="color: #555555; font-weight: bold;">-1.00%</span><span style="color: #555555;"> (range: -12.53% to 2.59%; a positive value means the CV increased). The median CV across all features across batches </span><span style="color: #555555; font-weight: bold;">decreased from</span><span style="color: #555555;"> </span><span style="color: #555555; font-weight: bold;">39.00% to 37.71%</span><span style="color: #555555;">.</span></span></span></code></pre></div>
 <p>In order to demonstrate the correction, we will plot an example (PC
 40:8) before and after the drift and batch correction. As we will be
 using the same plot on several occasions, we create a simple function
@@ -662,12 +659,10 @@ don’t forget to change back to <code>batch_wise = TRUE</code> after the
 test.</p>
 </blockquote>
 </details><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">my_trend_plot</span><span class="op">(</span><span class="st">"conc_before"</span>, <span class="st">"PC 40:8"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">Generating plots (1 page)...</span></span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">my_trend_plot</span><span class="op">(</span><span class="st">"conc_before"</span>, <span class="st">"PC 40:8"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="tutorial-03-lipidomics-workflow_files/figure-html/plot-trends-1.png" class="r-plt" alt="RunScatter plots with trends before after corrections  " width="100%"></p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">my_trend_plot</span><span class="op">(</span><span class="st">"conc"</span>, <span class="st">"PC 40:8"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">Generating plots (1 page)...</span></span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">my_trend_plot</span><span class="op">(</span><span class="st">"conc"</span>, <span class="st">"PC 40:8"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="tutorial-03-lipidomics-workflow_files/figure-html/plot-trends-2.png" class="r-plt" alt="RunScatter plots with trends before after corrections  " width="100%"></p>
 </div>
 <div class="section level2">
@@ -705,10 +700,9 @@ to center the batches. What do you observe?</p>
 <span><span class="co">#&gt;   <span style="color: #0000BB;">"PG 33:1 d7 (ISTD)"</span>, <span style="color: #0000BB;">"PI 33:1 d7 (ISTD)"</span>, <span style="color: #0000BB;">"PS 33:1 d7 (ISTD)"</span>, <span style="color: #0000BB;">"SM 36:2 d9</span></span></span>
 <span><span class="co">#&gt;   <span style="color: #0000BB;">(ISTD)"</span>, <span style="color: #0000BB;">"TG 48:1 d7 (ISTD) [-15:0]"</span>, and <span style="color: #0000BB;">"TG 48:1 d7 (ISTD) [SIM]"</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Batch median-centering of 6 batches was applied to drift-corrected concentrations of all 502 features.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #555555;">The median CV change of all features in study samples was </span><span style="color: #555555; font-weight: bold;">-0.23%</span><span style="color: #555555;"> (range: -31.80% to 69.10%).  The median absolute CV of all features </span><span style="color: #555555; font-weight: bold;">increased from</span><span style="color: #555555;"> </span><span style="color: #555555; font-weight: bold;">38.39% to 38.83%</span><span style="color: #555555;">.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #555555;">The median per-feature CV change of all features in study samples was </span><span style="color: #555555; font-weight: bold;">-0.23%</span><span style="color: #555555;"> (range: -31.80% to 69.10%; a positive value means the CV increased).  The median CV across all features </span><span style="color: #555555; font-weight: bold;">increased from</span><span style="color: #555555;"> </span><span style="color: #555555; font-weight: bold;">38.39% to 38.83%</span><span style="color: #555555;">.</span></span></span>
 <span></span>
-<span><span class="fu">my_trend_plot</span><span class="op">(</span><span class="st">"conc"</span>, <span class="st">"PC 40:8"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">Generating plots (1 page)...</span></span></span></code></pre></div>
+<span><span class="fu">my_trend_plot</span><span class="op">(</span><span class="st">"conc"</span>, <span class="st">"PC 40:8"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="tutorial-03-lipidomics-workflow_files/figure-html/batch-effect-corr-1.png" class="r-plt" alt="RunScatter plots with trends after corrections" width="100%"></p>
 </div>
 <div class="section level2">
@@ -782,7 +776,6 @@ the effects visually.</p>
 <span>  max.cv.conc.bqc <span class="op">=</span> <span class="fl">25</span>,</span>
 <span>  features.to.keep <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CE 20:4"</span>, <span class="st">"CE 22:5"</span>, <span class="st">"CE 22:6"</span>, <span class="st">"CE 16:0"</span>, <span class="st">"CE 18:0"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; Calculating feature QC metrics - please wait...</span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">%CV not computed for 4440 feature×QC-type×variable combinations with fewer than 3 replicates (LTR: 4440).</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">QC metrics calculated for 502 features across 7 sample types, including normalized-intensity, concentration, and response-curve statistics.</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">The QC parameter </span><span style="color: #00BB00;">min.intensity.median.spl</span> contains NAs for the following features: LPC O-22:1, PC 34:5, PC 35:1, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC P-32:1 M+1. These features failed QC.</span></span>
@@ -868,8 +861,7 @@ folder.</p>
 </blockquote>
 </details><div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">mrmhub</span><span class="fu">::</span><span class="fu"><a href="../reference/save_report_xlsx.html">save_report_xlsx</a></span><span class="op">(</span><span class="va">myexp</span>, path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".xlsx"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Saving report to disk - please wait...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The data processing report of experiment 'sPerfect' has been saved to </span><span style="color: #0000BB;">/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//Rtmpv0nzin/file58a65d9bc651.xlsx</span>.</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The data processing report of experiment 'sPerfect' has been saved to </span><span style="color: #0000BB;">/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//Rtmp3wTAot/filee8c66130cf49.xlsx</span>.</span></span></code></pre></div>
 <p>Specific data subsets can also be saved as a clean flat, wide CSV
 file. This is the format used to share the data for the statistical
 analysis presented in the next part of this workshop.</p>
@@ -887,7 +879,7 @@ generated CSV files.</p>
 <span>  qc_types <span class="op">=</span> <span class="st">"SPL"</span>, </span>
 <span>  include_qualifier <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  filter_data <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Concentration values for 377 analyses and 324 features have been exported to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//Rtmpv0nzin/file58a6f3eb953.csv'.</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Concentration values for 377 analyses and 324 features have been exported to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//Rtmp3wTAot/filee8c63b72037.csv'.</span></span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="sharing-the-mrmhubexperiment-dataset">22. Sharing the <code>MRMhubExperiment</code> dataset<a class="anchor" aria-label="anchor" href="#sharing-the-mrmhubexperiment-dataset"></a>
@@ -911,40 +903,11 @@ above (<code>mexp</code>)</p>
 <span><span class="va">my_saved_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span>file <span class="op">=</span> <span class="va">path</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">myexp</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">MRMhubExperiment</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────────────</span></span></span>
-<span><span class="co">#&gt; <span style="color: #0000BB;">Title: </span><span style="color: #0000BB; font-weight: bold;">sPerfect</span></span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #0000BB;">Processing status: </span><span style="color: #0000BB; font-weight: bold;">Drift-Batch-corrected concentrations</span></span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── <span style="font-weight: bold;">Annotated Raw Data</span> ──</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • Analyses: 498</span></span>
-<span><span class="co">#&gt; • Features: 502</span></span>
-<span><span class="co">#&gt; • Raw signal used for processing: `feature_area`</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── <span style="font-weight: bold;">Metadata</span> ──</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • Analyses/samples: <span style="color: #00BB00; font-weight: bold;">✔</span></span></span>
-<span><span class="co">#&gt; • Features/analytes: <span style="color: #00BB00; font-weight: bold;">✔</span></span></span>
-<span><span class="co">#&gt; • Internal standards: <span style="color: #00BB00; font-weight: bold;">✔</span></span></span>
-<span><span class="co">#&gt; • Response curves: <span style="color: #00BB00; font-weight: bold;">✔</span></span></span>
-<span><span class="co">#&gt; • Calibrants/QC concentrations: <span style="color: #BB0000; font-weight: bold;">✖</span></span></span>
-<span><span class="co">#&gt; • Study samples: <span style="color: #BB0000; font-weight: bold;">✖</span></span></span>
-<span><span class="co">#&gt; • Interferences: <span style="color: #BB0000; font-weight: bold;">✖</span></span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── <span style="font-weight: bold;">Processing Status</span> ──</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • Isotope corrected: <span style="color: #00BB00;">✔</span></span></span>
-<span><span class="co">#&gt; • ISTD normalized: <span style="color: #00BB00;">✔</span></span></span>
-<span><span class="co">#&gt; • ISTD quantitated: <span style="color: #00BB00;">✔</span></span></span>
-<span><span class="co">#&gt; • Drift corrected variables: `feature_conc`</span></span>
-<span><span class="co">#&gt; • Batch corrected variables: `feature_conc`</span></span>
-<span><span class="co">#&gt; • Feature filtering applied: <span style="color: #00BB00;">✔</span></span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── <span style="font-weight: bold;">Exclusion of Analyses and Features</span> ──</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; • Analyses manually excluded (`analysis_id`): <span style="color: #BB0000;">Longit_batch6_51</span></span></span>
-<span><span class="co">#&gt; • Features manually excluded (`feature_id`): <span style="color: #BB0000;">✖</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">MRMhubExperiment: sPerfect</span> <span style="color: #00BBBB;">──────────────────────────────────────────────────</span></span></span>
+<span><span class="co">#&gt; <span style="font-style: italic;">NA</span> | 498 analyses and 502 features | signal: <span style="color: #00BB00;">feature_area</span></span></span>
+<span><span class="co">#&gt; <span style="color: #0000BB;">Last step: </span><span style="color: #0000BB; font-weight: bold;">Features filtered by QC</span></span></span>
+<span><span class="co">#&gt; Normalized <span style="color: #00BB00;">✔</span> Quantitated <span style="color: #00BB00;">✔</span> Drift/batch <span style="color: #00BB00;">✔</span> Filtered <span style="color: #00BB00;">✔</span></span></span>
+<span><span class="co">#&gt; <span style="color: #555555;">ℹ Use `status()` for the full processing and metadata report</span></span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="next-steps">Next steps<a class="anchor" aria-label="anchor" href="#next-steps"></a>

@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Basic MRMhub Workflow • mrmhub</title>
+<title>A basic MRMhub workflow • mrmhub</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
@@ -16,12 +16,10 @@
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
-<meta property="og:title" content="Basic MRMhub Workflow">
-<meta name="description" content="A realistic end-to-end workflow covering project setup, metadata import,
-drift/batch correction, QC filtering, and export.
+<meta property="og:title" content="A basic MRMhub workflow">
+<meta name="description" content="A realistic end-to-end workflow, from project setup through drift and batch correction, QC filtering, and export.
 ">
-<meta property="og:description" content="A realistic end-to-end workflow covering project setup, metadata import,
-drift/batch correction, QC filtering, and export.
+<meta property="og:description" content="A realistic end-to-end workflow, from project setup through drift and batch correction, QC filtering, and export.
 ">
 <meta property="og:image" content="https://slinghub.github.io/MRMhub/quant/logo.svg">
 </head>
@@ -33,7 +31,7 @@ drift/batch correction, QC filtering, and export.
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -75,6 +73,7 @@ drift/batch correction, QC filtering, and export.
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul>
 </li>
 <li class="nav-item dropdown">
@@ -88,7 +87,7 @@ drift/batch correction, QC filtering, and export.
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Preparing and running</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-04-data-import.html">Importing Analytical Data</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-05-metadata.html">Importing Metadata</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-05-metadata.html">Metadata Tables &amp; Matching</a></li>
     <li><a class="dropdown-item" href="../articles/manual-07-corrections.html">Drift and Batch Correction</a></li>
     <li><a class="dropdown-item" href="../articles/manual-12-interference-correction.html">Isotopic Interference Correction</a></li>
     <li><a class="dropdown-item" href="../articles/manual-11-quarto-workflows.html">Quarto Workflows</a></li>
@@ -126,7 +125,7 @@ drift/batch correction, QC filtering, and export.
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.svg" class="logo" alt=""><h1>Basic MRMhub Workflow</h1>
+      <img src="../logo.svg" class="logo" alt=""><h1>A basic MRMhub workflow</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/HEAD/vignettes/articles/tutorial-02-basic-workflow.Rmd" class="external-link"><code>vignettes/articles/tutorial-02-basic-workflow.Rmd</code></a></small>
@@ -135,191 +134,159 @@ drift/batch correction, QC filtering, and export.
 
     
     
-<p class="page-kind page-kind-tutorial">
-Tutorial
+<p class="page-meta">
+<span class="page-kind page-kind-tutorial">Tutorial</span> <span class="page-level">Beginner</span> <span class="page-prereq">Prerequisites:
+<a href="tutorial-00-first-analysis.html">Your First Analysis</a></span>
 </p>
-<div class="callout callout-note">
-<p><strong>Time</strong> ~15 min  ·  <strong>Level</strong>
-Beginner–Intermediate  ·  <strong>Prerequisites</strong> <a href="tutorial-00-first-analysis.html">Your First Analysis</a></p>
-</div>
-<p>This tutorial outlines the key steps in a MRMhub workflow, based on a
-lipidomics dataset; see the <a href="tutorial-03-lipidomics-workflow.html">Lipidomics Data
-Processing</a> tutorial for a more detailed example. Where <a href="tutorial-00-first-analysis.html">Your First Analysis</a> uses
-bundled demo data and covers only import, normalize and export, this
-tutorial uses real file paths, imports metadata via an MSOrganiser
-template, applies drift and batch correction, runs QC filtering, and
-exports a full report. The examples are simplified and may not apply to
-every dataset and experimental setup, so consult the other tutorials and
-recipes for additional workflows and data types.</p>
+<p>MRMhub processes targeted mass-spectrometry data through an ordered
+sequence: import, metadata annotation, normalization, quantification,
+drift and batch correction, QC filtering, and export. This tutorial
+walks through that full sequence on a lipidomics dataset, using real
+file paths, an MSOrganiser metadata template, and a complete exported
+report. The examples are deliberately simplified; the <a href="tutorial-03-lipidomics-workflow.html">Lipidomics data
+processing</a> tutorial and the recipes cover dataset- and
+instrument-specific variations. After this tutorial you can set up a
+project, run the standard pipeline end to end, and export a QC-filtered
+report.</p>
 <div class="section level2">
-<h2 id="step-1-set-up-a-project">Step 1: Set Up a Project<a class="anchor" aria-label="anchor" href="#step-1-set-up-a-project"></a>
+<h2 id="set-up-a-project">1. Set up a project<a class="anchor" aria-label="anchor" href="#set-up-a-project"></a>
 </h2>
-<p>To start a new MRMhub data analysis, create an RStudio or Positron
-project. (See <a href="https://support.posit.co/hc/en-us/articles/200526207-Using-RStudio-Projects" class="external-link">Using
-RStudio Projects</a> or the <a href="https://positron.posit.co/" class="external-link">Positron User Guide</a>.)</p>
-<p>The project should contain the following subfolders:</p>
+<p>To start a new analysis, create an RStudio or Positron project (see
+<a href="https://support.posit.co/hc/en-us/articles/200526207-Using-RStudio-Projects" class="external-link">Using
+RStudio Projects</a> or the <a href="https://positron.posit.co/" class="external-link">Positron User Guide</a>). A
+predictable folder layout keeps raw data, results, and the processing
+notebook separate:</p>
 <pre><code>my_study/
 ├── data/           # raw data and metadata files
 ├── output/         # exported results
 └── analysis.Rmd    # your processing notebook</code></pre>
-<p>R/Notebook (<code>.Rmd</code>) or <a href="https://docs.posit.co/ide/user/ide/guide/documents/quarto-project.html" class="external-link">Quarto</a>
-(<code>.qmd</code>) files are good choices for documented processing
-workflows. They combine code with formatted text to document every
-processing decision.</p>
-<p>Start with a new notebook or R script and load the
-<code>mrmhub</code> package:</p>
+<p>An R Notebook (<code>.Rmd</code>) or <a href="https://docs.posit.co/ide/user/ide/guide/documents/quarto-project.html" class="external-link">Quarto</a>
+(<code>.qmd</code>) document is a good home for a processing workflow:
+it interleaves code with prose, documenting every decision. Load the
+package to begin:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/SLINGhub/MRMhub" class="external-link">mrmhub</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="step-2-create-a-mrmhubexperiment">Step 2: Create a MRMhubExperiment<a class="anchor" aria-label="anchor" href="#step-2-create-a-mrmhubexperiment"></a>
+<h2 id="create-the-experiment-and-import-data">2. Create the experiment and import data<a class="anchor" aria-label="anchor" href="#create-the-experiment-and-import-data"></a>
 </h2>
-<p>The <code>MRMhubExperiment</code> object is the main <strong>data
-container</strong> in the MRMhub workflow. See <a href="manual-02-data-object.html">The MRMhubExperiment Object</a> for
-details.</p>
-<p>Create a new empty object:</p>
+<p>The <code>MRMhubExperiment</code> object is the central data
+container in a MRMhub workflow (see <a href="manual-02-data-object.html">The MRMhubExperiment object</a>). We
+create an empty object, then import peak-area data from an INTEGRATOR
+output file; the file also carries some metadata (<code>qc_type</code>,
+<code>batch_id</code>), which we import at the same time.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MRMhubExperiment.html">MRMhubExperiment</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="step-3-import-analysis-data">Step 3: Import Analysis Data<a class="anchor" aria-label="anchor" href="#step-3-import-analysis-data"></a>
-</h2>
-<p>Import peak area data from an INTEGRATOR output file. This file also
-contains some metadata (e.g., <code>qc_type</code>,
-<code>batch_id</code>) which we import at the same time.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_data_mrmhub.html">import_data_mrmhub</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">myexp</span>, </span>
-<span>  path <span class="op">=</span> <span class="st">"datasets/sPerfect_MRMhub.tsv"</span>, </span>
+<span>  <span class="va">myexp</span>,</span>
+<span>  path <span class="op">=</span> <span class="st">"datasets/sPerfect_MRMhub.tsv"</span>,</span>
 <span>  import_metadata <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Imported 499 analyses with 503 features.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #00BB00;">feature_area</span> selected as default feature intensity. Modify with `set_intensity_var()`.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Analysis metadata associated with 499 analyses.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Feature metadata associated with 503 features.</span></span></span></code></pre></div>
-<details><summary><strong>Using a different data source?</strong>
-</summary><p>See <a href="manual-04-data-import.html">Import and prepare data
-files</a> for a decision flowchart, or <a href="manual-04-data-import.html">Data Import</a> for the full API
-reference.</p>
-</details>
+<span><span class="op">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Imported 499 analyses with 503 features.</span></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #00BBBB;">ℹ</span> <span style="color: #00BB00;">feature_area</span> selected as default feature intensity. Modify with `set_intensity_var()`.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Analysis metadata associated with 499 analyses.</span></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Feature metadata associated with 503 features.</span></code></pre>
+</div>
+<p>MRMhub reads several other formats; <a href="manual-04-data-import.html">Import and prepare data files</a> has
+a decision flowchart and the full importer reference.</p>
 </div>
 <div class="section level2">
-<h2 id="step-4-add-metadata">Step 4: Add Metadata<a class="anchor" aria-label="anchor" href="#step-4-add-metadata"></a>
+<h2 id="add-metadata">3. Add metadata<a class="anchor" aria-label="anchor" href="#add-metadata"></a>
 </h2>
-<p>Processing steps require additional information not available in the
-data file: internal standard assignments, concentrations, sample
-amounts, etc.</p>
-<p>Metadata can be imported from separate CSV/Excel files or R data
-frames (see <a href="manual-05-metadata.html">Metadata Import</a>), or
-from an MSOrganiser template:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_metadata_msorganiser.html">import_metadata_msorganiser</a></span><span class="op">(</span></span>
-<span>  <span class="va">myexp</span>, </span>
-<span>  path <span class="op">=</span> <span class="st">"datasets/sPerfect_Metadata.xlsx"</span>, </span>
-<span>  ignore_warnings <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt; Found no errors, 4 warnings, and no notes in the metadata.</span></span>
-<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
-<span><span class="co">#&gt;   Type  Table    Column                Issue                           Count</span></span>
-<span><span class="co">#&gt; 1 W*    Analyses analysis_id           Analyses not in analysis data      15</span></span>
-<span><span class="co">#&gt; 2 W*    Features feature_id            Feature(s) without metadata         1</span></span>
-<span><span class="co">#&gt; 3 W*    Features feature_id            Feature(s) not in analysis data     4</span></span>
-<span><span class="co">#&gt; 4 W*    ISTDs    quant_istd_feature_id Internal standard(s) not used       1</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
-<span><span class="co">#&gt; E = Error, W = Warning, W* = Suppressed Warning, N = Note</span></span>
-<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Analysis metadata associated with 499 analyses.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Feature metadata associated with 502 features.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Internal Standard metadata associated with 17 ISTDs.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Response curve metadata associated with 12 annotated analyses.</span></span></span></code></pre></div>
-<p>The validation checks may produce warnings, which by default cause
-the import to fail. Setting <code>ignore_warnings = TRUE</code> allows
-it to proceed; the warnings are still shown in the console table, marked
-with an asterisk (<code>*</code>) in the <code>status</code> column, and
-should be reviewed to ensure nothing critical is missed. See <a href="tutorial-10-metadata-validation.html">Validating and Fixing
-Metadata</a> for how to inspect and resolve them.</p>
+<p>Most processing steps need information absent from the data file —
+internal-standard assignments, calibrant concentrations, sample amounts.
+Metadata can come from separate CSV or Excel files, from R data frames
+(see <a href="manual-05-metadata.html">Metadata import</a>), or from an
+MSOrganiser template:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>myexp <span class="ot">&lt;-</span> <span class="fu">import_metadata_msorganiser</span>(</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  myexp,</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="at">path =</span> <span class="st">"datasets/sPerfect_Metadata.xlsx"</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  <span class="at">ignore_warnings =</span> <span class="cn">TRUE</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>)</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>Found no errors, <span class="dv">4</span> warnings, and no notes <span class="cf">in</span> the metadata.</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="sc">--------------------------------------------------------------------------------</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>  Type  Table    Column                Issue                           Count</span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a><span class="dv">1</span> W<span class="sc">*</span>    Analyses analysis_id           Analyses not <span class="cf">in</span> analysis data      <span class="dv">15</span></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="dv">2</span> W<span class="sc">*</span>    Features feature_id            <span class="fu">Feature</span>(s) without metadata         <span class="dv">1</span></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a><span class="dv">3</span> W<span class="sc">*</span>    Features feature_id            <span class="fu">Feature</span>(s) not <span class="cf">in</span> analysis data     <span class="dv">4</span></span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a><span class="dv">4</span> W<span class="sc">*</span>    ISTDs    quant_istd_feature_id Internal <span class="fu">standard</span>(s) not used       <span class="dv">1</span></span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a><span class="sc">--------------------------------------------------------------------------------</span></span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a>E <span class="ot">=</span> Error, W <span class="ot">=</span> Warning, W<span class="sc">*</span> <span class="er">=</span> Suppressed Warning, N <span class="ot">=</span> Note</span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a><span class="sc">--------------------------------------------------------------------------------</span></span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Analysis metadata associated with 499 analyses.</span></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Feature metadata associated with 502 features.</span></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Internal Standard metadata associated with 17 ISTDs.</span></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Response curve metadata associated with 12 annotated analyses.</span></code></pre>
+</div>
+<p>Validation checks may raise warnings, which by default halt the
+import. Setting <code>ignore_warnings = TRUE</code> lets it proceed; the
+warnings still appear in the console table, marked with an asterisk
+(<code>*</code>) in the <code>status</code> column, and should be
+reviewed so nothing critical is missed. <a href="tutorial-10-metadata-validation.html">Validating and fixing
+metadata</a> shows how to inspect and resolve them.</p>
 </div>
 <div class="section level2">
-<h2 id="step-5-process-the-data">Step 5: Process the Data<a class="anchor" aria-label="anchor" href="#step-5-process-the-data"></a>
+<h2 id="process-the-data">4. Process the data<a class="anchor" aria-label="anchor" href="#process-the-data"></a>
 </h2>
-<p>Apply normalization, quantification, drift correction, batch
-correction, and QC filtering:</p>
+<p>With data and metadata in place, we run the core pipeline: normalize
+to internal standards, quantify, correct run-order drift and
+between-batch effects, and filter features on QC criteria.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Normalize by internal standards</span></span>
-<span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_by_istd.html">normalize_by_istd</a></span><span class="op">(</span><span class="va">myexp</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">Interfering features defined in metadata, but no correction was applied. Use `correct_custom_interferences()` to correct.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">460 features normalized with 17 ISTDs in 499 analyses.</span></span></span>
-<span></span>
-<span><span class="co"># Quantify using ISTD-based approach</span></span>
+<code class="sourceCode R"><span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_by_istd.html">normalize_by_istd</a></span><span class="op">(</span><span class="va">myexp</span><span class="op">)</span></span>
 <span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/quantify_by_istd.html">quantify_by_istd</a></span><span class="op">(</span><span class="va">myexp</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">460 feature concentrations calculated based on 42 ISTDs and sample amounts of 499 analyses.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Concentrations are given in μmol/L.</span></span></span>
 <span></span>
-<span><span class="co"># Correct run-order drift (Gaussian kernel, sample-based)</span></span>
 <span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/correct_drift_gaussiankernel.html">correct_drift_gaussiankernel</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">myexp</span>,</span>
+<span>  <span class="va">myexp</span>,</span>
 <span>  variable <span class="op">=</span> <span class="st">"conc"</span>,</span>
 <span>  ref_qc_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SPL"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Applying `conc` drift correction...</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">2 feature(s) contain one or more zero or negative `conc` values. Verify your data or use `log_transform_internal = FALSE`.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">1 features showed no variation in the study sample's original values across analyses. </span></span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">1 features have invalid values after smoothing. NA will be be returned for all values of these faetures. Set `use_original_if_fail = FALSE to return orginal values..</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">Smoothing failed for 1 feature(s) in all batches. Please check data, metadata, and fit parameters.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">Smoothing failed for 1 feature(s) in at least one batch: PG 36:2. Please check data, metadata and fit parameters.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Drift correction was applied to 459 of 460 features (batch-wise).</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #555555;">The median CV change of all features in study samples was </span><span style="color: #555555; font-weight: bold;">-0.56%</span><span style="color: #555555;"> (range: -10.22% to 2.49%). The median absolute CV of all features across batches </span><span style="color: #555555; font-weight: bold;">decreased from</span><span style="color: #555555;"> </span><span style="color: #555555; font-weight: bold;">38.96% to 38.56%</span><span style="color: #555555;">.</span></span></span>
 <span></span>
-<span><span class="co"># Correct batch effects (median centering)</span></span>
 <span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/correct_batch_centering.html">correct_batch_centering</a></span><span class="op">(</span></span>
-<span>  <span class="va">myexp</span>, </span>
+<span>  <span class="va">myexp</span>,</span>
 <span>  variable <span class="op">=</span> <span class="st">"conc"</span>,</span>
 <span>  ref_qc_types <span class="op">=</span> <span class="st">"SPL"</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">Adding batch correction on top of `conc` drift-correction.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Batch median-centering of 6 batches was applied to drift-corrected concentrations of all 502 features.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> <span style="color: #555555;">The median CV change of all features in study samples was </span><span style="color: #555555; font-weight: bold;">-0.44%</span><span style="color: #555555;"> (range: -27.90% to 10.30%).  The median absolute CV of all features </span><span style="color: #555555; font-weight: bold;">decreased from</span><span style="color: #555555;"> </span><span style="color: #555555; font-weight: bold;">38.99% to 38.76%</span><span style="color: #555555;">.</span></span></span>
 <span></span>
-<span><span class="co"># Apply QC-based feature filtering</span></span>
 <span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/filter_features_qc.html">filter_features_qc</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">myexp</span>,</span>
+<span>  <span class="va">myexp</span>,</span>
 <span>  include_qualifier <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  include_istd <span class="op">=</span> <span class="cn">FALSE</span>, </span>
+<span>  include_istd <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  min.signalblank.median.spl.sblk <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  max.cv.conc.bqc <span class="op">=</span> <span class="fl">25</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt; Calculating feature QC metrics - please wait...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">QC metrics calculated for 502 features across 7 sample types, including normalized-intensity and concentration statistics.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">The QC parameter </span><span style="color: #00BB00;">min.signalblank.median.spl.sblk</span> contains NAs for the following features: LPC O-22:1, PC 34:5, PC 35:1, PG 36:2, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC .... These features failed QC.</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">The QC parameter </span><span style="color: #00BB00;">max.cv.conc.bqc</span> contains NAs for the following features: Cer d18:1/12:0 (ISTD) [M-H20&gt;264], Cer d18:1/25:0 (ISTD) [M-H20&gt;264], Hex2Cer.... These features failed QC.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">New feature QC filters were defined: 181 of 423 quantifier features meet QC criteria (not including the 25 quantifier ISTD features).</span></span></span></code></pre></div>
-<p>Note that the drift correction above uses the study samples
-(<code>ref_qc_types = "SPL"</code>) as the reference. Study-sample
-smoothing is only appropriate for large, well-randomised sample sets;
-the QC-based convention (Broadhurst et al. 2018) instead fits the drift
-trend on dedicated QC injections.</p>
-<details><summary><strong>Processing step order</strong>
-</summary><p>The recommended order is:</p>
-<ol style="list-style-type: decimal">
-<li>Normalize by ISTD</li>
-<li>Quantify (ISTD or external calibration)</li>
-<li>Drift correction</li>
-<li>Batch correction</li>
-<li>QC filtering</li>
-</ol>
-<p>See <a href="manual-03-design-decisions.html">Design Decisions</a>
-for the rationale behind this order.</p>
-</details>
+<span><span class="op">)</span></span></code></pre></div>
+<p>The drift correction here fits on the study samples
+(<code>ref_qc_types = "SPL"</code>). Study-sample smoothing suits only
+large, well-randomised sample sets; the QC-based convention (Broadhurst
+et al. 2018) instead fits the drift trend on dedicated QC injections.
+MRMhub applies these steps in a recommended order — normalize, quantify,
+drift-correct, batch-correct, then filter — motivated in <a href="manual-03-design-decisions.html">Design decisions</a>.</p>
 </div>
 <div class="section level2">
-<h2 id="step-6-visualize-results">Step 6: Visualize Results<a class="anchor" aria-label="anchor" href="#step-6-visualize-results"></a>
+<h2 id="visualize-results">5. Visualize results<a class="anchor" aria-label="anchor" href="#visualize-results"></a>
 </h2>
-<p>Create a run scatter plot to check signal trends and correction
-quality:</p>
+<p>A run-scatter plot shows signal against injection order, a quick
+visual check on trends and correction quality. We plot a single lipid
+class here; <a href="manual-08-visualization.html">Visualisation
+functions</a> lists the full set of plots grouped by workflow stage.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">myexp</span>,</span>
+<span>  <span class="va">myexp</span>,</span>
 <span>  variable <span class="op">=</span> <span class="st">"conc"</span>,</span>
 <span>  include_feature_filter <span class="op">=</span> <span class="st">"PC 4"</span>,</span>
 <span>  include_istd <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -328,56 +295,55 @@ quality:</p>
 <span>  output_pdf <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  path <span class="op">=</span> <span class="st">"./output/runscatter_PC408_beforecorr.pdf"</span>,</span>
 <span>  cols_page <span class="op">=</span> <span class="fl">3</span>, rows_page <span class="op">=</span> <span class="fl">2</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">Generating plots (1 page)...</span></span></span></code></pre></div>
-<p><img src="tutorial-02-basic-workflow_files/figure-html/unnamed-chunk-4-1.png" class="r-plt" alt="" width="100%"></p>
-<p>See <a href="manual-08-visualization.html">Visualisation
-Functions</a> for the full list of plotting functions grouped by
-workflow stage.</p>
+<span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<img src="tutorial-02-basic-workflow_files/figure-html/runscatter-1.png" class="r-plt" alt="Run-scatter of PC feature concentrations across injection order" width="700"><p class="caption">
+Figure 1. Run-scatter of PC concentrations by injection order after
+drift and batch correction.
+</p>
+</div>
 </div>
 <div class="section level2">
-<h2 id="step-7-export-and-share">Step 7: Export and Share<a class="anchor" aria-label="anchor" href="#step-7-export-and-share"></a>
+<h2 id="export-and-share">6. Export and share<a class="anchor" aria-label="anchor" href="#export-and-share"></a>
 </h2>
+<p>Finally, we export results for downstream analysis and archiving: a
+detailed Excel report capturing every table and QC metric, a flat CSV of
+just the QC-passing concentrations, and the serialized object holding
+the complete processing state.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Detailed Excel report with multiple sheets</span></span>
-<span><span class="fu"><a href="../reference/save_report_xlsx.html">save_report_xlsx</a></span><span class="op">(</span><span class="va">myexp</span>, path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".xlsx"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Saving report to disk - please wait...</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The data processing report has been saved to </span><span style="color: #0000BB;">/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpPWCuce/file58496a9e0f16.xlsx</span>.</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/save_report_xlsx.html">save_report_xlsx</a></span><span class="op">(</span><span class="va">myexp</span>, path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".xlsx"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Flat CSV with concentration values that passed QC</span></span>
 <span><span class="fu"><a href="../reference/save_dataset_csv.html">save_dataset_csv</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">myexp</span>, </span>
+<span>  <span class="va">myexp</span>,</span>
 <span>  path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span>,</span>
-<span>  variable <span class="op">=</span> <span class="st">"conc"</span>, </span>
-<span>  qc_types <span class="op">=</span> <span class="st">"SPL"</span>, </span>
+<span>  variable <span class="op">=</span> <span class="st">"conc"</span>,</span>
+<span>  qc_types <span class="op">=</span> <span class="st">"SPL"</span>,</span>
 <span>  include_qualifier <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  filter_data <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Concentration values for 378 analyses and 181 features have been exported to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpPWCuce/file58496b671ae9.csv'.</span></span></span>
 <span></span>
-<span><span class="co"># Save the complete object for reproducibility or sharing</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">saveRDS</a></span><span class="op">(</span><span class="va">myexp</span>, file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".rds"</span><span class="op">)</span>, compress <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>The <code>.rds</code> file preserves the entire
-<code>MRMhubExperiment</code> object, so a colleague can open it in R
-and run their own processing, plots and QC checks — no code is needed to
-reproduce the data state.</p>
+<code>MRMhubExperiment</code>, so a colleague can open it in R and run
+their own plots and QC checks — reproducing the exact data state without
+re-running the pipeline.</p>
 </div>
 <div class="section level2">
 <h2 id="next-steps">Next steps<a class="anchor" aria-label="anchor" href="#next-steps"></a>
 </h2>
 <ul>
 <li>
-<a href="tutorial-03-lipidomics-workflow.html">Lipidomics Data
-Processing</a> — a more detailed lipidomics example</li>
+<a href="tutorial-03-lipidomics-workflow.html">Lipidomics data
+processing</a> — a more detailed lipidomics example</li>
 <li>
-<a href="tutorial-04-drift-correction.html">Drift and Batch
-Correction</a> — correction methods and diagnostics</li>
+<a href="tutorial-04-drift-correction.html">Drift and batch
+correction</a> — correction methods and diagnostics</li>
 <li>
 <a href="tutorial-05-run-scatter.html">Exploring QC: RunScatter and
 PCA</a> — QC visualisation and outlier screening</li>
 <li>
-<a href="recipe-01-ext-calibration-qc.html">External Calibration
-&amp; QC</a> — quantitation with calibration curves</li>
+<a href="recipe-01-ext-calibration-qc.html">External calibration and
+QC</a> — quantitation with calibration curves</li>
 </ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

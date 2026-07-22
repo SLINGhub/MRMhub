@@ -53,8 +53,7 @@ Functions starting with `get_` retrieve data and metadata from an
 `MRMhubExperiment` object, and the `$` syntax can be used to access the
 data and metadata tables directly. The whole object, with all its data,
 metadata and processing state, is saved and read back as a single `.rds`
-file, and a detailed summary of the dataset and processing status can be
-printed at any time:
+file:
 
 ``` r
 
@@ -64,7 +63,28 @@ dataset  <- get_analyticaldata(mexp, annotated = TRUE)  # processed data
 analyses <- mexp$annot_analyses                         # sample metadata
 
 saveRDS(mexp, "myexp-mrmhub.rds", compress = TRUE)
-print(mexp)                                             # dataset + status summary
+```
+
+### Inspecting the processing state
+
+Printing an `MRMhubExperiment` gives a compact overview: the number of
+analyses and features, the raw signal in use, the last processing step,
+and a one-line summary of which steps have been applied.
+
+``` r
+
+mexp                    # or print(mexp)
+```
+
+[`status()`](https://slinghub.github.io/MRMhub/quant/reference/status.md)
+prints the full dashboard — sample composition by QC type, feature
+composition, which metadata tables are populated, the state of every
+processing step, and any manually excluded analyses or features. It is
+the quickest way to confirm where a dataset stands in the workflow.
+
+``` r
+
+status(mexp)
 ```
 
 The full list of accessor and processing functions is given in the

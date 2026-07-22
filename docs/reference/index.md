@@ -23,6 +23,8 @@ are the central data object in the MRMhub workflow.
   : S4 class representing the MRMhub dataset
 - [`` `$`( ``*`<MRMhubExperiment>`*`)`](https://slinghub.github.io/MRMhub/quant/reference/cash-MRMhubExperiment-method.md)
   : Access slots of a MRMhubExperiment object via \$ syntax
+- [`status()`](https://slinghub.github.io/MRMhub/quant/reference/status.md)
+  : Detailed processing and metadata report for a MRMhubExperiment
 - [`set_analysis_order()`](https://slinghub.github.io/MRMhub/quant/reference/set_analysis_order.md)
   : Set analysis order
 - [`get_batch_boundaries()`](https://slinghub.github.io/MRMhub/quant/reference/get_batch_boundaries.md)
@@ -273,6 +275,10 @@ spectrometry is also available.
   Percent coefficient of variation (%CV)
 - [`cv_log()`](https://slinghub.github.io/MRMhub/quant/reference/cv_log.md)
   : Percent coefficient of variation (%CV) based on log-transformation
+- [`pooled_sd()`](https://slinghub.github.io/MRMhub/quant/reference/pooled_sd.md)
+  : Pooled standard deviation across groups
+- [`pooled_rsd()`](https://slinghub.github.io/MRMhub/quant/reference/pooled_rsd.md)
+  : Pooled percent relative standard deviation (%RSD) across groups
 - [`calc_average_molweight()`](https://slinghub.github.io/MRMhub/quant/reference/calc_average_molweight.md)
   : Calculate average molecular weight from chemical formulas
 - [`correct_drift()`](https://slinghub.github.io/MRMhub/quant/reference/correct_drift.md)

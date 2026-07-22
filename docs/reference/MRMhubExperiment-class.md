@@ -104,10 +104,6 @@ processing steps, and the current status of the data.
 
   Flag if one or more features have been isotope corrected
 
-- `has_outliers_tech`:
-
-  Flag if data has technical analysis/sample outliers
-
 - `analyses_excluded`:
 
   Analyses excluded from processing, plots and reporting, unless

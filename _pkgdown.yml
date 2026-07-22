@@ -173,6 +173,7 @@ reference:
   - MRMhubExperiment
   - MRMhubExperiment-class
   - $,MRMhubExperiment-method
+  - status
   - set_analysis_order
   - get_batch_boundaries
   - data_sum_features
@@ -318,6 +319,8 @@ reference:
   contents:
   - cv
   - cv_log
+  - pooled_sd
+  - pooled_rsd
   - calc_average_molweight
   - correct_drift
   - fun_gauss.kernel.smooth

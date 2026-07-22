@@ -1,106 +1,22 @@
-# Importing Metadata
+# Metadata Tables & Matching
 
 Manual
 
 Metadata in this context refers to analysis metadata, i.e., data that
-annotate the analytical data. Metadata can be retrieved from the
-imported analysis data file where available, or imported from separate
-files or R data frames. Integrity of metadata and data is essential for
-correct post-processing: MRMhub inspects imported data and metadata for
-completeness and for consistency of the IDs used across the different
-metadata tables, and after import a summary of the identified errors,
-warnings, and notes is printed to the console so that possible issues
-can be identified and addressed.
+annotate the analytical data. MRMhub stores it in five tables —
+analyses, features, internal standards, response curves, and
+calibration/QC concentrations — that are attached to an
+`MRMhubExperiment` and linked to the measurements by identifier. This
+page documents the structure of each table and how identifiers are
+matched. For the steps to obtain the templates and import metadata, see
+[Import Metadata from Files or a
+Template](https://slinghub.github.io/MRMhub/quant/articles/recipe-05-import-metadata.md).
 
-## Metadata formats and templates
-
-The structure and the required and optional columns for each metadata
-type are described below under [Metadata table
-structures](#metadata-table-structures) and in the help pages of the
-corresponding import functions. To obtain metadata templates, an Excel
-file containing all metadata table templates can be saved.
-
-``` r
-
-mrmhub::save_metadata_templates()
-```
-
-## Importing metadata from files and sheets
-
-The analysis data are first imported as outlined in [Importing
-Analytical
-Data](https://slinghub.github.io/MRMhub/quant/articles/manual-04-data-import.md).
-In this case, metadata present in the analysis data is not imported;
-only the peak areas are read.
-
-``` r
-
-library(mrmhub)
-mexp <- mrmhub::MRMhubExperiment()
-
-data_path <- "datasets/sPerfect_MRMhub.tsv"
-mexp <- import_data_mrmhub(data = mexp, path = data_path, import_metadata = FALSE)
-```
-
-The corresponding metadata can then be added file by file.
-
-``` r
-
-mexp <- import_metadata_analyses(mexp,
-                                 path = "datasets/analysis_metadata.csv",
-                                 excl_unmatched_analyses = TRUE,
-                                 ignore_warnings = TRUE)
-
-mexp <- import_metadata_features(mexp,
-                                 path = "datasets/feature_metadata.csv",
-                                 ignore_warnings= TRUE )
-```
-
-Metadata can also be imported from sheets of an Excel workbook, which
-allows all metadata to be stored in one file. Here, metadata on internal
-standards and response curves is added to the MRMhubExperiment object.
-
-``` r
-
-mexp <- import_metadata_istds(mexp,
-                              path = "datasets/metadata_tables.xlsx",
-                              sheet = "ISTDs",
-                              ignore_warnings= TRUE)
-```
-
-Furthermore, metadata can be imported from R `data.frame` objects, which
-allows metadata to be obtained from additional sources, e.g. databases
-or a LIMS.
-
-``` r
-
-df_qcinfo <- readr::read_table(file = "datasets/qc_metadata.txt")
-mexp <- import_metadata_qcconcentrations(mexp, table = df_qcinfo)
-```
-
-## Importing an MSOrganiser metadata template
-
-Another option to import metadata is via the MSOrganiser template file,
-an Excel file (`.xlsx`). This template provides tables for all metadata
-types supported by MRMhub, with options to check the validity and
-integrity of the metadata. The template can be obtained from
-<https://github.com/SLINGhub/mrmhub> or via a mrmhub function.
-
-``` r
-
-mrmhub::save_metadata_msorganiser_template()
-```
-
-Only the metadata tables required by the intended processing workflow
-need to be completed. The following import function imports all
-completed tables.
-
-``` r
-
-mexp <- import_metadata_msorganiser(mexp,
-                                    path = "datasets/sPerfect_Metadata.xlsx",
-                                    ignore_warnings= TRUE)
-```
+Integrity of metadata and data is essential for correct post-processing:
+MRMhub inspects imported data and metadata for completeness and for
+consistency of the IDs used across the tables, and prints a summary of
+the identified errors, warnings, and notes to the console after import
+so that possible issues can be identified and addressed.
 
 ## Metadata table structures
 
@@ -224,6 +140,9 @@ a warning.
 
 ## Next steps
 
+- [Import Metadata from Files or a
+  Template](https://slinghub.github.io/MRMhub/quant/articles/recipe-05-import-metadata.md)
+  — the import steps
 - [Importing Analytical
   Data](https://slinghub.github.io/MRMhub/quant/articles/manual-04-data-import.md)
   — importing the measurement data
@@ -233,6 +152,3 @@ a warning.
 - [The MRMhubExperiment Data
   Object](https://slinghub.github.io/MRMhub/quant/articles/manual-02-data-object.md)
   — where the metadata is stored
-- [Function
-  reference](https://slinghub.github.io/MRMhub/quant/reference/index.md)
-  — full arguments for every metadata importer

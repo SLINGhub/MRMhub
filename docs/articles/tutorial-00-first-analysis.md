@@ -21,7 +21,7 @@ library(mrmhub)
 demo_file <- system.file("extdata", "MRMhub_demo.tsv", package = "mrmhub")
 mexp <- MRMhubExperiment()
 mexp <- import_data_mrmhub(mexp, path = demo_file, import_metadata = TRUE)
-mexp
+mexp                        # compact overview; status(mexp) prints the full report
 
 # 2. Normalise each feature by its internal standard
 mexp <- normalize_by_istd(mexp)

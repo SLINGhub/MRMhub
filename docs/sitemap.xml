@@ -42,6 +42,7 @@
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/recipe-02-custom-qc-report.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/recipe-03-mztab-export.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/recipe-04-summarizedexperiment.html</loc></url>
+<url><loc>https://slinghub.github.io/MRMhub/quant/articles/recipe-05-import-metadata.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/tutorial-01-prep-data.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.html</loc></url>
@@ -163,6 +164,8 @@
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/plot_rt_vs_chain.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/plot_runsequence.html</loc></url>
+<url><loc>https://slinghub.github.io/MRMhub/quant/reference/pooled_rsd.html</loc></url>
+<url><loc>https://slinghub.github.io/MRMhub/quant/reference/pooled_sd.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/pretty_logticks.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/pretty_n_breaks.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/print.assertr_tibble.html</loc></url>
@@ -181,6 +184,7 @@
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/scientific_format_end.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/set_analysis_order.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/set_intensity_var.html</loc></url>
+<url><loc>https://slinghub.github.io/MRMhub/quant/reference/status.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/summarize_interferences.html</loc></url>
 </urlset>
 

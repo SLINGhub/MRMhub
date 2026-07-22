@@ -1,219 +1,175 @@
-# Basic MRMhub Workflow
+# A basic MRMhub workflow
 
-Tutorial
-
-**Time** ~15 min  ·  **Level** Beginner–Intermediate  · 
-**Prerequisites** [Your First
+Tutorial Beginner Prerequisites: [Your First
 Analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md)
 
-This tutorial outlines the key steps in a MRMhub workflow, based on a
-lipidomics dataset; see the [Lipidomics Data
-Processing](https://slinghub.github.io/MRMhub/quant/articles/tutorial-03-lipidomics-workflow.md)
-tutorial for a more detailed example. Where [Your First
-Analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md)
-uses bundled demo data and covers only import, normalize and export,
-this tutorial uses real file paths, imports metadata via an MSOrganiser
-template, applies drift and batch correction, runs QC filtering, and
-exports a full report. The examples are simplified and may not apply to
-every dataset and experimental setup, so consult the other tutorials and
-recipes for additional workflows and data types.
+MRMhub processes targeted mass-spectrometry data through an ordered
+sequence: import, metadata annotation, normalization, quantification,
+drift and batch correction, QC filtering, and export. This tutorial
+walks through that full sequence on a lipidomics dataset, using real
+file paths, an MSOrganiser metadata template, and a complete exported
+report. The examples are deliberately simplified; the [Lipidomics data
+processing](https://slinghub.github.io/MRMhub/quant/articles/tutorial-03-lipidomics-workflow.md)
+tutorial and the recipes cover dataset- and instrument-specific
+variations. After this tutorial you can set up a project, run the
+standard pipeline end to end, and export a QC-filtered report.
 
-## Step 1: Set Up a Project
+## 1. Set up a project
 
-To start a new MRMhub data analysis, create an RStudio or Positron
-project. (See [Using RStudio
+To start a new analysis, create an RStudio or Positron project (see
+[Using RStudio
 Projects](https://support.posit.co/hc/en-us/articles/200526207-Using-RStudio-Projects)
-or the [Positron User Guide](https://positron.posit.co/).)
-
-The project should contain the following subfolders:
+or the [Positron User Guide](https://positron.posit.co/)). A predictable
+folder layout keeps raw data, results, and the processing notebook
+separate:
 
     my_study/
     ├── data/           # raw data and metadata files
     ├── output/         # exported results
     └── analysis.Rmd    # your processing notebook
 
-R/Notebook (`.Rmd`) or
+An R Notebook (`.Rmd`) or
 [Quarto](https://docs.posit.co/ide/user/ide/guide/documents/quarto-project.html)
-(`.qmd`) files are good choices for documented processing workflows.
-They combine code with formatted text to document every processing
-decision.
-
-Start with a new notebook or R script and load the `mrmhub` package:
+(`.qmd`) document is a good home for a processing workflow: it
+interleaves code with prose, documenting every decision. Load the
+package to begin:
 
 ``` r
 
 library(mrmhub)
 ```
 
-## Step 2: Create a MRMhubExperiment
+## 2. Create the experiment and import data
 
-The `MRMhubExperiment` object is the main **data container** in the
-MRMhub workflow. See [The MRMhubExperiment
-Object](https://slinghub.github.io/MRMhub/quant/articles/manual-02-data-object.md)
-for details.
-
-Create a new empty object:
+The `MRMhubExperiment` object is the central data container in a MRMhub
+workflow (see [The MRMhubExperiment
+object](https://slinghub.github.io/MRMhub/quant/articles/manual-02-data-object.md)).
+We create an empty object, then import peak-area data from an INTEGRATOR
+output file; the file also carries some metadata (`qc_type`,
+`batch_id`), which we import at the same time.
 
 ``` r
 
 myexp <- MRMhubExperiment()
 ```
 
-## Step 3: Import Analysis Data
-
-Import peak area data from an INTEGRATOR output file. This file also
-contains some metadata (e.g., `qc_type`, `batch_id`) which we import at
-the same time.
-
 ``` r
 
 myexp <- import_data_mrmhub(
-  data = myexp, 
-  path = "datasets/sPerfect_MRMhub.tsv", 
+  myexp,
+  path = "datasets/sPerfect_MRMhub.tsv",
   import_metadata = TRUE
 )
-#> ✔ Imported 499 analyses with 503 features.
-#> ℹ feature_area selected as default feature intensity. Modify with `set_intensity_var()`.
-#> ✔ Analysis metadata associated with 499 analyses.
-#> ✔ Feature metadata associated with 503 features.
 ```
 
-**Using a different data source?**
+    ✔ Imported 499 analyses with 503 features.
 
-See [Import and prepare data
+    ℹ feature_area selected as default feature intensity. Modify with `set_intensity_var()`.
+
+    ✔ Analysis metadata associated with 499 analyses.
+
+    ✔ Feature metadata associated with 503 features.
+
+MRMhub reads several other formats; [Import and prepare data
 files](https://slinghub.github.io/MRMhub/quant/articles/manual-04-data-import.md)
-for a decision flowchart, or [Data
-Import](https://slinghub.github.io/MRMhub/quant/articles/manual-04-data-import.md)
-for the full API reference.
+has a decision flowchart and the full importer reference.
 
-## Step 4: Add Metadata
+## 3. Add metadata
 
-Processing steps require additional information not available in the
-data file: internal standard assignments, concentrations, sample
-amounts, etc.
-
-Metadata can be imported from separate CSV/Excel files or R data frames
+Most processing steps need information absent from the data file —
+internal-standard assignments, calibrant concentrations, sample amounts.
+Metadata can come from separate CSV or Excel files, from R data frames
 (see [Metadata
-Import](https://slinghub.github.io/MRMhub/quant/articles/manual-05-metadata.md)),
+import](https://slinghub.github.io/MRMhub/quant/articles/manual-05-metadata.md)),
 or from an MSOrganiser template:
 
 ``` r
-
 myexp <- import_metadata_msorganiser(
-  myexp, 
-  path = "datasets/sPerfect_Metadata.xlsx", 
+  myexp,
+  path = "datasets/sPerfect_Metadata.xlsx",
   ignore_warnings = TRUE
 )
-#> Found no errors, 4 warnings, and no notes in the metadata.
-#> --------------------------------------------------------------------------------
-#>   Type  Table    Column                Issue                           Count
-#> 1 W*    Analyses analysis_id           Analyses not in analysis data      15
-#> 2 W*    Features feature_id            Feature(s) without metadata         1
-#> 3 W*    Features feature_id            Feature(s) not in analysis data     4
-#> 4 W*    ISTDs    quant_istd_feature_id Internal standard(s) not used       1
-#> 
-#> --------------------------------------------------------------------------------
-#> E = Error, W = Warning, W* = Suppressed Warning, N = Note
-#> --------------------------------------------------------------------------------
-#> ✔ Analysis metadata associated with 499 analyses.
-#> ✔ Feature metadata associated with 502 features.
-#> ✔ Internal Standard metadata associated with 17 ISTDs.
-#> ✔ Response curve metadata associated with 12 annotated analyses.
+Found no errors, 4 warnings, and no notes in the metadata.
+--------------------------------------------------------------------------------
+  Type  Table    Column                Issue                           Count
+1 W*    Analyses analysis_id           Analyses not in analysis data      15
+2 W*    Features feature_id            Feature(s) without metadata         1
+3 W*    Features feature_id            Feature(s) not in analysis data     4
+4 W*    ISTDs    quant_istd_feature_id Internal standard(s) not used       1
+
+--------------------------------------------------------------------------------
+E = Error, W = Warning, W* = Suppressed Warning, N = Note
+--------------------------------------------------------------------------------
 ```
 
-The validation checks may produce warnings, which by default cause the
-import to fail. Setting `ignore_warnings = TRUE` allows it to proceed;
-the warnings are still shown in the console table, marked with an
-asterisk (`*`) in the `status` column, and should be reviewed to ensure
-nothing critical is missed. See [Validating and Fixing
-Metadata](https://slinghub.github.io/MRMhub/quant/articles/tutorial-10-metadata-validation.md)
-for how to inspect and resolve them.
+    ✔ Analysis metadata associated with 499 analyses.
 
-## Step 5: Process the Data
+    ✔ Feature metadata associated with 502 features.
 
-Apply normalization, quantification, drift correction, batch correction,
-and QC filtering:
+    ✔ Internal Standard metadata associated with 17 ISTDs.
+
+    ✔ Response curve metadata associated with 12 annotated analyses.
+
+Validation checks may raise warnings, which by default halt the import.
+Setting `ignore_warnings = TRUE` lets it proceed; the warnings still
+appear in the console table, marked with an asterisk (`*`) in the
+`status` column, and should be reviewed so nothing critical is missed.
+[Validating and fixing
+metadata](https://slinghub.github.io/MRMhub/quant/articles/tutorial-10-metadata-validation.md)
+shows how to inspect and resolve them.
+
+## 4. Process the data
+
+With data and metadata in place, we run the core pipeline: normalize to
+internal standards, quantify, correct run-order drift and between-batch
+effects, and filter features on QC criteria.
 
 ``` r
 
-# Normalize by internal standards
 myexp <- normalize_by_istd(myexp)
-#> ! Interfering features defined in metadata, but no correction was applied. Use `correct_custom_interferences()` to correct.
-#> ✔ 460 features normalized with 17 ISTDs in 499 analyses.
-
-# Quantify using ISTD-based approach
 myexp <- quantify_by_istd(myexp)
-#> ✔ 460 feature concentrations calculated based on 42 ISTDs and sample amounts of 499 analyses.
-#> ✔ Concentrations are given in μmol/L.
 
-# Correct run-order drift (Gaussian kernel, sample-based)
 myexp <- correct_drift_gaussiankernel(
-  data = myexp,
+  myexp,
   variable = "conc",
   ref_qc_types = c("SPL")
 )
-#> ✔ Applying `conc` drift correction...
-#> ! 2 feature(s) contain one or more zero or negative `conc` values. Verify your data or use `log_transform_internal = FALSE`.
-#> ! 1 features showed no variation in the study sample's original values across analyses. 
-#> ! 1 features have invalid values after smoothing. NA will be be returned for all values of these faetures. Set `use_original_if_fail = FALSE to return orginal values..
-#> ! Smoothing failed for 1 feature(s) in all batches. Please check data, metadata, and fit parameters.
-#> ! Smoothing failed for 1 feature(s) in at least one batch: PG 36:2. Please check data, metadata and fit parameters.
-#> ✔ Drift correction was applied to 459 of 460 features (batch-wise).
-#> ℹ The median CV change of all features in study samples was -0.56% (range: -10.22% to 2.49%). The median absolute CV of all features across batches decreased from 38.96% to 38.56%.
 
-# Correct batch effects (median centering)
 myexp <- correct_batch_centering(
-  myexp, 
+  myexp,
   variable = "conc",
   ref_qc_types = "SPL"
 )
-#> ! Adding batch correction on top of `conc` drift-correction.
-#> ✔ Batch median-centering of 6 batches was applied to drift-corrected concentrations of all 502 features.
-#> ℹ The median CV change of all features in study samples was -0.44% (range: -27.90% to 10.30%).  The median absolute CV of all features decreased from 38.99% to 38.76%.
 
-# Apply QC-based feature filtering
 myexp <- filter_features_qc(
-  data = myexp,
+  myexp,
   include_qualifier = FALSE,
-  include_istd = FALSE, 
+  include_istd = FALSE,
   min.signalblank.median.spl.sblk = 10,
   max.cv.conc.bqc = 25
 )
-#> Calculating feature QC metrics - please wait...
-#> ✔ QC metrics calculated for 502 features across 7 sample types, including normalized-intensity and concentration statistics.
-#> ! The QC parameter min.signalblank.median.spl.sblk contains NAs for the following features: LPC O-22:1, PC 34:5, PC 35:1, PG 36:2, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC .... These features failed QC.
-#> ! The QC parameter max.cv.conc.bqc contains NAs for the following features: Cer d18:1/12:0 (ISTD) [M-H20>264], Cer d18:1/25:0 (ISTD) [M-H20>264], Hex2Cer.... These features failed QC.
-#> ✔ New feature QC filters were defined: 181 of 423 quantifier features meet QC criteria (not including the 25 quantifier ISTD features).
 ```
 
-Note that the drift correction above uses the study samples
-(`ref_qc_types = "SPL"`) as the reference. Study-sample smoothing is
-only appropriate for large, well-randomised sample sets; the QC-based
-convention (Broadhurst et al. 2018) instead fits the drift trend on
-dedicated QC injections.
+The drift correction here fits on the study samples
+(`ref_qc_types = "SPL"`). Study-sample smoothing suits only large,
+well-randomised sample sets; the QC-based convention (Broadhurst et
+al. 2018) instead fits the drift trend on dedicated QC injections.
+MRMhub applies these steps in a recommended order — normalize, quantify,
+drift-correct, batch-correct, then filter — motivated in [Design
+decisions](https://slinghub.github.io/MRMhub/quant/articles/manual-03-design-decisions.md).
 
-**Processing step order**
+## 5. Visualize results
 
-The recommended order is:
-
-1.  Normalize by ISTD
-2.  Quantify (ISTD or external calibration)
-3.  Drift correction
-4.  Batch correction
-5.  QC filtering
-
-See [Design
-Decisions](https://slinghub.github.io/MRMhub/quant/articles/manual-03-design-decisions.md)
-for the rationale behind this order.
-
-## Step 6: Visualize Results
-
-Create a run scatter plot to check signal trends and correction quality:
+A run-scatter plot shows signal against injection order, a quick visual
+check on trends and correction quality. We plot a single lipid class
+here; [Visualisation
+functions](https://slinghub.github.io/MRMhub/quant/articles/manual-08-visualization.md)
+lists the full set of plots grouped by workflow stage.
 
 ``` r
 
 plot_runscatter(
-  data = myexp,
+  myexp,
   variable = "conc",
   include_feature_filter = "PC 4",
   include_istd = FALSE,
@@ -223,54 +179,52 @@ plot_runscatter(
   path = "./output/runscatter_PC408_beforecorr.pdf",
   cols_page = 3, rows_page = 2
 )
-#> Generating plots (1 page)...
 ```
 
-![](tutorial-02-basic-workflow_files/figure-html/unnamed-chunk-4-1.png)
+![Run-scatter of PC feature concentrations across injection
+order](tutorial-02-basic-workflow_files/figure-html/runscatter-1.png)
 
-See [Visualisation
-Functions](https://slinghub.github.io/MRMhub/quant/articles/manual-08-visualization.md)
-for the full list of plotting functions grouped by workflow stage.
+Figure 1. Run-scatter of PC concentrations by injection order after
+drift and batch correction.
 
-## Step 7: Export and Share
+## 6. Export and share
+
+Finally, we export results for downstream analysis and archiving: a
+detailed Excel report capturing every table and QC metric, a flat CSV of
+just the QC-passing concentrations, and the serialized object holding
+the complete processing state.
 
 ``` r
 
-# Detailed Excel report with multiple sheets
 save_report_xlsx(myexp, path = tempfile(fileext = ".xlsx"))
-#> Saving report to disk - please wait...
-#> ✔ The data processing report has been saved to /var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpPWCuce/file58496a9e0f16.xlsx.
 
-# Flat CSV with concentration values that passed QC
 save_dataset_csv(
-  data = myexp, 
+  myexp,
   path = tempfile(fileext = ".csv"),
-  variable = "conc", 
-  qc_types = "SPL", 
+  variable = "conc",
+  qc_types = "SPL",
   include_qualifier = FALSE,
   filter_data = TRUE
 )
-#> ✔ Concentration values for 378 analyses and 181 features have been exported to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpPWCuce/file58496b671ae9.csv'.
 
-# Save the complete object for reproducibility or sharing
 saveRDS(myexp, file = tempfile(fileext = ".rds"), compress = TRUE)
 ```
 
-The `.rds` file preserves the entire `MRMhubExperiment` object, so a
-colleague can open it in R and run their own processing, plots and QC
-checks — no code is needed to reproduce the data state.
+The `.rds` file preserves the entire `MRMhubExperiment`, so a colleague
+can open it in R and run their own plots and QC checks — reproducing the
+exact data state without re-running the pipeline.
 
 ## Next steps
 
-- [Lipidomics Data
-  Processing](https://slinghub.github.io/MRMhub/quant/articles/tutorial-03-lipidomics-workflow.md)
+- [Lipidomics data
+  processing](https://slinghub.github.io/MRMhub/quant/articles/tutorial-03-lipidomics-workflow.md)
   — a more detailed lipidomics example
-- [Drift and Batch
-  Correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.md)
+- [Drift and batch
+  correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.md)
   — correction methods and diagnostics
 - [Exploring QC: RunScatter and
   PCA](https://slinghub.github.io/MRMhub/quant/articles/tutorial-05-run-scatter.md)
   — QC visualisation and outlier screening
-- [External Calibration &
+- [External calibration and
   QC](https://slinghub.github.io/MRMhub/quant/articles/recipe-01-ext-calibration-qc.md)
   — quantitation with calibration curves
