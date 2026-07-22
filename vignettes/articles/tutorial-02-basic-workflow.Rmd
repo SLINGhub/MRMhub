@@ -1,49 +1,41 @@
 ---
-title: "Basic MRMhub Workflow"
-output: 
+title: "A basic MRMhub workflow"
+description: >
+  A realistic end-to-end workflow, from project setup through drift and
+  batch correction, QC filtering, and export.
+output:
   rmarkdown::html_vignette:
     fig_width: 6
     fig_height: 2
-description: |
-  A realistic end-to-end workflow covering project setup, metadata import, 
-  drift/batch correction, QC filtering, and export.
 vignette: >
-  %\VignetteIndexEntry{Basic MRMhub Workflow}
+  %\VignetteIndexEntry{A basic MRMhub workflow}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-editor_options: 
-  markdown: 
-    wrap: 72
+editor_options:
+  markdown:
+    wrap: 100
 ---
 
-```{r, include = FALSE, echo = FALSE}
-knitr::opts_chunk$set(collapse = TRUE, results = TRUE, message = TRUE, comment = "#>", out.width = "100%")
-set.seed(1041)
-options(dplyr.print_max = 10)
+```{r setup, include = FALSE}
+source("_common.R")
 ```
 
-<p class="page-kind page-kind-tutorial">Tutorial</p>
+<p class="page-meta"><span class="page-kind page-kind-tutorial">Tutorial</span> <span class="page-level">Beginner</span> <span class="page-prereq">Prerequisites: <a href="tutorial-00-first-analysis.html">Your First Analysis</a></span></p>
 
-::: {.callout .callout-note}
-**Time** ~15 min &nbsp;·&nbsp; **Level** Beginner–Intermediate &nbsp;·&nbsp; **Prerequisites** [Your First Analysis](tutorial-00-first-analysis.html)
-:::
+MRMhub processes targeted mass-spectrometry data through an ordered sequence: import, metadata
+annotation, normalization, quantification, drift and batch correction, QC filtering, and export.
+This tutorial walks through that full sequence on a lipidomics dataset, using real file paths, an
+MSOrganiser metadata template, and a complete exported report. The examples are deliberately
+simplified; the [Lipidomics data processing](tutorial-03-lipidomics-workflow.html) tutorial and the
+recipes cover dataset- and instrument-specific variations. After this tutorial you can set up a
+project, run the standard pipeline end to end, and export a QC-filtered report.
 
-This tutorial outlines the key steps in a MRMhub workflow, based on a lipidomics
-dataset; see the [Lipidomics Data Processing](tutorial-03-lipidomics-workflow.html)
-tutorial for a more detailed example. Where [Your First Analysis](tutorial-00-first-analysis.html)
-uses bundled demo data and covers only import, normalize and export, this tutorial
-uses real file paths, imports metadata via an MSOrganiser template, applies drift
-and batch correction, runs QC filtering, and exports a full report. The examples
-are simplified and may not apply to every dataset and experimental setup, so
-consult the other tutorials and recipes for additional workflows and data types.
+## 1. Set up a project
 
-## Step 1: Set Up a Project
-
-To start a new MRMhub data analysis, create an RStudio or Positron
-project. (See [Using RStudio Projects](https://support.posit.co/hc/en-us/articles/200526207-Using-RStudio-Projects)
-or the [Positron User Guide](https://positron.posit.co/).)
-
-The project should contain the following subfolders:
+To start a new analysis, create an RStudio or Positron project (see
+[Using RStudio Projects](https://support.posit.co/hc/en-us/articles/200526207-Using-RStudio-Projects)
+or the [Positron User Guide](https://positron.posit.co/)). A predictable folder layout keeps raw
+data, results, and the processing notebook separate:
 
 ```
 my_study/
@@ -52,139 +44,107 @@ my_study/
 └── analysis.Rmd    # your processing notebook
 ```
 
-R/Notebook (`.Rmd`) or [Quarto](https://docs.posit.co/ide/user/ide/guide/documents/quarto-project.html) 
-(`.qmd`) files are good choices for documented processing workflows. They
-combine code with formatted text to document every processing decision.
-
-Start with a new notebook or R script and load the `mrmhub` package:
+An R Notebook (`.Rmd`) or
+[Quarto](https://docs.posit.co/ide/user/ide/guide/documents/quarto-project.html) (`.qmd`) document
+is a good home for a processing workflow: it interleaves code with prose, documenting every
+decision. Load the package to begin:
 
 ```{r}
 library(mrmhub)
 ```
 
-## Step 2: Create a MRMhubExperiment
+## 2. Create the experiment and import data
 
-The `MRMhubExperiment` object is the main **data container** in the
-MRMhub workflow. See [The MRMhubExperiment Object](manual-02-data-object.html) 
-for details.
-
-Create a new empty object:
+The `MRMhubExperiment` object is the central data container in a MRMhub workflow (see
+[The MRMhubExperiment object](manual-02-data-object.html)). We create an empty object, then import
+peak-area data from an INTEGRATOR output file; the file also carries some metadata (`qc_type`,
+`batch_id`), which we import at the same time.
 
 ```{r}
 myexp <- MRMhubExperiment()
 ```
 
-## Step 3: Import Analysis Data
-
-Import peak area data from an INTEGRATOR output file. This file also
-contains some metadata (e.g., `qc_type`, `batch_id`) which we import
-at the same time.
-
 ```{r load-rawdata}
+#| message: true
 myexp <- import_data_mrmhub(
-  data = myexp, 
-  path = "datasets/sPerfect_MRMhub.tsv", 
+  myexp,
+  path = "datasets/sPerfect_MRMhub.tsv",
   import_metadata = TRUE
 )
 ```
 
-<details>
-<summary><strong>Using a different data source?</strong></summary>
+MRMhub reads several other formats; [Import and prepare data files](manual-04-data-import.html) has a
+decision flowchart and the full importer reference.
 
-See [Import and prepare data files](manual-04-data-import.html) for a
-decision flowchart, or [Data Import](manual-04-data-import.html) for
-the full API reference.
+## 3. Add metadata
 
-</details>
-
-## Step 4: Add Metadata
-
-Processing steps require additional information not available in the
-data file: internal standard assignments, concentrations, sample
-amounts, etc.
-
-Metadata can be imported from separate CSV/Excel files or R data frames
-(see [Metadata Import](manual-05-metadata.html)), or from an
-MSOrganiser template:
+Most processing steps need information absent from the data file — internal-standard assignments,
+calibrant concentrations, sample amounts. Metadata can come from separate CSV or Excel files, from R
+data frames (see [Metadata import](manual-05-metadata.html)), or from an MSOrganiser template:
 
 ```{r import-metadata}
+#| message: true
 myexp <- import_metadata_msorganiser(
-  myexp, 
-  path = "datasets/sPerfect_Metadata.xlsx", 
+  myexp,
+  path = "datasets/sPerfect_Metadata.xlsx",
   ignore_warnings = TRUE
 )
 ```
 
-The validation checks may produce warnings, which by default cause the import to
-fail. Setting `ignore_warnings = TRUE` allows it to proceed; the warnings are still
-shown in the console table, marked with an asterisk (`*`) in the `status` column,
-and should be reviewed to ensure nothing critical is missed. See
-[Validating and Fixing Metadata](tutorial-10-metadata-validation.html) for how to
-inspect and resolve them.
+Validation checks may raise warnings, which by default halt the import. Setting
+`ignore_warnings = TRUE` lets it proceed; the warnings still appear in the console table, marked with
+an asterisk (`*`) in the `status` column, and should be reviewed so nothing critical is missed.
+[Validating and fixing metadata](tutorial-10-metadata-validation.html) shows how to inspect and
+resolve them.
 
-## Step 5: Process the Data
+## 4. Process the data
 
-Apply normalization, quantification, drift correction, batch correction,
-and QC filtering:
+With data and metadata in place, we run the core pipeline: normalize to internal standards, quantify,
+correct run-order drift and between-batch effects, and filter features on QC criteria.
 
 ```{r processing}
-# Normalize by internal standards
 myexp <- normalize_by_istd(myexp)
-
-# Quantify using ISTD-based approach
 myexp <- quantify_by_istd(myexp)
 
-# Correct run-order drift (Gaussian kernel, sample-based)
 myexp <- correct_drift_gaussiankernel(
-  data = myexp,
+  myexp,
   variable = "conc",
   ref_qc_types = c("SPL")
 )
 
-# Correct batch effects (median centering)
 myexp <- correct_batch_centering(
-  myexp, 
+  myexp,
   variable = "conc",
   ref_qc_types = "SPL"
 )
 
-# Apply QC-based feature filtering
 myexp <- filter_features_qc(
-  data = myexp,
+  myexp,
   include_qualifier = FALSE,
-  include_istd = FALSE, 
+  include_istd = FALSE,
   min.signalblank.median.spl.sblk = 10,
   max.cv.conc.bqc = 25
 )
 ```
 
-Note that the drift correction above uses the study samples
-(`ref_qc_types = "SPL"`) as the reference. Study-sample smoothing is only
-appropriate for large, well-randomised sample sets; the QC-based convention
-(Broadhurst et al. 2018) instead fits the drift trend on dedicated QC injections.
+The drift correction here fits on the study samples (`ref_qc_types = "SPL"`). Study-sample smoothing
+suits only large, well-randomised sample sets; the QC-based convention (Broadhurst et al. 2018)
+instead fits the drift trend on dedicated QC injections. MRMhub applies these steps in a recommended
+order — normalize, quantify, drift-correct, batch-correct, then filter — motivated in
+[Design decisions](manual-03-design-decisions.html).
 
-<details>
-<summary><strong>Processing step order</strong></summary>
+## 5. Visualize results
 
-The recommended order is:
+A run-scatter plot shows signal against injection order, a quick visual check on trends and
+correction quality. We plot a single lipid class here;
+[Visualisation functions](manual-08-visualization.html) lists the full set of plots grouped by
+workflow stage.
 
-1. Normalize by ISTD
-2. Quantify (ISTD or external calibration)
-3. Drift correction
-4. Batch correction
-5. QC filtering
-
-See [Design Decisions](manual-03-design-decisions.html) for the rationale behind this order.
-
-</details>
-
-## Step 6: Visualize Results
-
-Create a run scatter plot to check signal trends and correction quality:
-
-```{r}
+```{r runscatter}
+#| fig.cap: !expr fig_cap("Run-scatter of PC concentrations by injection order after drift and batch correction.")
+#| fig.alt: Run-scatter of PC feature concentrations across injection order
 plot_runscatter(
-  data = myexp,
+  myexp,
   variable = "conc",
   include_feature_filter = "PC 4",
   include_istd = FALSE,
@@ -196,38 +156,33 @@ plot_runscatter(
 )
 ```
 
-See [Visualisation Functions](manual-08-visualization.html) for the full
-list of plotting functions grouped by workflow stage.
+## 6. Export and share
 
-
-## Step 7: Export and Share
+Finally, we export results for downstream analysis and archiving: a detailed Excel report capturing
+every table and QC metric, a flat CSV of just the QC-passing concentrations, and the serialized
+object holding the complete processing state.
 
 ```{r save-report}
-# Detailed Excel report with multiple sheets
 save_report_xlsx(myexp, path = tempfile(fileext = ".xlsx"))
 
-# Flat CSV with concentration values that passed QC
 save_dataset_csv(
-  data = myexp, 
+  myexp,
   path = tempfile(fileext = ".csv"),
-  variable = "conc", 
-  qc_types = "SPL", 
+  variable = "conc",
+  qc_types = "SPL",
   include_qualifier = FALSE,
   filter_data = TRUE
 )
 
-# Save the complete object for reproducibility or sharing
 saveRDS(myexp, file = tempfile(fileext = ".rds"), compress = TRUE)
 ```
 
-The `.rds` file preserves the entire `MRMhubExperiment` object, so a colleague can
-open it in R and run their own processing, plots and QC checks — no code is needed
-to reproduce the data state.
+The `.rds` file preserves the entire `MRMhubExperiment`, so a colleague can open it in R and run their
+own plots and QC checks — reproducing the exact data state without re-running the pipeline.
 
 ## Next steps
 
-- [Lipidomics Data Processing](tutorial-03-lipidomics-workflow.html) — a more detailed lipidomics example
-- [Drift and Batch Correction](tutorial-04-drift-correction.html) — correction methods and diagnostics
+- [Lipidomics data processing](tutorial-03-lipidomics-workflow.html) — a more detailed lipidomics example
+- [Drift and batch correction](tutorial-04-drift-correction.html) — correction methods and diagnostics
 - [Exploring QC: RunScatter and PCA](tutorial-05-run-scatter.html) — QC visualisation and outlier screening
-- [External Calibration & QC](recipe-01-ext-calibration-qc.html) — quantitation with calibration curves
-
+- [External calibration and QC](recipe-01-ext-calibration-qc.html) — quantitation with calibration curves

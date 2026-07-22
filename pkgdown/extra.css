@@ -21,18 +21,48 @@ main table {
      <p class="page-kind page-kind-manual">Manual</p> */
 .page-kind {
   display: inline-block;
-  margin: 0 0 1.2em;
-  padding: 0.15em 0.6em;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  margin: 0 0 1.4em;
+  padding: 0.2em 0.7em;
+  font-size: 0.68rem;
+  font-weight: 400;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  border-radius: 3px;
+  background: transparent;
+  border: 1px solid;
+  border-radius: 0.25rem;
+  opacity: 0.7;
 }
-.page-kind-manual   { color: #2C3E50; background: #e7eef2; }  /* steel blue */
-.page-kind-tutorial { color: #3a5f30; background: #e6efe2; }  /* muted green */
-.page-kind-recipe   { color: #8a5a25; background: #f6ebdd; }  /* warm orange */
-.page-kind-reference{ color: #2C3E50; background: #e9ebee; }  /* navy */
+.page-kind-manual    { color: #2C3E50; border-color: #5B8FA8; }  /* steel blue */
+.page-kind-tutorial  { color: #3a5f30; border-color: #6B9E5E; }  /* muted green */
+.page-kind-recipe    { color: #8a5a25; border-color: #D4914E; }  /* warm orange */
+.page-kind-reference { color: #2C3E50; border-color: #2C3E50; }  /* navy */
+
+/* One header line: type chip, then level, then the prerequisite(s) inline. */
+.page-meta {
+  margin: 0 0 1.4em;
+  line-height: 2;
+}
+.page-meta .page-kind {
+  margin: 0;
+}
+.page-level {
+  margin-left: 0.6em;
+  font-size: 0.8rem;
+  color: #888;
+}
+.page-prereq {
+  font-size: 0.85rem;
+  color: #555;
+}
+.page-prereq::before {
+  content: "·";
+  margin: 0 0.55em;
+  color: #bbb;
+}
+.page-prereq strong {
+  color: #444;
+  font-weight: 600;
+}
 
 /* MRMhub modest callouts — Quarto-aesthetic boxes for pkgdown articles.
    Markup: <div class="callout callout-{note|tip|caution}">...</div>
@@ -64,6 +94,60 @@ main table {
 }
 .callout-getstarted > :first-child { margin-top: 0; }
 .callout-getstarted > :last-child  { margin-bottom: 0; }
+
+/* mrmhub console output — cli message-stream feedback (green ✔ success, grey ℹ
+   info). pkgdown wraps EACH cli message in its own
+   <div class="cell-output cell-output-stderr"><pre><code>. Bootstrap styles that
+   <pre> as a bordered, rounded, padded box; if we also box the wrapping div we
+   get a box-in-a-box. So instead: add NO box on the div, flatten Bootstrap's
+   <pre> (drop its border/radius/default background/padding) and restyle it as a
+   flat band segment, then remove the margin between consecutive messages so a
+   run of alerts reads as one continuous console band. Light background on
+   purpose — cli's grey info text (col_grey) fails WCAG 4.5:1 on a dark band,
+   while green and grey both clear it here. */
+.cell-output-stderr {
+  margin: 0;
+}
+:not(.cell-output-stderr) + .cell-output-stderr {
+  margin-top: 0; /* hug the code chunk the output belongs to */
+}
+/* the gap above the console box is mostly the code block's own bottom margin;
+   trim it when console output immediately follows */
+div.sourceCode:has(+ .cell-output-stderr),
+div.sourceCode:has(+ .cell-output-stderr) > pre {
+  margin-bottom: 0.2em;
+}
+.cell-output-stderr + :not(.cell-output-stderr) {
+  margin-top: 1.4em; /* separate the run of messages from the following prose */
+}
+.cell-output-stderr pre {
+  margin: 0;
+  padding: 0.3em 0.9em; /* vertical padding centres the text in the band */
+  background: #f4f7f4;
+  border: none;
+  border-left: 3px solid #6B9E5E;
+  border-radius: 0;
+}
+.cell-output-stderr pre code {
+  display: block;
+  /* These are single-line cli alerts; `normal` collapses the trailing newline
+     pkgdown appends (which would otherwise render as a blank line) and lets long
+     messages wrap naturally — no clipping, no overlap. */
+  white-space: normal;
+  font-size: 0.85em;
+  line-height: 1.5;
+}
+
+/* Figure and table legends — noticeably smaller than body text (~30% down) so
+   the numbered captions read as secondary. */
+.figure .caption,
+p.caption,
+caption,
+.figure figcaption {
+  font-size: 0.7em;
+  line-height: 1.4;
+  color: #555;
+}
 
 /* Navbar dropdown menus: pkgdown's Bootstrap caps every .dropdown-menu at
    max-height: 280px with an inner scrollbar, which hides items in the longer
