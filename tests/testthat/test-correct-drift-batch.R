@@ -136,7 +136,7 @@ test_that("correct_drift_gaussiankernel works", {
       ref_qc_types = "SPL",
       ignore_istd = TRUE
     ),
-    "(range: -2.47% to 0.04%)",
+    "(range: -2.47% to 0.04%",
     fixed = TRUE
   )
 
@@ -150,7 +150,7 @@ test_that("correct_drift_gaussiankernel works", {
       ref_qc_types = "SPL",
       ignore_istd = TRUE
     ),
-    "(range: -2.10% to -0.27%)",
+    "(range: -2.10% to -0.27%",
     fixed = TRUE
   )
 
@@ -194,7 +194,7 @@ test_that("correct_drift_gaussiankernel works", {
       ref_qc_types = "SPL",
       ignore_istd = TRUE
     ),
-    "(range: -11.46% to -0.74%)",
+    "(range: -11.46% to -0.74%",
     fixed = TRUE
   )
 
@@ -209,7 +209,7 @@ test_that("correct_drift_gaussiankernel works", {
       ref_qc_types = "SPL",
       ignore_istd = FALSE
     ),
-    "(range: -11.46% to -0.74%)",
+    "(range: -11.46% to -0.74%",
     fixed = TRUE
   )
 
@@ -224,7 +224,7 @@ test_that("correct_drift_gaussiankernel works", {
       ref_qc_types = "SPL",
       ignore_istd = FALSE
     ),
-    "(range: -19.06% to -0.51%)",
+    "(range: -19.06% to -0.51%",
     fixed = TRUE
   )
 
@@ -238,7 +238,7 @@ test_that("correct_drift_gaussiankernel works", {
       ref_qc_types = "SPL",
       ignore_istd = TRUE
     ),
-    "(range: -12.78% to -0.99%)",
+    "(range: -12.78% to -0.99%",
     fixed = TRUE
   )
 })
@@ -252,7 +252,7 @@ test_that("using sample types other than SPL", {
       ref_qc_types = c("BQC", "TQC"),
       ignore_istd = TRUE
     ),
-    "(range: -1.39% to 0.92%)",
+    "(range: -1.39% to 0.92%",
     fixed = TRUE
   )
 
@@ -307,7 +307,7 @@ test_that("replace_previous FALSE works", {
       ignore_istd = TRUE,
       ref_qc_types = "SPL"
     ),
-    "-11.46% to -0.74%)",
+    "-11.46% to -0.74%",
     fixed = TRUE
   )
 
@@ -338,7 +338,7 @@ test_that("replace_previous FALSE works", {
       ignore_istd = TRUE,
       ref_qc_types = "SPL"
     ),
-    "-3.66% to -0.57%)",
+    "-3.66% to -0.57%",
     fixed = TRUE
   )
 })
@@ -403,7 +403,7 @@ test_that("recalc_trend_after works", {
       ref_qc_types = "SPL",
       ignore_istd = FALSE
     ),
-    "-2.47% to 0.04%)",
+    "-2.47% to 0.04%",
     fixed = TRUE
   )
 
@@ -488,7 +488,7 @@ test_that("Scale smooth works", {
 
 # conditional correction
 # result when correcting all
-#The median CV change of all features in study samples was -1.91% (range: -11.46% to -0.74%). The median absolute CV of all features decreased from 33.81% to 32.22%.
+#The median per-feature CV change of all features in study samples was -1.91% (range: -11.46% to -0.74%; a positive value means the CV increased). The median CV across all features decreased from 33.81% to 32.22%.
 
 test_that("conditional correction works", {
   expect_message(
@@ -555,7 +555,7 @@ test_that("conditional correction works", {
       ref_qc_types = "SPL",
       ignore_istd = TRUE
     ),
-    "-11.46% to -6.18%)",
+    "-11.46% to -6.18%",
     fixed = TRUE
   )
 
@@ -589,7 +589,7 @@ test_that("conditional correction works", {
       ref_qc_types = "SPL",
       ignore_istd = TRUE
     ),
-    "-4.48% to -0.43%)",
+    "-4.48% to -0.43%",
     fixed = TRUE
   )
 
@@ -606,7 +606,7 @@ test_that("conditional correction works", {
       ref_qc_types = "SPL",
       ignore_istd = TRUE
     ),
-    "-2.47% to 0.04%)",
+    "-2.47% to 0.04%",
     fixed = TRUE
   )
   expect_message(
@@ -1221,7 +1221,7 @@ test_that("correct_drift_cubicspline works", {
       use_original_if_fail = FALSE,
       ignore_istd = TRUE
     ),
-    "-8.31% to 2.90%)",
+    "-8.31% to 2.90%",
     fixed = TRUE
   )
 
@@ -1265,7 +1265,7 @@ test_that("correct_drift_cubicspline works", {
       use_original_if_fail = FALSE,
       ignore_istd = TRUE
     ),
-    "-7.87% to 1.93%)",
+    "-7.87% to 1.93%",
     fixed = TRUE
   )
 
@@ -1293,7 +1293,7 @@ test_that("correct_drift_cubicspline works", {
       use_original_if_fail = FALSE,
       ignore_istd = TRUE
     ),
-    "-8.21% to 3.56%)",
+    "-8.21% to 3.56%",
     fixed = TRUE
   )
 
@@ -1479,7 +1479,7 @@ test_that("correct_drift_gam works", {
       use_original_if_fail = FALSE,
       ignore_istd = TRUE
     ),
-    "-8.52% to 0.73%)",
+    "-8.52% to 0.73%",
     fixed = TRUE
   )
 
@@ -1760,7 +1760,7 @@ test_that("correct_batch_centering works", {
       log_transform_internal = FALSE,
       replace_exisiting_trendcurves = FALSE
     ),
-    "-5.90% to 4.90%)",
+    "-5.90% to 4.90%",
     fixed = TRUE
   )
 
@@ -1787,7 +1787,7 @@ test_that("correct_batch_centering works", {
       variable = "conc",
       replace_exisiting_trendcurves = FALSE
     ),
-    "-5.90% to 4.90%)",
+    "-5.90% to 4.90%",
     fixed = TRUE
   )
 
@@ -1800,7 +1800,7 @@ test_that("correct_batch_centering works", {
       variable = "intensity",
       replace_exisiting_trendcurves = FALSE
     ),
-    "-16.40% to 1.40%)",
+    "-16.40% to 1.40%",
     fixed = TRUE
   )
 
@@ -1829,7 +1829,7 @@ test_that("correct_batch_centering works with replace_previous", {
       variable = "conc",
       replace_exisiting_trendcurves = FALSE
     )),
-    "-4.30% to 3.10%)",
+    "-4.30% to 3.10%",
     fixed = TRUE
   )
 
@@ -1851,7 +1851,7 @@ test_that("correct_batch_centering works with replace_previous", {
       variable = "conc",
       replace_exisiting_trendcurves = FALSE
     )),
-    "-4.10% to -0.10%)",
+    "-4.10% to -0.10%",
     fixed = TRUE
   )
 
@@ -1875,7 +1875,7 @@ test_that("correct_batch_centering works with replace_previous", {
       variable = "conc",
       replace_exisiting_trendcurves = FALSE
     ),
-    "-4.30% to 3.10%)",
+    "-4.30% to 3.10%",
     fixed = TRUE
   )
 
@@ -1901,7 +1901,7 @@ test_that("correct_batch_centering works with replace_previous", {
       variable = "conc",
       replace_exisiting_trendcurves = FALSE
     ),
-    "-7.00% to 2.70%)",
+    "-7.00% to 2.70%",
     fixed = TRUE
   )
 

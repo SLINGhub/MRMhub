@@ -560,7 +560,7 @@ correct_drift <- function(
     # data was not corrected before, make a copy of the original data as "_raw"
     is_first_correction <- TRUE
     data@dataset[[variable_raw]] <- data@dataset[[variable]]
-    mh_success(
+    mh_info(
       "Applying `{variable_strip}` drift correction..."
     )
   }
@@ -1051,7 +1051,7 @@ correct_drift <- function(
   )
 
   cli_alert_info(cli::col_grey(
-    "The median CV change of {ifelse(all(is.na(feature_list)), 'all', 'these')} features in study samples was {.strong {formatC(cv_difference_median, format = 'f', digits = 2)}%} (range: {formatC(cv_difference_low, format = 'f', digits = 2)}% to {formatC(cv_difference_high, format = 'f', digits = 2)}%). The median absolute CV of all features{text_batchwise}{.strong {text_change}} {.strong {formatC(cv_median_raw, format = 'f', digits = 2)}% {ifelse(str_detect(text_change, 'remained'), '', paste0('to ', formatC(cv_median_adj, format = 'f', digits = 2),'%'))}}."
+    "The median per-feature CV change of {ifelse(all(is.na(feature_list)), 'all', 'these')} features in study samples was {.strong {formatC(cv_difference_median, format = 'f', digits = 2)}%} (range: {formatC(cv_difference_low, format = 'f', digits = 2)}% to {formatC(cv_difference_high, format = 'f', digits = 2)}%; a positive value means the CV increased). The median CV across all features{text_batchwise}{.strong {text_change}} {.strong {formatC(cv_median_raw, format = 'f', digits = 2)}% {ifelse(str_detect(text_change, 'remained'), '', paste0('to ', formatC(cv_median_adj, format = 'f', digits = 2),'%'))}}."
   ))
 
   # Invalidate downstream processed data
@@ -1910,7 +1910,7 @@ correct_batch_centering <- function(
   )
 
   cli_alert_info(cli::col_grey(
-    "The median CV change of all features in study samples was {.strong {formatC(d_res_sum$cv_diff_median, format = 'f', digits = 2)}%} (range: {formatC(d_res_sum$cv_diff_min, format = 'f', digits = 2)}% to {formatC(d_res_sum$cv_diff_max, format = 'f', digits = 2)}%).  The median absolute CV of all features {.strong {text_change}} {.strong {formatC(d_res_sum$cv_before, format = 'f', digits = 2)}% {ifelse(str_detect(text_change, 'remained'), '',  paste0('to ', formatC(d_res_sum$cv_after, format = 'f', digits = 2),'%'))}}."
+    "The median per-feature CV change of all features in study samples was {.strong {formatC(d_res_sum$cv_diff_median, format = 'f', digits = 2)}%} (range: {formatC(d_res_sum$cv_diff_min, format = 'f', digits = 2)}% to {formatC(d_res_sum$cv_diff_max, format = 'f', digits = 2)}%; a positive value means the CV increased).  The median CV across all features {.strong {text_change}} {.strong {formatC(d_res_sum$cv_before, format = 'f', digits = 2)}% {ifelse(str_detect(text_change, 'remained'), '',  paste0('to ', formatC(d_res_sum$cv_after, format = 'f', digits = 2),'%'))}}."
   ))
 
   # Return data
