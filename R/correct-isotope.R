@@ -251,6 +251,7 @@ correct_interference_manual <- function(
 #' @param neg_to_na If `TRUE`, negative or zero values after correction are
 #'   replaced with `NA`. Default: `FALSE`.
 #' @return [`MRMhubExperiment`][MRMhubExperiment-class] object with feature intensities corrected.
+#' @seealso The [interference-correction guide](https://slinghub.github.io/MRMhub/quant/articles/manual-12-interference-correction.html).
 #' @export
 #' @references Gao L., Ji S, Burla B, Wenk MR, Torta F, & Cazenave-Gassiot A
 #' (2021). LICAR: An Application for Isotopic Correction of Targeted Lipidomic
@@ -300,7 +301,7 @@ check_interference_variable <- function(variable) {
 #'
 #' @inheritParams correct_isotopic_interferences
 #' @return [`MRMhubExperiment`][MRMhubExperiment-class] object with feature intensities corrected.
-#' @seealso [correct_isotopic_interferences()], [correct_interference_manual()]
+#' @seealso [correct_isotopic_interferences()], [correct_interference_manual()]; the [interference-correction guide](https://slinghub.github.io/MRMhub/quant/articles/manual-12-interference-correction.html).
 #' @export
 correct_custom_interferences <- function(
   data = NULL,

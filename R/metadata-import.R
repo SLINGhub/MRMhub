@@ -1144,6 +1144,7 @@ assert_metadata <- function(
 #' @param metadata List of tibbles or data.frames containing analysis, feature, istd, response curve tables
 #' @param excl_unmatched_analyses Exclude analyses (samples) that have no matching metadata
 #' @return metadata list
+#' @seealso The [metadata guide](https://slinghub.github.io/MRMhub/quant/articles/manual-05-metadata.html).
 #' @export
 
 # Add verified metadata to the MRMhubExperiment object

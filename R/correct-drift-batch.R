@@ -1292,6 +1292,7 @@ correct_drift_gaussiankernel <- function(
 #' @param use_original_if_fail Determines the action when smoothing fails or results in invalid values for a feature. If `FALSE` (default), the result for each feature will `NA` for all batches, if `TRUE`, the original data is kept.
 #' @param show_progress Logical. Display progress bars if `TRUE`; disable for notebook rendering by setting to `FALSE`.
 #' @return [`MRMhubExperiment`][MRMhubExperiment-class] object
+#' @seealso The [drift-correction tutorial](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.html) for a worked example.
 #' @export
 correct_drift_loess <- function(
   data = NULL,
@@ -1430,7 +1431,7 @@ correct_drift_loess <- function(
 #' batch variation in an automated direct infusion mass spectrometry (DIMS) metabolomics workflow.
 #' Anal Bioanal Chem 405, 5147–5157 (2013). https://doi-org.libproxy1.nus.edu.sg/10.1007/s00216-013-6856-7
 #'
-#' @seealso [stats::smooth.spline()]
+#' @seealso [stats::smooth.spline()]; the [drift-correction tutorial](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.html) for a worked example.
 correct_drift_cubicspline <- function(
   data = NULL,
   variable,
@@ -1549,7 +1550,7 @@ correct_drift_cubicspline <- function(
 #' @return [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @export
 #'
-#' @seealso [mgcv::gam()]
+#' @seealso [mgcv::gam()]; the [drift-correction tutorial](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.html) for a worked example.
 correct_drift_gam <- function(
   data = NULL,
   variable,
@@ -1634,7 +1635,7 @@ correct_drift_gam <- function(
 #' @param ... Additional arguments that can be passed to the batch correction
 #'   function.
 #' @return A [`MRMhubExperiment`][MRMhubExperiment-class] object containing the corrected data.
-#' @seealso [plot_runscatter()] for visualizing the correction before and after.
+#' @seealso [plot_runscatter()] for visualizing the correction before and after; the [drift-correction tutorial](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.html) for a worked example.
 #' @export
 
 correct_batch_centering <- function(
