@@ -122,11 +122,19 @@ div.sourceCode:has(+ .cell-output-stderr) > pre {
 }
 .cell-output-stderr pre {
   margin: 0;
-  padding: 0.3em 0.9em; /* vertical padding centres the text in the band */
+  padding: 0.05em 0.9em; /* minimal — stacked cli lines read as one console block */
   background: #f4f7f4;
   border: none;
   border-left: 3px solid #6B9E5E;
   border-radius: 0;
+}
+/* a little breathing room only at the top of the first line and bottom of the last */
+:not(.cell-output-stderr) + .cell-output-stderr pre {
+  padding-top: 0.35em;
+}
+.cell-output-stderr:has(+ :not(.cell-output-stderr)) pre,
+.cell-output-stderr:last-child pre {
+  padding-bottom: 0.35em;
 }
 .cell-output-stderr pre code {
   display: block;
