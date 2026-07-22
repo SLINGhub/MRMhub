@@ -26,7 +26,7 @@ analysis result file}
 front of the qualifier name (the latter only has the m/z transition values)}
 
 \item{conc_column}{Which concentration field of the masshunter data to use, in
-case "Calc. Conc." and "Final. Conc." are present.  Default is "conc_final".
+case "Calc. Conc." and "Final Conc" are present.  Default is "conc_final".
 Must be one of "conc_calc" or "conc_final" (default).}
 
 \item{silent}{Logical, whether to suppress most notifications}
@@ -37,7 +37,7 @@ Must be one of "conc_calc" or "conc_final" (default).}
 \description{
 Imports .csv files exported from Agilent MassHunter Quantitative
 Analysis software, containing peak integration results. The input files must
-have anlyses (samples) in rows, features/compounds in columns, and either
+have analyses (samples) in rows, features/compounds in columns, and either
 peak areas, peak heights, or response as the values. Additional columns, such
 as retention time (RT), full-width at half-maximum (FWHM), precursor m/z
 (PrecursorMZ), and collision energy (CE), will also be imported and made

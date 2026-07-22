@@ -35,12 +35,12 @@ QC types ("SPL", "TQC", "BQC", "HQC", "MQC", "LQC", "NIST", "LTR") present
 in the dataset.}
 
 \item{pca_dims}{A numeric vector indicating for which PCA dimensions
-to the loadings should be shown. Default is c(1, 2, 3, 4).}
+the loadings should be shown. Default is c(1, 2, 3, 4).}
 
 \item{log_transform}{A logical value indicating whether to log-transform
 the data before the PCA. Default is \code{TRUE}.}
 
-\item{top_n}{Number of top features with highest absolute loading that will be to shown for each PC dimension. Default is 30.}
+\item{top_n}{Number of top features with highest absolute loading that will be shown for each PC dimension. Default is 30.}
 
 \item{vertical_bars}{Show vertical bars instead of horizontal bars in the plot. Default is \code{FALSE}.}
 

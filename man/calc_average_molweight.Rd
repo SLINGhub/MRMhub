@@ -20,7 +20,7 @@ The calculation uses the \pkg{enviPat} package to retrieve isotopic masses and a
 This function calculates the \emph{average molecular weight} (not monoisotopic mass), which reflects the average of the isotopic distribution found in nature.
 
 Isotopes can be specified explicitly in the formula. Atomic mass numbers for isotopes must be enclosed in square brackets (e.g., \verb{[13]C} for carbon-13).
-Deuterium must be written as \code{D} instead of \verb{[3]H}.
+Deuterium must be written as \code{D} instead of \verb{[2]H}.
 
 The function uses the \pkg{enviPat} package to validate and parse chemical formulas, calculate isotopic patterns,
 and determine the average molecular weight based on weighted means of isotopic abundances.

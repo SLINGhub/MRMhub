@@ -2,7 +2,7 @@
 % Please edit documentation in R/calc-calibrations.R
 \name{get_qc_bias_variability}
 \alias{get_qc_bias_variability}
-\title{Retrieve calibration regression results}
+\title{Retrieve QC bias and variability metrics}
 \usage{
 get_qc_bias_variability(
   data,
@@ -34,7 +34,7 @@ If \code{"samples"}, the output is in wide format with samples as columns.}
 
 \item{with_conc}{Logical. If \code{TRUE}, includes target and measured mean concentrations in the results. Defaults to \code{TRUE}.}
 
-\item{with_conc_target}{Logical. If \code{TRUE}, includes target (know) concentration of the QC sample in the results. Defaults to \code{TRUE}.}
+\item{with_conc_target}{Logical. If \code{TRUE}, includes target (known) concentration of the QC sample in the results. Defaults to \code{TRUE}.}
 
 \item{with_bias}{Logical. If \code{TRUE}, includes percentage bias in the results. Defaults to \code{TRUE}.}
 
@@ -42,7 +42,7 @@ If \code{"samples"}, the output is in wide format with samples as columns.}
 
 \item{with_conc_ratio}{Logical. If \code{TRUE}, includes the ratio of measured to target concentration in the results. Defaults to \code{FALSE}.}
 
-\item{with_cv_intra}{Logical. If \code{TRUE}, includes intra-assay coefficient of variation (CV) for the in the results. Defaults to \code{TRUE}.}
+\item{with_cv_intra}{Logical. If \code{TRUE}, includes intra-assay coefficient of variation (CV) in the results. Defaults to \code{TRUE}.}
 
 \item{with_conc_out_of_range}{Logical. If \code{TRUE} (and the dataset carries the
 \code{feature_conc_out_of_range} flag from \code{\link[=quantify_by_calibration]{quantify_by_calibration()}}), includes
@@ -53,10 +53,10 @@ calibrated range (\code{frac_conc_out_of_range}). Defaults to \code{TRUE}.}
 A data frame containing the calibration results, including metrics such as bias, percentage bias, and intra-assay CV based on specified parameters.
 }
 \description{
-This function retrieves calibration curve regression results from a \code{MRMhubExperiment} object.
-It returns a summary of quality control (QC) metrics for specified QC samples.
+This function retrieves quality control (QC) bias and variability metrics from a \code{MRMhubExperiment} object.
+It returns a summary of QC metrics for specified QC samples,
 including bias, absolute bias, and intra-assay coefficient of variation (CV).
-The standard deviation of bias and percentage bias are also included unless the
+The standard deviation of the concentration ratio is also included unless
 it is \code{NA} for all analytes, i.e. when no replicates were measured.
 }
 \details{

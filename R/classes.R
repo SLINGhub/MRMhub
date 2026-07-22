@@ -16,16 +16,16 @@
 #'   (see [quantify_by_istd()]), or the calibrant concentration unit (e.g.
 #'   `"nmol/L"`) for calibration quantitation. Divided by `sample_amount_unit` by
 #'   `get_conc_unit()` to name the unit of `feature_conc`. `NA` when not quantitated.
-#' @slot dataset_orig Original imported analysis data. Required fields:
-#' @slot dataset Processed analysis data. Required fields:
-#' @slot dataset_filtered Processed analysis data. Required fields:
+#' @slot dataset_orig Original imported analysis data.
+#' @slot dataset Processed analysis data.
+#' @slot dataset_filtered QC-filtered processed analysis data.
 #' @slot annot_analyses Annotation of analyses/runs
 #' @slot annot_features Annotation of measured features.
 #' @slot annot_istds Annotation of Internal Standard concs.
-#' @slot annot_responsecurves Annotation of response curves (RQC). Required fields
-#' @slot annot_qcconcentrations Annotation of calibration curves. Required fields
-#' @slot annot_studysamples Annotation of study samples. Required fields:
-#' @slot annot_batches Annotation of batches. Required fields:
+#' @slot annot_responsecurves Annotation of response curves (RQC).
+#' @slot annot_qcconcentrations Annotation of calibration curves.
+#' @slot annot_studysamples Annotation of study samples.
+#' @slot annot_batches Annotation of batches.
 #' @slot annot_interferences Interference relationships (`feature_id`, `interference_feature_id`, `interference_contribution`, `overlap_type`, `source`) feeding the correction engine; derived (auto) and/or manual.
 #' @slot metrics_qc QC information for each measured feature
 #' @slot metrics_calibration Calibration metrics calculated from external calibration curves for each measured feature

@@ -24,6 +24,6 @@ assert_metadata(
 metadata list
 }
 \description{
-Metadata provided as a list of tibbles will validates for consistency again loaded analysis data of the provided \code{MRMhubExperiment} object and then transfered.
+Metadata provided as a list of tibbles will be validated for consistency against the loaded analysis data of the provided \code{MRMhubExperiment} object and then transferred.
 }
 \keyword{internal}

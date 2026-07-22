@@ -16,7 +16,7 @@ fun_loess(tbl, ref_qc_types, log_transform_internal, ...)
 \item{...}{Additional arguments forwarded to Loess}
 }
 \value{
-List with a \code{data.frame} containing original x and the smoothed y values, and a \code{boolean} value indicting whether the fit failed or not not.
+List with a \code{data.frame} containing original x and the smoothed y values, and a \code{boolean} value indicting whether the fit failed or not.
 }
 \description{
 Function for loess-based smoothing, for use by \code{correct_drift}

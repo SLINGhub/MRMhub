@@ -12,14 +12,14 @@ exclude_features(data = NULL, features, clear_existing)
 \item{features}{A character vector of feature IDs (case-sensitive) to be excluded from the dataset.
 If this is \code{NA} or an empty vector, the exclusion behavior will be handled as set via the \code{clear_existing} flag.}
 
-\item{clear_existing}{A logical value. If \code{TRUE}, existing \code{valid_analysis} flags will be overwritten. If \code{FALSE},
+\item{clear_existing}{A logical value. If \code{TRUE}, existing \code{valid_feature} flags will be overwritten. If \code{FALSE},
 the exclusions will be appended, preserving any existing invalidated features}
 }
 \value{
-A modified \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object with the specified analyses defined as excluded.
+A modified \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object with the specified features defined as excluded.
 }
 \description{
 This function excludes specified features from a \code{MRMhubExperiment} object, either by
 marking them as invalid for downstream processing.
-The function also alloows to reset the exclusions.
+The function also allows to reset the exclusions.
 }

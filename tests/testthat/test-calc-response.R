@@ -18,7 +18,7 @@ test_that("get_response_curve_stats works", {
   expect_equal(dim(res), c(29,7))
 
   res <- get_response_curve_stats(mexp,
-                                  with_staturation_stats = TRUE)
+                                  with_saturation_stats = TRUE)
   expect_equal(dim(res), c(29,17))
 
 })

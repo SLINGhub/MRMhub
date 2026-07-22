@@ -19,7 +19,7 @@ calibrate_by_reference(
 \arguments{
 \item{data}{A \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object containing the metabolomics data to be normalized}
 
-\item{variable}{Character string indicating which data type to calibrate Must be
+\item{variable}{Character string indicating which data type to calibrate. Must be
 one of: "intensity", "norm_intensity", or "conc"}
 
 \item{reference_sample_id}{Character vector specifying the sample ID(s) to use as
@@ -69,7 +69,8 @@ defined for a reference sample. The calibrated concentration for a given analyte
 
 \deqn{c_\textrm{cal}^\textrm{Analyte} = \frac{c_\textrm{sample}^\textrm{Analyte}}{c_\textrm{ref}^\textrm{Analyte}} \times c_\textrm{known}^\textrm{Analyte}}
 
-The input variable can either \code{conc}, \code{norm_intensity}, or \verb{intensity, whereas the result will always be stored under the variable}conc` (concentration), in the unit defined
+The input variable can be either \code{conc}, \code{norm_intensity}, or \code{intensity}, whereas the result is
+always stored under the variable \code{conc} (concentration), in the unit defined
 for the feature concentrations in the reference sample.
 
 Metadata requirements:
@@ -98,19 +99,20 @@ and is calculated as follows:
 
 where \eqn{c_\textrm{measured}} is the measured (non-calibrated) concentration, and
 \eqn{c_\textrm{expected}} is the known or reference concentration for the same analyte.
-A bias value of 1 indicates perfect agreement; values above or below 1 indicate over- or underestimation.
+A ratio of 1 indicates perfect agreement; values above or below 1 indicate over- or underestimation.
 
-To export the calibrated concentrations use \code{save_dataset_csv()} with \verb{variable = "conc", or to export non-calibrated values with }variable = "conc_beforecal"\verb{. When saving the MRMhub XLSX report, the calibrated concentrations will also be stored as }conc`.
+To export the calibrated concentrations use \code{save_dataset_csv()} with \code{variable = "conc"},
+or to export non-calibrated values with \code{variable = "conc_beforecal"}.
+When saving the MRMhub XLSX report, the calibrated concentrations will also be stored as \code{conc}.
 \item Normalization (relative calibration, \code{absolute_calibration = FALSE})
 
-Normalizes features abundances with corresponding feature abundances in a reference sample,
+Normalizes feature abundances with corresponding feature abundances in a reference sample,
 resulting in ratios. Any available feature abundance variable
-(i.e., \code{conc}, \code{norm_intensity}, or \code{intensity}) can be used as input. The normalization is calculate for all present features.
+(i.e., \code{conc}, \code{norm_intensity}, or \code{intensity}) can be used as input. The normalization is calculated for all present features.
 The resulting output will be stored as \verb{[VARIABLE]_normalized}, whereby \verb{[VARIABLE]} is the input variable, e.g., \code{conc_normalized}.
 
-To export the normalized abundances , use \code{save_dataset_csv()} with \code{variable = "[VARIABLE]_normalized"}
-For MRMhub XLSX report, use \code{save_report_xlsx()} with same variable setting as for \code{save_dataset_csv()} to
-When saving the MRMhub XLSX report via \code{save_report_xlsx()}, availble unfiltered normalized feature abundances
+To export the normalized abundances, use \code{save_dataset_csv()} with \code{variable = "[VARIABLE]_normalized"}.
+When saving the MRMhub XLSX report via \code{save_report_xlsx()}, available unfiltered normalized feature abundances
 will be included by default. To include filtered normalized feature abundances, set \code{filtered_variable = "[VARIABLE]_normalized"}.
 }
 }

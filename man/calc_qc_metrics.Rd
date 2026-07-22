@@ -60,14 +60,14 @@ different QC sample types (e.g., SPL, TQC, BQC, PBLK, NIST, LTR)
 The format for the metrics is standardized as \code{metric_name_qc_type}, where
 \code{qc_type} refers to the specific QC sample type for which the metric is
 calculated. For example: \code{intensity_min_spl} refers to the minimum intensity
-Statistics of normalized intensities , external calibration, and response
+Statistics of normalized intensities, external calibration, and response
 curves can be included by setting the relevant arguments
 (\code{include_norm_intensity_stats}, \code{include_conc_stats},
 \code{include_response_stats}, \code{include_calibration_results}) to \code{TRUE}.
 
 \strong{Note} when corresponding underlying processed data is not available,
 the function will not raise an error but will return \code{NA} values for the
-respective metrics. This, however, does not apply for the optinal metrics
+respective metrics. This, however, does not apply for the optional metrics
 mentioned above. For these cases an error will be raised if the underlying
 data is missing.
 
@@ -80,7 +80,7 @@ The calculated metrics are stored in the \code{metrics_qc} table of the
 \code{MRMhubExperiment} objects and comprises following details
 \itemize{
 \item \strong{Feature details}:
-Specific feature information extracted from the feature metadata tanle,
+Specific feature information extracted from the feature metadata table,
 such as feature class, associated ISTD, quantifier status.
 \item \strong{Feature MS Method Information} (if method variables are available in the analysis data).
 Extracts and summarizes method-related variables for each feature. If multiple
@@ -89,7 +89,7 @@ The latter would indicate inconsistent analysis conditions.
 \itemize{
 \item \code{precursor_mz}: The m/z value of the precursor ion(s),
 \item \code{product_mz}: The m/z value of the product ion(s), concatenated if multiple values exist for the same feature.
-\item \code{collision_energy}: The collision energy used for fragmentation, concatenated if multiple values exist exist for the same feature.
+\item \code{collision_energy}: The collision energy used for fragmentation, concatenated if multiple values exist for the same feature.
 }
 \item \strong{Missing Value Metrics}:
 \itemize{
@@ -98,7 +98,7 @@ The latter would indicate inconsistent analysis conditions.
 \item \code{missing_conc_prop_spl}: Proportion of missing concentration values for SPL samples.
 \item \code{na_in_all}: Indicator if a feature has all missing intensities across all samples
 }
-\item \strong{Retention Time (RT) Metrics}: Requires that retention tim data are available.
+\item \strong{Retention Time (RT) Metrics}: Requires that retention time data are available.
 \itemize{
 \item \verb{rt_min_*}: Minimum retention time across different QC sample types (e.g., SPL, BQC, TQC).
 \item \verb{rt_max_*}: Maximum retention time across different QC sample types.

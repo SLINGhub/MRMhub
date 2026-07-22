@@ -1,6 +1,6 @@
 #' Plasma lipidomics dataset with metadata
 #'
-#' This demo dataset is included for use in function examples and user testing..
+#' This demo dataset is included for use in function examples and user testing.
 #' It is a small, preprocessed subset of a plasma lipidomics dataset,
 #' containing raw peak areas and analytical metadata. The original dataset
 #' was published in Tan et al., ATVB, 2022.
@@ -26,7 +26,7 @@
 #'
 #' @format A `MRMhubExperiment` object with the following data and metadata:
 #' \describe{
-#'   \item{dataset_orig}{Original data (peak datas).}
+#'   \item{dataset_orig}{Original data (peak data).}
 #'   \item{dataset}{Annotated data}
 #'   \item{annot_analyses}{Analysis-level metadata}
 #'   \item{annot_features}{Feature-level annotations}

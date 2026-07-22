@@ -35,7 +35,7 @@
 #' @param show_labels A logical value indicating whether to show analysis_id
 #' labels for points outside k * MAD of the selected PCA dimensions. Default
 #' is `TRUE`.
-#' @param labels_column A character string indicating the column to be use for the point labels. Typically "analysis_id" or "analysis_order".
+#' @param labels_column A character string indicating the column to be used for the point labels. Typically "analysis_id" or "analysis_order".
 #' Default is "analysis_id".
 #' @param labels_threshold_mad A numeric value determining the threshold
 #' for showing labels based on the median absolute deviation (MAD). Default
@@ -490,11 +490,11 @@ plot_pca <- function(
 #' "conc", "conc_raw", "rt", "fwhm".
 #' @template qc_types
 #' @param pca_dims A numeric vector indicating for which PCA dimensions
-#' to the loadings should be shown. Default is c(1, 2, 3, 4).
+#' the loadings should be shown. Default is c(1, 2, 3, 4).
 #' @param log_transform A logical value indicating whether to log-transform
 #' the data before the PCA. Default is `TRUE`.
 #'
-#' @param top_n Number of top features with highest absolute loading that will be to shown for each PC dimension. Default is 30.
+#' @param top_n Number of top features with highest absolute loading that will be shown for each PC dimension. Default is 30.
 #' @param vertical_bars Show vertical bars instead of horizontal bars in the plot. Default is `FALSE`.
 #' @param abs_loading Show absolute loading values instead of signed loadings. Default is `TRUE`.
 #'

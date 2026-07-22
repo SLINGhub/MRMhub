@@ -23,11 +23,11 @@ set when the data are quantitated. \code{"pmol"} or \code{"ng"} for ISTD quantit
 \code{"nmol/L"}) for calibration quantitation. Divided by \code{sample_amount_unit} by
 \code{get_conc_unit()} to name the unit of \code{feature_conc}. \code{NA} when not quantitated.}
 
-\item{\code{dataset_orig}}{Original imported analysis data. Required fields:}
+\item{\code{dataset_orig}}{Original imported analysis data.}
 
-\item{\code{dataset}}{Processed analysis data. Required fields:}
+\item{\code{dataset}}{Processed analysis data.}
 
-\item{\code{dataset_filtered}}{Processed analysis data. Required fields:}
+\item{\code{dataset_filtered}}{QC-filtered processed analysis data.}
 
 \item{\code{annot_analyses}}{Annotation of analyses/runs}
 
@@ -35,13 +35,13 @@ set when the data are quantitated. \code{"pmol"} or \code{"ng"} for ISTD quantit
 
 \item{\code{annot_istds}}{Annotation of Internal Standard concs.}
 
-\item{\code{annot_responsecurves}}{Annotation of response curves (RQC). Required fields}
+\item{\code{annot_responsecurves}}{Annotation of response curves (RQC).}
 
-\item{\code{annot_qcconcentrations}}{Annotation of calibration curves. Required fields}
+\item{\code{annot_qcconcentrations}}{Annotation of calibration curves.}
 
-\item{\code{annot_studysamples}}{Annotation of study samples. Required fields:}
+\item{\code{annot_studysamples}}{Annotation of study samples.}
 
-\item{\code{annot_batches}}{Annotation of batches. Required fields:}
+\item{\code{annot_batches}}{Annotation of batches.}
 
 \item{\code{annot_interferences}}{Interference relationships (\code{feature_id}, \code{interference_feature_id}, \code{interference_contribution}, \code{overlap_type}, \code{source}) feeding the correction engine; derived (auto) and/or manual.}
 

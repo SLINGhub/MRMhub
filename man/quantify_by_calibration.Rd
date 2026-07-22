@@ -56,7 +56,7 @@ Concentrations of all features in all analyses are determined using ISTD-normali
 Calibration curves are calculated for each feature based on calibration sample concentrations defined in the \code{qc_concentrations} metadata.
 The regression fit model (linear or quadratic) and the weighting method (either "none", "1/x", or "1/x^2") can be defined globally via
 the arguments \code{fit_model} and \code{fit_weighting} for all features, if \code{fit_overwrite} is \code{TRUE}.
-Alternatively, the model and weighting can be defined individually for each feature in the \code{feature} metadata (columns \code{curve_fit_model} and \code{fit_weighting}).
+Alternatively, the model and weighting can be defined individually for each feature in the \code{feature} metadata (columns \code{curve_fit_model} and \code{curve_fit_weighting}).
 If these details are missing in the metadata, the default values provided via \code{fit_model} and \code{fit_weighting} will be used.
 }
 \details{

@@ -72,7 +72,7 @@
 #'   before_norm_var = "intensity",
 #'   after_norm_var = "norm_intensity",
 #'   plot_type = "scatter",
-#'   qc_type = "SPL",
+#'   qc_types = "SPL",
 #'   filter_data = FALSE,
 #'   facet_by_class = TRUE,
 #'   cv_threshold_value = 25
@@ -220,20 +220,21 @@ plot_normalization_qc <- function(
 #'
 #' The comparison is visualized through one of three plot types:
 #' * Scatter plot: Values of `y_variable` vs `x_variable`
-#' * Difference plot: (`y_variable` - `x_variable``) vs mean of both values
+#' * Difference plot: (`y_variable` - `x_variable`) vs mean of both values
 #' * Ratio plot: log2(`y_variable` / `x_variable`) vs mean of both values
 #'
 #'
 #' @template data_mexp
 #' @param plot_type A character string specifying the type of plot to generate.
-#' Must be one of "scatter", "diff", or "ratio". Selecting "scatter" plots the "y_variable" against the "y_variable" values
-#' as a scatter plot, "diff" plots the difference between the two values against the average value, and "ratio" plots the log2 ratio of the two values against the average value.c
+#' Must be one of "scatter", "diff", or "ratio". Selecting "scatter" plots the "y_variable" against the "x_variable" values
+#' as a scatter plot, "diff" plots the difference between the two values against the average value, and "ratio" plots the log2 ratio of the two values against the average value.
 #' @param x_variable The name of the QC metric variable to be plotted on the
 #'   x-axis.
 #' @param y_variable The name of the QC metric variable to be plotted on the
 #'   y-axis.
 #' @param qc_types A character vector specifying the QC types to plot.
 #' @param facet_by_class Logical; if `TRUE`, facets the plot by `feature_class`, as defined
+#'   in the feature metadata.
 #' @param y_shared Logical; if `TRUE`, all facets share the same y-axis scale.
 #'   If `FALSE` (default), each facet has its own y-axis scale.
 #' @param filter_data Logical; whether to use all data (default) or only

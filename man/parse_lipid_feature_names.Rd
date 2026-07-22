@@ -21,7 +21,7 @@ parse_lipid_feature_names(
 \item{add_chain_composition}{add \code{total_c} and \code{total_db} to the dataset}
 }
 \value{
-\code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object
+The input data frame with added lipid class, species and transition name columns.
 }
 \description{
 This function retrieves lipid class, species and transition names from the \code{feature_id} column and adds them as columns to the dataset.

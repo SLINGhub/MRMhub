@@ -10,8 +10,11 @@ get_batch_boundaries(data = NULL, batch_indices = NULL)
 \item{data}{\code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object}
 
 \item{batch_indices}{A numeric vector with one or two elements, representing the first and/or last batch index (i.e., sequential batch number).
-If NULL or invalid, the function will abort.#' @return A vector with two elements: the lower and upper analysis number for the specified batch(es).}
+If NULL or invalid, the function will abort.}
+}
+\value{
+A vector with two elements: the lower and upper analysis number for the specified batch(es).
 }
 \description{
-Sets the analysis order (sequence) based on either (i) analysis timestamp, if available, (ii) the order in which analysis appeared in the imported raw data file, or (iii) the order in which analyses were defined in the Analysis metadata.
+Returns the lower and upper analysis number (sequence position) spanned by the specified batch or range of batches.
 }

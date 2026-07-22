@@ -49,11 +49,11 @@ in the dataset.}
 
 \item{cor_min}{Numeric. Minimum correlation threshold. Only feature pairs with
 positive correlations above this value will be shown. Set to Inf to exclude positive
-corrections.}
+correlations.}
 
-\item{cor_min_neg}{Numeric. Minimum nagative correlation threshold. Only feature pairs with
-negative correlations above this value will be shown. Set to -Inf to exclude nagative
-corrections.}
+\item{cor_min_neg}{Numeric. Minimum negative correlation threshold. Only feature pairs with
+negative correlations above this value will be shown. Set to -Inf to exclude negative
+correlations.}
 
 \item{log_scale}{A logical value indicating whether to use a log10 scale for
 both axes. Default is \code{FALSE}.}

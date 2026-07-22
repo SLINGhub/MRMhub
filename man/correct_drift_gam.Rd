@@ -46,13 +46,13 @@ correct_drift_gam(
 
 \item{conditional_correction}{Determines whether drift correction is applied to all features unconditionally (\code{FALSE}, the default) or, when \code{TRUE}, only conditionally based on sample CV change.}
 
-\item{recalc_trend_after}{Recalculate trend post-drift correction for \code{plot_qc_runscatter()}. This will double calculation time.}
+\item{recalc_trend_after}{Recalculate trend post-drift correction for \code{plot_runscatter()}. This will double calculation time.}
 
 \item{feature_list}{Subset the features for correction whose names match the specified text using regular expression. Default is \code{NULL}.}
 
 \item{cv_diff_threshold}{Maximum allowable change (difference) in CV before and after smoothing for correction to be applied.}
 
-\item{use_original_if_fail}{Determines the action when smoothing fails or results in invalid values for a feature. If \code{FALSE} (default), the result for each feature will \code{NA} for all batches, if \code{TRUE}, the original data is kept.}
+\item{use_original_if_fail}{Determines the action when smoothing fails or results in invalid values for a feature. If \code{FALSE} (default), the result for each feature will be \code{NA} for all batches, if \code{TRUE}, the original data is kept.}
 
 \item{show_progress}{Logical. Display progress bars if \code{TRUE}; disable for notebook rendering by setting to \code{FALSE}.}
 }

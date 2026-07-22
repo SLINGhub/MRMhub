@@ -16,7 +16,7 @@ fun_gauss.kernel.smooth(tbl, ref_qc_types, log_transform_internal, ...)
 \item{...}{Additional arguments}
 }
 \value{
-List with a \code{data.frame} containing original \code{x} and the smoothed \code{y} values, and a \code{boolean} value indicting whether the fit failed or not not.
+List with a \code{data.frame} containing original \code{x} and the smoothed \code{y} values, and a \code{boolean} value indicting whether the fit failed or not.
 }
 \description{
 Function for Gaussian kernel-based smoothing, for use by \code{correct_drift}.

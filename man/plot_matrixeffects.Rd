@@ -41,8 +41,8 @@ in the dataset.}
 \item{include_qualifier}{A logical value indicating whether to include
 qualifier features. Default is \code{TRUE}.}
 
-\item{only_istd}{A logical value indicating whether to include features used as internal
-standards (ISTD).  Default is \code{TRUE}. Set to \code{FALSE} in combination with feature_filter parameters to show other features.}
+\item{only_istd}{A logical value indicating whether to show only internal
+standard (ISTD) features. Default is \code{TRUE}. Set to \code{FALSE} in combination with feature_filter parameters to show other features.}
 
 \item{include_feature_filter}{Feature(s) to include by \code{feature_id}, as a
 character vector. Each element is matched exactly when it names an existing

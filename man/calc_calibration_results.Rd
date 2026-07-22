@@ -45,9 +45,8 @@ method for the regression points in the calibration curve. Must be one of
 specific weighting method is defined for a feature in the metadata, or
 when \code{fit_overwrite = TRUE}.}
 
-\item{ignore_missing_annotation}{If \code{FALSE}, an error will be raised if any of
-the following information is missing: calibration curve data, ISTD mix
-volume, and sample amounts for any feature.}
+\item{ignore_missing_annotation}{If \code{FALSE}, an error will be raised if
+calibration curve data is missing for any feature.}
 
 \item{include_fit_object}{If \code{TRUE}, the function will return the full
 regression fit objects for each feature in the \code{metrics_calibration} table.}
@@ -71,7 +70,7 @@ or quadratic) and the weighting method (either "none", "1/x", or "1/x^2")
 can be defined globally via the arguments \code{fit_model} and \code{fit_weighting}
 for all features, if \code{fit_overwrite} is \code{TRUE}. Alternatively, the
 model and weighting can be defined individually for each feature in the
-\code{feature} metadata (columns \code{curve_fit_model} and \code{fit_weighting}). If
+\code{feature} metadata (columns \code{curve_fit_model} and \code{curve_fit_weighting}). If
 these details are missing in the metadata, the default values provided via
 \code{fit_model} and \code{fit_weighting} will be used.
 }

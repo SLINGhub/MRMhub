@@ -1,7 +1,7 @@
 #' Import Agilent MassHunter Quantitative Analysis CSV files
 #' @description Imports .csv files exported from Agilent MassHunter Quantitative
 #' Analysis software, containing peak integration results. The input files must
-#' have anlyses (samples) in rows, features/compounds in columns, and either
+#' have analyses (samples) in rows, features/compounds in columns, and either
 #' peak areas, peak heights, or response as the values. Additional columns, such
 #' as retention time (RT), full-width at half-maximum (FWHM), precursor m/z
 #' (PrecursorMZ), and collision energy (CE), will also be imported and made
@@ -22,7 +22,7 @@
 #' @param expand_qualifier_names Logical, whether to add the quantifier name in
 #'   front of the qualifier name (the latter only has the m/z transition values)
 #' @param conc_column Which concentration field of the masshunter data to use, in
-#' case "Calc. Conc." and "Final. Conc." are present.  Default is "conc_final".
+#' case "Calc. Conc." and "Final Conc" are present.  Default is "conc_final".
 #' Must be one of "conc_calc" or "conc_final" (default).
 #' @param silent Logical, whether to suppress most notifications
 #' @return [`MRMhubExperiment`][MRMhubExperiment-class] object with the imported data
@@ -175,7 +175,7 @@ import_data_skyline <- function(
 #' @description
 #' Imports tabular data files (*.tsv) generated from `MRMhub` containing peak
 #' integration results. The input files must be in a long format with columns
-#' for the raw data file name, feature ID, peak intensity, and other arguments
+#' for the raw data file name, feature ID, peak intensity, and other columns.
 #' Additional information, such as retention time, FWHM, precursor/product m/z,
 #' and CE will also be imported and made available in the `MRMhubExperiment`
 #' object for downstream analyses.
@@ -240,7 +240,7 @@ import_data_mrmhub <- function(
 #'
 #' @param data [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @param path One or more file names with path, or a folder path, which case all *.csv files in this folder will be read.
-#' @param variable_name Variable type representing the values in the table. Must be one of "intensity", "norm_intensity", "conc", "area", "height", "response")
+#' @param variable_name Variable type representing the values in the table. Must be one of "intensity", "norm_intensity", "conc", "area", "height", "response".
 #' @param analysis_id_col Column to be used as analysis_id. `NA` (default) used 'analysis_id' if present, or the first column if it contains unique values.
 #' @param import_metadata Import additional metadata columns (e.g. batch ID, sample type) and add to the [`MRMhubExperiment`][MRMhubExperiment-class] object.
 #' Only following metadata column names are supported: `"qc_type"`, `"batch_id"`, `"is_quantifier"`, `"is_istd"`, `"analysis_order"`
@@ -760,9 +760,9 @@ import_data_main <- function(
 #'
 #' @param path File path of MassHunter Quant CSV file
 #' @param silent Suppress messages
-#' @param expand_qualifier_names If `TRUE`, original qualifier names will be renamed by adding the quantifier name in front and placing qualifier name into square brackets(e.g. `Qualifier (422.3 -> 113.0)` transition names of quantifier will be added to qualifier names
+#' @param expand_qualifier_names If `TRUE`, each qualifier is renamed by adding its quantifier's name in front and placing the qualifier's m/z transition in square brackets (e.g. `Qualifier (422.3 -> 113.0)`).
 #' @param conc_column Which concentration field of the masshunter data to use, in
-#' case "Calc. Conc." and "Final. Conc." are present.  Default is "conc_final".
+#' case "Calc. Conc." and "Final Conc" are present.  Default is "conc_final".
 #' @return A tibble with the parse results in the long format
 #' @examples
 #' file_path = system.file("extdata", "MHQuant_demo.csv", package = "mrmhub")
@@ -1187,7 +1187,7 @@ parse_masshunter_csv <- function(
 
 #' Parses skyline peak integration results into a tibble
 #'
-#' @param path File name of the MRMhub result file (*.tsv or *.csv)
+#' @param path File name of the Skyline result file (*.tsv or *.csv)
 # #' @param use_normalized_data Import raw peak areas or normalized peak areas from the file
 #' @param na_strings A character vector of strings to be interpreted as NA values.
 #' @param silent No comments printed
@@ -1198,9 +1198,9 @@ parse_masshunter_csv <- function(
 #' @return A tibble in the long format
 #' @examples
 #'
-#' file_path = system.file("extdata", "MRMhub_demo.tsv", package = "mrmhub")
+#' file_path = system.file("extdata", "Skyline_MoleculeTransitionResults.csv", package = "mrmhub")
 #'
-#' tbl <- parse_mrmhub_result(path = file_path)
+#' tbl <- parse_skyline_result(path = file_path, na_strings = "NA")
 #'
 #' head(tbl)
 #' @export
@@ -1679,8 +1679,8 @@ parse_plain_long_csv <- function(
 #'
 #' Parses a CSV table with analysis/samples in rows, features values in columns.
 #'
-#' @param path path name and path of a plain long-format CSV file
-#' @param variable_name Name of the variable representing the values in the table. Must be one of "intensity", "norm_intensity", "conc", "area", "height", "response")
+#' @param path File name and path of a plain wide-format CSV file
+#' @param variable_name Name of the variable representing the values in the table. Must be one of "intensity", "norm_intensity", "conc", "area", "height", "response".
 #' @param analysis_id_col Column to be used as analysis_id
 #' @param import_metadata Import additional metadata columns (e.g. batch ID, sample type) and add to the [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @param first_feature_column Column number of the first column representing the feature values

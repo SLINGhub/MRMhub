@@ -7,13 +7,9 @@
 #' feature variables, such as retention time (RT) and full width at
 #' half maximum (FWHM), can be plotted against analysis order or timestamps.
 #'
-#' By default, all QC types present in the dataset will be plotted. QC types that
-#' predefined colors or shapes are assigned black shapes.
-#' User-defined QC types that have no predefined colors or shapes in mrmhub.
-#' will be assigned black shapes.
-#
-#' have no predefined color and shape, will be assigned shapes in black. To show specific
-#' QC types use the `qc_types` argument.
+#' By default, all QC types present in the dataset will be plotted. User-defined
+#' QC types that have no predefined color or shape in mrmhub are assigned black
+#' shapes. To show specific QC types, use the `qc_types` argument.
 #'
 #' To plot the feature values before the last applied drift/batch correction,
 #' add `*_before` to the variable name, e.g., `intensity_before` or `conc_before`.
@@ -38,7 +34,7 @@
 #' there are outlier or a high variability in the data, e.g. in the study samples.
 #'
 #' - When using log-scale (`log_scale = TRUE`), zero or negative values will
-#' replaced with the minimum positive value divided by 5 to avoid log 0 errors
+#' be replaced with the minimum positive value divided by 5 to avoid log 0 errors
 #'
 #' - Reference lines/ranges corresponding to mean \eqn{\pm} k x SD can be shown across
 #' or within batches as lines or shaded stripes.
@@ -52,7 +48,7 @@
 #'
 #' @template data_mexp
 #' @param variable The variable to plot on the y-axis, one of 'intensity',
-#' 'norm_intensity', 'conc', 'conc', 'rt', 'fwhm', 'area', 'height', response'.
+#' 'norm_intensity', 'conc', 'rt', 'fwhm', 'area', 'height', 'response'.
 #' Add `_before` after the variable name to plot the feature values before the last
 #' applied drift/batch correction, (e.g., `conc_before`). Add `_raw` after the
 #' variable name to plot the raw uncorrected feature values (e.g., `conc_raw`).
@@ -99,7 +95,7 @@
 #' @param y_label_text Override the default y-axis label text.
 #' @param pages_per_core Number of pages to be plotted by core when multithreading is enabled. Default is `6`. Changing this number may improve performance.
 #' @param show_gridlines Whether to show major x and y gridlines.
-#' @param y_lim Numeric vector of length 2, specifying the lower and upper y-axis limits. Default is `c(0,NA)``, which sets the lower limit to 0 and the upper limit automatically.
+#' @param y_lim Numeric vector of length 2, specifying the lower and upper y-axis limits. Default is `c(0,NA)`, which sets the lower limit to 0 and the upper limit automatically.
 #' @param log_scale Logical, whether to use a log10 scale for the y-axis.
 #'
 #' @param rows_page Number of rows per page.

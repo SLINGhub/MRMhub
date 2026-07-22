@@ -14,10 +14,10 @@ add_metadata(data = NULL, metadata, excl_unmatched_analyses = FALSE)
 \item{excl_unmatched_analyses}{Exclude analyses (samples) that have no matching metadata}
 }
 \value{
-metadata list
+An updated \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object
 }
 \description{
-Metadata provided as a list of tibbles will validates for consistency again loaded analysis data of the provided \code{MRMhubExperiment} object and then transfered.
+Metadata provided as a list of tibbles will be validated for consistency against the loaded analysis data of the provided \code{MRMhubExperiment} object and then transferred.
 }
 \seealso{
 The \href{https://slinghub.github.io/MRMhub/quant/articles/manual-05-metadata.html}{metadata guide}.

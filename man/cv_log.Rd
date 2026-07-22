@@ -13,8 +13,7 @@ cv_log(x, na.rm = FALSE)
 computation takes place}
 }
 \value{
-a numeric value. If x contains a zero, then NaN is returned. If x is
-not numeric, NA_real_ is returned
+a numeric value. If x contains a zero, then NaN is returned
 }
 \description{
 Computes the percent coefficient of variation (CV) based on the log-transformation of

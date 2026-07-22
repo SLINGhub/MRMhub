@@ -18,8 +18,8 @@
 #'
 #'    \deqn{c_\textrm{cal}^\textrm{Analyte} = \frac{c_\textrm{sample}^\textrm{Analyte}}{c_\textrm{ref}^\textrm{Analyte}} \times c_\textrm{known}^\textrm{Analyte}}
 #'
-#'    The input variable can either `conc`, `norm_intensity`, or `intensity, whereas the result will
-#'    always be stored under the variable`conc` (concentration), in the unit defined
+#'    The input variable can be either `conc`, `norm_intensity`, or `intensity`, whereas the result is
+#'    always stored under the variable `conc` (concentration), in the unit defined
 #'    for the feature concentrations in the reference sample.
 #'
 #'    Metadata requirements:
@@ -44,28 +44,27 @@
 #'
 #'    where \eqn{c_\textrm{measured}} is the measured (non-calibrated) concentration, and
 #'    \eqn{c_\textrm{expected}} is the known or reference concentration for the same analyte.
-#'     A bias value of 1 indicates perfect agreement; values above or below 1 indicate over- or underestimation.
+#'     A ratio of 1 indicates perfect agreement; values above or below 1 indicate over- or underestimation.
 #'
-#'    To export the calibrated concentrations use `save_dataset_csv()` with `variable = "conc",
+#'    To export the calibrated concentrations use `save_dataset_csv()` with `variable = "conc"`,
 #'    or to export non-calibrated values with `variable = "conc_beforecal"`.
 #'    When saving the MRMhub XLSX report, the calibrated concentrations will also be stored as `conc`.
 #'
 #' 2. Normalization (relative calibration, `absolute_calibration = FALSE`)
 #'
-#'    Normalizes features abundances with corresponding feature abundances in a reference sample,
+#'    Normalizes feature abundances with corresponding feature abundances in a reference sample,
 #'    resulting in ratios. Any available feature abundance variable
-#'    (i.e., `conc`, `norm_intensity`, or `intensity`) can be used as input. The normalization is calculate for all present features.
+#'    (i.e., `conc`, `norm_intensity`, or `intensity`) can be used as input. The normalization is calculated for all present features.
 #'    The resulting output will be stored as `[VARIABLE]_normalized`, whereby `[VARIABLE]` is the input variable, e.g., `conc_normalized`.
 
 #'
-#'    To export the normalized abundances , use `save_dataset_csv()` with `variable = "[VARIABLE]_normalized"`
-#'    For MRMhub XLSX report, use `save_report_xlsx()` with same variable setting as for `save_dataset_csv()` to
-#'    When saving the MRMhub XLSX report via `save_report_xlsx()`, availble unfiltered normalized feature abundances
+#'    To export the normalized abundances, use `save_dataset_csv()` with `variable = "[VARIABLE]_normalized"`.
+#'    When saving the MRMhub XLSX report via `save_report_xlsx()`, available unfiltered normalized feature abundances
 #'    will be included by default. To include filtered normalized feature abundances, set `filtered_variable = "[VARIABLE]_normalized"`.
 #'
 #'
 #' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] object containing the metabolomics data to be normalized
-#' @param variable Character string indicating which data type to calibrate Must be
+#' @param variable Character string indicating which data type to calibrate. Must be
 #'   one of: "intensity", "norm_intensity", or "conc"
 #' @param reference_sample_id Character vector specifying the sample ID(s) to use as
 #'   reference(s) or standards. When more than one ID is given, all analyses

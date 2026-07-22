@@ -28,8 +28,9 @@ order_chained_columns_tbl(
 }}
 }
 \value{
-A data frame containing ordered chains with a \code{chain_id} column to distinguish between different chains.
-If disconnected rows are included, they will have their own \code{chain_id}.
+A data frame containing ordered chains. If \code{include_chain_id = TRUE}, a
+\code{chain_id} column is added to distinguish between different chains; when disconnected
+rows are included, they will have their own \code{chain_id}.
 }
 \description{
 This function orders rows of a data frame based on chained relationships defined by two columns.
@@ -47,7 +48,7 @@ stringsAsFactors = FALSE
 # Order keeping disconnected rows
 order_chained_columns_tbl(df_unordered, "From", "To", FALSE, "keep")
 
-# Ordr excluding disconnected rows
+# Order excluding disconnected rows
 order_chained_columns_tbl(df_unordered, "From", "To", FALSE, "exclude")
 
 

@@ -7,7 +7,7 @@
 parse_skyline_result(path, na_strings, silent = FALSE, ...)
 }
 \arguments{
-\item{path}{File name of the MRMhub result file (*.tsv or *.csv)}
+\item{path}{File name of the Skyline result file (*.tsv or *.csv)}
 
 \item{na_strings}{A character vector of strings to be interpreted as NA values.}
 
@@ -25,9 +25,9 @@ Parses skyline peak integration results into a tibble
 }
 \examples{
 
-file_path = system.file("extdata", "MRMhub_demo.tsv", package = "mrmhub")
+file_path = system.file("extdata", "Skyline_MoleculeTransitionResults.csv", package = "mrmhub")
 
-tbl <- parse_mrmhub_result(path = file_path)
+tbl <- parse_skyline_result(path = file_path, na_strings = "NA")
 
 head(tbl)
 }

@@ -15,7 +15,7 @@ import_metadata_istds(
 \arguments{
 \item{data}{A \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object}
 
-\item{table}{A data frame or tibble with analysis (sample) metadata. If \code{path} is also provided, an error will be raised.}
+\item{table}{A data frame or tibble with ISTD metadata. If \code{path} is also provided, an error will be raised.}
 
 \item{path}{A character string specifying the path to a CSV (.csv) or Excel (.xlsx) file. If \code{table} is also provided, an error will be raised.}
 
@@ -28,7 +28,7 @@ An updated \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object
 }
 \description{
 Imports ISTD metadata (annotation) from a preloaded data frame or tibble via the \code{data} argument, or from data from a file (CSV or Excel) via the \code{path} argument.
-The analysis metadata must contain following columns: \code{istd_feature_id} and one of \code{istd_conc_nmolar} or \code{istd_conc_ngml}.
+The ISTD metadata must contain following columns: \code{istd_feature_id} and one of \code{istd_conc_nmolar} or \code{istd_conc_ngml}.
 }
 \section{Identifier normalization}{
 

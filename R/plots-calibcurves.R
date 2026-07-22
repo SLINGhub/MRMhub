@@ -30,7 +30,7 @@
 #' @param fit_overwrite If `TRUE`,
 #'   the function will use the provided `fit_model` and `fit_weighting` values
 #'   for all analytes and ignore any fit method and weighting settings defined in
-#'   the metadata .
+#'   the metadata.
 #' @param fit_model A character string specifying the default regression fit
 #'   method to use for the calibration curve. Must be one of `"linear"` or
 #'   `"quadratic"`. This method will be applied if no specific fit method is
@@ -43,16 +43,13 @@
 #'   when `fit_overwrite = TRUE`.
 #' @param ci_show Logical, if `TRUE`, displays the confidence interval as ribbon.
 #' Default is `NA`, in which case confidence intervals are plotted in a linear
-#' scale and ommitted in log-log scale.
+#' scale and omitted in log-log scale.
 #' @param ci_clip Logical, if `TRUE`, clips the confidence interval above or below the highest and lowest data point, respectively.
 #' @param zoom_n_points Number of x lowest concentration points to display, used for zooming. Set to `NULL` or `NA` (default) to show all points.
 #' @param log_scale Logical. Determines whether the x and y axes are displayed in a logarithmic scale (log-log scale).
 #'   Set to `TRUE` to enable logarithmic scaling; otherwise, set to `FALSE` for a linear scale.
 #'   Note: If `TRUE`, any regression curves or standard error regions with negative
 #'   values will be omitted from display.
-
-#' equimolar response of spiked-in non-labelled and labelled standards. At a normalized intensity of 1,
-#' assuming an equimolar response, both types of standards are present at equal concentrations.
 #' @param filter_data Logical, if `TRUE`, uses QC filtered data; otherwise uses
 #'   raw data. Default is `FALSE`.
 #' @param include_qualifier Logical, whether to include qualifier features. Default is `TRUE`.

@@ -47,7 +47,7 @@ correct_drift_cubicspline(
 
 \item{conditional_correction}{Determines whether drift correction is applied to all features unconditionally (\code{FALSE}, the default) or, when \code{TRUE}, only conditionally based on sample CV change.}
 
-\item{recalc_trend_after}{Recalculate trend post-drift correction for \code{plot_qc_runscatter()}. This will double calculation time.}
+\item{recalc_trend_after}{Recalculate trend post-drift correction for \code{plot_runscatter()}. This will double calculation time.}
 
 \item{log_transform_internal}{Log transform the data for correction when \code{TRUE} (the default). Note: log transformation is solely applied internally for smoothing, results will not be log-transformed.}
 
@@ -55,7 +55,7 @@ correct_drift_cubicspline(
 
 \item{cv_diff_threshold}{Maximum allowable change (difference) in CV before and after smoothing for correction to be applied.}
 
-\item{use_original_if_fail}{Determines the action when smoothing fails or results in invalid values for a feature. If \code{FALSE} (default), the result for each feature will \code{NA} for all batches, if \code{TRUE}, the original data is kept.}
+\item{use_original_if_fail}{Determines the action when smoothing fails or results in invalid values for a feature. If \code{FALSE} (default), the result for each feature will be \code{NA} for all batches, if \code{TRUE}, the original data is kept.}
 
 \item{show_progress}{Logical. Display progress bars if \code{TRUE}; disable for notebook rendering by setting to \code{FALSE}.}
 }
@@ -74,7 +74,7 @@ The cubic spline smoothing approach, particularly when used with the
 regularization parameter \code{lambda}, is similar but not identical to previously described
 QC-based drift correction methods, such as \strong{QC-RSC (Quality Control Regularized
 Spline Correction)}, described in Dunn et al. (Nat Protoc, 2011) and Kirwan et al.
-(Anal Bioanal Chem, 2014).
+(Anal Bioanal Chem, 2013).
 
 By default, the smoothing parameter is determined using cross-validation,
 which can lead to overfitting. To reduce overfitting
@@ -124,7 +124,7 @@ Nat Protoc 6, 1060–1083 (2011).
 
 Kirwan, J.A., Broadhurst, D.I., Davidson, R.L. et al. Characterising and correcting
 batch variation in an automated direct infusion mass spectrometry (DIMS) metabolomics workflow.
-Anal Bioanal Chem 405, 5147–5157 (2013). https://doi-org.libproxy1.nus.edu.sg/10.1007/s00216-013-6856-7
+Anal Bioanal Chem 405, 5147–5157 (2013). https://doi.org/10.1007/s00216-013-6856-7
 }
 \seealso{
 \code{\link[stats:smooth.spline]{stats::smooth.spline()}}; the \href{https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.html}{drift-correction tutorial} for a worked example.

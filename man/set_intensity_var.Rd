@@ -21,7 +21,7 @@ set_intensity_var(
 
 \item{warnings}{Suppress warnings}
 
-\item{...}{Feature variables to best search for one-by-one when \code{auto-detect = TRUE}}
+\item{...}{Feature variables to search for one-by-one when \code{auto_select = TRUE}}
 }
 \value{
 \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object

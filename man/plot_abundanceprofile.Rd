@@ -50,7 +50,7 @@ If \code{TRUE}, pre-calculated summary data is used from the \code{metrics_qc} t
 When \code{TRUE}, \code{qc_types} must specify only one QC type.}
 
 \item{feature_map}{A named character vector specifying feature classes, their order, and color. The order of the vector determines the y-axis order.
-Alternatively, can be a single string: \code{lipidomics} to use a default theme comprising mapping for lipid classes frequently measured in lipidomics methods. When using
+Alternatively, can be a single string: \code{lipidomics} to use a default theme comprising a mapping for lipid classes frequently measured in lipidomics methods. When using
 the default theme, set \code{drop_empty_classes = TRUE} to avoid showing classes not present in the data.
 If \code{NA} (default), the default theme is used.}
 

@@ -45,7 +45,7 @@ data are on the raw (untransformed) scale.}
 \item{feature_list}{Sets specific features for correction only. Can be character vector or a single string which is then interpreted as regular expression. Default is \code{NULL} which means all features are selected.}
 
 \item{replace_exisiting_trendcurves}{A logical value indicating whether to replace
-trend curves from previous corrections. This is only use for plotting using \code{plot_runscatter()}. Default is \code{FALSE}.}
+trend curves from previous corrections. This is only used for plotting using \code{plot_runscatter()}. Default is \code{FALSE}.}
 
 \item{...}{Additional arguments that can be passed to the batch correction
 function.}

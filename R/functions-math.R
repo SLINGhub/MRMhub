@@ -1,6 +1,6 @@
 #' Percent coefficient of variation (%CV)
 #'
-#' This function computes the percent coefficient of variation  of the values in x.
+#' This function computes the percent coefficient of variation of the values in x.
 #' If na.rm is `TRUE` then missing values are removed before computation proceeds.
 #'
 #' @param x a numeric vector with untransformed data
@@ -60,8 +60,7 @@ cv <- function(x, na.rm = FALSE, use_robust_cv = FALSE, min_n = 1L) {
 #' @param na.rm logical, if `TRUE` then NA values are stripped from x before
 #' computation takes place
 #'
-#' @return a numeric value. If x contains a zero, then NaN is returned. If x is
-#' not numeric, NA_real_ is returned
+#' @return a numeric value. If x contains a zero, then NaN is returned
 #' @references
 #' Canchola et al. (2017) Correct use of percent coefficient of variation (% CV) formula for log-transformed data. MOJ Proteomics Bioinform. 2017;6(4):316‒317.
 #' [DOI: 10.15406/mojpb.2017.06.00200](https://doi.org/10.15406/mojpb.2017.06.00200)

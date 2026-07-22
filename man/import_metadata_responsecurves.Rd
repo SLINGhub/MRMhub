@@ -28,7 +28,7 @@ An updated \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object
 }
 \description{
 Imports response curve metadata (annotation) from a preloaded data frame or tibble via the \code{data} argument, or from data from a file (CSV or Excel) via the \code{path} argument.
-The analysis metadata must contain following columns: \code{analysis_id}, \code{curve_id}, \code{analyzed_amount} and \code{analyzed_amount_unit}.
+The response curve metadata must contain following columns: \code{analysis_id}, \code{curve_id}, \code{analyzed_amount} and \code{analyzed_amount_unit}.
 }
 \section{Identifier normalization}{
 

@@ -25,8 +25,18 @@ correct_drift(
 \arguments{
 \item{data}{\code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object}
 
-\item{smooth_fun}{Function that performs drift correction. Function need to have following parameter \code{data} (\code{\link[=MRMhubExperiment-class]{MRMhubExperiment}}), \code{ref_qc_types} (one or more strings), and \code{span_width} (numerical).
-Function needs to return a numerical vector with the length of number of rows in \code{data}. In case functions fails a vector with NA_real_ needs be returned}
+\item{smooth_fun}{Function that performs the drift correction for a single
+feature within one batch. It must accept the arguments \code{tbl} (a data frame
+with the columns \code{qc_type}, \code{x} (run-order number), \code{y} (the variable to
+correct), and \code{analysis_id}, \code{feature_id}, \code{batch_id}), \code{ref_qc_types} (one
+or more QC-type strings used to fit the trend), \code{log_transform_internal}
+(logical), and \code{...} (smoother-specific parameters such as \code{span} or
+\code{degree}). It must return a named list carrying \code{y_adj} (the drift-adjusted
+\code{y}) and \code{fit_error} (logical), and typically also \code{y_fit}, \code{fit_warning},
+and the passed-through \code{analysis_id}, \code{feature_id}, \code{batch_id}, \code{qc_type},
+and \code{x}. When the fit fails it must return that same structure with
+\code{y_adj = NA_real_} and \code{fit_error = TRUE}. See \code{\link[=fun_loess]{fun_loess()}} for a reference
+implementation.}
 
 \item{variable}{The variable to be corrected for drift effects. Must be one of "intensity", "norm_intensity", or "conc"}
 
@@ -50,7 +60,7 @@ A value of 0 (the default) requires the CV to improve, while a value above 0 all
 
 \item{feature_list}{Sets specific features for correction only. Can be character vector or a single string which is then interpreted as regular expression. Default is \code{NULL} which means all features are selected.}
 
-\item{recalc_trend_after}{Recalculate trend post-drift correction for \code{plot_qc_runscatter()}. This will double calculation time.}
+\item{recalc_trend_after}{Recalculate trend post-drift correction for \code{plot_runscatter()}. This will double calculation time.}
 
 \item{show_progress}{Show progress bar. Default = \code{TRUE}.}
 
@@ -61,6 +71,7 @@ A value of 0 (the default) requires the CV to improve, while a value above 0 all
 }
 \description{
 Function to correct for run-order drifts within or across batches via a provided custom function
-#' @details
+}
+\details{
 The drift correction function needs to be provided by the user. See \code{smooth_fun} for details.
 }

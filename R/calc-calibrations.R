@@ -4,7 +4,7 @@
 #' Calibration curves are calculated for each feature based on calibration sample concentrations defined in the `qc_concentrations` metadata.
 #' The regression fit model (linear or quadratic) and the weighting method (either "none", "1/x", or "1/x^2") can be defined globally via
 #' the arguments `fit_model` and `fit_weighting` for all features, if `fit_overwrite` is `TRUE`.
-#' Alternatively, the model and weighting can be defined individually for each feature in the `feature` metadata (columns `curve_fit_model` and `fit_weighting`).
+#' Alternatively, the model and weighting can be defined individually for each feature in the `feature` metadata (columns `curve_fit_model` and `curve_fit_weighting`).
 #' If these details are missing in the metadata, the default values provided via `fit_model` and `fit_weighting` will be used.
 #'
 #' The concentrations are added to the `dataset` table as `feature_conc` column. The results of the regression and the calculated LoD and LoQ values are stored in the `metrics_calibration` table of the returned `MRMhubExperiment` object.
@@ -291,7 +291,7 @@ quantify_by_calibration <- function(
 #' can be defined globally via the arguments `fit_model` and `fit_weighting`
 #' for all features, if `fit_overwrite` is `TRUE`. Alternatively, the
 #' model and weighting can be defined individually for each feature in the
-#' `feature` metadata (columns `curve_fit_model` and `fit_weighting`). If
+#' `feature` metadata (columns `curve_fit_model` and `curve_fit_weighting`). If
 #' these details are missing in the metadata, the default values provided via
 #' `fit_model` and `fit_weighting` will be used.
 #'
@@ -339,9 +339,8 @@ quantify_by_calibration <- function(
 #'   `"none"`, `"1/x"`, or `"1/x^2"`. This method will be applied if no
 #'   specific weighting method is defined for a feature in the metadata, or
 #'   when `fit_overwrite = TRUE`.
-#' @param ignore_missing_annotation If `FALSE`, an error will be raised if any of
-#'   the following information is missing: calibration curve data, ISTD mix
-#'   volume, and sample amounts for any feature.
+#' @param ignore_missing_annotation If `FALSE`, an error will be raised if
+#'   calibration curve data is missing for any feature.
 #' @param include_fit_object If `TRUE`, the function will return the full
 #'   regression fit objects for each feature in the `metrics_calibration` table.
 #' @param lod_sigma A character string selecting the response standard deviation
@@ -743,12 +742,12 @@ calc_calibration_results <- function(
 }
 
 
-#' Retrieve calibration regression results
+#' Retrieve QC bias and variability metrics
 #'
-#' This function retrieves calibration curve regression results from a `MRMhubExperiment` object.
-#' It returns a summary of quality control (QC) metrics for specified QC samples.
+#' This function retrieves quality control (QC) bias and variability metrics from a `MRMhubExperiment` object.
+#' It returns a summary of QC metrics for specified QC samples,
 #' including bias, absolute bias, and intra-assay coefficient of variation (CV).
-#' The standard deviation of bias and percentage bias are also included unless the
+#' The standard deviation of the concentration ratio is also included unless
 #' it is `NA` for all analytes, i.e. when no replicates were measured.
 #'
 #' The standard deviation of concentration is also included unless the number of replicates was 1.
@@ -761,11 +760,11 @@ calc_calibration_results <- function(
 #' If `"samples"`, the output is in wide format with samples as columns.
 #' @param include_qualifier Logical. If `TRUE`, includes qualifier features in the results. Defaults to `FALSE`.
 #' @param with_conc Logical. If `TRUE`, includes target and measured mean concentrations in the results. Defaults to `TRUE`.
-#' @param with_conc_target Logical. If `TRUE`, includes target (know) concentration of the QC sample in the results. Defaults to `TRUE`.
+#' @param with_conc_target Logical. If `TRUE`, includes target (known) concentration of the QC sample in the results. Defaults to `TRUE`.
 #' @param with_bias Logical. If `TRUE`, includes percentage bias in the results. Defaults to `TRUE`.
 #' @param with_bias_abs Logical. If `TRUE`, includes absolute bias in concentration units in the results. Defaults to `FALSE`.
 #' @param with_conc_ratio Logical. If `TRUE`, includes the ratio of measured to target concentration in the results. Defaults to `FALSE`.
-#' @param with_cv_intra Logical. If `TRUE`, includes intra-assay coefficient of variation (CV) for the in the results. Defaults to `TRUE`.
+#' @param with_cv_intra Logical. If `TRUE`, includes intra-assay coefficient of variation (CV) in the results. Defaults to `TRUE`.
 #' @param with_conc_out_of_range Logical. If `TRUE` (and the dataset carries the
 #'   `feature_conc_out_of_range` flag from [`quantify_by_calibration()`]), includes
 #'   the fraction of replicate measurements whose concentration fell outside the
@@ -967,10 +966,10 @@ get_qc_bias_variability <- function(
 #' - `feature_id`: Feature identifier.
 #' - `is_quantifier`: Logical, indicates if the feature is a quantifier.
 #' - `fit_model`: Regression model used for fitting.
-#' - `weighting`: Weighting method used in fitting.
+#' - `fit_weighting`: Weighting method used in fitting.
 #' - `lowest_cal`: Lowest nonzero calibration concentration.
-#' - `highest_cal`: Highest  calibration concentration.
-#' - `r.squared`: R-squared value, indicating goodness of fit. For a **weighted**
+#' - `highest_cal`: Highest calibration concentration.
+#' - `r2`: R-squared value, indicating goodness of fit. For a **weighted**
 #'   fit this is the weighted coefficient of determination (computed from weighted
 #'   sums of squares), matching the value reported by vendor software such as
 #'   Agilent MassHunter for the same weighted curve.

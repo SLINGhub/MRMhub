@@ -15,7 +15,7 @@ import_metadata_features(
 \arguments{
 \item{data}{A \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object}
 
-\item{table}{A data frame or tibble with analysis (sample) metadata. If \code{path} is also provided, an error will be raised.}
+\item{table}{A data frame or tibble with feature metadata. If \code{path} is also provided, an error will be raised.}
 
 \item{path}{A character string specifying the path to a CSV (.csv) or Excel (.xlsx) file. If \code{table} is also provided, an error will be raised.}
 
@@ -27,8 +27,8 @@ import_metadata_features(
 An updated \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object
 }
 \description{
-Imports analysis metadata (annotation) from a preloaded data frame or tibble via the \code{data} argument,  or from data from a file (CSV or Excel) via the \code{path} argument.
-The analysis metadata must contain following columns: \code{analysis_id} and \code{qc_type}. Additional analysis metadata columns are described under details below.
+Imports feature metadata (annotation) from a preloaded data frame or tibble via the \code{data} argument,  or from data from a file (CSV or Excel) via the \code{path} argument.
+The feature metadata must contain following column: \code{feature_id}. Additional feature metadata columns are described under details below.
 }
 \section{Identifier normalization}{
 

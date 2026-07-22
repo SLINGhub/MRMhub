@@ -1,8 +1,8 @@
 #' Plot retention time versus chain length and saturation
 #'
-#' Generates  scatter plots of retention time (RT) versus either chain
+#' Generates scatter plots of retention time (RT) versus either chain
 #' length, degree of saturation (double bonds), or equivalent carbon number (ECN)
-#' of lipid features of diffent feature classes. This
+#' of lipid features of different feature classes. This
 #' visualization can be useful in identifying annotation (peak picking) errors in reversed-phase (RP)-LC lipidomics dataset
 #' arising from isotopic,
 #' isobaric, isomeric, or unknown interferences.
@@ -16,7 +16,7 @@
 #' \eqn{ecn_k = 1.5}.
 #'
 #' @template data_mexp
-#' @param x_var Variable to use for the x-axis. One ofEither "total_c", "total_db" or "ecn".
+#' @param x_var Variable to use for the x-axis. One of "total_c", "total_db", or "ecn".
 #' @template qc_types
 #' @param outliers_highlight Whether to highlight potential outliers in the plot. Default is `TRUE`.
 #' @param outlier_residual_min Minimum value for the residuals to be considered an outlier (default is `0.15`). The value corresponds to the RT difference betweem the

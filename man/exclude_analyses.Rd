@@ -21,5 +21,5 @@ A modified \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object with t
 \description{
 This function excludes specified analyses from a \code{MRMhubExperiment} object, either by
 marking them as invalid for downstream processing.
-The function also alloows to reset the exclusions.
+The function also allows to reset the exclusions.
 }

@@ -1,9 +1,10 @@
 #' Load an example `MRMhubExperiment` dataset
 #' @description
-#' Load an example `MRMhubExperiment` dataset. Dataset 1 is a small dataset (Burla et al, 2024, see below) and Dataset 2 a larger dataset (Tan et al, 2022).See Details below.
+#' Load an example `MRMhubExperiment` dataset: a small, preprocessed subset of a
+#' plasma lipidomics dataset (Tan et al., ATVB, 2022).
 #'
 #' @param data [`MRMhubExperiment`][MRMhubExperiment-class] object, optional. Data will be overwritten if provided.
-#' @param dataset Dataset type. Either 1 or 2. Default is 1.
+#' @param dataset Which example dataset to load. Currently only `1` (the default) is available.
 #'
 #' @return [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @examples

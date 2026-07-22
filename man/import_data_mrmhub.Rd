@@ -21,7 +21,7 @@ import_data_mrmhub(data = NULL, path, import_metadata = TRUE, silent = FALSE)
 \description{
 Imports tabular data files (*.tsv) generated from \code{MRMhub} containing peak
 integration results. The input files must be in a long format with columns
-for the raw data file name, feature ID, peak intensity, and other arguments
+for the raw data file name, feature ID, peak intensity, and other columns.
 Additional information, such as retention time, FWHM, precursor/product m/z,
 and CE will also be imported and made available in the \code{MRMhubExperiment}
 object for downstream analyses.

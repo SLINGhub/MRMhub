@@ -2,7 +2,7 @@
 % Please edit documentation in R/data-export.R
 \name{save_metadata_templates}
 \alias{save_metadata_templates}
-\title{Saves a Excel (xlsx) file with metadata templates}
+\title{Saves an Excel (xlsx) file with metadata templates}
 \usage{
 save_metadata_templates(path = "metadata_template.xlsx")
 }

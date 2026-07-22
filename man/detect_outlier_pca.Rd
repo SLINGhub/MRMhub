@@ -27,9 +27,9 @@ detect_outlier_pca(
 
 \item{qc_types}{QC types included in the outlier detection}
 
-\item{fence_multiplicator}{Multiplicator for SD or MAD, respectively.}
+\item{fence_multiplicator}{Multiplier for SD or MAD.}
 
-\item{summarize_fun}{Function used to summarize the features, either "pca" based on PCA, or "rma" based on mean relative abundance (RMA) of all features}
+\item{summarize_fun}{Function used to summarize the features, either "pca" based on PCA, or "rma" based on Relative Mean Abundance (RMA) of all features}
 
 \item{outlier_detection}{Outlier detection method, either based on "sd" or "mad"}
 
@@ -39,6 +39,6 @@ detect_outlier_pca(
 \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object
 }
 \description{
-Retrieves analysis IDs of data outliers based  the principal components PCA
+Retrieves analysis IDs of data outliers based on the principal components (PCA)
 with SD or MAD fences
 }

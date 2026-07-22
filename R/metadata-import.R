@@ -200,10 +200,10 @@ import_metadata_analyses <- function(
 }
 
 #' Import feature metadata
-#' @description Imports analysis metadata (annotation) from a preloaded data frame or tibble via the `data` argument,  or from data from a file (CSV or Excel) via the `path` argument.
-#' The analysis metadata must contain following columns: `analysis_id` and `qc_type`. Additional analysis metadata columns are described under details below.
+#' @description Imports feature metadata (annotation) from a preloaded data frame or tibble via the `data` argument,  or from data from a file (CSV or Excel) via the `path` argument.
+#' The feature metadata must contain following column: `feature_id`. Additional feature metadata columns are described under details below.
 #' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] object
-#' @param table A data frame or tibble with analysis (sample) metadata. If `path` is also provided, an error will be raised.
+#' @param table A data frame or tibble with feature metadata. If `path` is also provided, an error will be raised.
 #' @param path A character string specifying the path to a CSV (.csv) or Excel (.xlsx) file. If `table` is also provided, an error will be raised.
 #' @param sheet Defines the sheet name in case an Excel file is provided.
 #' @param ignore_warnings Ignore warnings from data validation and proceed with importing metadata
@@ -239,9 +239,9 @@ import_metadata_features <- function(
 
 #' Import internal standards (ISTD) metadata
 #' @description Imports ISTD metadata (annotation) from a preloaded data frame or tibble via the `data` argument, or from data from a file (CSV or Excel) via the `path` argument.
-#' The analysis metadata must contain following columns: `istd_feature_id` and one of `istd_conc_nmolar` or `istd_conc_ngml`.
+#' The ISTD metadata must contain following columns: `istd_feature_id` and one of `istd_conc_nmolar` or `istd_conc_ngml`.
 #' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] object
-#' @param table A data frame or tibble with analysis (sample) metadata. If `path` is also provided, an error will be raised.
+#' @param table A data frame or tibble with ISTD metadata. If `path` is also provided, an error will be raised.
 #' @param path A character string specifying the path to a CSV (.csv) or Excel (.xlsx) file. If `table` is also provided, an error will be raised.
 #' @param sheet Defines the sheet name in case an Excel file is provided.
 #' @param ignore_warnings Ignore warnings from data validation and proceed with importing metadata
@@ -273,7 +273,7 @@ import_metadata_istds <- function(
 
 #' Import response curves metadata
 #' @description Imports response curve metadata (annotation) from a preloaded data frame or tibble via the `data` argument, or from data from a file (CSV or Excel) via the `path` argument.
-#' The analysis metadata must contain following columns: `analysis_id`, `curve_id`, `analyzed_amount` and `analyzed_amount_unit`.
+#' The response curve metadata must contain following columns: `analysis_id`, `curve_id`, `analyzed_amount` and `analyzed_amount_unit`.
 #' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @param table A data frame or tibble with response curve metadata. If `path` is also provided, an error will be raised.
 #' @param path A character string specifying the path to a CSV (.csv) or Excel (.xlsx) file. If `table` is also provided, an error will be raised.
@@ -306,7 +306,7 @@ import_metadata_responsecurves <- function(
 
 #' Import calibration curves metadata
 #' @description Imports calibration curve metadata (annotation) from a preloaded data frame or tibble via the `data` argument, or from data from a file (CSV or Excel) via the `path` argument.
-#' The analysis metadata must contain following columns: `analysis_id`, `curve_id`, `feature_id`, `concentration`, and `concentration_unit`.
+#' The calibration curve metadata must contain following columns: `sample_id`, `analyte_id`, `concentration`, and `concentration_unit`.
 #' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @param table A data frame or tibble with calibration curve metadata. If `path` is also provided, an error will be raised.
 #' @param path A character string specifying the path to a CSV (.csv) or Excel (.xlsx) file. If `table` is also provided, an error will be raised.
@@ -503,7 +503,7 @@ print_assertion_summary <- function(
 
 
 #' Add metadata to an `MRMhubExperiment` object
-#' @description Metadata provided as a list of tibbles will validates for consistency again loaded analysis data of the provided `MRMhubExperiment` object and then transfered.
+#' @description Metadata provided as a list of tibbles will be validated for consistency against the loaded analysis data of the provided `MRMhubExperiment` object and then transferred.
 #' @param data [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @param metadata List of tibbles or data.frames containing analysis, feature, istd, response curve tables
 #' @param ignore_warnings Ignore data validation warnings and proceed with adding metadata
@@ -1139,11 +1139,11 @@ assert_metadata <- function(
 
 
 #' Add metadata to an `MRMhubExperiment` object
-#' @description Metadata provided as a list of tibbles will validates for consistency again loaded analysis data of the provided `MRMhubExperiment` object and then transfered.
+#' @description Metadata provided as a list of tibbles will be validated for consistency against the loaded analysis data of the provided `MRMhubExperiment` object and then transferred.
 #' @param data [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @param metadata List of tibbles or data.frames containing analysis, feature, istd, response curve tables
 #' @param excl_unmatched_analyses Exclude analyses (samples) that have no matching metadata
-#' @return metadata list
+#' @return An updated [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @seealso The [metadata guide](https://slinghub.github.io/MRMhub/quant/articles/manual-05-metadata.html).
 #' @export
 
@@ -1345,9 +1345,9 @@ add_metadata <- function(
 #'   MSOrganiser *tool* version (e.g. 1.9.x) that generated the file.
 #' NOTES
 #' - if no sample_type is defined then SPL will be assigned
-#' - if valid_analysis is left blank for all analyses then samples then it will be replace by `TRUE`
-#' - if valid_analysis is undefined for one or more, but all all samples, then an error will be returned
-#' @param path File path of the msorganiser EXCEL template (*.xlm)
+#' - if valid_analysis is left blank for all analyses then it will be replaced by `TRUE`
+#' - if valid_analysis is undefined for one or more, but all samples, then an error will be returned
+#' @param path File path of the msorganiser EXCEL template (*.xlsm/*.xlsx)
 #' @param trim_ws Trim all white spaces and double spaces
 #' @return A list with tibbles containing different metadata
 #' @noRd

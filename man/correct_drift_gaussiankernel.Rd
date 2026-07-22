@@ -72,7 +72,7 @@ visualization (e.g., \code{plot_runscatter()}).}
 \item{feature_list}{Character vector. Regular expression pattern to select
 specific features for correction. Default is \code{NULL} for all features.}
 
-\item{use_original_if_fail}{Determines the action when smoothing fails or results in invalid values for a feature. If \code{FALSE} (default), the result for each feature will \code{NA} for all batches, if \code{TRUE}, the original data is kept.}
+\item{use_original_if_fail}{Determines the action when smoothing fails or results in invalid values for a feature. If \code{FALSE} (default), the result for each feature will be \code{NA} for all batches, if \code{TRUE}, the original data is kept.}
 
 \item{show_progress}{Logical. Display progress bars if \code{TRUE}; disable for
 notebook rendering by setting to \code{FALSE}.}
@@ -91,13 +91,13 @@ applied  to \code{concentration}, \code{norm_intensity}, and \code{intensity} da
 
 Corrections can be applied on a batch-by-batch basis (\code{batch_wise = TRUE},
 default) or across all batches (\code{batch_wise = FALSE}). The correction can
-either replace existing drift or batch corrections (\verb{replace_previous = }TRUE\verb{, default) or applied on top of existing corrections (}replace_previous = FALSE`).
+either replace existing drift or batch corrections (\code{replace_previous = TRUE}, default) or applied on top of existing corrections (\code{replace_previous = FALSE}).
 
 Drift correction can be applied to all features (\code{conditional_correction = FALSE})
 or conditionally, based on whether the sample CV difference before and
 after correction is below a defined threshold (\code{cv_diff_threshold}). The
 conditional correction is applied separately for each batch if
-\code{batch_wise = TRUE}, .
+\code{batch_wise = TRUE}.
 
 It is recommended to visually inspect the correction using the
 \code{\link[=plot_runscatter]{plot_runscatter()}} function. Set the argument
@@ -120,7 +120,7 @@ change being the median of these batch medians across features.
 }
 \references{
 Teo G., Chew WS, Burla B, Herr D, Tai ES, Wenk MR, Torta F, & Choi H
-(2020). MRMhub: Automated Data Processing for Large-Scale Targeted
+(2020). MRMkit: Automated Data Processing for Large-Scale Targeted
 Metabolomics Analysis. \emph{Analytical Chemistry}, 92(20), 13677–13682.
 \url{https://doi.org/10.1021/acs.analchem.0c03060}
 }

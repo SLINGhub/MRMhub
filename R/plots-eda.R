@@ -2,9 +2,9 @@
 #'
 #' @param d_FC  data.frame with `feature_id`, `p` and `log2FC`
 #' @param p_adjust calculate and use FDR
-#' @param sig_FC_min |FC| treshold
-#' @param sig_p_value_min P value treshold
-#' @param symmetric_x make x axis symetric around 0
+#' @param sig_FC_min |FC| threshold
+#' @param sig_p_value_min P value threshold
+#' @param symmetric_x make x axis symmetric around 0
 #' @param x_min x min
 #' @param x_max x max
 #' @param point_size point size

@@ -26,7 +26,7 @@ a numeric value. If the mean (or the median, for robust CV) is zero,
 or x is not numeric, NA_real_ is returned
 }
 \description{
-This function computes the percent coefficient of variation  of the values in x.
+This function computes the percent coefficient of variation of the values in x.
 If na.rm is \code{TRUE} then missing values are removed before computation proceeds.
 }
 \examples{

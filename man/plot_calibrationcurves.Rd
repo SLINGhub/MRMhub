@@ -54,7 +54,7 @@ The default is \code{NA}, which means any of the QC types "CAL", "HQC", "MQC", "
 \item{fit_overwrite}{If \code{TRUE},
 the function will use the provided \code{fit_model} and \code{fit_weighting} values
 for all analytes and ignore any fit method and weighting settings defined in
-the metadata .}
+the metadata.}
 
 \item{fit_model}{A character string specifying the default regression fit
 method to use for the calibration curve. Must be one of \code{"linear"} or
@@ -70,7 +70,7 @@ when \code{fit_overwrite = TRUE}.}
 
 \item{ci_show}{Logical, if \code{TRUE}, displays the confidence interval as ribbon.
 Default is \code{NA}, in which case confidence intervals are plotted in a linear
-scale and ommitted in log-log scale.}
+scale and omitted in log-log scale.}
 
 \item{ci_clip}{Logical, if \code{TRUE}, clips the confidence interval above or below the highest and lowest data point, respectively.}
 
@@ -79,9 +79,7 @@ scale and ommitted in log-log scale.}
 \item{log_scale}{Logical. Determines whether the x and y axes are displayed in a logarithmic scale (log-log scale).
 Set to \code{TRUE} to enable logarithmic scaling; otherwise, set to \code{FALSE} for a linear scale.
 Note: If \code{TRUE}, any regression curves or standard error regions with negative
-values will be omitted from display.
-equimolar response of spiked-in non-labelled and labelled standards. At a normalized intensity of 1,
-assuming an equimolar response, both types of standards are present at equal concentrations.}
+values will be omitted from display.}
 
 \item{filter_data}{Logical, if \code{TRUE}, uses QC filtered data; otherwise uses
 raw data. Default is \code{FALSE}.}

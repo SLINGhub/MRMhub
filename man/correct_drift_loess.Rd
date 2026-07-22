@@ -46,16 +46,16 @@ default) or layer on top of it (\code{FALSE}).}
 \item{conditional_correction}{Determines whether drift correction is applied to all features unconditionally (\code{FALSE}, the default) or,
 when \code{TRUE}, only to features whose difference of sample CV before vs after smoothing is below the threshold specified by \code{cv_diff_threshold}.}
 
-\item{recalc_trend_after}{Recalculate trend post-drift correction for \code{plot_qc_runscatter()}. This will double calculation time.}
+\item{recalc_trend_after}{Recalculate trend post-drift correction for \code{plot_runscatter()}. This will double calculation time.}
 
-\item{log_transform_internal}{Log transform the data for correction when \code{TRUE} (the default). Note: log transformation is solely applied internally for smoothing, results will not be be log-transformed. Log transformation may result in more robust smoothing that is less sensitive to outlier.}
+\item{log_transform_internal}{Log transform the data for correction when \code{TRUE} (the default). Note: log transformation is solely applied internally for smoothing, results will not be be log-transformed. Log transformation may result in more robust smoothing that is less sensitive to outliers.}
 
 \item{feature_list}{Subset the features for correction whose names matches the specified text using regular expression. Default is \code{NULL} which means all features are selected.}
 
 \item{cv_diff_threshold}{This parameter defines the maximum allowable change (difference) in the coefficient of variation (CV) of samples before and after smoothing for the correction to be applied.
 A value of 0 (the default) requires the CV to improve, while a value above 0 allows the CV to also become worse by a maximum of the defined difference.}
 
-\item{use_original_if_fail}{Determines the action when smoothing fails or results in invalid values for a feature. If \code{FALSE} (default), the result for each feature will \code{NA} for all batches, if \code{TRUE}, the original data is kept.}
+\item{use_original_if_fail}{Determines the action when smoothing fails or results in invalid values for a feature. If \code{FALSE} (default), the result for each feature will be \code{NA} for all batches, if \code{TRUE}, the original data is kept.}
 
 \item{extrapolate}{Extrapolate loess smoothing. WARNING: It is generally not recommended to extrapolate outside of the range spanned by the QCs used for smoothing. See details below.}
 

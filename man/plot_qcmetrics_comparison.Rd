@@ -33,8 +33,8 @@ plot_qcmetrics_comparison(
 \item{data}{A \code{MRMhubExperiment} object.}
 
 \item{plot_type}{A character string specifying the type of plot to generate.
-Must be one of "scatter", "diff", or "ratio". Selecting "scatter" plots the "y_variable" against the "y_variable" values
-as a scatter plot, "diff" plots the difference between the two values against the average value, and "ratio" plots the log2 ratio of the two values against the average value.c}
+Must be one of "scatter", "diff", or "ratio". Selecting "scatter" plots the "y_variable" against the "x_variable" values
+as a scatter plot, "diff" plots the difference between the two values against the average value, and "ratio" plots the log2 ratio of the two values against the average value.}
 
 \item{x_variable}{The name of the QC metric variable to be plotted on the
 x-axis.}
@@ -44,7 +44,8 @@ y-axis.}
 
 \item{qc_types}{A character vector specifying the QC types to plot.}
 
-\item{facet_by_class}{Logical; if \code{TRUE}, facets the plot by \code{feature_class}, as defined}
+\item{facet_by_class}{Logical; if \code{TRUE}, facets the plot by \code{feature_class}, as defined
+in the feature metadata.}
 
 \item{y_shared}{Logical; if \code{TRUE}, all facets share the same y-axis scale.
 If \code{FALSE} (default), each facet has its own y-axis scale.}
@@ -107,7 +108,7 @@ across feature classes. A list of available QC metrics is available from the
 The comparison is visualized through one of three plot types:
 \itemize{
 \item Scatter plot: Values of \code{y_variable} vs \code{x_variable}
-\item Difference plot: (\code{y_variable} - `x_variable``) vs mean of both values
+\item Difference plot: (\code{y_variable} - \code{x_variable}) vs mean of both values
 \item Ratio plot: log2(\code{y_variable} / \code{x_variable}) vs mean of both values
 }
 \itemize{

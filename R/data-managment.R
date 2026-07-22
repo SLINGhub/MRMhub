@@ -231,7 +231,7 @@ get_analysis_count <- function(data, qc_types = NULL) {
 #'
 #' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @param is_istd If set, then defines whether to include or exclude internal standard features. Default is `NA` means no filter for internal standards is applied.
-#' @param is_quantifier If set, then defines whether to include or exclude qualifier features. Default is `NA` means no filter for qualifier features is applied.
+#' @param is_quantifier If set, then defines whether to include or exclude quantifier features. Default is `NA` means no filter for quantifier features is applied.
 #'
 #' @return An integer with the feature count
 #'
@@ -257,7 +257,7 @@ get_feature_count <- function(data, is_istd = NA, is_quantifier = NA) {
 #'
 #' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @param is_istd If set, then defines whether to include or exclude internal standard features. Default is `NA` means no filter for internal standards is applied.
-#' @param is_quantifier If set, then defines whether to include or exclude qualifier features. Default is `NA` means no filter for qualifier features is applied.
+#' @param is_quantifier If set, then defines whether to include or exclude quantifier features. Default is `NA` means no filter for quantifier features is applied.
 #'
 #' @return A character vector with `feature_id` values
 #'
@@ -297,15 +297,15 @@ get_analyis_start <- function(data) {
 #' Get the end time of the analysis sequence
 #'
 #' Returns the end time of the analysis, corresponding to the last `acquisition_time_stamp` from the dataset.
-#' Note: if `estimate_analysis_end` is set to `FALSE`, the function will return
-#' the timestamp of the last analysis in the dataset, corresping to the start of
-#' the last analysis. Set `estimate_analysis_end` to `TRUE` to estimate the end
+#' Note: if `estimate_sequence_end` is set to `FALSE`, the function will return
+#' the timestamp of the last analysis in the dataset, corresponding to the start of
+#' the last analysis. Set `estimate_sequence_end` to `TRUE` to estimate the end
 #' time of the analysis sequence, based on the median runtime.
 #'
 #' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @param estimate_sequence_end If `TRUE`, the function will estimate the end
 #' time of the analysis sequence based on the median runtime. `FALSE` will
-#' return to start time of last analysis in the sequence.
+#' return the start time of the last analysis in the sequence.
 #' @return A `POSIXct` timestamp, or `NA_POSIXct_` if the dataset is empty.
 #'
 #' @export
@@ -533,10 +533,11 @@ check_var_in_dataset <- function(table, variable) {
 
 #' Get the start and end analysis numbers of specified batches
 #' @description
-#' Sets the analysis order (sequence) based on either (i) analysis timestamp, if available, (ii) the order in which analysis appeared in the imported raw data file, or (iii) the order in which analyses were defined in the Analysis metadata.
+#' Returns the lower and upper analysis number (sequence position) spanned by the specified batch or range of batches.
 #' @param data [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @param batch_indices A numeric vector with one or two elements, representing the first and/or last batch index (i.e., sequential batch number).
-#' If NULL or invalid, the function will abort.#' @return A vector with two elements: the lower and upper analysis number for the specified batch(es).
+#' If NULL or invalid, the function will abort.
+#' @return A vector with two elements: the lower and upper analysis number for the specified batch(es).
 #' @export
 get_batch_boundaries <- function(data = NULL, batch_indices = NULL) {
   check_data(data)
@@ -600,18 +601,6 @@ get_batch_boundaries <- function(data = NULL, batch_indices = NULL) {
   return(c(lower_bound, upper_bound))
 }
 
-
-#' Set the analysis order
-#' @description
-#' Sets the analysis order (sequence), based on either (i) analysis timestamp if available, (ii) the order in which analysis appeared in the imported raw data file, or (iii) the order in which analyses were defined in the Analysis metadata
-#' @param data [`MRMhubExperiment`][MRMhubExperiment-class] object
-#' @param order_by Must by any of: "timestamp", "resultfile" or "metadata". Defines how the analysis order is determined. Default is "timestamp", when not available the sequence in the analysis results are used.
-#' @return [`MRMhubExperiment`][MRMhubExperiment-class] object
-#' @examples
-#' file_path <- system.file("extdata", "MRMhub_demo.tsv", package = "mrmhub")
-#' mexp <- MRMhubExperiment()
-#' mexp <- import_data_mrmhub(mexp, path = file_path, import_metadata = TRUE)
-#' mexp <- set_analysis_order(mexp, "timestamp")
 
 #' Internal function to set analysis order in metadata
 #'
@@ -952,7 +941,7 @@ link_data_metadata <- function(data = NULL, minimal_info = TRUE) {
 #' @param variable_name Feature variable to be used as default feature intensity for downstream processing.
 #' @param auto_select If `TRUE` then the first available of these will be used as default: "intensity", "response", "area", "height".
 #' @param warnings Suppress warnings
-#' @param ... Feature variables to best search for one-by-one when `auto-detect = TRUE`
+#' @param ... Feature variables to search for one-by-one when `auto_select = TRUE`
 #' @return [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @export
 
@@ -1050,7 +1039,7 @@ set_intensity_var <- function(
 #' @description
 #' This function excludes specified analyses from a `MRMhubExperiment` object, either by
 #' marking them as invalid for downstream processing.
-#' The function also alloows to reset the exclusions.
+#' The function also allows to reset the exclusions.
 #'
 #' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @param analyses A character vector of analysis IDs (case-sensitive) to be excluded from the dataset.
@@ -1127,15 +1116,15 @@ exclude_analyses <- function(data = NULL, analyses, clear_existing) {
 #' @description
 #' This function excludes specified features from a `MRMhubExperiment` object, either by
 #' marking them as invalid for downstream processing.
-#' The function also alloows to reset the exclusions.
+#' The function also allows to reset the exclusions.
 #'
 #' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @param features A character vector of feature IDs (case-sensitive) to be excluded from the dataset.
 #' If this is `NA` or an empty vector, the exclusion behavior will be handled as set via the `clear_existing` flag.
-#' @param clear_existing A logical value. If `TRUE`, existing `valid_analysis` flags will be overwritten. If `FALSE`,
+#' @param clear_existing A logical value. If `TRUE`, existing `valid_feature` flags will be overwritten. If `FALSE`,
 #' the exclusions will be appended, preserving any existing invalidated features
 #'
-#' @return A modified [`MRMhubExperiment`][MRMhubExperiment-class] object with the specified analyses defined as excluded.
+#' @return A modified [`MRMhubExperiment`][MRMhubExperiment-class] object with the specified features defined as excluded.
 #' @export
 
 exclude_features <- function(data = NULL, features, clear_existing) {

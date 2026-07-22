@@ -12,8 +12,8 @@
 #' @param batchwise_normalization A logical value indicating whether to normalize the signals by batch instead of globally.
 #' @param include_qualifier A logical value indicating whether to include
 #' qualifier features. Default is `TRUE`.
-#' @param only_istd A logical value indicating whether to include features used as internal
-#' standards (ISTD).  Default is `TRUE`. Set to `FALSE` in combination with feature_filter parameters to show other features.
+#' @param only_istd A logical value indicating whether to show only internal
+#' standard (ISTD) features. Default is `TRUE`. Set to `FALSE` in combination with feature_filter parameters to show other features.
 #' @template feature_filters
 #' @param y_lim A numeric vector of length 2 specifying the y-axis limits.
 #' @param point_size A numeric value indicating the size of points in

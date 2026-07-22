@@ -6,7 +6,7 @@
 #' @param ref_qc_types QC types used for the smoothing (fit) by loess
 #' @param log_transform_internal Apply log transformation internally for smoothing if `TRUE` (default). This does not affect the final data, which remains untransformed.
 #' @param ... Additional arguments
-#' @return List with a `data.frame` containing original `x` and the smoothed `y` values, and a `boolean` value indicting whether the fit failed or not not.
+#' @return List with a `data.frame` containing original `x` and the smoothed `y` values, and a `boolean` value indicting whether the fit failed or not.
 
 ### Function to clean up serial trend within a batch
 fun_gauss.kernel.smooth = function(
@@ -152,7 +152,7 @@ fun_gauss.kernel.smooth = function(
 #' @param ref_qc_types QC types used for the smoothing (fit) by loess
 #' @param log_transform_internal Apply log transformation internally for smoothing if `TRUE` (default). This does not affect the final data, which remains untransformed.
 #' @param ... Additional arguments forwarded to Loess
-#' @return List with a `data.frame` containing original x and the smoothed y values, and a `boolean` value indicting whether the fit failed or not not.
+#' @return List with a `data.frame` containing original x and the smoothed y values, and a `boolean` value indicting whether the fit failed or not.
 fun_loess <- function(tbl, ref_qc_types, log_transform_internal, ...) {
   arg <- list(...)
   surface <- ifelse(arg$extrapolate, "direct", "interpolate")
@@ -420,11 +420,21 @@ fun_gam_smooth <- function(
 #' Drift correction by custom function
 #' @description
 #' Function to correct for run-order drifts within or across batches via a provided custom function
-#' #' @details
+#' @details
 #' The drift correction function needs to be provided by the user. See `smooth_fun` for details.
 #' @param data [`MRMhubExperiment`][MRMhubExperiment-class] object
-#' @param smooth_fun Function that performs drift correction. Function need to have following parameter `data` ([`MRMhubExperiment`][MRMhubExperiment-class]), `ref_qc_types` (one or more strings), and `span_width` (numerical).
-#' Function needs to return a numerical vector with the length of number of rows in `data`. In case functions fails a vector with NA_real_ needs be returned
+#' @param smooth_fun Function that performs the drift correction for a single
+#' feature within one batch. It must accept the arguments `tbl` (a data frame
+#' with the columns `qc_type`, `x` (run-order number), `y` (the variable to
+#' correct), and `analysis_id`, `feature_id`, `batch_id`), `ref_qc_types` (one
+#' or more QC-type strings used to fit the trend), `log_transform_internal`
+#' (logical), and `...` (smoother-specific parameters such as `span` or
+#' `degree`). It must return a named list carrying `y_adj` (the drift-adjusted
+#' `y`) and `fit_error` (logical), and typically also `y_fit`, `fit_warning`,
+#' and the passed-through `analysis_id`, `feature_id`, `batch_id`, `qc_type`,
+#' and `x`. When the fit fails it must return that same structure with
+#' `y_adj = NA_real_` and `fit_error = TRUE`. See [fun_loess()] for a reference
+#' implementation.
 #' @param variable  The variable to be corrected for drift effects. Must be one of "intensity", "norm_intensity", or "conc"
 #' @param ref_qc_types QC types used for drift correction
 #' @param batch_wise Apply to each batch separately if `TRUE` (the default)
@@ -437,7 +447,7 @@ fun_gam_smooth <- function(
 #' @param ignore_istd Do not apply corrections to ISTDs
 #' @param feature_list Sets specific features for correction only. Can be character vector or a single string which is then interpreted as regular expression. Default is `NULL` which means all features are selected.
 #' @param use_original_if_fail Determines the action when smoothing fails or results in invalid values for a feature. If `TRUE` (default), the original data is used; if `FALSE`, the result for each analysis is NA.
-#' @param recalc_trend_after Recalculate trend post-drift correction for `plot_qc_runscatter()`. This will double calculation time.
+#' @param recalc_trend_after Recalculate trend post-drift correction for `plot_runscatter()`. This will double calculation time.
 #' @param show_progress Show progress bar. Default = `TRUE`.
 #' @param ... Arguments specific for the smoothing function
 #' @return [`MRMhubExperiment`][MRMhubExperiment-class] object
@@ -1087,13 +1097,13 @@ correct_drift <- function(
 #' Corrections can be applied on a batch-by-batch basis (`batch_wise = TRUE`,
 #' default) or across all batches (`batch_wise = FALSE`). The correction can
 #' either replace existing drift or batch corrections (`replace_previous =
-#' `TRUE`, default) or applied on top of existing corrections (`replace_previous = FALSE`).
+#' TRUE`, default) or applied on top of existing corrections (`replace_previous = FALSE`).
 #'
 #' Drift correction can be applied to all features (`conditional_correction = FALSE`)
 #' or conditionally, based on whether the sample CV difference before and
 #' after correction is below a defined threshold (`cv_diff_threshold`). The
 #' conditional correction is applied separately for each batch if
-#' `batch_wise = TRUE`, .
+#' `batch_wise = TRUE`.
 #'
 #' It is recommended to visually inspect the correction using the
 #' [plot_runscatter()] function. Set the argument
@@ -1145,13 +1155,13 @@ correct_drift <- function(
 #' A value of 0 (the default) requires the CV to improve, while a value above 0 allows the CV to also become worse by a maximum of the defined difference.
 #' @param feature_list Character vector. Regular expression pattern to select
 #' specific features for correction. Default is `NULL` for all features.
-#' @param use_original_if_fail Determines the action when smoothing fails or results in invalid values for a feature. If `FALSE` (default), the result for each feature will `NA` for all batches, if `TRUE`, the original data is kept.
+#' @param use_original_if_fail Determines the action when smoothing fails or results in invalid values for a feature. If `FALSE` (default), the result for each feature will be `NA` for all batches, if `TRUE`, the original data is kept.
 #' @param show_progress Logical. Display progress bars if `TRUE`; disable for
 #' notebook rendering by setting to `FALSE`.
 #' @return Returns a [`MRMhubExperiment`][MRMhubExperiment-class] object.
 #' @references
 #' Teo G., Chew WS, Burla B, Herr D, Tai ES, Wenk MR, Torta F, & Choi H
-#' (2020). MRMhub: Automated Data Processing for Large-Scale Targeted
+#' (2020). MRMkit: Automated Data Processing for Large-Scale Targeted
 #' Metabolomics Analysis. *Analytical Chemistry*, 92(20), 13677–13682.
 #' \url{https://doi.org/10.1021/acs.analchem.0c03060}
 #' @export
@@ -1282,14 +1292,14 @@ correct_drift_gaussiankernel <- function(
 #' @param span Loess span width (default is 0.75)
 #' @param degree Degree of the polynomial to be used in the loess smoothing, normally 1 or 2. Default is 2.
 #' @param extrapolate Extrapolate loess smoothing. WARNING: It is generally not recommended to extrapolate outside of the range spanned by the QCs used for smoothing. See details below.
-#' @param log_transform_internal Log transform the data for correction when `TRUE` (the default). Note: log transformation is solely applied internally for smoothing, results will not be be log-transformed. Log transformation may result in more robust smoothing that is less sensitive to outlier.
+#' @param log_transform_internal Log transform the data for correction when `TRUE` (the default). Note: log transformation is solely applied internally for smoothing, results will not be be log-transformed. Log transformation may result in more robust smoothing that is less sensitive to outliers.
 #' @param conditional_correction Determines whether drift correction is applied to all features unconditionally (`FALSE`, the default) or,
 #' when `TRUE`, only to features whose difference of sample CV before vs after smoothing is below the threshold specified by `cv_diff_threshold`.
-#' @param recalc_trend_after Recalculate trend post-drift correction for `plot_qc_runscatter()`. This will double calculation time.
+#' @param recalc_trend_after Recalculate trend post-drift correction for `plot_runscatter()`. This will double calculation time.
 #' @param cv_diff_threshold This parameter defines the maximum allowable change (difference) in the coefficient of variation (CV) of samples before and after smoothing for the correction to be applied.
 #' A value of 0 (the default) requires the CV to improve, while a value above 0 allows the CV to also become worse by a maximum of the defined difference.
 #' @param feature_list Subset the features for correction whose names matches the specified text using regular expression. Default is `NULL` which means all features are selected.
-#' @param use_original_if_fail Determines the action when smoothing fails or results in invalid values for a feature. If `FALSE` (default), the result for each feature will `NA` for all batches, if `TRUE`, the original data is kept.
+#' @param use_original_if_fail Determines the action when smoothing fails or results in invalid values for a feature. If `FALSE` (default), the result for each feature will be `NA` for all batches, if `TRUE`, the original data is kept.
 #' @param show_progress Logical. Display progress bars if `TRUE`; disable for notebook rendering by setting to `FALSE`.
 #' @return [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @seealso The [drift-correction tutorial](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.html) for a worked example.
@@ -1358,7 +1368,7 @@ correct_drift_loess <- function(
 #' regularization parameter `lambda`, is similar but not identical to previously described
 #' QC-based drift correction methods, such as **QC-RSC (Quality Control Regularized
 #' Spline Correction)**, described in Dunn et al. (Nat Protoc, 2011) and Kirwan et al.
-#' (Anal Bioanal Chem, 2014).
+#' (Anal Bioanal Chem, 2013).
 #'
 #' By default, the smoothing parameter is determined using cross-validation,
 #' which can lead to overfitting. To reduce overfitting
@@ -1414,10 +1424,10 @@ correct_drift_loess <- function(
 #' @param penalty The coefficient of the penalty for degrees of freedom in the GCV criterion.
 #' @param log_transform_internal Log transform the data for correction when `TRUE` (the default). Note: log transformation is solely applied internally for smoothing, results will not be log-transformed.
 #' @param conditional_correction Determines whether drift correction is applied to all features unconditionally (`FALSE`, the default) or, when `TRUE`, only conditionally based on sample CV change.
-#' @param recalc_trend_after Recalculate trend post-drift correction for `plot_qc_runscatter()`. This will double calculation time.
+#' @param recalc_trend_after Recalculate trend post-drift correction for `plot_runscatter()`. This will double calculation time.
 #' @param cv_diff_threshold Maximum allowable change (difference) in CV before and after smoothing for correction to be applied.
 #' @param feature_list Subset the features for correction whose names match the specified text using regular expression. Default is `NULL`.
-#' @param use_original_if_fail Determines the action when smoothing fails or results in invalid values for a feature. If `FALSE` (default), the result for each feature will `NA` for all batches, if `TRUE`, the original data is kept.
+#' @param use_original_if_fail Determines the action when smoothing fails or results in invalid values for a feature. If `FALSE` (default), the result for each feature will be `NA` for all batches, if `TRUE`, the original data is kept.
 #' @param show_progress Logical. Display progress bars if `TRUE`; disable for notebook rendering by setting to `FALSE`.
 #' @return [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @export
@@ -1429,7 +1439,7 @@ correct_drift_loess <- function(
 #'
 #' Kirwan, J.A., Broadhurst, D.I., Davidson, R.L. et al. Characterising and correcting
 #' batch variation in an automated direct infusion mass spectrometry (DIMS) metabolomics workflow.
-#' Anal Bioanal Chem 405, 5147–5157 (2013). https://doi-org.libproxy1.nus.edu.sg/10.1007/s00216-013-6856-7
+#' Anal Bioanal Chem 405, 5147–5157 (2013). https://doi.org/10.1007/s00216-013-6856-7
 #'
 #' @seealso [stats::smooth.spline()]; the [drift-correction tutorial](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.html) for a worked example.
 correct_drift_cubicspline <- function(
@@ -1542,10 +1552,10 @@ correct_drift_cubicspline <- function(
 #' @param sp Smoothing parameter (`NULL` by default, estimated automatically).
 #' @param log_transform_internal Log transform the data for correction when `TRUE` (the default). Note: log transformation is solely applied internally for smoothing, results will not be log-transformed.
 #' @param conditional_correction Determines whether drift correction is applied to all features unconditionally (`FALSE`, the default) or, when `TRUE`, only conditionally based on sample CV change.
-#' @param recalc_trend_after Recalculate trend post-drift correction for `plot_qc_runscatter()`. This will double calculation time.
+#' @param recalc_trend_after Recalculate trend post-drift correction for `plot_runscatter()`. This will double calculation time.
 #' @param cv_diff_threshold Maximum allowable change (difference) in CV before and after smoothing for correction to be applied.
 #' @param feature_list Subset the features for correction whose names match the specified text using regular expression. Default is `NULL`.
-#' @param use_original_if_fail Determines the action when smoothing fails or results in invalid values for a feature. If `FALSE` (default), the result for each feature will `NA` for all batches, if `TRUE`, the original data is kept.
+#' @param use_original_if_fail Determines the action when smoothing fails or results in invalid values for a feature. If `FALSE` (default), the result for each feature will be `NA` for all batches, if `TRUE`, the original data is kept.
 #' @param show_progress Logical. Display progress bars if `TRUE`; disable for notebook rendering by setting to `FALSE`.
 #' @return [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @export
@@ -1631,7 +1641,7 @@ correct_drift_gam <- function(
 #'   data are on the raw (untransformed) scale.
 #' @param feature_list Sets specific features for correction only. Can be character vector or a single string which is then interpreted as regular expression. Default is `NULL` which means all features are selected.
 #' @param replace_exisiting_trendcurves A logical value indicating whether to replace
-#' trend curves from previous corrections. This is only use for plotting using `plot_runscatter()`. Default is `FALSE`.
+#' trend curves from previous corrections. This is only used for plotting using `plot_runscatter()`. Default is `FALSE`.
 #' @param ... Additional arguments that can be passed to the batch correction
 #'   function.
 #' @return A [`MRMhubExperiment`][MRMhubExperiment-class] object containing the corrected data.

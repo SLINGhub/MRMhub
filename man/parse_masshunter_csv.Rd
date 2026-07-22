@@ -14,12 +14,12 @@ parse_masshunter_csv(
 \arguments{
 \item{path}{File path of MassHunter Quant CSV file}
 
-\item{expand_qualifier_names}{If \code{TRUE}, original qualifier names will be renamed by adding the quantifier name in front and placing qualifier name into square brackets(e.g. \code{Qualifier (422.3 -> 113.0)} transition names of quantifier will be added to qualifier names}
+\item{expand_qualifier_names}{If \code{TRUE}, each qualifier is renamed by adding its quantifier's name in front and placing the qualifier's m/z transition in square brackets (e.g. \code{Qualifier (422.3 -> 113.0)}).}
 
 \item{silent}{Suppress messages}
 
 \item{conc_column}{Which concentration field of the masshunter data to use, in
-case "Calc. Conc." and "Final. Conc." are present.  Default is "conc_final".}
+case "Calc. Conc." and "Final Conc" are present.  Default is "conc_final".}
 }
 \value{
 A tibble with the parse results in the long format

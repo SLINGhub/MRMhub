@@ -182,11 +182,11 @@ add_missing_column <- function(
 }
 
 #' Get concentration unit based on sample amount unit
-#' internall analyte amount is pmol, thus when sample amount unit is uL,
+#' internally analyte amount is pmol, thus when sample amount unit is uL,
 #' pmol/uL equal to umol/L
 #'
 #' @param sample_amount_unit string with sample amount unit
-#' @param analyte_amount_unit string with base analyre amount unit
+#' @param analyte_amount_unit string with base analyte amount unit
 #' @return string with feature_conc unit
 #' @noRd
 
@@ -253,8 +253,9 @@ get_conc_unit <- function(sample_amount_unit, analyte_amount_unit) {
 #'     \item{"keep"}{Keep disconnected rows in the result.}
 #'   }
 #'
-#' @return A data frame containing ordered chains with a `chain_id` column to distinguish between different chains.
-#'   If disconnected rows are included, they will have their own `chain_id`.
+#' @return A data frame containing ordered chains. If `include_chain_id = TRUE`, a
+#'   `chain_id` column is added to distinguish between different chains; when disconnected
+#'   rows are included, they will have their own `chain_id`.
 #'
 #' @examples
 #' df_unordered <- data.frame(
@@ -266,7 +267,7 @@ get_conc_unit <- function(sample_amount_unit, analyte_amount_unit) {
 #' # Order keeping disconnected rows
 #' order_chained_columns_tbl(df_unordered, "From", "To", FALSE, "keep")
 #'
-#' # Ordr excluding disconnected rows
+#' # Order excluding disconnected rows
 #' order_chained_columns_tbl(df_unordered, "From", "To", FALSE, "exclude")
 #'
 #'

@@ -7,7 +7,7 @@
 \format{
 A \code{MRMhubExperiment} object with the following data and metadata:
 \describe{
-\item{dataset_orig}{Original data (peak datas).}
+\item{dataset_orig}{Original data (peak data).}
 \item{dataset}{Annotated data}
 \item{annot_analyses}{Analysis-level metadata}
 \item{annot_features}{Feature-level annotations}

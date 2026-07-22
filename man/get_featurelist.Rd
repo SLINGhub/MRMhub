@@ -11,7 +11,7 @@ get_featurelist(data, is_istd = NA, is_quantifier = NA)
 
 \item{is_istd}{If set, then defines whether to include or exclude internal standard features. Default is \code{NA} means no filter for internal standards is applied.}
 
-\item{is_quantifier}{If set, then defines whether to include or exclude qualifier features. Default is \code{NA} means no filter for qualifier features is applied.}
+\item{is_quantifier}{If set, then defines whether to include or exclude quantifier features. Default is \code{NA} means no filter for quantifier features is applied.}
 }
 \value{
 A character vector with \code{feature_id} values

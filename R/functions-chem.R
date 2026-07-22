@@ -6,7 +6,7 @@
 #' This function calculates the *average molecular weight* (not monoisotopic mass), which reflects the average of the isotopic distribution found in nature.
 #'
 #' Isotopes can be specified explicitly in the formula. Atomic mass numbers for isotopes must be enclosed in square brackets (e.g., `[13]C` for carbon-13).
-#' Deuterium must be written as `D` instead of `[3]H`.
+#' Deuterium must be written as `D` instead of `[2]H`.
 #'
 #' @param formula A character vector of one or more chemical formulas to process.
 #'

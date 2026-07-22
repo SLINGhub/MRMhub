@@ -465,21 +465,21 @@ save_report_xlsx <- function(
 
 #' Export data to a CSV file
 #'
-#' This function exports specific unprocessed or pr ocessed feature variable
+#' This function exports specific unprocessed or processed feature variable
 #' (e.g. intensities or concentrations) from a `MRMhubExperiment` object to a CSV file.
 #' Allows selection of features and optional QC filtering.
 #' @param data [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @param path File name with path of exported CSV file
 #' @param variable Variable to be exported, must be present in the data and any of "area", "height", "intensity", "norm_intensity", "response", "conc", "conc_raw", "rt", "fwhm".
-#' @param qc_types QC types to be plotted. Can be a vector of QC types or a regular expression pattern. `NA` (default) displays all available QC/Sample types.
+#' @param qc_types QC types to be exported. Can be a vector of QC types or a regular expression pattern. `NA` (default) exports all available QC/Sample types.
 #' @param filter_data A logical value indicating whether to use all data
 #' (default) or only QC-filtered data (filtered via [filter_features_qc()]). Default is `FALSE`.
 #' @param include_qualifier A logical value indicating whether to include
 #' qualifier features. Default is `NA`, which will be automatically set to `FALSE`
-#' if `variable` is `conc` or `conc_raw`, and `FALSE` otherwise.
+#' if `variable` is `conc` or `conc_raw`, and `TRUE` otherwise.
 #' @param include_istd A logical value indicating whether to include internal
 #' standard (ISTD) features. Default is `NA`, which will be automatically set to `FALSE`
-#' if `variable` is ''norm_intensity`, `conc` or `conc_raw`, and `TRUE` otherwise.
+#' if `variable` is `norm_intensity`, `conc` or `conc_raw`, and `TRUE` otherwise.
 #' @param include_feature_filter Feature(s) to include by `feature_id`, as a
 #'   character vector. Each element is matched exactly when it names an existing
 #'   feature, otherwise treated as a regex; elements combine with OR. A full ID
@@ -642,7 +642,7 @@ save_feature_qc_metrics <- function(data = NULL, path) {
   invisible(data@metrics_qc)
 }
 
-#' Saves a Excel (xlsx) file with metadata templates
+#' Saves an Excel (xlsx) file with metadata templates
 #'
 #' This function saves a XLSX file with metadata template to the specified location.
 #'

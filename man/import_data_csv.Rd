@@ -19,7 +19,7 @@ import_data_csv(
 
 \item{path}{One or more file names with path, or a folder path, which case all *.csv files in this folder will be read.}
 
-\item{variable_name}{Variable type representing the values in the table. Must be one of "intensity", "norm_intensity", "conc", "area", "height", "response")}
+\item{variable_name}{Variable type representing the values in the table. Must be one of "intensity", "norm_intensity", "conc", "area", "height", "response".}
 
 \item{analysis_id_col}{Column to be used as analysis_id. \code{NA} (default) used 'analysis_id' if present, or the first column if it contains unique values.}
 

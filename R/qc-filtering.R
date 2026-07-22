@@ -16,14 +16,14 @@
 #' `qc_type` refers to the specific QC sample type for which the metric is
 #' calculated. For example: `intensity_min_spl` refers to the minimum intensity
 
-#' Statistics of normalized intensities , external calibration, and response
+#' Statistics of normalized intensities, external calibration, and response
 #' curves can be included by setting the relevant arguments
 #'  (`include_norm_intensity_stats`, `include_conc_stats`,
 #'  `include_response_stats`, `include_calibration_results`) to `TRUE`.
 #'
 #'  **Note** when corresponding underlying processed data is not available,
 #'  the function will not raise an error but will return `NA` values for the
-#'  respective metrics. This, however, does not apply for the optinal metrics
+#'  respective metrics. This, however, does not apply for the optional metrics
 #'  mentioned above. For these cases an error will be raised if the underlying
 #'  data is missing.
 #'
@@ -36,7 +36,7 @@
 #' `MRMhubExperiment` objects and comprises following details
 #'
 #' - **Feature details**:
-#'  Specific feature information extracted from the feature metadata tanle,
+#'  Specific feature information extracted from the feature metadata table,
 #'  such as feature class, associated ISTD, quantifier status.
 #'
 #' - **Feature MS Method Information** (if method variables are available in the analysis data).
@@ -45,7 +45,7 @@
 #'   The latter would indicate inconsistent analysis conditions.
 #'   - `precursor_mz`: The m/z value of the precursor ion(s),
 #'   - `product_mz`: The m/z value of the product ion(s), concatenated if multiple values exist for the same feature.
-#'   - `collision_energy`: The collision energy used for fragmentation, concatenated if multiple values exist exist for the same feature.
+#'   - `collision_energy`: The collision energy used for fragmentation, concatenated if multiple values exist for the same feature.
 
 #' - **Missing Value Metrics**:
 #'   - `missing_intensity_prop_spl`: Proportion of missing intensities for the SPL sample type.
@@ -53,7 +53,7 @@
 #'   - `missing_conc_prop_spl`: Proportion of missing concentration values for SPL samples.
 #'   - `na_in_all`: Indicator if a feature has all missing intensities across all samples
 #'
-#' - **Retention Time (RT) Metrics**: Requires that retention tim data are available.
+#' - **Retention Time (RT) Metrics**: Requires that retention time data are available.
 #'   - `rt_min_*`: Minimum retention time across different QC sample types (e.g., SPL, BQC, TQC).
 #'   - `rt_max_*`: Maximum retention time across different QC sample types.
 #'   - `rt_median_*`: Median retention time for specific QC sample types like PBLK, SPL, BQC, TQC, etc.
@@ -742,7 +742,7 @@ calc_qc_metrics <- function(
   } else if (is.na(include_response_stats) || include_response_stats) {
     d_rqc_stats <- get_response_curve_stats(
       data,
-      with_staturation_stats = FALSE,
+      with_saturation_stats = FALSE,
       limit_to_rqc = TRUE,
       silent_invalid_data = if (isTRUE(include_response_stats)) FALSE else TRUE
     )

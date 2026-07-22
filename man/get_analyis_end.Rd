@@ -11,15 +11,15 @@ get_analyis_end(data, estimate_sequence_end)
 
 \item{estimate_sequence_end}{If \code{TRUE}, the function will estimate the end
 time of the analysis sequence based on the median runtime. \code{FALSE} will
-return to start time of last analysis in the sequence.}
+return the start time of the last analysis in the sequence.}
 }
 \value{
 A \code{POSIXct} timestamp, or \code{NA_POSIXct_} if the dataset is empty.
 }
 \description{
 Returns the end time of the analysis, corresponding to the last \code{acquisition_time_stamp} from the dataset.
-Note: if \code{estimate_analysis_end} is set to \code{FALSE}, the function will return
-the timestamp of the last analysis in the dataset, corresping to the start of
-the last analysis. Set \code{estimate_analysis_end} to \code{TRUE} to estimate the end
+Note: if \code{estimate_sequence_end} is set to \code{FALSE}, the function will return
+the timestamp of the last analysis in the dataset, corresponding to the start of
+the last analysis. Set \code{estimate_sequence_end} to \code{TRUE} to estimate the end
 time of the analysis sequence, based on the median runtime.
 }

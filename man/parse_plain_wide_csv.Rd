@@ -14,9 +14,9 @@ parse_plain_wide_csv(
 )
 }
 \arguments{
-\item{path}{path name and path of a plain long-format CSV file}
+\item{path}{File name and path of a plain wide-format CSV file}
 
-\item{variable_name}{Name of the variable representing the values in the table. Must be one of "intensity", "norm_intensity", "conc", "area", "height", "response")}
+\item{variable_name}{Name of the variable representing the values in the table. Must be one of "intensity", "norm_intensity", "conc", "area", "height", "response".}
 
 \item{analysis_id_col}{Column to be used as analysis_id}
 

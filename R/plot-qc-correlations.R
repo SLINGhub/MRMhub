@@ -47,11 +47,11 @@ get_feature_correlations <- function(tbl, cor_min_neg, cor_min) {
 #'
 #' @param cor_min Numeric. Minimum correlation threshold. Only feature pairs with
 #' positive correlations above this value will be shown. Set to Inf to exclude positive
-#' corrections.
+#' correlations.
 #'
-#' @param cor_min_neg Numeric. Minimum nagative correlation threshold. Only feature pairs with
-#' negative correlations above this value will be shown. Set to -Inf to exclude nagative
-#' corrections.
+#' @param cor_min_neg Numeric. Minimum negative correlation threshold. Only feature pairs with
+#' negative correlations above this value will be shown. Set to -Inf to exclude negative
+#' correlations.
 #' @param log_scale A logical value indicating whether to use a log10 scale for
 #' both axes. Default is `FALSE`.
 #' @param sort_by_corr A logical value indicating whether to sort the features in

@@ -5,10 +5,10 @@
 #' analyzed sample amount (`x`) and feature intensity (`y`) of each curve are each scaled to their
 #' maximum (set to 1), so the returned `slopenorm` and `y0norm` are on this normalized scale.
 #' Optionally, it can include
-#' additional statistics from the `lancer` package (if installed) when `with_staturation_stats` is set to `TRUE`.
+#' additional statistics from the `lancer` package (if installed) when `with_saturation_stats` is set to `TRUE`.
 #'
 #' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] object containing the dataset and response curve annotations.
-#' @param with_staturation_stats Logical, if `TRUE`, include additional statistics from the `lancer` package.
+#' @param with_saturation_stats Logical, if `TRUE`, include additional statistics from the `lancer` package.
 #'   Note: The `lancer` package must be installed when this argument is set to `TRUE`.
 #' @param limit_to_rqc Logical, if `TRUE`, only include rows with `qc_type == "RQC"`. Default is `FALSE`.
 #' @param silent_invalid_data Logical, if `TRUE` suppresses raising an error when
@@ -21,7 +21,7 @@
 #' @export
 get_response_curve_stats <- function(
   data = NULL,
-  with_staturation_stats = FALSE,
+  with_saturation_stats = FALSE,
   limit_to_rqc = FALSE,
   silent_invalid_data = FALSE
 ) {
@@ -132,7 +132,7 @@ get_response_curve_stats <- function(
       names_prefix = "rqc_"
     )
 
-  if (with_staturation_stats) {
+  if (with_saturation_stats) {
     if (!rlang::is_installed("lancer")) {
       cli::cli_abort(
         # nocov start

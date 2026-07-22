@@ -24,18 +24,18 @@ save_dataset_csv(
 
 \item{variable}{Variable to be exported, must be present in the data and any of "area", "height", "intensity", "norm_intensity", "response", "conc", "conc_raw", "rt", "fwhm".}
 
-\item{qc_types}{QC types to be plotted. Can be a vector of QC types or a regular expression pattern. \code{NA} (default) displays all available QC/Sample types.}
+\item{qc_types}{QC types to be exported. Can be a vector of QC types or a regular expression pattern. \code{NA} (default) exports all available QC/Sample types.}
 
 \item{filter_data}{A logical value indicating whether to use all data
 (default) or only QC-filtered data (filtered via \code{\link[=filter_features_qc]{filter_features_qc()}}). Default is \code{FALSE}.}
 
 \item{include_qualifier}{A logical value indicating whether to include
 qualifier features. Default is \code{NA}, which will be automatically set to \code{FALSE}
-if \code{variable} is \code{conc} or \code{conc_raw}, and \code{FALSE} otherwise.}
+if \code{variable} is \code{conc} or \code{conc_raw}, and \code{TRUE} otherwise.}
 
 \item{include_istd}{A logical value indicating whether to include internal
 standard (ISTD) features. Default is \code{NA}, which will be automatically set to \code{FALSE}
-if \code{variable} is ''norm_intensity\verb{, }conc\code{or}conc_raw\verb{, and }TRUE` otherwise.}
+if \code{variable} is \code{norm_intensity}, \code{conc} or \code{conc_raw}, and \code{TRUE} otherwise.}
 
 \item{include_feature_filter}{Feature(s) to include by \code{feature_id}, as a
 character vector. Each element is matched exactly when it names an existing
@@ -49,7 +49,7 @@ the same way as \code{include_feature_filter}. \code{NA} or \code{""} ignores th
 \item{add_qctype}{Add the QC type as column}
 }
 \description{
-This function exports specific unprocessed or pr ocessed feature variable
+This function exports specific unprocessed or processed feature variable
 (e.g. intensities or concentrations) from a \code{MRMhubExperiment} object to a CSV file.
 Allows selection of features and optional QC filtering.
 }

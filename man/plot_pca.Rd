@@ -85,7 +85,7 @@ principled QC-based filtering use \code{\link[=filter_features_qc]{filter_featur
 labels for points outside k * MAD of the selected PCA dimensions. Default
 is \code{TRUE}.}
 
-\item{labels_column}{A character string indicating the column to be use for the point labels. Typically "analysis_id" or "analysis_order".
+\item{labels_column}{A character string indicating the column to be used for the point labels. Typically "analysis_id" or "analysis_order".
 Default is "analysis_id".}
 
 \item{labels_threshold_mad}{A numeric value determining the threshold
