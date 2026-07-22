@@ -309,12 +309,11 @@ import_data_csv <- function(
 #'
 #' When `import_metadata` is set to `TRUE`, the following metadata columns will be imported
 #' if present:
-#' \itemize{
-#'   \item \code{analysis_order}
-#'   \item \code{qc_type}
-#'   \item \code{batch_id}
-#'   \item \code{is_quantifier}
-#' }
+#'
+#' - `analysis_order`
+#' - `qc_type`
+#' - `batch_id`
+#' - `is_quantifier`
 #'
 #' To prevent additional non-metadata columns from being misinterpreted as features,
 #' use the `first_feature_column` parameter to specify the column where feature data starts.

@@ -148,33 +148,32 @@ pooled_rsd <- function(x, group, na.rm = FALSE, min_n = 2L) {
 #' Get outlier bounds via different methods
 #'
 #' Computes lower and upper bounds for a numeric vector using one of several methods:
-#' \itemize{
-#'   \item \code{"iqr"}: Tukey's Interquartile Range fences
-#'   \item \code{"mad"}: Median Absolute Deviation
-#'   \item \code{"sd"}: Standard deviation from mean
-#'   \item \code{"quantile"}: Fixed percentile cutoffs
-#'   \item \code{"z_normal"}: Standard Z-score using mean & SD
-#'   \item \code{"z_robust"}: Modified Z-score using median & MAD
-#'   \item \code{"fold_change"}: Median ± log10(k), assumes log-transformed data
-#' }
+#'
+#' - `"iqr"`: Tukey's Interquartile Range fences
+#' - `"mad"`: Median Absolute Deviation
+#' - `"sd"`: Standard deviation from mean
+#' - `"quantile"`: Fixed percentile cutoffs
+#' - `"z_normal"`: Standard Z-score using mean & SD
+#' - `"z_robust"`: Modified Z-score using median & MAD
+#' - `"fold_change"`: Median ± log10(k), assumes log-transformed data
 #'
 #' @param x A numeric vector.
-#' @param method Character string: one of \code{"iqr"}, \code{"mad"}, \code{"sd"},
-#'   \code{"quantile"}, \code{"z_normal"}, \code{"z_robust"}, or \code{"fold_change"}.
+#' @param method Character string: one of `"iqr"`, `"mad"`, `"sd"`,
+#'   `"quantile"`, `"z_normal"`, `"z_robust"`, or `"fold_change"`.
 #' @param k Numeric multiplier or threshold. Defaults depend on method:
-#'   \itemize{
-#'     \item \code{"iqr"}: 1.5 (multiplier of IQR)
-#'     \item \code{"mad"}: 3 (multiplier of MAD)
-#'     \item \code{"sd"}: 3 (multiplier of SD)
-#'     \item \code{"z_normal"}: 3 (threshold in SD units)
-#'     \item \code{"z_robust"}: 3.5 (threshold in robust Z units)
-#'     \item \code{"fold_change"}: 2 (fold-change multiplier, assumes log-transformed data)
-#'     \item \code{"quantile"}: 0.01 (lower/upper quantiles, e.g., 1% and 99%)
-#'   }
-#' @param outlier_log Logical. If \code{TRUE}, applies log10 transformation to \code{x}
-#' @param na.rm Logical. Should missing values be removed? Default is \code{FALSE}.
 #'
-#' @return A numeric vector of length 2: \code{c(lower_bound, upper_bound)} representing
+#'   - `"iqr"`: 1.5 (multiplier of IQR)
+#'   - `"mad"`: 3 (multiplier of MAD)
+#'   - `"sd"`: 3 (multiplier of SD)
+#'   - `"z_normal"`: 3 (threshold in SD units)
+#'   - `"z_robust"`: 3.5 (threshold in robust Z units)
+#'   - `"fold_change"`: 2 (fold-change multiplier, assumes log-transformed data)
+#'   - `"quantile"`: 0.01 (lower/upper quantiles, e.g., 1% and 99%)
+#'
+#' @param outlier_log Logical. If `TRUE`, applies log10 transformation to `x`
+#' @param na.rm Logical. Should missing values be removed? Default is `FALSE`.
+#'
+#' @return A numeric vector of length 2: `c(lower_bound, upper_bound)` representing
 #' the smallest and largest observed values within the computed fences.
 #'
 #' @examples
@@ -355,10 +354,10 @@ get_mad_tails <- function(x, k, na.rm = FALSE) {
 #' fences from a numeric vector.
 #'
 #' @param x A numeric vector.
-#' @param k A numeric multiplier for the IQR. Default is \code{1.5}.
-#' @param na.rm Logical. Should missing values be removed? Default is \code{FALSE}.
+#' @param k A numeric multiplier for the IQR. Default is `1.5`.
+#' @param na.rm Logical. Should missing values be removed? Default is `FALSE`.
 #'
-#' @return A numeric vector of length 2: \code{c(lower_tail, upper_tail)}.
+#' @return A numeric vector of length 2: `c(lower_tail, upper_tail)`.
 #'
 #' @export
 get_iqr_tails <- function(x, k = 1.5, na.rm = FALSE) {
