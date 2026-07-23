@@ -27,12 +27,10 @@ as_assertr_tibble <- function(x, ...) {
 }
 
 # Footer legend explaining the defect-severity codes used in the report.
+.assertr_legend_text <- "E = Error, W = Warning, W* = Suppressed Warning, N = Note"
+
 .assertr_legend <- function(divider = .assertr_divider()) {
-  paste0(
-    divider,
-    "\nE = Error, W = Warning, W* = Suppressed Warning, N = Note\n",
-    divider
-  )
+  paste0(divider, "\n", .assertr_legend_text, "\n", divider)
 }
 
 #' Print method for validation-report tibbles
@@ -51,8 +49,6 @@ as_assertr_tibble <- function(x, ...) {
 #' @keywords internal
 #' @export
 print.assertr_tibble <- function(x, n = NULL, width = NULL, ...) {
-  divider <- .assertr_divider()
-
   # Strip our class so the parent tibble print formats the body normally, then
   # capture its output to drop the lines we don't want (the "# A tibble: ..."
   # summary line, and the column-type chip row like "<chr> <int>").
@@ -69,6 +65,7 @@ print.assertr_tibble <- function(x, n = NULL, width = NULL, ...) {
   # Pluralized severity-count headline, derived from the Type column (W* is a
   # suppressed warning, still a warning). The letters remain the primary,
   # colour-independent severity signal.
+  summary_line <- character()
   if ("Type" %in% names(x)) {
     nD <- sum(x$Type == "D")
     nE <- sum(x$Type == "E")
@@ -83,9 +80,21 @@ print.assertr_tibble <- function(x, n = NULL, width = NULL, ...) {
         "Found {cli::no(nE)} error{?s}, {cli::no(nW)} warning{?s}, and {cli::no(nN)} note{?s} in the metadata."
       )
     }
-    cat(cli::ansi_strip(summary_line), "\n", sep = "")
+    summary_line <- cli::ansi_strip(summary_line)
   }
 
+  # Size the divider to the widest line actually printed (summary, table body,
+  # or legend) rather than a fixed terminal width, so it never trails past the
+  # report — a wider divider overflows the container and adds a horizontal
+  # scrollbar in the rendered docs. The legend text floors the width.
+  divider <- strrep(
+    "-",
+    max(nchar(c(summary_line, body, .assertr_legend_text), type = "width"))
+  )
+
+  if (length(summary_line)) {
+    cat(summary_line, "\n", sep = "")
+  }
   cat(divider, "\n", sep = "")
   cat(body, sep = "\n")
   cat("\n", .assertr_legend(divider), "\n", sep = "")
