@@ -62,7 +62,7 @@ algorithm allows the RT to move up to |*x*| minutes earlier and up to *y* minute
 expected RT in the reference samples. In addition, the `RT_shift_bound` parameter restricts the RT
 shift between adjacent sample injections.
 
-RT-shift correction can be disabled by setting `RT_shift = [0, 0]`, which can help for datasets with
+RT-shift correction can be disabled by setting `RT_shift = [0.0, 0.0]`, which can help for datasets with
 strong variability of features and/or interferences in the chromatograms, where the
 cross-correlation approach may yield inaccurate results. In the absence of chromatographic peaks for
 blank samples, their RT shifts are determined by interpolation from the shifts observed in adjacent
