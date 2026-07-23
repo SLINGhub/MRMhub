@@ -104,7 +104,7 @@ Each representative value must also be supported by roughly half of all runs: a 
 
 In outline, the consensus retention times are surveyed as follows:
 
-```{.python .pseudocode}
+```{.pseudocode}
 FUNCTION CalculateConsensusRetentionTimes(allRuns)
     peakCounts ← number of peaks in each run
     maximumCount ← MIN(median of peakCounts, 12)
