@@ -52,3 +52,7 @@ MRMhub-Dataset1/
 
 # Excel temp/lock files (created when a workbook is open)
 ~$*
+/integrator_original
+/integrator157
+integrator_full_diff.txt
+compare_integrator_workers.sh
