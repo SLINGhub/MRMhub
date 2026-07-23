@@ -118,20 +118,15 @@ se_filt <- save_dataset_summarizedexperiment(mexp_filt, filter_data = TRUE)
 **Everything is exported** — internal standards, QC samples, blanks and
 calibrants are all present and flagged rather than dropped, because downstream
 tools need them: `lipidr`, for one, requires the internal-standard annotation.
-Subset to study samples in one line:
+But nothing downstream reads `qc_type`, so a PCA, normalization or differential
+test will fold blanks, calibrants and QC replicates in with the study samples.
+Subset to study samples before any such analysis — here in one line:
 
 ```{r}
 se_spl <- se[!rowData(se)$is_istd, se$qc_type == "SPL"]
 dim(se_spl)
 #> [1]  20 374
 ```
-
-::: {.callout .callout-caution}
-**Subset before any statistical analysis.** Most tools include
-blanks, calibrants and QC replicates in a PCA, a normalization or a
-differential test and return results that look plausible and mean nothing.
-Nothing downstream understands `qc_type`.
-:::
 
 QC metrics are deliberately *not* written to `rowData()` — nothing downstream
 reads them, and QC filtering belongs in MRMhub where it is tested. Use
