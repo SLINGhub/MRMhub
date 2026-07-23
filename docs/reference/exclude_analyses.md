@@ -2,7 +2,7 @@
 
 This function excludes specified analyses from a `MRMhubExperiment`
 object, either by marking them as invalid for downstream processing. The
-function also alloows to reset the exclusions.
+function also allows to reset the exclusions.
 
 ## Usage
 
@@ -14,7 +14,9 @@ exclude_analyses(data = NULL, analyses, clear_existing)
 
 - data:
 
-  A `MRMhubExperiment` object
+  A
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object
 
 - analyses:
 
@@ -30,5 +32,6 @@ exclude_analyses(data = NULL, analyses, clear_existing)
 
 ## Value
 
-A modified `MRMhubExperiment` object with the specified analyses defined
-as excluded.
+A modified
+[`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+object with the specified analyses defined as excluded.

@@ -61,7 +61,8 @@ filter_features_qc(
 
 - data:
 
-  MRMhubExperiment object.
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object.
 
 - clear_existing:
 
@@ -248,8 +249,9 @@ filter_features_qc(
 
 ## Value
 
-The input MRMhubExperiment object with the feature filtering criteria
-applied.
+The input
+[`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+object with the feature filtering criteria applied.
 
 ## Details
 

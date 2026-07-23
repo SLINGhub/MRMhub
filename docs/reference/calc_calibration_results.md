@@ -8,8 +8,8 @@ as defined in the `qc_concentrations` metadata. The regression fit model
 `fit_weighting` for all features, if `fit_overwrite` is `TRUE`.
 Alternatively, the model and weighting can be defined individually for
 each feature in the `feature` metadata (columns `curve_fit_model` and
-`fit_weighting`). If these details are missing in the metadata, the
-default values provided via `fit_model` and `fit_weighting` will be
+`curve_fit_weighting`). If these details are missing in the metadata,
+the default values provided via `fit_model` and `fit_weighting` will be
 used.
 
 ## Usage
@@ -32,8 +32,9 @@ calc_calibration_results(
 
 - data:
 
-  A `MRMhubExperiment` object containing the data to be used for
-  calibration.
+  A
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object containing the data to be used for calibration.
 
 - variable:
 
@@ -70,9 +71,8 @@ calc_calibration_results(
 
 - ignore_missing_annotation:
 
-  If `FALSE`, an error will be raised if any of the following
-  information is missing: calibration curve data, ISTD mix volume, and
-  sample amounts for any feature.
+  If `FALSE`, an error will be raised if calibration curve data is
+  missing for any feature.
 
 - include_fit_object:
 
@@ -89,9 +89,11 @@ calc_calibration_results(
 
 ## Value
 
-A modified `MRMhubExperiment` object with an updated
-`metrics_calibration` table containing the calibration curve results,
-including concentrations, LoD, and LoQ values for each feature.
+A modified
+[`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+object with an updated `metrics_calibration` table containing the
+calibration curve results, including concentrations, LoD, and LoQ values
+for each feature.
 
 ## Details
 

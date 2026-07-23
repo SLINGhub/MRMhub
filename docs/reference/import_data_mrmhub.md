@@ -3,7 +3,7 @@
 Imports tabular data files (\*.tsv) generated from `MRMhub` containing
 peak integration results. The input files must be in a long format with
 columns for the raw data file name, feature ID, peak intensity, and
-other arguments Additional information, such as retention time, FWHM,
+other columns. Additional information, such as retention time, FWHM,
 precursor/product m/z, and CE will also be imported and made available
 in the `MRMhubExperiment` object for downstream analyses.
 
@@ -24,7 +24,8 @@ import_data_mrmhub(data = NULL, path, import_metadata = TRUE, silent = FALSE)
 
 - data:
 
-  MRMhubExperiment object
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object
 
 - path:
 
@@ -42,7 +43,8 @@ import_data_mrmhub(data = NULL, path, import_metadata = TRUE, silent = FALSE)
 
 ## Value
 
-MRMhubExperiment object with the imported data
+[`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+object with the imported data
 
 ## Identifier normalization
 

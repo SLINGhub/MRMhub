@@ -44,11 +44,13 @@ features is 100%. Points are grouped by qc_type and spread using quasirandom jit
     <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-05-run-scatter.html">RunScatter and PCA</a></li>
     <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Downstream / export</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-08-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Recipes</h6></li>
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
-    <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul></li>
 <li class="nav-item dropdown">
@@ -155,8 +157,8 @@ qualifier features. Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-only-istd">only_istd<a class="anchor" aria-label="anchor" href="#arg-only-istd"></a></dt>
-<dd><p>A logical value indicating whether to include features used as internal
-standards (ISTD).  Default is <code>TRUE</code>. Set to <code>FALSE</code> in combination with feature_filter parameters to show other features.</p></dd>
+<dd><p>A logical value indicating whether to show only internal
+standard (ISTD) features. Default is <code>TRUE</code>. Set to <code>FALSE</code> in combination with feature_filter parameters to show other features.</p></dd>
 
 
 <dt id="arg-include-feature-filter">include_feature_filter<a class="anchor" aria-label="anchor" href="#arg-include-feature-filter"></a></dt>

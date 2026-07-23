@@ -40,11 +40,13 @@
     <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-05-run-scatter.html">RunScatter and PCA</a></li>
     <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Downstream / export</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-08-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Recipes</h6></li>
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
-    <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul></li>
 <li class="nav-item dropdown">
@@ -113,7 +115,7 @@
 
 
 <dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
-<dd><p>MRMhubExperiment object</p></dd>
+<dd><p><code><a href="MRMhubExperiment-class.html">MRMhubExperiment</a></code> object</p></dd>
 
 
 <dt id="arg-path">path<a class="anchor" aria-label="anchor" href="#arg-path"></a></dt>
@@ -121,7 +123,7 @@
 
 
 <dt id="arg-variable-name">variable_name<a class="anchor" aria-label="anchor" href="#arg-variable-name"></a></dt>
-<dd><p>Variable type representing the values in the table. Must be one of "intensity", "norm_intensity", "conc", "area", "height", "response")</p></dd>
+<dd><p>Variable type representing the values in the table. Must be one of "intensity", "norm_intensity", "conc", "area", "height", "response".</p></dd>
 
 
 <dt id="arg-analysis-id-col">analysis_id_col<a class="anchor" aria-label="anchor" href="#arg-analysis-id-col"></a></dt>
@@ -129,8 +131,8 @@
 
 
 <dt id="arg-import-metadata">import_metadata<a class="anchor" aria-label="anchor" href="#arg-import-metadata"></a></dt>
-<dd><p>Import additional metadata columns (e.g. batch ID, sample type) and add to the <code>MRMhubExperiment</code> object.
-Only following metadata column names are supported: "qc_type", "batch_id", "is_quantifier", "is_istd", "analysis_order"</p></dd>
+<dd><p>Import additional metadata columns (e.g. batch ID, sample type) and add to the <code><a href="MRMhubExperiment-class.html">MRMhubExperiment</a></code> object.
+Only following metadata column names are supported: <code>"qc_type"</code>, <code>"batch_id"</code>, <code>"is_quantifier"</code>, <code>"is_istd"</code>, <code>"analysis_order"</code></p></dd>
 
 
 <dt id="arg-first-feature-column">first_feature_column<a class="anchor" aria-label="anchor" href="#arg-first-feature-column"></a></dt>
@@ -143,7 +145,7 @@ Only following metadata column names are supported: "qc_type", "batch_id", "is_q
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>MRMhubExperiment object</p>
+    <p><code><a href="MRMhubExperiment-class.html">MRMhubExperiment</a></code> object</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>

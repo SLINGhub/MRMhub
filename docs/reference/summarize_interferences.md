@@ -18,7 +18,8 @@ summarize_interferences(data = NULL)
 
 - data:
 
-  A `MRMhubExperiment`.
+  A
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md).
 
 ## Value
 

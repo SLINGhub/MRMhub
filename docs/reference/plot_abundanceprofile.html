@@ -40,11 +40,13 @@
     <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-05-run-scatter.html">RunScatter and PCA</a></li>
     <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Downstream / export</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-08-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Recipes</h6></li>
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
-    <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul></li>
 <li class="nav-item dropdown">
@@ -158,7 +160,7 @@ When <code>TRUE</code>, <code>qc_types</code> must specify only one QC type.</p>
 
 <dt id="arg-feature-map">feature_map<a class="anchor" aria-label="anchor" href="#arg-feature-map"></a></dt>
 <dd><p>A named character vector specifying feature classes, their order, and color. The order of the vector determines the y-axis order.
-Alternatively, can be a single string: <code>lipidomics</code> to use a default theme comprising mapping for lipid classes frequently measured in lipidomics methods. When using
+Alternatively, can be a single string: <code>lipidomics</code> to use a default theme comprising a mapping for lipid classes frequently measured in lipidomics methods. When using
 the default theme, set <code>drop_empty_classes = TRUE</code> to avoid showing classes not present in the data.
 If <code>NA</code> (default), the default theme is used.</p></dd>
 

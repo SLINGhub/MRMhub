@@ -2,7 +2,7 @@
 
 Imports .csv files exported from Agilent MassHunter Quantitative
 Analysis software, containing peak integration results. The input files
-must have anlyses (samples) in rows, features/compounds in columns, and
+must have analyses (samples) in rows, features/compounds in columns, and
 either peak areas, peak heights, or response as the values. Additional
 columns, such as retention time (RT), full-width at half-maximum (FWHM),
 precursor m/z (PrecursorMZ), and collision energy (CE), will also be
@@ -33,7 +33,8 @@ import_data_masshunter(
 
 - data:
 
-  MRMhubExperiment object
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object
 
 - path:
 
@@ -53,7 +54,7 @@ import_data_masshunter(
 - conc_column:
 
   Which concentration field of the masshunter data to use, in case
-  "Calc. Conc." and "Final. Conc." are present. Default is "conc_final".
+  "Calc. Conc." and "Final Conc" are present. Default is "conc_final".
   Must be one of "conc_calc" or "conc_final" (default).
 
 - silent:
@@ -62,7 +63,8 @@ import_data_masshunter(
 
 ## Value
 
-MRMhubExperiment object with the imported data
+[`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+object with the imported data
 
 ## Identifier normalization
 

@@ -32,8 +32,7 @@ fun_gauss.kernel.smooth(tbl, ref_qc_types, log_transform_internal, ...)
 ## Value
 
 List with a `data.frame` containing original `x` and the smoothed `y`
-values, and a `boolean` value indicting whether the fit failed or not
-not.
+values, and a `boolean` value indicting whether the fit failed or not.
 
 ## Author
 

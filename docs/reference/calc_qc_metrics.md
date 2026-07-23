@@ -23,14 +23,16 @@ calc_qc_metrics(
 
 - data:
 
-  A `MRMhubExperiment` object containing data and metadata, whereby data
-  needs to be normalized and quantitated for specific QC metrics, such
-  as statistics based on normalized intensities and concentrations.
+  A
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object containing data and metadata, whereby data needs to be
+  normalized and quantitated for specific QC metrics, such as statistics
+  based on normalized intensities and concentrations.
 
 - use_batch_medians:
 
   Logical, whether to compute QC metrics using the median of batch-wise
-  derived values instead of the full dataset. Default is FALSE.
+  derived values instead of the full dataset. Default is `FALSE`.
 
 - use_robust_cv:
 
@@ -64,8 +66,10 @@ calc_qc_metrics(
 
 ## Value
 
-A `MRMhubExperiment` object with an updated `metrics_qc` table
-containing computed QC metrics for each feature.
+A
+[`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+object with an updated `metrics_qc` table containing computed QC metrics
+for each feature.
 
 ## Details
 
@@ -76,14 +80,14 @@ TQC, BQC, PBLK, NIST, LTR)
 The format for the metrics is standardized as `metric_name_qc_type`,
 where `qc_type` refers to the specific QC sample type for which the
 metric is calculated. For example: `intensity_min_spl` refers to the
-minimum intensity Statistics of normalized intensities , external
+minimum intensity Statistics of normalized intensities, external
 calibration, and response curves can be included by setting the relevant
 arguments (`include_norm_intensity_stats`, `include_conc_stats`,
 `include_response_stats`, `include_calibration_results`) to `TRUE`.
 
 **Note** when corresponding underlying processed data is not available,
 the function will not raise an error but will return `NA` values for the
-respective metrics. This, however, does not apply for the optinal
+respective metrics. This, however, does not apply for the optional
 metrics mentioned above. For these cases an error will be raised if the
 underlying data is missing.
 
@@ -96,7 +100,7 @@ The calculated metrics are stored in the `metrics_qc` table of the
 `MRMhubExperiment` objects and comprises following details
 
 - **Feature details**: Specific feature information extracted from the
-  feature metadata tanle, such as feature class, associated ISTD,
+  feature metadata table, such as feature class, associated ISTD,
   quantifier status.
 
 - **Feature MS Method Information** (if method variables are available
@@ -111,7 +115,7 @@ The calculated metrics are stored in the `metrics_qc` table of the
     multiple values exist for the same feature.
 
   - `collision_energy`: The collision energy used for fragmentation,
-    concatenated if multiple values exist exist for the same feature.
+    concatenated if multiple values exist for the same feature.
 
 - **Missing Value Metrics**:
 
@@ -127,7 +131,7 @@ The calculated metrics are stored in the `metrics_qc` table of the
   - `na_in_all`: Indicator if a feature has all missing intensities
     across all samples
 
-- **Retention Time (RT) Metrics**: Requires that retention tim data are
+- **Retention Time (RT) Metrics**: Requires that retention time data are
   available.
 
   - `rt_min_*`: Minimum retention time across different QC sample types

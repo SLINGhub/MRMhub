@@ -13,7 +13,9 @@ get_analysis_count(data, qc_types = NULL)
 
 - data:
 
-  A `MRMhubExperiment` object
+  A
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object
 
 - qc_types:
 

@@ -9,7 +9,7 @@ The cubic spline smoothing approach, particularly when used with the
 regularization parameter lambda, is similar but not identical to previously described
 QC-based drift correction methods, such as QC-RSC (Quality Control Regularized
 Spline Correction), described in Dunn et al. (Nat Protoc, 2011) and Kirwan et al.
-(Anal Bioanal Chem, 2014).
+(Anal Bioanal Chem, 2013).
 By default, the smoothing parameter is determined using cross-validation,
 which can lead to overfitting. To reduce overfitting
 the regularization parameter lambda may be defined, with a good starting point
@@ -44,7 +44,7 @@ The cubic spline smoothing approach, particularly when used with the
 regularization parameter lambda, is similar but not identical to previously described
 QC-based drift correction methods, such as QC-RSC (Quality Control Regularized
 Spline Correction), described in Dunn et al. (Nat Protoc, 2011) and Kirwan et al.
-(Anal Bioanal Chem, 2014).
+(Anal Bioanal Chem, 2013).
 By default, the smoothing parameter is determined using cross-validation,
 which can lead to overfitting. To reduce overfitting
 the regularization parameter lambda may be defined, with a good starting point
@@ -110,11 +110,13 @@ stats::smooth.spline().'><meta property="og:image" content="https://slinghub.git
     <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-05-run-scatter.html">RunScatter and PCA</a></li>
     <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Downstream / export</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-08-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Recipes</h6></li>
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
-    <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul></li>
 <li class="nav-item dropdown">
@@ -172,7 +174,7 @@ adjust all other samples in the dataset. The correction can be applied to "inten
 regularization parameter <code>lambda</code>, is similar but not identical to previously described
 QC-based drift correction methods, such as <strong>QC-RSC (Quality Control Regularized
 Spline Correction)</strong>, described in Dunn et al. (Nat Protoc, 2011) and Kirwan et al.
-(Anal Bioanal Chem, 2014).</p>
+(Anal Bioanal Chem, 2013).</p>
 <p>By default, the smoothing parameter is determined using cross-validation,
 which can lead to overfitting. To reduce overfitting
 the regularization parameter <code>lambda</code> may be defined, with a good starting point
@@ -228,7 +230,7 @@ definitive criteria for correction (see Details below).</p>
 
 
 <dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
-<dd><p>MRMhubExperiment object</p></dd>
+<dd><p><code><a href="MRMhubExperiment-class.html">MRMhubExperiment</a></code> object</p></dd>
 
 
 <dt id="arg-variable">variable<a class="anchor" aria-label="anchor" href="#arg-variable"></a></dt>
@@ -252,7 +254,7 @@ definitive criteria for correction (see Details below).</p>
 
 
 <dt id="arg-cv">cv<a class="anchor" aria-label="anchor" href="#arg-cv"></a></dt>
-<dd><p>Ordinary leave-one-out (TRUE) or ‘generalized’ cross-validation (GCV) when FALSE; is used for smoothing parameter computation only when spar is not specified</p></dd>
+<dd><p>Ordinary leave-one-out (<code>TRUE</code>) or ‘generalized’ cross-validation (GCV) when <code>FALSE</code>; is used for smoothing parameter computation only when spar is not specified</p></dd>
 
 
 <dt id="arg-spar">spar<a class="anchor" aria-label="anchor" href="#arg-spar"></a></dt>
@@ -272,7 +274,7 @@ definitive criteria for correction (see Details below).</p>
 
 
 <dt id="arg-recalc-trend-after">recalc_trend_after<a class="anchor" aria-label="anchor" href="#arg-recalc-trend-after"></a></dt>
-<dd><p>Recalculate trend post-drift correction for <code>plot_qc_runscatter()</code>. This will double calculation time.</p></dd>
+<dd><p>Recalculate trend post-drift correction for <code><a href="plot_runscatter.html">plot_runscatter()</a></code>. This will double calculation time.</p></dd>
 
 
 <dt id="arg-log-transform-internal">log_transform_internal<a class="anchor" aria-label="anchor" href="#arg-log-transform-internal"></a></dt>
@@ -288,7 +290,7 @@ definitive criteria for correction (see Details below).</p>
 
 
 <dt id="arg-use-original-if-fail">use_original_if_fail<a class="anchor" aria-label="anchor" href="#arg-use-original-if-fail"></a></dt>
-<dd><p>Determines the action when smoothing fails or results in invalid values for a feature. If <code>FALSE</code> (default), the result for each feature will <code>NA</code> for all batches, if <code>TRUE</code>, the original data is kept.</p></dd>
+<dd><p>Determines the action when smoothing fails or results in invalid values for a feature. If <code>FALSE</code> (default), the result for each feature will be <code>NA</code> for all batches, if <code>TRUE</code>, the original data is kept.</p></dd>
 
 
 <dt id="arg-show-progress">show_progress<a class="anchor" aria-label="anchor" href="#arg-show-progress"></a></dt>
@@ -297,7 +299,7 @@ definitive criteria for correction (see Details below).</p>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>MRMhubExperiment object</p>
+    <p><code><a href="MRMhubExperiment-class.html">MRMhubExperiment</a></code> object</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -317,11 +319,11 @@ Nat Protoc 6, 1060–1083 (2011).
 <a href="https://doi.org/10.1038/nprot.2011.335" class="external-link">https://doi.org/10.1038/nprot.2011.335</a></p>
 <p>Kirwan, J.A., Broadhurst, D.I., Davidson, R.L. et al. Characterising and correcting
 batch variation in an automated direct infusion mass spectrometry (DIMS) metabolomics workflow.
-Anal Bioanal Chem 405, 5147–5157 (2013). https://doi-org.libproxy1.nus.edu.sg/10.1007/s00216-013-6856-7</p>
+Anal Bioanal Chem 405, 5147–5157 (2013). https://doi.org/10.1007/s00216-013-6856-7</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="https://rdrr.io/r/stats/smooth.spline.html" class="external-link">stats::smooth.spline()</a></code></p></div>
+    <div class="dont-index"><p><code><a href="https://rdrr.io/r/stats/smooth.spline.html" class="external-link">stats::smooth.spline()</a></code>; the <a href="https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.html">drift-correction tutorial</a> for a worked example.</p></div>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

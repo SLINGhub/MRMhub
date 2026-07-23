@@ -69,7 +69,7 @@ plot_calibrationcurves(
 
   If `TRUE`, the function will use the provided `fit_model` and
   `fit_weighting` values for all analytes and ignore any fit method and
-  weighting settings defined in the metadata .
+  weighting settings defined in the metadata.
 
 - fit_model:
 
@@ -90,7 +90,7 @@ plot_calibrationcurves(
 
   Logical, if `TRUE`, displays the confidence interval as ribbon.
   Default is `NA`, in which case confidence intervals are plotted in a
-  linear scale and ommitted in log-log scale.
+  linear scale and omitted in log-log scale.
 
 - ci_clip:
 
@@ -108,10 +108,7 @@ plot_calibrationcurves(
   logarithmic scale (log-log scale). Set to `TRUE` to enable logarithmic
   scaling; otherwise, set to `FALSE` for a linear scale. Note: If
   `TRUE`, any regression curves or standard error regions with negative
-  values will be omitted from display. equimolar response of spiked-in
-  non-labelled and labelled standards. At a normalized intensity of 1,
-  assuming an equimolar response, both types of standards are present at
-  equal concentrations.
+  values will be omitted from display.
 
 - filter_data:
 

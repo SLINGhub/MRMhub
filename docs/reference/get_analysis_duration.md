@@ -14,7 +14,9 @@ get_analysis_duration(data, estimate_sequence_end)
 
 - data:
 
-  A `MRMhubExperiment` object
+  A
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object
 
 - estimate_sequence_end:
 

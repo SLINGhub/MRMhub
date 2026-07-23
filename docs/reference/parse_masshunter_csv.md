@@ -21,10 +21,9 @@ parse_masshunter_csv(
 
 - expand_qualifier_names:
 
-  If TRUE, original qualifier names will be renamed by adding the
-  quantifier name in front and placing qualifier name into square
-  brackets(e.g. `Qualifier (422.3 -> 113.0)` transition names of
-  quantifier will be added to qualifier names
+  If `TRUE`, each qualifier is renamed by adding its quantifier's name
+  in front and placing the qualifier's m/z transition in square brackets
+  (e.g. `Qualifier (422.3 -> 113.0)`).
 
 - silent:
 
@@ -33,7 +32,7 @@ parse_masshunter_csv(
 - conc_column:
 
   Which concentration field of the masshunter data to use, in case
-  "Calc. Conc." and "Final. Conc." are present. Default is "conc_final".
+  "Calc. Conc." and "Final Conc" are present. Default is "conc_final".
 
 ## Value
 

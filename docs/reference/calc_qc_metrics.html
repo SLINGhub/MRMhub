@@ -46,11 +46,13 @@ of batch-wise calculations."><meta property="og:image" content="https://slinghub
     <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-05-run-scatter.html">RunScatter and PCA</a></li>
     <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Downstream / export</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-08-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Recipes</h6></li>
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
-    <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul></li>
 <li class="nav-item dropdown">
@@ -122,7 +124,7 @@ of batch-wise calculations.</p>
 
 
 <dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
-<dd><p>A <code>MRMhubExperiment</code> object containing data and metadata, whereby
+<dd><p>A <code><a href="MRMhubExperiment-class.html">MRMhubExperiment</a></code> object containing data and metadata, whereby
 data needs to be normalized and quantitated for specific QC metrics, such as
 statistics based on normalized intensities and concentrations.</p></dd>
 
@@ -130,7 +132,7 @@ statistics based on normalized intensities and concentrations.</p></dd>
 <dt id="arg-use-batch-medians">use_batch_medians<a class="anchor" aria-label="anchor" href="#arg-use-batch-medians"></a></dt>
 <dd><p>Logical, whether to compute QC metrics using the
 median of batch-wise derived values instead of the full dataset. Default is
-FALSE.</p></dd>
+<code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-use-robust-cv">use_robust_cv<a class="anchor" aria-label="anchor" href="#arg-use-robust-cv"></a></dt>
@@ -164,7 +166,7 @@ If <code>TRUE</code>, they are always incorporated.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <code>MRMhubExperiment</code> object with an updated <code>metrics_qc</code> table
+    <p>A <code><a href="MRMhubExperiment-class.html">MRMhubExperiment</a></code> object with an updated <code>metrics_qc</code> table
 containing computed QC metrics for each feature.</p>
     </div>
     <div class="section level2">
@@ -175,13 +177,13 @@ different QC sample types (e.g., SPL, TQC, BQC, PBLK, NIST, LTR)</p>
 <p>The format for the metrics is standardized as <code>metric_name_qc_type</code>, where
 <code>qc_type</code> refers to the specific QC sample type for which the metric is
 calculated. For example: <code>intensity_min_spl</code> refers to the minimum intensity
-Statistics of normalized intensities , external calibration, and response
+Statistics of normalized intensities, external calibration, and response
 curves can be included by setting the relevant arguments
 (<code>include_norm_intensity_stats</code>, <code>include_conc_stats</code>,
 <code>include_response_stats</code>, <code>include_calibration_results</code>) to <code>TRUE</code>.</p>
 <p><strong>Note</strong> when corresponding underlying processed data is not available,
 the function will not raise an error but will return <code>NA</code> values for the
-respective metrics. This, however, does not apply for the optinal metrics
+respective metrics. This, however, does not apply for the optional metrics
 mentioned above. For these cases an error will be raised if the underlying
 data is missing.</p>
 <p>If <code>use_batch_medians = TRUE</code>, batch-specific QC statistics are computed
@@ -190,21 +192,21 @@ However, response curve and calibration statistics are calculated per
 curve, irrespective of batches and <code>use_batch_medians</code> settings.</p>
 <p>The calculated metrics are stored in the <code>metrics_qc</code> table of the
 <code>MRMhubExperiment</code> objects and comprises following details</p><ul><li><p><strong>Feature details</strong>:
-Specific feature information extracted from the feature metadata tanle,
+Specific feature information extracted from the feature metadata table,
 such as feature class, associated ISTD, quantifier status.</p></li>
 <li><p><strong>Feature MS Method Information</strong> (if method variables are available in the analysis data).
 Extracts and summarizes method-related variables for each feature. If multiple
 values exist for the same feature, these will be concatenated into a string.
 The latter would indicate inconsistent analysis conditions.</p><ul><li><p><code>precursor_mz</code>: The m/z value of the precursor ion(s),</p></li>
 <li><p><code>product_mz</code>: The m/z value of the product ion(s), concatenated if multiple values exist for the same feature.</p></li>
-<li><p><code>collision_energy</code>: The collision energy used for fragmentation, concatenated if multiple values exist exist for the same feature.</p></li>
+<li><p><code>collision_energy</code>: The collision energy used for fragmentation, concatenated if multiple values exist for the same feature.</p></li>
 </ul></li>
 <li><p><strong>Missing Value Metrics</strong>:</p><ul><li><p><code>missing_intensity_prop_spl</code>: Proportion of missing intensities for the SPL sample type.</p></li>
 <li><p><code>missing_norm_intensity_prop_spl</code>: Proportion of missing normalized intensities for SPL samples.</p></li>
 <li><p><code>missing_conc_prop_spl</code>: Proportion of missing concentration values for SPL samples.</p></li>
 <li><p><code>na_in_all</code>: Indicator if a feature has all missing intensities across all samples</p></li>
 </ul></li>
-<li><p><strong>Retention Time (RT) Metrics</strong>: Requires that retention tim data are available.</p><ul><li><p><code>rt_min_*</code>: Minimum retention time across different QC sample types (e.g., SPL, BQC, TQC).</p></li>
+<li><p><strong>Retention Time (RT) Metrics</strong>: Requires that retention time data are available.</p><ul><li><p><code>rt_min_*</code>: Minimum retention time across different QC sample types (e.g., SPL, BQC, TQC).</p></li>
 <li><p><code>rt_max_*</code>: Maximum retention time across different QC sample types.</p></li>
 <li><p><code>rt_median_*</code>: Median retention time for specific QC sample types like PBLK, SPL, BQC, TQC, etc.</p></li>
 </ul></li>

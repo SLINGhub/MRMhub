@@ -12,7 +12,7 @@ The cubic spline smoothing approach, particularly when used with the
 regularization parameter `lambda`, is similar but not identical to
 previously described QC-based drift correction methods, such as **QC-RSC
 (Quality Control Regularized Spline Correction)**, described in Dunn et
-al. (Nat Protoc, 2011) and Kirwan et al. (Anal Bioanal Chem, 2014).
+al. (Nat Protoc, 2011) and Kirwan et al. (Anal Bioanal Chem, 2013).
 
 By default, the smoothing parameter is determined using
 cross-validation, which can lead to overfitting. To reduce overfitting
@@ -76,7 +76,8 @@ correct_drift_cubicspline(
 
 - data:
 
-  MRMhubExperiment object
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object
 
 - variable:
 
@@ -103,9 +104,9 @@ correct_drift_cubicspline(
 
 - cv:
 
-  Ordinary leave-one-out (TRUE) or ‘generalized’ cross-validation (GCV)
-  when FALSE; is used for smoothing parameter computation only when spar
-  is not specified
+  Ordinary leave-one-out (`TRUE`) or ‘generalized’ cross-validation
+  (GCV) when `FALSE`; is used for smoothing parameter computation only
+  when spar is not specified
 
 - spar:
 
@@ -131,7 +132,8 @@ correct_drift_cubicspline(
 
 - recalc_trend_after:
 
-  Recalculate trend post-drift correction for `plot_qc_runscatter()`.
+  Recalculate trend post-drift correction for
+  [`plot_runscatter()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.md).
   This will double calculation time.
 
 - log_transform_internal:
@@ -154,7 +156,7 @@ correct_drift_cubicspline(
 
   Determines the action when smoothing fails or results in invalid
   values for a feature. If `FALSE` (default), the result for each
-  feature will `NA` for all batches, if `TRUE`, the original data is
+  feature will be `NA` for all batches, if `TRUE`, the original data is
   kept.
 
 - show_progress:
@@ -164,7 +166,8 @@ correct_drift_cubicspline(
 
 ## Value
 
-MRMhubExperiment object
+[`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+object
 
 ## Details
 
@@ -185,9 +188,11 @@ liquid chromatography coupled to mass spectrometry. Nat Protoc 6,
 Kirwan, J.A., Broadhurst, D.I., Davidson, R.L. et al. Characterising and
 correcting batch variation in an automated direct infusion mass
 spectrometry (DIMS) metabolomics workflow. Anal Bioanal Chem 405,
-5147–5157 (2013).
-https://doi-org.libproxy1.nus.edu.sg/10.1007/s00216-013-6856-7
+5147–5157 (2013). https://doi.org/10.1007/s00216-013-6856-7
 
 ## See also
 
-[`stats::smooth.spline()`](https://rdrr.io/r/stats/smooth.spline.html)
+[`stats::smooth.spline()`](https://rdrr.io/r/stats/smooth.spline.html);
+the [drift-correction
+tutorial](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.html)
+for a worked example.

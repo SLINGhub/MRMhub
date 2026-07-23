@@ -22,17 +22,18 @@ parse_lipid_feature_names(
 
 - use_as_feature_class:
 
-  Set feature_class to lipid_class
+  Set `feature_class` to `lipid_class`
 
 - add_transition_names:
 
   add transition name and transition group, based on information in
-  square brackets in feature_id
+  square brackets in `feature_id`
 
 - add_chain_composition:
 
-  add total_c and total_db to the dataset
+  add `total_c` and `total_db` to the dataset
 
 ## Value
 
-MRMhubExperiment object
+The input data frame with added lipid class, species and transition name
+columns.

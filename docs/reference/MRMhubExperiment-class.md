@@ -31,15 +31,15 @@ processing steps, and the current status of the data.
 
 - `dataset_orig`:
 
-  Original imported analysis data. Required fields:
+  Original imported analysis data.
 
 - `dataset`:
 
-  Processed analysis data. Required fields:
+  Processed analysis data.
 
 - `dataset_filtered`:
 
-  Processed analysis data. Required fields:
+  QC-filtered processed analysis data.
 
 - `annot_analyses`:
 
@@ -55,19 +55,19 @@ processing steps, and the current status of the data.
 
 - `annot_responsecurves`:
 
-  Annotation of response curves (RQC). Required fields
+  Annotation of response curves (RQC).
 
 - `annot_qcconcentrations`:
 
-  Annotation of calibration curves. Required fields
+  Annotation of calibration curves.
 
 - `annot_studysamples`:
 
-  Annotation of study samples. Required fields:
+  Annotation of study samples.
 
 - `annot_batches`:
 
-  Annotation of batches. Required fields:
+  Annotation of batches.
 
 - `annot_interferences`:
 

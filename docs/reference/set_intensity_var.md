@@ -22,7 +22,8 @@ set_intensity_var(
 
 - data:
 
-  MRMhubExperiment object
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object
 
 - variable_name:
 
@@ -40,9 +41,9 @@ set_intensity_var(
 
 - ...:
 
-  Feature variables to best search for one-by-one when
-  `auto-detect = TRUE`
+  Feature variables to search for one-by-one when `auto_select = TRUE`
 
 ## Value
 
-MRMhubExperiment object
+[`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+object

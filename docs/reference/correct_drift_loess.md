@@ -77,7 +77,8 @@ correct_drift_loess(
 
 - data:
 
-  MRMhubExperiment object
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object
 
 - variable:
 
@@ -120,7 +121,8 @@ correct_drift_loess(
 
 - recalc_trend_after:
 
-  Recalculate trend post-drift correction for `plot_qc_runscatter()`.
+  Recalculate trend post-drift correction for
+  [`plot_runscatter()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.md).
   This will double calculation time.
 
 - log_transform_internal:
@@ -128,7 +130,7 @@ correct_drift_loess(
   Log transform the data for correction when `TRUE` (the default). Note:
   log transformation is solely applied internally for smoothing, results
   will not be be log-transformed. Log transformation may result in more
-  robust smoothing that is less sensitive to outlier.
+  robust smoothing that is less sensitive to outliers.
 
 - feature_list:
 
@@ -148,7 +150,7 @@ correct_drift_loess(
 
   Determines the action when smoothing fails or results in invalid
   values for a feature. If `FALSE` (default), the result for each
-  feature will `NA` for all batches, if `TRUE`, the original data is
+  feature will be `NA` for all batches, if `TRUE`, the original data is
   kept.
 
 - extrapolate:
@@ -164,7 +166,8 @@ correct_drift_loess(
 
 ## Value
 
-MRMhubExperiment object
+[`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+object
 
 ## Details
 
@@ -174,3 +177,9 @@ the correction passed the defined CV difference threshold in case of
 conditional correction (`conditional_correction = TRUE`). For batch-wise
 correction, the change is calculated per batch, with the final median CV
 change being the median of these batch medians across features.
+
+## See also
+
+The [drift-correction
+tutorial](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.html)
+for a worked example.

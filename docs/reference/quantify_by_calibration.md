@@ -9,7 +9,7 @@ weighting method (either "none", "1/x", or "1/x^2") can be defined
 globally via the arguments `fit_model` and `fit_weighting` for all
 features, if `fit_overwrite` is `TRUE`. Alternatively, the model and
 weighting can be defined individually for each feature in the `feature`
-metadata (columns `curve_fit_model` and `fit_weighting`). If these
+metadata (columns `curve_fit_model` and `curve_fit_weighting`). If these
 details are missing in the metadata, the default values provided via
 `fit_model` and `fit_weighting` will be used.
 
@@ -32,7 +32,9 @@ quantify_by_calibration(
 
 - data:
 
-  A `MRMhubExperiment` object
+  A
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object
 
 - include_qualifier:
 
@@ -84,7 +86,9 @@ quantify_by_calibration(
 
 ## Value
 
-A modified `MRMhubExperiment` object with updated concentration values.
+A modified
+[`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+object with updated concentration values.
 
 ## Details
 

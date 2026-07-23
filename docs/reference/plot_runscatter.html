@@ -4,12 +4,9 @@ different sample/QC types along the analysis sequence. It helps identify
 trends, detect outliers, and assess analytical performance. Available
 feature variables, such as retention time (RT) and full width at
 half maximum (FWHM), can be plotted against analysis order or timestamps.
-By default, all QC types present in the dataset will be plotted. QC types that
-predefined colors or shapes are assigned black shapes.
-User-defined QC types that have no predefined colors or shapes in mrmhub.
-will be assigned black shapes.
-have no predefined color and shape, will be assigned shapes in black. To show specific
-QC types use the qc_types argument.
+By default, all QC types present in the dataset will be plotted. User-defined
+QC types that have no predefined color or shape in mrmhub are assigned black
+shapes. To show specific QC types, use the qc_types argument.
 To plot the feature values before the last applied drift/batch correction,
 add *_before to the variable name, e.g., intensity_before or conc_before.
 To plot the uncorrected feature values (before any drift/batch correction),
@@ -27,12 +24,9 @@ different sample/QC types along the analysis sequence. It helps identify
 trends, detect outliers, and assess analytical performance. Available
 feature variables, such as retention time (RT) and full width at
 half maximum (FWHM), can be plotted against analysis order or timestamps.
-By default, all QC types present in the dataset will be plotted. QC types that
-predefined colors or shapes are assigned black shapes.
-User-defined QC types that have no predefined colors or shapes in mrmhub.
-will be assigned black shapes.
-have no predefined color and shape, will be assigned shapes in black. To show specific
-QC types use the qc_types argument.
+By default, all QC types present in the dataset will be plotted. User-defined
+QC types that have no predefined color or shape in mrmhub are assigned black
+shapes. To show specific QC types, use the qc_types argument.
 To plot the feature values before the last applied drift/batch correction,
 add *_before to the variable name, e.g., intensity_before or conc_before.
 To plot the uncorrected feature values (before any drift/batch correction),
@@ -86,11 +80,13 @@ providing critical insights into data quality."><meta property="og:image" conten
     <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-05-run-scatter.html">RunScatter and PCA</a></li>
     <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Downstream / export</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-08-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Recipes</h6></li>
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
-    <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul></li>
 <li class="nav-item dropdown">
@@ -143,12 +139,9 @@ different sample/QC types along the analysis sequence. It helps identify
 trends, detect outliers, and assess analytical performance. Available
 feature variables, such as retention time (RT) and full width at
 half maximum (FWHM), can be plotted against analysis order or timestamps.</p>
-<p>By default, all QC types present in the dataset will be plotted. QC types that
-predefined colors or shapes are assigned black shapes.
-User-defined QC types that have no predefined colors or shapes in mrmhub.
-will be assigned black shapes.
-have no predefined color and shape, will be assigned shapes in black. To show specific
-QC types use the <code>qc_types</code> argument.</p>
+<p>By default, all QC types present in the dataset will be plotted. User-defined
+QC types that have no predefined color or shape in mrmhub are assigned black
+shapes. To show specific QC types, use the <code>qc_types</code> argument.</p>
 <p>To plot the feature values before the last applied drift/batch correction,
 add <code>*_before</code> to the variable name, e.g., <code>intensity_before</code> or <code>conc_before</code>.
 To plot the uncorrected feature values (before any drift/batch correction),
@@ -234,7 +227,7 @@ providing critical insights into data quality.</p>
 
 <dt id="arg-variable">variable<a class="anchor" aria-label="anchor" href="#arg-variable"></a></dt>
 <dd><p>The variable to plot on the y-axis, one of 'intensity',
-'norm_intensity', 'conc', 'conc', 'rt', 'fwhm', 'area', 'height', response'.
+'norm_intensity', 'conc', 'rt', 'fwhm', 'area', 'height', 'response'.
 Add <code>_before</code> after the variable name to plot the feature values before the last
 applied drift/batch correction, (e.g., <code>conc_before</code>). Add <code>_raw</code> after the
 variable name to plot the raw uncorrected feature values (e.g., <code>conc_raw</code>).</p></dd>
@@ -364,7 +357,7 @@ If <code>NA</code> (default), the color assigned to the qc_type is used.</p></dd
 
 
 <dt id="arg-y-lim">y_lim<a class="anchor" aria-label="anchor" href="#arg-y-lim"></a></dt>
-<dd><p>Numeric vector of length 2, specifying the lower and upper y-axis limits. Default is `c(0,NA)“, which sets the lower limit to 0 and the upper limit automatically.</p></dd>
+<dd><p>Numeric vector of length 2, specifying the lower and upper y-axis limits. Default is <code>c(0,NA)</code>, which sets the lower limit to 0 and the upper limit automatically.</p></dd>
 
 
 <dt id="arg-log-scale">log_scale<a class="anchor" aria-label="anchor" href="#arg-log-scale"></a></dt>
@@ -477,7 +470,7 @@ based on median absolute deviation (MAD) fences of SPL and QC samples, or to
 remove the top n points. This can help to focus on the trends of interest when
 there are outlier or a high variability in the data, e.g. in the study samples.</p></li>
 <li><p>When using log-scale (<code>log_scale = TRUE</code>), zero or negative values will
-replaced with the minimum positive value divided by 5 to avoid log 0 errors</p></li>
+be replaced with the minimum positive value divided by 5 to avoid log 0 errors</p></li>
 <li><p>Reference lines/ranges corresponding to mean \(\pm\) k x SD can be shown across
 or within batches as lines or shaded stripes.</p></li>
 <li><p>Trend curves can be displayed before or after drift/batch correction. In

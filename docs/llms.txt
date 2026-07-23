@@ -102,41 +102,65 @@ Functions to create, access and query MRMhubExperiment objects, which
 are the central data object in the MRMhub workflow.
 
 - [`MRMhubExperiment()`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment.md)
-  : Constructor for the MRMhubExperiment object
+  :
+
+  Constructor for the `MRMhubExperiment` object
+
 - [`MRMhubExperiment-class`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
   : S4 class representing the MRMhub dataset
+
 - [`` `$`( ``*`<MRMhubExperiment>`*`)`](https://slinghub.github.io/MRMhub/quant/reference/cash-MRMhubExperiment-method.md)
-  : Access slots of a MRMhubExperiment object via \$ syntax
+  :
+
+  Access slots of a `MRMhubExperiment` object via \$ syntax
+
 - [`status()`](https://slinghub.github.io/MRMhub/quant/reference/status.md)
-  : Detailed processing and metadata report for a MRMhubExperiment
+  :
+
+  Detailed processing and metadata report for a `MRMhubExperiment`
+
 - [`set_analysis_order()`](https://slinghub.github.io/MRMhub/quant/reference/set_analysis_order.md)
   : Set analysis order
+
 - [`get_batch_boundaries()`](https://slinghub.github.io/MRMhub/quant/reference/get_batch_boundaries.md)
   : Get the start and end analysis numbers of specified batches
+
 - [`data_sum_features()`](https://slinghub.github.io/MRMhub/quant/reference/data_sum_features.md)
   : Sum up feature intensities per analyte
+
 - [`exclude_analyses()`](https://slinghub.github.io/MRMhub/quant/reference/exclude_analyses.md)
   : Exclude analyses from the dataset
+
 - [`exclude_features()`](https://slinghub.github.io/MRMhub/quant/reference/exclude_features.md)
   : Exclude features from the dataset
+
 - [`get_analyticaldata()`](https://slinghub.github.io/MRMhub/quant/reference/get_analyticaldata.md)
   : Get the annotated or the originally imported analytical data
+
 - [`set_intensity_var()`](https://slinghub.github.io/MRMhub/quant/reference/set_intensity_var.md)
   : Set default variable to be used as feature raw signal value
+
 - [`get_analysis_count()`](https://slinghub.github.io/MRMhub/quant/reference/get_analysis_count.md)
   : Get the number of analyses in the dataset
+
 - [`get_analyis_start()`](https://slinghub.github.io/MRMhub/quant/reference/get_analyis_start.md)
   : Get the start time of the analysis sequence
+
 - [`get_analyis_end()`](https://slinghub.github.io/MRMhub/quant/reference/get_analyis_end.md)
   : Get the end time of the analysis sequence
+
 - [`get_analysis_breaks()`](https://slinghub.github.io/MRMhub/quant/reference/get_analysis_breaks.md)
   : Get the number of analysis breaks in the analysis
+
 - [`get_analysis_duration()`](https://slinghub.github.io/MRMhub/quant/reference/get_analysis_duration.md)
   : Get the total duration of the analysis
+
 - [`get_runtime_median()`](https://slinghub.github.io/MRMhub/quant/reference/get_runtime_median.md)
   : Get the median run time
+
 - [`get_feature_count()`](https://slinghub.github.io/MRMhub/quant/reference/get_feature_count.md)
   : Get the number of features in the dataset
+
 - [`get_featurelist()`](https://slinghub.github.io/MRMhub/quant/reference/get_featurelist.md)
   : Get feature IDs
 
@@ -180,24 +204,35 @@ MRMhub Excel template or CSV files.
 
 - [`import_metadata_analyses()`](https://slinghub.github.io/MRMhub/quant/reference/import_metadata_analyses.md)
   : Import analysis metadata
+
 - [`import_metadata_features()`](https://slinghub.github.io/MRMhub/quant/reference/import_metadata_features.md)
   : Import feature metadata
+
 - [`import_metadata_istds()`](https://slinghub.github.io/MRMhub/quant/reference/import_metadata_istds.md)
   : Import internal standards (ISTD) metadata
+
 - [`import_metadata_responsecurves()`](https://slinghub.github.io/MRMhub/quant/reference/import_metadata_responsecurves.md)
   : Import response curves metadata
+
 - [`import_metadata_qcconcentrations()`](https://slinghub.github.io/MRMhub/quant/reference/import_metadata_qcconcentrations.md)
   : Import calibration curves metadata
+
 - [`import_metadata_msorganiser()`](https://slinghub.github.io/MRMhub/quant/reference/import_metadata_msorganiser.md)
   : Import metadata from a MRMhub Metadata Organizer file
+
 - [`import_metadata_from_data()`](https://slinghub.github.io/MRMhub/quant/reference/import_metadata_from_data.md)
   : Retrieve metadata from imported analysis data
+
 - [`save_metadata_templates()`](https://slinghub.github.io/MRMhub/quant/reference/save_metadata_templates.md)
-  : Saves a Excel (xlsx) file with metadata templates
+  : Saves an Excel (xlsx) file with metadata templates
+
 - [`save_metadata_msorganiser_template()`](https://slinghub.github.io/MRMhub/quant/reference/save_metadata_msorganiser_template.md)
   : Saves a MRMhub Metadata Organizer template
+
 - [`add_metadata()`](https://slinghub.github.io/MRMhub/quant/reference/add_metadata.md)
-  : Add metadata to an MRMhubExperiment object
+  :
+
+  Add metadata to an `MRMhubExperiment` object
 
 ## Isotope correction
 
@@ -229,7 +264,7 @@ Function to plot and analyze external calibration curves
 - [`get_calibration_metrics()`](https://slinghub.github.io/MRMhub/quant/reference/get_calibration_metrics.md)
   : Get calibration metrics
 - [`get_qc_bias_variability()`](https://slinghub.github.io/MRMhub/quant/reference/get_qc_bias_variability.md)
-  : Retrieve calibration regression results
+  : Retrieve QC bias and variability metrics
 
 ## Normalization, Quantification
 
@@ -345,10 +380,14 @@ Example datasets for testing and demonstration.
 
 - [`lipidomics_dataset`](https://slinghub.github.io/MRMhub/quant/reference/lipidomics_dataset.md)
   : Plasma lipidomics dataset with metadata
+
 - [`quant_lcms_dataset`](https://slinghub.github.io/MRMhub/quant/reference/quant_lcms_dataset.md)
   : LC-MS dataset with external calibration curve and metadata
+
 - [`data_load_example()`](https://slinghub.github.io/MRMhub/quant/reference/data_load_example.md)
-  : Load an example MRMhubExperiment dataset
+  :
+
+  Load an example `MRMhubExperiment` dataset
 
 ## Helper functions
 
@@ -498,13 +537,6 @@ spectrometry is also available.
   import results from tools such as Lipid Data Analyzer, MS-DIAL or
   MZmine.
 
-- [Export to Bioconductor
-  (SummarizedExperiment)](https://slinghub.github.io/MRMhub/quant/articles/recipe-04-summarizedexperiment.md):
-
-  Export a processed MRMhubExperiment as a Bioconductor
-  SummarizedExperiment, and take it downstream: differential abundance
-  with limma, or lipid-specific analysis with lipidr.
-
 - [Import Metadata from Files or a
   Template](https://slinghub.github.io/MRMhub/quant/articles/recipe-05-import-metadata.md):
 
@@ -547,6 +579,13 @@ spectrometry is also available.
 
 - [Calibration by a Reference
   Sample](https://slinghub.github.io/MRMhub/quant/articles/tutorial-07-calibration-reference.md):
+
+- [Export to Bioconductor
+  (SummarizedExperiment)](https://slinghub.github.io/MRMhub/quant/articles/tutorial-08-summarizedexperiment.md):
+
+  Export a processed MRMhubExperiment as a Bioconductor
+  SummarizedExperiment, and take it downstream: differential abundance
+  with limma, or lipid-specific analysis with lipidr.
 
 - [Validating and Fixing
   Metadata](https://slinghub.github.io/MRMhub/quant/articles/tutorial-10-metadata-validation.md):

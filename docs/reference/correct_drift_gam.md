@@ -63,7 +63,8 @@ correct_drift_gam(
 
 - data:
 
-  MRMhubExperiment object
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object
 
 - variable:
 
@@ -116,7 +117,8 @@ correct_drift_gam(
 
 - recalc_trend_after:
 
-  Recalculate trend post-drift correction for `plot_qc_runscatter()`.
+  Recalculate trend post-drift correction for
+  [`plot_runscatter()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.md).
   This will double calculation time.
 
 - feature_list:
@@ -133,7 +135,7 @@ correct_drift_gam(
 
   Determines the action when smoothing fails or results in invalid
   values for a feature. If `FALSE` (default), the result for each
-  feature will `NA` for all batches, if `TRUE`, the original data is
+  feature will be `NA` for all batches, if `TRUE`, the original data is
   kept.
 
 - show_progress:
@@ -143,7 +145,8 @@ correct_drift_gam(
 
 ## Value
 
-MRMhubExperiment object
+[`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+object
 
 ## Details
 
@@ -160,4 +163,7 @@ penalized splines, implemented via
 
 ## See also
 
-[`mgcv::gam()`](https://rdrr.io/pkg/mgcv/man/gam.html)
+[`mgcv::gam()`](https://rdrr.io/pkg/mgcv/man/gam.html); the
+[drift-correction
+tutorial](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.html)
+for a worked example.

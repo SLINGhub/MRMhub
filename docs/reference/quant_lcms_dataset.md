@@ -17,7 +17,7 @@ A `MRMhubExperiment` object with the following data and metadata:
 
 - dataset_orig:
 
-  Original data (peak datas).
+  Original data (peak data).
 
 - dataset:
 

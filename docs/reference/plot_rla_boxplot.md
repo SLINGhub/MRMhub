@@ -3,7 +3,7 @@
 The Relative Log Abundance (RLA) plot visualizes standardized feature
 abundances distributions across samples. RLA standardization involves
 subtracting either the within-batch or across-batch median from each
-feature's log-transformed abundance. Thse plots are effective for
+feature's log-transformed abundance. These plots are effective for
 identifying systematic technical variations, such as batch effects,
 instrument drift, or sample handling inconsistencies, by providing a
 robust representation less susceptible to global intensity shifts.
@@ -12,7 +12,7 @@ The function also incorporates optional outlier detection and
 visualization functionalities to identify anomalous samples based on
 their median RLA values.
 
-This funcion returns a list with the ggplot object representing the RLA
+This function returns a list with the ggplot object representing the RLA
 plot and a table with detected outliers (if `outlier_detection = TRUE`).
 
 ## Usage

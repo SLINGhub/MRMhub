@@ -44,11 +44,13 @@ the corresponding spiked-in ISTD amount, and the per-feature response factor
     <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-05-run-scatter.html">RunScatter and PCA</a></li>
     <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Downstream / export</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-08-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Recipes</h6></li>
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
-    <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul></li>
 <li class="nav-item dropdown">
@@ -116,7 +118,7 @@ the corresponding spiked-in ISTD amount, and the per-feature response factor
 
 
 <dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
-<dd><p>A <code>MRMhubExperiment</code> object</p></dd>
+<dd><p>A <code><a href="MRMhubExperiment-class.html">MRMhubExperiment</a></code> object</p></dd>
 
 
 <dt id="arg-concentration-unit">concentration_unit<a class="anchor" aria-label="anchor" href="#arg-concentration-unit"></a></dt>
@@ -135,13 +137,14 @@ If <code>TRUE</code>, missing annotations will be ignored, and resulting feature
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <code>MRMhubExperiment</code> object with the calculated analyte concentrations added to the
+    <p>A <code><a href="MRMhubExperiment-class.html">MRMhubExperiment</a></code> object with the calculated analyte concentrations added to the
 <code>dataset</code> table in the <code>feature_conc</code> column (and the intermediate <code>feature_pmol_total</code>).</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The ISTD used for quantitation is the feature's normalization ISTD
-(<code>istd_feature_id</code>); a separate quantitation ISTD is not supported.</p>
+    <p>The ISTD used for quantitation is taken from the <code>quant_istd_feature_id</code>
+column, which is currently always derived from the feature's normalization
+ISTD (<code>istd_feature_id</code>).</p>
 <p>By default, concentrations are returned in molar units (e.g., µmol/L). To return concentrations in mass units
 (e.g., µg/L), set <code>concentration_unit = "mass"</code>. This requires either the chemical formula or molecular weight
 for each feature to be specified in the feature metadata.</p>

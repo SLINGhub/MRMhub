@@ -1,8 +1,7 @@
 # Drift correction by custom function
 
 Function to correct for run-order drifts within or across batches via a
-provided custom function \#' @details The drift correction function
-needs to be provided by the user. See `smooth_fun` for details.
+provided custom function
 
 ## Usage
 
@@ -30,15 +29,25 @@ correct_drift(
 
 - data:
 
-  MRMhubExperiment object
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object
 
 - smooth_fun:
 
-  Function that performs drift correction. Function need to have
-  following parameter `data` (`MRMhubExperiment`), `ref_qc_types` (one
-  or more strings), and `span_width` (numerical). Function needs to
-  return a numerical vector with the length of number of rows in `data`.
-  In case functions fails a vector with NA_real\_ needs be returned
+  Function that performs the drift correction for a single feature
+  within one batch. It must accept the arguments `tbl` (a data frame
+  with the columns `qc_type`, `x` (run-order number), `y` (the variable
+  to correct), and `analysis_id`, `feature_id`, `batch_id`),
+  `ref_qc_types` (one or more QC-type strings used to fit the trend),
+  `log_transform_internal` (logical), and `...` (smoother-specific
+  parameters such as `span` or `degree`). It must return a named list
+  carrying `y_adj` (the drift-adjusted `y`) and `fit_error` (logical),
+  and typically also `y_fit`, `fit_warning`, and the passed-through
+  `analysis_id`, `feature_id`, `batch_id`, `qc_type`, and `x`. When the
+  fit fails it must return that same structure with `y_adj = NA_real_`
+  and `fit_error = TRUE`. See
+  [`fun_loess()`](https://slinghub.github.io/MRMhub/quant/reference/fun_loess.md)
+  for a reference implementation.
 
 - variable:
 
@@ -82,8 +91,8 @@ correct_drift(
 - use_original_if_fail:
 
   Determines the action when smoothing fails or results in invalid
-  values for a feature. If TRUE (default), the original data is used; if
-  FALSE, the result for each analysis is NA.
+  values for a feature. If `TRUE` (default), the original data is used;
+  if `FALSE`, the result for each analysis is NA.
 
 - ignore_istd:
 
@@ -97,12 +106,13 @@ correct_drift(
 
 - recalc_trend_after:
 
-  Recalculate trend post-drift correction for `plot_qc_runscatter()`.
+  Recalculate trend post-drift correction for
+  [`plot_runscatter()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.md).
   This will double calculation time.
 
 - show_progress:
 
-  Show progress bar. Default = \`TRUE.
+  Show progress bar. Default = `TRUE`.
 
 - ...:
 
@@ -110,4 +120,10 @@ correct_drift(
 
 ## Value
 
-MRMhubExperiment object
+[`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+object
+
+## Details
+
+The drift correction function needs to be provided by the user. See
+`smooth_fun` for details.

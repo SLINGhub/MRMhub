@@ -37,7 +37,8 @@ correct_isotopic_interferences(
 
 - data:
 
-  MRMhubExperiment object.
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object.
 
 - variable:
 
@@ -58,7 +59,8 @@ correct_isotopic_interferences(
 
 ## Value
 
-MRMhubExperiment object with feature intensities corrected.
+[`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+object with feature intensities corrected.
 
 ## References
 
@@ -67,3 +69,8 @@ LICAR: An Application for Isotopic Correction of Targeted Lipidomic Data
 Acquired with Class-Based Chromatographic Separations Using Multiple
 Reaction Monitoring. *Analytical Chemistry*, 93(6), 3163-3171.
 <https://doi.org/10.1021/acs.analchem.0c04565>
+
+## See also
+
+The [interference-correction
+guide](https://slinghub.github.io/MRMhub/quant/articles/manual-12-interference-correction.html).

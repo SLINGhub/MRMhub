@@ -52,11 +52,13 @@ on top of previous corrections or replace all prior batch corrections.'><meta pr
     <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-05-run-scatter.html">RunScatter and PCA</a></li>
     <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Downstream / export</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-08-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Recipes</h6></li>
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
-    <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul></li>
 <li class="nav-item dropdown">
@@ -133,7 +135,7 @@ on top of previous corrections or replace all prior batch corrections.</p>
 
 
 <dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
-<dd><p>A <code>MRMhubExperiment</code> object containing the data to be corrected.
+<dd><p>A <code><a href="MRMhubExperiment-class.html">MRMhubExperiment</a></code> object containing the data to be corrected.
 This object must include information about QC types and measurements.</p></dd>
 
 
@@ -175,7 +177,7 @@ data are on the raw (untransformed) scale.</p></dd>
 
 <dt id="arg-replace-exisiting-trendcurves">replace_exisiting_trendcurves<a class="anchor" aria-label="anchor" href="#arg-replace-exisiting-trendcurves"></a></dt>
 <dd><p>A logical value indicating whether to replace
-trend curves from previous corrections. This is only use for plotting using <code><a href="plot_runscatter.html">plot_runscatter()</a></code>. Default is <code>FALSE</code>.</p></dd>
+trend curves from previous corrections. This is only used for plotting using <code><a href="plot_runscatter.html">plot_runscatter()</a></code>. Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -185,11 +187,11 @@ function.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <code>MRMhubExperiment</code> object containing the corrected data.</p>
+    <p>A <code><a href="MRMhubExperiment-class.html">MRMhubExperiment</a></code> object containing the corrected data.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code>plot_runscatter</code> for visualizing the correction before and after.</p></div>
+    <div class="dont-index"><p><code><a href="plot_runscatter.html">plot_runscatter()</a></code> for visualizing the correction before and after; the <a href="https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.html">drift-correction tutorial</a> for a worked example.</p></div>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

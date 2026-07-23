@@ -28,8 +28,10 @@ correct_batch_centering(
 
 - data:
 
-  A `MRMhubExperiment` object containing the data to be corrected. This
-  object must include information about QC types and measurements.
+  A
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object containing the data to be corrected. This object must include
+  information about QC types and measurements.
 
 - variable:
 
@@ -73,7 +75,7 @@ correct_batch_centering(
 - replace_exisiting_trendcurves:
 
   A logical value indicating whether to replace trend curves from
-  previous corrections. This is only use for plotting using
+  previous corrections. This is only used for plotting using
   [`plot_runscatter()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.md).
   Default is `FALSE`.
 
@@ -84,8 +86,13 @@ correct_batch_centering(
 
 ## Value
 
-A `MRMhubExperiment` object containing the corrected data.
+A
+[`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+object containing the corrected data.
 
 ## See also
 
-`plot_runscatter` for visualizing the correction before and after.
+[`plot_runscatter()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.md)
+for visualizing the correction before and after; the [drift-correction
+tutorial](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.html)
+for a worked example.

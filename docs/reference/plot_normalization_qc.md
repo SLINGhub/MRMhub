@@ -186,7 +186,7 @@ plot_normalization_qc(
   before_norm_var = "intensity",
   after_norm_var = "norm_intensity",
   plot_type = "scatter",
-  qc_type = "SPL",
+  qc_types = "SPL",
   filter_data = FALSE,
   facet_by_class = TRUE,
   cv_threshold_value = 25

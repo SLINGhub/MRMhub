@@ -51,13 +51,13 @@ mexp <- import_metadata_msorganiser(
 #>   "CAL", "EQA", "PQC", "TQC", "BQC", "RQC", "EQC", "NIST", "LTR", "SPL", "SST",
 #>   and "MBLK" ("Sample" is an alias for "SPL").
 #> Found no errors, no warnings, and 1 note in the metadata.
-#> --------------------------------------------------------------------------------
+#> -------------------------------------------------------------
 #>   Type  Table    Column    Issue                        Count
 #> 1 N     Analyses sample_id Not defined for all analyses     8
 #> 
-#> --------------------------------------------------------------------------------
+#> -------------------------------------------------------------
 #> E = Error, W = Warning, W* = Suppressed Warning, N = Note
-#> --------------------------------------------------------------------------------
+#> -------------------------------------------------------------
 ```
 
 Next, the raw peak areas are normalized with the corresponding internal
@@ -84,8 +84,7 @@ mexp <- calc_calibration_results(
     fit_model = "quadratic",
     fit_weighting = "1/x",log_scale = TRUE,
     rows_page = 2,
-    cols_page = 4, show_progress = FALSE
-  )
+    cols_page = 4, show_progress = FALSE)
 ```
 
 ![Calibration

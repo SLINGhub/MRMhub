@@ -54,9 +54,9 @@ order_chained_columns_tbl(
 
 ## Value
 
-A data frame containing ordered chains with a `chain_id` column to
-distinguish between different chains. If disconnected rows are included,
-they will have their own `chain_id`.
+A data frame containing ordered chains. If `include_chain_id = TRUE`, a
+`chain_id` column is added to distinguish between different chains; when
+disconnected rows are included, they will have their own `chain_id`.
 
 ## Examples
 
@@ -80,7 +80,7 @@ order_chained_columns_tbl(df_unordered, "From", "To", FALSE, "keep")
 #> 2 DIFFERENT NOTSAME
 #> 7   OUTLIER INSIDER
 
-# Ordr excluding disconnected rows
+# Order excluding disconnected rows
 order_chained_columns_tbl(df_unordered, "From", "To", FALSE, "exclude")
 #>      From      To
 #> 6   START     MID

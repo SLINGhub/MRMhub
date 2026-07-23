@@ -17,7 +17,9 @@ import_data_mztab(data = NULL, path, import_metadata = TRUE, silent = FALSE)
 
 - data:
 
-  An `MRMhubExperiment` object (e.g. from
+  An
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object (e.g. from
   [`MRMhubExperiment()`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment.md)).
 
 - path:
@@ -36,7 +38,8 @@ import_data_mztab(data = NULL, path, import_metadata = TRUE, silent = FALSE)
 
 ## Value
 
-The updated `MRMhubExperiment`.
+The updated
+[`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md).
 
 ## Details
 

@@ -68,11 +68,13 @@
     <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-05-run-scatter.html">RunScatter and PCA</a></li>
     <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Downstream / export</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-08-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Recipes</h6></li>
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
-    <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul>
 </li>
@@ -181,8 +183,7 @@ output file; the file also carries some metadata (<code>qc_type</code>,
 <code class="sourceCode R"><span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_data_mrmhub.html">import_data_mrmhub</a></span><span class="op">(</span></span>
 <span>  <span class="va">myexp</span>,</span>
 <span>  path <span class="op">=</span> <span class="st">"datasets/sPerfect_MRMhub.tsv"</span>,</span>
-<span>  import_metadata <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span>  import_metadata <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Imported 499 analyses with 503 features.</span></code></pre>
 </div>
@@ -209,19 +210,18 @@ MSOrganiser template:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>myexp <span class="ot">&lt;-</span> <span class="fu">import_metadata_msorganiser</span>(</span>
 <span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  myexp,</span>
 <span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="at">path =</span> <span class="st">"datasets/sPerfect_Metadata.xlsx"</span>,</span>
-<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  <span class="at">ignore_warnings =</span> <span class="cn">TRUE</span></span>
-<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>)</span>
-<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>Found no errors, <span class="dv">4</span> warnings, and no notes <span class="cf">in</span> the metadata.</span>
-<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="sc">--------------------------------------------------------------------------------</span></span>
-<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>  Type  Table    Column                Issue                           Count</span>
-<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a><span class="dv">1</span> W<span class="sc">*</span>    Analyses analysis_id           Analyses not <span class="cf">in</span> analysis data      <span class="dv">15</span></span>
-<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="dv">2</span> W<span class="sc">*</span>    Features feature_id            <span class="fu">Feature</span>(s) without metadata         <span class="dv">1</span></span>
-<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a><span class="dv">3</span> W<span class="sc">*</span>    Features feature_id            <span class="fu">Feature</span>(s) not <span class="cf">in</span> analysis data     <span class="dv">4</span></span>
-<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a><span class="dv">4</span> W<span class="sc">*</span>    ISTDs    quant_istd_feature_id Internal <span class="fu">standard</span>(s) not used       <span class="dv">1</span></span>
-<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a></span>
-<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a><span class="sc">--------------------------------------------------------------------------------</span></span>
-<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a>E <span class="ot">=</span> Error, W <span class="ot">=</span> Warning, W<span class="sc">*</span> <span class="er">=</span> Suppressed Warning, N <span class="ot">=</span> Note</span>
-<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a><span class="sc">--------------------------------------------------------------------------------</span></span></code></pre></div>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  <span class="at">ignore_warnings =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>Found no errors, <span class="dv">4</span> warnings, and no notes <span class="cf">in</span> the metadata.</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="sc">----------------------------------------------------------------------------</span></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>  Type  Table    Column                Issue                           Count</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="dv">1</span> W<span class="sc">*</span>    Analyses analysis_id           Analyses not <span class="cf">in</span> analysis data      <span class="dv">15</span></span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a><span class="dv">2</span> W<span class="sc">*</span>    Features feature_id            <span class="fu">Feature</span>(s) without metadata         <span class="dv">1</span></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="dv">3</span> W<span class="sc">*</span>    Features feature_id            <span class="fu">Feature</span>(s) not <span class="cf">in</span> analysis data     <span class="dv">4</span></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a><span class="dv">4</span> W<span class="sc">*</span>    ISTDs    quant_istd_feature_id Internal <span class="fu">standard</span>(s) not used       <span class="dv">1</span></span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a></span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a><span class="sc">----------------------------------------------------------------------------</span></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>E <span class="ot">=</span> Error, W <span class="ot">=</span> Warning, W<span class="sc">*</span> <span class="er">=</span> Suppressed Warning, N <span class="ot">=</span> Note</span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a><span class="sc">----------------------------------------------------------------------------</span></span></code></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Analysis metadata associated with 499 analyses.</span></code></pre>
 </div>
@@ -254,22 +254,19 @@ between-batch effects, and filter features on QC criteria.</p>
 <span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/correct_drift_gaussiankernel.html">correct_drift_gaussiankernel</a></span><span class="op">(</span></span>
 <span>  <span class="va">myexp</span>,</span>
 <span>  variable <span class="op">=</span> <span class="st">"conc"</span>,</span>
-<span>  ref_qc_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SPL"</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
+<span>  ref_qc_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SPL"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/correct_batch_centering.html">correct_batch_centering</a></span><span class="op">(</span></span>
 <span>  <span class="va">myexp</span>,</span>
 <span>  variable <span class="op">=</span> <span class="st">"conc"</span>,</span>
-<span>  ref_qc_types <span class="op">=</span> <span class="st">"SPL"</span></span>
-<span><span class="op">)</span></span>
+<span>  ref_qc_types <span class="op">=</span> <span class="st">"SPL"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/filter_features_qc.html">filter_features_qc</a></span><span class="op">(</span></span>
 <span>  <span class="va">myexp</span>,</span>
 <span>  include_qualifier <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  include_istd <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  min.signalblank.median.spl.sblk <span class="op">=</span> <span class="fl">10</span>,</span>
-<span>  max.cv.conc.bqc <span class="op">=</span> <span class="fl">25</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span>  max.cv.conc.bqc <span class="op">=</span> <span class="fl">25</span><span class="op">)</span></span></code></pre></div>
 <p>The drift correction here fits on the study samples
 (<code>ref_qc_types = "SPL"</code>). Study-sample smoothing suits only
 large, well-randomised sample sets; the QC-based convention (Broadhurst
@@ -294,8 +291,7 @@ functions</a> lists the full set of plots grouped by workflow stage.</p>
 <span>  log_scale <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  output_pdf <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  path <span class="op">=</span> <span class="st">"./output/runscatter_PC408_beforecorr.pdf"</span>,</span>
-<span>  cols_page <span class="op">=</span> <span class="fl">3</span>, rows_page <span class="op">=</span> <span class="fl">2</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span>  cols_page <span class="op">=</span> <span class="fl">3</span>, rows_page <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="tutorial-02-basic-workflow_files/figure-html/runscatter-1.png" class="r-plt" alt="Run-scatter of PC feature concentrations across injection order" width="700"><p class="caption">
 Figure 1. Run-scatter of PC concentrations by injection order after
@@ -319,8 +315,7 @@ the complete processing state.</p>
 <span>  variable <span class="op">=</span> <span class="st">"conc"</span>,</span>
 <span>  qc_types <span class="op">=</span> <span class="st">"SPL"</span>,</span>
 <span>  include_qualifier <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  filter_data <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span><span class="op">)</span></span>
+<span>  filter_data <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">saveRDS</a></span><span class="op">(</span><span class="va">myexp</span>, file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".rds"</span><span class="op">)</span>, compress <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>The <code>.rds</code> file preserves the entire

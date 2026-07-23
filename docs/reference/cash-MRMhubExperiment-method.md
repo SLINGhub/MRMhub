@@ -1,7 +1,7 @@
-# Access slots of a MRMhubExperiment object via \$ syntax
+# Access slots of a `MRMhubExperiment` object via \$ syntax
 
 \$ syntax can be used to as a shortcut for getting specific variables
-and results from a MRMhubExperiment object
+and results from a `MRMhubExperiment` object
 
 ## Usage
 
@@ -14,11 +14,13 @@ x$name
 
 - x:
 
-  MRMhubExperiment object
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object
 
 - name:
 
-  MRMhubExperiment slot
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  slot
 
 ## Value
 

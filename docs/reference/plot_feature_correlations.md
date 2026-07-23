@@ -65,13 +65,13 @@ plot_feature_correlations(
 
   Numeric. Minimum correlation threshold. Only feature pairs with
   positive correlations above this value will be shown. Set to Inf to
-  exclude positive corrections.
+  exclude positive correlations.
 
 - cor_min_neg:
 
-  Numeric. Minimum nagative correlation threshold. Only feature pairs
+  Numeric. Minimum negative correlation threshold. Only feature pairs
   with negative correlations above this value will be shown. Set to -Inf
-  to exclude nagative corrections.
+  to exclude negative correlations.
 
 - log_scale:
 

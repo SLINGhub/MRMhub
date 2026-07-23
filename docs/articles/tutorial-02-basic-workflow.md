@@ -58,8 +58,7 @@ myexp <- MRMhubExperiment()
 myexp <- import_data_mrmhub(
   myexp,
   path = "datasets/sPerfect_MRMhub.tsv",
-  import_metadata = TRUE
-)
+  import_metadata = TRUE)
 ```
 
     ✔ Imported 499 analyses with 503 features.
@@ -87,19 +86,18 @@ or from an MSOrganiser template:
 myexp <- import_metadata_msorganiser(
   myexp,
   path = "datasets/sPerfect_Metadata.xlsx",
-  ignore_warnings = TRUE
-)
+  ignore_warnings = TRUE)
 Found no errors, 4 warnings, and no notes in the metadata.
---------------------------------------------------------------------------------
+----------------------------------------------------------------------------
   Type  Table    Column                Issue                           Count
 1 W*    Analyses analysis_id           Analyses not in analysis data      15
 2 W*    Features feature_id            Feature(s) without metadata         1
 3 W*    Features feature_id            Feature(s) not in analysis data     4
 4 W*    ISTDs    quant_istd_feature_id Internal standard(s) not used       1
 
---------------------------------------------------------------------------------
+----------------------------------------------------------------------------
 E = Error, W = Warning, W* = Suppressed Warning, N = Note
---------------------------------------------------------------------------------
+----------------------------------------------------------------------------
 ```
 
     ✔ Analysis metadata associated with 499 analyses.
@@ -132,22 +130,19 @@ myexp <- quantify_by_istd(myexp)
 myexp <- correct_drift_gaussiankernel(
   myexp,
   variable = "conc",
-  ref_qc_types = c("SPL")
-)
+  ref_qc_types = c("SPL"))
 
 myexp <- correct_batch_centering(
   myexp,
   variable = "conc",
-  ref_qc_types = "SPL"
-)
+  ref_qc_types = "SPL")
 
 myexp <- filter_features_qc(
   myexp,
   include_qualifier = FALSE,
   include_istd = FALSE,
   min.signalblank.median.spl.sblk = 10,
-  max.cv.conc.bqc = 25
-)
+  max.cv.conc.bqc = 25)
 ```
 
 The drift correction here fits on the study samples
@@ -177,8 +172,7 @@ plot_runscatter(
   log_scale = FALSE,
   output_pdf = FALSE,
   path = "./output/runscatter_PC408_beforecorr.pdf",
-  cols_page = 3, rows_page = 2
-)
+  cols_page = 3, rows_page = 2)
 ```
 
 ![Run-scatter of PC feature concentrations across injection
@@ -204,8 +198,7 @@ save_dataset_csv(
   variable = "conc",
   qc_types = "SPL",
   include_qualifier = FALSE,
-  filter_data = TRUE
-)
+  filter_data = TRUE)
 
 saveRDS(myexp, file = tempfile(fileext = ".rds"), compress = TRUE)
 ```

@@ -1,6 +1,6 @@
-# Constructor for the MRMhubExperiment object
+# Constructor for the `MRMhubExperiment` object
 
-Constructor for the MRMhubExperiment object
+Constructor for the `MRMhubExperiment` object
 
 ## Usage
 
@@ -21,4 +21,5 @@ MRMhubExperiment(title = "", analysis_type = NA_character_)
 
 ## Value
 
-`MRMhubExperiment` object
+[`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+object

@@ -21,8 +21,9 @@ save_report_xlsx(
 
 - data:
 
-  A `MRMhubExperiment` object containing original and processed data and
-  metadata.
+  A
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object containing original and processed data and metadata.
 
 - path:
 

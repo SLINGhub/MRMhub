@@ -40,11 +40,13 @@
     <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-05-run-scatter.html">RunScatter and PCA</a></li>
     <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Downstream / export</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-08-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Recipes</h6></li>
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
-    <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul></li>
 <li class="nav-item dropdown">
@@ -110,7 +112,7 @@
 
 
 <dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
-<dd><p>A <code>MRMhubExperiment</code> object</p></dd>
+<dd><p>A <code><a href="MRMhubExperiment-class.html">MRMhubExperiment</a></code> object</p></dd>
 
 
 <dt id="arg-path">path<a class="anchor" aria-label="anchor" href="#arg-path"></a></dt>
@@ -127,7 +129,7 @@
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>An updated <code>MRMhubExperiment</code> object</p>
+    <p>An updated <code><a href="MRMhubExperiment-class.html">MRMhubExperiment</a></code> object</p>
     </div>
     <div class="section level2">
     <h2 id="identifier-normalization">Identifier normalization<a class="anchor" aria-label="anchor" href="#identifier-normalization"></a></h2>
@@ -164,16 +166,16 @@ as duplicates.</p>
 <span class="r-in"><span> excl_unmatched_analyses <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
 <span class="r-in"><span> ignore_warnings <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Found no errors, 4 warnings, and no notes in the metadata.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> --------------------------------------------------------------------------------</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------------------------------------------------</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Type  Table    Column                Issue                           Count</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1 W*    Analyses analysis_id           Analyses not in analysis data      15</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2 W*    Features feature_id            Feature(s) without metadata         1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3 W*    Features feature_id            Feature(s) not in analysis data   321</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4 W*    ISTDs    quant_istd_feature_id Internal standard(s) not used       2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> --------------------------------------------------------------------------------</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------------------------------------------------</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> E = Error, W = Warning, W* = Suppressed Warning, N = Note</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> --------------------------------------------------------------------------------</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------------------------------------------------</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Analysis metadata associated with 499 analyses.</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Feature metadata associated with 27 features.</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Internal Standard metadata associated with 15 ISTDs.</span></span>

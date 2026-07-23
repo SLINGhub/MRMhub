@@ -178,8 +178,7 @@ Render the template:
 
 quarto::quarto_render(
   "qc-report-template.qmd",
-  execute_params = list(rds_path = "results/mexp_processed.rds")
-)
+  execute_params = list(rds_path = "results/mexp_processed.rds"))
 ```
 
 ## Tips

@@ -68,11 +68,13 @@
     <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-05-run-scatter.html">RunScatter and PCA</a></li>
     <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Downstream / export</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-08-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Recipes</h6></li>
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
-    <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul>
 </li>
@@ -329,16 +331,16 @@ to explore the metadata structure.</p>
 <code class="sourceCode R"><span><span class="va">file_path</span> <span class="op">&lt;-</span> <span class="st">"datasets/sPerfect_Metadata.xlsx"</span></span>
 <span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_metadata_msorganiser.html">import_metadata_msorganiser</a></span><span class="op">(</span><span class="va">myexp</span>, path <span class="op">=</span> <span class="va">file_path</span>, ignore_warnings <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Found no errors, 4 warnings, and no notes in the metadata.</span></span>
-<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; ----------------------------------------------------------------------------</span></span>
 <span><span class="co">#&gt;   Type  Table    Column                Issue                           Count</span></span>
 <span><span class="co">#&gt; 1 W*    Analyses analysis_id           Analyses not in analysis data      15</span></span>
 <span><span class="co">#&gt; 2 W*    Features feature_id            Feature(s) without metadata         1</span></span>
 <span><span class="co">#&gt; 3 W*    Features feature_id            Feature(s) not in analysis data     4</span></span>
 <span><span class="co">#&gt; 4 W*    ISTDs    quant_istd_feature_id Internal standard(s) not used       1</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; ----------------------------------------------------------------------------</span></span>
 <span><span class="co">#&gt; E = Error, W = Warning, W* = Suppressed Warning, N = Note</span></span>
-<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
+<span><span class="co">#&gt; ----------------------------------------------------------------------------</span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Analysis metadata associated with 499 analyses.</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Feature metadata associated with 502 features.</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Internal Standard metadata associated with 17 ISTDs.</span></span></span>
@@ -415,7 +417,7 @@ think the resulting PCA plot suggests now?</p>
 <span>  include_istd <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">2 features contained missing or non-numeric values and were exluded.</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The PCA was calculated based on `feature_intensity` values of 423 features.</span></span></span>
-<span><span class="co">#&gt; ggrepel: 10000 iterations in 0.002738s, 5 overlaps. Consider increasing 'max.iter'.</span></span></code></pre></div>
+<span><span class="co">#&gt; ggrepel: 10000 iterations in 0.002885s, 5 overlaps. Consider increasing 'max.iter'.</span></span></code></pre></div>
 <p><img src="tutorial-03-lipidomics-workflow_files/figure-html/pca-before-1.png" class="r-plt" alt="PCA plot" width="100%"></p>
 </div>
 <div class="section level2">
@@ -449,7 +451,7 @@ dimensions (by modifying <code>pca_dims</code>).</p>
 <span>  shared_labeltext_hide <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">2 features contained missing or non-numeric values and were exluded.</span></span></span>
 <span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The PCA was calculated based on `feature_intensity` values of 423 features.</span></span></span>
-<span><span class="co">#&gt; ggrepel: 10000 iterations in 0.006320s, 7 overlaps. Consider increasing 'max.iter'.</span></span></code></pre></div>
+<span><span class="co">#&gt; ggrepel: 10000 iterations in 0.006337s, 7 overlaps. Consider increasing 'max.iter'.</span></span></code></pre></div>
 <p><img src="tutorial-03-lipidomics-workflow_files/figure-html/outlier-removal-1.png" class="r-plt" alt="PCA plot" width="100%"></p>
 </div>
 <div class="section level2">
@@ -861,7 +863,7 @@ folder.</p>
 </blockquote>
 </details><div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">mrmhub</span><span class="fu">::</span><span class="fu"><a href="../reference/save_report_xlsx.html">save_report_xlsx</a></span><span class="op">(</span><span class="va">myexp</span>, path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".xlsx"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The data processing report of experiment 'sPerfect' has been saved to </span><span style="color: #0000BB;">/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//Rtmp3wTAot/filee8c66130cf49.xlsx</span>.</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The data processing report of experiment 'sPerfect' has been saved to </span><span style="color: #0000BB;">/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpuqCL31/filef6d660729101.xlsx</span>.</span></span></code></pre></div>
 <p>Specific data subsets can also be saved as a clean flat, wide CSV
 file. This is the format used to share the data for the statistical
 analysis presented in the next part of this workshop.</p>
@@ -879,7 +881,7 @@ generated CSV files.</p>
 <span>  qc_types <span class="op">=</span> <span class="st">"SPL"</span>, </span>
 <span>  include_qualifier <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  filter_data <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Concentration values for 377 analyses and 324 features have been exported to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//Rtmp3wTAot/filee8c63b72037.csv'.</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Concentration values for 377 analyses and 324 features have been exported to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpuqCL31/filef6d61868acac.csv'.</span></span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="sharing-the-mrmhubexperiment-dataset">22. Sharing the <code>MRMhubExperiment</code> dataset<a class="anchor" aria-label="anchor" href="#sharing-the-mrmhubexperiment-dataset"></a>

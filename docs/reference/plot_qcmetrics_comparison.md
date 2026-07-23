@@ -45,10 +45,10 @@ plot_qcmetrics_comparison(
 
   A character string specifying the type of plot to generate. Must be
   one of "scatter", "diff", or "ratio". Selecting "scatter" plots the
-  "y_variable" against the "y_variable" values as a scatter plot, "diff"
+  "y_variable" against the "x_variable" values as a scatter plot, "diff"
   plots the difference between the two values against the average value,
   and "ratio" plots the log2 ratio of the two values against the average
-  value.c
+  value.
 
 - x_variable:
 
@@ -64,7 +64,8 @@ plot_qcmetrics_comparison(
 
 - facet_by_class:
 
-  Logical; if `TRUE`, facets the plot by `feature_class`, as defined
+  Logical; if `TRUE`, facets the plot by `feature_class`, as defined in
+  the feature metadata.
 
 - y_shared:
 
@@ -159,7 +160,7 @@ The comparison is visualized through one of three plot types:
 
 - Scatter plot: Values of `y_variable` vs `x_variable`
 
-- Difference plot: (`y_variable` - \`x_variable“) vs mean of both values
+- Difference plot: (`y_variable` - `x_variable`) vs mean of both values
 
 - Ratio plot: log2(`y_variable` / `x_variable`) vs mean of both values
 

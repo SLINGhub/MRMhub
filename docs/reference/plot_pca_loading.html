@@ -44,11 +44,13 @@ investigate which feature (groups) are contributing to the variance seen in the 
     <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-05-run-scatter.html">RunScatter and PCA</a></li>
     <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Downstream / export</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-08-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Recipes</h6></li>
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
-    <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul></li>
 <li class="nav-item dropdown">
@@ -145,7 +147,7 @@ in the dataset.</p></dd>
 
 <dt id="arg-pca-dims">pca_dims<a class="anchor" aria-label="anchor" href="#arg-pca-dims"></a></dt>
 <dd><p>A numeric vector indicating for which PCA dimensions
-to the loadings should be shown. Default is c(1, 2, 3, 4).</p></dd>
+the loadings should be shown. Default is c(1, 2, 3, 4).</p></dd>
 
 
 <dt id="arg-log-transform">log_transform<a class="anchor" aria-label="anchor" href="#arg-log-transform"></a></dt>
@@ -154,7 +156,7 @@ the data before the PCA. Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-top-n">top_n<a class="anchor" aria-label="anchor" href="#arg-top-n"></a></dt>
-<dd><p>Number of top features with highest absolute loading that will be to shown for each PC dimension. Default is 30.</p></dd>
+<dd><p>Number of top features with highest absolute loading that will be shown for each PC dimension. Default is 30.</p></dd>
 
 
 <dt id="arg-vertical-bars">vertical_bars<a class="anchor" aria-label="anchor" href="#arg-vertical-bars"></a></dt>

@@ -18,7 +18,9 @@ get_calibration_metrics(
 
 - data:
 
-  A `MRMhubExperiment` object with QC metrics.
+  A
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object with QC metrics.
 
 - with_lod:
 
@@ -54,17 +56,16 @@ See its documentation for details.
 
 - `fit_model`: Regression model used for fitting.
 
-- `weighting`: Weighting method used in fitting.
+- `fit_weighting`: Weighting method used in fitting.
 
 - `lowest_cal`: Lowest nonzero calibration concentration.
 
 - `highest_cal`: Highest calibration concentration.
 
-- `r.squared`: R-squared value, indicating goodness of fit. For a
-  **weighted** fit this is the weighted coefficient of determination
-  (computed from weighted sums of squares), matching the value reported
-  by vendor software such as Agilent MassHunter for the same weighted
-  curve.
+- `r2`: R-squared value, indicating goodness of fit. For a **weighted**
+  fit this is the weighted coefficient of determination (computed from
+  weighted sums of squares), matching the value reported by vendor
+  software such as Agilent MassHunter for the same weighted curve.
 
 - `coef_a`: Intercept of the regression line
 

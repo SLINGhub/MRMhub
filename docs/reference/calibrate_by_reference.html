@@ -48,11 +48,13 @@ summarized using either mean (default) or median (set by the summarize_fun argum
     <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-05-run-scatter.html">RunScatter and PCA</a></li>
     <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Downstream / export</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-08-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Recipes</h6></li>
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
-    <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul></li>
 <li class="nav-item dropdown">
@@ -127,11 +129,11 @@ summarized using either <code>mean</code> (default) or <code>median</code> (set 
 
 
 <dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
-<dd><p>A <code>MRMhubExperiment</code> object containing the metabolomics data to be normalized</p></dd>
+<dd><p>A <code><a href="MRMhubExperiment-class.html">MRMhubExperiment</a></code> object containing the metabolomics data to be normalized</p></dd>
 
 
 <dt id="arg-variable">variable<a class="anchor" aria-label="anchor" href="#arg-variable"></a></dt>
-<dd><p>Character string indicating which data type to calibrate Must be
+<dd><p>Character string indicating which data type to calibrate. Must be
 one of: "intensity", "norm_intensity", or "conc"</p></dd>
 
 
@@ -144,11 +146,11 @@ whose <code>sample_id</code> matches any of them are pooled and summarized toget
 
 <dt id="arg-absolute-calibration">absolute_calibration<a class="anchor" aria-label="anchor" href="#arg-absolute-calibration"></a></dt>
 <dd><p>Logical indicating whether to perform absolute calibration using
-known concentrations of the reference sample (TRUE) or relative calibration (FALSE).</p></dd>
+known concentrations of the reference sample (<code>TRUE</code>) or relative calibration (<code>FALSE</code>).</p></dd>
 
 
 <dt id="arg-batch-wise">batch_wise<a class="anchor" aria-label="anchor" href="#arg-batch-wise"></a></dt>
-<dd><p>Logical indicating whether to perform calibration for each batch seperately (TRUE) or for all samples together (FALSE).</p></dd>
+<dd><p>Logical indicating whether to perform calibration for each batch seperately (<code>TRUE</code>) or for all samples together (<code>FALSE</code>).</p></dd>
 
 
 <dt id="arg-summarize-fun">summarize_fun<a class="anchor" aria-label="anchor" href="#arg-summarize-fun"></a></dt>
@@ -171,13 +173,13 @@ Must be one of <code>"original"</code> (keep original values), <code>"na"</code>
 
 <dt id="arg-store-normalized">store_normalized<a class="anchor" aria-label="anchor" href="#arg-store-normalized"></a></dt>
 <dd><p>Logical indicating whether to keep the normalized values in the dataset
-when <code>absolute_calibration = TRUE</code>. Default is FALSE. These values are then stored
+when <code>absolute_calibration = TRUE</code>. Default is <code>FALSE</code>. These values are then stored
 as <code>[VARIABLE]_normalized</code>, where <code>[VARIABLE]</code> is the input variable, e.g., <code>conc</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A <code>MRMhubExperiment</code> object with calibrated data</p>
+    <p>A <code><a href="MRMhubExperiment-class.html">MRMhubExperiment</a></code> object with calibrated data</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -186,7 +188,8 @@ concentrations, or relative, resulting in ratios:</p><ol><li><p>Absolute calibra
 <p>Calibrates (or re-calibrates) feature abundances based on known concentrations of the corresponding features
 defined for a reference sample. The calibrated concentration for a given analyte is calculated as:</p>
 <p>$$c_\textrm{cal}^\textrm{Analyte} = \frac{c_\textrm{sample}^\textrm{Analyte}}{c_\textrm{ref}^\textrm{Analyte}} \times c_\textrm{known}^\textrm{Analyte}$$</p>
-<p>The input variable can either <code>conc</code>, <code>norm_intensity</code>, or <code>intensity, whereas the result will always be stored under the variable</code>conc` (concentration), in the unit defined
+<p>The input variable can be either <code>conc</code>, <code>norm_intensity</code>, or <code>intensity</code>, whereas the result is
+always stored under the variable <code>conc</code> (concentration), in the unit defined
 for the feature concentrations in the reference sample.</p>
 <p>Metadata requirements:</p><ul><li><p><code>sample_id</code> and <code>analyte_id</code> must be defined for the reference sample and features in the analysis and feature metadata, respectively.</p></li>
 <li><p>Known analyte concentrations must be defined in the <code>QC concentration</code> metadata for the for the reference sample</p></li>
@@ -203,16 +206,17 @@ and is calculated as follows:</p>
 <p>$$c_\textrm{ratio}^\textrm{Analyte} = \frac{c_\textrm{measured}^\textrm{Analyte}}{c_\textrm{expected}^\textrm{Analyte}}$$</p>
 <p>where \(c_\textrm{measured}\) is the measured (non-calibrated) concentration, and
 \(c_\textrm{expected}\) is the known or reference concentration for the same analyte.
-A bias value of 1 indicates perfect agreement; values above or below 1 indicate over- or underestimation.</p>
-<p>To export the calibrated concentrations use <code><a href="save_dataset_csv.html">save_dataset_csv()</a></code> with <code>variable = "conc", or to export non-calibrated values with </code>variable = "conc_beforecal"<code>. When saving the MRMhub XLSX report, the calibrated concentrations will also be stored as </code>conc`.</p></li>
+A ratio of 1 indicates perfect agreement; values above or below 1 indicate over- or underestimation.</p>
+<p>To export the calibrated concentrations use <code><a href="save_dataset_csv.html">save_dataset_csv()</a></code> with <code>variable = "conc"</code>,
+or to export non-calibrated values with <code>variable = "conc_beforecal"</code>.
+When saving the MRMhub XLSX report, the calibrated concentrations will also be stored as <code>conc</code>.</p></li>
 <li><p>Normalization (relative calibration, <code>absolute_calibration = FALSE</code>)</p>
-<p>Normalizes features abundances with corresponding feature abundances in a reference sample,
+<p>Normalizes feature abundances with corresponding feature abundances in a reference sample,
 resulting in ratios. Any available feature abundance variable
-(i.e., <code>conc</code>, <code>norm_intensity</code>, or <code>intensity</code>) can be used as input. The normalization is calculate for all present features.
+(i.e., <code>conc</code>, <code>norm_intensity</code>, or <code>intensity</code>) can be used as input. The normalization is calculated for all present features.
 The resulting output will be stored as <code>[VARIABLE]_normalized</code>, whereby <code>[VARIABLE]</code> is the input variable, e.g., <code>conc_normalized</code>.</p>
-<p>To export the normalized abundances , use <code><a href="save_dataset_csv.html">save_dataset_csv()</a></code> with <code>variable = "[VARIABLE]_normalized"</code>
-For MRMhub XLSX report, use <code><a href="save_report_xlsx.html">save_report_xlsx()</a></code> with same variable setting as for <code><a href="save_dataset_csv.html">save_dataset_csv()</a></code> to
-When saving the MRMhub XLSX report via <code><a href="save_report_xlsx.html">save_report_xlsx()</a></code>, availble unfiltered normalized feature abundances
+<p>To export the normalized abundances, use <code><a href="save_dataset_csv.html">save_dataset_csv()</a></code> with <code>variable = "[VARIABLE]_normalized"</code>.
+When saving the MRMhub XLSX report via <code><a href="save_report_xlsx.html">save_report_xlsx()</a></code>, available unfiltered normalized feature abundances
 will be included by default. To include filtered normalized feature abundances, set <code>filtered_variable = "[VARIABLE]_normalized"</code>.</p></li>
 </ol></div>
     <div class="section level2">

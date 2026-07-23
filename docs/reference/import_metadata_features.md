@@ -1,10 +1,10 @@
 # Import feature metadata
 
-Imports analysis metadata (annotation) from a preloaded data frame or
+Imports feature metadata (annotation) from a preloaded data frame or
 tibble via the `data` argument, or from data from a file (CSV or Excel)
-via the `path` argument. The analysis metadata must contain following
-columns: `analysis_id` and `qc_type`. Additional analysis metadata
-columns are described under details below.
+via the `path` argument. The feature metadata must contain following
+column: `feature_id`. Additional feature metadata columns are described
+under details below.
 
 ## Usage
 
@@ -22,12 +22,14 @@ import_metadata_features(
 
 - data:
 
-  A `MRMhubExperiment` object
+  A
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object
 
 - table:
 
-  A data frame or tibble with analysis (sample) metadata. If `path` is
-  also provided, an error will be raised.
+  A data frame or tibble with feature metadata. If `path` is also
+  provided, an error will be raised.
 
 - path:
 
@@ -45,7 +47,9 @@ import_metadata_features(
 
 ## Value
 
-An updated `MRMhubExperiment` object
+An updated
+[`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+object
 
 ## Identifier normalization
 

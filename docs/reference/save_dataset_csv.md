@@ -1,9 +1,8 @@
 # Export data to a CSV file
 
-This function exports specific unprocessed or pr ocessed feature
-variable (e.g. intensities or concentrations) from a `MRMhubExperiment`
-object to a CSV file. Allows selection of features and optional QC
-filtering.
+This function exports specific unprocessed or processed feature variable
+(e.g. intensities or concentrations) from a `MRMhubExperiment` object to
+a CSV file. Allows selection of features and optional QC filtering.
 
 ## Usage
 
@@ -26,7 +25,8 @@ save_dataset_csv(
 
 - data:
 
-  MRMhubExperiment object
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object
 
 - path:
 
@@ -40,8 +40,8 @@ save_dataset_csv(
 
 - qc_types:
 
-  QC types to be plotted. Can be a vector of QC types or a regular
-  expression pattern. `NA` (default) displays all available QC/Sample
+  QC types to be exported. Can be a vector of QC types or a regular
+  expression pattern. `NA` (default) exports all available QC/Sample
   types.
 
 - filter_data:
@@ -55,13 +55,13 @@ save_dataset_csv(
 
   A logical value indicating whether to include qualifier features.
   Default is `NA`, which will be automatically set to `FALSE` if
-  `variable` is `conc` or `conc_raw`, and `FALSE` otherwise.
+  `variable` is `conc` or `conc_raw`, and `TRUE` otherwise.
 
 - include_istd:
 
   A logical value indicating whether to include internal standard (ISTD)
   features. Default is `NA`, which will be automatically set to `FALSE`
-  if `variable` is ”norm_intensity`, `conc`or`conc_raw`, and `TRUE\`
+  if `variable` is `norm_intensity`, `conc` or `conc_raw`, and `TRUE`
   otherwise.
 
 - include_feature_filter:

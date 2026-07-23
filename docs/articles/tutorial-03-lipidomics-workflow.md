@@ -213,16 +213,16 @@ Exercises
 file_path <- "datasets/sPerfect_Metadata.xlsx"
 myexp <- import_metadata_msorganiser(myexp, path = file_path, ignore_warnings = TRUE)
 #> Found no errors, 4 warnings, and no notes in the metadata.
-#> --------------------------------------------------------------------------------
+#> ----------------------------------------------------------------------------
 #>   Type  Table    Column                Issue                           Count
 #> 1 W*    Analyses analysis_id           Analyses not in analysis data      15
 #> 2 W*    Features feature_id            Feature(s) without metadata         1
 #> 3 W*    Features feature_id            Feature(s) not in analysis data     4
 #> 4 W*    ISTDs    quant_istd_feature_id Internal standard(s) not used       1
 #> 
-#> --------------------------------------------------------------------------------
+#> ----------------------------------------------------------------------------
 #> E = Error, W = Warning, W* = Suppressed Warning, N = Note
-#> --------------------------------------------------------------------------------
+#> ----------------------------------------------------------------------------
 #> ✔ Analysis metadata associated with 499 analyses.
 #> ✔ Feature metadata associated with 502 features.
 #> ✔ Internal Standard metadata associated with 17 ISTDs.
@@ -301,7 +301,7 @@ plot_pca(
   include_istd = FALSE)
 #> ! 2 features contained missing or non-numeric values and were exluded.
 #> ✔ The PCA was calculated based on `feature_intensity` values of 423 features.
-#> ggrepel: 10000 iterations in 0.002738s, 5 overlaps. Consider increasing 'max.iter'.
+#> ggrepel: 10000 iterations in 0.002885s, 5 overlaps. Consider increasing 'max.iter'.
 ```
 
 ![PCA
@@ -338,7 +338,7 @@ plot_pca(
   shared_labeltext_hide = NA)
 #> ! 2 features contained missing or non-numeric values and were exluded.
 #> ✔ The PCA was calculated based on `feature_intensity` values of 423 features.
-#> ggrepel: 10000 iterations in 0.006320s, 7 overlaps. Consider increasing 'max.iter'.
+#> ggrepel: 10000 iterations in 0.006337s, 7 overlaps. Consider increasing 'max.iter'.
 ```
 
 ![PCA
@@ -797,7 +797,7 @@ Exercises
 ``` r
 
 mrmhub::save_report_xlsx(myexp, path = tempfile(fileext = ".xlsx"))
-#> ✔ The data processing report of experiment 'sPerfect' has been saved to /var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//Rtmp3wTAot/filee8c66130cf49.xlsx.
+#> ✔ The data processing report of experiment 'sPerfect' has been saved to /var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpuqCL31/filef6d660729101.xlsx.
 ```
 
 Specific data subsets can also be saved as a clean flat, wide CSV file.
@@ -818,7 +818,7 @@ mrmhub::save_dataset_csv(
   qc_types = "SPL", 
   include_qualifier = FALSE,
   filter_data = TRUE)
-#> ✔ Concentration values for 377 analyses and 324 features have been exported to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//Rtmp3wTAot/filee8c63b72037.csv'.
+#> ✔ Concentration values for 377 analyses and 324 features have been exported to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpuqCL31/filef6d61868acac.csv'.
 ```
 
 ## 22. Sharing the `MRMhubExperiment` dataset

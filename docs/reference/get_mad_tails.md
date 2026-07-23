@@ -23,7 +23,7 @@ get_mad_tails(x, k, na.rm = FALSE)
 
 - na.rm:
 
-  if TRUE then NA values are stripped from x before computation takes
+  if `TRUE` then NA values are stripped from x before computation takes
   place.
 
 ## Value

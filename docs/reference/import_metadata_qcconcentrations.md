@@ -2,9 +2,9 @@
 
 Imports calibration curve metadata (annotation) from a preloaded data
 frame or tibble via the `data` argument, or from data from a file (CSV
-or Excel) via the `path` argument. The analysis metadata must contain
-following columns: `analysis_id`, `curve_id`, `feature_id`,
-`concentration`, and `concentration_unit`.
+or Excel) via the `path` argument. The calibration curve metadata must
+contain following columns: `sample_id`, `analyte_id`, `concentration`,
+and `concentration_unit`.
 
 ## Usage
 
@@ -22,7 +22,9 @@ import_metadata_qcconcentrations(
 
 - data:
 
-  A `MRMhubExperiment` object
+  A
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object
 
 - table:
 
@@ -45,7 +47,9 @@ import_metadata_qcconcentrations(
 
 ## Value
 
-An updated `MRMhubExperiment` object
+An updated
+[`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+object
 
 ## Identifier normalization
 
