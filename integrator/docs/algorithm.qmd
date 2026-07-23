@@ -96,28 +96,41 @@ the algorithm determines the **target number of features per transition** as the
 features detected in the initial survey, and treats it as the upper limit for the number of stable,
 consistent features to report in the second-round survey.
 
-In the second round, the algorithm maps peak features across the samples so that every reported
-feature is stable (reliably detected across samples) and consistent. Rather than chaining each peak
-to the one in the next sample, it ranks the peaks in each sample by intensity, aligns them by rank,
-and takes the median retention time at each rank position across all samples — retaining a position
-only when a majority of samples show a peak there within a small RT tolerance. This yields a consensus
-set of feature retention times that is robust to individual missed or spurious peaks. The matching
-accounts for the RT drift estimated above. The user sets the `RT_tol` parameter to indicate the
-maximum deviation of RT from the value given in the method table; if no feature can be detected within
-this bound, the integrated area is reported as zero.
+In the second round, the algorithm finds retention times that recur consistently across several runs while reducing the influence of noisy or missing peaks. It begins by estimating a reasonable upper bound on how many consensus peaks may exist, using the median number of detected peaks per run and limiting the search to twelve.
+
+For each possible peak count, it keeps only runs with enough detected peaks. Within every eligible run, it selects the strongest peaks and orders them by retention time. Peaks in the same chronological position are then treated as corresponding across runs. The representative retention time for each position is calculated with a median, which is less sensitive to outliers than an average.
+
+Each representative value must also be supported by roughly half of all runs: a run supports it when any detected peak lies within a tolerance of 0.025 retention-time units. The candidate solution containing the most supported values is retained. Ties favor solutions based on fewer peaks, which usually include more runs. If no value passes the support test, the method returns the median retention time of the strongest peak from each run.
 
 In outline, the consensus retention times are surveyed as follows:
 
 ```{.python .pseudocode}
-peaks_per_sample = detect_peaks(sample) for each survey sample
-N = min(median(peak count per sample), 12)                     # target features per transition
-for k from N down to 1:
-    keep the top-k peaks by intensity in each sample, sorted by RT
-    for rank position i in 0 .. k:
-        median_rt[i] = median RT at rank i across samples
-        keep median_rt[i] only if >= half the samples have a peak within ~0.025 min
-    stop at the largest self-consistent set
-map each declared isomer to the nearest consensus RT, accepted only within RT_tol
+FUNCTION CalculateConsensusRetentionTimes(allRuns)
+    peakCounts ← number of peaks in each run
+    maximumCount ← MIN(median of peakCounts, 12)
+    fallback ← median RT of the strongest peak in each run
+    bestResult ← empty list
+
+    FOR candidateCount FROM maximumCount DOWN TO 1
+        IF candidateCount < size of bestResult: STOP
+
+        eligibleRuns ← runs containing at least candidateCount peaks
+        orderedPeaks ← for each eligible run:
+            select candidateCount strongest peaks
+            sort them by retention time
+
+        currentResult ← empty list
+        FOR each ordered position
+            estimate ← median RT at that position
+            support ← number of all runs with a peak within 0.025 of estimate
+            IF support ≥ floor(number of allRuns / 2)
+                append estimate to currentResult
+
+        IF size of currentResult ≥ size of bestResult
+            bestResult ← currentResult
+
+    RETURN bestResult if nonempty; otherwise RETURN [fallback]
+END FUNCTION
 ```
 
 ## Determination of peak integration borders
