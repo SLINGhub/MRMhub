@@ -27,7 +27,7 @@ inst/doc
 *.Rout
 *.Rout.fail
 
-# Local dev notes (audit plan + learnings) — not part of the package
+# Local dev notes (audit plan + learnings) - not part of the package
 dev-notes/
 
 # Local, non-package share doc (not committed)

@@ -8,7 +8,7 @@ use std::path::{Component, Path, PathBuf};
 use std::process::{Command, Stdio};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::{SystemTime, UNIX_EPOCH};
-use tauri::{AppHandle, Emitter, Manager, State};
+use tauri::{AppHandle, Emitter, Manager, State, WindowEvent};
 
 mod visualizer;
 
@@ -303,6 +303,53 @@ fn write_settings(app: &AppHandle, settings: &Settings) -> Result<(), String> {
     }
     let json = serde_json::to_vec_pretty(settings).map_err(|error| error.to_string())?;
     fs::write(settings_path, json).map_err(|error| error.to_string())
+}
+
+// appends one close timestamp to the selected dataset's exit log
+fn append_exit_log_entry(project: &Path, entry: &str) -> Result<(), String> {
+    if !project.is_dir() {
+        return Ok(());
+    }
+    let log_path = project.join("exit_log.txt");
+    let separator = fs::read(&log_path).map_or("", |contents| {
+        if contents.is_empty() || contents.ends_with(b"\n\n") {
+            ""
+        } else if contents.ends_with(b"\n") {
+            "\n"
+        } else {
+            "\n\n"
+        }
+    });
+    let mut file = OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(log_path)
+        .map_err(|error| error.to_string())?;
+    if !separator.is_empty() {
+        file.write_all(separator.as_bytes())
+            .map_err(|error| error.to_string())?;
+    }
+    file.write_all(entry.as_bytes())
+        .map_err(|error| error.to_string())?;
+    file.write_all(b"\n").map_err(|error| error.to_string())
+}
+
+// records that the gui window closed in the remembered dataset folder
+fn append_exit_log(project: &Path) -> Result<(), String> {
+    let timestamp = chrono::Local::now().format("%d/%m/%Y , %Hh:%Mm:%Ss");
+    append_exit_log_entry(
+        project,
+        &format!("exit // mrmhub-gui closed @ {timestamp}"),
+    )
+}
+
+// writes a close entry for the current dataset, if one is remembered
+fn log_exit_for_current_project(app: &AppHandle) {
+    if let Some(settings) = read_settings(app) {
+        if !settings.last_project.trim().is_empty() {
+            let _ = append_exit_log(&PathBuf::from(settings.last_project));
+        }
+    }
 }
 
 // saves the selected project for the next launch
@@ -1885,6 +1932,11 @@ fn main() {
     tauri::Builder::default()
         .manage(RunState(AtomicBool::new(false)))
         .plugin(tauri_plugin_dialog::init())
+        .on_window_event(|window, event| {
+            if matches!(event, WindowEvent::CloseRequested { .. }) {
+                log_exit_for_current_project(window.app_handle());
+            }
+        })
         .invoke_handler(tauri::generate_handler![
             load_startup_state,
             select_project,
@@ -2092,6 +2144,29 @@ mod tests {
         assert_eq!(timestamped, ["v1"]);
         // and the pristine pre-edit state is still preserved as the Original
         assert_eq!(original.as_deref(), Some("v0"));
+        fs::remove_dir_all(&dir).unwrap();
+    }
+
+    #[test]
+    fn exit_log_appends_blank_line_between_close_entries() {
+        let dir = temp_project("exit_log");
+
+        append_exit_log_entry(
+            &dir,
+            "exit // mrmhub-gui closed @ 23/07/2026 , 18h:22m:30s",
+        )
+        .unwrap();
+        append_exit_log_entry(
+            &dir,
+            "exit // mrmhub-gui closed @ 24/07/2026 , 10h:51m:19s",
+        )
+        .unwrap();
+
+        let log = fs::read_to_string(dir.join("exit_log.txt")).unwrap();
+        assert_eq!(
+            log,
+            "exit // mrmhub-gui closed @ 23/07/2026 , 18h:22m:30s\n\nexit // mrmhub-gui closed @ 24/07/2026 , 10h:51m:19s\n"
+        );
         fs::remove_dir_all(&dir).unwrap();
     }
 
