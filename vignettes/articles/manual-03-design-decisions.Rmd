@@ -68,7 +68,7 @@ To start processing data directly, see [Your First Analysis](tutorial-00-first-a
    The argument is about the *internal* representation only. Several parallel
    intensity variables are no obstacle — SE holds them as parallel assays, which
    is exactly what the exporter relies on. Once an experiment is processed,
-   [`save_dataset_summarizedexperiment()`](recipe-04-summarizedexperiment.html)
+   [`save_dataset_summarizedexperiment()`](tutorial-08-summarizedexperiment.html)
    hands it to `limma`, `lipidr`, `POMA` and the rest of the ecosystem.
 
 ```{r}

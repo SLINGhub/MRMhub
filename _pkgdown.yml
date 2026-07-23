@@ -73,6 +73,10 @@ navbar:
       - text: RunScatter and PCA
         href: articles/tutorial-05-run-scatter.html
       - text: '-------'
+      - text: Downstream / export
+      - text: Export to Bioconductor (SummarizedExperiment)
+        href: articles/tutorial-08-summarizedexperiment.html
+      - text: '-------'
       - text: Recipes
       - text: External calibration & QC
         href: articles/recipe-01-ext-calibration-qc.html
@@ -80,8 +84,6 @@ navbar:
         href: articles/recipe-02-custom-qc-report.html
       - text: Import & export mzTab-M
         href: articles/recipe-03-mztab-export.html
-      - text: Export to Bioconductor (SummarizedExperiment)
-        href: articles/recipe-04-summarizedexperiment.html
       - text: Import metadata from files or a template
         href: articles/recipe-05-import-metadata.html
     manual:
