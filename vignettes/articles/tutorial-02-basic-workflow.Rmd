@@ -69,8 +69,7 @@ myexp <- MRMhubExperiment()
 myexp <- import_data_mrmhub(
   myexp,
   path = "datasets/sPerfect_MRMhub.tsv",
-  import_metadata = TRUE
-)
+  import_metadata = TRUE)
 ```
 
 MRMhub reads several other formats; [Import and prepare data files](manual-04-data-import.html) has a
@@ -87,8 +86,7 @@ data frames (see [Metadata import](manual-05-metadata.html)), or from an MSOrgan
 myexp <- import_metadata_msorganiser(
   myexp,
   path = "datasets/sPerfect_Metadata.xlsx",
-  ignore_warnings = TRUE
-)
+  ignore_warnings = TRUE)
 ```
 
 Validation checks may raise warnings, which by default halt the import. Setting
@@ -109,22 +107,19 @@ myexp <- quantify_by_istd(myexp)
 myexp <- correct_drift_gaussiankernel(
   myexp,
   variable = "conc",
-  ref_qc_types = c("SPL")
-)
+  ref_qc_types = c("SPL"))
 
 myexp <- correct_batch_centering(
   myexp,
   variable = "conc",
-  ref_qc_types = "SPL"
-)
+  ref_qc_types = "SPL")
 
 myexp <- filter_features_qc(
   myexp,
   include_qualifier = FALSE,
   include_istd = FALSE,
   min.signalblank.median.spl.sblk = 10,
-  max.cv.conc.bqc = 25
-)
+  max.cv.conc.bqc = 25)
 ```
 
 The drift correction here fits on the study samples (`ref_qc_types = "SPL"`). Study-sample smoothing
@@ -152,8 +147,7 @@ plot_runscatter(
   log_scale = FALSE,
   output_pdf = FALSE,
   path = "./output/runscatter_PC408_beforecorr.pdf",
-  cols_page = 3, rows_page = 2
-)
+  cols_page = 3, rows_page = 2)
 ```
 
 ## 6. Export and share
@@ -171,8 +165,7 @@ save_dataset_csv(
   variable = "conc",
   qc_types = "SPL",
   include_qualifier = FALSE,
-  filter_data = TRUE
-)
+  filter_data = TRUE)
 
 saveRDS(myexp, file = tempfile(fileext = ".rds"), compress = TRUE)
 ```
