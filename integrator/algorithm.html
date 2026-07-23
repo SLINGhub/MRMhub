@@ -307,32 +307,32 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>For each possible peak count, it keeps only runs with enough detected peaks. Within every eligible run, it selects the strongest peaks and orders them by retention time. Peaks in the same chronological position are then treated as corresponding across runs. The representative retention time for each position is calculated with a median, which is less sensitive to outliers than an average.</p>
 <p>Each representative value must also be supported by roughly half of all runs: a run supports it when any detected peak lies within a tolerance of 0.025 retention-time units. The candidate solution containing the most supported values is retained. Ties favor solutions based on fewer peaks, which usually include more runs. If no value passes the support test, the method returns the median retention time of the strongest peak from each run.</p>
 <p>In outline, the consensus retention times are surveyed as follows:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python pseudocode code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>FUNCTION CalculateConsensusRetentionTimes(allRuns)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    peakCounts ← number of peaks <span class="kw">in</span> each run</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    maximumCount ← MIN(median of peakCounts, <span class="dv">12</span>)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    fallback ← median RT of the strongest peak <span class="kw">in</span> each run</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    bestResult ← empty <span class="bu">list</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    FOR candidateCount FROM maximumCount DOWN TO <span class="dv">1</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>        IF candidateCount <span class="op">&lt;</span> size of bestResult: STOP</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        eligibleRuns ← runs containing at least candidateCount peaks</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        orderedPeaks ← <span class="cf">for</span> each eligible run:</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>            select candidateCount strongest peaks</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>            sort them by retention time</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>        currentResult ← empty <span class="bu">list</span></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>        FOR each ordered position</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>            estimate ← median RT at that position</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>            support ← number of <span class="bu">all</span> runs <span class="cf">with</span> a peak within <span class="fl">0.025</span> of estimate</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>            IF support ≥ floor(number of allRuns <span class="op">/</span> <span class="dv">2</span>)</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>                append estimate to currentResult</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>        IF size of currentResult ≥ size of bestResult</span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>            bestResult ← currentResult</span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    RETURN bestResult <span class="cf">if</span> nonempty<span class="op">;</span> otherwise RETURN [fallback]</span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>END FUNCTION</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<pre class="pseudocode"><code>FUNCTION CalculateConsensusRetentionTimes(allRuns)
+    peakCounts ← number of peaks in each run
+    maximumCount ← MIN(median of peakCounts, 12)
+    fallback ← median RT of the strongest peak in each run
+    bestResult ← empty list
+
+    FOR candidateCount FROM maximumCount DOWN TO 1
+        IF candidateCount &lt; size of bestResult: STOP
+
+        eligibleRuns ← runs containing at least candidateCount peaks
+        orderedPeaks ← for each eligible run:
+            select candidateCount strongest peaks
+            sort them by retention time
+
+        currentResult ← empty list
+        FOR each ordered position
+            estimate ← median RT at that position
+            support ← number of all runs with a peak within 0.025 of estimate
+            IF support ≥ floor(number of allRuns / 2)
+                append estimate to currentResult
+
+        IF size of currentResult ≥ size of bestResult
+            bestResult ← currentResult
+
+    RETURN bestResult if nonempty; otherwise RETURN [fallback]
+END FUNCTION</code></pre>
 </section>
 <section id="determination-of-peak-integration-borders" class="level2">
 <h2 class="anchored" data-anchor-id="determination-of-peak-integration-borders">Determination of peak integration borders</h2>
