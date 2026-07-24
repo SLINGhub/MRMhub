@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.9.38">
+<meta name="generator" content="quarto-1.10.18">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -13,10 +13,13 @@
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
 */
-code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
-div.columns{display: flex; gap: min(4vw, 1.5em);}
-div.column{flex: auto; overflow-x: auto;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
@@ -40,14 +43,14 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-0a6b7249c26820e032cb0bd839ff02b1.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-82c0a550d76b23a941edfa673b1f3621.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-daa16ad70864c2de36df1d25ac9f34a4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-82c0a550d76b23a941edfa673b1f3621.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-d75fdbbafb6609ad1fb5dc6294fb069d.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-b1ea61e1e1aaf56a6595074ec96c4785.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-d75fdbbafb6609ad1fb5dc6294fb069d.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -204,6 +207,7 @@ ul.task-list li input[type="checkbox"] {
   <ul class="collapse">
   <li><a href="#msconvert-settings" id="toc-msconvert-settings" class="nav-link" data-scroll-target="#msconvert-settings">Q: The mzML files are misread, or conversion fails</a></li>
   <li><a href="#csv-misread" id="toc-csv-misread" class="nav-link" data-scroll-target="#csv-misread">Q: After editing a CSV, integration results are incorrect or implausible</a></li>
+  <li><a href="#col-not-found" id="toc-col-not-found" class="nav-link" data-scroll-target="#col-not-found">Q: INTEGRATOR reports a “column not found” error</a></li>
   <li><a href="#file-names" id="toc-file-names" class="nav-link" data-scroll-target="#file-names">Q: Which input files are required, and can they be renamed?</a></li>
   <li><a href="#peakwidth-brackets" id="toc-peakwidth-brackets" class="nav-link" data-scroll-target="#peakwidth-brackets">Q: A per-feature peak-width override has no effect</a></li>
   <li><a href="#rtshift-zero" id="toc-rtshift-zero" class="nav-link" data-scroll-target="#rtshift-zero">Q: RT-shift correction seems inactive</a></li>
@@ -283,6 +287,7 @@ ul.task-list li input[type="checkbox"] {
 <ul>
 <li><a href="#wont-open">The application will not open</a></li>
 <li><a href="#csv-misread">Integration results are incorrect or implausible</a></li>
+<li><a href="#col-not-found">INTEGRATOR reports a “column not found” error</a></li>
 <li><a href="#no-report">Validation wrote no report files</a></li>
 <li><a href="#no-effect">A changed parameter has no effect on the integration</a></li>
 <li><a href="#crash-start">MRMhub closes immediately on start</a></li>
@@ -328,7 +333,11 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="csv-misread" class="level3">
 <h3 class="anchored" data-anchor-id="csv-misread">Q: After editing a CSV, integration results are incorrect or implausible</h3>
-<p><strong>A:</strong> The CSV files are read <strong>by column position, not by header name</strong>, so a reordered, inserted, or deleted column is read into the wrong field <strong>with no error</strong> — the run completes, but the values are wrong. Restore the template column order (<a href="./input-files.html#column-order-warning">details</a>). Spreadsheet editors corrupt these files the same silent way: dropped leading zeros, values like <code>16:0</code> coerced to dates (format the cells as text), a semicolon delimiter from a non-English locale, a UTF-8 byte-order mark that breaks the first header, and stray trailing spaces or blank rows. File names must also match the mzML files exactly (<code>.mzML</code> extension, correct case). When results look wrong, reopen the CSV in a plain-text editor and compare it column-for-column with the template.</p>
+<p><strong>A:</strong> Columns are matched by <strong>header name</strong>, so a renamed or misspelled required column stops the run with an explicit error rather than being silently misread (see <a href="#col-not-found">the “column not found” error</a>). Plausible-but-wrong results instead come from spreadsheet editors corrupting the cell <strong>values</strong>: dropped leading zeros, values like <code>16:0</code> coerced to dates (format the cells as text), a semicolon delimiter from a non-English locale, a UTF-8 byte-order mark that breaks the first header, and stray trailing spaces or blank rows. File names must also match the mzML files exactly (<code>.mzML</code> extension, correct case). When results look wrong, reopen the CSV in a plain-text editor and compare the values against the template.</p>
+</section>
+<section id="col-not-found" class="level3">
+<h3 class="anchored" data-anchor-id="col-not-found">Q: INTEGRATOR reports a “column not found” error</h3>
+<p><strong>A:</strong> <code>run_order.csv</code> and <code>feature_list.csv</code> are read by matching the <strong>header row</strong>, so a required column whose name INTEGRATOR cannot find stops the run with a <code>&lt;name&gt; column not found!</code> message. The usual causes are a misspelled or renamed header, a deleted column, or a stray space inserted <strong>inside</strong> a name (<code>Feature ID</code> is read as <code>Feature</code> and no longer matches <code>Feature_ID</code>). Column <em>order</em> does not matter. Restore the exact header names from the <a href="https://github.com/SLINGhub/MRMhub/releases">templates</a> — the required names are listed in <a href="./input-files.html#sample-list-run_order.csv">Input Files</a> (matching is case-insensitive).</p>
 </section>
 <section id="file-names" class="level3">
 <h3 class="anchored" data-anchor-id="file-names">Q: Which input files are required, and can they be renamed?</h3>
@@ -403,7 +412,7 @@ ul.task-list li input[type="checkbox"] {
 <li><strong>The steps were not re-run</strong> — an edit to any input file takes effect only after re-running from <strong>Step 1</strong>; a change to the plots needs <strong>Step 4</strong> re-run.</li>
 <li><strong>The value is in the wrong format</strong> — check brackets, commas, and sign (see the <a href="#peakwidth-brackets">peak-width</a> and <a href="#rtshift-zero">RT-shift</a> notes).</li>
 <li><strong>The change is too small</strong> to alter the result — try a larger adjustment.</li>
-<li><strong>A column no longer matches the template order</strong>, so the value is read into the wrong field (see <a href="#csv-misread">a shifted CSV column</a>).</li>
+<li><strong>A required column header is misspelled or missing</strong>, so the edited value never reaches INTEGRATOR (this now stops the run — see <a href="#col-not-found">the “column not found” error</a>).</li>
 </ul>
 </section>
 <section id="what-to-rerun" class="level3">
