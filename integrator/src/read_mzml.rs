@@ -85,6 +85,17 @@ struct QQ {
     baseline: String,
     index: Option<u16>,
 }
+fn get_col_i(name: &str, header: &csv::StringRecord) -> Result<usize, Box<dyn Error>> {
+    header
+        .iter()
+        .position(|x| {
+            x.split_once(' ').map_or_else(
+                || x.eq_ignore_ascii_case(name),
+                |x| x.0.eq_ignore_ascii_case(name),
+            )
+        })
+        .ok_or_else(|| format!("{name} column not found!").into())
+}
 fn read_assay(assay_f: &Path) -> Result<Vec<QQ>, Box<dyn Error>> {
     let mut rdr = csv::ReaderBuilder::new()
         .comment(Some(b'#'))
@@ -92,17 +103,7 @@ fn read_assay(assay_f: &Path) -> Result<Vec<QQ>, Box<dyn Error>> {
         .trim(csv::Trim::All)
         .from_path(assay_f)?;
     let header = rdr.headers()?;
-    let get_col = |name: &str| -> Result<usize, Box<dyn Error>> {
-        header
-            .iter()
-            .position(|x| {
-                x.split_once(' ').map_or_else(
-                    || x.eq_ignore_ascii_case(name),
-                    |x| x.0.eq_ignore_ascii_case(name),
-                )
-            })
-            .ok_or_else(|| format!("{name} column not found!").into())
-    };
+    let get_col = |name| get_col_i(name, header);
     let feat_id_c = get_col("Feature_ID")?;
     let t_name_c = get_col("Transition_Name")?;
     let istd_c = get_col("ISTD_Feature_ID")?;
@@ -114,7 +115,7 @@ fn read_assay(assay_f: &Path) -> Result<Vec<QQ>, Box<dyn Error>> {
     let ert_c = get_col("end_RT")?;
     let pw_c = get_col("peak_width")?;
     let bl_c = get_col("baseline")?;
-    let ci_c = get_col("chromatogram_index")?;
+    let ci_c = get_col("chromatogram_index").ok();
 
     let mut records: Vec<csv::StringRecord> = rdr.into_records().collect::<Result<_, _>>()?;
     records.sort_unstable_by(|x, y| x[t_name_c].cmp(&y[t_name_c]));
@@ -193,7 +194,7 @@ fn read_assay(assay_f: &Path) -> Result<Vec<QQ>, Box<dyn Error>> {
                     })()
                 },
                 baseline: rec_p[bl_c].to_string(),
-                index: rec_p[ci_c].parse().ok(),
+                index: ci_c.and_then(|x| rec_p[x].parse().ok()),
             })
         })
         .collect::<Result<_, Box<dyn Error>>>()
@@ -446,24 +447,30 @@ fn filter_mzml<'a, 'b>(
     Ok(mzml_fs_ord.into_iter().map(|x| x.0).collect())
 }
 type FileO = (String, String, String, bool, bool, usize);
-fn read_file_ord(batch_i_file: &Path) -> std::io::Result<Vec<FileO>> {
+fn read_file_ord(batch_i_file: &Path) -> Result<Vec<FileO>, Box<dyn Error>> {
     let mut rdr = csv::ReaderBuilder::new()
         .comment(Some(b'#'))
         .has_headers(true)
         .trim(csv::Trim::All)
         .from_path(batch_i_file)?;
-    let ncol = rdr.headers()?.len();
+    let header = rdr.headers()?;
+    let get_col = |name| get_col_i(name, header);
+    let filename_c = get_col("file_name")?;
+    let batch_c = get_col("batch")?;
+    let st_c = get_col("sample_type")?;
+    let ref_c = get_col("reference")?;
+    let learn_c = get_col("learn").ok();
     let mut file_ord: Vec<_> = rdr
         .into_records()
         .enumerate()
         .map(|(i, rec)| {
             rec.map(|x| {
                 (
-                    x[0].to_string(),
-                    x[1].to_string(),
-                    x[2].to_string(),
-                    !x[3].trim().is_empty(),
-                    ncol < 5 || !x[4].trim().is_empty(),
+                    x[filename_c].to_string(),
+                    x[batch_c].to_string(),
+                    x[st_c].to_string(),
+                    !x[ref_c].trim().is_empty(),
+                    learn_c.is_none_or(|y| !x[y].trim().is_empty()),
                     i,
                 )
             })
