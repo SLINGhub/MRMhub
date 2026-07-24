@@ -383,7 +383,7 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="transition-feature-list-feature_list.csv" class="level3">
 <h3 class="anchored" data-anchor-id="transition-feature-list-feature_list.csv">Transition / Feature list (<code>feature_list.csv</code>)</h3>
-<p>The transition/feature list specifies the transitions to process and the features to integrate for each. Transitions present in the mzML files but not listed here are ignored. Multiple features may be defined for one transition. Required columns are shown in <strong>bold</strong>; the <strong>#</strong> column is the fixed column position (see the <a href="#column-order-warning">warning above</a>).</p>
+<p>The transition/feature list specifies the transitions to process and the features to integrate for each. Transitions present in the mzML files but not listed here are ignored. Multiple features may be defined for one transition. Required columns are shown in <strong>bold</strong>.</p>
 <!-- TODO: add feature_list.csv screenshot leading this section (none available yet). Drop the image at
 images/feature_list.png and enable:
 ![A portion of the feature list from [an example lipidomics dataset](https://slinghub.github.io/MRMhub-workflows/Dataset3.html).](images/feature_list.png){fig-align="center" width="70%" fig-alt="Screenshot of a feature_list.csv with columns Compound Name, Transition Name, ISTD, Precursor Ion, Product Ion, RT, and the optional per-feature integration columns."} -->
@@ -398,27 +398,27 @@ images/feature_list.png and enable:
 <tbody>
 <tr class="odd">
 <td>1</td>
-<td><strong>Compound Name</strong></td>
+<td><strong>Feature_ID</strong></td>
 <td>Feature (analyte) identifier. Unique, typically identifying a single peak.</td>
 </tr>
 <tr class="even">
 <td>2</td>
-<td><strong>Transition Name</strong></td>
+<td><strong>Transition_Name</strong></td>
 <td>Transition identifier. May be repeated across features sharing one transition.</td>
 </tr>
 <tr class="odd">
 <td>3</td>
-<td>ISTD</td>
+<td>ISTD_Feature_ID</td>
 <td>Internal standard assigned to the feature. No function inside INTEGRATOR; carried to the result and read by QUANT. If set, must match a defined Compound Name; may be empty.</td>
 </tr>
 <tr class="even">
 <td>4</td>
-<td><strong>Precursor Ion</strong></td>
+<td><strong>Precursor_Ion</strong></td>
 <td>Precursor-ion <em>m/z</em>. Must match the mzML value within <code>mz_tol</code>.</td>
 </tr>
 <tr class="odd">
 <td>5</td>
-<td><strong>Product Ion</strong></td>
+<td><strong>Product_Ion</strong></td>
 <td>Product-ion <em>m/z</em>. Must match the mzML value within <code>mz_tol</code>.</td>
 </tr>
 <tr class="even">
@@ -433,17 +433,17 @@ images/feature_list.png and enable:
 </tr>
 <tr class="even">
 <td>8</td>
-<td>left integration bound</td>
+<td>start_RT</td>
 <td>Fixed left peak border for all samples, in minutes, read from and tracked relative to the reference sample (see the <a href="#reference-frame-caution">caution</a> below). Empty = determined automatically.</td>
 </tr>
 <tr class="odd">
 <td>9</td>
-<td>right integration bound</td>
+<td>end_RT</td>
 <td>Fixed right peak border for all samples, in minutes, read from and tracked relative to the reference sample (see the <a href="#reference-frame-caution">caution</a> below). Empty = determined automatically.</td>
 </tr>
 <tr class="even">
 <td>10</td>
-<td>peak width</td>
+<td>peak_width</td>
 <td>Per-feature override of the global <code>peak_width</code>, entered <strong>without the brackets</strong> as <a href="./tuning.html#peak-width-schematic"><code>w, x, y, z</code></a> (see <a href="./tuning.html">Tuning Peak Integration</a>). Empty = use the global value.</td>
 </tr>
 <tr class="odd">
@@ -453,7 +453,7 @@ images/feature_list.png and enable:
 </tr>
 <tr class="even">
 <td>12</td>
-<td>chromatogram index</td>
+<td>chromatogram_index</td>
 <td>Overrides the automatic assignment of chromatograms to transitions. Empty = assigned automatically.</td>
 </tr>
 <tr class="odd">
