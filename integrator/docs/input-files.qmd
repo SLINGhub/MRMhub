@@ -66,7 +66,7 @@ present in the data folder but not listed here are ignored. Required columns are
 | **file_name** | mzML file to process, located in the folder set by `mzML_files`. Must include the `.mzML` extension (exact case). |
 | batch | Analysis batch identifier. No effect inside INTEGRATOR; carried through to the result. |
 | sample_type | Sample/QC type. Blanks **must** be labelled with text containing `BLK` — the only label INTEGRATOR treats specially (during peak finding). Every other label has no effect inside INTEGRATOR, may be left empty, and is carried through to `long.csv` for the QUANT module. Using the standard [MRMhub QC types](https://slinghub.github.io/MRMhub/quant/articles/manual-00-sample-types.html) here lets QUANT assign the QC roles automatically. |
-| reference | Marks a sample as a retention-time reference for RT-shift estimation; label with `x`, otherwise leave empty. Multiple references must exhibit negligible RT shifts relative to one another. |
+| **reference** | Marks a sample as a retention-time reference for RT-shift estimation; label with `x`, otherwise leave empty. Multiple references must exhibit negligible RT shifts relative to one another. |
 | learn | Optional column. Marks a sample as a learning sample, this column allow user to select a subset of sample that will be considered for the detection of consensus peaks. |
 
 ### Transition / Feature list (`feature_list.csv`)
