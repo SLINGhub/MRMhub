@@ -42,7 +42,7 @@ peak detection and integration. It must reside in the same folder as the MRMhub 
 | `num_threads` | Number of CPU threads used for integration; affects speed only, not results. Default: `2`. |
 | `mz_tol` | Allowed deviation between the listed and detected *m/z*, in *m/z* units. Default: `0.06`. |
 | `RT_tol` | Allowed deviation between the listed and detected RT, in minutes; a key setting for complex chromatograms. Default: `0.1`. |
-| `RT_shift` | `[x, y]` bound the RT drift relative to the reference samples: at most *x* min earlier and *y* min later than expected. The lower bound is **negative** (earlier), the upper positive (later). **`[0, 0]` disables RT-shift correction** — but a small non-zero window is recommended even for stable methods, as it improves consistent border finding. Default: `[-0.2, 0.2]`. |
+| `RT_shift` | `[x, y]` bound the RT drift relative to the reference samples: at most *x* min earlier and *y* min later than expected. The lower bound is **negative** (earlier), the upper positive (later). **`[0.0, 0.0]` disables RT-shift correction** — but a small non-zero window is recommended even for stable methods, as it improves consistent border finding. Default: `[-0.2, 0.2]`. |
 | `RT_shift_bound` | Maximum RT drift allowed between adjacent samples, in minutes. Default: `0.1`. |
 | `crop_window` | `[y, z]` crops the chromatogram to a window from *y* min before to *z* min after the listed RT. Default: `[1.5, 2.0]`. |
 
