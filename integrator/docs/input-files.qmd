@@ -17,12 +17,14 @@ INTEGRATOR is configured through the following three input files, which specify 
 
 Each file is specified in detail below. See the [Algorithm](algorithm.qmd) for how these settings drive detection and integration.
 
+<!--
 ::: {#column-order-warning .callout-important}
 ## Do not change the column order of the template input tables
 
 INTEGRATOR reads `run_order.csv` and `feature_list.csv` **by column position**, not by header name. Reordering, deleting, or inserting columns will therefore be **misinterpreted**, potentially **without any
 warning or error**. The `param.txt` is, however, order-independent. Use the [templates](https://github.com/SLINGhub/MRMhub/releases) as a starting point to ensure the correct column order.
 :::
+-->
 
 ### Global parameters (`param.txt`)
 
@@ -95,7 +97,7 @@ images/feature_list.png and enable:
 
 ::: {#reference-frame-caution .callout-caution}
 ## Use RT and borders from a reference sample
-The `RT` and any fixed `left`/`right integration bound` are interpreted in the retention-time frame of
+The `RT` and any fixed `start_RT`/`end_RT` are interpreted in the retention-time frame of
 the reference sample(s) (`run_order.csv`, `reference = x`) and tracked from there into every sample.
 Read these values from a reference sample: a value taken from a non-reference sample that has drifted
 relative to the reference carries that offset into the whole sequence, shifting the integration
