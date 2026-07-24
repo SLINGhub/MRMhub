@@ -309,7 +309,7 @@ warning or error**. The `param.txt` is, however, order-independent. Use the [tem
 </tr>
 <tr class="even">
 <td><code>RT_shift</code></td>
-<td><code>[x, y]</code> bound the RT drift relative to the reference samples: at most <em>x</em> min earlier and <em>y</em> min later than expected. The lower bound is <strong>negative</strong> (earlier), the upper positive (later). <strong><code>[0, 0]</code> disables RT-shift correction</strong> — but a small non-zero window is recommended even for stable methods, as it improves consistent border finding. Default: <code>[-0.2, 0.2]</code>.</td>
+<td><code>[x, y]</code> bound the RT drift relative to the reference samples: at most <em>x</em> min earlier and <em>y</em> min later than expected. The lower bound is <strong>negative</strong> (earlier), the upper positive (later). <strong><code>[0.0, 0.0]</code> disables RT-shift correction</strong> — but a small non-zero window is recommended even for stable methods, as it improves consistent border finding. Default: <code>[-0.2, 0.2]</code>.</td>
 </tr>
 <tr class="odd">
 <td><code>RT_shift_bound</code></td>
