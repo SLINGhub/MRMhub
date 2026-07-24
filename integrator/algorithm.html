@@ -80,9 +80,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-82c0a550d76b23a941edfa673b1f3621.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-daa16ad70864c2de36df1d25ac9f34a4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-82c0a550d76b23a941edfa673b1f3621.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-ceb70c92b08e5c876752cb1abb99d4ba.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-1794527cc8e9e980d5a06cdf3d308d53.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-ceb70c92b08e5c876752cb1abb99d4ba.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -337,7 +337,7 @@ END FUNCTION</code></pre>
 <section id="determination-of-peak-integration-borders" class="level2">
 <h2 class="anchored" data-anchor-id="determination-of-peak-integration-borders">Determination of peak integration borders</h2>
 <p>In the final step, the algorithm goes through the transitions to finalise the integration borders.</p>
-<p>For the simple case of unimodal ion traces, the user can set the <code>peak_width</code> parameter quartet <code>[w, x, y, z]</code> to define the default start and end integration points. This can be customised for individual analytes with a <code>peak width</code> column in the transition-list table. The user can also set the <code>uniform_width</code> option (its own column in the transition table) so that the integration width remains the same between samples for a given transition, and can set fixed <strong>left/right integration bounds</strong> to fix the integration points with respect to the reference samples.</p>
+<p>For the simple case of unimodal ion traces, the user can set the <code>peak_width</code> parameter quartet <code>[w, x, y, z]</code> to define the default start and end integration points. This can be customised for individual analytes with a <code>peak_width</code> column in the transition-list table. The user can also set the <code>uniform_width</code> option (its own column in the transition table) so that the integration width remains the same between samples for a given transition, and can set fixed <strong>left/right integration bounds</strong> to fix the integration points with respect to the reference samples.</p>
 <p>The expected <code>RT</code> and any fixed left/right integration bounds are interpreted in the retention-time frame of the reference sample(s) and drift-tracked from there into every sample.</p>
 <div class="callout callout-style-default callout-caution callout-titled">
 <div class="callout-header d-flex align-content-center">
