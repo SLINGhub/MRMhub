@@ -342,41 +342,40 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="sample-list-run_order.csv" class="level3">
 <h3 class="anchored" data-anchor-id="sample-list-run_order.csv">Sample list (<code>run_order.csv</code>)</h3>
-<p>The sample list defines the data files to process, in processing order (top to bottom). mzML files present in the data folder but not listed here are ignored. Required columns are shown in <strong>bold</strong>; the <strong>#</strong> column is the fixed column position (see the <a href="#column-order-warning">warning above</a>).</p>
+<p>The sample list defines the data files to process, in processing order (top to bottom). mzML files present in the data folder but not listed here are ignored. Required columns are shown in <strong>bold</strong>.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="images/paste-8.png" class="img-fluid figure-img" style="width:50.0%" alt="Screenshot of a run_order.csv sample list with columns file name, batch, sample_type, and reference. Two early BQC rows carry an x in the reference column marking them as retention-time anchors."></p>
+<p><img src="images/paste-8.png" class="img-fluid figure-img" style="width:50.0%" alt="Screenshot of a run_order.csv sample list with columns file_name, batch, sample_type, and reference. Two early BQC rows carry an x in the reference column marking them as retention-time anchors."></p>
 <figcaption>A portion of the sample list from <a href="https://slinghub.github.io/MRMhub-workflows/Dataset3.html">an example lipidomics dataset</a></figcaption>
 </figure>
 </div>
 <table class="caption-top table">
 <thead>
 <tr class="header">
-<th>#</th>
 <th>Column</th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>1</td>
-<td><strong>file name</strong></td>
+<td><strong>file_name</strong></td>
 <td>mzML file to process, located in the folder set by <code>mzML_files</code>. Must include the <code>.mzML</code> extension (exact case).</td>
 </tr>
 <tr class="even">
-<td>2</td>
 <td>batch</td>
 <td>Analysis batch identifier. No effect inside INTEGRATOR; carried through to the result.</td>
 </tr>
 <tr class="odd">
-<td>3</td>
 <td>sample_type</td>
 <td>Sample/QC type. Blanks <strong>must</strong> be labelled with text containing <code>BLK</code> — the only label INTEGRATOR treats specially (during peak finding). Every other label has no effect inside INTEGRATOR, may be left empty, and is carried through to <code>long.csv</code> for the QUANT module. Using the standard <a href="https://slinghub.github.io/MRMhub/quant/articles/manual-00-sample-types.html">MRMhub QC types</a> here lets QUANT assign the QC roles automatically.</td>
 </tr>
 <tr class="even">
-<td>4</td>
 <td>reference</td>
 <td>Marks a sample as a retention-time reference for RT-shift estimation; label with <code>x</code>, otherwise leave empty. Multiple references must exhibit negligible RT shifts relative to one another.</td>
+</tr>
+<tr class="odd">
+<td>learn</td>
+<td>Optional column. Marks a sample as a learning sample, this column allow user to select a subset of sample that will be considered for the detection of consensus peaks.</td>
 </tr>
 </tbody>
 </table>
@@ -390,74 +389,60 @@ images/feature_list.png and enable:
 <table class="caption-top table">
 <thead>
 <tr class="header">
-<th>#</th>
 <th>Column</th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>1</td>
 <td><strong>Feature_ID</strong></td>
 <td>Feature (analyte) identifier. Unique, typically identifying a single peak.</td>
 </tr>
 <tr class="even">
-<td>2</td>
 <td><strong>Transition_Name</strong></td>
 <td>Transition identifier. May be repeated across features sharing one transition.</td>
 </tr>
 <tr class="odd">
-<td>3</td>
 <td>ISTD_Feature_ID</td>
 <td>Internal standard assigned to the feature. No function inside INTEGRATOR; carried to the result and read by QUANT. If set, must match a defined Compound Name; may be empty.</td>
 </tr>
 <tr class="even">
-<td>4</td>
 <td><strong>Precursor_Ion</strong></td>
 <td>Precursor-ion <em>m/z</em>. Must match the mzML value within <code>mz_tol</code>.</td>
 </tr>
 <tr class="odd">
-<td>5</td>
 <td><strong>Product_Ion</strong></td>
 <td>Product-ion <em>m/z</em>. Must match the mzML value within <code>mz_tol</code>.</td>
 </tr>
 <tr class="even">
-<td>6</td>
 <td><strong>RT</strong></td>
 <td>Expected retention time of the feature, in minutes, read from a sample marked as a <code>reference</code> (see the <a href="#reference-frame-caution">caution</a> below).</td>
 </tr>
 <tr class="odd">
-<td>7</td>
 <td>uniform_width</td>
 <td>If <code>y</code>, the integration width is held constant across samples (set to the median of the automatically determined borders); if <code>n</code>, borders are found per sample. Default: <code>n</code>.</td>
 </tr>
 <tr class="even">
-<td>8</td>
 <td>start_RT</td>
 <td>Fixed left peak border for all samples, in minutes, read from and tracked relative to the reference sample (see the <a href="#reference-frame-caution">caution</a> below). Empty = determined automatically.</td>
 </tr>
 <tr class="odd">
-<td>9</td>
 <td>end_RT</td>
 <td>Fixed right peak border for all samples, in minutes, read from and tracked relative to the reference sample (see the <a href="#reference-frame-caution">caution</a> below). Empty = determined automatically.</td>
 </tr>
 <tr class="even">
-<td>10</td>
 <td>peak_width</td>
 <td>Per-feature override of the global <code>peak_width</code>, entered <strong>without the brackets</strong> as <a href="./tuning.html#peak-width-schematic"><code>w, x, y, z</code></a> (see <a href="./tuning.html">Tuning Peak Integration</a>). Empty = use the global value.</td>
 </tr>
 <tr class="odd">
-<td>11</td>
 <td>baseline</td>
 <td><code>default</code>: horizontal line at the 5th percentile of intensities within the window; <code>v_drop</code>: horizontal line at the lowest intensity of the integrated region; <code>v2v</code>: straight line connecting the left and right bounds. Default: <code>default</code>.</td>
 </tr>
 <tr class="even">
-<td>12</td>
 <td>chromatogram_index</td>
-<td>Overrides the automatic assignment of chromatograms to transitions. Empty = assigned automatically.</td>
+<td>Optional column. Overrides the automatic assignment of chromatograms to transitions. Empty = assigned automatically.</td>
 </tr>
 <tr class="odd">
-<td>13</td>
 <td>Remarks</td>
 <td>Free-text documentation of integration settings; no function.</td>
 </tr>
