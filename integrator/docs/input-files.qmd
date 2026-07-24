@@ -71,8 +71,7 @@ present in the data folder but not listed here are ignored. Required columns are
 
 The transition/feature list specifies the transitions to process and the features to integrate for
 each. Transitions present in the mzML files but not listed here are ignored. Multiple features may be
-defined for one transition. Required columns are shown in **bold**; the **#** column is the fixed
-column position (see the [warning above](#column-order-warning)).
+defined for one transition. Required columns are shown in **bold**.
 
 <!-- TODO: add feature_list.csv screenshot leading this section (none available yet). Drop the image at
 images/feature_list.png and enable:
@@ -80,18 +79,18 @@ images/feature_list.png and enable:
 
 | # | Column | Description |
 |---|---|---|
-| 1 | **Compound Name** | Feature (analyte) identifier. Unique, typically identifying a single peak. |
-| 2 | **Transition Name** | Transition identifier. May be repeated across features sharing one transition. |
-| 3 | ISTD | Internal standard assigned to the feature. No function inside INTEGRATOR; carried to the result and read by QUANT. If set, must match a defined Compound Name; may be empty. |
-| 4 | **Precursor Ion** | Precursor-ion *m/z*. Must match the mzML value within `mz_tol`. |
-| 5 | **Product Ion** | Product-ion *m/z*. Must match the mzML value within `mz_tol`. |
+| 1 | **Feature_ID** | Feature (analyte) identifier. Unique, typically identifying a single peak. |
+| 2 | **Transition_Name** | Transition identifier. May be repeated across features sharing one transition. |
+| 3 | ISTD_Feature_ID | Internal standard assigned to the feature. No function inside INTEGRATOR; carried to the result and read by QUANT. If set, must match a defined Compound Name; may be empty. |
+| 4 | **Precursor_Ion** | Precursor-ion *m/z*. Must match the mzML value within `mz_tol`. |
+| 5 | **Product_Ion** | Product-ion *m/z*. Must match the mzML value within `mz_tol`. |
 | 6 | **RT** | Expected retention time of the feature, in minutes, read from a sample marked as a `reference` (see the [caution](#reference-frame-caution) below). |
 | 7 | uniform_width | If `y`, the integration width is held constant across samples (set to the median of the automatically determined borders); if `n`, borders are found per sample. Default: `n`. |
-| 8 | left integration bound | Fixed left peak border for all samples, in minutes, read from and tracked relative to the reference sample (see the [caution](#reference-frame-caution) below). Empty = determined automatically. |
-| 9 | right integration bound | Fixed right peak border for all samples, in minutes, read from and tracked relative to the reference sample (see the [caution](#reference-frame-caution) below). Empty = determined automatically. |
-| 10 | peak width | Per-feature override of the global `peak_width`, entered **without the brackets** as [`w, x, y, z`](tuning.qmd#peak-width-schematic) (see [Tuning Peak Integration](tuning.qmd)). Empty = use the global value. |
+| 8 | start_RT | Fixed left peak border for all samples, in minutes, read from and tracked relative to the reference sample (see the [caution](#reference-frame-caution) below). Empty = determined automatically. |
+| 9 | end_RT | Fixed right peak border for all samples, in minutes, read from and tracked relative to the reference sample (see the [caution](#reference-frame-caution) below). Empty = determined automatically. |
+| 10 | peak_width | Per-feature override of the global `peak_width`, entered **without the brackets** as [`w, x, y, z`](tuning.qmd#peak-width-schematic) (see [Tuning Peak Integration](tuning.qmd)). Empty = use the global value. |
 | 11 | baseline | `default`: horizontal line at the 5th percentile of intensities within the window; `v_drop`: horizontal line at the lowest intensity of the integrated region; `v2v`: straight line connecting the left and right bounds. Default: `default`. |
-| 12 | chromatogram index | Overrides the automatic assignment of chromatograms to transitions. Empty = assigned automatically. |
+| 12 | chromatogram_index | Overrides the automatic assignment of chromatograms to transitions. Empty = assigned automatically. |
 | 13 | Remarks | Free-text documentation of integration settings; no function. |
 
 ::: {#reference-frame-caution .callout-caution}

@@ -97,7 +97,7 @@ number of values, cause it to be ignored. See [Tuning Peak Integration](tuning.q
 
 ### Q: RT-shift correction seems inactive {#rtshift-zero}
 
-**A:** `RT_shift = [0, 0]` disables it. The lower bound is negative (earlier), the upper positive
+**A:** `RT_shift = [0.0, 0.0]` disables it. The lower bound is negative (earlier), the upper positive
 (later), e.g. `[-0.2, 0.2]`; a small non-zero window is recommended even for stable methods. See
 [Tuning Peak Integration](tuning.qmd).
 
