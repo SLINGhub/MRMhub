@@ -254,19 +254,14 @@ ul.task-list li input[type="checkbox"] {
 </table>
 </div>
 <p>Each file is specified in detail below. See the <a href="./algorithm.html">Algorithm</a> for how these settings drive detection and integration.</p>
-<div id="column-order-warning" class="callout callout-style-default callout-important callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Important</span>Do not change the column order of the template input tables
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>INTEGRATOR reads <code>run_order.csv</code> and <code>feature_list.csv</code> <strong>by column position</strong>, not by header name. Reordering, deleting, or inserting columns will therefore be <strong>misinterpreted</strong>, potentially <strong>without any warning or error</strong>. The <code>param.txt</code> is, however, order-independent. Use the <a href="https://github.com/SLINGhub/MRMhub/releases">templates</a> as a starting point to ensure the correct column order.</p>
-</div>
-</div>
+<!--
+::: {#column-order-warning .callout-important}
+## Do not change the column order of the template input tables
+
+INTEGRATOR reads `run_order.csv` and `feature_list.csv` **by column position**, not by header name. Reordering, deleting, or inserting columns will therefore be **misinterpreted**, potentially **without any
+warning or error**. The `param.txt` is, however, order-independent. Use the [templates](https://github.com/SLINGhub/MRMhub/releases) as a starting point to ensure the correct column order.
+:::
+-->
 <section id="global-parameters-param.txt" class="level3">
 <h3 class="anchored" data-anchor-id="global-parameters-param.txt">Global parameters (<code>param.txt</code>)</h3>
 <p><code>param.txt</code> (the name is fixed) holds the global parameters that direct INTEGRATOR to the input and data files and control peak detection and integration. It must reside in the same folder as the MRMhub executable.</p>
@@ -458,7 +453,7 @@ images/feature_list.png and enable:
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>The <code>RT</code> and any fixed <code>left</code>/<code>right integration bound</code> are interpreted in the retention-time frame of the reference sample(s) (<code>run_order.csv</code>, <code>reference = x</code>) and tracked from there into every sample. Read these values from a reference sample: a value taken from a non-reference sample that has drifted relative to the reference carries that offset into the whole sequence, shifting the integration throughout.</p>
+<p>The <code>RT</code> and any fixed <code>start_RT</code>/<code>end_RT</code> are interpreted in the retention-time frame of the reference sample(s) (<code>run_order.csv</code>, <code>reference = x</code>) and tracked from there into every sample. Read these values from a reference sample: a value taken from a non-reference sample that has drifted relative to the reference carries that offset into the whole sequence, shifting the integration throughout.</p>
 </div>
 </div>
 </section>
