@@ -43,8 +43,8 @@ Baseline path = `main:quant/vignettes/articles/<original>.Rmd`.
 | tutorial-07-calibration-reference | `T_CalibRef` | tutorial | reworked — for review/build |
 | tutorial-08-summarizedexperiment | *(none — Claude-era)* | tutorial | done |
 | recipe-04-validate-metadata (was tutorial-10-metadata-validation) | *(none — Claude-era)* | recipe | reworked + renamed tutorial→recipe — for review/build |
-| tutorial-11-interference-correction | *(none — Claude-era)* | tutorial | to verify |
-| tutorial-12-workflow-builder | *(none — Claude-era)* | tutorial | to verify |
+| tutorial-11-interference-correction | *(none — Claude-era)* | tutorial | reworked — for review/build |
+| tutorial-12-workflow-builder | *(none — Claude-era)* | tutorial | reworked — for review/build |
 | recipe-01-ext-calibration-qc | `R01_quantms` | recipe | reworked — for review/build |
 | recipe-02-custom-qc-report | *(none — Claude-era)* | recipe | to verify |
 | recipe-03-mztab-export | *(none — Claude-era)* | recipe | to verify |

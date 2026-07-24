@@ -1,13 +1,14 @@
 ---
-title: "Build a Workflow Without Code"
+title: "Build a workflow without code"
 output:
   rmarkdown::html_vignette:
     fig_width: 6
     fig_height: 3
-description: |
-  Use the point-and-click builder to validate your data and metadata and generate a runnable Quarto workflow.
+description: >
+  Use the point-and-click builder to validate your data and metadata and
+  generate a runnable Quarto workflow.
 vignette: >
-  %\VignetteIndexEntry{Build a Workflow Without Code}
+  %\VignetteIndexEntry{Build a workflow without code}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 editor_options:
@@ -15,14 +16,12 @@ editor_options:
     wrap: 72
 ---
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE, comment = "#>", out.width = "100%",
-  message = FALSE, warning = FALSE, eval = FALSE
-)
+```{r setup, include = FALSE}
+source("_common.R")
+knitr::opts_chunk$set(eval = FALSE)
 ```
 
-<p class="page-kind page-kind-tutorial">Tutorial</p>
+<p class="page-meta"><span class="page-kind page-kind-tutorial">Tutorial</span> <span class="page-level">Beginner</span> <span class="page-prereq">Prerequisites: <a href="manual-00-installation.html">MRMhub installed</a></span></p>
 
 `build_workflow()` opens an interactive application that turns a data file and
 its metadata into a runnable Quarto (`.qmd`) workflow. It validates the inputs
@@ -30,11 +29,7 @@ against the real importers, disables processing steps the metadata cannot
 support, and previews the generated document for download — while the code-first
 workflow it produces remains the reproducible artefact.
 
-::: {.callout .callout-note}
-**Time** ~5 min &nbsp;·&nbsp; **Level** Beginner &nbsp;·&nbsp; **Prerequisites** [MRMhub installed](manual-00-installation.html)
-:::
-
-## Launching the builder
+## 1. Launching the builder
 
 ```{r}
 library(mrmhub)
@@ -48,7 +43,7 @@ them (they are not pulled in when `mrmhub` itself is installed). To try the
 builder without any files of your own, use the **Load bundled demo data** button,
 which loads the INTEGRATOR demo dataset shipped with the package.
 
-## The sidebar, step by step
+## 2. The sidebar, step by step
 
 The sidebar is worked top to bottom in four numbered sections.
 
@@ -100,7 +95,7 @@ The corrected feature variable is chosen automatically as the highest processing
 level the selected steps reach — `conc` once a quantification step is included,
 otherwise `norm_intensity`, otherwise raw `intensity`.
 
-## Reading the validation panel
+## 3. Reading the validation panel
 
 The **Validation** panel runs the selected steps' preconditions against the
 imported experiment and reports one line per finding:
@@ -115,7 +110,7 @@ imported experiment and reports one line per finding:
 Because the panel calls the same importer and precondition checks as a scripted
 run, a workflow that validates cleanly here runs the same way from the console.
 
-## What it generates
+## 4. What it generates
 
 The **Generated workflow** pane updates live as the sidebar changes. The YAML
 front matter records the title and the requested output formats:
@@ -144,16 +139,20 @@ code is, in order:
 
 ```{r}
 mexp <- MRMhubExperiment()
-mexp <- import_data_mrmhub(mexp, path = "data/MRMhub_demo.tsv", import_metadata = TRUE)
+mexp <- import_data_mrmhub(
+  mexp, path = "data/MRMhub_demo.tsv", import_metadata = TRUE)
 
 mexp <- normalize_by_istd(mexp)
 mexp <- quantify_by_istd(mexp)
 
-mexp <- correct_drift_gaussiankernel(mexp, variable = "conc", ref_qc_types = "SPL")
-mexp <- correct_batch_centering(mexp, variable = "conc", ref_qc_types = "SPL")
+mexp <- correct_drift_gaussiankernel(
+  mexp, variable = "conc", ref_qc_types = "SPL")
+mexp <- correct_batch_centering(
+  mexp, variable = "conc", ref_qc_types = "SPL")
 
 mexp <- calc_qc_metrics(mexp)
-mexp <- filter_features_qc(mexp, include_qualifier = FALSE, include_istd = FALSE)
+mexp <- filter_features_qc(
+  mexp, include_qualifier = FALSE, include_istd = FALSE)
 
 save_report_xlsx(mexp, path = "output/results.xlsx")
 ```
@@ -163,7 +162,7 @@ The emitted calls and their argument defaults mirror the
 assemble that script, not a separate engine. **Copy code** copies the document to
 the clipboard, and **Download .qmd** (or the project button) writes it to disk.
 
-## Rendering the workflow
+## 5. Rendering the workflow
 
 The **Output format(s)** control writes the requested Quarto formats into the
 document's YAML — HTML, Word (`.docx`), and PDF may be combined. The PDF format
@@ -183,15 +182,15 @@ builder is a starting point, not a black box.
 For scripted use, the same document can be produced without the application by
 passing a specification list to `generate_workflow_qmd()`.
 
-## Next Steps
+## Next steps
 
-- [Your First Analysis](tutorial-00-first-analysis.html) — the equivalent
+- [Your first analysis](tutorial-00-first-analysis.html) — the equivalent
   five-minute workflow written by hand
-- [Basic MRMhub Workflow](tutorial-02-basic-workflow.html) — the full pipeline
+- [Basic MRMhub workflow](tutorial-02-basic-workflow.html) — the full pipeline
   the builder mirrors
-- [Importing Analytical Data](manual-04-data-import.html) — file formats and the
+- [Importing analytical data](manual-04-data-import.html) — file formats and the
   importer decision tree
-- [Importing Metadata](manual-05-metadata.html) — metadata tables and their
+- [Importing metadata](manual-05-metadata.html) — metadata tables and their
   required columns
-- [Quarto Workflows](manual-11-quarto-workflows.html) — the setup chunk, coloured
+- [Quarto workflows](manual-11-quarto-workflows.html) — the setup chunk, coloured
   console output, and rendering to HTML, PDF, and Word

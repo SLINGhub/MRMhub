@@ -1,16 +1,14 @@
 ---
-title: "Interference Correction"
+title: "Interference correction"
 output:
   rmarkdown::html_vignette:
     fig_width: 7
     fig_height: 4
-description: |
-  Annotate mrm_pattern, derive isotopic interference relationships automatically
-  with calc_isotopic_interferences(), inspect them, and apply the subtraction
-  with correct_isotopic_interferences(). Declared and single-pair manual
-  corrections are also covered.
+description: >
+  Derive and subtract isotopic (M+2) interferences in class-based targeted
+  assays: annotate mrm_pattern, auto-derive the overlaps, inspect, and correct.
 vignette: >
-  %\VignetteIndexEntry{Interference Correction}
+  %\VignetteIndexEntry{Interference correction}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 editor_options:
@@ -19,12 +17,12 @@ editor_options:
 bibliography: references.bib
 ---
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(collapse = TRUE, comment = "#>", eval = FALSE,
-                      fig.width = 7, fig.height = 4, out.width = "100%")
+```{r setup, include = FALSE}
+source("_common.R")
+knitr::opts_chunk$set(eval = FALSE)
 ```
 
-<p class="page-kind page-kind-tutorial">Tutorial</p>
+<p class="page-meta"><span class="page-kind page-kind-tutorial">Tutorial</span> <span class="page-level">Advanced</span> <span class="page-prereq">Prerequisites: <a href="tutorial-02-basic-workflow.html">Basic workflow</a></span></p>
 
 In class-based targeted assays, the natural-abundance heavy isotopologues of one species can overlap
 the transition of a species two mass units heavier, inflating its measured area. MRMhub derives these
@@ -41,10 +39,6 @@ whether it lands on the retained product ion or the neutral loss. The whole-mole
 path is therefore for genuine full-scan data only, **never a fallback for MRM** data that happens to
 lack a product m/z. The underlying concepts (front/back overlaps, the co-elution requirement) are
 covered in the [Isotopic interference correction](manual-12-interference-correction.html) manual page.
-
-::: {.callout .callout-note}
-**Time** ~15 min &nbsp;·&nbsp; **Level** Advanced &nbsp;·&nbsp; **Prerequisites** [Basic workflow](tutorial-02-basic-workflow.html)
-:::
 
 ## 1. Preparing for isotopic correction
 
@@ -92,7 +86,7 @@ overlaps and stores them in the `annot_interferences` slot. Choose the derivatio
 acquisition:
 
 ```{r}
-# Class-based LC-MRM: fragment-level front/back correction (needs precursor + product m/z).
+# Class-based LC-MRM: fragment-level M+2 (needs precursor + product m/z).
 mexp <- calc_isotopic_interferences(mexp, level = "MRM")
 
 # Genuine MS1 / full-scan: whole-molecule M+2 (needs precursor m/z only).
@@ -107,7 +101,8 @@ for the experimental option to keep only chromatographically co-eluting pairs.
 ## 3. Inspect the derived relationships
 
 The two-stage API is a built-in *preview*: review the derived edges before subtracting anything. Each
-row of `annot_interferences` is one overlap, with its contribution factor `K` and an `overlap_type`
+row of `annot_interferences` is one overlap, carrying its contribution factor in
+`interference_contribution` (the *K* of the subtraction formula) and an `overlap_type`
 (`m2_front`, `m2_back`, or `ms1_m2`):
 
 ```{r}
@@ -150,13 +145,12 @@ actual `dataset` column name (`feature_intensity`).
 ```{r}
 mexp <- correct_interference_manual(
   mexp,
-  variable                  = "feature_intensity",
-  feature                   = "PC 32:0",
-  interfering_feature       = "SM 36:1 M+3",
+  variable = "feature_intensity",
+  feature = "PC 32:0",
+  interfering_feature = "SM 36:1 M+3",
   interference_contribution = 0.0107,
-  neg_to_na                 = FALSE,
-  updated_feature_id        = NA
-)
+  neg_to_na = FALSE,
+  updated_feature_id = NA)
 ```
 
 Setting `updated_feature_id` renames the corrected feature so raw and corrected channels can coexist.
@@ -191,10 +185,13 @@ mexp <- MRMhubExperiment() |>
 ```{r}
 d <- get_analyticaldata(mexp, annotated = TRUE) |>
   dplyr::filter(feature_id == "PC 32:0") |>
-  dplyr::select(analysis_id, qc_type,
-                intensity_before = feature_intensity_orig,
-                intensity_after  = feature_intensity) |>
-  dplyr::mutate(pct_change = 100 * (intensity_after - intensity_before) / intensity_before)
+  dplyr::select(
+    analysis_id, qc_type,
+    intensity_before = feature_intensity_orig,
+    intensity_after = feature_intensity) |>
+  dplyr::mutate(
+    pct_change =
+      100 * (intensity_after - intensity_before) / intensity_before)
 
 summary(d$pct_change)
 ```
@@ -205,7 +202,10 @@ median often indicates an underestimated contribution factor.
 features were affected by which magnitude of correction (percent of signal removed) in the study
 samples:
 
-```{r, eval = TRUE, message = FALSE, warning = FALSE}
+```{r qc-impact}
+#| eval: true
+#| fig.cap: !expr fig_cap("How many features were corrected at each magnitude (percent of signal removed) in the study samples.")
+#| fig.alt: Distribution of per-feature interference-correction magnitude in study samples
 plot_qc_interference_impact(mexp, qc_types = "SPL")
 ```
 
@@ -215,11 +215,16 @@ shows each corrected feature's residual signal as a percent of its uncorrected v
 `sort_by_effect = "desc"` ranks them by correction magnitude and `top_n` keeps only the largest. A blank
 approaching zero alongside study samples (`SPL`) retaining most of their signal is the expected pattern:
 
-```{r, eval = TRUE, message = FALSE, warning = FALSE}
+```{r per-feature}
+#| eval: true
+#| fig.cap: !expr fig_cap("Per-feature residual signal after correction, as a percent of the uncorrected value, for features with at least 40% removed, split by QC type.")
+#| fig.alt: Per-feature residual signal after interference correction, split by QC type
 plot_interference_correction(
-  mexp, qc_types = "SPL", min_correction_pct = 40, sort_by_effect = "desc",
-  point_size = 1.5, point_alpha = 0.8
-)
+  mexp,
+  qc_types = "SPL",
+  min_correction_pct = 40,
+  sort_by_effect = "desc",
+  point_size = 1.5, point_alpha = 0.8)
 ```
 
 Each point is one study sample; the box summarises all of them. `SPL` points have a transparent fill,
@@ -233,7 +238,8 @@ only when the interferer's apex falls inside the victim's integration window, dr
 chromatographically resolved pairs:
 
 ```{r}
-mexp <- calc_isotopic_interferences(mexp, level = "MRM", check_coelution = TRUE)
+mexp <- calc_isotopic_interferences(
+  mexp, level = "MRM", check_coelution = TRUE)
 ```
 
 It is **off by default** while the gate is validated. When enabled, inspect `annot_interferences`
