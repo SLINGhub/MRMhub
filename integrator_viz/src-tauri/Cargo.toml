@@ -1,8 +1,8 @@
 [package]
 name = "mrmhub-viz"
-version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
+version = "0.9.8"
+description = "MRMhub-viz — interactive viewer for INTEGRATOR peak-integration results"
+authors = ["Guo Shou Teo (National University of Singapore)"]
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
