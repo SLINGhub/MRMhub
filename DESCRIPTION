@@ -1,6 +1,6 @@
 Package: mrmhub
 Title: Small Molecule Mass Spectrometry Data Processing, Quality Control, and Reporting
-Version: 0.9.3
+Version: 0.9.8
 Authors@R: c(person(given = "Bo", family = "Burla", role = c("aut", "cre"),
     email = "bo.burla@nus.edu.sg", comment = c(ORCID = "0000-0002-5918-3249")),
     person(given = "Guo Shou", family = "Teo", role = "aut",
