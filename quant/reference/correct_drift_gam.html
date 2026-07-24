@@ -92,11 +92,13 @@ mgcv::gam() function.'><meta property="og:image" content="https://slinghub.githu
     <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-05-run-scatter.html">RunScatter and PCA</a></li>
     <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Downstream / export</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-08-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Recipes</h6></li>
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
-    <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul></li>
 <li class="nav-item dropdown">
@@ -200,7 +202,7 @@ definitive criteria for correction (see Details below).</p>
 
 
 <dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
-<dd><p>MRMhubExperiment object</p></dd>
+<dd><p><code><a href="MRMhubExperiment-class.html">MRMhubExperiment</a></code> object</p></dd>
 
 
 <dt id="arg-variable">variable<a class="anchor" aria-label="anchor" href="#arg-variable"></a></dt>
@@ -244,7 +246,7 @@ definitive criteria for correction (see Details below).</p>
 
 
 <dt id="arg-recalc-trend-after">recalc_trend_after<a class="anchor" aria-label="anchor" href="#arg-recalc-trend-after"></a></dt>
-<dd><p>Recalculate trend post-drift correction for <code>plot_qc_runscatter()</code>. This will double calculation time.</p></dd>
+<dd><p>Recalculate trend post-drift correction for <code><a href="plot_runscatter.html">plot_runscatter()</a></code>. This will double calculation time.</p></dd>
 
 
 <dt id="arg-feature-list">feature_list<a class="anchor" aria-label="anchor" href="#arg-feature-list"></a></dt>
@@ -256,7 +258,7 @@ definitive criteria for correction (see Details below).</p>
 
 
 <dt id="arg-use-original-if-fail">use_original_if_fail<a class="anchor" aria-label="anchor" href="#arg-use-original-if-fail"></a></dt>
-<dd><p>Determines the action when smoothing fails or results in invalid values for a feature. If <code>FALSE</code> (default), the result for each feature will <code>NA</code> for all batches, if <code>TRUE</code>, the original data is kept.</p></dd>
+<dd><p>Determines the action when smoothing fails or results in invalid values for a feature. If <code>FALSE</code> (default), the result for each feature will be <code>NA</code> for all batches, if <code>TRUE</code>, the original data is kept.</p></dd>
 
 
 <dt id="arg-show-progress">show_progress<a class="anchor" aria-label="anchor" href="#arg-show-progress"></a></dt>
@@ -265,7 +267,7 @@ definitive criteria for correction (see Details below).</p>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>MRMhubExperiment object</p>
+    <p><code><a href="MRMhubExperiment-class.html">MRMhubExperiment</a></code> object</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -279,7 +281,7 @@ change being the median of these batch medians across features.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">mgcv::gam()</a></code></p></div>
+    <div class="dont-index"><p><code><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">mgcv::gam()</a></code>; the <a href="https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.html">drift-correction tutorial</a> for a worked example.</p></div>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

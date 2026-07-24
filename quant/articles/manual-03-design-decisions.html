@@ -70,11 +70,13 @@ and contributors who want to understand or extend the package.
     <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-05-run-scatter.html">RunScatter and PCA</a></li>
     <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Downstream / export</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-08-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Recipes</h6></li>
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
-    <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul>
 </li>
@@ -213,7 +215,7 @@ another. Enforcing that is the work QUANT exists to do.</p>
 <p>The argument is about the <em>internal</em> representation only.
 Several parallel intensity variables are no obstacle — SE holds them as
 parallel assays, which is exactly what the exporter relies on. Once an
-experiment is processed, <a href="recipe-04-summarizedexperiment.html"><code>save_dataset_summarizedexperiment()</code></a>
+experiment is processed, <a href="tutorial-08-summarizedexperiment.html"><code>save_dataset_summarizedexperiment()</code></a>
 hands it to <code>limma</code>, <code>lipidr</code>, <code>POMA</code>
 and the rest of the ecosystem.</p>
 </li>

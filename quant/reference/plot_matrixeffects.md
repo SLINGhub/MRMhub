@@ -60,9 +60,9 @@ plot_matrixeffects(
 
 - only_istd:
 
-  A logical value indicating whether to include features used as
-  internal standards (ISTD). Default is `TRUE`. Set to `FALSE` in
-  combination with feature_filter parameters to show other features.
+  A logical value indicating whether to show only internal standard
+  (ISTD) features. Default is `TRUE`. Set to `FALSE` in combination with
+  feature_filter parameters to show other features.
 
 - include_feature_filter:
 

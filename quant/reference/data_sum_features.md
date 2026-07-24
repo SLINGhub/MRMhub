@@ -16,7 +16,8 @@ data_sum_features(data, qualifier_action = "include")
 
 - data:
 
-  MRMhubExperiment object
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object
 
 - qualifier_action:
 
@@ -26,7 +27,8 @@ data_sum_features(data, qualifier_action = "include")
 
 ## Value
 
-MRMhubExperiment object
+[`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+object
 
 ## Details
 

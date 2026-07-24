@@ -26,7 +26,7 @@ pooled_sd(x, group, na.rm = FALSE, min_n = 2L)
 
 - na.rm:
 
-  logical, if TRUE then NA values in `x` are stripped before pooling
+  logical, if `TRUE` then NA values in `x` are stripped before pooling
 
 - min_n:
 

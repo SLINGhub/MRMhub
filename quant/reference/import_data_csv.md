@@ -20,7 +20,8 @@ import_data_csv(
 
 - data:
 
-  MRMhubExperiment object
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object
 
 - path:
 
@@ -30,7 +31,7 @@ import_data_csv(
 - variable_name:
 
   Variable type representing the values in the table. Must be one of
-  "intensity", "norm_intensity", "conc", "area", "height", "response")
+  "intensity", "norm_intensity", "conc", "area", "height", "response".
 
 - analysis_id_col:
 
@@ -40,9 +41,11 @@ import_data_csv(
 - import_metadata:
 
   Import additional metadata columns (e.g. batch ID, sample type) and
-  add to the `MRMhubExperiment` object. Only following metadata column
-  names are supported: "qc_type", "batch_id", "is_quantifier",
-  "is_istd", "analysis_order"
+  add to the
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object. Only following metadata column names are supported:
+  `"qc_type"`, `"batch_id"`, `"is_quantifier"`, `"is_istd"`,
+  `"analysis_order"`
 
 - first_feature_column:
 
@@ -55,7 +58,8 @@ import_data_csv(
 
 ## Value
 
-MRMhubExperiment object
+[`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+object
 
 ## Details
 

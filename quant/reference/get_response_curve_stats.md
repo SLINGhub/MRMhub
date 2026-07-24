@@ -6,15 +6,15 @@ and intercept) for each response curve in the provided
 (`x`) and feature intensity (`y`) of each curve are each scaled to their
 maximum (set to 1), so the returned `slopenorm` and `y0norm` are on this
 normalized scale. Optionally, it can include additional statistics from
-the `lancer` package (if installed) when `with_staturation_stats` is set
-to TRUE.
+the `lancer` package (if installed) when `with_saturation_stats` is set
+to `TRUE`.
 
 ## Usage
 
 ``` r
 get_response_curve_stats(
   data = NULL,
-  with_staturation_stats = FALSE,
+  with_saturation_stats = FALSE,
   limit_to_rqc = FALSE,
   silent_invalid_data = FALSE
 )
@@ -24,14 +24,15 @@ get_response_curve_stats(
 
 - data:
 
-  A `MRMhubExperiment` object containing the dataset and response curve
-  annotations.
+  A
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object containing the dataset and response curve annotations.
 
-- with_staturation_stats:
+- with_saturation_stats:
 
-  Logical, if TRUE, include additional statistics from the `lancer`
+  Logical, if `TRUE`, include additional statistics from the `lancer`
   package. Note: The `lancer` package must be installed when this
-  argument is set to TRUE.
+  argument is set to `TRUE`.
 
 - limit_to_rqc:
 
@@ -40,7 +41,7 @@ get_response_curve_stats(
 
 - silent_invalid_data:
 
-  Logical, if TRUE suppresses raising an error when required data or
+  Logical, if `TRUE` suppresses raising an error when required data or
   metadata are missing, or there is a mismatch between them.
 
 ## Value

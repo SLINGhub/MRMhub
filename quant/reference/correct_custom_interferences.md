@@ -25,7 +25,8 @@ correct_custom_interferences(
 
 - data:
 
-  MRMhubExperiment object.
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object.
 
 - variable:
 
@@ -46,9 +47,12 @@ correct_custom_interferences(
 
 ## Value
 
-MRMhubExperiment object with feature intensities corrected.
+[`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+object with feature intensities corrected.
 
 ## See also
 
 [`correct_isotopic_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/correct_isotopic_interferences.md),
-[`correct_interference_manual()`](https://slinghub.github.io/MRMhub/quant/reference/correct_interference_manual.md)
+[`correct_interference_manual()`](https://slinghub.github.io/MRMhub/quant/reference/correct_interference_manual.md);
+the [interference-correction
+guide](https://slinghub.github.io/MRMhub/quant/articles/manual-12-interference-correction.html).

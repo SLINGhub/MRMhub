@@ -1,7 +1,7 @@
-# Detailed processing and metadata report for a MRMhubExperiment
+# Detailed processing and metadata report for a `MRMhubExperiment`
 
 Prints the full status dashboard for a
-[MRMhubExperiment](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment.md):
+[`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md):
 sample and feature composition, which metadata tables are populated, the
 state of each processing step, and any manually excluded analyses or
 features. Printing the object directly gives the compact one-screen
@@ -17,7 +17,9 @@ status(object)
 
 - object:
 
-  A `MRMhubExperiment` object.
+  A
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object.
 
 ## Value
 

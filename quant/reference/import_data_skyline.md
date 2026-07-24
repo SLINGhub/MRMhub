@@ -19,7 +19,9 @@ import_data_skyline(
 
 - data:
 
-  A `MRMhubExperiment` object.
+  A
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object.
 
 - path:
 
@@ -48,7 +50,9 @@ import_data_skyline(
 
 ## Value
 
-A `MRMhubExperiment` object containing the imported data.
+A
+[`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+object containing the imported data.
 
 ## Details
 

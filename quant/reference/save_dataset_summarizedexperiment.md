@@ -27,7 +27,9 @@ save_dataset_summarizedexperiment(
 
 - data:
 
-  An `MRMhubExperiment` object.
+  An
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object.
 
 - path:
 

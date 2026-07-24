@@ -1,7 +1,7 @@
 # Save feature QC metrics to CSV
 
 This function exports the feature information and QC (Quality Control)
-metrics from a MRMhubExperiment object to a CSV file.
+metrics from a `MRMhubExperiment` object to a CSV file.
 
 ## Usage
 
@@ -13,7 +13,9 @@ save_feature_qc_metrics(data = NULL, path)
 
 - data:
 
-  A MRMhubExperiment object containing the QC metrics.
+  A
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object containing the QC metrics.
 
 - path:
 

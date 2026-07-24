@@ -20,13 +20,13 @@ parse_plain_wide_csv(
 
 - path:
 
-  path name and path of a plain long-format CSV file
+  File name and path of a plain wide-format CSV file
 
 - variable_name:
 
   Name of the variable representing the values in the table. Must be one
   of "intensity", "norm_intensity", "conc", "area", "height",
-  "response")
+  "response".
 
 - analysis_id_col:
 
@@ -35,7 +35,9 @@ parse_plain_wide_csv(
 - import_metadata:
 
   Import additional metadata columns (e.g. batch ID, sample type) and
-  add to the `MRMhubExperiment` object
+  add to the
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object
 
 - first_feature_column:
 

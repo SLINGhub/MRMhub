@@ -55,7 +55,7 @@ state.
     parallel intensity variables are no obstacle — SE holds them as
     parallel assays, which is exactly what the exporter relies on. Once
     an experiment is processed,
-    [`save_dataset_summarizedexperiment()`](https://slinghub.github.io/MRMhub/quant/articles/recipe-04-summarizedexperiment.md)
+    [`save_dataset_summarizedexperiment()`](https://slinghub.github.io/MRMhub/quant/articles/tutorial-08-summarizedexperiment.md)
     hands it to `limma`, `lipidr`, `POMA` and the rest of the ecosystem.
 
 ``` r

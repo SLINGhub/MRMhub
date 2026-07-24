@@ -23,7 +23,9 @@ import_metadata_analyses(
 
 - data:
 
-  A `MRMhubExperiment` object
+  A
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object
 
 - table:
 
@@ -50,7 +52,9 @@ import_metadata_analyses(
 
 ## Value
 
-An updated `MRMhubExperiment` object
+An updated
+[`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+object
 
 ## Identifier normalization
 

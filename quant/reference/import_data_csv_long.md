@@ -24,7 +24,9 @@ import_data_csv_long(
 
 - data:
 
-  A `MRMhubExperiment` object to which the imported data will be added.
+  A
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object to which the imported data will be added.
 
 - path:
 
@@ -62,7 +64,9 @@ import_data_csv_long(
 
 ## Value
 
-A `MRMhubExperiment` object containing the imported data.
+A
+[`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+object containing the imported data.
 
 ## Details
 

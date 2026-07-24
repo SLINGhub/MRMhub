@@ -12,15 +12,14 @@ artifacts. The smoothing can be applied to `concentration`,
 Corrections can be applied on a batch-by-batch basis
 (`batch_wise = TRUE`, default) or across all batches
 (`batch_wise = FALSE`). The correction can either replace existing drift
-or batch corrections
-(`replace_previous = `TRUE`, default) or applied on top of existing corrections (`replace_previous
-= FALSE\`).
+or batch corrections (`replace_previous = TRUE`, default) or applied on
+top of existing corrections (`replace_previous = FALSE`).
 
 Drift correction can be applied to all features
 (`conditional_correction = FALSE`) or conditionally, based on whether
 the sample CV difference before and after correction is below a defined
 threshold (`cv_diff_threshold`). The conditional correction is applied
-separately for each batch if `batch_wise = TRUE`, .
+separately for each batch if `batch_wise = TRUE`.
 
 It is recommended to visually inspect the correction using the
 [`plot_runscatter()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.md)
@@ -64,7 +63,9 @@ correct_drift_gaussiankernel(
 
 - data:
 
-  A MRMhubExperiment object.
+  A
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object.
 
 - variable:
 
@@ -145,7 +146,7 @@ correct_drift_gaussiankernel(
 
   Determines the action when smoothing fails or results in invalid
   values for a feature. If `FALSE` (default), the result for each
-  feature will `NA` for all batches, if `TRUE`, the original data is
+  feature will be `NA` for all batches, if `TRUE`, the original data is
   kept.
 
 - show_progress:
@@ -155,7 +156,9 @@ correct_drift_gaussiankernel(
 
 ## Value
 
-Returns a MRMhubExperiment object.
+Returns a
+[`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+object.
 
 ## Details
 
@@ -169,6 +172,6 @@ change being the median of these batch medians across features.
 ## References
 
 Teo G., Chew WS, Burla B, Herr D, Tai ES, Wenk MR, Torta F, & Choi H
-(2020). MRMhub: Automated Data Processing for Large-Scale Targeted
+(2020). MRMkit: Automated Data Processing for Large-Scale Targeted
 Metabolomics Analysis. *Analytical Chemistry*, 92(20), 13677–13682.
 <https://doi.org/10.1021/acs.analchem.0c03060>

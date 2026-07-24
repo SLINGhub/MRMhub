@@ -23,7 +23,6 @@
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/recipe-01-ext-calibration-qc.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/recipe-02-custom-qc-report.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/recipe-03-mztab-export.html</loc></url>
-<url><loc>https://slinghub.github.io/MRMhub/quant/articles/recipe-04-summarizedexperiment.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/recipe-05-import-metadata.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/tutorial-01-prep-data.html</loc></url>
@@ -32,12 +31,14 @@
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/tutorial-05-run-scatter.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/tutorial-07-calibration-reference.html</loc></url>
+<url><loc>https://slinghub.github.io/MRMhub/quant/articles/tutorial-08-summarizedexperiment.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/tutorial-10-metadata-validation.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/tutorial-11-interference-correction.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/tutorial-12-workflow-builder.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/authors.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/index.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/news/index.html</loc></url>
+<url><loc>https://slinghub.github.io/MRMhub/quant/plan-articleRework.prompt.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/plan-cliConsoleReview.prompt.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/plan-docsStructureReview.prompt.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/plan-documentationRevision.prompt.html</loc></url>

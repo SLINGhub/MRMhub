@@ -8,12 +8,12 @@ stratified samples to avoid local biases and artifacts. The smoothing can be
 applied  to concentration, norm_intensity, and intensity data.
 Corrections can be applied on a batch-by-batch basis (batch_wise = TRUE,
 default) or across all batches (batch_wise = FALSE). The correction can
-either replace existing drift or batch corrections (replace_previous = TRUE, default) or applied on top of existing corrections (replace_previous = FALSE`).
+either replace existing drift or batch corrections (replace_previous = TRUE, default) or applied on top of existing corrections (replace_previous = FALSE).
 Drift correction can be applied to all features (conditional_correction = FALSE)
 or conditionally, based on whether the sample CV difference before and
 after correction is below a defined threshold (cv_diff_threshold). The
 conditional correction is applied separately for each batch if
-batch_wise = TRUE, .
+batch_wise = TRUE.
 It is recommended to visually inspect the correction using the
 plot_runscatter() function. Set the argument
 recalc_trend_after = TRUE so that the trends after correction are also
@@ -31,12 +31,12 @@ stratified samples to avoid local biases and artifacts. The smoothing can be
 applied  to concentration, norm_intensity, and intensity data.
 Corrections can be applied on a batch-by-batch basis (batch_wise = TRUE,
 default) or across all batches (batch_wise = FALSE). The correction can
-either replace existing drift or batch corrections (replace_previous = TRUE, default) or applied on top of existing corrections (replace_previous = FALSE`).
+either replace existing drift or batch corrections (replace_previous = TRUE, default) or applied on top of existing corrections (replace_previous = FALSE).
 Drift correction can be applied to all features (conditional_correction = FALSE)
 or conditionally, based on whether the sample CV difference before and
 after correction is below a defined threshold (cv_diff_threshold). The
 conditional correction is applied separately for each batch if
-batch_wise = TRUE, .
+batch_wise = TRUE.
 It is recommended to visually inspect the correction using the
 plot_runscatter() function. Set the argument
 recalc_trend_after = TRUE so that the trends after correction are also
@@ -86,11 +86,13 @@ definitive criteria for correction (see Details below)."><meta property="og:imag
     <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-05-run-scatter.html">RunScatter and PCA</a></li>
     <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Downstream / export</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-08-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Recipes</h6></li>
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
-    <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul></li>
 <li class="nav-item dropdown">
@@ -147,12 +149,12 @@ stratified samples to avoid local biases and artifacts. The smoothing can be
 applied  to <code>concentration</code>, <code>norm_intensity</code>, and <code>intensity</code> data.</p>
 <p>Corrections can be applied on a batch-by-batch basis (<code>batch_wise = TRUE</code>,
 default) or across all batches (<code>batch_wise = FALSE</code>). The correction can
-either replace existing drift or batch corrections (<code>replace_previous = </code>TRUE<code>, default) or applied on top of existing corrections (</code>replace_previous = FALSE`).</p>
+either replace existing drift or batch corrections (<code>replace_previous = TRUE</code>, default) or applied on top of existing corrections (<code>replace_previous = FALSE</code>).</p>
 <p>Drift correction can be applied to all features (<code>conditional_correction = FALSE</code>)
 or conditionally, based on whether the sample CV difference before and
 after correction is below a defined threshold (<code>cv_diff_threshold</code>). The
 conditional correction is applied separately for each batch if
-<code>batch_wise = TRUE</code>, .</p>
+<code>batch_wise = TRUE</code>.</p>
 <p>It is recommended to visually inspect the correction using the
 <code><a href="plot_runscatter.html">plot_runscatter()</a></code> function. Set the argument
 <code>recalc_trend_after = TRUE</code> so that the trends after correction are also
@@ -193,7 +195,7 @@ definitive criteria for correction (see Details below).</p>
 
 
 <dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
-<dd><p>A MRMhubExperiment object.</p></dd>
+<dd><p>A <code><a href="MRMhubExperiment-class.html">MRMhubExperiment</a></code> object.</p></dd>
 
 
 <dt id="arg-variable">variable<a class="anchor" aria-label="anchor" href="#arg-variable"></a></dt>
@@ -271,7 +273,7 @@ specific features for correction. Default is <code>NULL</code> for all features.
 
 
 <dt id="arg-use-original-if-fail">use_original_if_fail<a class="anchor" aria-label="anchor" href="#arg-use-original-if-fail"></a></dt>
-<dd><p>Determines the action when smoothing fails or results in invalid values for a feature. If <code>FALSE</code> (default), the result for each feature will <code>NA</code> for all batches, if <code>TRUE</code>, the original data is kept.</p></dd>
+<dd><p>Determines the action when smoothing fails or results in invalid values for a feature. If <code>FALSE</code> (default), the result for each feature will be <code>NA</code> for all batches, if <code>TRUE</code>, the original data is kept.</p></dd>
 
 
 <dt id="arg-show-progress">show_progress<a class="anchor" aria-label="anchor" href="#arg-show-progress"></a></dt>
@@ -281,7 +283,7 @@ notebook rendering by setting to <code>FALSE</code>.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Returns a MRMhubExperiment object.</p>
+    <p>Returns a <code><a href="MRMhubExperiment-class.html">MRMhubExperiment</a></code> object.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -295,7 +297,7 @@ change being the median of these batch medians across features.</p>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
     <p>Teo G., Chew WS, Burla B, Herr D, Tai ES, Wenk MR, Torta F, &amp; Choi H
-(2020). MRMhub: Automated Data Processing for Large-Scale Targeted
+(2020). MRMkit: Automated Data Processing for Large-Scale Targeted
 Metabolomics Analysis. <em>Analytical Chemistry</em>, 92(20), 13677–13682.
 <a href="https://doi.org/10.1021/acs.analchem.0c03060" class="external-link">https://doi.org/10.1021/acs.analchem.0c03060</a></p>
     </div>

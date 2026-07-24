@@ -14,7 +14,9 @@ get_analysis_breaks(data, break_duration_minutes)
 
 - data:
 
-  A `MRMhubExperiment` object
+  A
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object
 
 - break_duration_minutes:
 

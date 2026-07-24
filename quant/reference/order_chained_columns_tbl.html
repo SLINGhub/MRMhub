@@ -46,11 +46,13 @@ disconnected_action parameter."><meta property="og:image" content="https://sling
     <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-05-run-scatter.html">RunScatter and PCA</a></li>
     <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Downstream / export</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-08-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Recipes</h6></li>
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
-    <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul></li>
 <li class="nav-item dropdown">
@@ -148,8 +150,9 @@ are not present in other rows). The behavior for disconnected rows is controlled
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A data frame containing ordered chains with a <code>chain_id</code> column to distinguish between different chains.
-If disconnected rows are included, they will have their own <code>chain_id</code>.</p>
+    <p>A data frame containing ordered chains. If <code>include_chain_id = TRUE</code>, a
+<code>chain_id</code> column is added to distinguish between different chains; when disconnected
+rows are included, they will have their own <code>chain_id</code>.</p>
     </div>
 
     <div class="section level2">
@@ -173,7 +176,7 @@ If disconnected rows are included, they will have their own <code>chain_id</code
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2 DIFFERENT NOTSAME</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 7   OUTLIER INSIDER</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Ordr excluding disconnected rows</span></span></span>
+<span class="r-in"><span><span class="co"># Order excluding disconnected rows</span></span></span>
 <span class="r-in"><span><span class="fu">order_chained_columns_tbl</span><span class="op">(</span><span class="va">df_unordered</span>, <span class="st">"From"</span>, <span class="st">"To"</span>, <span class="cn">FALSE</span>, <span class="st">"exclude"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      From      To</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6   START     MID</span>

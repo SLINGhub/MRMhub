@@ -32,7 +32,9 @@ calc_isotopic_interferences(
 
 - data:
 
-  A `MRMhubExperiment` object.
+  A
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object.
 
 - level:
 
@@ -60,7 +62,9 @@ calc_isotopic_interferences(
 
 ## Value
 
-The `MRMhubExperiment` with a populated `annot_interferences` slot.
+The
+[`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+with a populated `annot_interferences` slot.
 
 ## Details
 

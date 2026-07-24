@@ -13,7 +13,9 @@ get_feature_count(data, is_istd = NA, is_quantifier = NA)
 
 - data:
 
-  A `MRMhubExperiment` object
+  A
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object
 
 - is_istd:
 
@@ -23,8 +25,9 @@ get_feature_count(data, is_istd = NA, is_quantifier = NA)
 
 - is_quantifier:
 
-  If set, then defines whether to include or exclude qualifier features.
-  Default is `NA` means no filter for qualifier features is applied.
+  If set, then defines whether to include or exclude quantifier
+  features. Default is `NA` means no filter for quantifier features is
+  applied.
 
 ## Value
 

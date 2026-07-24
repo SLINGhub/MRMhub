@@ -2,7 +2,7 @@
 
 Generates scatter plots of retention time (RT) versus either chain
 length, degree of saturation (double bonds), or equivalent carbon number
-(ECN) of lipid features of diffent feature classes. This visualization
+(ECN) of lipid features of different feature classes. This visualization
 can be useful in identifying annotation (peak picking) errors in
 reversed-phase (RP)-LC lipidomics dataset arising from isotopic,
 isobaric, isomeric, or unknown interferences.
@@ -36,7 +36,7 @@ plot_rt_vs_chain(
 
 - x_var:
 
-  Variable to use for the x-axis. One ofEither "total_c", "total_db" or
+  Variable to use for the x-axis. One of "total_c", "total_db", or
   "ecn".
 
 - qc_types:

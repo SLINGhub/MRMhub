@@ -40,11 +40,13 @@
     <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-05-run-scatter.html">RunScatter and PCA</a></li>
     <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Downstream / export</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-08-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Recipes</h6></li>
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
-    <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul></li>
 <li class="nav-item dropdown">
@@ -114,20 +116,20 @@
 
 
 <dt id="arg-use-as-feature-class">use_as_feature_class<a class="anchor" aria-label="anchor" href="#arg-use-as-feature-class"></a></dt>
-<dd><p>Set feature_class to lipid_class</p></dd>
+<dd><p>Set <code>feature_class</code> to <code>lipid_class</code></p></dd>
 
 
 <dt id="arg-add-transition-names">add_transition_names<a class="anchor" aria-label="anchor" href="#arg-add-transition-names"></a></dt>
-<dd><p>add transition name and transition group, based on information in square brackets in feature_id</p></dd>
+<dd><p>add transition name and transition group, based on information in square brackets in <code>feature_id</code></p></dd>
 
 
 <dt id="arg-add-chain-composition">add_chain_composition<a class="anchor" aria-label="anchor" href="#arg-add-chain-composition"></a></dt>
-<dd><p>add total_c and total_db to the dataset</p></dd>
+<dd><p>add <code>total_c</code> and <code>total_db</code> to the dataset</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>MRMhubExperiment object</p>
+    <p>The input data frame with added lipid class, species and transition name columns.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

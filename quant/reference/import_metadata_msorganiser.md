@@ -18,7 +18,9 @@ import_metadata_msorganiser(
 
 - data:
 
-  A `MRMhubExperiment` object
+  A
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object
 
 - path:
 
@@ -36,7 +38,9 @@ import_metadata_msorganiser(
 
 ## Value
 
-An updated `MRMhubExperiment` object
+An updated
+[`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+object
 
 ## Identifier normalization
 
@@ -72,16 +76,16 @@ mexp <- import_metadata_msorganiser(
  excl_unmatched_analyses = FALSE,
  ignore_warnings = TRUE)
 #> Found no errors, 4 warnings, and no notes in the metadata.
-#> --------------------------------------------------------------------------------
+#> ----------------------------------------------------------------------------
 #>   Type  Table    Column                Issue                           Count
 #> 1 W*    Analyses analysis_id           Analyses not in analysis data      15
 #> 2 W*    Features feature_id            Feature(s) without metadata         1
 #> 3 W*    Features feature_id            Feature(s) not in analysis data   321
 #> 4 W*    ISTDs    quant_istd_feature_id Internal standard(s) not used       2
 #> 
-#> --------------------------------------------------------------------------------
+#> ----------------------------------------------------------------------------
 #> E = Error, W = Warning, W* = Suppressed Warning, N = Note
-#> --------------------------------------------------------------------------------
+#> ----------------------------------------------------------------------------
 #> ✔ Analysis metadata associated with 499 analyses.
 #> ✔ Feature metadata associated with 27 features.
 #> ✔ Internal Standard metadata associated with 15 ISTDs.

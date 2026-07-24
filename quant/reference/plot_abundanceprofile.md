@@ -72,7 +72,7 @@ plot_abundanceprofile(
   A named character vector specifying feature classes, their order, and
   color. The order of the vector determines the y-axis order.
   Alternatively, can be a single string: `lipidomics` to use a default
-  theme comprising mapping for lipid classes frequently measured in
+  theme comprising a mapping for lipid classes frequently measured in
   lipidomics methods. When using the default theme, set
   `drop_empty_classes = TRUE` to avoid showing classes not present in
   the data. If `NA` (default), the default theme is used.

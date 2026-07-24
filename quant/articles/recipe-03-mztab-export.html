@@ -72,11 +72,13 @@ from tools such as Lipid Data Analyzer, MS-DIAL or MZmine.
     <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-05-run-scatter.html">RunScatter and PCA</a></li>
     <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Downstream / export</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-08-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Recipes</h6></li>
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
-    <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul>
 </li>
@@ -187,8 +189,7 @@ back to the raw <code>feature_intensity</code> and declares an
 <span><span class="fu"><a href="../reference/save_dataset_mztab.html">save_dataset_mztab</a></span><span class="op">(</span></span>
 <span>  <span class="va">mexp</span>,</span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">out_dir</span>, <span class="st">"intensities.mzTab"</span><span class="op">)</span>,</span>
-<span>  variable <span class="op">=</span> <span class="st">"intensity"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span>  variable <span class="op">=</span> <span class="st">"intensity"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="what-gets-written">What gets written<a class="anchor" aria-label="anchor" href="#what-gets-written"></a>
@@ -241,8 +242,7 @@ the summary abundance and per-group mean / %CV</td>
 <span>  <span class="va">mexp</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">out_dir</span>, <span class="st">"experiment.mzTab"</span><span class="op">)</span>,</span>
 <span>  instrument <span class="op">=</span> <span class="st">"Agilent 6495C QqQ"</span>,</span>
 <span>  contact <span class="op">=</span> <span class="st">"Jane Doe"</span>,</span>
-<span>  publication <span class="op">=</span> <span class="st">"doi:10.1234/example"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span>  publication <span class="op">=</span> <span class="st">"doi:10.1234/example"</span><span class="op">)</span></span></code></pre></div>
 <p><strong>mzTab-M is a quantification report, not a full processing
 record.</strong> Internal-standard relationships, QC and calibration
 metrics, drift/batch-correction state, and the QC-type / batch structure

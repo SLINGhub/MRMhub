@@ -2,7 +2,7 @@
 
 Imports response curve metadata (annotation) from a preloaded data frame
 or tibble via the `data` argument, or from data from a file (CSV or
-Excel) via the `path` argument. The analysis metadata must contain
+Excel) via the `path` argument. The response curve metadata must contain
 following columns: `analysis_id`, `curve_id`, `analyzed_amount` and
 `analyzed_amount_unit`.
 
@@ -22,7 +22,9 @@ import_metadata_responsecurves(
 
 - data:
 
-  A `MRMhubExperiment` object
+  A
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object
 
 - table:
 
@@ -45,7 +47,9 @@ import_metadata_responsecurves(
 
 ## Value
 
-An updated `MRMhubExperiment` object
+An updated
+[`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+object
 
 ## Identifier normalization
 

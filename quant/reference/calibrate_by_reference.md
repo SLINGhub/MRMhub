@@ -27,12 +27,13 @@ calibrate_by_reference(
 
 - data:
 
-  A `MRMhubExperiment` object containing the metabolomics data to be
-  normalized
+  A
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object containing the metabolomics data to be normalized
 
 - variable:
 
-  Character string indicating which data type to calibrate Must be one
+  Character string indicating which data type to calibrate. Must be one
   of: "intensity", "norm_intensity", or "conc"
 
 - reference_sample_id:
@@ -45,13 +46,13 @@ calibrate_by_reference(
 - absolute_calibration:
 
   Logical indicating whether to perform absolute calibration using known
-  concentrations of the reference sample (TRUE) or relative calibration
-  (FALSE).
+  concentrations of the reference sample (`TRUE`) or relative
+  calibration (`FALSE`).
 
 - batch_wise:
 
   Logical indicating whether to perform calibration for each batch
-  seperately (TRUE) or for all samples together (FALSE).
+  seperately (`TRUE`) or for all samples together (`FALSE`).
 
 - summarize_fun:
 
@@ -78,13 +79,15 @@ calibrate_by_reference(
 - store_normalized:
 
   Logical indicating whether to keep the normalized values in the
-  dataset when `absolute_calibration = TRUE`. Default is FALSE. These
+  dataset when `absolute_calibration = TRUE`. Default is `FALSE`. These
   values are then stored as `[VARIABLE]_normalized`, where `[VARIABLE]`
   is the input variable, e.g., `conc`.
 
 ## Value
 
-A `MRMhubExperiment` object with calibrated data
+A
+[`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+object with calibrated data
 
 ## Details
 
@@ -102,10 +105,10 @@ concentrations, or relative, resulting in ratios:
     \frac{c\_\textrm{sample}^\textrm{Analyte}}{c\_\textrm{ref}^\textrm{Analyte}}
     \times c\_\textrm{known}^\textrm{Analyte}\$\$
 
-    The input variable can either `conc`, `norm_intensity`, or
-    `intensity, whereas the result will always be stored under the variable`conc\`
-    (concentration), in the unit defined for the feature concentrations
-    in the reference sample.
+    The input variable can be either `conc`, `norm_intensity`, or
+    `intensity`, whereas the result is always stored under the variable
+    `conc` (concentration), in the unit defined for the feature
+    concentrations in the reference sample.
 
     Metadata requirements:
 
@@ -147,37 +150,32 @@ concentrations, or relative, resulting in ratios:
 
     where \\c\_\textrm{measured}\\ is the measured (non-calibrated)
     concentration, and \\c\_\textrm{expected}\\ is the known or
-    reference concentration for the same analyte. A bias value of 1
-    indicates perfect agreement; values above or below 1 indicate over-
-    or underestimation.
+    reference concentration for the same analyte. A ratio of 1 indicates
+    perfect agreement; values above or below 1 indicate over- or
+    underestimation.
 
     To export the calibrated concentrations use
     [`save_dataset_csv()`](https://slinghub.github.io/MRMhub/quant/reference/save_dataset_csv.md)
-    with
-    `variable = "conc", or to export non-calibrated values with `variable
-    =
-    "conc_beforecal"`. When saving the MRMhub XLSX report, the calibrated concentrations will also be stored as `conc\`.
+    with `variable = "conc"`, or to export non-calibrated values with
+    `variable = "conc_beforecal"`. When saving the MRMhub XLSX report,
+    the calibrated concentrations will also be stored as `conc`.
 
 2.  Normalization (relative calibration, `absolute_calibration = FALSE`)
 
-    Normalizes features abundances with corresponding feature abundances
+    Normalizes feature abundances with corresponding feature abundances
     in a reference sample, resulting in ratios. Any available feature
     abundance variable (i.e., `conc`, `norm_intensity`, or `intensity`)
-    can be used as input. The normalization is calculate for all present
-    features. The resulting output will be stored as
+    can be used as input. The normalization is calculated for all
+    present features. The resulting output will be stored as
     `[VARIABLE]_normalized`, whereby `[VARIABLE]` is the input variable,
     e.g., `conc_normalized`.
 
-    To export the normalized abundances , use
+    To export the normalized abundances, use
     [`save_dataset_csv()`](https://slinghub.github.io/MRMhub/quant/reference/save_dataset_csv.md)
-    with `variable = "[VARIABLE]_normalized"` For MRMhub XLSX report,
-    use
-    [`save_report_xlsx()`](https://slinghub.github.io/MRMhub/quant/reference/save_report_xlsx.md)
-    with same variable setting as for
-    [`save_dataset_csv()`](https://slinghub.github.io/MRMhub/quant/reference/save_dataset_csv.md)
-    to When saving the MRMhub XLSX report via
+    with `variable = "[VARIABLE]_normalized"`. When saving the MRMhub
+    XLSX report via
     [`save_report_xlsx()`](https://slinghub.github.io/MRMhub/quant/reference/save_report_xlsx.md),
-    availble unfiltered normalized feature abundances will be included
+    available unfiltered normalized feature abundances will be included
     by default. To include filtered normalized feature abundances, set
     `filtered_variable = "[VARIABLE]_normalized"`.
 

@@ -18,13 +18,12 @@ cv_log(x, na.rm = FALSE)
 
 - na.rm:
 
-  logical, if TRUE then NA values are stripped from x before computation
-  takes place
+  logical, if `TRUE` then NA values are stripped from x before
+  computation takes place
 
 ## Value
 
-a numeric value. If x contains a zero, then NaN is returned. If x is not
-numeric, NA_real\_ is returned
+a numeric value. If x contains a zero, then NaN is returned
 
 ## References
 

@@ -12,7 +12,8 @@ get_analyticaldata(data = NULL, annotated)
 
 - data:
 
-  MRMhubExperiment object
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object
 
 - annotated:
 

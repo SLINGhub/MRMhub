@@ -8,8 +8,8 @@ as defined in the `qc_concentrations` metadata. The regression fit model
 `fit_weighting` for all features, if `fit_overwrite` is `TRUE`.
 Alternatively, the model and weighting can be defined individually for
 each feature in the `feature` metadata (columns `curve_fit_model` and
-`fit_weighting`). If these details are missing in the metadata, the
-default values provided via `fit_model` and `fit_weighting` will be
+`curve_fit_weighting`). If these details are missing in the metadata,
+the default values provided via `fit_model` and `fit_weighting` will be
 used.
 
 ## Usage
@@ -32,8 +32,9 @@ calc_calibration_results(
 
 - data:
 
-  A `MRMhubExperiment` object containing the data to be used for
-  calibration.
+  A
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object containing the data to be used for calibration.
 
 - variable:
 
@@ -70,9 +71,8 @@ calc_calibration_results(
 
 - ignore_missing_annotation:
 
-  If `FALSE`, an error will be raised if any of the following
-  information is missing: calibration curve data, ISTD mix volume, and
-  sample amounts for any feature.
+  If `FALSE`, an error will be raised if calibration curve data is
+  missing for any feature.
 
 - include_fit_object:
 
@@ -89,9 +89,11 @@ calc_calibration_results(
 
 ## Value
 
-A modified `MRMhubExperiment` object with an updated
-`metrics_calibration` table containing the calibration curve results,
-including concentrations, LoD, and LoQ values for each feature.
+A modified
+[`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+object with an updated `metrics_calibration` table containing the
+calibration curve results, including concentrations, LoD, and LoQ values
+for each feature.
 
 ## Details
 
@@ -117,6 +119,29 @@ always the residual standard error, independent of this choice.
 The results of the regression and the calculated LoD and LoQ values are
 stored in the `metrics_calibration` table of the returned
 `MRMhubExperiment` object.
+
+### Calibration coefficient columns
+
+The fitted curve is stored in **ascending** power order, following R's
+[`lm()`](https://rdrr.io/r/stats/lm.html) /
+[`poly()`](https://rdrr.io/r/stats/poly.html) convention. The model is
+
+`response = coef_a + coef_b * x + coef_c * x^2`
+
+- `coef_a` — intercept (0th-order term, `x^0`)
+
+- `coef_b` — 1st-order (linear) coefficient (`x^1`); the slope of a
+  linear fit
+
+- `coef_c` — 2nd-order (quadratic) coefficient (`x^2`); `NA` for a
+  linear fit
+
+Only linear and quadratic models are fitted, so there are no
+higher-order terms. This ascending order is the **reverse** of the
+descending `a*x^2 + b*x + c` form printed by some vendor software (e.g.
+Agilent MassHunter, where `a` is the quadratic term). When comparing
+against such an export, match coefficients by power (`coef_a` =
+intercept, `coef_c` = `x^2`), not by letter.
 
 ## References
 

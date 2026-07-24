@@ -40,11 +40,13 @@
     <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-05-run-scatter.html">RunScatter and PCA</a></li>
     <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Downstream / export</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-08-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Recipes</h6></li>
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
-    <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul></li>
 <li class="nav-item dropdown">
@@ -111,7 +113,7 @@
 
 
 <dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
-<dd><p>A <code>MRMhubExperiment</code> object with QC metrics.</p></dd>
+<dd><p>A <code><a href="MRMhubExperiment-class.html">MRMhubExperiment</a></code> object with QC metrics.</p></dd>
 
 
 <dt id="arg-with-lod">with_lod<a class="anchor" aria-label="anchor" href="#arg-with-lod"></a></dt>
@@ -143,21 +145,26 @@ See its documentation for details.</p><div class="section">
 <ul><li><p><code>feature_id</code>: Feature identifier.</p></li>
 <li><p><code>is_quantifier</code>: Logical, indicates if the feature is a quantifier.</p></li>
 <li><p><code>fit_model</code>: Regression model used for fitting.</p></li>
-<li><p><code>weighting</code>: Weighting method used in fitting.</p></li>
+<li><p><code>fit_weighting</code>: Weighting method used in fitting.</p></li>
 <li><p><code>lowest_cal</code>: Lowest nonzero calibration concentration.</p></li>
-<li><p><code>highest_cal</code>: Highest  calibration concentration.</p></li>
-<li><p><code>r.squared</code>: R-squared value, indicating goodness of fit. For a <strong>weighted</strong>
+<li><p><code>highest_cal</code>: Highest calibration concentration.</p></li>
+<li><p><code>r2</code>: R-squared value, indicating goodness of fit. For a <strong>weighted</strong>
 fit this is the weighted coefficient of determination (computed from weighted
 sums of squares), matching the value reported by vendor software such as
 Agilent MassHunter for the same weighted curve.</p></li>
-<li><p><code>coef_a</code>: Intercept of the regression line</p></li>
-<li><p><code>coef_b</code>: Slope of the regression line in <strong>linear</strong> models, or coefficient of the linear term (<code>x</code>) in <strong>quadratic</strong> models.</p></li>
-<li><p><code>coef_c</code>: Coefficient of the quadratic term (<code>x^2</code>) in <strong>quadratic</strong> models. Returns <code>NA</code> for <strong>linear</strong> models.</p></li>
+<li><p><code>coef_a</code>: <strong>Intercept</strong> (0th-order term, <code>x^0</code>) of the fitted curve.</p></li>
+<li><p><code>coef_b</code>: <strong>1st-order</strong> (linear, <code>x^1</code>) coefficient — the slope in a <strong>linear</strong> fit, or the linear term in a <strong>quadratic</strong> fit.</p></li>
+<li><p><code>coef_c</code>: <strong>2nd-order</strong> (quadratic, <code>x^2</code>) coefficient in <strong>quadratic</strong> fits. Returns <code>NA</code> for <strong>linear</strong> fits.</p></li>
 <li><p><code>sigma</code>: Standard deviation of residuals.</p></li>
 <li><p><code>reg_failed</code>: <code>TRUE</code> if regression fitting failed.</p></li>
 <li><p><code>LoD</code> = 3.3× the sample standard error of residuals / slope of the regression (see Notes).</p></li>
 <li><p><code>LoQ</code> = 10× the sample standard error of residuals / slope of the regression (see Notes).</p></li>
-</ul><p><strong>Note:</strong> LoD/LoQ follow the ICH Q2(R1/R2) approach (3.3 sigma / S and
+</ul><p>The coefficients describe the curve in <strong>ascending</strong> power order (R's
+<code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code> / <code><a href="https://rdrr.io/r/stats/poly.html" class="external-link">poly()</a></code> convention): <code>response = coef_a + coef_b * x + coef_c * x^2</code>.
+This is the reverse of the descending <code>a*x^2 + b*x + c</code> form used by some
+vendor software (e.g. Agilent MassHunter, where <code>a</code> is the <code>x^2</code> term), so
+when comparing against such an export, match by power, not by letter.</p>
+<p><strong>Note:</strong> LoD/LoQ follow the ICH Q2(R1/R2) approach (3.3 sigma / S and
 10 sigma / S). The slope <code>S</code> is the slope of the calibration curve at zero
 concentration (the linear coefficient <code>coef_b</code>); for a <strong>quadratic</strong> fit the
 quadratic term does not contribute to this slope. The response <code>sigma</code> is

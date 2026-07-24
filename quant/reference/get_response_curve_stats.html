@@ -4,12 +4,12 @@ for each response curve in the provided MRMhubExperiment object. Before fitting,
 analyzed sample amount (x) and feature intensity (y) of each curve are each scaled to their
 maximum (set to 1), so the returned slopenorm and y0norm are on this normalized scale.
 Optionally, it can include
-additional statistics from the lancer package (if installed) when with_staturation_stats is set to TRUE."><meta property="og:description" content="This function calculates linear regression statistics (R-squared, slope, and intercept)
+additional statistics from the lancer package (if installed) when with_saturation_stats is set to TRUE."><meta property="og:description" content="This function calculates linear regression statistics (R-squared, slope, and intercept)
 for each response curve in the provided MRMhubExperiment object. Before fitting, the
 analyzed sample amount (x) and feature intensity (y) of each curve are each scaled to their
 maximum (set to 1), so the returned slopenorm and y0norm are on this normalized scale.
 Optionally, it can include
-additional statistics from the lancer package (if installed) when with_staturation_stats is set to TRUE."><meta property="og:image" content="https://slinghub.github.io/MRMhub/quant/logo.svg"></head><body>
+additional statistics from the lancer package (if installed) when with_saturation_stats is set to TRUE."><meta property="og:image" content="https://slinghub.github.io/MRMhub/quant/logo.svg"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -50,11 +50,13 @@ additional statistics from the lancer package (if installed) when with_staturati
     <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-05-run-scatter.html">RunScatter and PCA</a></li>
     <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Downstream / export</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-08-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Recipes</h6></li>
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
-    <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul></li>
 <li class="nav-item dropdown">
@@ -107,14 +109,14 @@ for each response curve in the provided <code>MRMhubExperiment</code> object. Be
 analyzed sample amount (<code>x</code>) and feature intensity (<code>y</code>) of each curve are each scaled to their
 maximum (set to 1), so the returned <code>slopenorm</code> and <code>y0norm</code> are on this normalized scale.
 Optionally, it can include
-additional statistics from the <code>lancer</code> package (if installed) when <code>with_staturation_stats</code> is set to TRUE.</p>
+additional statistics from the <code>lancer</code> package (if installed) when <code>with_saturation_stats</code> is set to <code>TRUE</code>.</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_response_curve_stats</span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  with_staturation_stats <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  with_saturation_stats <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  limit_to_rqc <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  silent_invalid_data <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -125,12 +127,12 @@ additional statistics from the <code>lancer</code> package (if installed) when <
 
 
 <dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
-<dd><p>A <code>MRMhubExperiment</code> object containing the dataset and response curve annotations.</p></dd>
+<dd><p>A <code><a href="MRMhubExperiment-class.html">MRMhubExperiment</a></code> object containing the dataset and response curve annotations.</p></dd>
 
 
-<dt id="arg-with-staturation-stats">with_staturation_stats<a class="anchor" aria-label="anchor" href="#arg-with-staturation-stats"></a></dt>
-<dd><p>Logical, if TRUE, include additional statistics from the <code>lancer</code> package.
-Note: The <code>lancer</code> package must be installed when this argument is set to TRUE.</p></dd>
+<dt id="arg-with-saturation-stats">with_saturation_stats<a class="anchor" aria-label="anchor" href="#arg-with-saturation-stats"></a></dt>
+<dd><p>Logical, if <code>TRUE</code>, include additional statistics from the <code>lancer</code> package.
+Note: The <code>lancer</code> package must be installed when this argument is set to <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-limit-to-rqc">limit_to_rqc<a class="anchor" aria-label="anchor" href="#arg-limit-to-rqc"></a></dt>
@@ -138,7 +140,7 @@ Note: The <code>lancer</code> package must be installed when this argument is se
 
 
 <dt id="arg-silent-invalid-data">silent_invalid_data<a class="anchor" aria-label="anchor" href="#arg-silent-invalid-data"></a></dt>
-<dd><p>Logical, if TRUE suppresses raising an error when
+<dd><p>Logical, if <code>TRUE</code> suppresses raising an error when
 required data or metadata are missing, or there is a mismatch between them.</p></dd>
 
 </dl></div>

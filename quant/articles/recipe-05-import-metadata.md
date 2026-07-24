@@ -33,8 +33,7 @@ mexp <- MRMhubExperiment()
 mexp <- import_data_mrmhub(
   data = mexp,
   path = "datasets/sPerfect_MRMhub.tsv",
-  import_metadata = FALSE
-)
+  import_metadata = FALSE)
 ```
 
 The metadata is then added table by table. Sample and feature metadata
@@ -46,13 +45,11 @@ mexp <- import_metadata_analyses(
   mexp,
   path = "datasets/analysis_metadata.csv",
   excl_unmatched_analyses = TRUE,
-  ignore_warnings = TRUE
-)
+  ignore_warnings = TRUE)
 mexp <- import_metadata_features(
   mexp,
   path = "datasets/feature_metadata.csv",
-  ignore_warnings = TRUE
-)
+  ignore_warnings = TRUE)
 ```
 
 Metadata can also be read from the sheets of a single Excel workbook,
@@ -64,8 +61,7 @@ mexp <- import_metadata_istds(
   mexp,
   path = "datasets/metadata_tables.xlsx",
   sheet = "ISTDs",
-  ignore_warnings = TRUE
-)
+  ignore_warnings = TRUE)
 ```
 
 Metadata can equally be supplied from an R `data.frame`, allowing it to
@@ -97,8 +93,7 @@ the import reads all completed tables:
 mexp <- import_metadata_msorganiser(
   mexp,
   path = "datasets/sPerfect_Metadata.xlsx",
-  ignore_warnings = TRUE
-)
+  ignore_warnings = TRUE)
 ```
 
 ## Next steps

@@ -1,7 +1,7 @@
 # Retrieve metadata from imported analysis data
 
 Retrieves available metadata from the imported analysis data and
-associates it with the provided MRMhubExperiment object.
+associates it with the provided `MRMhubExperiment` object.
 
 ## Usage
 
@@ -13,7 +13,9 @@ import_metadata_from_data(data = NULL, qc_type_column_name = "qc_type")
 
 - data:
 
-  A `MRMhubExperiment` object
+  A
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object
 
 - qc_type_column_name:
 
@@ -21,4 +23,6 @@ import_metadata_from_data(data = NULL, qc_type_column_name = "qc_type")
 
 ## Value
 
-An updated `MRMhubExperiment` object
+An updated
+[`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+object

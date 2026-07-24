@@ -6,7 +6,7 @@ or quadratic) and the weighting method (either "none", "1/x", or "1/x^2")
 can be defined globally via the arguments fit_model and fit_weighting
 for all features, if fit_overwrite is TRUE. Alternatively, the
 model and weighting can be defined individually for each feature in the
-feature metadata (columns curve_fit_model and fit_weighting). If
+feature metadata (columns curve_fit_model and curve_fit_weighting). If
 these details are missing in the metadata, the default values provided via
 fit_model and fit_weighting will be used.'><meta property="og:description" content='Calibration curves are calculated for each feature using ISTD-normalized
 intensities and the corresponding concentrations of calibration samples, as
@@ -15,7 +15,7 @@ or quadratic) and the weighting method (either "none", "1/x", or "1/x^2")
 can be defined globally via the arguments fit_model and fit_weighting
 for all features, if fit_overwrite is TRUE. Alternatively, the
 model and weighting can be defined individually for each feature in the
-feature metadata (columns curve_fit_model and fit_weighting). If
+feature metadata (columns curve_fit_model and curve_fit_weighting). If
 these details are missing in the metadata, the default values provided via
 fit_model and fit_weighting will be used.'><meta property="og:image" content="https://slinghub.github.io/MRMhub/quant/logo.svg"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -58,11 +58,13 @@ fit_model and fit_weighting will be used.'><meta property="og:image" content="ht
     <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-05-run-scatter.html">RunScatter and PCA</a></li>
     <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Downstream / export</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-08-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Recipes</h6></li>
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
-    <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul></li>
 <li class="nav-item dropdown">
@@ -117,7 +119,7 @@ or quadratic) and the weighting method (either "none", "1/x", or "1/x^2")
 can be defined globally via the arguments <code>fit_model</code> and <code>fit_weighting</code>
 for all features, if <code>fit_overwrite</code> is <code>TRUE</code>. Alternatively, the
 model and weighting can be defined individually for each feature in the
-<code>feature</code> metadata (columns <code>curve_fit_model</code> and <code>fit_weighting</code>). If
+<code>feature</code> metadata (columns <code>curve_fit_model</code> and <code>curve_fit_weighting</code>). If
 these details are missing in the metadata, the default values provided via
 <code>fit_model</code> and <code>fit_weighting</code> will be used.</p>
     </div>
@@ -142,7 +144,7 @@ these details are missing in the metadata, the default values provided via
 
 
 <dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
-<dd><p>A <code>MRMhubExperiment</code> object containing the data to be used for
+<dd><p>A <code><a href="MRMhubExperiment-class.html">MRMhubExperiment</a></code> object containing the data to be used for
 calibration.</p></dd>
 
 
@@ -182,9 +184,8 @@ when <code>fit_overwrite = TRUE</code>.</p></dd>
 
 
 <dt id="arg-ignore-missing-annotation">ignore_missing_annotation<a class="anchor" aria-label="anchor" href="#arg-ignore-missing-annotation"></a></dt>
-<dd><p>If <code>FALSE</code>, an error will be raised if any of
-the following information is missing: calibration curve data, ISTD mix
-volume, and sample amounts for any feature.</p></dd>
+<dd><p>If <code>FALSE</code>, an error will be raised if
+calibration curve data is missing for any feature.</p></dd>
 
 
 <dt id="arg-include-fit-object">include_fit_object<a class="anchor" aria-label="anchor" href="#arg-include-fit-object"></a></dt>
@@ -202,7 +203,7 @@ is performed.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A modified <code>MRMhubExperiment</code> object with an updated
+    <p>A modified <code><a href="MRMhubExperiment-class.html">MRMhubExperiment</a></code> object with an updated
 <code>metrics_calibration</code> table containing the calibration curve results,
 including concentrations, LoD, and LoQ values for each feature.</p>
     </div>
@@ -226,7 +227,23 @@ uses the standard error of the intercept. The <code>sigma</code> column reported
 this choice.</p>
 <p>The results of the regression and the calculated LoD and LoQ values are
 stored in the <code>metrics_calibration</code> table of the returned <code>MRMhubExperiment</code>
-object.</p>
+object.</p><div class="section">
+<h3 id="calibration-coefficient-columns">Calibration coefficient columns<a class="anchor" aria-label="anchor" href="#calibration-coefficient-columns"></a></h3>
+
+
+<p>The fitted curve is stored in <strong>ascending</strong> power order, following R's
+<code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code> / <code><a href="https://rdrr.io/r/stats/poly.html" class="external-link">poly()</a></code> convention. The model is</p>
+<p><code>response = coef_a + coef_b * x + coef_c * x^2</code></p><ul><li><p><code>coef_a</code> — intercept (0th-order term, <code>x^0</code>)</p></li>
+<li><p><code>coef_b</code> — 1st-order (linear) coefficient (<code>x^1</code>); the slope of a linear fit</p></li>
+<li><p><code>coef_c</code> — 2nd-order (quadratic) coefficient (<code>x^2</code>); <code>NA</code> for a linear fit</p></li>
+</ul><p>Only linear and quadratic models are fitted, so there are no higher-order
+terms. This ascending order is the <strong>reverse</strong> of the descending
+<code>a*x^2 + b*x + c</code> form printed by some vendor software (e.g. Agilent
+MassHunter, where <code>a</code> is the quadratic term). When comparing against such an
+export, match coefficients by power (<code>coef_a</code> = intercept, <code>coef_c</code> = <code>x^2</code>),
+not by letter.</p>
+</div>
+
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>

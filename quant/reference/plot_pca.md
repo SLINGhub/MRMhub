@@ -128,7 +128,7 @@ plot_pca(
 
 - labels_column:
 
-  A character string indicating the column to be use for the point
+  A character string indicating the column to be used for the point
   labels. Typically "analysis_id" or "analysis_order". Default is
   "analysis_id".
 

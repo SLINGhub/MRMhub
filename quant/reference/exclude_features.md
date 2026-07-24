@@ -2,7 +2,7 @@
 
 This function excludes specified features from a `MRMhubExperiment`
 object, either by marking them as invalid for downstream processing. The
-function also alloows to reset the exclusions.
+function also allows to reset the exclusions.
 
 ## Usage
 
@@ -14,7 +14,9 @@ exclude_features(data = NULL, features, clear_existing)
 
 - data:
 
-  A `MRMhubExperiment` object
+  A
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object
 
 - features:
 
@@ -24,11 +26,12 @@ exclude_features(data = NULL, features, clear_existing)
 
 - clear_existing:
 
-  A logical value. If `TRUE`, existing `valid_analysis` flags will be
+  A logical value. If `TRUE`, existing `valid_feature` flags will be
   overwritten. If `FALSE`, the exclusions will be appended, preserving
   any existing invalidated features
 
 ## Value
 
-A modified `MRMhubExperiment` object with the specified analyses defined
-as excluded.
+A modified
+[`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+object with the specified features defined as excluded.

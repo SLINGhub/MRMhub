@@ -48,7 +48,7 @@ plot_pca_loading(
 
 - pca_dims:
 
-  A numeric vector indicating for which PCA dimensions to the loadings
+  A numeric vector indicating for which PCA dimensions the loadings
   should be shown. Default is c(1, 2, 3, 4).
 
 - log_transform:
@@ -58,7 +58,7 @@ plot_pca_loading(
 
 - top_n:
 
-  Number of top features with highest absolute loading that will be to
+  Number of top features with highest absolute loading that will be
   shown for each PC dimension. Default is 30.
 
 - vertical_bars:

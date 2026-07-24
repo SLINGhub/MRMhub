@@ -1,4 +1,4 @@
-# Saves a Excel (xlsx) file with metadata templates
+# Saves an Excel (xlsx) file with metadata templates
 
 This function saves a XLSX file with metadata template to the specified
 location.

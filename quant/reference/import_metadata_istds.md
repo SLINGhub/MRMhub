@@ -2,7 +2,7 @@
 
 Imports ISTD metadata (annotation) from a preloaded data frame or tibble
 via the `data` argument, or from data from a file (CSV or Excel) via the
-`path` argument. The analysis metadata must contain following columns:
+`path` argument. The ISTD metadata must contain following columns:
 `istd_feature_id` and one of `istd_conc_nmolar` or `istd_conc_ngml`.
 
 ## Usage
@@ -21,12 +21,14 @@ import_metadata_istds(
 
 - data:
 
-  A `MRMhubExperiment` object
+  A
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object
 
 - table:
 
-  A data frame or tibble with analysis (sample) metadata. If `path` is
-  also provided, an error will be raised.
+  A data frame or tibble with ISTD metadata. If `path` is also provided,
+  an error will be raised.
 
 - path:
 
@@ -44,7 +46,9 @@ import_metadata_istds(
 
 ## Value
 
-An updated `MRMhubExperiment` object
+An updated
+[`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+object
 
 ## Identifier normalization
 

@@ -18,7 +18,9 @@ set_analysis_order(
 
 - data:
 
-  A `MRMhubExperiment` object
+  A
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object
 
 - order_by:
 
@@ -29,7 +31,9 @@ set_analysis_order(
 
 ## Value
 
-An updated `MRMhubExperiment` object with ordered analyses
+An updated
+[`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+object with ordered analyses
 
 ## Examples
 

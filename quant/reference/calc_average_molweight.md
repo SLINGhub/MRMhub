@@ -29,7 +29,7 @@ distribution found in nature.
 
 Isotopes can be specified explicitly in the formula. Atomic mass numbers
 for isotopes must be enclosed in square brackets (e.g., `[13]C` for
-carbon-13). Deuterium must be written as `D` instead of `[3]H`.
+carbon-13). Deuterium must be written as `D` instead of `[2]H`.
 
 The function uses the enviPat package to validate and parse chemical
 formulas, calculate isotopic patterns, and determine the average

@@ -1,37 +1,22 @@
 # Export to Bioconductor (SummarizedExperiment)
 
-Recipe
+Tutorial Intermediate Prerequisites: [Basic
+workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md)
 
-**Level** Intermediate  ·  **Output** A `SummarizedExperiment` object
- ·  **Requires** a processed `MRMhubExperiment`, the
-`SummarizedExperiment` package
+Export a processed `MRMhubExperiment` to a Bioconductor
+[SummarizedExperiment](https://bioconductor.org/packages/SummarizedExperiment/),
+then take it downstream — differential abundance with `limma`,
+lipid-specific analysis with `lipidr`.
 
-## Goal
-
-Hand a processed experiment to the Bioconductor ecosystem.
-[SummarizedExperiment](https://bioconductor.org/packages/SummarizedExperiment/)
-is the standard container for feature × sample data, and is the entry
-point for `limma` (differential abundance), `POMA` and `pmp`
-(preprocessing), `ComplexHeatmap` (visualization) and `lipidr`
-(lipid-specific analysis).
-
-`MRMhubExperiment` remains the authoritative processing record. The
-export is a one-way hand-off at the end of the pipeline: no Bioconductor
-class models calibration curves, internal-standard relationships, QC
-types or batches, which is exactly what `mrmhub` exists to handle. See
-[Design
-Decisions](https://slinghub.github.io/MRMhub/quant/articles/manual-03-design-decisions.md)
-for why the internal representation stays long-format.
-
-## Prerequisites
+## 1. Setup
 
 ``` r
 
 library(mrmhub)
 library(SummarizedExperiment)
 
-# A processed MRMhubExperiment. Here built from the bundled `lipidomics_dataset`;
-# in practice this would be your own processed object.
+# A processed MRMhubExperiment. Here built from the bundled
+# `lipidomics_dataset`; in practice this would be your own processed object.
 mexp <- lipidomics_dataset |>
   normalize_by_istd() |>
   quantify_by_istd()
@@ -45,7 +30,7 @@ mexp <- lipidomics_dataset |>
 BiocManager::install("SummarizedExperiment")
 ```
 
-## Basic export
+## 2. Basic export
 
 ``` r
 
@@ -62,14 +47,14 @@ se
 ```
 
 Pass a `path` to also write the object to disk as an `.rds`; without
-one, the object is simply returned:
+one, the object is returned:
 
 ``` r
 
 save_dataset_summarizedexperiment(mexp, "experiment.rds")
 ```
 
-## Anatomy of the exported object
+## 3. Anatomy of the exported object
 
 Features are **rows** and analyses are **columns**, per the
 SummarizedExperiment convention.
@@ -79,7 +64,7 @@ SummarizedExperiment convention.
 | [`assays()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html) | one matrix per feature variable, named without the `feature_` prefix |
 | [`rowData()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html) | `annot_features` — one row per `feature_id` |
 | [`colData()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html) | `annot_analyses` — one row per `analysis_id` |
-| `metadata()` | title, analysis type, processing status, `is_*` flags, concentration unit, `mrmhub` version |
+| `metadata()` | title, analysis type, processing status, `is_*` flags, concentration unit, MRMhub version |
 
 The parallel feature variables become **parallel assays**, so raw,
 normalized and quantified values live side-by-side in one object:
@@ -98,7 +83,9 @@ Export a subset with `variable`:
 ``` r
 
 se_conc <- save_dataset_summarizedexperiment(mexp, variable = "conc")
-se_two <- save_dataset_summarizedexperiment(mexp, variable = c("intensity", "conc"))
+se_two <- save_dataset_summarizedexperiment(
+  mexp,
+  variable = c("intensity", "conc"))
 ```
 
 To export QC-filtered data instead of the full dataset, filter first and
@@ -111,19 +98,20 @@ mexp_filt <- mexp |>
   filter_features_qc(
     include_qualifier = FALSE,
     include_istd = FALSE,
-    max.cv.conc.bqc = 25
-  )
+    max.cv.conc.bqc = 25)
 
 se_filt <- save_dataset_summarizedexperiment(mexp_filt, filter_data = TRUE)
 ```
 
-## Subsetting: study samples only
+## 4. Subsetting: study samples only
 
 **Everything is exported** — internal standards, QC samples, blanks and
 calibrants are all present and flagged rather than dropped, because
-downstream tools need them (`lipidr` requires the internal-standard
-annotation, and `pmp`’s blank filter needs blanks). Subsetting is one
-line:
+downstream tools need them: `lipidr`, for one, requires the
+internal-standard annotation. But nothing downstream reads `qc_type`, so
+a PCA, normalization or differential test will fold blanks, calibrants
+and QC replicates in with the study samples. Subset to study samples
+before any such analysis — here in one line:
 
 ``` r
 
@@ -132,27 +120,23 @@ dim(se_spl)
 #> [1]  20 374
 ```
 
-**Subset before any statistical analysis.** Most tools will cheerfully
-include blanks, calibrants and QC replicates in a PCA, a normalization
-or a differential test and return results that look plausible and mean
-nothing. Nothing downstream understands `qc_type`.
-
 QC metrics are deliberately *not* written to
 [`rowData()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html)
-— nothing downstream reads them, and QC filtering belongs in `mrmhub`
+— nothing downstream reads them, and QC filtering belongs in MRMhub
 where it is tested. Use `filter_data = TRUE` as above, or
 [`save_feature_qc_metrics()`](https://slinghub.github.io/MRMhub/quant/reference/save_feature_qc_metrics.md)
-for the metrics themselves. If you do want them alongside the features:
+for the metrics themselves. To attach them to the features anyway:
 
 ``` r
 
 rowData(se) <- cbind(
   rowData(se),
-  mexp_filt@metrics_qc[match(rownames(se), mexp_filt@metrics_qc$feature_id), ]
-)
+  mexp_filt@metrics_qc[
+    match(rownames(se), mexp_filt@metrics_qc$feature_id),
+  ])
 ```
 
-## Differential abundance with limma
+## 5. Differential abundance with limma
 
 [limma](https://bioconductor.org/packages/limma/) works directly on
 continuous data such as concentrations. Note that
@@ -171,7 +155,8 @@ from your sample metadata and already be present in
 library(limma)
 
 set.seed(1)
-se_spl$group <- factor(sample(c("ctrl", "trt"), ncol(se_spl), replace = TRUE))
+se_spl$group <- factor(
+  sample(c("ctrl", "trt"), ncol(se_spl), replace = TRUE))
 
 # log-transform: concentrations are right-skewed and limma assumes normality
 y <- log2(assay(se_spl, "conc"))
@@ -202,7 +187,7 @@ extra joins — for example blocking on batch:
 design <- model.matrix(~ 0 + group + batch_id, data = colData(se_spl))
 ```
 
-## Lipid-specific analysis with lipidr
+## 6. Lipid-specific analysis with lipidr
 
 [lipidr](https://www.lipidr.org) works on a `LipidomicsExperiment`, a
 subclass of `SummarizedExperiment`. Produce one directly:
@@ -212,20 +197,14 @@ subclass of `SummarizedExperiment`. Produce one directly:
 le <- save_dataset_summarizedexperiment(
   mexp,
   variable = "intensity",
-  as = "LipidomicsExperiment"
-)
+  as = "LipidomicsExperiment")
 ```
 
-`mrmhub` fills in what lipidr requires: `Molecule` from `feature_id`,
-`Class` from the curated `feature_class`, `istd` from `is_istd`, plus
-the `summarized` and per-assay `logged` / `normalized` flags that lipidr
-reads but does **not** validate — an object missing them constructs
-cleanly and then misbehaves.
-
-Using `feature_class` rather than lipidr’s own name parser also keeps
-the class assignment correct for mrmhub’s isobaric
-(`PC 28:0|SM 32:1 M+3`) and neutral-loss (`PE P-16:0/18:1 [-FA]`)
-naming, which lipidr cannot parse.
+MRMhub fills in what lipidr requires: `Molecule` from `feature_id`,
+`Class` from `feature_class`, `istd` from `is_istd`, plus the
+`summarized` / `logged` / `normalized` flags lipidr reads but does
+**not** validate — an object missing them constructs cleanly and then
+misbehaves.
 
 **Use a peak-area scale variable with lipidr, not concentrations.**
 lipidr log-transforms with `log = TRUE` by default and **clamps values
@@ -233,12 +212,13 @@ below 1 to 1** first, which assumes Skyline peak-area magnitudes.
 Concentrations in µmol/L are mostly below 1, so they are silently
 flattened to `log2(1) = 0` —
 [`eBayes()`](https://rdrr.io/pkg/limma/man/ebayes.html) then reports
-zero residual variances and every fold change collapses. `mrmhub` warns
+zero residual variances and every fold change collapses. MRMhub warns
 when you export a mostly-sub-1 assay this way.
 
-The cause is unit scale, not concentration as such: the same values in
-nmol/L pass through untouched. If you need concentrations, pass
-`log = FALSE` to lipidr, or log-transform them yourself beforehand.
+The trigger is absolute scale, not concentration as such: the clamp is a
+fixed threshold at 1, so any assay whose values sit mostly below it is
+affected. If you need concentrations, pass `log = FALSE` to lipidr, or
+log-transform them yourself beforehand.
 
 ``` r
 
@@ -246,7 +226,8 @@ library(lipidr)
 
 le_spl <- le[!rowData(le)$istd, le$qc_type == "SPL"]
 set.seed(1)
-le_spl$group <- factor(sample(c("ctrl", "trt"), ncol(le_spl), replace = TRUE))
+le_spl$group <- factor(
+  sample(c("ctrl", "trt"), ncol(le_spl), replace = TRUE))
 
 plot_samples(le_spl, type = "boxplot", measure = "intensity")
 
@@ -256,14 +237,9 @@ de_results <- de_analysis(
   le_norm,
   trt - ctrl,
   measure = "intensity",
-  group_col = "group"
-)
+  group_col = "group")
 plot_results_volcano(de_results, show.labels = FALSE)
 ```
-
-[`de_analysis()`](https://rdrr.io/pkg/lipidr/man/de_analysis.html) wraps
-limma internally and returns a plain data frame, not a
-`LipidomicsExperiment` — the pipeline ends there.
 
 ## References
 
@@ -294,4 +270,4 @@ limma internally and returns a plain data frame, not a
   — QC-filter features before exporting.
 - [Custom QC
   report](https://slinghub.github.io/MRMhub/quant/articles/recipe-02-custom-qc-report.md)
-  — reporting straight from `mrmhub`.
+  — reporting straight from MRMhub.

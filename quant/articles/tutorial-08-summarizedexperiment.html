@@ -72,11 +72,13 @@ analysis with lipidr.
     <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-05-run-scatter.html">RunScatter and PCA</a></li>
     <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Downstream / export</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-08-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Recipes</h6></li>
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
-    <li><a class="dropdown-item" href="../articles/recipe-04-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul>
 </li>
@@ -132,45 +134,29 @@ analysis with lipidr.
       <img src="../logo.svg" class="logo" alt=""><h1>Export to Bioconductor (SummarizedExperiment)</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/development/vignettes/articles/recipe-04-summarizedexperiment.Rmd" class="external-link"><code>vignettes/articles/recipe-04-summarizedexperiment.Rmd</code></a></small>
-      <div class="d-none name"><code>recipe-04-summarizedexperiment.Rmd</code></div>
+      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/development/vignettes/articles/tutorial-08-summarizedexperiment.Rmd" class="external-link"><code>vignettes/articles/tutorial-08-summarizedexperiment.Rmd</code></a></small>
+      <div class="d-none name"><code>tutorial-08-summarizedexperiment.Rmd</code></div>
     </div>
 
     
     
-<p class="page-kind page-kind-recipe">
-Recipe
+<p class="page-meta">
+<span class="page-kind page-kind-tutorial">Tutorial</span> <span class="page-level">Intermediate</span> <span class="page-prereq">Prerequisites:
+<a href="tutorial-02-basic-workflow.html">Basic workflow</a></span>
 </p>
-<div class="callout callout-note">
-<p><strong>Level</strong> Intermediate  ·  <strong>Output</strong> A
-<code>SummarizedExperiment</code> object  ·  <strong>Requires</strong> a
-processed <code>MRMhubExperiment</code>, the
-<code>SummarizedExperiment</code> package</p>
-</div>
+<p>Export a processed <code>MRMhubExperiment</code> to a Bioconductor <a href="https://bioconductor.org/packages/SummarizedExperiment/" class="external-link">SummarizedExperiment</a>,
+then take it downstream — differential abundance with
+<code>limma</code>, lipid-specific analysis with
+<code>lipidr</code>.</p>
 <div class="section level2">
-<h2 id="goal">Goal<a class="anchor" aria-label="anchor" href="#goal"></a>
-</h2>
-<p>Hand a processed experiment to the Bioconductor ecosystem. <a href="https://bioconductor.org/packages/SummarizedExperiment/" class="external-link">SummarizedExperiment</a>
-is the standard container for feature × sample data, and is the entry
-point for <code>limma</code> (differential abundance), <code>POMA</code>
-and <code>pmp</code> (preprocessing), <code>ComplexHeatmap</code>
-(visualization) and <code>lipidr</code> (lipid-specific analysis).</p>
-<p><code>MRMhubExperiment</code> remains the authoritative processing
-record. The export is a one-way hand-off at the end of the pipeline: no
-Bioconductor class models calibration curves, internal-standard
-relationships, QC types or batches, which is exactly what
-<code>mrmhub</code> exists to handle. See <a href="manual-03-design-decisions.html">Design Decisions</a> for why the
-internal representation stays long-format.</p>
-</div>
-<div class="section level2">
-<h2 id="prerequisites">Prerequisites<a class="anchor" aria-label="anchor" href="#prerequisites"></a>
+<h2 id="setup">1. Setup<a class="anchor" aria-label="anchor" href="#setup"></a>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/SLINGhub/MRMhub" class="external-link">mrmhub</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://bioconductor.org/packages/SummarizedExperiment" class="external-link">SummarizedExperiment</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># A processed MRMhubExperiment. Here built from the bundled `lipidomics_dataset`;</span></span>
-<span><span class="co"># in practice this would be your own processed object.</span></span>
+<span><span class="co"># A processed MRMhubExperiment. Here built from the bundled</span></span>
+<span><span class="co"># `lipidomics_dataset`; in practice this would be your own processed object.</span></span>
 <span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="va">lipidomics_dataset</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/normalize_by_istd.html">normalize_by_istd</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/quantify_by_istd.html">quantify_by_istd</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
@@ -181,7 +167,7 @@ it once with:</p>
 <span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu">install</span><span class="op">(</span><span class="st">"SummarizedExperiment"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="basic-export">Basic export<a class="anchor" aria-label="anchor" href="#basic-export"></a>
+<h2 id="basic-export">2. Basic export<a class="anchor" aria-label="anchor" href="#basic-export"></a>
 </h2>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">se</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/save_dataset_summarizedexperiment.html">save_dataset_summarizedexperiment</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span></span>
@@ -195,12 +181,12 @@ it once with:</p>
 <span><span class="co">#&gt; colnames(499): Longit_BLANK-01 (Eluent A) ... Longit_BLANK-07 (Eluent A)</span></span>
 <span><span class="co">#&gt; colData names(13): analysis_order analysis_id ... annot_order_num remarks</span></span></code></pre></div>
 <p>Pass a <code>path</code> to also write the object to disk as an
-<code>.rds</code>; without one, the object is simply returned:</p>
+<code>.rds</code>; without one, the object is returned:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/save_dataset_summarizedexperiment.html">save_dataset_summarizedexperiment</a></span><span class="op">(</span><span class="va">mexp</span>, <span class="st">"experiment.rds"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="anatomy-of-the-exported-object">Anatomy of the exported object<a class="anchor" aria-label="anchor" href="#anatomy-of-the-exported-object"></a>
+<h2 id="anatomy-of-the-exported-object">3. Anatomy of the exported object<a class="anchor" aria-label="anchor" href="#anatomy-of-the-exported-object"></a>
 </h2>
 <p>Features are <strong>rows</strong> and analyses are
 <strong>columns</strong>, per the SummarizedExperiment convention.</p>
@@ -236,7 +222,7 @@ it once with:</p>
 <tr class="even">
 <td><code>metadata()</code></td>
 <td>title, analysis type, processing status, <code>is_*</code> flags,
-concentration unit, <code>mrmhub</code> version</td>
+concentration unit, MRMhub version</td>
 </tr>
 </tbody>
 </table>
@@ -252,7 +238,9 @@ side-by-side in one object:</p>
 <p>Export a subset with <code>variable</code>:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">se_conc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/save_dataset_summarizedexperiment.html">save_dataset_summarizedexperiment</a></span><span class="op">(</span><span class="va">mexp</span>, variable <span class="op">=</span> <span class="st">"conc"</span><span class="op">)</span></span>
-<span><span class="va">se_two</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/save_dataset_summarizedexperiment.html">save_dataset_summarizedexperiment</a></span><span class="op">(</span><span class="va">mexp</span>, variable <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"intensity"</span>, <span class="st">"conc"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">se_two</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/save_dataset_summarizedexperiment.html">save_dataset_summarizedexperiment</a></span><span class="op">(</span></span>
+<span>  <span class="va">mexp</span>,</span>
+<span>  variable <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"intensity"</span>, <span class="st">"conc"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>To export QC-filtered data instead of the full dataset, filter first
 and pass <code>filter_data = TRUE</code>:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
@@ -261,44 +249,40 @@ and pass <code>filter_data = TRUE</code>:</p>
 <span>  <span class="fu"><a href="../reference/filter_features_qc.html">filter_features_qc</a></span><span class="op">(</span></span>
 <span>    include_qualifier <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>    include_istd <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>    max.cv.conc.bqc <span class="op">=</span> <span class="fl">25</span></span>
-<span>  <span class="op">)</span></span>
+<span>    max.cv.conc.bqc <span class="op">=</span> <span class="fl">25</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">se_filt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/save_dataset_summarizedexperiment.html">save_dataset_summarizedexperiment</a></span><span class="op">(</span><span class="va">mexp_filt</span>, filter_data <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="subsetting-study-samples-only">Subsetting: study samples only<a class="anchor" aria-label="anchor" href="#subsetting-study-samples-only"></a>
+<h2 id="subsetting-study-samples-only">4. Subsetting: study samples only<a class="anchor" aria-label="anchor" href="#subsetting-study-samples-only"></a>
 </h2>
 <p><strong>Everything is exported</strong> — internal standards, QC
 samples, blanks and calibrants are all present and flagged rather than
-dropped, because downstream tools need them (<code>lipidr</code>
-requires the internal-standard annotation, and <code>pmp</code>’s blank
-filter needs blanks). Subsetting is one line:</p>
+dropped, because downstream tools need them: <code>lipidr</code>, for
+one, requires the internal-standard annotation. But nothing downstream
+reads <code>qc_type</code>, so a PCA, normalization or differential test
+will fold blanks, calibrants and QC replicates in with the study
+samples. Subset to study samples before any such analysis — here in one
+line:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">se_spl</span> <span class="op">&lt;-</span> <span class="va">se</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData</a></span><span class="op">(</span><span class="va">se</span><span class="op">)</span><span class="op">$</span><span class="va">is_istd</span>, <span class="va">se</span><span class="op">$</span><span class="va">qc_type</span> <span class="op">==</span> <span class="st">"SPL"</span><span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">se_spl</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1]  20 374</span></span></code></pre></div>
-<div class="callout callout-caution">
-<p><strong>Subset before any statistical analysis.</strong> Most tools
-will cheerfully include blanks, calibrants and QC replicates in a PCA, a
-normalization or a differential test and return results that look
-plausible and mean nothing. Nothing downstream understands
-<code>qc_type</code>.</p>
-</div>
 <p>QC metrics are deliberately <em>not</em> written to
 <code><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData()</a></code> — nothing downstream reads them, and QC filtering
-belongs in <code>mrmhub</code> where it is tested. Use
+belongs in MRMhub where it is tested. Use
 <code>filter_data = TRUE</code> as above, or
-<code><a href="../reference/save_feature_qc_metrics.html">save_feature_qc_metrics()</a></code> for the metrics themselves. If
-you do want them alongside the features:</p>
+<code><a href="../reference/save_feature_qc_metrics.html">save_feature_qc_metrics()</a></code> for the metrics themselves. To
+attach them to the features anyway:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData</a></span><span class="op">(</span><span class="va">se</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData</a></span><span class="op">(</span><span class="va">se</span><span class="op">)</span>,</span>
-<span>  <span class="va">mexp_filt</span><span class="op">@</span><span class="va">metrics_qc</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">se</span><span class="op">)</span>, <span class="va">mexp_filt</span><span class="op">@</span><span class="va">metrics_qc</span><span class="op">$</span><span class="va">feature_id</span><span class="op">)</span>, <span class="op">]</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="va">mexp_filt</span><span class="op">@</span><span class="va">metrics_qc</span><span class="op">[</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/match.html" class="external-link">match</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">se</span><span class="op">)</span>, <span class="va">mexp_filt</span><span class="op">@</span><span class="va">metrics_qc</span><span class="op">$</span><span class="va">feature_id</span><span class="op">)</span>,</span>
+<span>  <span class="op">]</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="differential-abundance-with-limma">Differential abundance with limma<a class="anchor" aria-label="anchor" href="#differential-abundance-with-limma"></a>
+<h2 id="differential-abundance-with-limma">5. Differential abundance with limma<a class="anchor" aria-label="anchor" href="#differential-abundance-with-limma"></a>
 </h2>
 <p><a href="https://bioconductor.org/packages/limma/" class="external-link">limma</a> works
 directly on continuous data such as concentrations. Note that
@@ -316,7 +300,8 @@ present in <code><a href="https://rdrr.io/pkg/SummarizedExperiment/man/Summarize
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://bioinf.wehi.edu.au/limma/" class="external-link">limma</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
-<span><span class="va">se_spl</span><span class="op">$</span><span class="va">group</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ctrl"</span>, <span class="st">"trt"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">se_spl</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">se_spl</span><span class="op">$</span><span class="va">group</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ctrl"</span>, <span class="st">"trt"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">se_spl</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># log-transform: concentrations are right-skewed and limma assumes normality</span></span>
 <span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log2</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">assay</a></span><span class="op">(</span><span class="va">se_spl</span>, <span class="st">"conc"</span><span class="op">)</span><span class="op">)</span></span>
@@ -342,7 +327,7 @@ batch:</p>
 <code class="sourceCode R"><span><span class="va">design</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/model.matrix.html" class="external-link">model.matrix</a></span><span class="op">(</span><span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">group</span> <span class="op">+</span> <span class="va">batch_id</span>, data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">se_spl</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="lipid-specific-analysis-with-lipidr">Lipid-specific analysis with lipidr<a class="anchor" aria-label="anchor" href="#lipid-specific-analysis-with-lipidr"></a>
+<h2 id="lipid-specific-analysis-with-lipidr">6. Lipid-specific analysis with lipidr<a class="anchor" aria-label="anchor" href="#lipid-specific-analysis-with-lipidr"></a>
 </h2>
 <p><a href="https://www.lipidr.org" class="external-link">lipidr</a> works on a
 <code>LipidomicsExperiment</code>, a subclass of
@@ -351,20 +336,14 @@ batch:</p>
 <code class="sourceCode R"><span><span class="va">le</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/save_dataset_summarizedexperiment.html">save_dataset_summarizedexperiment</a></span><span class="op">(</span></span>
 <span>  <span class="va">mexp</span>,</span>
 <span>  variable <span class="op">=</span> <span class="st">"intensity"</span>,</span>
-<span>  as <span class="op">=</span> <span class="st">"LipidomicsExperiment"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p><code>mrmhub</code> fills in what lipidr requires:
-<code>Molecule</code> from <code>feature_id</code>, <code>Class</code>
-from the curated <code>feature_class</code>, <code>istd</code> from
-<code>is_istd</code>, plus the <code>summarized</code> and per-assay
-<code>logged</code> / <code>normalized</code> flags that lipidr reads
-but does <strong>not</strong> validate — an object missing them
-constructs cleanly and then misbehaves.</p>
-<p>Using <code>feature_class</code> rather than lipidr’s own name parser
-also keeps the class assignment correct for mrmhub’s isobaric
-(<code>PC 28:0|SM 32:1 M+3</code>) and neutral-loss
-(<code>PE P-16:0/18:1 [-FA]</code>) naming, which lipidr cannot
-parse.</p>
+<span>  as <span class="op">=</span> <span class="st">"LipidomicsExperiment"</span><span class="op">)</span></span></code></pre></div>
+<p>MRMhub fills in what lipidr requires: <code>Molecule</code> from
+<code>feature_id</code>, <code>Class</code> from
+<code>feature_class</code>, <code>istd</code> from <code>is_istd</code>,
+plus the <code>summarized</code> / <code>logged</code> /
+<code>normalized</code> flags lipidr reads but does <strong>not</strong>
+validate — an object missing them constructs cleanly and then
+misbehaves.</p>
 <div class="callout callout-caution">
 <p><strong>Use a peak-area scale variable with lipidr, not
 concentrations.</strong> lipidr log-transforms with
@@ -372,20 +351,20 @@ concentrations.</strong> lipidr log-transforms with
 1</strong> first, which assumes Skyline peak-area magnitudes.
 Concentrations in µmol/L are mostly below 1, so they are silently
 flattened to <code>log2(1) = 0</code> — <code><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">eBayes()</a></code> then
-reports zero residual variances and every fold change collapses.
-<code>mrmhub</code> warns when you export a mostly-sub-1 assay this
-way.</p>
-<p>The cause is unit scale, not concentration as such: the same values
-in nmol/L pass through untouched. If you need concentrations, pass
-<code>log = FALSE</code> to lipidr, or log-transform them yourself
-beforehand.</p>
+reports zero residual variances and every fold change collapses. MRMhub
+warns when you export a mostly-sub-1 assay this way.</p>
+<p>The trigger is absolute scale, not concentration as such: the clamp
+is a fixed threshold at 1, so any assay whose values sit mostly below it
+is affected. If you need concentrations, pass <code>log = FALSE</code>
+to lipidr, or log-transform them yourself beforehand.</p>
 </div>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/ahmohamed/lipidr" class="external-link">lipidr</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">le_spl</span> <span class="op">&lt;-</span> <span class="va">le</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData</a></span><span class="op">(</span><span class="va">le</span><span class="op">)</span><span class="op">$</span><span class="va">istd</span>, <span class="va">le</span><span class="op">$</span><span class="va">qc_type</span> <span class="op">==</span> <span class="st">"SPL"</span><span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
-<span><span class="va">le_spl</span><span class="op">$</span><span class="va">group</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ctrl"</span>, <span class="st">"trt"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">le_spl</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">le_spl</span><span class="op">$</span><span class="va">group</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ctrl"</span>, <span class="st">"trt"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">le_spl</span><span class="op">)</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/lipidr/man/plot_samples.html" class="external-link">plot_samples</a></span><span class="op">(</span><span class="va">le_spl</span>, type <span class="op">=</span> <span class="st">"boxplot"</span>, measure <span class="op">=</span> <span class="st">"intensity"</span><span class="op">)</span></span>
 <span></span>
@@ -395,12 +374,8 @@ beforehand.</p>
 <span>  <span class="va">le_norm</span>,</span>
 <span>  <span class="va">trt</span> <span class="op">-</span> <span class="va">ctrl</span>,</span>
 <span>  measure <span class="op">=</span> <span class="st">"intensity"</span>,</span>
-<span>  group_col <span class="op">=</span> <span class="st">"group"</span></span>
-<span><span class="op">)</span></span>
+<span>  group_col <span class="op">=</span> <span class="st">"group"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/lipidr/man/de_analysis.html" class="external-link">plot_results_volcano</a></span><span class="op">(</span><span class="va">de_results</span>, show.labels <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<p><code><a href="https://rdrr.io/pkg/lipidr/man/de_analysis.html" class="external-link">de_analysis()</a></code> wraps limma internally and returns a plain
-data frame, not a <code>LipidomicsExperiment</code> — the pipeline ends
-there.</p>
 </div>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
@@ -433,7 +408,7 @@ MetaboLights.</li>
 workflow</a> — QC-filter features before exporting.</li>
 <li>
 <a href="recipe-02-custom-qc-report.html">Custom QC report</a> —
-reporting straight from <code>mrmhub</code>.</li>
+reporting straight from MRMhub.</li>
 </ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

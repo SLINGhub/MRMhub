@@ -1,7 +1,7 @@
 # Plasma lipidomics dataset with metadata
 
 This demo dataset is included for use in function examples and user
-testing.. It is a small, preprocessed subset of a plasma lipidomics
+testing. It is a small, preprocessed subset of a plasma lipidomics
 dataset, containing raw peak areas and analytical metadata. The original
 dataset was published in Tan et al., ATVB, 2022.
 

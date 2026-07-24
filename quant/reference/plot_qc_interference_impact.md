@@ -26,7 +26,9 @@ plot_qc_interference_impact(
 
 - data:
 
-  A `MRMhubExperiment` (already interference-corrected).
+  A
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  (already interference-corrected).
 
 - qc_types:
 

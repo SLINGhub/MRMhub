@@ -1,7 +1,7 @@
 # Get list of analyses classified as technical outliers
 
-Retrieves analysis IDs of data outliers based the principal components
-PCA with SD or MAD fences
+Retrieves analysis IDs of data outliers based on the principal
+components (PCA) with SD or MAD fences
 
 ## Usage
 
@@ -23,7 +23,8 @@ detect_outlier_pca(
 
 - data:
 
-  MRMhubExperiment object
+  [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+  object
 
 - variable:
 
@@ -43,12 +44,12 @@ detect_outlier_pca(
 
 - fence_multiplicator:
 
-  Multiplicator for SD or MAD, respectively.
+  Multiplier for SD or MAD.
 
 - summarize_fun:
 
   Function used to summarize the features, either "pca" based on PCA, or
-  "rma" based on mean relative abundance (RMA) of all features
+  "rma" based on Relative Mean Abundance (RMA) of all features
 
 - outlier_detection:
 
@@ -60,4 +61,5 @@ detect_outlier_pca(
 
 ## Value
 
-MRMhubExperiment object
+[`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
+object
