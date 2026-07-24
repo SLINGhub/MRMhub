@@ -1,5 +1,8 @@
 ---
 title: "Exploring QC: RunScatter and PCA"
+description: >
+  Read run-order signal quality with RunScatter and multivariate structure with
+  PCA, using the built-in lipidomics dataset.
 output:
   rmarkdown::html_vignette:
     fig_width: 8
@@ -8,37 +11,32 @@ vignette: >
   %\VignetteIndexEntry{Exploring QC: RunScatter and PCA}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-editor_options: 
-  markdown: 
+editor_options:
+  markdown:
     wrap: 100
 ---
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
+```{r setup, include = FALSE}
+source("_common.R")
 ```
 
-<p class="page-kind page-kind-tutorial">Tutorial</p>
+<p class="page-meta"><span class="page-kind page-kind-tutorial">Tutorial</span> <span class="page-level">Intermediate</span> <span class="page-prereq">Prerequisites: <a href="tutorial-02-basic-workflow.html">Basic workflow</a></span></p>
 
 This tutorial covers two complementary QC-exploration views on the built-in
-lipidomics dataset. `plot_runscatter()` visualises a feature's signal across the
-analysis sequence — helping to identify trends, detect outliers, and assess
-analytical performance — while Principal Component Analysis (`plot_pca()`,
-`plot_pca_loading()`, `detect_outlier_pca()`) provides a multivariate view for
+lipidomics dataset. `plot_runscatter()` shows a feature's signal across the
+analysis sequence, which helps to identify trends, detect outliers, and assess
+analytical performance. Principal component analysis (`plot_pca()`,
+`plot_pca_loading()`, `detect_outlier_pca()`) adds a multivariate view for
 spotting injection outliers and residual batch effects. The RunScatter examples
-use a single feature (`TG 48:2 [-18:1]`).
+all use a single feature, `TG 48:2 [-18:1]`.
 
-::: {.callout .callout-note}
-**Time** ~20 min &nbsp;·&nbsp; **Level** Intermediate &nbsp;·&nbsp; **Prerequisites** [Basic workflow](tutorial-02-basic-workflow.html)
-:::
+## 1. Setup
 
-## Setup
+We load the dataset, normalise to internal standards, and compute the QC metrics
+that several of the plots below draw on.
 
-```{r setup}
-#| results: false  
-#| message: false
+```{r prepare}
+#| results: false
 library(mrmhub)
 
 mexp <- lipidomics_dataset
@@ -46,106 +44,112 @@ mexp <- normalize_by_istd(mexp)
 mexp <- calc_qc_metrics(mexp)
 ```
 
-## Basic plot
+## 2. Basic plot
 
 A minimal call plots all QC and sample types for one feature.
 
-```{r}
-#| fig.alt: >
-#|   Basic RunScatter plot of TG 48:2 [-18:1]
-#| results: false 
-#| message: false
-plot_runscatter(mexp, variable = "intensity",
-                include_feature_filter = "TG 48\\:2 \\[\\-18:1\\]",
-                rows_page = 1, cols_page = 1)
+```{r basic}
+#| fig.cap: !expr fig_cap("RunScatter of TG 48:2 [-18:1] across the analysis sequence, all sample types shown.")
+#| fig.alt: Basic RunScatter plot of TG 48:2 [-18:1]
+#| results: false
+plot_runscatter(
+  mexp,
+  variable = "intensity",
+  include_feature_filter = "TG 48\\:2 \\[\\-18:1\\]",
+  rows_page = 1, cols_page = 1)
 ```
 
-## Selecting QC types
+## 3. Selecting QC types
 
 Use `qc_types` to display only specific sample types.
 
-```{r}
-#| fig.alt: >
-#|   RunScatter plot showing BQC and SPL only
-#| results: false 
-#| message: false
-plot_runscatter(mexp, variable = "intensity",
-                include_feature_filter = "TG 48\\:2 \\[\\-18:1\\]",
-                qc_types = c("BQC", "SPL"),
-                rows_page = 1, cols_page = 1)
+```{r qctypes}
+#| fig.cap: !expr fig_cap("RunScatter restricted to batch QC (BQC) and study (SPL) samples.")
+#| fig.alt: RunScatter plot showing BQC and SPL only
+#| results: false
+plot_runscatter(
+  mexp,
+  variable = "intensity",
+  include_feature_filter = "TG 48\\:2 \\[\\-18:1\\]",
+  qc_types = c("BQC", "SPL"),
+  rows_page = 1, cols_page = 1)
 ```
 
-## Batch display
+## 4. Batch display
 
 Set `show_batches = TRUE` and `batch_zebra_stripe = TRUE` to highlight batch boundaries with
 alternating shaded areas.
 
-```{r}
-#| fig.alt: >
-#|   RunScatter plot with batch zebra stripes
-#| results: false 
-#| message: false
-plot_runscatter(mexp, variable = "intensity",
-                include_feature_filter = "TG 48\\:2 \\[\\-18:1\\]",
-                show_batches = TRUE,
-                batch_zebra_stripe = TRUE,
-                rows_page = 1, cols_page = 1)
+```{r batches}
+#| fig.cap: !expr fig_cap("RunScatter with batch boundaries marked by alternating zebra stripes.")
+#| fig.alt: RunScatter plot with batch zebra stripes
+#| results: false
+plot_runscatter(
+  mexp,
+  variable = "intensity",
+  include_feature_filter = "TG 48\\:2 \\[\\-18:1\\]",
+  show_batches = TRUE,
+  batch_zebra_stripe = TRUE,
+  rows_page = 1, cols_page = 1)
 ```
 
-## Reference lines
+## 5. Reference lines
 
 Show mean ± k × SD reference lines with `show_reference_lines = TRUE`. Use `reference_sd_shade`
 to display the range as a shaded band instead of lines.
 
-```{r}
-#| fig.alt: >
-#|   RunScatter plot with mean ± 2 SD reference band
-#| results: false 
-#| message: false
-plot_runscatter(mexp, variable = "intensity",
-                include_feature_filter = "TG 48\\:2 \\[\\-18:1\\]",
-                qc_types = c("BQC", "SPL"),
-                show_reference_lines = TRUE,
-                ref_qc_types = "BQC",
-                reference_k_sd = 2,
-                reference_sd_shade = TRUE,
-                rows_page = 1, cols_page = 1)
+```{r reflines}
+#| fig.cap: !expr fig_cap("RunScatter with a mean ± 2 SD reference band computed from the BQC samples.")
+#| fig.alt: RunScatter plot with mean ± 2 SD reference band
+#| results: false
+plot_runscatter(
+  mexp,
+  variable = "intensity",
+  include_feature_filter = "TG 48\\:2 \\[\\-18:1\\]",
+  qc_types = c("BQC", "SPL"),
+  show_reference_lines = TRUE,
+  ref_qc_types = "BQC",
+  reference_k_sd = 2,
+  reference_sd_shade = TRUE,
+  rows_page = 1, cols_page = 1)
 ```
 
-## Outlier capping
+## 6. Outlier capping
 
 Use `cap_outliers = TRUE` to cap extreme values based on MAD fences. This is useful when outliers
 obscure the trends of QC or study samples.
 
-```{r}
-#| fig.alt: >
-#|   RunScatter plot with outlier capping
-#| results: false 
-#| message: false
-plot_runscatter(mexp, variable = "intensity",
-                include_feature_filter = "TG 48\\:2 \\[\\-18:1\\]",
-                cap_outliers = TRUE,
-                cap_sample_k_mad = 3,
-                rows_page = 1, cols_page = 1)
+```{r capping}
+#| fig.cap: !expr fig_cap("RunScatter with extreme values capped at MAD-based fences.")
+#| fig.alt: RunScatter plot with outlier capping
+#| results: false
+plot_runscatter(
+  mexp,
+  variable = "intensity",
+  include_feature_filter = "TG 48\\:2 \\[\\-18:1\\]",
+  cap_outliers = TRUE,
+  cap_sample_k_mad = 3,
+  rows_page = 1, cols_page = 1)
 ```
 
-## Log scale
+## 7. Log scale
 
 Set `log_scale = TRUE` to apply a log10 transformation to the y-axis. Zero or negative values are
 replaced with the minimum positive value divided by 5.
 
-```{r}
-#| fig.alt: >
-#|   RunScatter plot with log10 y-axis
-#| results: false 
-#| message: false
-plot_runscatter(mexp, variable = "intensity",
-                include_feature_filter = "TG 48\\:2 \\[\\-18:1\\]",
-                log_scale = TRUE,
-                rows_page = 1, cols_page = 1)
+```{r logscale}
+#| fig.cap: !expr fig_cap("RunScatter with a log10-transformed y-axis.")
+#| fig.alt: RunScatter plot with log10 y-axis
+#| results: false
+plot_runscatter(
+  mexp,
+  variable = "intensity",
+  include_feature_filter = "TG 48\\:2 \\[\\-18:1\\]",
+  log_scale = TRUE,
+  rows_page = 1, cols_page = 1)
 ```
 
-## Removing gaps in the analysis sequence
+## 8. Removing gaps in the analysis sequence
 
 Gaps in the x-axis can arise in two ways:
 
@@ -162,16 +166,17 @@ Both options can be combined.
 
 ### Collapsing excluded QC types
 
-```{r}
-#| fig.alt: >
-#|   RunScatter plot with collapsed gaps from excluded QC types
-#| results: false 
-#| message: false
-plot_runscatter(mexp, variable = "intensity",
-                include_feature_filter = "TG 48\\:2 \\[\\-18:1\\]",
-                qc_types = c("LTR"),
-                collapse_excluded = TRUE,
-                rows_page = 1, cols_page = 1)
+```{r collapse}
+#| fig.cap: !expr fig_cap("RunScatter of a single QC type (LTR) with the excluded positions collapsed.")
+#| fig.alt: RunScatter plot with collapsed gaps from excluded QC types
+#| results: false
+plot_runscatter(
+  mexp,
+  variable = "intensity",
+  include_feature_filter = "TG 48\\:2 \\[\\-18:1\\]",
+  qc_types = c("LTR"),
+  collapse_excluded = TRUE,
+  rows_page = 1, cols_page = 1)
 ```
 
 ### Removing gaps from unannotated analyses
@@ -180,9 +185,8 @@ To demonstrate this feature, we first simulate a dataset with unannotated analys
 block of runs from batch 2. This creates a contiguous gap in the analysis order, as would occur
 when solvent blanks or system suitability injections are not imported.
 
-```{r}
-#| results: false 
-#| message: false
+```{r simulate-gaps}
+#| results: false
 mexp_gaps <- exclude_analyses(
   mexp,
   analyses = c(
@@ -195,21 +199,21 @@ mexp_gaps <- exclude_analyses(
     "Longit_batch2_TQC14",
     "Longit_batch2_TQC15"
   ),
-  clear_existing = TRUE
-)
+  clear_existing = TRUE)
 mexp_gaps <- normalize_by_istd(mexp_gaps)
 mexp_gaps <- calc_qc_metrics(mexp_gaps)
 ```
 
-```{r}
-#| fig.alt: >
-#|   RunScatter plot with gap indicator lines
-#| results: false 
-#| message: false
-plot_runscatter(mexp_gaps, variable = "intensity",
-                include_feature_filter = "TG 48\\:2 \\[\\-18:1\\]",
-                remove_gaps = TRUE,
-                rows_page = 1, cols_page = 1)
+```{r gaps}
+#| fig.cap: !expr fig_cap("RunScatter with vertical indicator lines marking the collapsed unannotated runs.")
+#| fig.alt: RunScatter plot with gap indicator lines
+#| results: false
+plot_runscatter(
+  mexp_gaps,
+  variable = "intensity",
+  include_feature_filter = "TG 48\\:2 \\[\\-18:1\\]",
+  remove_gaps = TRUE,
+  rows_page = 1, cols_page = 1)
 ```
 
 ### Combining both
@@ -218,39 +222,40 @@ When filtering to a single QC type *and* the sequence contains unannotated
 runs, combine `collapse_excluded` and `remove_gaps` to produce a compact,
 fully annotated plot.
 
-```{r}
-#| fig.alt: >
-#|   RunScatter plot with collapsed excluded types and gap indicators
-#| results: false 
-#| message: false
-plot_runscatter(mexp_gaps, variable = "intensity",
-                include_feature_filter = "TG 48\\:2 \\[\\-18:1\\]",
-                qc_types = c("BQC"),
-                collapse_excluded = TRUE,
-                remove_gaps = TRUE,
-                rows_page = 1, cols_page = 1)
+```{r gaps-combined}
+#| fig.cap: !expr fig_cap("RunScatter combining collapsed excluded types with gap indicators.")
+#| fig.alt: RunScatter plot with collapsed excluded types and gap indicators
+#| results: false
+plot_runscatter(
+  mexp_gaps,
+  variable = "intensity",
+  include_feature_filter = "TG 48\\:2 \\[\\-18:1\\]",
+  qc_types = c("BQC"),
+  collapse_excluded = TRUE,
+  remove_gaps = TRUE,
+  rows_page = 1, cols_page = 1)
 ```
 
-## Label wrapping
+## 9. Label wrapping
 
 When feature names are long, strip labels can overflow. Set `label_wrap = TRUE` to wrap labels
 across multiple lines, controlled by `label_wrap_width`. Here we show three features to illustrate
 the effect on strip text.
 
-```{r}
-#| fig.alt: >
-#|   RunScatter plot with wrapped strip labels
-#| results: false 
-#| message: false
-plot_runscatter(mexp, variable = "intensity",
-                include_feature_filter = "TG 48\\:2 \\[\\-18:1\\]",
-                rows_page = 1, cols_page = 3,
-                specific_page = 1,
-                label_wrap = TRUE,
-                label_wrap_width = 8)
+```{r labelwrap}
+#| fig.cap: !expr fig_cap("RunScatter of three features with wrapped strip labels.")
+#| fig.alt: RunScatter plot with wrapped strip labels
+#| results: false
+plot_runscatter(
+  mexp,
+  variable = "intensity",
+  include_feature_filter = "TG 48\\:2 \\[\\-18:1\\]",
+  label_wrap = TRUE,
+  label_wrap_width = 8,
+  rows_page = 1, cols_page = 3, specific_page = 1)
 ```
 
-## Trend curves
+## 10. Trend curves
 
 Trend curves visualise the fitted signal used during drift or batch correction. They require a
 prior correction step — `show_trend = TRUE` will error if no drift or batch correction has been
@@ -258,9 +263,9 @@ applied. To plot the values *before* the last correction, append `_before` to th
 (e.g. `variable = "intensity_before"`); for the original uncorrected values use `_raw`
 (e.g. `variable = "intensity_raw"`).
 
-See the [Drift Correction](tutorial-04-drift-correction.html) tutorial for a worked example.
+See the [drift and batch correction](tutorial-04-drift-correction.html) tutorial for a worked example.
 
-## Principal component analysis (PCA)
+## 11. Principal component analysis (PCA)
 
 PCA is a routine multivariate check in targeted MS workflows: it helps spot injection
 outliers, visualise residual batch effects, and confirm that drift or batch corrections
@@ -274,15 +279,15 @@ samples (SPL) typically show wider biological spread. The `ellipse_variable` con
 grouping of the confidence ellipses (`qc_type`, `batch_id`, or `"none"`); a markedly
 dispersed QC cluster suggests insufficient normalisation or remaining instrument drift.
 
-```{r}
-#| fig.alt: >
-#|   PCA score plot coloured by QC type
+```{r pca-score-qc}
+#| fig.cap: !expr fig_cap("PCA score plot coloured by QC type, with confidence ellipses per group.")
+#| fig.alt: PCA score plot coloured by QC type
 #| results: false
-#| message: false
-plot_pca(mexp,
-         variable = "norm_intensity",
-         qc_types = c("BQC", "SPL"),
-         ellipse_variable = "qc_type")
+plot_pca(
+  mexp,
+  variable = "norm_intensity",
+  qc_types = c("BQC", "SPL"),
+  ellipse_variable = "qc_type")
 ```
 
 ### Score plot by batch
@@ -291,15 +296,15 @@ If samples separate along PC1 or PC2 by `batch_id`, batch effects persist and a
 centering-based correction is likely warranted. Running the same plot before and after
 `correct_batch_centering()` confirms that the batch ellipses overlap after correction.
 
-```{r}
-#| fig.alt: >
-#|   PCA score plot coloured by batch
+```{r pca-score-batch}
+#| fig.cap: !expr fig_cap("PCA score plot coloured by batch.")
+#| fig.alt: PCA score plot coloured by batch
 #| results: false
-#| message: false
-plot_pca(mexp,
-         variable = "norm_intensity",
-         qc_types = c("BQC", "SPL"),
-         ellipse_variable = "batch_id")
+plot_pca(
+  mexp,
+  variable = "norm_intensity",
+  qc_types = c("BQC", "SPL"),
+  ellipse_variable = "batch_id")
 ```
 
 ### Loadings
@@ -309,14 +314,14 @@ extremes contribute most to sample separation. A single feature dominating PC1 s
 inspected — it is often a saturated or contaminated transition rather than a biological
 signal.
 
-```{r}
-#| fig.alt: >
-#|   PCA loadings plot
+```{r pca-loadings}
+#| fig.cap: !expr fig_cap("PCA loadings identifying the features driving each component.")
+#| fig.alt: PCA loadings plot
 #| results: false
-#| message: false
-plot_pca_loading(mexp,
-                 variable = "norm_intensity",
-                 qc_types = c("BQC", "SPL"))
+plot_pca_loading(
+  mexp,
+  variable = "norm_intensity",
+  qc_types = c("BQC", "SPL"))
 ```
 
 ### Detecting outlier injections
@@ -327,9 +332,8 @@ outside a fence, defined as either `mean ± k·SD` (`outlier_detection = "sd"`) 
 returns the `analysis_id` values that exceed the fence on the selected component, or `NULL`
 if none are flagged.
 
-```{r}
+```{r pca-outliers}
 #| results: markup
-#| message: false
 outlier_ids <- detect_outlier_pca(
   mexp,
   variable = "intensity",
@@ -337,8 +341,7 @@ outlier_ids <- detect_outlier_pca(
   pca_component = 1,
   qc_types = c("BQC", "SPL"),
   outlier_detection = "mad",
-  fence_multiplicator = 4
-)
+  fence_multiplicator = 4)
 
 outlier_ids
 ```
@@ -362,11 +365,12 @@ failed injection, contamination, instrument fault, or sample-handling error.
 ### Excluding analyses and features
 
 After visual and documented confirmation, remove the offending injections or features.
-`exclude_analyses()` / `exclude_features()` set the affected rows aside for downstream steps
-while the original data remain in `mexp@dataset_orig`; setting `clear_existing = TRUE`
-replaces any previous exclusion list rather than appending.
+`exclude_analyses()` and `exclude_features()` flip the affected rows' `valid_analysis` /
+`valid_feature` flag so downstream steps skip them, while the original data remain in
+`mexp@dataset_orig`; setting `clear_existing = TRUE` replaces any previous exclusion list
+rather than appending.
 
-```{r}
+```{r exclude}
 #| eval: false
 # Review candidates before excluding
 mexp@annot_analyses |>
@@ -392,6 +396,6 @@ mexp <- exclude_features(mexp, features = c("PC 32:0"), clear_existing = FALSE)
 
 ## Next steps
 
-- [Drift and Batch Correction](tutorial-04-drift-correction.html) — apply and inspect corrections
-- [Visualisation Functions](manual-08-visualization.html) — the full list of plotting functions
-- [Basic MRMhub Workflow](tutorial-02-basic-workflow.html) — where these checks fit in the pipeline
+- [Drift and batch correction](tutorial-04-drift-correction.html) — apply and inspect corrections
+- [Visualisation functions](manual-08-visualization.html) — the full list of plotting functions
+- [Basic MRMhub workflow](tutorial-02-basic-workflow.html) — where these checks fit in the pipeline

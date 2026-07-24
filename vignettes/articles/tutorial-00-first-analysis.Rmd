@@ -1,13 +1,14 @@
 ---
-title: "Your First Analysis"
+title: "Your first analysis"
+description: >
+  A short walkthrough on the bundled demo data: import a result file, normalize
+  by internal standard, inspect the run, and export — no external files needed.
 output:
   rmarkdown::html_vignette:
     fig_width: 6
     fig_height: 3
-description: |
-  A 5-minute walkthrough: import demo data, inspect, normalize, and export.
 vignette: >
-  %\VignetteIndexEntry{Your First Analysis}
+  %\VignetteIndexEntry{Your first analysis}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 editor_options:
@@ -15,76 +16,82 @@ editor_options:
     wrap: 72
 ---
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE, comment = "#>", out.width = "100%",
-  message = FALSE, warning = FALSE, eval = FALSE
-)
+```{r setup, include = FALSE}
+source("_common.R")
 ```
 
-<p class="page-kind page-kind-tutorial">Tutorial</p>
+<p class="page-meta"><span class="page-kind page-kind-tutorial">Tutorial</span> <span class="page-level">Beginner</span> <span class="page-prereq">Prerequisites: <a href="manual-00-installation.html">MRMhub installed</a></span></p>
 
-This walkthrough produces a normalized dataset in under 5 minutes using
-bundled demo data; no external files are needed.
+This walkthrough takes an MRMhub result from import to a normalized, exportable
+dataset in a handful of lines, using demo data bundled with the package so
+nothing external is needed. It is the shortest path through the pipeline; the
+workflow tutorials that follow unpack each step in full.
 
-::: {.callout .callout-note}
-**Time** ~5 min &nbsp;·&nbsp; **Level** Beginner &nbsp;·&nbsp; **Prerequisites** [MRMhub installed](manual-00-installation.html)
-:::
+## 1. Run the complete workflow
 
-## The complete workflow in one script
+The block below is the whole analysis: import the demo result, normalize each
+feature by its internal standard, and print the resulting object. Run it and you
+have a processed dataset.
 
-The complete workflow on the bundled demo data is shown below. The printed summary and plot are
-produced by this code.
-
-```{r whole-thing, eval=TRUE, fig.height=4}
+```{r pipeline}
+#| message: true
 library(mrmhub)
 
-# 1. Import the bundled demo dataset (produced by INTEGRATOR)
 demo_file <- system.file("extdata", "MRMhub_demo.tsv", package = "mrmhub")
+
 mexp <- MRMhubExperiment()
 mexp <- import_data_mrmhub(mexp, path = demo_file, import_metadata = TRUE)
-mexp                        # compact overview; status(mexp) prints the full report
-
-# 2. Normalise each feature by its internal standard
 mexp <- normalize_by_istd(mexp)
+mexp
+```
 
-# 3. Inspect the normalised signal across the analytical run
+We then look at the normalized signal across the analytical run, the first thing
+to inspect for run-order drift.
+
+```{r runscatter}
+#| fig.height: 4
+#| fig.cap: !expr fig_cap("Internal-standard–normalized signal of each feature plotted against injection order.")
+#| fig.alt: RunScatter of ISTD-normalized feature intensities against run order
 plot_runscatter(mexp, variable = "norm_intensity")
 ```
 
-`build_workflow()` offers an interactive alternative — a point-and-click
-application that validates your data and metadata, warns about any pipeline
-mismatches, and generates an equivalent Quarto (`.qmd`) workflow to download (see
-[Build a Workflow Without Code](tutorial-12-workflow-builder.html)) — while the
-code-first workflow above remains the reproducible path. What each line does is
-described below.
+Printing the object returns a compact status overview — `status(mexp)` prints the
+full report. If you prefer not to write code, `build_workflow()` opens an
+interactive application that validates your data and metadata, flags pipeline
+mismatches, and generates an equivalent Quarto workflow to download (see
+[Build a workflow without code](tutorial-12-workflow-builder.html)); the script
+above remains the reproducible path.
 
-## What the script does
+## 2. What the script does
 
-The imported object is an `MRMhubExperiment`, a structured container holding the peak
-area data, sample annotations, and feature metadata. A few helpers summarise what was
-imported, and `normalize_by_istd()` corrects for extraction and injection variability;
-its result is recorded in `mexp@is_istd_normalized`, and the original data is always
-preserved in `mexp@dataset_orig`.
+The importer returns an `MRMhubExperiment`: a structured container holding the
+peak-area data, the sample annotations, and the feature metadata together.
+`normalize_by_istd()` divides each feature by its assigned internal standard,
+correcting for extraction and injection variability. The ratio is stored in
+`feature_norm_intensity`, the `is_istd_normalized` flag is set, and the raw
+import is left untouched in the `dataset_orig` slot. A few helpers report what
+was imported:
 
-```{r}
+```{r inspect}
+#| eval: false
 get_analysis_count(mexp)   # number of analyses
 get_feature_count(mexp)    # number of features
-get_featurelist(mexp)      # the feature list
+get_featurelist(mexp)      # the measured features
 ```
 
-## Exporting
+## 3. Export the results
 
-Export the processed data to an Excel report (multiple sheets) or a tidy CSV:
+Write the processed data to a multi-sheet Excel report, or to a single tidy CSV:
 
-```{r}
+```{r export}
+#| eval: false
 save_report_xlsx(mexp, path = "my_first_results.xlsx")
 save_dataset_csv(mexp, path = "my_first_results.csv")
 ```
 
 ## Next steps
 
-- [Key Concepts & Glossary](manual-01-key-concepts.html) — understand the data model
+- [Key concepts and glossary](manual-01-key-concepts.html) — understand the data model
 - [Preparing and importing data](tutorial-01-prep-data.html) — import your own data and metadata
-- [Basic MRMhub Workflow](tutorial-02-basic-workflow.html) — the full end-to-end pipeline
-- [Lipidomics Data Processing](tutorial-03-lipidomics-workflow.html) — a detailed real-world workflow
+- [Basic MRMhub workflow](tutorial-02-basic-workflow.html) — the full end-to-end pipeline
+- [Lipidomics data processing](tutorial-03-lipidomics-workflow.html) — a detailed real-world workflow

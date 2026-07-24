@@ -92,7 +92,7 @@ myexp <- import_metadata_msorganiser(
 Validation checks may raise warnings, which by default halt the import. Setting
 `ignore_warnings = TRUE` lets it proceed; the warnings still appear in the console table, marked with
 an asterisk (`*`) in the `status` column, and should be reviewed so nothing critical is missed.
-[Validating and fixing metadata](tutorial-10-metadata-validation.html) shows how to inspect and
+[Validating and fixing metadata](recipe-04-validate-metadata.html) shows how to inspect and
 resolve them.
 
 ## 4. Process the data

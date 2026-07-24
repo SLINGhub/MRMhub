@@ -115,5 +115,5 @@ mexp <- import_metadata_msorganiser(
 ## Next steps
 
 - [Metadata Tables & Matching](manual-05-metadata.html) — the structure of each metadata table
-- [Validating metadata](tutorial-10-metadata-validation.html) — checking metadata before processing
+- [Validating and fixing metadata](recipe-04-validate-metadata.html) — checking metadata before processing
 - [Importing Analytical Data](manual-04-data-import.html) — importing the measurement data

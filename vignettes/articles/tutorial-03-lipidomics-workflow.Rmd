@@ -1,508 +1,427 @@
 ---
-title: "Lipidomics Data Processing"
-output: 
+title: "Lipidomics data processing"
+description: >
+  Post-process a targeted lipidomics run from peak areas to a curated, quantified
+  dataset: quality assessment, ISTD normalisation, drift and batch correction, and
+  QC filtering.
+output:
   rmarkdown::html_vignette:
     fig_width: 6
     fig_height: 2
-description: |
-  MRMhub: Postprocessing and Quality Control of Small-Molecule Mass Spectrometry Data 
 vignette: >
-  %\VignetteIndexEntry{Lipidomics Data Processing}
+  %\VignetteIndexEntry{Lipidomics data processing}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-editor_options: 
-  markdown: 
+editor_options:
+  markdown:
     wrap: 72
 ---
 
-```{r, include = FALSE, echo = FALSE}
-knitr::opts_chunk$set(collapse = TRUE, results = TRUE, message = TRUE, comment = "#>", out.width = "100%")
+```{r setup, include = FALSE}
+source("_common.R")
 set.seed(1041)
 options(dplyr.print_max = 10)
 ```
 
-<p class="page-kind page-kind-tutorial">Tutorial</p>
+<p class="page-meta"><span class="page-kind page-kind-tutorial">Tutorial</span> <span class="page-level">Advanced</span> <span class="page-prereq">Prerequisites: <a href="tutorial-02-basic-workflow.html">Basic workflow</a></span></p>
 
-This tutorial illustrates a postprocessing and quality control workflow
-starting from the preprocessed data of a lipidomics analysis. Starting
-from peak areas, the aim is to produce a curated dataset with lipid
-species concentrations that is ready for subsequent statistical
-analysis. This post-processing will include an assessment of the
-analytical and data quality of the lipidomics analysis, followed by
-normalisation/quantification, feature filtering and reporting of the
-dataset.
+This tutorial follows a complete postprocessing and quality control workflow for
+a targeted lipidomics analysis. Starting from integrated peak areas, we work
+towards a curated table of lipid species concentrations ready for statistical
+analysis. Along the way we assess the analytical and data quality of the run,
+normalise and quantify against internal standards, correct for run-order drift
+and between-batch effects, filter features on QC criteria, and export the result.
+The dataset — a longitudinal plasma study (`sPerfect`) measured across six
+batches — is realistic enough to show the decisions a real analysis demands.
 
-::: {.callout .callout-note}
-**Time** ~45 min &nbsp;·&nbsp; **Level** Advanced &nbsp;·&nbsp; **Prerequisites** [Basic workflow](tutorial-02-basic-workflow.html)
-:::
-
-```{r, results = FALSE, message = FALSE}
+```{r library}
 library(mrmhub)
 ```
 
 ## 1. Importing analysis results
 
-We begin by importing the MRMhub result file, which contains the areas
-of the integrated peaks (features) in all the processed raw data files.
-In addition, the MRMhub result file also contains peak retention times
-and widths, as well as metadata extracted from the mzML files, such as
-acquisition time stamp and m/z values. We import these metadata by
-setting `import_metadata = TRUE`.
-
-<details>
-
-<summary>Exercises</summary>
-
-> Type `print(myexp)` in the console to get a summary of the status. You
-> can explore the `myexp` object in RStudio by clicking it in the
-> Environment panel on the top right.
-
-</details>
+We begin by importing the MRMhub result file, which holds the areas of the
+integrated peaks (features) for every processed raw data file. The same file also
+carries the peak retention times and widths and metadata read from the mzML
+files, such as acquisition time stamps and precursor/product m/z values; setting
+`import_metadata = TRUE` brings those across as well. The imported data lands in
+the `dataset_orig` slot and is copied to the working `dataset`. Printing the
+object at any stage with `print(myexp)` reports its processing status, and in
+RStudio you can expand `myexp` in the Environment pane.
 
 ```{r load-rawdata}
-myexp <- mrmhub::MRMhubExperiment(title = "sPerfect")
-
-data_path <- "./datasets/sPerfect_MRMhub.tsv"
-myexp <- import_data_mrmhub(data = myexp, path = data_path, import_metadata = TRUE)
+#| message: true
+myexp <- MRMhubExperiment(title = "sPerfect")
+myexp <- import_data_mrmhub(
+  myexp,
+  path = "./datasets/sPerfect_MRMhub.tsv",
+  import_metadata = TRUE
+)
 ```
 
 ## 2. A glimpse on the imported data
 
-Examine the imported data by executing the code below or by entering the
-command `View(myexp@dataset_orig)` in the console. The data is in long
-format, which allows multiple parameters to be viewed for each
-analysis-feature pair.
-
-<details>
-
-<summary>Exercises</summary>
-
-> Explore the imported table using in the RStudio table viewer with the
-> filter functionality.
-
-</details>
+The data is stored in long format — one row per analysis–feature pair — so each
+measurement carries its own area, retention time, and metadata side by side.
+Print the working table below, or enter `View(myexp@dataset_orig)` in the console
+to browse and filter it in the RStudio viewer. For routine access it is cleaner
+to use `get_analyticaldata(myexp, annotated = TRUE)`, which returns the same data
+already joined to its sample and feature annotations.
 
 ```{r view-rawdata}
-print(myexp@dataset) # Better use `get_analyticaldata(mexp, annotated = TRUE)`
+print(myexp@dataset)
 ```
 
 ## 3. Analytical design and timeline
 
-An overview of the analysis design and timelines can provide useful
-information for subsequent processing steps. The plot below illustrates
-the batch structure, the quality control (QC) samples included with
-their respective positions, and additional information regarding the
-date, duration, and run time of the analysis.
-
-<details>
-
-<summary>Exercises</summary>
-
-> Show analysis timestamps with `show_timestamp = TRUE`. Have there been
-> long interruptions within and between the batches?
-
-</details>
+Before touching the signals, it is worth understanding how the run was
+structured. The plot below lays out the batch boundaries, the positions of the
+quality control (QC) samples, and the date, duration, and run time of the
+analysis — context that informs every later choice about drift, batches, and
+which QC type to trust. Setting `show_timestamp = TRUE` overlays acquisition
+times and reveals any long interruptions within or between batches.
 
 ```{r runsequence}
-#| fig.alt: >
-#|   RunSequence plot
+#| fig.cap: !expr fig_cap("Run sequence of the analysis: batch structure, QC-sample positions, and acquisition timeline.")
+#| fig.alt: RunSequence plot of the analysis showing batches and QC positions
 plot_runsequence(
-  myexp, 
-  qc_types = NA, 
-  show_batches = TRUE, 
-  batch_zebra_stripe = TRUE, 
-  batch_fill_color = "#fffbdb", 
+  myexp,
+  qc_types = NA,
+  show_batches = TRUE,
+  batch_zebra_stripe = TRUE,
+  batch_fill_color = "#fffbdb",
   segment_linewidth = 0.5,
-  show_timestamp = FALSE)
+  show_timestamp = FALSE
+)
 ```
 
-## 4. Overview Chromatographic Separation
+## 4. Overview of chromatographic separation
 
-The following plot shows the retention time distribution of all detected lipid species. 
+A first look at the chromatography confirms that species elute where expected.
+The plot shows the retention time distribution of all detected lipid species
+across the study samples, arranged by class.
 
-```{r chunk6b-rtplot}
-#| fig.alt: >
-#|   RLA plot - overview of all analyses
+```{r rt-overview}
+#| fig.cap: !expr fig_cap("Retention-time distribution of all detected lipid species across the study samples.")
+#| fig.alt: Retention-time distribution of all detected lipid species
 plot_abundanceprofile(
-  data = myexp,
-  log_scale = FALSE,
-  variable = "rt", 
-  density_strip = TRUE,
+  myexp,
+  variable = "rt",
   qc_types = "SPL",
+  log_scale = FALSE,
+  density_strip = TRUE,
   show_sum = FALSE,
   x_label = NA,
-  feature_map = "lipidomics")
+  feature_map = "lipidomics"
+)
 ```
-
 
 ## 5. Peak picking QC
 
-To check for potential peak picking errors, the retention time (RT) of lipid features can be plotted against the total carbon count and double bond number. Features that deviate  from the trend are labelled and indicate potential misannotations or peak picking errors. However, the robustness of this approach depends on the comprehensiveness of the lipid species covered in the analysis. In this example, only a limited number of lipid features were measured, and thus the trend is not well defined for some classes and double bond counts.
+Within a lipid class, retention time increases smoothly with chain length and
+decreases with the number of double bonds, so plotting RT against total carbon
+count (coloured by double-bond number) turns peak-picking errors into visible
+outliers. Species whose residual from the class trend exceeds
+`outlier_residual_min` are labelled, flagging likely misannotations or
+mis-integrated peaks. The check is only as strong as the coverage behind it: here
+just a few species per class were measured, so the trend is poorly constrained
+for some classes and double-bond counts.
 
-
-```{r chunk13-peakpickingqc}
+```{r peak-picking-qc}
 #| fig-height: 6.5
+#| fig.cap: !expr fig_cap("Retention time versus total carbon number per lipid class; labelled points flag possible misannotations.")
+#| fig.alt: Retention time versus carbon number per lipid class, outliers labelled
 plot_rt_vs_chain(
-  myexp, 
-  qc_types = "SPL", 
-  x_var = "total_c", outlier_residual_min = 0.3,
+  myexp,
+  qc_types = "SPL",
+  x_var = "total_c",
+  outlier_residual_min = 0.3,
   font_base_size = 8,
-  point_size = 1)  
+  point_size = 1
+)
 ```
 
+## 6. Signal trends of internal standards
 
+The internal standards (ISTDs) are our clearest window on instrument stability.
+The same ISTD amount was spiked into every sample except the solvent blanks
+(`SBLK`), so in the absence of technical variation each ISTD should read a
+constant intensity across all samples and sample types. Plotting them in
+injection order across the six batches makes any drift, batch offset, or blockage
+immediately visible. Setting `output_pdf = TRUE` saves the plots to the `output`
+subfolder for closer inspection.
 
-## 6. Signal trends of Internal Standards
-
-We can examine the internal standards (ISTDs) in all samples across all
-six batches to assess how the analyses performed. The same ISTD amount
-was spiked into each sample (except `SBLK`), so the same intensities are
-expected in all samples and sample types.
-
-<details>
-
-<summary>Exercises</summary>
-
-> What do you observe? You can set `output_pdf = TRUE` to save the plots
-> as PDF (see subfolder `output`).
-
-</details>
-
-```{r runscatter}
+```{r runscatter-istd}
 #| message: true
-#| fig.alt: >
-#|   RunScatter plot
+#| fig.cap: !expr fig_cap("Internal-standard intensities across all six batches; the spiked amount is constant, so a flat trend is expected.")
+#| fig.alt: RunScatter of internal-standard intensities across batches
 plot_runscatter(
-  data = myexp,
+  myexp,
   variable = "intensity",
   qc_types = c("BQC", "TQC", "SPL", "PBLK", "SBLK"),
-  #analysis_range = NA, #get_batch_boundaries(myexp, c(1,6)), 
-  include_feature_filter = "ISTD", 
+  include_feature_filter = "ISTD",
   exclude_feature_filter = "Hex|282",
   cap_outliers = TRUE,
-  log_scale = FALSE, 
-  show_batches = TRUE,font_base_size = 5,
+  log_scale = FALSE,
+  show_batches = TRUE,
+  font_base_size = 5,
   output_pdf = FALSE,
-  path = "./output/runscatter_istd.pdf",
   cols_page = 4, rows_page = 3
 )
 ```
 
 ## 7. Adding detailed metadata
 
-To proceed with further processing, we require additional metadata
-describing the samples and features. The `MRMhub Excel template` provides
-a solution for the collection, organisation and pre-validation of
-analysis metadata. Import metadata from this template using the function
-below. If there are errors in the metadata (e.g. duplicate or missing
-ID), the import will fail with an error message and summary of the
-errors. If the metadata is error-free, a summary of warnings and notes
-about the metadata will be shown in a table, if present. Check your
-metadata by working through these warnings, or proceed using
-`ignore_warnings = TRUE`.
+Everything from here on — sample roles, ISTD assignments, spike amounts,
+concentrations — comes from the analysis metadata. The MRMhub Excel template
+collects, organises, and pre-validates it in one place; open the `.xlsx` file in
+the `datasets` folder to see its structure. On import the metadata is validated:
+a hard error (a duplicate or missing ID) stops the import with a summary of the
+problems, while softer issues are reported as warnings you can work through, or
+bypass with `ignore_warnings = TRUE`. We then fix the processing order to the
+injection sequence with `set_analysis_order()`, and tell MRMhub which of the
+imported signal variables to treat as the working feature intensity —
+`set_intensity_var("area")` — the value all subsequent calculations start from.
 
-<details>
-
-<summary>Exercises</summary>
-
-> Open the `XLSX` file in the `datasets` folder to explore the metadata
-> structure.
-
-</details>
-
-```{r import-metadat}
-file_path <- "datasets/sPerfect_Metadata.xlsx"
-myexp <- import_metadata_msorganiser(myexp, path = file_path, ignore_warnings = TRUE)
+```{r import-metadata}
+#| message: true
+myexp <- import_metadata_msorganiser(
+  myexp,
+  path = "datasets/sPerfect_Metadata.xlsx",
+  ignore_warnings = TRUE
+)
 myexp <- set_analysis_order(myexp, order_by = "timestamp")
 myexp <- set_intensity_var(myexp, variable_name = "area")
 ```
 
-## 8. Overall trends and possible outlier
+## 8. Overall trends and possible outliers
 
-To examine overall technical trends and issues affecting the majority of
-analytes (features), the RLA (Relative Log Abundance) plot is a useful
-tool (De Livera et al., Analytical Chemistry, 2015). In this plot, all
-features are normalised (by across or within-batch medians) and plotted
-as a boxplot per sample. This plot can help to identify potential
-pipetting errors, sample spillage, injection volume changes or
-instrument sensitivity changes.
-
-<details>
-
-<summary>Exercises</summary>
-
-> First, run the code below as it is. What observations can be made?
-> Then, examine batch 6, by uncommenting the line
-> `#plot_range_indices =`. What do you see in this batch? Identify the
-> potential outlier sample by setting `x_axis_variable = "analysis_id"`.
-> Next, set the y-axis limits manually `y_lim = c(-2,2)` and display all
-> analyses/batches again to inspect the data for other trends or
-> fluctuations.
-
-</details>
+To judge technical trends that affect most analytes at once, the RLA (Relative
+Log Abundance) plot is the tool of choice (De Livera et al., Analytical
+Chemistry, 2015). Each feature is expressed relative to its across- or
+within-batch median and summarised as one boxplot per sample; a well-behaved
+sample sits tight around zero, so boxes that shift or spread flag pipetting
+errors, sample spillage, injection-volume changes, or drops in instrument
+sensitivity. In this run one sample stands out from its batch as a candidate
+technical outlier.
 
 ```{r rla-plot}
-#| fig.alt: >
-#|   RLA plot
-mrmhub::plot_rla_boxplot(
-  data = myexp,
-  rla_type_batch = c("within"),
+#| fig.cap: !expr fig_cap("Within-batch relative log abundance per sample; deviating boxes flag pipetting, injection, or sensitivity issues.")
+#| fig.alt: RLA boxplot per sample within batches
+plot_rla_boxplot(
+  myexp,
   variable = "intensity",
-  qc_types = c("BQC", "SPL", "RQC", "TQC", "PBLK"), 
-  filter_data = FALSE, 
-  #analysis_range = get_batch_boundaries(myexp, batch_indices = c(5,6)), 
-  #y_lim = c(-3,3),
+  rla_type_batch = "within",
+  qc_types = c("BQC", "SPL", "RQC", "TQC", "PBLK"),
+  filter_data = FALSE,
   show_timestamp = FALSE,
-  outlier_exclude= FALSE, x_gridlines = FALSE,
+  outlier_exclude = FALSE,
+  x_gridlines = FALSE,
   batch_zebra_stripe = FALSE,
   linewidth = 0.1
 )
 ```
 
-## 9. PCA plot of all QC types
+## 9. PCA of all QC types
 
-A principal component analysis (PCA) plot provides an alternative method
-for obtaining an overview of the study and quality control (QC) samples,
-as well as for identifying potential issues, such as batch effects,
-technical outliers, and differences between the sample types.
-
-<details>
-
-<summary>Exercises</summary>
-
-> Add blanks and sample dilutions to the plot, by including
-> `"PBLK", "RQC"` to `qc_types =` below. What do you think the resulting
-> PCA plot suggests now?
-
-</details>
+Principal component analysis condenses all features into a few axes and gives a
+complementary overview of how the study and QC samples relate — useful for
+spotting batch effects, technical outliers, and systematic differences between
+sample types. Here it offers a second, independent view of the candidate outlier
+flagged by the RLA plot.
 
 ```{r pca-before}
-#| fig.alt: >
-#|   PCA plot
+#| fig.cap: !expr fig_cap("PCA of study and QC samples before outlier removal.")
+#| fig.alt: PCA of study and QC samples before outlier removal
 plot_pca(
-  data = myexp, 
-  variable = "feature_intensity", 
-  filter_data = FALSE,
-  pca_dims = c(1,2),
-  labels_threshold_mad = 3, 
+  myexp,
+  variable = "feature_intensity",
   qc_types = c("SPL", "BQC", "TQC"),
-  log_transform = TRUE,  
-  point_size = 2, point_alpha = 0.7, font_base_size = 8, ellipse_alpha = 0.3, 
-  include_istd = FALSE)
+  filter_data = FALSE,
+  pca_dims = c(1, 2),
+  labels_threshold_mad = 3,
+  log_transform = TRUE,
+  include_istd = FALSE,
+  point_size = 2, point_alpha = 0.7, ellipse_alpha = 0.3, font_base_size = 8
+)
 ```
 
-## 10. Exclude technical outliers
+## 10. Excluding technical outliers
 
-Based on the above RLA and PCA plots, we flagged a technical outlier and
-decided to remove it from all downstream processing via the function
-`exclude()`.
-
-<details>
-
-<summary>Exercises</summary>
-
-> What do we now see in the new PCA plot? Explore also different PCA
-> dimensions (by modifying `pca_dims`).
-
-</details>
+With the outlier corroborated by both plots, we remove it from all downstream
+processing using `exclude_analyses()`. The function does not delete any data — it
+sets the sample's `valid_analysis` flag to `FALSE`, so it is simply skipped in
+later steps and can be reinstated at any time. Replotting the PCA lets us confirm
+the effect of the exclusion on the sample structure.
 
 ```{r outlier-removal}
-#| fig.alt: >
-#|   PCA plot
- # Exclude the sample from the processing
-myexp <- exclude_analyses(myexp, analyses = c("Longit_batch6_51"), clear_existing  = TRUE)
+#| fig.cap: !expr fig_cap("PCA after excluding the flagged technical outlier.")
+#| fig.alt: PCA of study and QC samples after excluding the outlier
+myexp <- exclude_analyses(
+  myexp,
+  analyses = "Longit_batch6_51",
+  clear_existing = TRUE
+)
 
-# Replot the PCA
 plot_pca(
-  data = myexp,
+  myexp,
   variable = "intensity",
-  filter_data = FALSE,
-  pca_dims = c(1,2),
-  labels_threshold_mad = 3,
   qc_types = c("SPL", "BQC", "TQC"),
+  filter_data = FALSE,
+  pca_dims = c(1, 2),
+  labels_threshold_mad = 3,
   log_transform = TRUE,
-  point_size = 2, point_alpha = 0.7, font_base_size = 8, ellipse_alpha = 0.3,
   include_istd = FALSE,
-  shared_labeltext_hide = NA)
+  shared_labeltext_hide = NA,
+  point_size = 2, point_alpha = 0.7, ellipse_alpha = 0.3, font_base_size = 8
+)
 ```
 
 ## 11. Response curves
 
-A linear response in quantification is a prerequisite for comparing
-differences in analyte concentrations between samples. Given the
-considerable dynamic range of plasma lipid species abundances and the
-fact that the class-specific ISTD is spiked at a single concentration,
-verifying the linear response can be a valuable aspect of the analytical
-quality assessment. While optimising the injected sample amount is
-primarily a matter of quality assurance (QA), differences in instrument
-performance can affect the dynamic range. Therefore, we measured
-injection volume series at the start and end of this analysis as a QC.
-
-<details>
-
-<summary>Exercises</summary>
-
-> Look at the response curves below. What do we see from these results?
-> Change the plotted lipid species by modifying `include_feature_filter`
-> (it can use regular expressions). Save a PDF of all lipids by setting
-> `output_pdf = TRUE` and commenting out (add a `#` in front of)
-> `include_feature_filter`
-
-</details>
+A linear response is a prerequisite for comparing concentrations between samples.
+Plasma lipid abundances span a wide dynamic range, and because each
+class-specific ISTD is spiked at a single concentration, the response may be
+linear near the ISTD level yet flatten for far more or less abundant species.
+Verifying this is a worthwhile part of the analytical quality assessment, so we
+measured injection-volume series at the start and end of the run as a dedicated
+QC. We first drop the very lowest-abundance features, then plot the curves for a
+subset of PC species; `include_feature_filter` accepts regular expressions, so
+any class or chain-length pattern can be selected.
 
 ```{r responsecurves}
-#| fig.alt: >
-#|   Response curve plots
-# Exclude very low abundant features
-myexp <- mrmhub::filter_features_qc(myexp, 
-                                   include_qualifier = FALSE,
-                                   include_istd = TRUE,
-                                   min.intensity.median.spl = 200)
+#| fig.cap: !expr fig_cap("Response curves for selected PC species over the injection-volume series.")
+#| fig.alt: Response curves for selected PC species
+myexp <- filter_features_qc(
+  myexp,
+  include_qualifier = FALSE,
+  include_istd = TRUE,
+  min.intensity.median.spl = 200
+)
 plot_responsecurves(
-  data = myexp,
+  myexp,
   variable = "intensity",
   filter_data = TRUE,
-  include_feature_filter = "^PC 3[0-5]", # here we use regular expressions
-  output_pdf = FALSE, path = "response-curves.pdf",
-  cols_page = 5, rows_page = 4,
+  include_feature_filter = "^PC 3[0-5]",
+  output_pdf = FALSE,
+  cols_page = 5, rows_page = 4
 )
 ```
 
 ## 12. Isotope interference correction
 
-As demonstrated in the course presentation, there are several instances
-where the peaks of interest were co-integrated with the interfering
-isotope peaks of other lipid species. These interferences can be
-subtracted from the raw intensities (areas) using the below function,
-which uses information from the metadata. The relative abundances
-for the interfering fragments were obtained using LICAR
-(<https://github.com/SLINGhub/LICAR>).
-
-<details>
-
-<summary>Exercises</summary>
-
-> Check the sheet "Features (Analytes)" in the metadata file (folder
-> `data`). Which species were affected? Which information will you need?
-> Why should we correct for M+3 isotope interference?
-
-</details>
+Some peaks of interest are co-integrated with the isotopic peaks of other lipid
+species — for example the M+2 isotope of a species two mass units lighter falling
+in the same transition. `correct_custom_interferences()` subtracts these declared
+contributions from the raw feature intensities, reading which feature interferes
+with which, and by how much, from the metadata; the original values are preserved
+in `feature_intensity_before`. The interference factors here were derived with
+LICAR (<https://github.com/SLINGhub/LICAR>). Inspect the "Features (Analytes)"
+sheet of the metadata file to see which species are affected.
 
 ```{r isotope-correction}
-myexp <- mrmhub::correct_custom_interferences(myexp)
-plot_interference_correction(myexp, qc_types = c("BQC", "SPL", "TQC", "LTR"))
+#| fig.cap: !expr fig_cap("Selected species before and after isotope-interference correction.")
+#| fig.alt: QC plot of species before and after interference correction
+myexp <- correct_custom_interferences(myexp)
+plot_interference_correction(
+  myexp,
+  qc_types = c("BQC", "SPL", "TQC", "LTR")
+)
 ```
 
 ## 13. Normalization and quantification based on ISTDs
 
-The first step is to normalize each lipid species with its corresponding
-internal standard (ISTD). Subsequently, the concentrations are
-calculated based on the volume of the spiked-in ISTD solution, the
-concentration of the ISTDs in this solution, and the sample volume.
-
-<details>
-
-<summary>Exercises</summary>
-
-> Visit the metadata template to view the corresponding details. You can
-> also try to re-run e.g. above RLA and PCA plots with
-> `variable = "norm_intensity"` or `variable = "conc"` to plot the
-> normalized data.
-
-</details>
+Quantification proceeds in two steps. `normalize_by_istd()` divides each lipid's
+peak area by the area of its assigned class-specific internal standard *within
+the same injection*, writing the ratio to `feature_norm_intensity`; this cancels
+most of the injection-to-injection and matrix variation shared by an analyte and
+its ISTD. `quantify_by_istd()` then converts those ratios into absolute
+concentrations from three quantities held in the metadata — the ISTD
+concentration in the spike solution, the spiked volume, and the sample amount —
+and stores the result in `feature_conc`. Because both new variables sit beside
+the raw areas, the RLA and PCA plots above can be rerun on the normalised data
+with `variable = "norm_intensity"` or `variable = "conc"`.
 
 ```{r normalization}
-myexp <- mrmhub::normalize_by_istd(myexp)
-myexp <- mrmhub::quantify_by_istd(myexp)
+#| message: true
+myexp <- normalize_by_istd(myexp)
+myexp <- quantify_by_istd(myexp)
 ```
 
-## 14. Examine the effects of class-wide ISTD normalization
+## 14. Effects of class-wide ISTD normalization
 
-The use of class-specific ISTDs is common practice in lipidomics.
-However, non-authentic internal standards may elute at different times,
-which can result in them being subject to different matrix effects and
-thus different responses compared to the analytes. They may also differ
-in their fragmentation properties, which can also affect the response.
-Consequently, the use of non-authentic ISTDs for normalization can lead
-to the introduction of artefacts, which can manifest as increases in
-sample variability, rather than the expected reduction. It it therefore
-important to assess ISTDs during QA in particular, but also as QC, and
-to consider using alternative ISTDs when observing artefacts. One
-approach to detecting potential ISTD-related artefacts is to compare the
-variability of QC and samples before and after normalization.
-
-<details>
-
-<summary>Exercises</summary>
-
-> What would you expect from such comparisons of CV? Do you notice
-> potential issues with any of the ISTDs below? What could be possible
-> explanations for such an effect? And what would you do in this
-> situation?
-
-</details>
+Class-specific ISTDs are common practice in lipidomics, but they are rarely
+authentic standards for every species they normalise. A non-authentic ISTD may
+elute at a different time, experience different matrix effects, and fragment
+differently, so its response can diverge from that of the analyte. Normalising
+against such an ISTD can then *add* variability rather than remove it. Because a
+good ISTD should reduce the coefficient of variation (CV), comparing the CV of QC
+and study samples before and after normalisation is a direct way to catch a
+misbehaving standard — a class whose CV rises after normalisation is a warning
+sign worth investigating before trusting its concentrations.
 
 ```{r norm-effects}
-#| fig.alt: >
-#|   Normalization QC plot
-myexp <- mrmhub::filter_features_qc(myexp, 
-                                   include_qualifier = FALSE,
-                                   include_istd = TRUE,
-                                   min.intensity.median.spl = 1000)
-mrmhub::plot_normalization_qc(
-  data = myexp, 
-  before_norm_var = "intensity", 
+#| fig.cap: !expr fig_cap("Change in CV per feature after ISTD normalisation, faceted by lipid class.")
+#| fig.alt: Normalization QC plot of CV change per feature by class
+myexp <- filter_features_qc(
+  myexp,
+  include_qualifier = FALSE,
+  include_istd = TRUE,
+  min.intensity.median.spl = 1000
+)
+plot_normalization_qc(
+  myexp,
+  before_norm_var = "intensity",
   after_norm_var = "norm_intensity",
   plot_type = "diff",
-  point_size = 2,
-  facet_by_class = TRUE,
   qc_types = c("TQC", "BQC", "SPL"),
-  y_lim = c(-5, 15))
+  facet_by_class = TRUE,
+  point_size = 2,
+  y_lim = c(-5, 15)
+)
 ```
 
 ## 15. Drift correction
 
-A Gaussian kernel smoothing based on the study samples is used to correct
-for any drifts in the concentration data within each batch. Note that
-study-sample-based smoothing is only appropriate for large, well-randomised
-sample sets; the QC-based convention (Broadhurst et al. 2018) instead fits the
-drift trend on dedicated QC injections. The summary
-returned by the function below is not intended as diagnostics of the fit,
-but rather to indicate whether the fit caused any major artefacts. An
-option to scale along the fit is available by setting `scale_smooth = TRUE`.
+Even after ISTD normalisation, concentrations can drift gradually within a batch
+as the instrument response changes. We correct this with a Gaussian-kernel
+smoother fitted through the study samples in each batch (`batch_wise = TRUE`),
+which suits large, well-randomised sample sets like this longitudinal study;
+`kernel_size` sets the width of the smoothing window. The corrected values
+replace `conc`, the pre-correction values are kept in `conc_before`, and the
+fitted trend in `conc_before_fit`. The summary the function prints is not a formal
+diagnostic of the fit but a quick check — reported as a change in median CV —
+that the correction improved precision without introducing artefacts. A scale
+correction along the fit is available via `scale_smooth = TRUE`.
 
 ```{r drift-corr}
-
-myexp <- mrmhub::correct_drift_gaussiankernel(
-  data = myexp,
-  ignore_istd = TRUE,
+#| message: true
+myexp <- correct_drift_gaussiankernel(
+  myexp,
   variable = "conc",
-  ref_qc_types = c("SPL"),
+  ref_qc_types = "SPL",
+  ignore_istd = TRUE,
   batch_wise = TRUE,
   replace_previous = TRUE,
   recalc_trend_after = TRUE,
   kernel_size = 10,
-  #conditional_correction = 
   outlier_filter = FALSE,
   outlier_ksd = 5,
   location_smooth = TRUE,
-  scale_smooth = FALSE, 
-  show_progress = FALSE  # set to FALSE when rendering
+  scale_smooth = FALSE,
+  show_progress = FALSE
 )
 ```
 
-In order to demonstrate the correction, we will plot an example (PC
-40:8) before and after the drift and batch correction. As we will be
-using the same plot on several occasions, we create a simple function
-that wraps the plot with many parameters preset.
+To see the effect, we plot one example species (PC 40:8) before and after
+correction. Since we reuse the same plot several times, we wrap it in a small
+function with the recurring parameters preset; `variable` selects which stage to
+show (`conc_before` or `conc`) and `feature` which species.
 
 ```{r trendplot-fun}
-#| fig.alt: >
-#|   RunScatter plots with trends before and after corrections
-# Define a wrapper function
-my_trend_plot <- function(variable, feature){
+my_trend_plot <- function(variable, feature) {
   plot_runscatter(
-    data = myexp,
+    myexp,
     variable = variable,
     qc_types = c("BQC", "TQC", "SPL"),
     include_feature_filter = feature,
@@ -511,141 +430,98 @@ my_trend_plot <- function(variable, feature){
     log_scale = FALSE,
     show_trend = TRUE,
     output_pdf = FALSE,
-    path = "./output/runscatter_PC408_beforecorr.pdf",
-    cols_page = 1, rows_page = 1, 
+    cols_page = 1, rows_page = 1
   )
 }
 ```
 
-<details>
-
-<summary>Exercises</summary>
-
-> Use the function defined above to plot the trends of one
-> selected example before and after within-batch smoothing. What may
-> have caused such a drift in the raw concentrations? Do the QC samples
-> follow the trend of the sample? Look also at other lipid species.
->
-> Try changing `batch_wise = FALSE` in the code chunk above with
-> `correct_drift_gaussiankernel()` to run the run the smoothing across
-> all batches. Would this be a valid alternative? NOTE: don't forget to
-> change back to `batch_wise = TRUE` after the test.
-
-</details>
-
-```{r plot-trends}
-#| fig.alt: >
-#|   RunScatter plots with trends before after corrections  
+```{r plot-trend-before}
+#| fig.cap: !expr fig_cap("PC 40:8 raw concentrations before drift correction, with the fitted within-batch trend.")
+#| fig.alt: RunScatter of PC 40:8 concentrations before drift correction
 my_trend_plot("conc_before", "PC 40:8")
+```
+
+```{r plot-trend-after}
+#| fig.cap: !expr fig_cap("PC 40:8 concentrations after within-batch drift correction.")
+#| fig.alt: RunScatter of PC 40:8 concentrations after drift correction
 my_trend_plot("conc", "PC 40:8")
 ```
 
 ## 16. Batch-effect correction
 
-As we observed, the trend lines of the different batches are not
-aligned. We will use `correct_batch_centering()` to correct for median
-center (location) and scale differences between the batches. The define
-that the correction should be based on the study samples medians. An
-optional scale correction can be performed by setting
-`correct_scale = TRUE`. After the correction we directly plot our
-example lipid species again.
-
-<details>
-
-<summary>Exercises</summary>
-
-> Change the sample type to `qc_type = "BQC"` to use the BQC to center
-> the batches. What do you observe?
-
-</details>
+Drift correction flattens the trend inside each batch but leaves the batches at
+different levels, since each is fitted independently. `correct_batch_centering()`
+aligns them by shifting every batch to a common median, computed from the study
+samples (`ref_qc_types = "SPL"`); `correct_scale = TRUE` additionally equalises
+the between-batch spread. As with drift correction, the aligned values replace
+`conc` and the previous ones are retained in `conc_before`. We replot the example
+species to confirm the batches now line up.
 
 ```{r batch-effect-corr}
-#| fig.alt: >
-#|   RunScatter plots with trends after corrections
-myexp <- mrmhub::correct_batch_centering(
-  myexp, 
+#| fig.cap: !expr fig_cap("PC 40:8 after drift correction followed by batch centering; batch trends are aligned.")
+#| fig.alt: RunScatter of PC 40:8 after batch centering
+myexp <- correct_batch_centering(
+  myexp,
   variable = "conc",
   ref_qc_types = "SPL",
   replace_previous = TRUE,
-  correct_location = TRUE, 
-  correct_scale = TRUE, 
-  log_transform_internal = TRUE)
+  correct_location = TRUE,
+  correct_scale = TRUE,
+  log_transform_internal = TRUE
+)
 
 my_trend_plot("conc", "PC 40:8")
 ```
 
-## 17. Saving *runscatter* plots of all features as PDF
+## 17. Saving runscatter plots of all features as PDF
 
-For additional inspection and documentation, we can save plots for all
-or a selected subset of species. It is often preferable to exclude
-blanks, as they can exhibit random concentrations when signals of
-features and internal standards are in close proximity or below the
-limit of detection. The corresponding PDF can be accessed within the
-`output` subfolder. Use `filt_` arguments to include or exclude specific
-analytes. The filter can use regular expressions (regex). A language
-model such as ChatGPT can assist in generating more complex regex-based
-filters; see [Writing Pipelines with AI Assistants](manual-09-ai-assistants.html)
-for how to use LLMs with MRMhub effectively.
-
-<details>
-
-<summary>Exercises</summary>
-
-Explore the effect of setting `cap_outliers` to `TRUE`or `FALSE`. Run
-`?runscatter` in the console or press `F2` on the function name to see
-all available options for `plot_runscatter()`.
-
-</details>
+For a full record it helps to save runscatter plots for every species, or a
+chosen subset, to a multi-page PDF in the `output` subfolder. Blanks are usually
+worth excluding, as they can show erratic concentrations when feature and ISTD
+signals sit close together or below the limit of detection. The
+`include_feature_filter` and `exclude_feature_filter` arguments select analytes
+and both accept regular expressions, which a language model can help you
+construct for more intricate patterns.
 
 ```{r saving-runscatter}
 #| eval: false
-#| fig.alt: >
-#|   Runscatter plot
 plot_runscatter(
-  data = myexp,
+  myexp,
   variable = "conc",
   qc_types = c("BQC", "TQC", "SPL"),
-  include_feature_filter =  NA,
+  include_feature_filter = NA,
   exclude_feature_filter = "ISTD",
   cap_outliers = TRUE,
   log_scale = FALSE,
   show_trend = TRUE,
   output_pdf = TRUE,
   path = "./output/runscatter_after-drift-batch-correction.pdf",
-  cols_page = 2, 
-  rows_page = 2,
+  cols_page = 2, rows_page = 2,
   show_progress = TRUE
 )
 ```
 
 ## 18. QC-based feature filtering
 
-Finally, we apply a set of filters to exclude features that don't meet
-specific QC criteria. The available criteria can be seen by pressing
-`TAB` after the first open bracket of `filter_features_qc()` function,
-or by to viewing the help page. by running `?filter_features_qc` in the
-console. The filter function can be applied multiple times, either
-overwriting or amending (`clear_existing = FALSE`) previously set
-filters.
-
-<details>
-
-<summary>Exercises</summary>
-
-> Explore the effects of the different filtering criteria and filtering
-> thresholds. The plot below in section 17 can be run in order to
-> examine the effects visually.
-
-</details>
+The final curation step removes features that fail defined QC criteria.
+`filter_features_qc()` combines several: the quality of the response curves
+(minimum r², slope, and maximum y-intercept), the signal-to-blank ratio against
+process blanks, the absolute signal level as a proxy for the limit of detection,
+and the precision in the batch QCs (`max.cv.conc.bqc`). The criteria are applied
+*hierarchically* — a feature counts as failing CV only once it has passed the S/B
+and signal filters — and `features.to.keep` retains named species regardless. The
+filter can be run repeatedly, overwriting or, with `clear_existing = FALSE`,
+amending the previous set.
 
 ```{r qc-filter}
+#| message: true
 myexp <- filter_features_qc(
-  data = myexp, 
+  myexp,
   clear_existing = TRUE,
   use_batch_medians = TRUE,
   include_qualifier = FALSE,
   include_istd = FALSE,
-  response.curves.selection = c(1,2),
+  response.curves.selection = c(1, 2),
   response.curves.summary = "mean",
   min.rsquare.response = 0.8,
   min.slope.response = 0.75,
@@ -653,150 +529,104 @@ myexp <- filter_features_qc(
   min.signalblank.median.spl.pblk = 10,
   min.intensity.median.spl = 100,
   max.cv.conc.bqc = 25,
-  features.to.keep = c("CE 20:4", "CE 22:5", "CE 22:6", "CE 16:0", "CE 18:0")
+  features.to.keep = c(
+    "CE 20:4", "CE 22:5", "CE 22:6", "CE 16:0", "CE 18:0"
+  )
 )
 ```
 
 ## 19. Summary of the QC filtering
 
-The plot below provides an overview of the data quality and the feature
-filtering. The segments in green indicate the number of species that
-passed all previously defined quality control (QC) filtering criteria.
-The rest are the number of species that failed the different filtering
-criteria. It should be noted that the criteria are hierarchically
-organised; a feature is only classified as failing a criterion (e.g.,
-`CV`) when it has passed the hierarchically lower filters (e.g., `S/B`
-and `LOD`).
+The plot below summarises the filtering per lipid class. Green segments count the
+species that passed every criterion; the remaining segments count those that
+failed each one. Because the criteria are hierarchical, a species is attributed
+to the *first* filter it fails (for example `CV`), having already cleared the
+lower ones (`S/B`, `LOD`) — so the counts partition the features rather than
+double-counting them.
 
-<details>
-
-<summary>Exercises</summary>
-
-> Are there any differences between lipid classes in terms of their
-> analytical performance? What are the identified QC issues and what are
-> possible explanations for these? What could be the implications if you
-> want to run the next analysis?
-
-</details>
-
-```{r qc-summary-1}
-#| fig.alt: >
-#|   Feature QC filter plot by class
-mrmhub::plot_qc_summary_byclass(myexp) 
+```{r qc-summary-byclass}
+#| fig.cap: !expr fig_cap("Feature QC filtering outcome per lipid class; green marks species passing all criteria.")
+#| fig.alt: Feature QC filter summary by lipid class
+plot_qc_summary_byclass(myexp)
 ```
 
-The following plot provides a further summary of the feature filtering
-process, indicating the total number of features that have been
-successfully filtered. As previously stated, the classification is based
-on the hierarchical application of filters. The Venn diagram on the
-right illustrates the number of features that have been excluded by a
-particular filtering criterion.
+The next plot gives the same picture across all features, with the total retained,
+and adds a Venn diagram showing how many features each individual criterion
+excluded — and where those exclusions overlap.
 
-<details>
-
-<summary>Exercises</summary>
-
-> Take a look at the Venn diagram. If a feature shows a bad or
-> non-linear response (e.g. r2 \< 0.8), what could be the reasons for
-> this?
-
-</details>
-
-```{r qc-summary-2}
-#| fig.alt: >
-#|   Feature QC filter plot overall
-mrmhub::plot_qc_summary_overall(myexp)
+```{r qc-summary-overall}
+#| fig.cap: !expr fig_cap("Overall feature filtering summary with a Venn diagram of exclusion criteria.")
+#| fig.alt: Overall feature filter summary with Venn diagram
+plot_qc_summary_overall(myexp)
 ```
 
+## 20. Lipidome profile
 
-## 20. Lipidome Profile
-
-As a final overview, the feature concentration profile of the filtered dataset is shown below. Validating the concentrations, for example, those of the most abundant species, the summed concentrations per lipid class, or the ratios between lipid classes, against in-house reference values or literature data helps ensure that the quantification is within expected ranges and that no major quantification errors are present.
+As a final sanity check, we plot the concentration profile of the filtered
+dataset. Comparing these values — the most abundant species, the summed
+concentration per class, or the ratios between classes — against in-house
+reference ranges or the literature is the quickest way to confirm that
+quantification landed in a plausible range and that no gross errors slipped
+through.
 
 ```{r lipidprofile}
+#| fig.cap: !expr fig_cap("Concentration profile of the filtered study-sample lipidome.")
+#| fig.alt: Concentration profile of the filtered lipidome
 plot_abundanceprofile(
-  data = myexp,
-  log_scale = TRUE,
-  filter_data = TRUE,
-  variable = "conc", 
+  myexp,
+  variable = "conc",
   qc_types = "SPL",
-  #x_lim = c(-6, 2),
+  filter_data = TRUE,
+  log_scale = TRUE,
   x_label = NA,
-  feature_map = "lipidomics")
+  feature_map = "lipidomics"
+)
 ```
 
 ## 21. Saving a report with data, metadata and processing details
 
-A detailed summary of the data post-processing can be generated in the
-form of an formatted `Excel` workbook comprising multiple sheets, each
-containing raw and processed datasets, associated metadata, feature
-quality control metrics, and information about the applied processing
-steps.
-
-<details>
-
-<summary>Exercises</summary>
-
-> Explore the report that was saved in the `output` folder.
-
-</details>
+The full post-processing can be written to a formatted Excel workbook, with
+separate sheets for the raw and processed datasets, the associated metadata, the
+per-feature QC metrics, and a record of the processing steps applied — a
+self-contained account of how the numbers were produced.
 
 ```{r save-report}
-mrmhub::save_report_xlsx(myexp, path = tempfile(fileext = ".xlsx"))
+#| message: true
+save_report_xlsx(myexp, path = tempfile(fileext = ".xlsx"))
 ```
 
-Specific data subsets can also be saved as a clean flat, wide CSV file.
-This is the format used to share the data for the statistical analysis
-presented in the next part of this workshop.
-
-<details>
-
-<summary>Exercises</summary>
-
-> Specify which data to export using function arguments and check the
-> generated CSV files.
-
-</details>
+For downstream statistics it is often easier to export a single flat, wide CSV of
+a chosen data subset. This is the format used to share the data for the
+statistical analysis in the next part of the workshop.
 
 ```{r save-csv}
-mrmhub::save_dataset_csv(
-  data = myexp, 
+save_dataset_csv(
+  myexp,
   path = tempfile(fileext = ".csv"),
-  variable = "conc", 
-  qc_types = "SPL", 
+  variable = "conc",
+  qc_types = "SPL",
   include_qualifier = FALSE,
-  filter_data = TRUE)
+  filter_data = TRUE
+)
 ```
 
-## 22. Sharing the `MRMhubExperiment` dataset
+## 22. Sharing the MRMhubExperiment dataset
 
-The `myexp` object can be saved as an `RDS` file and shared. `RDS` files
-are serialized R variables/objects that can be opened in R by anyone,
-even in the absence of `mrmhub` package. The imported `MRMhubExperiment`
-object can also be used for re-processing, plotting, or inspection
-using the `mrmhub` package.
-
-<details>
-
-<summary>Exercises</summary>
-
-> Save the dataset to the disk and re-open it under a different name.
-> Check the status comparing it with the dataset generated in the
-> workflow above (`mexp`)
-
-</details>
+Finally, the whole `myexp` object can be serialized to an `RDS` file and shared.
+`RDS` files open in any R session — even without the mrmhub package installed —
+and the saved `MRMhubExperiment` can be reloaded for further processing,
+replotting, or inspection with mrmhub.
 
 ```{r save-rds}
-path = tempfile(fileext = ".rds")
+path <- tempfile(fileext = ".rds")
 saveRDS(myexp, file = path, compress = TRUE)
 my_saved_exp <- readRDS(file = path)
-print(myexp)
+print(my_saved_exp)
 ```
 
 ## Next steps
 
-- [Drift and Batch Correction](tutorial-04-drift-correction.html) — correction methods and diagnostics
-- [Exploring QC: RunScatter and PCA](tutorial-05-run-scatter.html) — QC visualisation in depth
-- [Interference Correction](tutorial-11-interference-correction.html) — correcting isotopic/isobaric overlap
-- [External Calibration & QC](recipe-01-ext-calibration-qc.html) — quantitation with calibration curves
-- [External Calibration & QC](recipe-01-ext-calibration-qc.html) — quantify with external calibration curves
+- [Drift and batch correction](tutorial-04-drift-correction.html) — correction methods and diagnostics in depth
+- [RunScatter and PCA QC exploration](tutorial-05-run-scatter.html) — QC visualisation in depth
+- [Interference correction](tutorial-11-interference-correction.html) — correcting isotopic and isobaric overlap
+- [External calibration & QC](recipe-01-ext-calibration-qc.html) — quantify with external calibration curves
