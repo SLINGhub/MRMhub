@@ -139,7 +139,7 @@ In the final step, the algorithm goes through the transitions to finalise the in
 
 For the simple case of unimodal ion traces, the user can set the `peak_width` parameter quartet
 `[w, x, y, z]` to define the default start and end integration points. This can be customised for
-individual analytes with a `peak width` column in the transition-list table. The user can also set
+individual analytes with a `peak_width` column in the transition-list table. The user can also set
 the `uniform_width` option (its own column in the transition table) so that the integration width
 remains the same between samples for a given transition, and can set fixed **left/right integration
 bounds** to fix the integration points with respect to the reference samples.
