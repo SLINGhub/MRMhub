@@ -72,7 +72,7 @@ INTEGRATOR processes a prepared analysis project in four steps, using a terminal
 A project with executables, `mzML` files, and the input files is assembled as detailed in [Installation](setup.qmd) and [Input Files](input-files.qmd). Before launching the integration, confirm:
 
 - Every mzML file is listed in the sample list, named exactly (`.mzML`, case-sensitive).
-- The CSV files keep the template column order, with all required columns filled.
+- The CSV files include the required column headers, named exactly, with all required columns filled.
 - Precursor/product *m/z* fall within `mz_tol`; RT in **minutes**.
 - `reference` samples are defined in the `run_order.csv`.
 

@@ -13,6 +13,7 @@ list every case — for peak-integration problems in particular, see
 
 - [The application will not open](#wont-open)
 - [Integration results are incorrect or implausible](#csv-misread)
+- [INTEGRATOR reports a "column not found" error](#col-not-found)
 - [Validation wrote no report files](#no-report)
 - [A changed parameter has no effect on the integration](#no-effect)
 - [MRMhub closes immediately on start](#crash-start)
@@ -74,14 +75,24 @@ files in the same folder. See [mzML Conversion](msconvert.qmd).
 
 ### Q: After editing a CSV, integration results are incorrect or implausible {#csv-misread}
 
-**A:** The CSV files are read **by column position, not by header name**, so a reordered, inserted, or
-deleted column is read into the wrong field **with no error** — the run completes, but the values are
-wrong. Restore the template column order ([details](input-files.qmd#column-order-warning)). Spreadsheet
-editors corrupt these files the same silent way: dropped leading zeros, values like `16:0` coerced to
-dates (format the cells as text), a semicolon delimiter from a non-English locale, a UTF-8 byte-order
-mark that breaks the first header, and stray trailing spaces or blank rows. File names must also match
-the mzML files exactly (`.mzML` extension, correct case). When results look wrong, reopen the CSV in a
-plain-text editor and compare it column-for-column with the template.
+**A:** Columns are matched by **header name**, so a renamed or misspelled required column stops the run
+with an explicit error rather than being silently misread (see
+[the "column not found" error](#col-not-found)). Plausible-but-wrong results instead come from
+spreadsheet editors corrupting the cell **values**: dropped leading zeros, values like `16:0` coerced
+to dates (format the cells as text), a semicolon delimiter from a non-English locale, a UTF-8
+byte-order mark that breaks the first header, and stray trailing spaces or blank rows. File names must
+also match the mzML files exactly (`.mzML` extension, correct case). When results look wrong, reopen
+the CSV in a plain-text editor and compare the values against the template.
+
+### Q: INTEGRATOR reports a "column not found" error {#col-not-found}
+
+**A:** `run_order.csv` and `feature_list.csv` are read by matching the **header row**, so a required
+column whose name INTEGRATOR cannot find stops the run with a `<name> column not found!` message. The
+usual causes are a misspelled or renamed header, a deleted column, or a stray space inserted **inside**
+a name (`Feature ID` is read as `Feature` and no longer matches `Feature_ID`). Column *order* does not
+matter. Restore the exact header names from the [templates](https://github.com/SLINGhub/MRMhub/releases)
+— the required names are listed in [Input Files](input-files.qmd#sample-list-run_order.csv) (matching
+is case-insensitive).
 
 ### Q: Which input files are required, and can they be renamed? {#file-names}
 
@@ -184,8 +195,8 @@ sample's RT shift, so they appear to wobble. See [Tuning Peak Integration](tunin
 - **The value is in the wrong format** — check brackets, commas, and sign (see the
   [peak-width](#peakwidth-brackets) and [RT-shift](#rtshift-zero) notes).
 - **The change is too small** to alter the result — try a larger adjustment.
-- **A column no longer matches the template order**, so the value is read into the wrong field (see
-  [a shifted CSV column](#csv-misread)).
+- **A required column header is misspelled or missing**, so the edited value never reaches INTEGRATOR
+  (this now stops the run — see [the "column not found" error](#col-not-found)).
 
 ### Q: I edited an input file — what must be re-run? {#what-to-rerun}
 

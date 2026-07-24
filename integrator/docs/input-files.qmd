@@ -17,21 +17,14 @@ INTEGRATOR is configured through the following three input files, which specify 
 
 Each file is specified in detail below. See the [Algorithm](algorithm.qmd) for how these settings drive detection and integration.
 
-<!--
-::: {#column-order-warning .callout-important}
-## Do not change the column order of the template input tables
-
-INTEGRATOR reads `run_order.csv` and `feature_list.csv` **by column position**, not by header name. Reordering, deleting, or inserting columns will therefore be **misinterpreted**, potentially **without any
-warning or error**. The `param.txt` is, however, order-independent. Use the [templates](https://github.com/SLINGhub/MRMhub/releases) as a starting point to ensure the correct column order.
-:::
--->
+`run_order.csv` and `feature_list.csv` are read by matching the **header row**: columns may appear in any order, but each required column name below must be present exactly (matching is case-insensitive; avoid inserting spaces inside a name). A missing required column stops the run with a `<name> column not found!` error. `param.txt` is likewise read by name. Use the [templates](https://github.com/SLINGhub/MRMhub/releases) as a starting point.
 
 ### Global parameters (`param.txt`)
 
 `param.txt` (the name is fixed) holds the global parameters that direct INTEGRATOR to the input and data files and control
 peak detection and integration. It must reside in the same folder as the MRMhub executable.
 
-![The `param.txt` file from [an example lipidomics dataset](https://slinghub.github.io/MRMhub-workflows/Dataset3.html)](images/paste-7.png){fig-align="center" width="70%" fig-alt="Screenshot of a param.txt file listing key = value parameter lines: mzML_files, batch_info, transition_list, peak_width, num_threads, mz_tol, RT_tol, RT_shift, RT_shift_bound, and crop_window, each with an assigned value."}
+![The `param.txt` file from [an example lipidomics dataset](https://slinghub.github.io/MRMhub-workflows/Dataset3.html)](images/param.txt.png){fig-align="center" width="70%" fig-alt="Screenshot of a param.txt file listing key = value parameter lines: mzML_files, batch_info, transition_list, peak_width, num_threads, mz_tol, RT_tol, RT_shift, RT_shift_bound, and crop_window, each with an assigned value."}
 
 | Parameter | Description |
 |---|---|
@@ -59,7 +52,7 @@ overrides in `feature_list.csv` (below) — for individual difficult peaks. See
 The sample list defines the data files to process, in processing order (top to bottom). mzML files
 present in the data folder but not listed here are ignored. Required columns are shown in **bold**.
 
-![A portion of the sample list from [an example lipidomics dataset](https://slinghub.github.io/MRMhub-workflows/Dataset3.html)](images/paste-8.png){fig-align="center" width="50%" fig-alt="Screenshot of a run_order.csv sample list with columns file_name, batch, sample_type, and reference. Two early BQC rows carry an x in the reference column marking them as retention-time anchors."}
+![A portion of the sample list from [an example lipidomics dataset](https://slinghub.github.io/MRMhub-workflows/Dataset3.html)](images/sample_list.png){fig-align="center" width="50%" fig-alt="Screenshot of a run_order.csv sample list with columns file_name, batch, sample_type, and reference. Several QC rows (TQC and BQC) carry an x in the reference column marking them as retention-time anchors; study samples (SPL) are left blank."}
 
 | Column | Description |
 |---|---|
@@ -75,9 +68,7 @@ The transition/feature list specifies the transitions to process and the feature
 each. Transitions present in the mzML files but not listed here are ignored. Multiple features may be
 defined for one transition. Required columns are shown in **bold**.
 
-<!-- TODO: add feature_list.csv screenshot leading this section (none available yet). Drop the image at
-images/feature_list.png and enable:
-![A portion of the feature list from [an example lipidomics dataset](https://slinghub.github.io/MRMhub-workflows/Dataset3.html).](images/feature_list.png){fig-align="center" width="70%" fig-alt="Screenshot of a feature_list.csv with columns Compound Name, Transition Name, ISTD, Precursor Ion, Product Ion, RT, and the optional per-feature integration columns."} -->
+![A portion of the feature list from [an example lipidomics dataset](https://slinghub.github.io/MRMhub-workflows/Dataset3.html)](images/feature_list.png){fig-align="center" width="70%" fig-alt="Screenshot of a feature_list.csv with columns Feature_ID, Transition_Name, ISTD_Feature_ID, Precursor_Ion, Product_Ion, RT, and the optional per-feature integration columns uniform_width, start_RT, end_RT, peak_width, baseline, chromatogram_index, and Remarks."}
 
 | Column | Description |
 |---|---|
