@@ -96,6 +96,25 @@ this choice.
 The results of the regression and the calculated LoD and LoQ values are
 stored in the \code{metrics_calibration} table of the returned \code{MRMhubExperiment}
 object.
+\subsection{Calibration coefficient columns}{
+
+The fitted curve is stored in \strong{ascending} power order, following R's
+\code{lm()} / \code{poly()} convention. The model is
+
+\code{response = coef_a + coef_b * x + coef_c * x^2}
+\itemize{
+\item \code{coef_a} — intercept (0th-order term, \code{x^0})
+\item \code{coef_b} — 1st-order (linear) coefficient (\code{x^1}); the slope of a linear fit
+\item \code{coef_c} — 2nd-order (quadratic) coefficient (\code{x^2}); \code{NA} for a linear fit
+}
+
+Only linear and quadratic models are fitted, so there are no higher-order
+terms. This ascending order is the \strong{reverse} of the descending
+\code{a*x^2 + b*x + c} form printed by some vendor software (e.g. Agilent
+MassHunter, where \code{a} is the quadratic term). When comparing against such an
+export, match coefficients by power (\code{coef_a} = intercept, \code{coef_c} = \code{x^2}),
+not by letter.
+}
 }
 \references{
 ICH Harmonised Tripartite Guideline. Validation of Analytical Procedures:

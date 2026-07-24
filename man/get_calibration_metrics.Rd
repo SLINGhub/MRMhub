@@ -44,14 +44,20 @@ See its documentation for details.
 fit this is the weighted coefficient of determination (computed from weighted
 sums of squares), matching the value reported by vendor software such as
 Agilent MassHunter for the same weighted curve.
-\item \code{coef_a}: Intercept of the regression line
-\item \code{coef_b}: Slope of the regression line in \strong{linear} models, or coefficient of the linear term (\code{x}) in \strong{quadratic} models.
-\item \code{coef_c}: Coefficient of the quadratic term (\code{x^2}) in \strong{quadratic} models. Returns \code{NA} for \strong{linear} models.
+\item \code{coef_a}: \strong{Intercept} (0th-order term, \code{x^0}) of the fitted curve.
+\item \code{coef_b}: \strong{1st-order} (linear, \code{x^1}) coefficient — the slope in a \strong{linear} fit, or the linear term in a \strong{quadratic} fit.
+\item \code{coef_c}: \strong{2nd-order} (quadratic, \code{x^2}) coefficient in \strong{quadratic} fits. Returns \code{NA} for \strong{linear} fits.
 \item \code{sigma}: Standard deviation of residuals.
 \item \code{reg_failed}: \code{TRUE} if regression fitting failed.
 \item \code{LoD} = 3.3× the sample standard error of residuals / slope of the regression (see Notes).
 \item \code{LoQ} = 10× the sample standard error of residuals / slope of the regression (see Notes).
 }
+
+The coefficients describe the curve in \strong{ascending} power order (R's
+\code{lm()} / \code{poly()} convention): \code{response = coef_a + coef_b * x + coef_c * x^2}.
+This is the reverse of the descending \code{a*x^2 + b*x + c} form used by some
+vendor software (e.g. Agilent MassHunter, where \code{a} is the \code{x^2} term), so
+when comparing against such an export, match by power, not by letter.
 
 \strong{Note:} LoD/LoQ follow the ICH Q2(R1/R2) approach (3.3 sigma / S and
 10 sigma / S). The slope \code{S} is the slope of the calibration curve at zero

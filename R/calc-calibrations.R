@@ -317,6 +317,24 @@ quantify_by_calibration <- function(
 #' stored in the `metrics_calibration` table of the returned `MRMhubExperiment`
 #' object.
 #'
+#' ## Calibration coefficient columns
+#'
+#' The fitted curve is stored in **ascending** power order, following R's
+#' `lm()` / `poly()` convention. The model is
+#'
+#' `response = coef_a + coef_b * x + coef_c * x^2`
+#'
+#' - `coef_a` — intercept (0th-order term, `x^0`)
+#' - `coef_b` — 1st-order (linear) coefficient (`x^1`); the slope of a linear fit
+#' - `coef_c` — 2nd-order (quadratic) coefficient (`x^2`); `NA` for a linear fit
+#'
+#' Only linear and quadratic models are fitted, so there are no higher-order
+#' terms. This ascending order is the **reverse** of the descending
+#' `a*x^2 + b*x + c` form printed by some vendor software (e.g. Agilent
+#' MassHunter, where `a` is the quadratic term). When comparing against such an
+#' export, match coefficients by power (`coef_a` = intercept, `coef_c` = `x^2`),
+#' not by letter.
+#'
 #' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] object containing the data to be used for
 #'   calibration.
 #' @param variable A character string specifying the variable for calibration.
@@ -973,13 +991,19 @@ get_qc_bias_variability <- function(
 #'   fit this is the weighted coefficient of determination (computed from weighted
 #'   sums of squares), matching the value reported by vendor software such as
 #'   Agilent MassHunter for the same weighted curve.
-#' - `coef_a`: Intercept of the regression line
-#' - `coef_b`: Slope of the regression line in **linear** models, or coefficient of the linear term (`x`) in **quadratic** models.
-#' - `coef_c`: Coefficient of the quadratic term (`x^2`) in **quadratic** models. Returns `NA` for **linear** models.
+#' - `coef_a`: **Intercept** (0th-order term, `x^0`) of the fitted curve.
+#' - `coef_b`: **1st-order** (linear, `x^1`) coefficient — the slope in a **linear** fit, or the linear term in a **quadratic** fit.
+#' - `coef_c`: **2nd-order** (quadratic, `x^2`) coefficient in **quadratic** fits. Returns `NA` for **linear** fits.
 #' - `sigma`: Standard deviation of residuals.
 #' - `reg_failed`: `TRUE` if regression fitting failed.
 #' - `LoD` = 3.3× the sample standard error of residuals / slope of the regression (see Notes).
 #' - `LoQ` = 10× the sample standard error of residuals / slope of the regression (see Notes).
+#'
+#' The coefficients describe the curve in **ascending** power order (R's
+#' `lm()` / `poly()` convention): `response = coef_a + coef_b * x + coef_c * x^2`.
+#' This is the reverse of the descending `a*x^2 + b*x + c` form used by some
+#' vendor software (e.g. Agilent MassHunter, where `a` is the `x^2` term), so
+#' when comparing against such an export, match by power, not by letter.
 #'
 #' **Note:** LoD/LoQ follow the ICH Q2(R1/R2) approach (3.3 sigma / S and
 #' 10 sigma / S). The slope `S` is the slope of the calibration curve at zero

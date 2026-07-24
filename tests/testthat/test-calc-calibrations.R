@@ -135,6 +135,49 @@ test_that("calc_calibration_results LoD/LoQ use the slope at zero (ICH Q2)", {
   expect_equal(res$loq_cal_1, 10 * res$sigma_cal_1 / res$coef_b_cal_1)
 })
 
+test_that("calc_calibration_results maps coef_a/b/c to intercept/linear/quadratic (ascending)", {
+  # Guard the stored coefficient order: a fitted quadratic is
+  # `response = coef_a + coef_b*x + coef_c*x^2` (ascending power, R's lm/poly
+  # convention). Truth values are deliberately distinct and non-swappable
+  # (intercept 0.1, slope 5, curvature 0.02) so a silent x^2 <-> intercept flip
+  # (the descending vendor-export convention) cannot slip through: the linear
+  # term and R^2 would still match, but coef_a/coef_c would not.
+  a0 <- 0.1
+  b1 <- 5
+  c2 <- 0.02
+
+  mexp_known <- mexp_norm
+  target <- mexp_norm@dataset |>
+    dplyr::filter(qc_type == "CAL", !is_istd, is_quantifier) |>
+    dplyr::slice(1) |>
+    dplyr::pull(feature_id)
+
+  ds <- mexp_known@dataset
+  cal_idx <- which(ds$feature_id == target & ds$qc_type == "CAL" & !ds$is_istd)
+  conc <- dplyr::inner_join(
+    ds[cal_idx, c("sample_id", "analyte_id")],
+    mexp_known@annot_qcconcentrations,
+    by = c("sample_id", "analyte_id")
+  )$concentration
+  # Overwrite the CAL responses so they lie exactly on the known parabola.
+  ds$feature_norm_intensity[cal_idx] <- a0 + b1 * conc + c2 * conc^2
+  mexp_known@dataset <- ds
+
+  res <- suppressMessages(calc_calibration_results(
+    mexp_known,
+    fit_overwrite = TRUE,
+    fit_model = "quadratic",
+    fit_weighting = "none",
+    ignore_missing_annotation = TRUE
+  ))
+  coefs <- get_calibration_metrics(res) |>
+    dplyr::filter(feature_id == target)
+
+  expect_equal(coefs$coef_a, a0) # intercept, NOT the x^2 term
+  expect_equal(coefs$coef_b, b1) # 1st-order (linear) term
+  expect_equal(coefs$coef_c, c2) # 2nd-order (quadratic) term
+})
+
 test_that("calc_calibration_results lod_sigma = 'intercept' uses the intercept SE", {
   # Default (residual SE, Sy/x): current behaviour.
   res_resid <- calc_calibration_results(
