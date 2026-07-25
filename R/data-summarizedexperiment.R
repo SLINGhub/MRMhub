@@ -18,7 +18,7 @@
 #' `LipidomicsExperiment` for use with
 #' [lipidr](https://www.lipidr.org). This opens the experiment to the
 #' Bioconductor ecosystem - `limma` for differential abundance, `POMA` and `pmp`
-#' for preprocessing, `ComplexHeatmap` for visualization.
+#' for preprocessing.
 #'
 #' @details
 #' **Layout.** Features are rows and analyses are columns, following the

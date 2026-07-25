@@ -83,7 +83,6 @@ check_setup <- function(verbose = TRUE) {
     "testthat",
     "patchwork",
     "ggrepel",
-    "ComplexHeatmap",
     "rgoslin",
     "lancer",
     "enviPat",
