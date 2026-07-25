@@ -15,10 +15,13 @@ plot_rt_vs_chain(
   include_qualifier = FALSE,
   robust_regression = TRUE,
   cols_page = 5,
-  point_size = 2,
+  point_size = NULL,
   point_alpha = 0.9,
   line_transparency = 0.5,
-  font_base_size = 8
+  font_base_size = NULL,
+  autoscale = TRUE,
+  legend_position = "right",
+  legend_size = NULL
 )
 }
 \arguments{
@@ -52,8 +55,25 @@ fitted line and the median RT of the feature. The value is used to flag outliers
 
 \item{line_transparency}{Alpha transparency of the regression lines. Default is 0.9}
 
-\item{font_base_size}{Numeric. Base font size (in points) for plot text.
-Default is 8.}
+\item{font_base_size}{Numeric. Base font size (in points) for plot text; all
+plot text scales proportionally with this value. See the function's default
+in the Usage section above.}
+
+\item{autoscale}{Logical. When \code{TRUE} (default), \code{font_base_size} and
+\code{point_size} left as \code{NULL} are sized automatically from \code{cols_page} (more
+facet columns per page give smaller text and points). Any value passed
+explicitly always takes precedence. When \code{FALSE}, unset sizes fall back to
+the single-plot defaults.}
+
+\item{legend_position}{Optional legend placement. One of \code{"right"},
+\code{"left"}, \code{"top"}, \code{"bottom"}, \code{"none"}; a corner keyword \code{"inside-tr"},
+\code{"inside-tl"}, \code{"inside-br"}, \code{"inside-bl"}; or a numeric \code{c(x, y)} in
+\verb{[0, 1]} coordinates. \code{NULL} (default) keeps the current placement.}
+
+\item{legend_size}{Optional single multiplier of \code{font_base_size} (when
+\verb{<= 3}) or absolute point size (when \verb{> 3}) that scales the whole legend:
+text, title, key and the plotted symbols. \code{NULL} (default) leaves the
+legend unchanged.}
 }
 \value{
 A \code{ggplot} object representing faceted scatter plots

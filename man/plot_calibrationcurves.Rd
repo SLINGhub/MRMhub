@@ -129,8 +129,9 @@ Default is \code{NA} which corresponds to the default shapes for QC types define
 \item{ribbon_fill}{Color for the confidence interval ribbon. Default is
 \code{"#91bfdb40"}.}
 
-\item{font_base_size}{Numeric. Base font size (in points) for plot text.
-Default is 8.}
+\item{font_base_size}{Numeric. Base font size (in points) for plot text; all
+plot text scales proportionally with this value. See the function's default
+in the Usage section above.}
 
 \item{rows_page}{Number of plot rows. Default is 4.}
 

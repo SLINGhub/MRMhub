@@ -21,7 +21,9 @@ plot_interference_correction(
   point_alpha = 0.3,
   box_alpha = 0.3,
   box_linewidth = 0.5,
-  font_base_size = 8,
+  font_base_size = 11,
+  legend_position = "right",
+  legend_size = NULL,
   angle_x = 45
 )
 }
@@ -79,8 +81,19 @@ millimeters. Default is \code{0.5}.}
 
 \item{box_linewidth}{Numeric. Width of the boxplot lines. Default is \code{0.5}.}
 
-\item{font_base_size}{Numeric. Base font size (in points) for plot text.
-Default is 8.}
+\item{font_base_size}{Numeric. Base font size (in points) for plot text; all
+plot text scales proportionally with this value. See the function's default
+in the Usage section above.}
+
+\item{legend_position}{Optional legend placement. One of \code{"right"},
+\code{"left"}, \code{"top"}, \code{"bottom"}, \code{"none"}; a corner keyword \code{"inside-tr"},
+\code{"inside-tl"}, \code{"inside-br"}, \code{"inside-bl"}; or a numeric \code{c(x, y)} in
+\verb{[0, 1]} coordinates. \code{NULL} (default) keeps the current placement.}
+
+\item{legend_size}{Optional single multiplier of \code{font_base_size} (when
+\verb{<= 3}) or absolute point size (when \verb{> 3}) that scales the whole legend:
+text, title, key and the plotted symbols. \code{NULL} (default) leaves the
+legend unchanged.}
 
 \item{angle_x}{Numeric. Angle of the x-axis text labels. Default is \code{45}.}
 }

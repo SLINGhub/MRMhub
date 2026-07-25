@@ -44,6 +44,9 @@
 #' @param point_size Size of points in millimeters (default is `1`).
 #' @param point_alpha Transparency of points (default is `0.5`).
 #' @template font_base_size
+#' @template autoscale
+#' @template legend_args
+#' @template legend_args_core
 #'
 #' @return A `ggplot` object representing the scatter plot comparing CV values
 #'   before and after normalization.
@@ -94,9 +97,15 @@ plot_normalization_qc <- function(
   x_lim = c(NA_real_, NA_real_),
   y_lim = c(NA_real_, NA_real_),
   cols_page = 5,
-  point_size = 1,
+  point_size = NULL,
   point_alpha = 0.5,
-  font_base_size = 8
+  font_base_size = NULL,
+  autoscale = TRUE,
+  legend_position = "right",
+  legend_size = NULL,
+  strip_text_size = NULL,
+  show_legend_title = NULL,
+  legend_bg_alpha = NULL
 ) {
   check_data(data)
 
@@ -207,7 +216,13 @@ plot_normalization_qc <- function(
     cols_page = cols_page,
     point_size = point_size,
     point_alpha = point_alpha,
-    font_base_size = font_base_size
+    font_base_size = font_base_size,
+    autoscale = autoscale,
+    legend_position = legend_position,
+    legend_size = legend_size,
+    strip_text_size = strip_text_size,
+    show_legend_title = show_legend_title,
+    legend_bg_alpha = legend_bg_alpha
   )
 }
 
@@ -267,6 +282,9 @@ plot_normalization_qc <- function(
 #'   Default is `NA` which corresponds to the default shapes for QC types defined in the package.
 #' @param point_stroke Numeric; thickness of point borders (default is `0.5`).
 #' @template font_base_size
+#' @template autoscale
+#' @template legend_args
+#' @template legend_args_core
 #'
 #' @return A `ggplot` object representing the scatter plot.
 #'
@@ -300,16 +318,31 @@ plot_qcmetrics_comparison <- function(
   x_lim = c(NA_real_, NA_real_),
   y_lim = c(NA_real_, NA_real_),
   cols_page = 5,
-  point_size = 1.5,
+  point_size = NULL,
   point_alpha = 0.5,
   point_color = "#0460acff",
   point_fill = "#4da2e7ff",
   point_shape = 21,
   point_stroke = 0.5,
-  font_base_size = 8
+  font_base_size = NULL,
+  autoscale = TRUE,
+  legend_position = "right",
+  legend_size = NULL,
+  strip_text_size = NULL,
+  show_legend_title = NULL,
+  legend_bg_alpha = NULL
 ) {
   # Check if data is provided and valid
   check_data(data)
+
+  .sizes <- mrmhub_autoscale_sizes(
+    cols_page,
+    font_base_size,
+    point_size,
+    autoscale
+  )
+  font_base_size <- .sizes$font_base_size
+  point_size <- .sizes$point_size
 
   if (missing(plot_type)) {
     cli::cli_abort(
@@ -642,19 +675,18 @@ plot_qcmetrics_comparison <- function(
   g <- g +
     theme_bw(base_size = font_base_size) +
     theme(
-      plot.title = element_text(size = font_base_size, face = "bold"),
-      strip.text = ggplot2::element_text(size = font_base_size, face = "bold"),
-      axis.text = element_text(size = font_base_size),
-      axis.title = element_text(size = font_base_size, face = "bold"),
-      panel.grid = element_line(linewidth = 0.001),
-      strip.background = ggplot2::element_rect(
-        linewidth = 0.0001,
-        fill = "#00283d"
-      ),
-      strip.text.x = ggplot2::element_text(color = "white"),
-      #strip.switch.pad.wrap = ggplot2::unit(1, "mm"),
-      panel.border = element_rect(linewidth = 0.5, color = "grey40"),
-      legend.position = "right"
+      axis.title = element_text(size = font_base_size, face = "bold")
+    ) +
+    mrmhub_base_theme(font_base_size, n_cols = cols_page)
+
+  g <- g +
+    mrmhub_style_layer(
+      font_base_size = font_base_size,
+      legend_position = legend_position,
+      legend_size = legend_size,
+      strip_text_size = strip_text_size,
+      show_legend_title = show_legend_title,
+      legend_bg_alpha = legend_bg_alpha
     )
 
   return(g)

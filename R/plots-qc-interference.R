@@ -42,7 +42,9 @@ plot_interference_correction <- function(
   point_alpha = 0.3,
   box_alpha = 0.3,
   box_linewidth = 0.5,
-  font_base_size = 8,
+  font_base_size = 11,
+  legend_position = "right",
+  legend_size = NULL,
   angle_x = 45
 ) {
   check_data(data)
@@ -231,20 +233,13 @@ plot_interference_correction <- function(
     xlab("Corrected Features") +
     theme(
       axis.text.x = ggplot2::element_text(angle = angle_x, hjust = 1),
-      panel.grid.major.y = element_blank(),
-      panel.grid.minor.y = element_blank(),
-      #panel.grid.major.x = element_blank(), #element_line(colour = "#bdbdbd", linetype = "dotted", size = .5),
-      panel.grid.minor.x = element_blank(), #element_line(colour = "grey88", linetype = "dotted", size = .5),
-      axis.text.y = element_text(size = font_base_size),
-      #axis.text.x = element_text(size = font_base_size, angle = x_text_angle, vjust = 0.5, hjust = x_text_just),
-      axis.title = element_text(size = font_base_size * 1, face = "plain"),
-      panel.border = element_rect(linewidth = 0.7, color = "grey40"),
-      legend.position = "inside",
-      legend.direction = "horizontal", # vertical layout
-      legend.text = element_text(size = font_base_size * 0.8), # text size
-      legend.title = element_text(size = font_base_size * 0.8),
-      legend.key.size = unit(font_base_size * 0.8, "pt"), # box size
-      legend.position.inside = c(0.6, 0.1)
+      axis.title = element_text(size = font_base_size, face = "plain")
+    ) +
+    mrmhub_base_theme(font_base_size) +
+    mrmhub_style_layer(
+      font_base_size = font_base_size,
+      legend_position = legend_position,
+      legend_size = legend_size
     )
 }
 

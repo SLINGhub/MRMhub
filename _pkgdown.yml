@@ -113,6 +113,8 @@ navbar:
       - text: Results and downstream use
       - text: Visualisation Functions
         href: articles/manual-08-visualization.html
+      - text: Customising Plots
+        href: articles/manual-13-plot-customization.html
       - text: Writing Pipelines with AI Assistants
         href: articles/manual-09-ai-assistants.html
       - text: '-------'

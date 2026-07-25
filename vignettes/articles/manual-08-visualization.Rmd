@@ -273,10 +273,17 @@ plot_interference_correction(mexp)
 
 # Customisation and export
 
+Text size, legend placement and legend sizing are controlled directly through shared arguments
+(`font_base_size`, `legend_position`, `legend_size`, and, on the core QC plots, `strip_text_size`,
+`show_legend_title`, `legend_bg_alpha`); paged and faceted plots size their text and points
+automatically from `cols_page`. See [Customising Plots](manual-13-plot-customization.html) for the
+full argument reference.
+
 ## ggplot2 layering
 
-All functions return `ggplot2` objects, so themes, scales, and titles can be appended in the usual
-way.
+All functions return `ggplot2` objects, so anything the arguments above do not cover — bespoke
+themes, scales, titles — can be appended in the usual way, and a trailing `theme()` overrides the
+house theme.
 
 ```{r}
 plot_runscatter(mexp, variable = "norm_intensity", qc_types = c("BQC", "SPL")) +

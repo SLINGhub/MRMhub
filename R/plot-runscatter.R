@@ -103,6 +103,9 @@
 #' @param specific_page Show/save a specific page number only. `NA` plots/saves all pages.
 #' @param page_orientation Page orientation, "LANDSCAPE" or "PORTRAIT".
 #' @template font_base_size
+#' @template autoscale
+#' @template legend_args
+#' @template legend_args_core
 #' @param use_dingbats Logical, whether to use Dingbats font in the PDF output for improved plotting speed. Default is `TRUE`. Set to `FALSE` if your PDF viewer does not show points correctly.
 #' @param show_progress Logical, whether to show a progress bar. Default is `TRUE`.
 #'
@@ -176,10 +179,16 @@ plot_runscatter <- function(
   y_lim = c(0, NA),
   log_scale = FALSE,
   show_gridlines = FALSE,
-  point_size = 1.5,
+  point_size = NULL,
   point_alpha = 1,
   point_border_width = NA,
-  font_base_size = 8,
+  font_base_size = NULL,
+  autoscale = TRUE,
+  legend_position = "right",
+  legend_size = NULL,
+  strip_text_size = NULL,
+  show_legend_title = NULL,
+  legend_bg_alpha = NULL,
 
   # Layout settings
   rows_page = 3,
@@ -211,6 +220,15 @@ plot_runscatter <- function(
   # Check the validity of input data
   check_data(data)
   rlang::arg_match(page_orientation, c("LANDSCAPE", "PORTRAIT"))
+
+  .sizes <- mrmhub_autoscale_sizes(
+    cols_page,
+    font_base_size,
+    point_size,
+    autoscale
+  )
+  font_base_size <- .sizes$font_base_size
+  point_size <- .sizes$point_size
 
   if (nrow(data@dataset) < 1) {
     cli::cli_abort(
@@ -580,6 +598,16 @@ plot_runscatter <- function(
     batch_fill_color = batch_fill_color,
     y_label = y_label,
     font_base_size = font_base_size,
+    # Pre-built here (not on the parallel worker) so the concrete layer object
+    # is serialized to the daemon -- it need not resolve `mrmhub_style_layer`.
+    style_layer = mrmhub_style_layer(
+      font_base_size = font_base_size,
+      legend_position = legend_position,
+      legend_size = legend_size,
+      strip_text_size = strip_text_size,
+      show_legend_title = show_legend_title,
+      legend_bg_alpha = legend_bg_alpha
+    ),
     point_border_width = point_border_width,
     show_grid = show_gridlines,
     y_min = y_lim[1],
@@ -738,6 +766,7 @@ runscatter_plot_pages <- function(
   batch_fill_color,
   y_label,
   font_base_size,
+  style_layer,
   point_border_width,
   show_grid,
   y_min,
@@ -1306,38 +1335,15 @@ runscatter_plot_pages <- function(
     p <- p +
       ggplot2::theme_bw(base_size = font_base_size) +
       ggplot2::theme(
-        plot.title = ggplot2::element_text(
-          size = font_base_size * 1,
-          face = "bold"
-        ),
-        strip.text = ggplot2::element_text(
-          size = font_base_size * 1,
-          face = "bold"
-        ),
-        strip.background = ggplot2::element_rect(
-          linewidth = 0.0001,
-          fill = "#00283d"
-        ),
-        strip.text.x = ggplot2::element_text(color = "white"),
-        axis.text.x = ggplot2::element_text(
-          size = font_base_size * 0.8,
-          ,
-          face = NULL
-        ),
-        axis.text.y = ggplot2::element_text(
-          size = font_base_size * 0.8,
-          face = NULL
-        ),
-        axis.title = ggplot2::element_text(
-          size = font_base_size,
-          face = NULL
-        ),
-        panel.grid.major = ggplot2::element_blank(),
-        panel.grid.minor = ggplot2::element_blank(),
-        strip.switch.pad.wrap = ggplot2::unit(-1, "mm"),
-        panel.border = element_rect(linewidth = 0.5, color = "grey40")
-      )
+        axis.text.x = ggplot2::element_text(size = font_base_size * 0.8),
+        axis.text.y = ggplot2::element_text(size = font_base_size * 0.8),
+        axis.title = ggplot2::element_text(size = font_base_size),
+        strip.switch.pad.wrap = ggplot2::unit(-1, "mm")
+      ) +
+      mrmhub_base_theme(font_base_size, n_cols = cols_page)
 
+    # The base theme already draws faint major gridlines; `show_gridlines`
+    # replaces them with a heavier dashed grid when explicitly requested.
     if (show_grid) {
       p <- p +
         ggplot2::theme(
@@ -1347,8 +1353,6 @@ runscatter_plot_pages <- function(
             linetype = "dashed"
           )
         )
-    } else {
-      p <- p + ggplot2::theme(panel.grid.major = ggplot2::element_blank())
     }
 
     if (!all(is.na(plot_range))) {
@@ -1365,6 +1369,8 @@ runscatter_plot_pages <- function(
         p <- p + ggplot2::coord_cartesian(xlim = plot_range)
       }
     }
+
+    p <- p + style_layer
 
     plot(p)
     if (return_plots) return(p)

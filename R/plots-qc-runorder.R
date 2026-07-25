@@ -27,6 +27,7 @@
 #' @param batch_line_color Color of the batch separator lines.
 #' @param batch_fill_color Color of the batch shaded areas.
 #' @template font_base_size
+#' @template legend_args
 #' @return A `ggplot` object representing the run sequence plot.
 #' @family QC plots
 #' @export
@@ -41,7 +42,9 @@ plot_runsequence <- function(
   batch_zebra_stripe = FALSE,
   batch_line_color = "#b6f0c5",
   batch_fill_color = "grey93",
-  font_base_size = 8
+  font_base_size = 11,
+  legend_position = NULL,
+  legend_size = NULL
 ) {
   # Check if data is valid
   check_data(data)
@@ -299,7 +302,12 @@ plot_runsequence <- function(
   # Color mapping
   p <- p + scale_color_manual(values = qc_colors, name = "QC type")
 
-  p
+  p +
+    mrmhub_style_layer(
+      font_base_size = font_base_size,
+      legend_position = legend_position,
+      legend_size = legend_size
+    )
 }
 
 
@@ -366,6 +374,8 @@ plot_runsequence <- function(
 #' @param x_gridlines Logical, whether to show major x-axis gridlines
 #' @param linewidth Numeric, line width used for whiskers of the boxplot
 #' @template font_base_size
+#' @template legend_args
+#' @template legend_args_core
 #' @param relative_log_abundances Logical, whether to use relative log abundances (RLA) or just log-transformed values
 #' @param show_plot Logical, whether to display the plot. Default is `TRUE`.
 #' @return A list with the `ggplot` object representing the RLA plot and a table with detected outliers if `outlier_detection = TRUE`.
@@ -415,7 +425,12 @@ plot_rla_boxplot <- function(
 
   x_gridlines = FALSE,
   linewidth = 0.2,
-  font_base_size = 8,
+  font_base_size = 11,
+  legend_position = "right",
+  legend_size = NULL,
+  strip_text_size = NULL,
+  show_legend_title = NULL,
+  legend_bg_alpha = NULL,
   relative_log_abundances = TRUE,
   show_plot = TRUE
 ) {
@@ -478,7 +493,11 @@ plot_rla_boxplot <- function(
   # A degenerate plot_range makes the downstream tick count divide by zero
   # (equal endpoints) or go negative (reversed), crashing in `pretty()`.
   if (!all(is.na(plot_range))) {
-    if (length(plot_range) != 2 || anyNA(plot_range) || plot_range[1] >= plot_range[2]) {
+    if (
+      length(plot_range) != 2 ||
+        anyNA(plot_range) ||
+        plot_range[1] >= plot_range[2]
+    ) {
       cli::cli_abort(
         "{.arg plot_range} must be a length-2 vector with {.code plot_range[1] < plot_range[2]}."
       )
@@ -978,26 +997,14 @@ plot_rla_boxplot <- function(
     ylab(bquote(bold(log[2] ~ .(variable)))) +
     xlab("Analysis Order No.") +
     theme(
-      panel.grid.major.y = element_blank(),
-      panel.grid.minor.y = element_blank(),
-      panel.grid.major.x = element_blank(), #element_line(colour = "#bdbdbd", linetype = "dotted", size = .5),
-      panel.grid.minor.x = element_blank(), #element_line(colour = "grey88", linetype = "dotted", size = .5),
-      axis.text.y = element_text(size = font_base_size),
       axis.text.x = element_text(
-        size = font_base_size,
         angle = x_text_angle,
         vjust = 0.5,
         hjust = x_text_just
       ),
-      axis.title = element_text(size = font_base_size * 1, face = "bold"),
-      panel.border = element_rect(linewidth = 1, color = "grey20"),
-      legend.position = "inside",
-      legend.direction = "horizontal", # vertical layout
-      legend.text = element_text(size = font_base_size * 0.8), # text size
-      legend.title = element_text(size = font_base_size * 0.8),
-      legend.key.size = unit(font_base_size * 0.8, "pt"), # box size
-      legend.position.inside = c(0.6, 0.1)
-    )
+      axis.title = element_text(size = font_base_size, face = "bold")
+    ) +
+    mrmhub_base_theme(font_base_size)
 
   if (outlier_detection) {
     p <- p +
@@ -1085,6 +1092,16 @@ plot_rla_boxplot <- function(
   ##if(!rla_limit_to_range){
   p <- p + ggplot2::coord_cartesian(xlim = xlim, ylim = ylim, expand = TRUE)
   ##}
+
+  p <- p +
+    mrmhub_style_layer(
+      font_base_size = font_base_size,
+      legend_position = legend_position,
+      legend_size = legend_size,
+      strip_text_size = strip_text_size,
+      show_legend_title = show_legend_title,
+      legend_bg_alpha = legend_bg_alpha
+    )
 
   res <- list(
     outliers = if (!outlier_detection) {

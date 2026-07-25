@@ -398,4 +398,5 @@ mexp <- exclude_features(mexp, features = c("PC 32:0"), clear_existing = FALSE)
 
 - [Drift and batch correction](tutorial-04-drift-correction.html) — apply and inspect corrections
 - [Visualisation functions](manual-08-visualization.html) — the full list of plotting functions
+- [Customising plots](manual-13-plot-customization.html) — sizing text, legends and points without `+ theme()`
 - [Basic MRMhub workflow](tutorial-02-basic-workflow.html) — where these checks fit in the pipeline

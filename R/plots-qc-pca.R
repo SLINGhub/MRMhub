@@ -51,6 +51,8 @@
 #' @param point_alpha A numeric value indicating the transparency of
 #' points (0-1). Default is 0.5.
 #' @template font_base_size
+#' @template legend_args
+#' @template legend_args_core
 #' @param ellipse_confidence_level A numeric value indicating the confidence level
 #' for the ellipses. Default is 0.95.
 #' @param ellipse_linewidth A numeric value indicating the line width of the
@@ -92,9 +94,14 @@ plot_pca <- function(
   shared_labeltext_hide = NA,
   label_font_size = 3,
 
-  point_size = 2,
-  point_alpha = 0.8,
-  font_base_size = 8,
+  point_size = 1.5,
+  point_alpha = 0.7,
+  font_base_size = 11,
+  legend_position = "inside-tr",
+  legend_size = NULL,
+  strip_text_size = NULL,
+  show_legend_title = NULL,
+  legend_bg_alpha = 0.6,
 
   ellipse_confidence_level = 0.95,
   ellipse_linewidth = 1,
@@ -365,11 +372,7 @@ plot_pca <- function(
           size = label_font_size,
           na.rm = TRUE,
           seed = 1237,
-          max.overlaps = 30,
-          # Surface ggrepel's "N unlabeled data points" notice (off by default
-          # since it became verbose-gated) so users are alerted when too many
-          # labels overlap to be placed.
-          verbose = TRUE
+          max.overlaps = 30
         )
     )
   }
@@ -453,24 +456,23 @@ plot_pca <- function(
     ggplot2::ylab(glue::glue(
       "PC{pca_dims[2]} ({round(pca_contrib[[pca_dims[2],'percent']]*100,1)}%)"
     )) +
+    mrmhub_base_theme(font_base_size) +
     ggplot2::theme(
-      panel.grid.major = ggplot2::element_blank(),
-      panel.grid.minor = ggplot2::element_blank(),
-      panel.border = ggplot2::element_rect(linewidth = 1, color = "grey40"),
-      axis.text.x = ggplot2::element_text(size = font_base_size, face = NULL),
-      axis.text.y = ggplot2::element_text(size = font_base_size, face = NULL),
-      axis.title.x = ggplot2::element_text(
-        size = font_base_size * 1.2,
-        face = NULL
-      ),
-      axis.title.y = ggplot2::element_text(
-        size = font_base_size * 1.2,
-        face = NULL
-      ),
+      axis.title.x = ggplot2::element_text(size = font_base_size * 1.2),
+      axis.title.y = ggplot2::element_text(size = font_base_size * 1.2),
       aspect.ratio = 1
     )
 
-  txt <- if (log_transform) "log2-transformed" else "raw"
+  p <- p +
+    mrmhub_style_layer(
+      font_base_size = font_base_size,
+      legend_position = legend_position,
+      legend_size = legend_size,
+      strip_text_size = strip_text_size,
+      show_legend_title = show_legend_title,
+      legend_bg_alpha = legend_bg_alpha
+    )
+
   mh_success(
     "The PCA was calculated based on `{variable}` values of {length(unique(d_filt$feature_id))} features."
   )
@@ -506,6 +508,8 @@ plot_pca <- function(
 #' standard (ISTD) features. Default is `TRUE`.
 #' @template feature_filters
 #' @template font_base_size
+#' @template legend_args
+#' @template legend_args_core
 #'
 #' @return A `ggplot` object with PCA loadings plot
 #'
@@ -526,7 +530,12 @@ plot_pca_loading <- function(
   include_feature_filter = NA,
   exclude_feature_filter = NA,
   min_median_value = NA,
-  font_base_size = 8
+  font_base_size = 11,
+  legend_position = "right",
+  legend_size = NULL,
+  strip_text_size = NULL,
+  show_legend_title = NULL,
+  legend_bg_alpha = NULL
 ) {
   # ... (all data prep code remains the same) ...
 
@@ -703,23 +712,22 @@ plot_pca_loading <- function(
     p <- p + ggplot2::scale_y_continuous(expand = expansion(mult = c(0, 0.05)))
   }
 
-  p +
+  p <- p +
     theme_bw(base_size = font_base_size) +
     theme(
-      plot.title = element_text(size = font_base_size, face = "bold"),
-      strip.text = ggplot2::element_text(size = font_base_size, face = "bold"),
       axis.text.x = element_text(size = font_base_size * 0.6),
       axis.text.y = element_text(size = font_base_size * 0.6),
-      axis.title = element_text(size = font_base_size, face = "bold"),
-      panel.grid = element_line(linewidth = 0.001),
-      panel.grid.minor = element_blank(),
-      panel.grid.major = element_line(linewidth = 0.2),
-      strip.background = ggplot2::element_rect(
-        linewidth = 0.0001,
-        fill = "#00283d"
-      ),
-      strip.text.x = ggplot2::element_text(color = "white"),
-      panel.border = element_rect(linewidth = 0.5, color = "grey40"),
-      legend.position = "right"
+      axis.title = element_text(size = font_base_size, face = "bold")
+    ) +
+    mrmhub_base_theme(font_base_size, n_cols = length(pca_dims))
+
+  p +
+    mrmhub_style_layer(
+      font_base_size = font_base_size,
+      legend_position = legend_position,
+      legend_size = legend_size,
+      strip_text_size = strip_text_size,
+      show_legend_title = show_legend_title,
+      legend_bg_alpha = legend_bg_alpha
     )
 }

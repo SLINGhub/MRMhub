@@ -17,11 +17,14 @@ plot_responsecurves(
   path = NA,
   return_plots = FALSE,
   color_curves = NULL,
-  point_size = 1.5,
+  point_size = NULL,
   line_width = 0.7,
   label_wrap = FALSE,
   label_wrap_width = 25,
-  font_base_size = 8,
+  font_base_size = NULL,
+  autoscale = TRUE,
+  legend_position = "right",
+  legend_size = NULL,
   rows_page = 4,
   cols_page = 5,
   curve_layout = "overlay",
@@ -79,8 +82,25 @@ lines using \code{label_wrap_width}. Default is \code{FALSE}.}
 \item{label_wrap_width}{Integer. Maximum width in characters for wrapped labels when
 \code{label_wrap = TRUE}. Default is \code{25}. Ignored when \code{label_wrap = FALSE}.}
 
-\item{font_base_size}{Numeric. Base font size (in points) for plot text.
-Default is 8.}
+\item{font_base_size}{Numeric. Base font size (in points) for plot text; all
+plot text scales proportionally with this value. See the function's default
+in the Usage section above.}
+
+\item{autoscale}{Logical. When \code{TRUE} (default), \code{font_base_size} and
+\code{point_size} left as \code{NULL} are sized automatically from \code{cols_page} (more
+facet columns per page give smaller text and points). Any value passed
+explicitly always takes precedence. When \code{FALSE}, unset sizes fall back to
+the single-plot defaults.}
+
+\item{legend_position}{Optional legend placement. One of \code{"right"},
+\code{"left"}, \code{"top"}, \code{"bottom"}, \code{"none"}; a corner keyword \code{"inside-tr"},
+\code{"inside-tl"}, \code{"inside-br"}, \code{"inside-bl"}; or a numeric \code{c(x, y)} in
+\verb{[0, 1]} coordinates. \code{NULL} (default) keeps the current placement.}
+
+\item{legend_size}{Optional single multiplier of \code{font_base_size} (when
+\verb{<= 3}) or absolute point size (when \verb{> 3}) that scales the whole legend:
+text, title, key and the plotted symbols. \code{NULL} (default) leaves the
+legend unchanged.}
 
 \item{rows_page}{Number of rows of plots per page. Used for pagination in
 \code{curve_layout = "overlay"} and \code{"cols"}. Ignored in \code{curve_layout = "rows"}.}

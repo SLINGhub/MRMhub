@@ -19,7 +19,12 @@ plot_pca_loading(
   include_feature_filter = NA,
   exclude_feature_filter = NA,
   min_median_value = NA,
-  font_base_size = 8
+  font_base_size = 11,
+  legend_position = "right",
+  legend_size = NULL,
+  strip_text_size = NULL,
+  show_legend_title = NULL,
+  legend_bg_alpha = NULL
 )
 }
 \arguments{
@@ -69,8 +74,30 @@ QC-type samples required for a feature to be included. \code{NA} (default)
 applies no filtering. This is a fast way to exclude noisy features; for
 principled QC-based filtering use \code{\link[=filter_features_qc]{filter_features_qc()}}.}
 
-\item{font_base_size}{Numeric. Base font size (in points) for plot text.
-Default is 8.}
+\item{font_base_size}{Numeric. Base font size (in points) for plot text; all
+plot text scales proportionally with this value. See the function's default
+in the Usage section above.}
+
+\item{legend_position}{Optional legend placement. One of \code{"right"},
+\code{"left"}, \code{"top"}, \code{"bottom"}, \code{"none"}; a corner keyword \code{"inside-tr"},
+\code{"inside-tl"}, \code{"inside-br"}, \code{"inside-bl"}; or a numeric \code{c(x, y)} in
+\verb{[0, 1]} coordinates. \code{NULL} (default) keeps the current placement.}
+
+\item{legend_size}{Optional single multiplier of \code{font_base_size} (when
+\verb{<= 3}) or absolute point size (when \verb{> 3}) that scales the whole legend:
+text, title, key and the plotted symbols. \code{NULL} (default) leaves the
+legend unchanged.}
+
+\item{strip_text_size}{Optional facet strip text size, as a multiplier of
+\code{font_base_size} (when \verb{<= 3}) or an absolute point size (when \verb{> 3}).
+\code{NULL} (default) leaves the strip text unchanged.}
+
+\item{show_legend_title}{Optional logical. \code{FALSE} hides the legend title.
+\code{NULL} (default) keeps the current title.}
+
+\item{legend_bg_alpha}{Optional opacity (\verb{[0, 1]}) of a white legend
+background box, useful for a readable inside legend drawn over points.
+\code{NULL} (default) leaves the legend background unchanged.}
 }
 \value{
 A \code{ggplot} object with PCA loadings plot

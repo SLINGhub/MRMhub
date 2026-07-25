@@ -10,6 +10,7 @@
 #'
 #' @template data_mexp
 #' @template font_base_size
+#' @template legend_args
 #'
 #' @return A `ggplot` object showing the feature QC filtering summary by feature class.
 #'
@@ -27,7 +28,12 @@
 # TODO: handling of features with (many) missing values, in SPL, in QC
 # TOOD: handle user_defined_keeper, i.e. add lighter green color for features that were forced kept
 # TODO: add option to facet by batch (required qc matrix by batch)
-plot_qc_summary_byclass <- function(data = NULL, font_base_size = 8) {
+plot_qc_summary_byclass <- function(
+  data = NULL,
+  font_base_size = 11,
+  legend_position = "right",
+  legend_size = NULL
+) {
   check_data(data)
 
   if (!data@is_filtered) {
@@ -242,19 +248,16 @@ plot_qc_summary_byclass <- function(data = NULL, font_base_size = 8) {
     ) +
     theme_bw(base_size = font_base_size) +
     theme(
-      legend.position = "inside",
-      legend.position.inside = c(0.85, 0.85),
-      panel.grid.major.x = element_line(color = "grey80", linewidth = .1),
-      panel.grid.major.y = element_line(color = "grey90", linewidth = .1),
-      panel.grid.minor = element_blank(),
-      axis.title.y.right = element_text(angle = 90, vjust = 0.5, hjust = 0.5),
-      legend.text = element_text(size = font_base_size - 1), # Legend text size
-      legend.title = element_text(size = font_base_size), # Legend title size
-      legend.key.size = unit(2, "mm")
-    ) # Legend key size
-  p
+      axis.title.y.right = element_text(angle = 90, vjust = 0.5, hjust = 0.5)
+    ) +
+    mrmhub_base_theme(font_base_size)
 
-  # cli::cli_alert_info(cli::green(""))
+  p +
+    mrmhub_style_layer(
+      font_base_size = font_base_size,
+      legend_position = legend_position,
+      legend_size = legend_size
+    )
 }
 
 

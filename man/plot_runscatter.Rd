@@ -39,10 +39,16 @@ plot_runscatter(
   y_lim = c(0, NA),
   log_scale = FALSE,
   show_gridlines = FALSE,
-  point_size = 1.5,
+  point_size = NULL,
   point_alpha = 1,
   point_border_width = NA,
-  font_base_size = 8,
+  font_base_size = NULL,
+  autoscale = TRUE,
+  legend_position = "right",
+  legend_size = NULL,
+  strip_text_size = NULL,
+  show_legend_title = NULL,
+  legend_bg_alpha = NULL,
   rows_page = 3,
   cols_page = 3,
   specific_page = NA,
@@ -147,8 +153,36 @@ If \code{NA} (default), the color assigned to the qc_type is used.}
 
 \item{point_border_width}{Width of the data point borders.}
 
-\item{font_base_size}{Numeric. Base font size (in points) for plot text.
-Default is 8.}
+\item{font_base_size}{Numeric. Base font size (in points) for plot text; all
+plot text scales proportionally with this value. See the function's default
+in the Usage section above.}
+
+\item{autoscale}{Logical. When \code{TRUE} (default), \code{font_base_size} and
+\code{point_size} left as \code{NULL} are sized automatically from \code{cols_page} (more
+facet columns per page give smaller text and points). Any value passed
+explicitly always takes precedence. When \code{FALSE}, unset sizes fall back to
+the single-plot defaults.}
+
+\item{legend_position}{Optional legend placement. One of \code{"right"},
+\code{"left"}, \code{"top"}, \code{"bottom"}, \code{"none"}; a corner keyword \code{"inside-tr"},
+\code{"inside-tl"}, \code{"inside-br"}, \code{"inside-bl"}; or a numeric \code{c(x, y)} in
+\verb{[0, 1]} coordinates. \code{NULL} (default) keeps the current placement.}
+
+\item{legend_size}{Optional single multiplier of \code{font_base_size} (when
+\verb{<= 3}) or absolute point size (when \verb{> 3}) that scales the whole legend:
+text, title, key and the plotted symbols. \code{NULL} (default) leaves the
+legend unchanged.}
+
+\item{strip_text_size}{Optional facet strip text size, as a multiplier of
+\code{font_base_size} (when \verb{<= 3}) or an absolute point size (when \verb{> 3}).
+\code{NULL} (default) leaves the strip text unchanged.}
+
+\item{show_legend_title}{Optional logical. \code{FALSE} hides the legend title.
+\code{NULL} (default) keeps the current title.}
+
+\item{legend_bg_alpha}{Optional opacity (\verb{[0, 1]}) of a white legend
+background box, useful for a readable inside legend drawn over points.
+\code{NULL} (default) leaves the legend background unchanged.}
 
 \item{rows_page}{Number of rows per page.}
 

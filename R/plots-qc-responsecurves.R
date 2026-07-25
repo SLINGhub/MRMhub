@@ -37,6 +37,8 @@
 #' @param point_size Size of points in millimeters.
 #' @param line_width Width of regression lines.
 #' @template font_base_size
+#' @template autoscale
+#' @template legend_args
 #' @param rows_page Number of rows of plots per page. Used for pagination in
 #'   `curve_layout = "overlay"` and `"cols"`. Ignored in `curve_layout = "rows"`.
 #' @param cols_page Number of columns of plots per page. Used for pagination in
@@ -94,11 +96,14 @@ plot_responsecurves <- function(
 
   # Plot customization
   color_curves = NULL,
-  point_size = 1.5,
+  point_size = NULL,
   line_width = 0.7,
   label_wrap = FALSE,
   label_wrap_width = 25,
-  font_base_size = 8,
+  font_base_size = NULL,
+  autoscale = TRUE,
+  legend_position = "right",
+  legend_size = NULL,
 
   # Layout settings (for multi-page PDF)
   rows_page = 4,
@@ -120,6 +125,16 @@ plot_responsecurves <- function(
   # -------------------------------------------
   check_data(data)
   rlang::arg_match(page_orientation, c("LANDSCAPE", "PORTRAIT"))
+
+  .sizes <- mrmhub_autoscale_sizes(
+    cols_page,
+    font_base_size,
+    point_size,
+    autoscale
+  )
+  font_base_size <- .sizes$font_base_size
+  point_size <- .sizes$point_size
+
   variable_strip <- str_remove(variable, "feature_") # Clean variable name
   rlang::arg_match(
     variable_strip,
@@ -308,6 +323,11 @@ plot_responsecurves <- function(
       point_size = point_size,
       line_width = line_width,
       font_base_size = font_base_size,
+      style_layer = mrmhub_style_layer(
+        font_base_size = font_base_size,
+        legend_position = legend_position,
+        legend_size = legend_size
+      ),
       x_axis_title = x_axis_unit,
       color_curves = color_curves,
       fill_curves = fill_curves,
@@ -357,6 +377,7 @@ plot_responsecurves_page <- function(
   point_size,
   line_width,
   font_base_size,
+  style_layer,
   x_axis_title,
   color_curves,
   fill_curves,
@@ -672,5 +693,5 @@ plot_responsecurves_page <- function(
       )
   }
 
-  p
+  p + mrmhub_base_theme(font_base_size, n_cols = cols_page) + style_layer
 }

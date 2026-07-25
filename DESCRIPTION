@@ -127,5 +127,6 @@ Collate:
     'plots-qc-runorder.R'
     'qc-filtering.R'
     'tibble-classes.R'
+    'utils-plot-style.R'
     'utils.R'
 Config/roxygen2/version: 8.0.0

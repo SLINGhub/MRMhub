@@ -1,0 +1,142 @@
+---
+title: "Customising plots"
+output:
+  rmarkdown::html_vignette:
+    fig_width: 7
+    fig_height: 5
+description: |
+  How the shared appearance arguments of the MRMhub plotting functions
+  control text size, legend placement, and automatic sizing, so a balanced
+  figure needs little or no manual ggplot2 theming.
+vignette: >
+  %\VignetteIndexEntry{Customising plots}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+editor_options:
+  markdown:
+    wrap: 100
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", eval = FALSE,
+                      fig.width = 7, fig.height = 5, out.width = "100%")
+```
+
+Every MRMhub `plot_*()` function returns a `ggplot2` object built from a shared house theme:
+faint grey gridlines, minor gridlines off, a thin panel border, and dark-navy facet strips with
+white labels. The theme is tuned to read well in a rendered report or a printed PDF without
+further adjustment. A small, consistent set of arguments exposes the appearance choices that
+otherwise required a trailing `+ theme(...)` on almost every call — text size, legend placement,
+and legend sizing — so a balanced figure can usually be produced from the plotting call alone.
+The functions still return plain `ggplot2` objects, so the full grammar remains available for
+anything the arguments do not cover (see [With `+ theme()`](#with-theme)).
+
+## The shared arguments
+
+Every plotting function accepts the three common arguments. The higher-use QC plots — `plot_pca()`,
+`plot_pca_loading()`, `plot_runscatter()`, `plot_rla_boxplot()`, `plot_normalization_qc()` and
+`plot_qcmetrics_comparison()` — accept three further arguments for finer legend and facet control.
+
+| Argument | Applies to | Effect |
+|----------|-----------|--------|
+| `font_base_size` | all plots | Base font size in points; all plot text scales proportionally |
+| `legend_position` | all plots | Legend placement (keyword, corner, or coordinate) |
+| `legend_size` | all plots | Scales the whole legend: text, title, key and plotted symbols |
+| `strip_text_size` | core QC plots | Facet strip label size |
+| `show_legend_title` | core QC plots | `FALSE` hides the legend title |
+| `legend_bg_alpha` | core QC plots | Opacity of a white background box behind an inside legend |
+
+Arguments left at their default (`NULL`, or the per-function legend default) leave that aspect of
+the plot at the house setting. Setting one overrides only that property.
+
+## Placing the legend
+
+`legend_position` accepts the standard ggplot2 keywords, four corner shortcuts for a legend drawn
+inside the panel, or a raw coordinate.
+
+| Value | Result |
+|-------|--------|
+| `"right"`, `"left"`, `"top"`, `"bottom"` | Legend outside the panel on that side |
+| `"none"` | No legend |
+| `"inside-tr"`, `"inside-tl"`, `"inside-br"`, `"inside-bl"` | Inside the panel, anchored to that corner |
+| `c(x, y)` | Inside the panel at that coordinate (`0`–`1`) |
+
+Most plots default to `"right"`. `plot_pca()` defaults to `"inside-tr"` with a translucent
+background (`legend_bg_alpha = 0.6`), since a square score plot usually has a free corner. For a
+faceted plot with a legend drawn over the points, the background box keeps it readable:
+
+```{r}
+plot_normalization_qc(mexp,
+  before_norm_var = "intensity",
+  after_norm_var  = "norm_intensity",
+  plot_type       = "diff",
+  legend_position = "inside-br",
+  legend_bg_alpha = 0.6)
+```
+
+## Sizing text and symbols
+
+`font_base_size` is the single text knob: increasing it scales axis text, titles, strip labels and
+the legend together. `legend_size` scales the legend independently — its text, title, key box, and
+the plotted symbol (the glyph in the key, which a plain `legend.key.size` does not resize). A value
+of `3` or less is read as a multiplier of `font_base_size`; a larger value is an absolute point
+size. `strip_text_size` follows the same convention for facet labels.
+
+```{r}
+plot_rt_vs_chain(mexp,
+  font_base_size  = 6,
+  legend_position = "right",
+  legend_size     = 0.8)     # legend text and glyphs at 6 * 0.8 pt
+```
+
+The equivalent before these arguments existed required a hand-written `theme()` setting
+`legend.text`, `legend.title` and `legend.key.size`, plus a `guides(override.aes = ...)` to resize
+the glyph — the single `legend_size` argument replaces all four.
+
+## Automatic sizing on paged and faceted plots
+
+Plots that lay panels out in a grid — `plot_runscatter()`, `plot_responsecurves()`,
+`plot_qcmetrics_comparison()`, `plot_normalization_qc()` and `plot_rt_vs_chain()` — size their text
+and points from the number of facet columns, since column count is the main driver of panel size.
+With `autoscale = TRUE` (the default), `font_base_size` and `point_size` left unset are filled from
+`cols_page`:
+
+| `cols_page` | `font_base_size` | `point_size` |
+|-------------|------------------|--------------|
+| 1–2 | 9 | 1.0 |
+| 3 | 7 | 0.7 |
+| 4–5 | 6 | 0.5 |
+| 6 or more | 5 | 0.4 |
+
+A value passed explicitly always wins, so autoscaling only fills what is left unset:
+
+```{r}
+# 3-column page: text and points sized automatically
+plot_runscatter(mexp, variable = "norm_intensity", cols_page = 3)
+
+# keep the automatic font, but set the point size by hand
+plot_runscatter(mexp, variable = "norm_intensity", cols_page = 3,
+                point_size = 1.2)
+```
+
+Setting `autoscale = FALSE` ignores the grid and uses the single-plot defaults
+(`font_base_size = 11`, `point_size = 1.5`) for anything left unset. Single-panel plots such as
+`plot_pca()` and `plot_matrixeffects()` use `font_base_size = 11` by default.
+
+## With `+ theme()` {#with-theme}
+
+The arguments cover the common adjustments; anything else is reachable through ordinary ggplot2
+layering, appended after the plotting call. A trailing `theme()` takes precedence, so it also
+serves as an override for any house-theme element.
+
+```{r}
+plot_pca(mexp, variable = "norm_intensity") +
+  ggplot2::theme(panel.grid.minor = ggplot2::element_line(linewidth = 0.2)) +
+  ggplot2::labs(title = "PCA of normalised intensities")
+```
+
+## Next steps
+
+- [Visualisation Functions](manual-08-visualization.html) — the plotting functions by workflow stage
+- [Exploring QC: RunScatter and PCA](tutorial-05-run-scatter.html) — the plots in an interpretation walk-through
+- [Custom QC Report (recipe)](recipe-02-custom-qc-report.html) — combining plots into a report

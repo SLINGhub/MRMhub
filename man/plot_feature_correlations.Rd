@@ -117,8 +117,9 @@ points (0-1). Default is 0.8.}
 
 \item{line_alpha}{A numeric value indicating the transparency of the correlation line (0-1). Default is 0.5.}
 
-\item{font_base_size}{Numeric. Base font size (in points) for plot text.
-Default is 8.}
+\item{font_base_size}{Numeric. Base font size (in points) for plot text; all
+plot text scales proportionally with this value. See the function's default
+in the Usage section above.}
 
 \item{show_progress}{Logical. If \code{TRUE}, displays a progress bar during
 plot creation.}

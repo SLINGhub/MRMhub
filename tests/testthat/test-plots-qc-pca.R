@@ -40,7 +40,7 @@ test_that("plot_pca works", {
     filter_data = FALSE
   )
 
-  expect_message(print(p), "unlabeled data points")
+  expect_no_message(print(p))
 
   p <- plot_pca(
     mexp,

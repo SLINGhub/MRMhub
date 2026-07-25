@@ -11,8 +11,9 @@ plot_qc_summary_overall(data = NULL, with_venn = TRUE, font_base_size = 8)
 
 \item{with_venn}{Whether to include a Venn diagram summarizing the features excluded due to different QC criteria. Default is \code{TRUE}.}
 
-\item{font_base_size}{Numeric. Base font size (in points) for plot text.
-Default is 8.}
+\item{font_base_size}{Numeric. Base font size (in points) for plot text; all
+plot text scales proportionally with this value. See the function's default
+in the Usage section above.}
 }
 \value{
 A \code{ggplot} object showing the feature QC filtering summary with or without a Venn diagram.

@@ -97,8 +97,9 @@ determined automatically from the data.}
 
 \item{segment_width}{A numeric value for the linewidth of the feature segments. Default is 0.25.}
 
-\item{font_base_size}{Numeric. Base font size (in points) for plot text.
-Default is 8.}
+\item{font_base_size}{Numeric. Base font size (in points) for plot text; all
+plot text scales proportionally with this value. See the function's default
+in the Usage section above.}
 
 \item{grid_major_color}{Color for major grid lines. Default is "grey50".}
 

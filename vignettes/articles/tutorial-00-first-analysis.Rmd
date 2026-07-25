@@ -95,3 +95,4 @@ save_dataset_csv(mexp, path = "my_first_results.csv")
 - [Preparing and importing data](tutorial-01-prep-data.html) — import your own data and metadata
 - [Basic MRMhub workflow](tutorial-02-basic-workflow.html) — the full end-to-end pipeline
 - [Lipidomics data processing](tutorial-03-lipidomics-workflow.html) — a detailed real-world workflow
+- [Customising plots](manual-13-plot-customization.html) — size text, legends and points for reports

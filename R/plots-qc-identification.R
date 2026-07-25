@@ -30,6 +30,8 @@
 #' @param point_alpha Alpha transparency of the data point. Default is 0.9
 #' @param line_transparency Alpha transparency of the regression lines. Default is 0.9
 #' @template font_base_size
+#' @template autoscale
+#' @template legend_args
 #'
 #' @return A `ggplot` object representing faceted scatter plots
 #'
@@ -47,11 +49,23 @@ plot_rt_vs_chain <- function(
   include_qualifier = FALSE,
   robust_regression = TRUE,
   cols_page = 5,
-  point_size = 2,
+  point_size = NULL,
   point_alpha = 0.9,
   line_transparency = 0.5,
-  font_base_size = 8
+  font_base_size = NULL,
+  autoscale = TRUE,
+  legend_position = "right",
+  legend_size = NULL
 ) {
+  .sizes <- mrmhub_autoscale_sizes(
+    cols_page,
+    font_base_size,
+    point_size,
+    autoscale
+  )
+  font_base_size <- .sizes$font_base_size
+  point_size <- .sizes$point_size
+
   # -- Data validation --
 
   if (inherits(data, "MRMhubExperiment")) {
@@ -410,9 +424,7 @@ plot_rt_vs_chain <- function(
     scale_shape_manual(values = c("No" = 1, "Yes" = 8)) +
     labs(x = x_title, y = "Median Retention Time", shape = "Outlier") +
     theme_bw(base_size = font_base_size) +
-    theme(
-      panel.grid.minor = element_blank()
-    )
+    mrmhub_base_theme(font_base_size, n_cols = cols_page)
 
   if (!outliers_highlight) {
     p <- p + ggplot2::guides(shape = "none") # Do not show shape legend
@@ -428,5 +440,11 @@ plot_rt_vs_chain <- function(
       cli::cli_alert_success("No potential annotation outliers were detected.")
     }
   }
-  p
+
+  p +
+    mrmhub_style_layer(
+      font_base_size = font_base_size,
+      legend_position = legend_position,
+      legend_size = legend_size
+    )
 }
