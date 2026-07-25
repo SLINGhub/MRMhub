@@ -53,6 +53,9 @@
 #' @template font_base_size
 #' @template legend_args
 #' @template legend_args_core
+#' @template title
+#' @param aspect_ratio Panel aspect ratio (height/width). Default `1` gives a
+#'   square score plot (PC1/PC2 on the same visual scale); `NULL` leaves it free.
 #' @param ellipse_confidence_level A numeric value indicating the confidence level
 #' for the ellipses. Default is 0.95.
 #' @param ellipse_linewidth A numeric value indicating the line width of the
@@ -97,11 +100,14 @@ plot_pca <- function(
   point_size = 1.5,
   point_alpha = 0.7,
   font_base_size = 11,
-  legend_position = "inside-tr",
+  legend_position = "right",
   legend_size = NULL,
+  show_legend_title = TRUE,
+  title = NULL,
   strip_text_size = NULL,
-  show_legend_title = NULL,
-  legend_bg_alpha = 0.6,
+  strip_bg_color = NULL,
+  legend_bg_alpha = NULL,
+  aspect_ratio = 1,
 
   ellipse_confidence_level = 0.95,
   ellipse_linewidth = 1,
@@ -378,6 +384,13 @@ plot_pca <- function(
   }
 
   if (ellipse_variable != "none") {
+    # The point legend already encodes qc_type, so drop the redundant qc_type
+    # ellipse legend title; keep it for other variables (e.g. batch_id).
+    ellipse_legend_title <- if (ellipse_variable == "qc_type") {
+      NULL
+    } else {
+      ellipse_variable
+    }
     p <- p +
       suppressWarnings(
         stat_ellipse(
@@ -407,7 +420,7 @@ plot_pca <- function(
       ggplot2::guides(
         fill = if (ellipse_fill) {
           ggplot2::guide_legend(
-            title = ellipse_variable,
+            title = ellipse_legend_title,
             override.aes = list(size = 1, alpha = ellipse_alpha)
           )
         } else {
@@ -415,12 +428,12 @@ plot_pca <- function(
         },
         color = if (ellipse_fill) {
           ggplot2::guide_legend(
-            title = ellipse_variable
+            title = ellipse_legend_title
             #override.aes = list(size = 1, alpha = ellipse_alpha)
           )
         } else {
           ggplot2::guide_legend(
-            title = ellipse_variable
+            title = ellipse_legend_title
             #override.aes = list(size = 1, alpha = 0.0)
           )
         }
@@ -436,14 +449,17 @@ plot_pca <- function(
       alpha = point_alpha
     ) +
     ggplot2::scale_color_manual(
+      name = NULL,
       values = pkg.env$qc_type_annotation$qc_type_col,
       drop = TRUE
     ) +
     ggplot2::scale_fill_manual(
+      name = NULL,
       values = pkg.env$qc_type_annotation$qc_type_fillcol,
       drop = TRUE
     ) +
     ggplot2::scale_shape_manual(
+      name = NULL,
       values = pkg.env$qc_type_annotation$qc_type_shape,
       drop = TRUE
     )
@@ -459,8 +475,7 @@ plot_pca <- function(
     mrmhub_base_theme(font_base_size) +
     ggplot2::theme(
       axis.title.x = ggplot2::element_text(size = font_base_size * 1.2),
-      axis.title.y = ggplot2::element_text(size = font_base_size * 1.2),
-      aspect.ratio = 1
+      axis.title.y = ggplot2::element_text(size = font_base_size * 1.2)
     )
 
   p <- p +
@@ -469,8 +484,11 @@ plot_pca <- function(
       legend_position = legend_position,
       legend_size = legend_size,
       strip_text_size = strip_text_size,
+      strip_bg_color = strip_bg_color,
       show_legend_title = show_legend_title,
-      legend_bg_alpha = legend_bg_alpha
+      title = title,
+      legend_bg_alpha = legend_bg_alpha,
+      aspect_ratio = aspect_ratio
     )
 
   mh_success(
@@ -510,6 +528,7 @@ plot_pca <- function(
 #' @template font_base_size
 #' @template legend_args
 #' @template legend_args_core
+#' @template title
 #'
 #' @return A `ggplot` object with PCA loadings plot
 #'
@@ -533,8 +552,10 @@ plot_pca_loading <- function(
   font_base_size = 11,
   legend_position = "right",
   legend_size = NULL,
+  show_legend_title = TRUE,
+  title = NULL,
   strip_text_size = NULL,
-  show_legend_title = NULL,
+  strip_bg_color = NULL,
   legend_bg_alpha = NULL
 ) {
   # ... (all data prep code remains the same) ...
@@ -727,7 +748,9 @@ plot_pca_loading <- function(
       legend_position = legend_position,
       legend_size = legend_size,
       strip_text_size = strip_text_size,
+      strip_bg_color = strip_bg_color,
       show_legend_title = show_legend_title,
+      title = title,
       legend_bg_alpha = legend_bg_alpha
     )
 }

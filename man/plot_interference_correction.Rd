@@ -24,6 +24,8 @@ plot_interference_correction(
   font_base_size = 11,
   legend_position = "right",
   legend_size = NULL,
+  show_legend_title = TRUE,
+  title = NULL,
   angle_x = 45
 )
 }
@@ -94,6 +96,12 @@ in the Usage section above.}
 \verb{<= 3}) or absolute point size (when \verb{> 3}) that scales the whole legend:
 text, title, key and the plotted symbols. \code{NULL} (default) leaves the
 legend unchanged.}
+
+\item{show_legend_title}{Logical. \code{TRUE} (default) keeps the legend title;
+\code{FALSE} hides it.}
+
+\item{title}{Optional plot title. \code{NULL} (default) or \code{NA} shows no title; a
+character string is shown as the title.}
 
 \item{angle_x}{Numeric. Angle of the x-axis text labels. Default is \code{45}.}
 }

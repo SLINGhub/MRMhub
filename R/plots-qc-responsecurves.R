@@ -39,6 +39,9 @@
 #' @template font_base_size
 #' @template autoscale
 #' @template legend_args
+#' @template title
+#' @template strip_text_size
+#' @template strip_bg_color
 #' @param rows_page Number of rows of plots per page. Used for pagination in
 #'   `curve_layout = "overlay"` and `"cols"`. Ignored in `curve_layout = "rows"`.
 #' @param cols_page Number of columns of plots per page. Used for pagination in
@@ -104,6 +107,10 @@ plot_responsecurves <- function(
   autoscale = TRUE,
   legend_position = "right",
   legend_size = NULL,
+  show_legend_title = TRUE,
+  title = NULL,
+  strip_text_size = NULL,
+  strip_bg_color = NULL,
 
   # Layout settings (for multi-page PDF)
   rows_page = 4,
@@ -326,7 +333,11 @@ plot_responsecurves <- function(
       style_layer = mrmhub_style_layer(
         font_base_size = font_base_size,
         legend_position = legend_position,
-        legend_size = legend_size
+        legend_size = legend_size,
+        show_legend_title = show_legend_title,
+        title = title,
+        strip_text_size = strip_text_size,
+        strip_bg_color = strip_bg_color
       ),
       x_axis_title = x_axis_unit,
       color_curves = color_curves,

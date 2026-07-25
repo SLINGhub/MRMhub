@@ -11,6 +11,7 @@
 #' @template data_mexp
 #' @template font_base_size
 #' @template legend_args
+#' @template title
 #'
 #' @return A `ggplot` object showing the feature QC filtering summary by feature class.
 #'
@@ -32,7 +33,9 @@ plot_qc_summary_byclass <- function(
   data = NULL,
   font_base_size = 11,
   legend_position = "right",
-  legend_size = NULL
+  legend_size = NULL,
+  show_legend_title = TRUE,
+  title = NULL
 ) {
   check_data(data)
 
@@ -256,7 +259,9 @@ plot_qc_summary_byclass <- function(
     mrmhub_style_layer(
       font_base_size = font_base_size,
       legend_position = legend_position,
-      legend_size = legend_size
+      legend_size = legend_size,
+      show_legend_title = show_legend_title,
+      title = title
     )
 }
 

@@ -25,6 +25,7 @@
 #' @param box_alpha Numeric. Transparency of the boxplot. Default is `0.3`.
 #' @param angle_x Numeric. Angle of the x-axis text labels. Default is `45`.
 #' @template legend_args
+#' @template title
 #'
 #' @return A `ggplot` object showing the grouped standardized beeswarm plot.
 #' @family QC plots
@@ -50,6 +51,8 @@ plot_matrixeffects <- function(
   font_base_size = 11,
   legend_position = "right",
   legend_size = NULL,
+  show_legend_title = TRUE,
+  title = NULL,
   angle_x = 45
 ) {
   check_data(data)
@@ -193,10 +196,12 @@ plot_matrixeffects <- function(
     #   y = ""
     # ) +
     ggplot2::scale_color_manual(
+      name = NULL,
       values = pkg.env$qc_type_annotation$qc_type_col,
       drop = TRUE
     ) +
     ggplot2::scale_fill_manual(
+      name = NULL,
       values = pkg.env$qc_type_annotation$qc_type_fillcol,
       drop = TRUE
     ) +
@@ -212,6 +217,8 @@ plot_matrixeffects <- function(
     mrmhub_style_layer(
       font_base_size = font_base_size,
       legend_position = legend_position,
-      legend_size = legend_size
+      legend_size = legend_size,
+      show_legend_title = show_legend_title,
+      title = title
     )
 }

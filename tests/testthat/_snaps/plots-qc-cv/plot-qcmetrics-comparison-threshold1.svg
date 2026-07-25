@@ -503,11 +503,10 @@
 <polyline points='16.77,364.69 17.89,364.69 ' style='stroke-width: 0.53; stroke: #666666; stroke-linecap: butt;' />
 <text x='346.13' y='571.77' text-anchor='middle' style='font-size: 6.00px; font-weight: bold; font-family: sans;' textLength='57.02px' lengthAdjust='spacingAndGlyphs'>QC metric: rt_median</text>
 <text transform='translate(7.12,290.33) rotate(-90)' text-anchor='middle' style='font-size: 6.00px; font-weight: bold; font-family: sans;' textLength='78.71px' lengthAdjust='spacingAndGlyphs'>QC metric: norm_intensity_cv</text>
-<rect x='680.36' y='274.52' width='36.65' height='31.62' style='stroke-width: 0.58; stroke: none; fill: #FFFFFF;' />
-<text x='683.35' y='282.26' style='font-size: 6.00px; font-family: sans;' textLength='22.01px' lengthAdjust='spacingAndGlyphs'>QC type</text>
-<rect x='683.35' y='285.87' width='17.28' height='17.28' style='stroke-width: 0.58; stroke: none; fill: #FFFFFF;' />
-<circle cx='691.99' cy='294.51' r='0.89' style='stroke-width: 0.71; stroke: #DB0202; stroke-opacity: 0.50; fill: #DB0202; fill-opacity: 0.50;' />
-<text x='703.62' y='296.16' style='font-size: 4.80px; font-family: sans;' textLength='10.41px' lengthAdjust='spacingAndGlyphs'>BQC</text>
+<rect x='680.36' y='278.70' width='36.65' height='23.26' style='stroke-width: 0.58; stroke: none; fill: #FFFFFF;' />
+<rect x='683.35' y='281.69' width='17.28' height='17.28' style='stroke-width: 0.58; stroke: none; fill: #FFFFFF;' />
+<circle cx='691.99' cy='290.33' r='0.89' style='stroke-width: 0.71; stroke: #DB0202; stroke-opacity: 0.50; fill: #DB0202; fill-opacity: 0.50;' />
+<text x='703.62' y='291.98' style='font-size: 4.80px; font-family: sans;' textLength='10.41px' lengthAdjust='spacingAndGlyphs'>BQC</text>
 <text x='17.89' y='7.12' style='font-size: 6.00px; font-family: sans;' textLength='102.74px' lengthAdjust='spacingAndGlyphs'>plot_qcmetrics_comparison threshold1</text>
 </g>
 </svg>

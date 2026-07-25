@@ -28,6 +28,7 @@
 #' @param batch_fill_color Color of the batch shaded areas.
 #' @template font_base_size
 #' @template legend_args
+#' @template title
 #' @return A `ggplot` object representing the run sequence plot.
 #' @family QC plots
 #' @export
@@ -44,7 +45,9 @@ plot_runsequence <- function(
   batch_fill_color = "grey93",
   font_base_size = 11,
   legend_position = NULL,
-  legend_size = NULL
+  legend_size = NULL,
+  show_legend_title = TRUE,
+  title = NULL
 ) {
   # Check if data is valid
   check_data(data)
@@ -300,13 +303,15 @@ plot_runsequence <- function(
   }
 
   # Color mapping
-  p <- p + scale_color_manual(values = qc_colors, name = "QC type")
+  p <- p + scale_color_manual(values = qc_colors, name = NULL)
 
   p +
     mrmhub_style_layer(
       font_base_size = font_base_size,
       legend_position = legend_position,
-      legend_size = legend_size
+      legend_size = legend_size,
+      show_legend_title = show_legend_title,
+      title = title
     )
 }
 
@@ -376,6 +381,7 @@ plot_runsequence <- function(
 #' @template font_base_size
 #' @template legend_args
 #' @template legend_args_core
+#' @template title
 #' @param relative_log_abundances Logical, whether to use relative log abundances (RLA) or just log-transformed values
 #' @param show_plot Logical, whether to display the plot. Default is `TRUE`.
 #' @return A list with the `ggplot` object representing the RLA plot and a table with detected outliers if `outlier_detection = TRUE`.
@@ -428,8 +434,10 @@ plot_rla_boxplot <- function(
   font_base_size = 11,
   legend_position = "right",
   legend_size = NULL,
+  show_legend_title = TRUE,
+  title = NULL,
   strip_text_size = NULL,
-  show_legend_title = NULL,
+  strip_bg_color = NULL,
   legend_bg_alpha = NULL,
   relative_log_abundances = TRUE,
   show_plot = TRUE
@@ -1099,7 +1107,9 @@ plot_rla_boxplot <- function(
       legend_position = legend_position,
       legend_size = legend_size,
       strip_text_size = strip_text_size,
+      strip_bg_color = strip_bg_color,
       show_legend_title = show_legend_title,
+      title = title,
       legend_bg_alpha = legend_bg_alpha
     )
 

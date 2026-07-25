@@ -35,19 +35,22 @@ anything the arguments do not cover (see [With `+ theme()`](#with-theme)).
 
 Every plotting function accepts the three common arguments. The higher-use QC plots — `plot_pca()`,
 `plot_pca_loading()`, `plot_runscatter()`, `plot_rla_boxplot()`, `plot_normalization_qc()` and
-`plot_qcmetrics_comparison()` — accept three further arguments for finer legend and facet control.
+`plot_qcmetrics_comparison()` — accept further arguments for finer legend and facet control.
 
 | Argument | Applies to | Effect |
 |----------|-----------|--------|
 | `font_base_size` | all plots | Base font size in points; all plot text scales proportionally |
 | `legend_position` | all plots | Legend placement (keyword, corner, or coordinate) |
 | `legend_size` | all plots | Scales the whole legend: text, title, key and plotted symbols |
-| `strip_text_size` | core QC plots | Facet strip label size |
-| `show_legend_title` | core QC plots | `FALSE` hides the legend title |
+| `show_legend_title` | all plots | `FALSE` hides the legend title |
+| `title` | all plots | A string sets the plot title; `NULL`/`NA` show none |
+| `strip_text_size` | faceted plots | Facet strip label size |
+| `strip_bg_color` | faceted plots | Facet strip background fill (strip text auto-contrasts light/dark) |
 | `legend_bg_alpha` | core QC plots | Opacity of a white background box behind an inside legend |
+| `aspect_ratio` | `plot_pca()` | Panel aspect ratio; default `1` (square score plot) |
 
-Arguments left at their default (`NULL`, or the per-function legend default) leave that aspect of
-the plot at the house setting. Setting one overrides only that property.
+Arguments left at their default (`NULL`, or the per-function default) leave that aspect of the
+plot at the house setting. Setting one overrides only that property.
 
 ## Placing the legend
 
@@ -61,9 +64,8 @@ inside the panel, or a raw coordinate.
 | `"inside-tr"`, `"inside-tl"`, `"inside-br"`, `"inside-bl"` | Inside the panel, anchored to that corner |
 | `c(x, y)` | Inside the panel at that coordinate (`0`–`1`) |
 
-Most plots default to `"right"`. `plot_pca()` defaults to `"inside-tr"` with a translucent
-background (`legend_bg_alpha = 0.6`), since a square score plot usually has a free corner. For a
-faceted plot with a legend drawn over the points, the background box keeps it readable:
+All plots default to `"right"`. For a legend drawn inside the panel over the points, a
+translucent background box (`legend_bg_alpha`) keeps it readable:
 
 ```{r}
 plot_normalization_qc(mexp,

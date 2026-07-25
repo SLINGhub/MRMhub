@@ -45,6 +45,8 @@ plot_interference_correction <- function(
   font_base_size = 11,
   legend_position = "right",
   legend_size = NULL,
+  show_legend_title = TRUE,
+  title = NULL,
   angle_x = 45
 ) {
   check_data(data)
@@ -209,10 +211,12 @@ plot_interference_correction <- function(
     #   y = ""
     # ) +
     ggplot2::scale_color_manual(
+      name = NULL,
       values = pkg.env$qc_type_annotation$qc_type_col,
       drop = TRUE
     ) +
     ggplot2::scale_fill_manual(
+      name = NULL,
       values = pkg.env$qc_type_annotation$qc_type_fillcol,
       drop = TRUE
     ) +
@@ -239,7 +243,9 @@ plot_interference_correction <- function(
     mrmhub_style_layer(
       font_base_size = font_base_size,
       legend_position = legend_position,
-      legend_size = legend_size
+      legend_size = legend_size,
+      show_legend_title = show_legend_title,
+      title = title
     )
 }
 

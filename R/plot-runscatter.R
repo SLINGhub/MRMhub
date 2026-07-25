@@ -106,6 +106,7 @@
 #' @template autoscale
 #' @template legend_args
 #' @template legend_args_core
+#' @template title
 #' @param use_dingbats Logical, whether to use Dingbats font in the PDF output for improved plotting speed. Default is `TRUE`. Set to `FALSE` if your PDF viewer does not show points correctly.
 #' @param show_progress Logical, whether to show a progress bar. Default is `TRUE`.
 #'
@@ -186,8 +187,10 @@ plot_runscatter <- function(
   autoscale = TRUE,
   legend_position = "right",
   legend_size = NULL,
+  show_legend_title = TRUE,
+  title = NULL,
   strip_text_size = NULL,
-  show_legend_title = NULL,
+  strip_bg_color = NULL,
   legend_bg_alpha = NULL,
 
   # Layout settings
@@ -605,7 +608,9 @@ plot_runscatter <- function(
       legend_position = legend_position,
       legend_size = legend_size,
       strip_text_size = strip_text_size,
+      strip_bg_color = strip_bg_color,
       show_legend_title = show_legend_title,
+      title = title,
       legend_bg_alpha = legend_bg_alpha
     ),
     point_border_width = point_border_width,

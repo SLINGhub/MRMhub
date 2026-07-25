@@ -32,6 +32,9 @@
 #' @template font_base_size
 #' @template autoscale
 #' @template legend_args
+#' @template title
+#' @template strip_text_size
+#' @template strip_bg_color
 #'
 #' @return A `ggplot` object representing faceted scatter plots
 #'
@@ -55,7 +58,11 @@ plot_rt_vs_chain <- function(
   font_base_size = NULL,
   autoscale = TRUE,
   legend_position = "right",
-  legend_size = NULL
+  legend_size = NULL,
+  show_legend_title = TRUE,
+  title = NULL,
+  strip_text_size = NULL,
+  strip_bg_color = NULL
 ) {
   .sizes <- mrmhub_autoscale_sizes(
     cols_page,
@@ -445,6 +452,10 @@ plot_rt_vs_chain <- function(
     mrmhub_style_layer(
       font_base_size = font_base_size,
       legend_position = legend_position,
-      legend_size = legend_size
+      legend_size = legend_size,
+      show_legend_title = show_legend_title,
+      title = title,
+      strip_text_size = strip_text_size,
+      strip_bg_color = strip_bg_color
     )
 }

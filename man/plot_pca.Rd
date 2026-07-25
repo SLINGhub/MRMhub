@@ -26,11 +26,14 @@ plot_pca(
   point_size = 1.5,
   point_alpha = 0.7,
   font_base_size = 11,
-  legend_position = "inside-tr",
+  legend_position = "right",
   legend_size = NULL,
+  show_legend_title = TRUE,
+  title = NULL,
   strip_text_size = NULL,
-  show_legend_title = NULL,
-  legend_bg_alpha = 0.6,
+  strip_bg_color = NULL,
+  legend_bg_alpha = NULL,
+  aspect_ratio = 1,
   ellipse_confidence_level = 0.95,
   ellipse_linewidth = 1,
   ellipse_fill = TRUE,
@@ -124,16 +127,26 @@ in the Usage section above.}
 text, title, key and the plotted symbols. \code{NULL} (default) leaves the
 legend unchanged.}
 
+\item{show_legend_title}{Logical. \code{TRUE} (default) keeps the legend title;
+\code{FALSE} hides it.}
+
+\item{title}{Optional plot title. \code{NULL} (default) or \code{NA} shows no title; a
+character string is shown as the title.}
+
 \item{strip_text_size}{Optional facet strip text size, as a multiplier of
 \code{font_base_size} (when \verb{<= 3}) or an absolute point size (when \verb{> 3}).
-\code{NULL} (default) leaves the strip text unchanged.}
+\code{NULL} (default) inherits from \code{font_base_size}.}
 
-\item{show_legend_title}{Optional logical. \code{FALSE} hides the legend title.
-\code{NULL} (default) keeps the current title.}
+\item{strip_bg_color}{Optional facet strip background fill colour. The strip
+text colour is set automatically for contrast (white on a dark fill, black
+on a light one). \code{NULL} (default) keeps the house dark-navy strips.}
 
 \item{legend_bg_alpha}{Optional opacity (\verb{[0, 1]}) of a white legend
 background box, useful for a readable inside legend drawn over points.
 \code{NULL} (default) leaves the legend background unchanged.}
+
+\item{aspect_ratio}{Panel aspect ratio (height/width). Default \code{1} gives a
+square score plot (PC1/PC2 on the same visual scale); \code{NULL} leaves it free.}
 
 \item{ellipse_confidence_level}{A numeric value indicating the confidence level
 for the ellipses. Default is 0.95.}

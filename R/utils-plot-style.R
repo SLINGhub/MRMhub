@@ -119,9 +119,15 @@ mrmhub_autoscale_sizes <- function(
 #'   key size, and the plotted symbols/glyphs (via `override.aes`).
 #' @param strip_text_size Facet strip text size, as a multiplier of
 #'   `font_base_size` (`<= 3`) or an absolute point size (`> 3`).
+#' @param strip_bg_color Facet strip background fill colour. The strip text
+#'   colour is set automatically for contrast: white on a dark background,
+#'   black on a light one.
 #' @param show_legend_title `FALSE` blanks the legend title.
+#' @param title Plot title: `NULL` (default) leaves the plot's own title (none),
+#'   `NA` blanks it, a string sets it.
 #' @param legend_bg_alpha Opacity (`[0, 1]`) of a white legend background box,
 #'   for a readable inside legend drawn over points.
+#' @param aspect_ratio Panel aspect ratio (height/width); `NULL` leaves it free.
 #' @param legend_aes Aesthetics whose glyph size is overridden when
 #'   `legend_size` is set. Defaults to `"colour"`, which resizes the shared key
 #'   of the (usually merged colour/shape/fill) legend without emitting ggplot's
@@ -135,8 +141,11 @@ mrmhub_style_layer <- function(
   legend_position = NULL,
   legend_size = NULL,
   strip_text_size = NULL,
+  strip_bg_color = NULL,
   show_legend_title = NULL,
+  title = NULL,
   legend_bg_alpha = NULL,
+  aspect_ratio = NULL,
   legend_aes = "colour"
 ) {
   ref <- if (is.null(font_base_size)) 8 else font_base_size
@@ -193,15 +202,42 @@ mrmhub_style_layer <- function(
     layers <- c(layers, list(do.call(ggplot2::guides, overrides)))
   }
 
+  strip_text_args <- list()
   if (!is.null(strip_text_size)) {
-    theme_args$strip.text <- ggplot2::element_text(
-      size = resolve_size(strip_text_size)
+    strip_text_args$size <- resolve_size(strip_text_size)
+  }
+  if (!is.null(strip_bg_color)) {
+    theme_args$strip.background <- ggplot2::element_rect(
+      fill = strip_bg_color,
+      colour = NA
     )
+    # Pick a legible text colour: white on a dark fill, black on a light one
+    # (perceived luminance, 0-255 scale).
+    rgb <- grDevices::col2rgb(strip_bg_color)[, 1]
+    lum <- 0.299 * rgb[[1]] + 0.587 * rgb[[2]] + 0.114 * rgb[[3]]
+    strip_text_args$colour <- if (lum < 140) "white" else "black"
+  }
+  if (length(strip_text_args) > 0) {
+    theme_args$strip.text <- do.call(ggplot2::element_text, strip_text_args)
   }
 
   # Placed after legend_size so an explicit FALSE wins over the sized title.
   if (isFALSE(show_legend_title)) {
     theme_args$legend.title <- ggplot2::element_blank()
+  }
+
+  # `title`: NULL leaves the plot's own title (none, for these plots); NA blanks
+  # it explicitly; a string sets it.
+  if (!is.null(title)) {
+    if (length(title) == 1 && is.na(title)) {
+      theme_args$plot.title <- ggplot2::element_blank()
+    } else {
+      layers <- c(layers, list(ggplot2::ggtitle(title)))
+    }
+  }
+
+  if (!is.null(aspect_ratio)) {
+    theme_args$aspect.ratio <- aspect_ratio
   }
 
   if (!is.null(legend_bg_alpha)) {

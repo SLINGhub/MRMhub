@@ -47,6 +47,7 @@
 #' @template autoscale
 #' @template legend_args
 #' @template legend_args_core
+#' @template title
 #'
 #' @return A `ggplot` object representing the scatter plot comparing CV values
 #'   before and after normalization.
@@ -103,8 +104,10 @@ plot_normalization_qc <- function(
   autoscale = TRUE,
   legend_position = "right",
   legend_size = NULL,
+  show_legend_title = TRUE,
+  title = NULL,
   strip_text_size = NULL,
-  show_legend_title = NULL,
+  strip_bg_color = NULL,
   legend_bg_alpha = NULL
 ) {
   check_data(data)
@@ -220,8 +223,10 @@ plot_normalization_qc <- function(
     autoscale = autoscale,
     legend_position = legend_position,
     legend_size = legend_size,
-    strip_text_size = strip_text_size,
     show_legend_title = show_legend_title,
+    title = title,
+    strip_text_size = strip_text_size,
+    strip_bg_color = strip_bg_color,
     legend_bg_alpha = legend_bg_alpha
   )
 }
@@ -285,6 +290,7 @@ plot_normalization_qc <- function(
 #' @template autoscale
 #' @template legend_args
 #' @template legend_args_core
+#' @template title
 #'
 #' @return A `ggplot` object representing the scatter plot.
 #'
@@ -328,8 +334,10 @@ plot_qcmetrics_comparison <- function(
   autoscale = TRUE,
   legend_position = "right",
   legend_size = NULL,
+  show_legend_title = TRUE,
+  title = NULL,
   strip_text_size = NULL,
-  show_legend_title = NULL,
+  strip_bg_color = NULL,
   legend_bg_alpha = NULL
 ) {
   # Check if data is provided and valid
@@ -612,12 +620,12 @@ plot_qcmetrics_comparison <- function(
 
   g <- g +
     ggplot2::scale_color_manual(
-      name = "QC type",
+      name = NULL,
       values = c(pkg.env$qc_type_annotation$qc_type_col, "NONE" = point_color),
       drop = TRUE
     ) +
     ggplot2::scale_fill_manual(
-      name = "QC type",
+      name = NULL,
       values = c(
         pkg.env$qc_type_annotation$qc_type_fillcol,
         "NONE" = point_fill
@@ -625,7 +633,7 @@ plot_qcmetrics_comparison <- function(
       drop = TRUE
     ) +
     ggplot2::scale_shape_manual(
-      name = "QC type",
+      name = NULL,
       values = c(
         pkg.env$qc_type_annotation$qc_type_shape,
         "NONE" = point_shape
@@ -685,7 +693,9 @@ plot_qcmetrics_comparison <- function(
       legend_position = legend_position,
       legend_size = legend_size,
       strip_text_size = strip_text_size,
+      strip_bg_color = strip_bg_color,
       show_legend_title = show_legend_title,
+      title = title,
       legend_bg_alpha = legend_bg_alpha
     )
 

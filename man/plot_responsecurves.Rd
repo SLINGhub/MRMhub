@@ -25,6 +25,10 @@ plot_responsecurves(
   autoscale = TRUE,
   legend_position = "right",
   legend_size = NULL,
+  show_legend_title = TRUE,
+  title = NULL,
+  strip_text_size = NULL,
+  strip_bg_color = NULL,
   rows_page = 4,
   cols_page = 5,
   curve_layout = "overlay",
@@ -101,6 +105,20 @@ the single-plot defaults.}
 \verb{<= 3}) or absolute point size (when \verb{> 3}) that scales the whole legend:
 text, title, key and the plotted symbols. \code{NULL} (default) leaves the
 legend unchanged.}
+
+\item{show_legend_title}{Logical. \code{TRUE} (default) keeps the legend title;
+\code{FALSE} hides it.}
+
+\item{title}{Optional plot title. \code{NULL} (default) or \code{NA} shows no title; a
+character string is shown as the title.}
+
+\item{strip_text_size}{Optional facet strip text size, as a multiplier of
+\code{font_base_size} (when \verb{<= 3}) or an absolute point size (when \verb{> 3}).
+\code{NULL} (default) inherits from \code{font_base_size}.}
+
+\item{strip_bg_color}{Optional facet strip background fill colour. The strip
+text colour is set automatically for contrast (white on a dark fill, black
+on a light one). \code{NULL} (default) keeps the house dark-navy strips.}
 
 \item{rows_page}{Number of rows of plots per page. Used for pagination in
 \code{curve_layout = "overlay"} and \code{"cols"}. Ignored in \code{curve_layout = "rows"}.}
