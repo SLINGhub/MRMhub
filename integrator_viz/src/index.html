@@ -39,6 +39,15 @@
     </style>
     <script src="d3.v7.min.js"></script>
     <script type="module" src="index.js"></script>
+    <script type="module">
+      // Show the app version in the window title (no-op outside Tauri).
+      window.__TAURI__?.app
+        ?.getVersion?.()
+        .then((v) => {
+          document.title = `MRMhub-viz ${v}`;
+        })
+        .catch(() => {});
+    </script>
   </head>
   <body>
     <!--
