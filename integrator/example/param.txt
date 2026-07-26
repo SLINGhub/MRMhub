@@ -1,0 +1,18 @@
+# INTEGRATOR parameter file (param.txt) — TEMPLATE
+# Must sit in the same folder as the MRMhub executable; paths are relative to it.
+# Edit the values for your data. Keys and types below match the parser exactly.
+
+mzML_files      = "mzML/*.mzML"       # glob for the converted mzML chromatograms
+transition_list = "feature_list.csv"  # transition / assay definition file
+batch_info      = "run_order.csv"     # acquisition order + sample roles
+
+num_threads = 4                       # parallel worker threads (integer)
+
+mz_tol = 0.5                          # m/z matching tolerance
+RT_tol = 0.2                          # retention-time matching tolerance
+
+peak_width     = [0.03, 0.05, 0.20, 0.50]  # expected peak-width bounds (4 values)
+RT_shift       = [-0.30, 0.30]             # RT-shift search window (2 values)
+RT_shift_bound = 0.50                      # maximum allowed RT shift
+
+# crop_window = [0.5, 0.5]            # optional: crop EIC to RT ± window (2 values)

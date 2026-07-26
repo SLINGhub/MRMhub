@@ -1,52 +1,32 @@
 # INTEGRATOR
 
 **INTEGRATOR** is the raw-data processing module of [MRMhub](https://github.com/SLINGhub/MRMhub):
-automated peak detection, picking, and integration for targeted Multiple Reaction Monitoring (MRM)
-mass-spectrometry data. It is a stand-alone application — it does **not** depend on the `mrmhub` R
-package and ships as a pre-built executable.
+automated peak detection, picking, and integration for targeted MRM mass-spectrometry data. It is a
+stand-alone executable and does **not** depend on the `mrmhub` R package. It reads a `param.txt` and
+input files from its own folder and writes `long.csv` / `quant_raw.csv`, which the QUANT R package
+ingests via `mrmhub::import_data_mrmhub()`. A companion viewer, **MRMhub-viz**, reviews the results.
 
-## What it does
+## Install
 
-INTEGRATOR reads its configuration from a `param.txt` file in the working directory, processes the
-input chromatograms, and emits two tables consumed by the QUANT R package:
+INTEGRATOR is a portable executable — no installation. Download the archive for your platform, unzip,
+and run `MRMhub` from the folder (keep one copy per analysis project). Download links, first-launch
+security steps, input files, and full usage are in the
+**[INTEGRATOR manual](https://slinghub.github.io/MRMhub/integrator/)**.
 
-- `quant_raw.csv` — wide-format peak areas (feature × sample)
-- `long.csv` — long-format peaks with areas, retention times, and per-pair parameters
+## Build from source
 
-The two MRMhub tools are coupled **only** through these files: INTEGRATOR writes them, then
-`mrmhub::import_data_mrmhub()` ingests `long.csv`. There are no shared code paths.
-
-A companion visualizer (`MRMhub-viz`) lets you inspect every transition's integration result, and
-`MRMhub_plot.r` (base R + `parallel`, no `mrmhub` dependency) renders per-transition PDFs in the
-executable's "Step 4".
-
-## Install / run
-
-Download the latest pre-built executable for macOS (Apple Silicon) or Windows from the
-[Releases page](https://github.com/SLINGhub/MRMhub/releases), unzip, and run. First-launch security
-setup and a full walkthrough are in the
-[INTEGRATOR Manual](https://slinghub.github.io/MRMhub/integrator-manual.html).
-
-## Building from source
-
-> **Note:** INTEGRATOR is being rewritten in Rust. The Rust crate lives in this directory
-> (`integrator/Cargo.toml`).
-
-Once the Rust crate is in place:
+Requires **Rust** (stable, via [rustup](https://rustup.rs); edition 2024 needs Rust ≥ 1.85); on
+**Windows** also the MSVC C++ Build Tools.
 
 ```bash
 cd integrator
-cargo build --release
+cargo build --release        # → target/release/MRMhub  (MRMhub.exe on Windows)
 ```
 
-Releases are built and published automatically by
-[`.github/workflows/integrator-release.yml`](../.github/workflows/integrator-release.yml) when a
-GitHub Release is published — it cross-compiles the executable for macOS and Windows and attaches the
-binaries to the Release.
+`MRMhub --version` prints the version. At startup the executable runs from its own folder, so
+`param.txt`, the input files, and `MRMhub_plot.r` must sit next to it; step 4 (PDF plots) needs R
+(`Rscript`) on `PATH`.
 
-## Layout
+## Documentation
 
-| Path | Purpose |
-|------|---------|
-| `Cargo.toml`, `src/` | Rust crate (the executable) — *in progress* |
-| `MRMhub_plot.r` | Base-R per-transition PDF plotting, invoked by the executable |
+Full manual: <https://slinghub.github.io/MRMhub/integrator/>
