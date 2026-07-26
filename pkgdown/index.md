@@ -9,9 +9,9 @@
 
 **MRMhub-QUANT** turns targeted MRM feature intensities into curated, QC-filtered, quantified results. It is the post-processing module of [MRMhub](https://slinghub.github.io/MRMhub/), distributed as the R package `mrmhub` (`library(mrmhub)`), and works with any intensity data — from [MRMhub-INTEGRATOR](https://slinghub.github.io/MRMhub/integrator/), Skyline, Agilent MassHunter, or generic CSV files. MRMhub-QUANT features:
 
-- **Reproducible pipelines.** Create reproducible computational pipelines with QC vizualizations. Script, re-run, and share it.
-- **Flexible workflows.** Metabolomics and lipidomics data post-processing using dedicated customizable functions. 
-- **A single data object.** Data, metadata, and processing details are stored in single sharable data object (`MRMhubExperiment`).
+- **Reproducible pipelines.** Script, re-run, and share, with QC visualisations at every step.
+- **Flexible workflows.** Customisable functions for metabolomics and lipidomics post-processing.
+- **A single data object.** Data, metadata, and processing state live in one shareable `MRMhubExperiment`.
 
 <div style="margin: 1.5em 0 0.5em;">
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 182" role="img" aria-label="MRMhub-QUANT workflow in five stages, each with its key actions. Import and Validate: import data, add metadata, validate IDs, set run order. Quantify: ISTD normalisation, quantify by ISTD, calibration curves, reference calibration. Correct: drift correction, batch effects, interferences. QC and Filter: QC metrics, PCA and run-scatter, outlier detection, feature filtering. Report: Excel and CSV, mzTab-M, QC reports, shareable object." style="width: 100%; height: auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
@@ -54,10 +54,6 @@
 </svg>
 <p style="font-size: 0.85rem; color: #6c757d; margin-top: 0.25rem;">Visualise at each step with <a href="articles/manual-08-visualization.html">QC plots</a> — RunScatter, PCA, run-sequence, normalization QC.</p>
 </div>
-
-<p style="margin: 1em 0;">
-<a href="articles/tutorial-00-first-analysis.html" class="btn btn-primary" role="button">Run your first analysis (5 min) →</a>
-</p>
 
 Prefer point-and-click? `build_workflow()` opens a guided app that validates your data and metadata, warns about pipeline mismatches, and generates a downloadable Quarto (`.qmd`) workflow.
 
