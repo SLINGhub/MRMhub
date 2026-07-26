@@ -117,14 +117,14 @@ plot_calibrationcurves <- function(
   output_pdf = FALSE,
   path = NA,
   return_plots = FALSE,
-  point_size = 1.5,
+  point_size = NULL,
   point_color = NA,
   point_fill = NA,
   point_shape = NA,
   line_width = 0.7,
   line_color = "#4575b4",
   ribbon_fill = "#e6f6ff",
-  font_base_size = 8,
+  font_base_size = NULL,
   rows_page = 4,
   cols_page = 5,
   specific_page = NA,
@@ -133,6 +133,8 @@ plot_calibrationcurves <- function(
   show_progress = TRUE
 ) {
   check_data(data)
+  font_base_size <- resolve_plot_opt(font_base_size, "font_base_size", 8)
+  point_size <- resolve_plot_opt(point_size, "point_size", 1.5)
   rlang::arg_match(page_orientation, c("LANDSCAPE", "PORTRAIT"))
 
   variable_strip <- str_remove(variable, "feature_")

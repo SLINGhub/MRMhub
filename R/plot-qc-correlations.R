@@ -115,16 +115,18 @@ plot_feature_correlations <- function(
   cols_page = 5,
   specific_page = NA,
   page_orientation = "LANDSCAPE",
-  point_size = 1,
+  point_size = NULL,
   point_alpha = 0.8,
   point_stroke = 0.3,
   line_width = 0.5,
   line_color = "orange",
   line_alpha = 0.5,
-  font_base_size = 8,
+  font_base_size = NULL,
   show_progress = TRUE
 ) {
   check_data(data)
+  font_base_size <- resolve_plot_opt(font_base_size, "font_base_size", 8)
+  point_size <- resolve_plot_opt(point_size, "point_size", 1)
   rlang::arg_match(page_orientation, c("LANDSCAPE", "PORTRAIT"))
 
   variable <- str_remove(variable, "feature_")

@@ -43,19 +43,21 @@ plot_matrixeffects <- function(
   exclude_feature_filter = NA,
   min_median_value = NA,
   y_lim = c(-NA, NA),
-  point_size = 0.5,
+  point_size = NULL,
   dodge_width = 0.6,
   point_alpha = 0.3,
   box_alpha = 0.3,
   box_linewidth = 0.5,
-  font_base_size = 11,
-  legend_position = "right",
+  font_base_size = NULL,
+  legend_position = NULL,
   legend_size = NULL,
-  show_legend_title = TRUE,
+  show_legend_title = NULL,
   title = NULL,
   angle_x = 45
 ) {
   check_data(data)
+  font_base_size <- resolve_plot_opt(font_base_size, "font_base_size", 11)
+  point_size <- resolve_plot_opt(point_size, "point_size", 0.5)
   variable <- str_remove(variable, "feature_")
   rlang::arg_match(
     variable,

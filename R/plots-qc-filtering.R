@@ -31,13 +31,14 @@
 # TODO: add option to facet by batch (required qc matrix by batch)
 plot_qc_summary_byclass <- function(
   data = NULL,
-  font_base_size = 11,
-  legend_position = "right",
+  font_base_size = NULL,
+  legend_position = NULL,
   legend_size = NULL,
-  show_legend_title = TRUE,
+  show_legend_title = NULL,
   title = NULL
 ) {
   check_data(data)
+  font_base_size <- resolve_plot_opt(font_base_size, "font_base_size", 11)
 
   if (!data@is_filtered) {
     cli_abort(
@@ -292,9 +293,10 @@ plot_qc_summary_byclass <- function(
 plot_qc_summary_overall <- function(
   data = NULL,
   with_venn = TRUE,
-  font_base_size = 8
+  font_base_size = NULL
 ) {
   check_data(data)
+  font_base_size <- resolve_plot_opt(font_base_size, "font_base_size", 8)
 
   if (!data@is_filtered) {
     cli_abort(

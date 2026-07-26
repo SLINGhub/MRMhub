@@ -23,9 +23,9 @@ plot_responsecurves(
   label_wrap_width = 25,
   font_base_size = NULL,
   autoscale = TRUE,
-  legend_position = "right",
+  legend_position = NULL,
   legend_size = NULL,
-  show_legend_title = TRUE,
+  show_legend_title = NULL,
   title = NULL,
   strip_text_size = NULL,
   strip_bg_color = NULL,
@@ -87,8 +87,10 @@ lines using \code{label_wrap_width}. Default is \code{FALSE}.}
 \code{label_wrap = TRUE}. Default is \code{25}. Ignored when \code{label_wrap = FALSE}.}
 
 \item{font_base_size}{Numeric. Base font size (in points) for plot text; all
-plot text scales proportionally with this value. See the function's default
-in the Usage section above.}
+plot text scales proportionally with this value. \code{NULL} (default) uses the
+global default set by \code{\link[=mrmhub_set_plot_defaults]{mrmhub_set_plot_defaults()}} if one is in effect,
+otherwise an automatic size (derived from the facet-column count on paged
+plots, or the per-plot default shown in the Usage section above).}
 
 \item{autoscale}{Logical. When \code{TRUE} (default), \code{font_base_size} and
 \code{point_size} left as \code{NULL} are sized automatically from \code{cols_page} (more
@@ -99,15 +101,17 @@ the single-plot defaults.}
 \item{legend_position}{Optional legend placement. One of \code{"right"},
 \code{"left"}, \code{"top"}, \code{"bottom"}, \code{"none"}; a corner keyword \code{"inside-tr"},
 \code{"inside-tl"}, \code{"inside-br"}, \code{"inside-bl"}; or a numeric \code{c(x, y)} in
-\verb{[0, 1]} coordinates. \code{NULL} (default) keeps the current placement.}
+\verb{[0, 1]} coordinates. \code{NULL} (default) keeps the current placement, unless
+a global default is set with \code{\link[=mrmhub_set_plot_defaults]{mrmhub_set_plot_defaults()}}.}
 
 \item{legend_size}{Optional single multiplier of \code{font_base_size} (when
 \verb{<= 3}) or absolute point size (when \verb{> 3}) that scales the whole legend:
 text, title, key and the plotted symbols. \code{NULL} (default) leaves the
 legend unchanged.}
 
-\item{show_legend_title}{Logical. \code{TRUE} (default) keeps the legend title;
-\code{FALSE} hides it.}
+\item{show_legend_title}{Logical. \code{NULL} (default) keeps the legend title,
+unless a global default is set with \code{\link[=mrmhub_set_plot_defaults]{mrmhub_set_plot_defaults()}}; \code{FALSE}
+hides it, \code{TRUE} forces it shown.}
 
 \item{title}{Optional plot title. \code{NULL} (default) or \code{NA} shows no title; a
 character string is shown as the title.}

@@ -57,9 +57,9 @@ plot_rt_vs_chain <- function(
   line_transparency = 0.5,
   font_base_size = NULL,
   autoscale = TRUE,
-  legend_position = "right",
+  legend_position = NULL,
   legend_size = NULL,
-  show_legend_title = TRUE,
+  show_legend_title = NULL,
   title = NULL,
   strip_text_size = NULL,
   strip_bg_color = NULL

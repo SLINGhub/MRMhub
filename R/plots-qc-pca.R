@@ -97,12 +97,12 @@ plot_pca <- function(
   shared_labeltext_hide = NA,
   label_font_size = 3,
 
-  point_size = 1.5,
+  point_size = NULL,
   point_alpha = 0.7,
-  font_base_size = 11,
-  legend_position = "right",
+  font_base_size = NULL,
+  legend_position = NULL,
   legend_size = NULL,
-  show_legend_title = TRUE,
+  show_legend_title = NULL,
   title = NULL,
   strip_text_size = NULL,
   strip_bg_color = NULL,
@@ -118,6 +118,9 @@ plot_pca <- function(
   # Check and define arguments
 
   check_data(data)
+  # Fill sizes left unset from the global plot defaults, then the built-ins.
+  font_base_size <- resolve_plot_opt(font_base_size, "font_base_size", 11)
+  point_size <- resolve_plot_opt(point_size, "point_size", 1.5)
   variable <- str_remove(variable, "feature_")
   rlang::arg_match(
     variable,
@@ -549,10 +552,10 @@ plot_pca_loading <- function(
   include_feature_filter = NA,
   exclude_feature_filter = NA,
   min_median_value = NA,
-  font_base_size = 11,
-  legend_position = "right",
+  font_base_size = NULL,
+  legend_position = NULL,
   legend_size = NULL,
-  show_legend_title = TRUE,
+  show_legend_title = NULL,
   title = NULL,
   strip_text_size = NULL,
   strip_bg_color = NULL,
@@ -561,6 +564,7 @@ plot_pca_loading <- function(
   # ... (all data prep code remains the same) ...
 
   check_data(data)
+  font_base_size <- resolve_plot_opt(font_base_size, "font_base_size", 11)
   variable <- str_remove(variable, "feature_")
   rlang::arg_match(
     variable,

@@ -23,14 +23,14 @@ plot_calibrationcurves(
   output_pdf = FALSE,
   path = NA,
   return_plots = FALSE,
-  point_size = 1.5,
+  point_size = NULL,
   point_color = NA,
   point_fill = NA,
   point_shape = NA,
   line_width = 0.7,
   line_color = "#4575b4",
   ribbon_fill = "#e6f6ff",
-  font_base_size = 8,
+  font_base_size = NULL,
   rows_page = 4,
   cols_page = 5,
   specific_page = NA,
@@ -130,8 +130,10 @@ Default is \code{NA} which corresponds to the default shapes for QC types define
 \code{"#91bfdb40"}.}
 
 \item{font_base_size}{Numeric. Base font size (in points) for plot text; all
-plot text scales proportionally with this value. See the function's default
-in the Usage section above.}
+plot text scales proportionally with this value. \code{NULL} (default) uses the
+global default set by \code{\link[=mrmhub_set_plot_defaults]{mrmhub_set_plot_defaults()}} if one is in effect,
+otherwise an automatic size (derived from the facet-column count on paged
+plots, or the per-plot default shown in the Usage section above).}
 
 \item{rows_page}{Number of plot rows. Default is 4.}
 

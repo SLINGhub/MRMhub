@@ -112,6 +112,7 @@ Collate:
     'metadata-import.R'
     'mrmhub-cli.R'
     'mrmhub-package.R'
+    'plot-defaults.R'
     'plot-featureprofile.R'
     'plot-qc-correlations.R'
     'plot-qc-matrixeffects.R'

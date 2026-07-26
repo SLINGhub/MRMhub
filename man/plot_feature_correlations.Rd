@@ -25,13 +25,13 @@ plot_feature_correlations(
   cols_page = 5,
   specific_page = NA,
   page_orientation = "LANDSCAPE",
-  point_size = 1,
+  point_size = NULL,
   point_alpha = 0.8,
   point_stroke = 0.3,
   line_width = 0.5,
   line_color = "orange",
   line_alpha = 0.5,
-  font_base_size = 8,
+  font_base_size = NULL,
   show_progress = TRUE
 )
 }
@@ -118,8 +118,10 @@ points (0-1). Default is 0.8.}
 \item{line_alpha}{A numeric value indicating the transparency of the correlation line (0-1). Default is 0.5.}
 
 \item{font_base_size}{Numeric. Base font size (in points) for plot text; all
-plot text scales proportionally with this value. See the function's default
-in the Usage section above.}
+plot text scales proportionally with this value. \code{NULL} (default) uses the
+global default set by \code{\link[=mrmhub_set_plot_defaults]{mrmhub_set_plot_defaults()}} if one is in effect,
+otherwise an automatic size (derived from the facet-column count on paged
+plots, or the per-plot default shown in the Usage section above).}
 
 \item{show_progress}{Logical. If \code{TRUE}, displays a progress bar during
 plot creation.}

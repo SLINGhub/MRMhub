@@ -26,7 +26,7 @@ plot_abundanceprofile(
   x_label = NA,
   y_axis_position = "right",
   segment_width = 0.25,
-  font_base_size = 8,
+  font_base_size = NULL,
   grid_major_color = "grey50",
   grid_major_linewidth = 0.1,
   grid_minor_color = "grey50",
@@ -98,8 +98,10 @@ determined automatically from the data.}
 \item{segment_width}{A numeric value for the linewidth of the feature segments. Default is 0.25.}
 
 \item{font_base_size}{Numeric. Base font size (in points) for plot text; all
-plot text scales proportionally with this value. See the function's default
-in the Usage section above.}
+plot text scales proportionally with this value. \code{NULL} (default) uses the
+global default set by \code{\link[=mrmhub_set_plot_defaults]{mrmhub_set_plot_defaults()}} if one is in effect,
+otherwise an automatic size (derived from the facet-column count on paged
+plots, or the per-plot default shown in the Usage section above).}
 
 \item{grid_major_color}{Color for major grid lines. Default is "grey50".}
 

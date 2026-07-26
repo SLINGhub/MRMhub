@@ -1,3 +1,20 @@
+#' Resolve a plot appearance argument against the global defaults
+#'
+#' Internal helper implementing the precedence used by every appearance
+#' argument: an explicit (non-`NULL`) value always wins, then the global option
+#' `mrmhub.<name>` (set via `mrmhub_set_plot_defaults()`), then the built-in
+#' `default`.
+#'
+#' @param value The value passed to the plotting function (possibly `NULL`).
+#' @param name Option suffix, e.g. `"font_base_size"` for `mrmhub.font_base_size`.
+#' @param default Built-in fallback when neither an explicit value nor an option
+#'   is set.
+#' @return The resolved value.
+#' @noRd
+resolve_plot_opt <- function(value, name, default = NULL) {
+  value %||% getOption(paste0("mrmhub.", name), default)
+}
+
 #' Shared refined base theme for `plot_*()` functions
 #'
 #' Internal helper returning the common mrmhub plot theme layer, applied on top
@@ -65,6 +82,10 @@ mrmhub_autoscale_sizes <- function(
   point_size = NULL,
   autoscale = TRUE
 ) {
+  # Global defaults (mrmhub_set_plot_defaults()) fill any size left unset before
+  # the cols_page autoscale lookup; an explicitly passed value still wins.
+  font_base_size <- resolve_plot_opt(font_base_size, "font_base_size")
+  point_size <- resolve_plot_opt(point_size, "point_size")
   if (autoscale) {
     lut_font <- if (cols_page <= 2) {
       9
@@ -148,6 +169,16 @@ mrmhub_style_layer <- function(
   aspect_ratio = NULL,
   legend_aes = "colour"
 ) {
+  # Fill any argument left unset from the global defaults set by
+  # mrmhub_set_plot_defaults(); an explicit value passed by the caller wins.
+  # (font_base_size arrives already resolved from the plotting function, so this
+  # is a harmless no-op for it in the normal path.)
+  font_base_size <- resolve_plot_opt(font_base_size, "font_base_size")
+  legend_position <- resolve_plot_opt(legend_position, "legend_position")
+  legend_size <- resolve_plot_opt(legend_size, "legend_size")
+  show_legend_title <- resolve_plot_opt(show_legend_title, "show_legend_title")
+  strip_bg_color <- resolve_plot_opt(strip_bg_color, "strip_bg_color")
+
   ref <- if (is.null(font_base_size)) 8 else font_base_size
   # A size <= 3 is treated as a multiplier of the base font size, larger
   # values as absolute points -- matches the convention used in the workflows.

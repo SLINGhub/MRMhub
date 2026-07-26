@@ -52,6 +52,35 @@ Every plotting function accepts the three common arguments. The higher-use QC pl
 Arguments left at their default (`NULL`, or the per-function default) leave that aspect of the
 plot at the house setting. Setting one overrides only that property.
 
+## Setting defaults for a whole notebook
+
+The same appearance choices can be made once, for every subsequent plot, with
+`mrmhub_set_plot_defaults()`. This is convenient when a document targets a particular medium — a
+smaller base font and point size for a dense multi-panel report, say — and the choice should apply
+throughout without repeating it on each call.
+
+```{r}
+mrmhub_set_plot_defaults(font_base_size = 8, point_size = 0.8)
+```
+
+The resolution order for every argument is: a value passed explicitly to a plotting function wins,
+then the global default set here, then the function's built-in default (including the automatic
+`cols_page` sizing on faceted plots). A one-off call therefore still overrides the global setting:
+
+```{r}
+# uses the global font_base_size = 8 set above
+plot_pca(mexp, variable = "norm_intensity")
+
+# this single plot overrides it
+plot_pca(mexp, variable = "norm_intensity", font_base_size = 11)
+```
+
+`mrmhub_get_plot_defaults()` reports the active settings and `mrmhub_reset_plot_defaults()` clears
+them. The defaults are ordinary R options (`mrmhub.font_base_size` and so on), so they can also be
+scoped to a single section with `withr::local_options()` rather than set for the whole session. The
+arguments that can be set globally are `font_base_size`, `point_size`, `legend_position`,
+`legend_size`, `show_legend_title` and `strip_bg_color`.
+
 ## Placing the legend
 
 `legend_position` accepts the standard ggplot2 keywords, four corner shortcuts for a legend drawn

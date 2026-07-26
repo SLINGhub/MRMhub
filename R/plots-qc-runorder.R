@@ -43,14 +43,15 @@ plot_runsequence <- function(
   batch_zebra_stripe = FALSE,
   batch_line_color = "#b6f0c5",
   batch_fill_color = "grey93",
-  font_base_size = 11,
+  font_base_size = NULL,
   legend_position = NULL,
   legend_size = NULL,
-  show_legend_title = TRUE,
+  show_legend_title = NULL,
   title = NULL
 ) {
   # Check if data is valid
   check_data(data)
+  font_base_size <- resolve_plot_opt(font_base_size, "font_base_size", 11)
 
   # Extract the required columns from the dataset
   d_filt <- data$dataset |>
@@ -431,10 +432,10 @@ plot_rla_boxplot <- function(
 
   x_gridlines = FALSE,
   linewidth = 0.2,
-  font_base_size = 11,
-  legend_position = "right",
+  font_base_size = NULL,
+  legend_position = NULL,
   legend_size = NULL,
-  show_legend_title = TRUE,
+  show_legend_title = NULL,
   title = NULL,
   strip_text_size = NULL,
   strip_bg_color = NULL,
@@ -443,6 +444,7 @@ plot_rla_boxplot <- function(
   show_plot = TRUE
 ) {
   check_data(data)
+  font_base_size <- resolve_plot_opt(font_base_size, "font_base_size", 11)
   if (nrow(data@dataset) < 1) {
     cli::cli_abort("No data available. Please import data and metadata first.")
   }

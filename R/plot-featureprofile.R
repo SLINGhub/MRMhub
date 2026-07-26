@@ -76,13 +76,14 @@ plot_abundanceprofile <- function(
   x_label = NA,
   y_axis_position = "right",
   segment_width = 0.25,
-  font_base_size = 8,
+  font_base_size = NULL,
   grid_major_color = "grey50",
   grid_major_linewidth = 0.1,
   grid_minor_color = "grey50",
   grid_minor_linewidth = 0.1
 ) {
   # --- 1. Argument Validation and Setup ---
+  font_base_size <- resolve_plot_opt(font_base_size, "font_base_size", 8)
   variable_clean <- stringr::str_remove(variable, "feature_")
   rlang::arg_match(y_axis_position, c("left", "right"))
 

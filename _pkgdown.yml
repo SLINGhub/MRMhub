@@ -291,6 +291,14 @@ reference:
   - plot_qcmetrics_comparison
   - plot_interference_correction
   - plot_qc_interference_impact
+- title: Plot appearance defaults
+  description: |
+    Set session-wide defaults (font size, point size, legend, strips) for the
+    plotting functions. See the "Customising plots" article.
+  contents:
+  - mrmhub_set_plot_defaults
+  - mrmhub_get_plot_defaults
+  - mrmhub_reset_plot_defaults
 - title: Response Curves
   description: |
     Functions to calculate and visualize response curves
