@@ -1332,7 +1332,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
       variable = "intensity",
       ref_qc_types = "SPL"
     ),
-    "-0.88% to -0.10%)",
+    "-0.88% to -0.10%;",
     fixed = TRUE
   )
 
@@ -1342,7 +1342,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
       variable = "intensity",
       ref_qc_types = "SPL"
     ),
-    "-7.30% to 0.10%)",
+    "-7.30% to 0.10%;",
     fixed = TRUE
   )
 
