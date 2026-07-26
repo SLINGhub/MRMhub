@@ -661,6 +661,20 @@ apply_interference_edges <- function(
   mh_success(
     "Interference correction applied to {n_corr} of {get_feature_count(data)} feature(s) ({n_auto} isotopic, {n_manual} custom edge(s))."
   )
+  # The fragment-based (MRM) isotopic correction implements the LICAR method;
+  # ask users to cite it when publishing. The MS1 whole-molecule level
+  # (`overlap_type == "ms1_m2"`) is a different approach and does not count.
+  if (
+    any(
+      features_to_correct$source == "auto" &
+        features_to_correct$overlap_type %in%
+          c("m2_head", "m2_front", "m2_back")
+    )
+  ) {
+    mh_info(
+      "Isotopic correction uses LICAR. Please cite Gao et al. (2021), Anal Chem, {.href [doi:10.1021/acs.analchem.0c04565](https://doi.org/10.1021/acs.analchem.0c04565)} when publishing."
+    )
+  }
 
   data
 }
