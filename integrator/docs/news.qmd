@@ -1,0 +1,28 @@
+---
+title: "NEWS"
+description: "Recent changes and new features in INTEGRATOR"
+---
+
+Binary releases are published on the
+[GitHub Releases page](https://github.com/SLINGhub/MRMhub/releases).
+
+## Latest changes
+
+- **Complete Rust source code**, including the **MRMhub-viz** viewer app, with
+  build instructions.
+- **Per-feature baseline determination**: the baseline mode (`default`
+  5th-percentile, `v_drop`, or valley-to-valley `v2v`) can be set globally or
+  overridden individually for each feature.
+- **Input files referenced by column name, not position**: `run_order.csv` and
+  `feature_list.csv` are matched on their header names, so columns may appear in
+  any order, improving robustness.
+- **Optional retention-time crop window**: `crop_window` restricts
+  retention-time alignment and peak integration to a window around the expected
+  retention time, useful for static-MRM acquisitions that record the full
+  retention-time range.
+- **Explicit transition-to-chromatogram mapping**: the optional
+  `chromatogram_index` column selects which chromatogram ID to use when an mzML
+  file contains multiple identical transitions.
+- **Version number embedded in the code and executable**, carrying version and
+  publisher metadata so binaries are properly identified, reducing
+  antivirus/SmartScreen warnings.

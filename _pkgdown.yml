@@ -128,7 +128,7 @@ navbar:
       - text: Troubleshooting & FAQ
         href: articles/manual-10-troubleshooting.html
     news:
-      text: News
+      text: NEWS
       href: news/index.html
 redirects:
   # Slug renames + consolidations — keep old published URLs alive (meta-refresh stubs).

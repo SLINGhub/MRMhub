@@ -12,6 +12,8 @@ website:
         href: index.qmd
       - text: Demo
         href: get-started.qmd
+      - text: NEWS
+        href: news.qmd
       - text: "INTEGRATOR ↗"
         href: https://slinghub.github.io/MRMhub/integrator/
       - text: "QUANT (R package) ↗"

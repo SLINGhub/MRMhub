@@ -44,8 +44,8 @@ website:
             href: msconvert.qmd
       - text: FAQ
         href: faq.qmd
-      - text: "Changelog"
-        href: https://github.com/SLINGhub/MRMhub/releases
+      - text: "NEWS"
+        href: news.qmd
     right:
       - text: "← MRMhub home"
         href: https://slinghub.github.io/MRMhub/
