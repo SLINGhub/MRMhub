@@ -56,3 +56,6 @@ MRMhub-Dataset1/
 /integrator157
 integrator_full_diff.txt
 compare_integrator_workers.sh
+
+# Build artifact: written by save_metadata_msorganiser_template() when knitting recipe-05
+vignettes/articles/metadata_msorganiser_template.xlsx
