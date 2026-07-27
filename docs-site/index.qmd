@@ -18,22 +18,22 @@ Reproducible, automated and scalable processing of targeted metabolomics and lip
 ::: {.title-sep}
 :::
 
-**MRMhub** is an automated, scalable framework for processing targeted metabolomics and
-lipidomics data acquired by liquid chromatography–mass spectrometry (LC-MS) in multiple
-reaction monitoring (MRM) mode. It provides a reproducible, end-to-end workflow — from raw
+**MRMhub** is an open-source, one-stop framework for reproducible, automated processing of
+targeted metabolomics and lipidomics data acquired by liquid chromatography–mass spectrometry
+(LC-MS) in multiple reaction monitoring (MRM) mode. Addressing well-known gaps in the robustness
+and scalability of existing software, it provides a reproducible, end-to-end workflow — from raw
 instrument data to quality-controlled quantitative results — at population scale on standard
-hardware. Its two modules, **MRMhub-INTEGRATOR** and **MRMhub-QUANT**, cover peak integration,
-quantification, quality control, and reporting, recording a full digital footprint of every
-step for reproducibility and traceability. Modular functions and defined data structures adapt
-to diverse study designs and data formats, and support collaboration between analytical and
+hardware, processing large studies within minutes while recording a full digital footprint of
+every step for reproducibility and traceability. Its modular functions and defined data structures
+adapt to diverse study designs and data formats, and support collaboration between analytical and
 bioinformatics scientists.
 
 ::: {.hero-fig}
 
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 250" style="max-width: 1000px; width: 100%; height: auto; font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;" role="img" aria-label="MRMhub processing overview: four pipeline stages — Peak Integration (Retention time alignment, Peak identification/selection, Peak border refinement, Integration, Reporting), Quantitation (ISTD normalization, Interference correction, Calibration curves, Quantification, Drift and batch correction), Quality Control (Data integrity, Feature annotation, Outlier detection, Runtime effects, Processing efficacy), and Reporting (Feature filtering, Dataset export, QC reporting, Process reporting, FAIR data sharing). Peak Integration is performed by MRMhub-INTEGRATOR; the remaining three stages by MRMhub-QUANT.">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 250" style="max-width: 1000px; width: 100%; height: auto; font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;" role="img" aria-label="MRMhub processing overview: four pipeline stages — Peak Integration (Retention time alignment, Peak identification/selection, Peak border refinement, Integration, Reporting), Quantitation (ISTD normalization, Isotopic correction, Calibration curves, Quantification, Drift and batch correction), Quality Control (Data integrity, Feature annotation, Outlier detection, Runtime effects, Processing efficacy), and Reporting (Feature filtering, Dataset export, QC reporting, Process reporting, FAIR data sharing). Peak Integration is performed by MRMhub-INTEGRATOR; the remaining three stages by MRMhub-QUANT.">
   <style>
     .ov-head { font-size: 20px; font-weight: 700; fill: #2C3E50; }
-    .ov-item { font-size: 16px; fill: #333; }
+    .ov-item { font-size: 16px; font-weight: 300; fill: #333; }
     .ov-band { font-size: 18px; font-weight: 700; fill: #35708c; letter-spacing: 1.5px; }
     .ov-div  { stroke: #e3e7ea; stroke-width: 1; }
     .ov-link { cursor: pointer; }
@@ -68,7 +68,7 @@ bioinformatics scientists.
   <text class="ov-item" x="14" y="159">Integration</text>
   <text class="ov-item" x="14" y="180">Reporting</text>
   <text class="ov-item" x="289" y="96">ISTD normalization</text>
-  <text class="ov-item" x="289" y="117">Interference correction</text>
+  <text class="ov-item" x="289" y="117">Isotopic correction</text>
   <text class="ov-item" x="289" y="138">Calibration curves</text>
   <text class="ov-item" x="289" y="159">Quantification</text>
   <text class="ov-item" x="289" y="180">Drift and batch correction</text>
@@ -92,14 +92,15 @@ bioinformatics scientists.
 Both are customizable and can be used together or independently:
 
 ::: {.module-list}
-- **[INTEGRATOR ↗](https://slinghub.github.io/MRMhub/integrator/)** — a consensus-based
-  peak integrator that accurately and consistently determines peak
-  boundaries in complex chromatograms across an analysis sequence. Fully supervised and
-  customizable for large datasets.
+- **[INTEGRATOR ↗](https://slinghub.github.io/MRMhub/integrator/)** — a fast, memory-efficient,
+  multithreaded standalone application for consensus-based peak integration across large analysis
+  sequences, with per-feature integration settings. It reads mzML (vendor raw files converted via
+  [msconvert](https://proteowizard.sourceforge.io/)) and exports integrated peak areas that feed
+  directly into QUANT or other post-processing tools.
 - **[QUANT ↗](https://slinghub.github.io/MRMhub/quant/)** — a programmatic R library
-  (`mrmhub`) for analysis post-processing and quality control: data validation, quantification,
-  correction of analytical artifacts, outlier detection, feature filtering, dataset export, and
-  QC reporting. It also imports intensity data from Skyline, generic CSV, and mzTab-M files.
+  (`mrmhub`) for building tailored, reproducible post-processing and quality-control pipelines.
+  It reads INTEGRATOR results directly, or feature-intensity data from other sources
+  (CSV, mzTab-M, Skyline).
 :::
 
 ## Getting started

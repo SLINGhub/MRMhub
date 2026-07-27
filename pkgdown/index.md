@@ -1,10 +1,7 @@
 # MRMhub-QUANT <a href="https://slinghub.github.io/MRMhub/quant/"><img src="man/figures/logo.svg" align="right" height="139" alt="MRMhub-QUANT website" /></a>
 
 <!-- badges: start -->
-[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html)
-[![R-CMD-check](https://github.com/SLINGhub/MRMhub/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/SLINGhub/MRMhub/actions/workflows/R-CMD-check.yml)
-[![Codecov test coverage](https://codecov.io/gh/SLINGhub/MRMhub/graph/badge.svg)](https://app.codecov.io/gh/SLINGhub/MRMhub)
-[![License: AGPL v3](https://img.shields.io/badge/License-AGPLv3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
+[![Version](https://img.shields.io/badge/version-0.9.8-blue.svg)](https://github.com/SLINGhub/MRMhub/releases) [![License: AGPL v3](https://img.shields.io/badge/License-AGPLv3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0) [![bioRxiv](https://img.shields.io/badge/bioRxiv-preprint-b31b1b.svg)](https://doi.org/10.64898/2025.12.20.695370) [![R-CMD-check](https://github.com/SLINGhub/MRMhub/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/SLINGhub/MRMhub/actions/workflows/R-CMD-check.yml) [![Codecov test coverage](https://codecov.io/gh/SLINGhub/MRMhub/graph/badge.svg)](https://app.codecov.io/gh/SLINGhub/MRMhub)
 <!-- badges: end -->
 
 **MRMhub-QUANT** turns targeted MRM feature intensities into curated, QC-filtered, quantified results. It is the post-processing module of [MRMhub](https://slinghub.github.io/MRMhub/), distributed as the R package `mrmhub` (`library(mrmhub)`), and works with any intensity data — from [MRMhub-INTEGRATOR](https://slinghub.github.io/MRMhub/integrator/), Skyline, Agilent MassHunter, or generic CSV files. MRMhub-QUANT features:
@@ -60,7 +57,7 @@ Prefer point-and-click? `build_workflow()` opens a guided app that validates you
 ## Quick Start and Demos
  
 - **[Installation](articles/manual-00-installation.html)** — install and verify your setup
-- **[Your First Analysis](articles/tutorial-00-first-analysis.html)** — a 5-minute run on bundled data
+- **[Quick example](articles/tutorial-00-first-analysis.html)** — a short end-to-end run on bundled data
 - **[Prepare your data](articles/manual-04-data-import.html)** — file formats and importers
 - **[Example: targeted lipidomics](articles/tutorial-03-lipidomics-workflow.html)** — a full lipidomics workflow
 - **[Example: external calibration](articles/recipe-01-ext-calibration-qc.html)** — a quantitative assay with calibration curves
@@ -73,7 +70,7 @@ Make sure to use a fresh R session without loaded packages (quit RStudio/Positro
 ```r
 if (!require("pak")) install.packages("pak")
 pak::pak("SLINGhub/MRMhub")
-library(mrmhub); mrmhub::check_setup()
+library(mrmhub)
 ```
 
 `pak` resolves locked packages and parallelises downloads; `remotes::install_github("SLINGhub/MRMhub")` is an equivalent fallback. For more details and troubleshooting see [Installation](articles/manual-00-installation.html) and [Troubleshooting & FAQ](articles/manual-10-troubleshooting.html).
@@ -82,8 +79,8 @@ library(mrmhub); mrmhub::check_setup()
 
 ## Contributing
 
-Questions, bug reports, feature requests, and suggestions are welcome via [GitHub issues](https://github.com/SLINGhub/MRMhub/issues). The project is released with a [Contributor Code of Conduct](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html).
+Bug reports and feature requests are welcome via [GitHub issues](https://github.com/SLINGhub/MRMhub/issues). The project follows the [Contributor Code of Conduct](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html).
 
-## Dual licensing
+## License
 
-The source code is dual-licensed: [GNU AGPLv3](https://www.gnu.org/licenses/agpl-3.0.en.html) for non-commercial use, or commercial licensing — contact Jonathan Tan (<jonathan_tan@nus.edu.sg>).
+Dual-licensed - non-commercial under [GNU AGPLv3](https://www.gnu.org/licenses/agpl-3.0.en.html). For commercial use contact Jonathan Tan (jonathan_tan@nus.edu.sg).
