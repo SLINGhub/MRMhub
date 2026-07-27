@@ -27,7 +27,7 @@ A tibble with linear regression statistics (\code{r2}, \code{slopenorm}, \code{y
 or \code{NULL} if no data matches the criteria.
 }
 \description{
-This function calculates linear regression statistics (R-squared, slope, and intercept)
+This function calculates linear regression statistics (R², slope, and intercept)
 for each response curve in the provided \code{MRMhubExperiment} object. Before fitting, the
 analyzed sample amount (\code{x}) and feature intensity (\code{y}) of each curve are each scaled to their
 maximum (set to 1), so the returned \code{slopenorm} and \code{y0norm} are on this normalized scale.

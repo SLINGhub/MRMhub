@@ -107,7 +107,7 @@ filter_features_qc(
 
 \item{response.curves.summary}{Define the method to summarize multiple response curves. Default is \code{NA}.}
 
-\item{min.rsquare.response}{Minimum R-squared value for the response curves. Default is \code{NA}.}
+\item{min.rsquare.response}{Minimum R² value for the response curves. Default is \code{NA}.}
 
 \item{min.slope.response}{Minimum slope for the response curve. Default is \code{NA}.}
 

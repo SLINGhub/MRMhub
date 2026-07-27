@@ -366,3 +366,73 @@ test_that("save_dataset_csv() / save_feature_qc_metrics() reject an invalid path
     "must be a single"
   )
 })
+
+test_that("save_dataset_rds() writes the file and round-trips the object", {
+  f <- withr::local_tempfile(fileext = ".rds")
+
+  expect_message(
+    save_dataset_rds(mexp, f),
+    "MRMhubExperiment saved to"
+  )
+  expect_true(file.exists(f))
+
+  mexp2 <- suppressMessages(read_dataset_rds(f))
+  expect_equal(mexp2, mexp)
+})
+
+test_that("save_dataset_rds() appends the .rds extension when missing", {
+  f <- withr::local_tempfile()
+  suppressMessages(save_dataset_rds(mexp, f))
+  expect_true(file.exists(paste0(f, ".rds")))
+})
+
+test_that("save_dataset_rds() respects overwrite = FALSE", {
+  f <- withr::local_tempfile(fileext = ".rds")
+  suppressMessages(save_dataset_rds(mexp, f))
+  expect_error(
+    save_dataset_rds(mexp, f, overwrite = FALSE),
+    "already exists"
+  )
+})
+
+test_that("read_dataset_rds() aborts on a non-MRMhubExperiment file", {
+  f <- withr::local_tempfile(fileext = ".rds")
+  saveRDS(1:10, f)
+  expect_error(read_dataset_rds(f), "MRMhubExperiment")
+})
+
+test_that("read_dataset_rds() aborts when the file does not exist", {
+  expect_error(
+    read_dataset_rds(file.path(tempdir(), "does-not-exist.rds")),
+    "does not exist"
+  )
+})
+
+test_that("read_dataset_rds() verifies the embedded fingerprint", {
+  f <- withr::local_tempfile(fileext = ".rds")
+  suppressMessages(save_dataset_rds(mexp, f, hash = TRUE))
+  expect_message(read_dataset_rds(f), "fingerprint verified")
+})
+
+test_that("read_dataset_rds() reports a fingerprint mismatch", {
+  f <- withr::local_tempfile(fileext = ".rds")
+  tampered <- mexp
+  attr(tampered, "mrmhub_hash") <- "deadbeef"
+  saveRDS(tampered, f)
+  expect_message(read_dataset_rds(f), "mismatch")
+})
+
+test_that("read_dataset_rds() skips verification when no fingerprint is embedded", {
+  f <- withr::local_tempfile(fileext = ".rds")
+  suppressMessages(save_dataset_rds(mexp, f, hash = FALSE))
+  expect_message(read_dataset_rds(f), "No embedded fingerprint")
+})
+
+test_that("read_dataset_rds() prints the full status when show_status = TRUE", {
+  f <- withr::local_tempfile(fileext = ".rds")
+  suppressMessages(save_dataset_rds(mexp, f))
+  expect_message(
+    read_dataset_rds(f, show_status = TRUE),
+    "Processing Status"
+  )
+})

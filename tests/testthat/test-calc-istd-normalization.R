@@ -60,7 +60,7 @@ test_that("Add metadata table by table, the normalize and quantify based on ISTD
       sheet = "QCconc",
       ignore_warnings = FALSE
     ),
-    "QC concentration metadata associated with 2 annotated samples and 3 annotated analytes"
+    "QC concentration metadata associated with 2 samples and 3 analytes"
   )
 
   testthat::expect_message(

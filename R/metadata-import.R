@@ -1318,7 +1318,7 @@ add_metadata <- function(
     ) |>
       length()
     mh_success(
-      "QC concentration metadata associated with {n_match_samples} annotated samples and {n_match_analytes} annotated analytes"
+      "QC concentration metadata associated with {n_match_samples} samples and {n_match_analytes} analytes"
     )
   }
 

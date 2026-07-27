@@ -787,6 +787,11 @@ calc_calibration_results <- function(
 #'   `feature_conc_out_of_range` flag from [`quantify_by_calibration()`]), includes
 #'   the fraction of replicate measurements whose concentration fell outside the
 #'   calibrated range (`frac_conc_out_of_range`). Defaults to `TRUE`.
+#' @param summary_table Logical. If `TRUE`, round the numeric metric columns to 3
+#'   significant figures for display (the integer replicate count `n` is left
+#'   intact). This is a presentation view for reporting; the values are
+#'   **rounded**, so do not use it for downstream computation. Defaults to
+#'   `FALSE` (full, unrounded metrics).
 #'
 #' @return A data frame containing the calibration results, including metrics such as bias, percentage bias, and intra-assay CV based on specified parameters.
 #'
@@ -806,7 +811,8 @@ get_qc_bias_variability <- function(
   with_bias_abs = FALSE,
   with_conc_ratio = FALSE,
   with_cv_intra = TRUE,
-  with_conc_out_of_range = TRUE
+  with_conc_out_of_range = TRUE,
+  summary_table = FALSE
 ) {
   check_data(data)
 
@@ -971,6 +977,15 @@ get_qc_bias_variability <- function(
       relocate("feature_id", "sample_id", "qc_type", .before = 1) |>
       arrange(.data$feature_id)
   }
+
+  if (summary_table) {
+    # Display rounding: round the double metric columns to 3 significant figures.
+    # The integer replicate count `n` is not a double and is left intact.
+    d_qc_summary <- d_qc_summary |>
+      mutate(across(where(is.double), \(x) signif(x, 3)))
+  }
+
+  d_qc_summary
 }
 
 #' Get calibration metrics
@@ -987,7 +1002,7 @@ get_qc_bias_variability <- function(
 #' - `fit_weighting`: Weighting method used in fitting.
 #' - `lowest_cal`: Lowest nonzero calibration concentration.
 #' - `highest_cal`: Highest calibration concentration.
-#' - `r2`: R-squared value, indicating goodness of fit. For a **weighted**
+#' - `r2`: R² value, indicating goodness of fit. For a **weighted**
 #'   fit this is the weighted coefficient of determination (computed from weighted
 #'   sums of squares), matching the value reported by vendor software such as
 #'   Agilent MassHunter for the same weighted curve.
@@ -1022,19 +1037,30 @@ get_qc_bias_variability <- function(
 
 #'
 #' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] object with QC metrics.
+#' @param include_qualifier Whether to include qualifier features. When `FALSE`,
+#'   only quantifier features are returned. Default is `TRUE`.
 #' @param with_lod Whether to include LoD in output. Default is `TRUE`.
 #' @param with_loq Whether to include LoQ in output. Default is `TRUE`.
 #' @param with_coefficients Whether to include regression coefficients. Default is `TRUE`.
 #' @param with_sigma Whether to include sigma in output. Default is `TRUE`.
+#' @param summary_table When `TRUE`, return a compact, display-formatted summary
+#'   tibble (`analyte`, `fit_model`, `fit_weighting`, `r2`, `lod`, `loq`) with
+#'   `r2` rounded to 5 decimals and `lod`/`loq` to 3 significant figures. This is
+#'   a presentation view for reporting; the values are **rounded**, so do not use
+#'   it for downstream computation. `lod`/`loq` follow `with_lod`/`with_loq`. The
+#'   `with_coefficients`/`with_sigma` flags are ignored in this mode. Default is
+#'   `FALSE` (full, unrounded metrics).
 #' @return A tibble with exported calibration metrics.
 #' @export
 
 get_calibration_metrics <- function(
   data = NULL,
+  include_qualifier = TRUE,
   with_lod = TRUE,
   with_loq = TRUE,
   with_coefficients = TRUE,
-  with_sigma = TRUE
+  with_sigma = TRUE,
+  summary_table = FALSE
 ) {
   check_data(data)
 
@@ -1063,6 +1089,22 @@ get_calibration_metrics <- function(
       if (with_loq) "loq",
       if (with_sigma) "sigma"
     )
+
+  if (!include_qualifier) {
+    cal <- cal |> dplyr::filter(.data$is_quantifier)
+  }
+
+  if (summary_table) {
+    cal <- cal |>
+      dplyr::transmute(
+        analyte = .data$feature_id,
+        .data$fit_model,
+        .data$fit_weighting,
+        r2 = round(.data$r2, 5),
+        dplyr::across(dplyr::any_of("lod"), ~ signif(.x, 3)),
+        dplyr::across(dplyr::any_of("loq"), ~ signif(.x, 3))
+      )
+  }
 
   # Return the metrics
   cal

@@ -1,19 +1,40 @@
-# Package-internal cli helpers. The full-line red/yellow/green look of mrmhub's
+# Package-internal cli helpers. The full-line green/yellow/red look of mrmhub's
 # console feedback is defined here, once, instead of being re-applied with a
 # `cli::col_*()` wrap at every call site. Each `mh_*()` forwards to the matching
-# `cli::cli_alert_*()` and colours the whole line, so alerts keep today's
-# saturated appearance while the colour stays local (no global cli theme, no
-# `.onLoad` state). Interpolation, pluralization (`{?s}`) and inline classes work
-# exactly as in a bare `cli_alert_*()` call because `.envir` is forwarded to the
-# caller's frame.
+# `cli::cli_alert_*()` with the message body coloured as one uniform colour, so
+# alerts keep today's saturated appearance while the colour stays local (no
+# global cli theme, no `.onLoad` state).
+#
+# Colouring is done by `mh_paint()`: render the cli markup to text first, strip
+# cli's own inline colours, then apply a single `col_*()`. A naive
+# `col_green(text)` wrap around the *raw markup* breaks up, because cli's inline
+# classes (`.field`, `.file`, `.val`, `.fn`, ...) each paint their own colour and
+# close with a reset-to-default; that reset lands *inside* the outer colour and
+# turns the remainder of the line black (and leaves e.g. file paths blue).
+# Rendering-then-stripping-then-colouring yields a line that is one colour end to
+# end, while the literal transforms of those classes (backticks, quotes) survive.
+# Interpolation and pluralization (`{?s}`) still work because `.envir` is
+# forwarded to `format_inline()`.
+
+#' Render cli markup and paint the whole message one colour
+#'
+#' @param text Message text, with cli inline markup / interpolation.
+#' @param col_fn A `cli::col_*()` function applied to the rendered, colour-
+#'   stripped text.
+#' @param .envir Environment for glue-style interpolation.
+#' @return A single-colour ANSI string ready to hand to `cli_alert_*()`.
+#' @keywords internal
+#' @noRd
+mh_paint <- function(text, col_fn, .envir) {
+  col_fn(cli::ansi_strip(cli::format_inline(text, .envir = .envir)))
+}
 
 #' Coloured cli alert wrappers
 #'
 #' Thin wrappers over [cli::cli_alert_success()] / `_info()` / `_warning()` /
-#' `_danger()` that wrap the whole message in the matching `cli::col_*()` so the
-#' entire line is coloured (success = green, warning = yellow, danger = red).
-#' `mh_info()` is left uncoloured (the neutral cli default). Call these instead
-#' of wrapping messages in `col_*()` inline.
+#' `_danger()` that colour the whole message body one colour via `mh_paint()`
+#' (success = green, info = green, warning = yellow, danger = red). Call these
+#' instead of wrapping messages in `col_*()` inline.
 #'
 #' @param text Message text, with cli inline markup / interpolation.
 #' @param .envir Environment for glue-style interpolation; defaults to the
@@ -23,28 +44,28 @@
 #' @keywords internal
 #' @noRd
 mh_success <- function(text, .envir = parent.frame()) {
-  cli::cli_alert_success(cli::col_green(text), .envir = .envir)
+  cli::cli_alert_success(mh_paint(text, cli::col_green, .envir))
 }
 
 #' @rdname mh_success
 #' @keywords internal
 #' @noRd
 mh_info <- function(text, .envir = parent.frame()) {
-  cli::cli_alert_info(text, .envir = .envir)
+  cli::cli_alert_info(mh_paint(text, cli::col_green, .envir))
 }
 
 #' @rdname mh_success
 #' @keywords internal
 #' @noRd
 mh_warn <- function(text, .envir = parent.frame()) {
-  cli::cli_alert_warning(cli::col_yellow(text), .envir = .envir)
+  cli::cli_alert_warning(mh_paint(text, cli::col_yellow, .envir))
 }
 
 #' @rdname mh_success
 #' @keywords internal
 #' @noRd
 mh_danger <- function(text, .envir = parent.frame()) {
-  cli::cli_alert_danger(cli::col_red(text), .envir = .envir)
+  cli::cli_alert_danger(mh_paint(text, cli::col_red, .envir))
 }
 
 #' Truncate a reported vector at a settable maximum

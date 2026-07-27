@@ -16,7 +16,8 @@ get_qc_bias_variability(
   with_bias_abs = FALSE,
   with_conc_ratio = FALSE,
   with_cv_intra = TRUE,
-  with_conc_out_of_range = TRUE
+  with_conc_out_of_range = TRUE,
+  summary_table = FALSE
 )
 }
 \arguments{
@@ -48,6 +49,12 @@ If \code{"samples"}, the output is in wide format with samples as columns.}
 \code{feature_conc_out_of_range} flag from \code{\link[=quantify_by_calibration]{quantify_by_calibration()}}), includes
 the fraction of replicate measurements whose concentration fell outside the
 calibrated range (\code{frac_conc_out_of_range}). Defaults to \code{TRUE}.}
+
+\item{summary_table}{Logical. If \code{TRUE}, round the numeric metric columns to 3
+significant figures for display (the integer replicate count \code{n} is left
+intact). This is a presentation view for reporting; the values are
+\strong{rounded}, so do not use it for downstream computation. Defaults to
+\code{FALSE} (full, unrounded metrics).}
 }
 \value{
 A data frame containing the calibration results, including metrics such as bias, percentage bias, and intra-assay CV based on specified parameters.

@@ -6,14 +6,19 @@
 \usage{
 get_calibration_metrics(
   data = NULL,
+  include_qualifier = TRUE,
   with_lod = TRUE,
   with_loq = TRUE,
   with_coefficients = TRUE,
-  with_sigma = TRUE
+  with_sigma = TRUE,
+  summary_table = FALSE
 )
 }
 \arguments{
 \item{data}{A \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object with QC metrics.}
+
+\item{include_qualifier}{Whether to include qualifier features. When \code{FALSE},
+only quantifier features are returned. Default is \code{TRUE}.}
 
 \item{with_lod}{Whether to include LoD in output. Default is \code{TRUE}.}
 
@@ -22,6 +27,14 @@ get_calibration_metrics(
 \item{with_coefficients}{Whether to include regression coefficients. Default is \code{TRUE}.}
 
 \item{with_sigma}{Whether to include sigma in output. Default is \code{TRUE}.}
+
+\item{summary_table}{When \code{TRUE}, return a compact, display-formatted summary
+tibble (\code{analyte}, \code{fit_model}, \code{fit_weighting}, \code{r2}, \code{lod}, \code{loq}) with
+\code{r2} rounded to 5 decimals and \code{lod}/\code{loq} to 3 significant figures. This is
+a presentation view for reporting; the values are \strong{rounded}, so do not use
+it for downstream computation. \code{lod}/\code{loq} follow \code{with_lod}/\code{with_loq}. The
+\code{with_coefficients}/\code{with_sigma} flags are ignored in this mode. Default is
+\code{FALSE} (full, unrounded metrics).}
 }
 \value{
 A tibble with exported calibration metrics.
@@ -40,7 +53,7 @@ See its documentation for details.
 \item \code{fit_weighting}: Weighting method used in fitting.
 \item \code{lowest_cal}: Lowest nonzero calibration concentration.
 \item \code{highest_cal}: Highest calibration concentration.
-\item \code{r2}: R-squared value, indicating goodness of fit. For a \strong{weighted}
+\item \code{r2}: R² value, indicating goodness of fit. For a \strong{weighted}
 fit this is the weighted coefficient of determination (computed from weighted
 sums of squares), matching the value reported by vendor software such as
 Agilent MassHunter for the same weighted curve.

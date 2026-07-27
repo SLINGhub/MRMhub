@@ -63,7 +63,7 @@
 #'   (`curve_layout = "cols"`) or per curve row (`curve_layout = "rows"`). If `FALSE`
 #'   (default), each panel auto-scales. Silently ignored when `curve_layout = "overlay"`.
 
-#' @param r2_vstep Numeric. Vertical step between stacked R-squared labels when multiple
+#' @param r2_vstep Numeric. Vertical step between stacked R² labels when multiple
 #'   curves are plotted in the same panel (`curve_layout = "overlay"`). Default is `0.06`.
 #'   Ignored when `curve_layout` is `"cols"` or `"rows"`, where each panel has one curve.
 #' @param specific_page An integer specifying a specific page to plot. If

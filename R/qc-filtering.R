@@ -83,7 +83,7 @@
 #'   Calculates response curve statistics for each feature and each curve
 #'   (where `#` refers to the curve identifier). Requires that response curves
 #'   are defined in the data. See [get_response_curve_stats()] for additional details.
-#'   - `r2_rqc_#`: R-squared value of the linear regression for the response
+#'   - `r2_rqc_#`: R² value of the linear regression for the response
 #'     curve, representing the goodness of fit.
 #'   - `slopenorm_rqc_#`: Normalized slope of the linear regression for the
 #'     response curve, indicating the relationship between the response and
@@ -98,7 +98,7 @@
 #'   - `fit_weighting`: The weighting method applied during curve fitting.
 #'   - `lowest_cal`: The lowest nonzero calibration concentration.
 #'   - `highest_cal`: The highest calibration concentration.
-#'   - `r.squared`: R-squared value indicating the goodness of fit.
+#'   - `r.squared`: R² value indicating the goodness of fit.
 #'   - `coef_a`: The intercept of the regression line (both **linear** and
 #'     **quadratic** fits).
 #'   - `coef_b`:
@@ -856,7 +856,7 @@ calc_qc_metrics <- function(
 #' @param max.cv.conc.tqc Maximum CV for concentration in TQC samples. Default is `NA`.
 #' @param response.curves.selection Select specific response curves by ID. Default is `NA`.
 #' @param response.curves.summary Define the method to summarize multiple response curves. Default is `NA`.
-#' @param min.rsquare.response Minimum R-squared value for the response curves. Default is `NA`.
+#' @param min.rsquare.response Minimum R² value for the response curves. Default is `NA`.
 #' @param min.slope.response Minimum slope for the response curve. Default is `NA`.
 #' @param max.slope.response Maximum slope for the response curve. Default is `NA`.
 #' @param max.yintercept.response Maximum y-intercept of the response curve. Default is `NA`.

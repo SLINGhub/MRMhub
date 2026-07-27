@@ -718,3 +718,153 @@ save_metadata_msorganiser_template <- function(
     "A MRMhub Metadata Organizer template was saved to '{path}'."
   )
 }
+
+
+#' Save a complete `MRMhubExperiment` as an RDS file
+#'
+#' @description
+#' Writes the whole [`MRMhubExperiment`][MRMhubExperiment-class] to a single `.rds`
+#' file: raw data, metadata joins, calibration fits, quantification results and
+#' processing history all travel together. This makes the `.rds` a self-contained,
+#' portable snapshot of a complete analysis project — a collaborator can open it
+#' with `readRDS()` to inspect, or load \pkg{mrmhub} to re-plot and re-process,
+#' without reconstructing the original file paths, input files or metadata versions.
+#'
+#' By default a content fingerprint of the object ([rlang::hash()]) is embedded in
+#' the saved file and printed. Record it (or compare printed fingerprints) to
+#' confirm that a reloaded file — or a copy shared with a colleague — holds the
+#' identical object. [read_dataset_rds()] reads the file back and verifies the
+#' fingerprint.
+#'
+#' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] object to save.
+#' @param path A character string with the file path. If it does not end in
+#'   `.rds`, the extension is appended automatically.
+#' @param hash A logical value. If `TRUE` (default), a content fingerprint of the
+#'   object is computed with [rlang::hash()], embedded in the saved file and
+#'   printed. The fingerprint is stored as an object attribute and is stripped
+#'   again by [read_dataset_rds()], so it does not affect the reloaded object.
+#' @param overwrite A logical value indicating whether to overwrite the file if it
+#'   already exists. Default is `TRUE`.
+#'
+#' @return The `path` written to, invisibly.
+#'
+#' @seealso [read_dataset_rds()], [save_report_xlsx()],
+#'   [save_dataset_summarizedexperiment()]
+#'
+#' @examples
+#' mexp <- data_load_example()
+#' path <- file.path(tempdir(), "example_mexp.rds")
+#' save_dataset_rds(mexp, path)
+#'
+#' @export
+save_dataset_rds <- function(data = NULL, path, hash = TRUE, overwrite = TRUE) {
+  check_data(data)
+  if (missing(path) || !rlang::is_string(path) || is.na(path)) {
+    cli::cli_abort(
+      "{.arg path} must be a single, non-missing file path (a string)."
+    )
+  }
+  if (!grepl("\\.rds$", path, ignore.case = TRUE)) {
+    path <- paste0(path, ".rds")
+  }
+  if (fs::file_exists(path) && !overwrite) {
+    cli::cli_abort(
+      "File {.file {path}} already exists. Use {.code overwrite = TRUE} to replace it."
+    )
+  }
+
+  # Fingerprint the pristine object, then embed it so a later read can confirm
+  # the file holds the same object. Stored as a plain attribute (not a slot), so
+  # a bare `readRDS()` still yields a usable object and `read_dataset_rds()`
+  # strips it back off.
+  h <- rlang::hash(data)
+  if (hash) {
+    attr(data, "mrmhub_hash") <- h
+  }
+
+  saveRDS(data, file = path)
+
+  mh_success("MRMhubExperiment saved to {.file {path}}.")
+  if (hash) {
+    cli::cli_text(cli::col_grey("Content fingerprint: {.val {h}}"))
+  }
+  invisible(path)
+}
+
+
+#' Read a complete `MRMhubExperiment` from an RDS file
+#'
+#' @description
+#' Reads an `.rds` file written by [save_dataset_rds()] (or a bare `saveRDS()`) back
+#' into an [`MRMhubExperiment`][MRMhubExperiment-class], with feedback and a class
+#' check. The `.rds` is a self-contained snapshot of a complete analysis project, so
+#' the reloaded object can be inspected, re-plotted or re-processed with \pkg{mrmhub}
+#' without the original input files or metadata.
+#'
+#' If the file carries an embedded content fingerprint (see [save_dataset_rds()]),
+#' it is verified against the reloaded object: a match confirms the file holds the
+#' object it was saved from, and the fingerprint is printed so it can be compared
+#' with a recorded value.
+#'
+#' @param path A character string with the path to the `.rds` file.
+#' @param verify A logical value. If `TRUE` (default) and the file carries an
+#'   embedded fingerprint, it is recomputed and compared; a mismatch triggers a
+#'   warning (the object is still returned).
+#' @param show_status A logical value. If `TRUE`, the full processing and metadata
+#'   report ([mrmhub_status()]) is printed after loading. Default is `FALSE`, which
+#'   prints only the compact one-line overview.
+#'
+#' @return The loaded [`MRMhubExperiment`][MRMhubExperiment-class] object.
+#'
+#' @seealso [save_dataset_rds()], [mrmhub_status()]
+#'
+#' @examples
+#' mexp <- data_load_example()
+#' path <- file.path(tempdir(), "example_mexp.rds")
+#' save_dataset_rds(mexp, path)
+#' mexp2 <- read_dataset_rds(path)
+#'
+#' @export
+read_dataset_rds <- function(path, verify = TRUE, show_status = FALSE) {
+  if (missing(path) || !rlang::is_string(path) || is.na(path)) {
+    cli::cli_abort(
+      "{.arg path} must be a single, non-missing file path (a string)."
+    )
+  }
+  if (!fs::file_exists(path)) {
+    cli::cli_abort("File {.file {path}} does not exist.")
+  }
+
+  obj <- readRDS(path)
+
+  if (!is(obj, "MRMhubExperiment")) {
+    cli::cli_abort(
+      "File {.file {path}} does not contain an {.cls MRMhubExperiment} (found {.cls {class(obj)[1]}})."
+    )
+  }
+
+  # Strip the embedded fingerprint so the returned object matches what was saved,
+  # then verify it against a fresh hash of that pristine object.
+  stored <- attr(obj, "mrmhub_hash")
+  attr(obj, "mrmhub_hash") <- NULL
+
+  if (verify) {
+    if (is.null(stored)) {
+      mh_info("No embedded fingerprint found; skipping verification.")
+    } else if (identical(rlang::hash(obj), stored)) {
+      mh_success("Content fingerprint verified: {.val {stored}}.")
+    } else {
+      mh_warn(
+        "Fingerprint mismatch — the file differs from the object it was saved from (stored {.val {stored}}, recomputed {.val {rlang::hash(obj)}})."
+      )
+    }
+  }
+
+  mh_success("Loaded MRMhubExperiment from {.file {path}}.")
+
+  if (show_status) {
+    mrmhub_status(obj)
+  }
+
+  obj
+}

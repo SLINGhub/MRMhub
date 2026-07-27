@@ -144,7 +144,7 @@ using \code{facet_grid2}. Pagination uses \code{cols_page} only.}
 (\code{curve_layout = "cols"}) or per curve row (\code{curve_layout = "rows"}). If \code{FALSE}
 (default), each panel auto-scales. Silently ignored when \code{curve_layout = "overlay"}.}
 
-\item{r2_vstep}{Numeric. Vertical step between stacked R-squared labels when multiple
+\item{r2_vstep}{Numeric. Vertical step between stacked R² labels when multiple
 curves are plotted in the same panel (\code{curve_layout = "overlay"}). Default is \code{0.06}.
 Ignored when \code{curve_layout} is \code{"cols"} or \code{"rows"}, where each panel has one curve.}
 

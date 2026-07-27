@@ -310,6 +310,8 @@ reference:
     Functions to export processed and raw datasets and the processing steps in different formats.
   contents:
   - save_report_xlsx
+  - save_dataset_rds
+  - read_dataset_rds
   - save_dataset_csv
   - save_dataset_mztab
   - save_dataset_summarizedexperiment

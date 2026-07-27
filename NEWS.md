@@ -25,6 +25,11 @@ This release focuses on usability, robustness, and new analysis capabilities.
   directly to Bioconductor `SummarizedExperiment` and `lipidr`
   `LipidomicsExperiment` objects for downstream analysis.
 
+* **Save and reload complete experiments**: `save_dataset_rds()` and
+  `read_dataset_rds()` write and read a whole `MRMhubExperiment` as a
+  self-contained `.rds` snapshot, with a content fingerprint embedded on save and
+  verified on load.
+
 * **Further new features**: mzTab-M import and export, and a status dashboard
   (`mrmhub_status()`) with compact object printing for a quick overview.
 

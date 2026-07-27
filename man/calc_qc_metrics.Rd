@@ -133,7 +133,7 @@ Calculates response curve statistics for each feature and each curve
 (where \verb{#} refers to the curve identifier). Requires that response curves
 are defined in the data. See \code{\link[=get_response_curve_stats]{get_response_curve_stats()}} for additional details.
 \itemize{
-\item \code{r2_rqc_#}: R-squared value of the linear regression for the response
+\item \code{r2_rqc_#}: R² value of the linear regression for the response
 curve, representing the goodness of fit.
 \item \code{slopenorm_rqc_#}: Normalized slope of the linear regression for the
 response curve, indicating the relationship between the response and
@@ -149,7 +149,7 @@ in the data:
 \item \code{fit_weighting}: The weighting method applied during curve fitting.
 \item \code{lowest_cal}: The lowest nonzero calibration concentration.
 \item \code{highest_cal}: The highest calibration concentration.
-\item \code{r.squared}: R-squared value indicating the goodness of fit.
+\item \code{r.squared}: R² value indicating the goodness of fit.
 \item \code{coef_a}: The intercept of the regression line (both \strong{linear} and
 \strong{quadratic} fits).
 \item \code{coef_b}:
