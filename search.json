@@ -54,5 +54,26 @@
     "title": "Run the demo",
     "section": "Next steps",
     "text": "Next steps\n\nMRMhub-INTEGRATOR manual ↗ — peak detection, parameters, review, and visualisation.\nMRMhub-QUANT articles ↗ — importers, corrections, quantitation, QC, and reporting.\nExample workflows ↗ — annotated, end-to-end example pipelines."
+  },
+  {
+    "objectID": "news.html",
+    "href": "news.html",
+    "title": "NEWS",
+    "section": "",
+    "text": "Highlights of recent updates to the two MRMhub modules. For the full details see the QUANT NEWS and the INTEGRATOR NEWS."
+  },
+  {
+    "objectID": "news.html#integrator",
+    "href": "news.html#integrator",
+    "title": "NEWS",
+    "section": "INTEGRATOR",
+    "text": "INTEGRATOR\n\nComplete Rust source code, including the MRMhub-viz viewer app, with build instructions.\nPer-feature baseline determination: the baseline mode (default 5th-percentile, v_drop, or valley-to-valley v2v) can be set globally or overridden individually for each feature.\nInput files referenced by column name, not position: run_order.csv and feature_list.csv are matched on their header names, so columns may appear in any order, improving robustness.\nOptional retention-time crop window: crop_window restricts retention-time alignment and peak integration to a window around the expected retention time, useful for static-MRM acquisitions that record the full retention-time range.\nExplicit transition-to-chromatogram mapping: the optional chromatogram_index column selects which chromatogram ID to use when an mzML file contains multiple identical transitions.\nVersion number embedded in the code and executable, carrying version and publisher metadata so binaries are properly identified, reducing antivirus/SmartScreen warnings."
+  },
+  {
+    "objectID": "news.html#quant-r-package",
+    "href": "news.html#quant-r-package",
+    "title": "NEWS",
+    "section": "QUANT (R package)",
+    "text": "QUANT (R package)\n\nConsiderably enhanced console output and error messages: clearer, more actionable messages, up-front argument validation, and truthful processing summaries make each step easier to follow and debug.\nSubstantially improved data and metadata import: more robust sample and feature ID normalization and matching, deduplication, and stronger schema validation greatly reduce silent input errors.\nConsistent, configurable plotting: shared appearance arguments (font sizes, colours, legend placement and sizing) with a refined house theme, now settable globally via the new mrmhub_set_plot_defaults().\nMS1 and MS2 (MRM) isotope interference correction: a full correction engine for both precursor (MS1) and transition-level (MRM) isotopic interferences, with MRM patterns based on the LICAR method (Gao et al., Anal. Chem., 2021).\nExport to SummarizedExperiment and LipidomicsExperiment: results convert directly to Bioconductor SummarizedExperiment and lipidr LipidomicsExperiment objects for downstream analysis.\nFurther new features: mzTab-M import and export, and a status() dashboard with compact object printing for a quick overview.\nImproved robustness, speed, and stability: better handling of missing values and analytical-sequence gaps, faster QC-metric computation, and many bug fixes based on user feedback.\nFully revised documentation: a rewritten, task-oriented pkgdown site with tutorials, manual, and recipes."
   }
 ]
