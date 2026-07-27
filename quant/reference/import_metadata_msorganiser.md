@@ -97,5 +97,5 @@ print(mexp)
 #> NA | 499 analyses and 27 features | signal: feature_area
 #> Last step: Annotated raw AREA values
 #> Normalized ✖ Quantitated ✖ Drift/batch ✖ Filtered ✖
-#> ℹ Use `status()` for the full processing and metadata report
+#> ℹ Use `mrmhub_status()` for the full processing and metadata report
 ```

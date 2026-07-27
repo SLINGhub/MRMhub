@@ -111,6 +111,7 @@
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/mrmhub_get_plot_defaults.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/mrmhub_reset_plot_defaults.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/mrmhub_set_plot_defaults.html</loc></url>
+<url><loc>https://slinghub.github.io/MRMhub/quant/reference/mrmhub_status.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/normalize_by_istd.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/order_chained_columns_tbl.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/parse_lipid_feature_names.html</loc></url>
@@ -155,7 +156,6 @@
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/scale_pretty_x.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/set_analysis_order.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/set_intensity_var.html</loc></url>
-<url><loc>https://slinghub.github.io/MRMhub/quant/reference/status.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/summarize_interferences.html</loc></url>
 </urlset>
 

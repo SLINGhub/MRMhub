@@ -76,7 +76,7 @@ and a one-line summary of which steps have been applied.
 mexp                    # or print(mexp)
 ```
 
-[`status()`](https://slinghub.github.io/MRMhub/quant/reference/status.md)
+[`mrmhub_status()`](https://slinghub.github.io/MRMhub/quant/reference/mrmhub_status.md)
 prints the full dashboard: sample composition by QC type, feature
 composition, which metadata tables are populated, the state of every
 processing step, and any manually excluded analyses or features. It is
@@ -84,7 +84,7 @@ the quickest way to confirm where a dataset stands in the workflow.
 
 ``` r
 
-status(mexp)
+mrmhub_status(mexp)
 ```
 
 The full list of accessor and processing functions is given in the

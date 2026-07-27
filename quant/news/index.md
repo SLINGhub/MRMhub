@@ -29,9 +29,10 @@ capabilities.
   convert directly to Bioconductor `SummarizedExperiment` and `lipidr`
   `LipidomicsExperiment` objects for downstream analysis.
 
-- **Further new features**: mzTab-M import and export, and a
-  [`status()`](https://slinghub.github.io/MRMhub/quant/reference/status.md)
-  dashboard with compact object printing for a quick overview.
+- **Further new features**: mzTab-M import and export, and a status
+  dashboard
+  ([`mrmhub_status()`](https://slinghub.github.io/MRMhub/quant/reference/mrmhub_status.md))
+  with compact object printing for a quick overview.
 
 - **Improved robustness, speed, and stability**: better handling of
   missing values and analytical-sequence gaps, faster QC-metric

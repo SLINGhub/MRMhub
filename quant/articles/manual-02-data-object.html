@@ -222,13 +222,13 @@ processing step, and a one-line summary of which steps have been
 applied.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mexp</span>                    <span class="co"># or print(mexp)</span></span></code></pre></div>
-<p><code><a href="../reference/status.html">status()</a></code> prints the full dashboard: sample composition
-by QC type, feature composition, which metadata tables are populated,
-the state of every processing step, and any manually excluded analyses
-or features. It is the quickest way to confirm where a dataset stands in
-the workflow.</p>
+<p><code><a href="../reference/mrmhub_status.html">mrmhub_status()</a></code> prints the full dashboard: sample
+composition by QC type, feature composition, which metadata tables are
+populated, the state of every processing step, and any manually excluded
+analyses or features. It is the quickest way to confirm where a dataset
+stands in the workflow.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/status.html">status</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/mrmhub_status.html">mrmhub_status</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span></span></code></pre></div>
 <p>The full list of accessor and processing functions is given in the <a href="../reference/index.html">function reference</a>.</p>
 <details><summary><strong>Under the hood</strong>: the full slot structure
 </summary><p><code>MRMhubExperiment</code> is an S4 object with the following

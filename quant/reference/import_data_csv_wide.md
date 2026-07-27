@@ -146,5 +146,5 @@ print(mexp)
 #> NA | 87 analyses and 5 features | signal: feature_conc
 #> Last step: Annotated raw CONC values
 #> Normalized ✖ Quantitated ✖ Drift/batch ✖ Filtered ✖
-#> ℹ Use `status()` for the full processing and metadata report
+#> ℹ Use `mrmhub_status()` for the full processing and metadata report
 ```

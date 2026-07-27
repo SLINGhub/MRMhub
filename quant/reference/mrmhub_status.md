@@ -10,7 +10,7 @@ overview instead.
 ## Usage
 
 ``` r
-status(object)
+mrmhub_status(object)
 ```
 
 ## Arguments
@@ -28,7 +28,7 @@ The `object`, invisibly.
 ## Examples
 
 ``` r
-status(MRMhubExperiment(title = "Test", analysis_type = "lipidomics"))
+mrmhub_status(MRMhubExperiment(title = "Test", analysis_type = "lipidomics"))
 #> 
 #> ── MRMhubExperiment ────────────────────────────────────────────────────────────
 #> Title: Test

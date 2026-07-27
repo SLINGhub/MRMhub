@@ -194,7 +194,7 @@ object. Run it and you have a processed dataset.</p>
 <pre><code>Normalized <span style="color: #00BB00;">✔</span> Quantitated <span style="color: #BB0000;">✖</span> Drift/batch <span style="color: #BB0000;">✖</span> Filtered <span style="color: #BB0000;">✖</span></code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code><span style="color: #555555;">ℹ Use `status()` for the full processing and metadata report</span></code></pre>
+<pre><code><span style="color: #555555;">ℹ Use `mrmhub_status()` for the full processing and metadata report</span></code></pre>
 </div>
 <p>We then look at the normalized signal across the analytical run, the
 first thing to inspect for run-order drift.</p>
@@ -225,8 +225,8 @@ against injection order.
 </p>
 </div>
 <p>Printing the object returns a compact status overview:
-<code>status(mexp)</code> prints the full report. If you prefer not to
-write code, <code><a href="../reference/build_workflow.html">build_workflow()</a></code> opens an interactive
+<code>mrmhub_status(mexp)</code> prints the full report. If you prefer
+not to write code, <code><a href="../reference/build_workflow.html">build_workflow()</a></code> opens an interactive
 application that validates your data and metadata, flags pipeline
 mismatches, and generates an equivalent Quarto workflow to download (see
 <a href="tutorial-12-workflow-builder.html">Build a workflow without

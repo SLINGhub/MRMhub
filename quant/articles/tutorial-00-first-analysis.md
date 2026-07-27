@@ -53,7 +53,7 @@ mexp
 
     Normalized ✔ Quantitated ✖ Drift/batch ✖ Filtered ✖
 
-    ℹ Use `status()` for the full processing and metadata report
+    ℹ Use `mrmhub_status()` for the full processing and metadata report
 
 We then look at the normalized signal across the analytical run, the
 first thing to inspect for run-order drift.
@@ -87,8 +87,9 @@ order](tutorial-00-first-analysis_files/figure-html/runscatter-4.png)
 Figure 1. Internal-standard–normalized signal of each feature plotted
 against injection order.
 
-Printing the object returns a compact status overview: `status(mexp)`
-prints the full report. If you prefer not to write code,
+Printing the object returns a compact status overview:
+`mrmhub_status(mexp)` prints the full report. If you prefer not to write
+code,
 [`build_workflow()`](https://slinghub.github.io/MRMhub/quant/reference/build_workflow.md)
 opens an interactive application that validates your data and metadata,
 flags pipeline mismatches, and generates an equivalent Quarto workflow
