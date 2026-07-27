@@ -60,6 +60,7 @@ Suggests:
     testthat (>= 3.0.0),
     vdiffr,
     withr,
+    xml2,
     mirai,
     carrier,
     shiny,
