@@ -36,7 +36,7 @@ jobs:
       # ----------------------------------------------------------------
       # Checkout the code
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # ----------------------------------------------------------------
       # Setup Pandoc (required for R Markdown / Quarto)
@@ -71,7 +71,7 @@ jobs:
       # Upload check results if failed
       - name: Upload check results
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ runner.os }}-r${{ matrix.config.r }}-results
           path: check
@@ -80,7 +80,7 @@ jobs:
       # Upload vdiffr snapshots (macOS only)
       - name: Upload vdiffr snapshots
         if: ${{ env.RUN_VDIFFR }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ runner.os }}-r${{ matrix.config.r }}-snapshots
           path: tests/figs
