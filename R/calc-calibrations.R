@@ -744,7 +744,7 @@ calc_calibration_results <- function(
       )
     }
     mh_success(
-      "Calibration curve fits calculated for {text_total_quant} quantifier and {text_total_qual} qualifier features. Average r-squared: {sprintf('%.4f', mean(d_stats$r2_cal_1[d_stats$is_quantifier], na.rm = TRUE))} and {sprintf('%.4f', mean(d_stats$r2_cal_1[!d_stats$is_quantifier], na.rm = TRUE))}."
+      "Calibration curve fits calculated for {text_total_quant} quantifier and {text_total_qual} qualifier features. Average r²: {sprintf('%.4f', mean(d_stats$r2_cal_1[d_stats$is_quantifier], na.rm = TRUE))} and {sprintf('%.4f', mean(d_stats$r2_cal_1[!d_stats$is_quantifier], na.rm = TRUE))}."
     )
   } else {
     if (count_quant_pass == 0) {
@@ -753,7 +753,7 @@ calc_calibration_results <- function(
       )
     }
     mh_success(
-      "Calibration curve fits calculated for {text_total_quant} quantifier features. Average r-squared: {sprintf('%.4f', mean(d_stats$r2_cal_1[d_stats$is_quantifier], na.rm = TRUE))}."
+      "Calibration curve fits calculated for {text_total_quant} quantifier features. Average r²: {sprintf('%.4f', mean(d_stats$r2_cal_1[d_stats$is_quantifier], na.rm = TRUE))}."
     )
   }
   data

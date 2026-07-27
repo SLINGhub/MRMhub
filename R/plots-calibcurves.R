@@ -625,7 +625,7 @@ plot_calibrationcurves <- function(
       name = glue::glue("{action_text} ({page_suffix})"),
       total = max(page_range)
     )
-  } else {
+  } else if (rlang::is_interactive()) {
     mh_info(glue::glue("{action_text} ({page_suffix})..."))
   }
 
