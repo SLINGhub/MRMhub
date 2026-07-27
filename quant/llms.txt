@@ -33,9 +33,9 @@ workflow.
 
 - **[Installation](https://slinghub.github.io/MRMhub/quant/articles/manual-00-installation.md)**
   — install and verify your setup
-- **[Your First
-  Analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md)**
-  — a 5-minute run on bundled data
+- **[Quick
+  example](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md)**
+  — a short end-to-end run on bundled data
 - **[Prepare your
   data](https://slinghub.github.io/MRMhub/quant/articles/manual-04-data-import.md)**
   — file formats and importers
@@ -55,7 +55,7 @@ RStudio/Positron first to avoid locked packages):
 
 if (!require("pak")) install.packages("pak")
 pak::pak("SLINGhub/MRMhub")
-library(mrmhub); mrmhub::check_setup()
+library(mrmhub)
 ```
 
 `pak` resolves locked packages and parallelises downloads;
@@ -67,17 +67,16 @@ FAQ](https://slinghub.github.io/MRMhub/quant/articles/manual-10-troubleshooting.
 
 ## Contributing
 
-Questions, bug reports, feature requests, and suggestions are welcome
-via [GitHub issues](https://github.com/SLINGhub/MRMhub/issues). The
-project is released with a [Contributor Code of
+Bug reports and feature requests are welcome via [GitHub
+issues](https://github.com/SLINGhub/MRMhub/issues). The project follows
+the [Contributor Code of
 Conduct](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html).
 
-## Dual licensing
+## License
 
-The source code is dual-licensed: [GNU
-AGPLv3](https://www.gnu.org/licenses/agpl-3.0.en.html) for
-non-commercial use, or commercial licensing — contact Jonathan Tan
-(<jonathan_tan@nus.edu.sg>).
+Dual-licensed - non-commercial under [GNU
+AGPLv3](https://www.gnu.org/licenses/agpl-3.0.en.html). For commercial
+use contact Jonathan Tan (<jonathan_tan@nus.edu.sg>).
 
 # Package index
 

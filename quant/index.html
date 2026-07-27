@@ -159,7 +159,7 @@ Visualise at each step with <a href="articles/manual-08-visualization.html">QC p
 <li>
 <strong><a href="articles/manual-00-installation.html">Installation</a></strong> — install and verify your setup</li>
 <li>
-<strong><a href="articles/tutorial-00-first-analysis.html">Your First Analysis</a></strong> — a 5-minute run on bundled data</li>
+<strong><a href="articles/tutorial-00-first-analysis.html">Quick example</a></strong> — a short end-to-end run on bundled data</li>
 <li>
 <strong><a href="articles/manual-04-data-import.html">Prepare your data</a></strong> — file formats and importers</li>
 <li>
@@ -175,18 +175,18 @@ Visualise at each step with <a href="articles/manual-08-visualization.html">QC p
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://pak.r-lib.org/" class="external-link">"pak"</a></span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"pak"</span><span class="op">)</span></span>
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"SLINGhub/MRMhub"</span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/SLINGhub/MRMhub" class="external-link">mrmhub</a></span><span class="op">)</span>; <span class="fu">mrmhub</span><span class="fu">::</span><span class="fu"><a href="reference/check_setup.html">check_setup</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/SLINGhub/MRMhub" class="external-link">mrmhub</a></span><span class="op">)</span></span></code></pre></div>
 <p><code>pak</code> resolves locked packages and parallelises downloads; <code>remotes::install_github("SLINGhub/MRMhub")</code> is an equivalent fallback. For more details and troubleshooting see <a href="articles/manual-00-installation.html">Installation</a> and <a href="articles/manual-10-troubleshooting.html">Troubleshooting &amp; FAQ</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
 </h2>
-<p>Questions, bug reports, feature requests, and suggestions are welcome via <a href="https://github.com/SLINGhub/MRMhub/issues" class="external-link">GitHub issues</a>. The project is released with a <a href="https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html" class="external-link">Contributor Code of Conduct</a>.</p>
+<p>Bug reports and feature requests are welcome via <a href="https://github.com/SLINGhub/MRMhub/issues" class="external-link">GitHub issues</a>. The project follows the <a href="https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html" class="external-link">Contributor Code of Conduct</a>.</p>
 </div>
 <div class="section level2">
-<h2 id="dual-licensing">Dual licensing<a class="anchor" aria-label="anchor" href="#dual-licensing"></a>
+<h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
 </h2>
-<p>The source code is dual-licensed: <a href="https://www.gnu.org/licenses/agpl-3.0.en.html" class="external-link">GNU AGPLv3</a> for non-commercial use, or commercial licensing — contact Jonathan Tan (<a href="mailto:jonathan_tan@nus.edu.sg" class="email">jonathan_tan@nus.edu.sg</a>).</p>
+<p>Dual-licensed - non-commercial under <a href="https://www.gnu.org/licenses/agpl-3.0.en.html" class="external-link">GNU AGPLv3</a>. For commercial use contact Jonathan Tan (<a href="mailto:jonathan_tan@nus.edu.sg" class="email">jonathan_tan@nus.edu.sg</a>).</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
@@ -232,10 +232,11 @@ Visualise at each step with <a href="articles/manual-08-visualization.html">QC p
 <div class="dev-status">
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://lifecycle.r-lib.org/articles/stages.html" class="external-link"><img src="https://img.shields.io/badge/lifecycle-stable-brightgreen.svg" alt="Lifecycle: stable"></a></li>
+<li><a href="https://github.com/SLINGhub/MRMhub/releases" class="external-link"><img src="https://img.shields.io/badge/version-0.9.8-blue.svg" alt="Version"></a></li>
+<li><a href="https://www.gnu.org/licenses/agpl-3.0" class="external-link"><img src="https://img.shields.io/badge/License-AGPLv3-blue.svg" alt="License: AGPL v3"></a></li>
+<li><a href="https://doi.org/10.64898/2025.12.20.695370" class="external-link"><img src="https://img.shields.io/badge/bioRxiv-preprint-b31b1b.svg" alt="bioRxiv"></a></li>
 <li><a href="https://github.com/SLINGhub/MRMhub/actions/workflows/R-CMD-check.yml" class="external-link"><img src="https://github.com/SLINGhub/MRMhub/actions/workflows/R-CMD-check.yml/badge.svg" alt="R-CMD-check"></a></li>
 <li><a href="https://app.codecov.io/gh/SLINGhub/MRMhub" class="external-link"><img src="https://codecov.io/gh/SLINGhub/MRMhub/graph/badge.svg" alt="Codecov test coverage"></a></li>
-<li><a href="https://www.gnu.org/licenses/agpl-3.0" class="external-link"><img src="https://img.shields.io/badge/License-AGPLv3-blue.svg" alt="License: AGPL v3"></a></li>
 </ul>
 </div>
 

@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 250" style="width: 100%; height: auto; font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;" role="img" aria-label="MRMhub processing overview: four pipeline stages — Peak Integration (Retention time alignment, Peak identification/selection, Peak border refinement, Integration, Reporting), Quantitation (ISTD normalization, Isotopic correction, Calibration curves, Quantification, Drift and batch correction), Quality Control (Data integrity, Feature annotation, Outlier detection, Runtime effects, Processing efficacy), and Reporting (Feature filtering, Dataset export, QC reporting, Process reporting, FAIR data sharing). Peak Integration is performed by MRMhub-INTEGRATOR; the remaining three stages by MRMhub-QUANT.">
+  <style>
+    .ov-head { font-size: 20px; font-weight: 700; fill: #2C3E50; }
+    .ov-item { font-size: 16px; font-weight: 300; fill: #333; }
+    .ov-band { font-size: 18px; font-weight: 700; fill: #35708c; letter-spacing: 1.5px; }
+    .ov-div  { stroke: #e3e7ea; stroke-width: 1; }
+  </style>
+  <polygon points="0,4 269,4 295,36 269,68 0,68" fill="#dce9f1"/>
+  <text class="ov-head" x="140" y="43" text-anchor="middle">Peak Integration</text>
+  <rect x="0" y="210" width="269" height="34" rx="4" fill="#edf1f3"/>
+  <text class="ov-band" x="134" y="232" text-anchor="middle">INTEGRATOR</text>
+  <polygon points="275,4 544,4 570,36 544,68 275,68 301,36" fill="#f6e7d3"/>
+  <polygon points="550,4 819,4 845,36 819,68 550,68 576,36" fill="#f3e0e0"/>
+  <polygon points="825,4 1094,4 1120,36 1094,68 825,68 851,36" fill="#e4efdd"/>
+  <text class="ov-head" x="415" y="43" text-anchor="middle">Quantitation</text>
+  <text class="ov-head" x="690" y="43" text-anchor="middle">Quality Control</text>
+  <text class="ov-head" x="963" y="43" text-anchor="middle">Reporting</text>
+  <rect x="275" y="210" width="845" height="34" rx="4" fill="#edf1f3"/>
+  <text class="ov-band" x="697" y="232" text-anchor="middle">QUANT</text>
+  <line class="ov-div" x1="272" y1="84" x2="272" y2="196"/>
+  <line class="ov-div" x1="547" y1="84" x2="547" y2="196"/>
+  <line class="ov-div" x1="822" y1="84" x2="822" y2="196"/>
+  <text class="ov-item" x="14" y="96">Retention time alignment</text>
+  <text class="ov-item" x="14" y="117">Peak identification / selection</text>
+  <text class="ov-item" x="14" y="138">Peak border refinement</text>
+  <text class="ov-item" x="14" y="159">Integration</text>
+  <text class="ov-item" x="14" y="180">Reporting</text>
+  <text class="ov-item" x="289" y="96">ISTD normalization</text>
+  <text class="ov-item" x="289" y="117">Isotopic correction</text>
+  <text class="ov-item" x="289" y="138">Calibration curves</text>
+  <text class="ov-item" x="289" y="159">Quantification</text>
+  <text class="ov-item" x="289" y="180">Drift and batch correction</text>
+  <text class="ov-item" x="564" y="96">Data integrity</text>
+  <text class="ov-item" x="564" y="117">Feature annotation</text>
+  <text class="ov-item" x="564" y="138">Outlier detection</text>
+  <text class="ov-item" x="564" y="159">Runtime effects</text>
+  <text class="ov-item" x="564" y="180">Processing efficacy</text>
+  <text class="ov-item" x="839" y="96">Feature filtering</text>
+  <text class="ov-item" x="839" y="117">Dataset export</text>
+  <text class="ov-item" x="839" y="138">QC reporting</text>
+  <text class="ov-item" x="839" y="159">Process reporting</text>
+  <text class="ov-item" x="839" y="180">FAIR data sharing</text>
+</svg>
