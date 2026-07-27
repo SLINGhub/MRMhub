@@ -36,7 +36,7 @@ jobs:
       DEMO_DATA_URL: ${{ vars.DEMO_DATA_URL }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: dtolnay/rust-toolchain@stable
         with:
@@ -171,7 +171,7 @@ jobs:
           }
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ steps.vars.outputs.pkg }}
           path: out/*.zip
