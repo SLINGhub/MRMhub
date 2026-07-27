@@ -24,8 +24,7 @@ cargo build --release        # → target/release/MRMhub  (MRMhub.exe on Windows
 ```
 
 `MRMhub --version` prints the version. At startup the executable runs from its own folder, so
-`param.txt`, the input files, and `MRMhub_plot.r` must sit next to it; step 4 (PDF plots) needs R
-(`Rscript`) on `PATH`.
+`param.txt`, the input files, and `MRMhub_plot.r` must sit next to it; step 4 (PDF plots) requires R.
 
 ## Documentation
 
