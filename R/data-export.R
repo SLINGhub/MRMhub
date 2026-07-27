@@ -855,7 +855,7 @@ read_dataset_rds <- function(path, verify = TRUE, show_status = FALSE) {
       mh_success("Content fingerprint verified: {.val {stored}}.")
     } else {
       mh_warn(
-        "Fingerprint mismatch — the file differs from the object it was saved from (stored {.val {stored}}, recomputed {.val {rlang::hash(obj)}})."
+        "Fingerprint mismatch \u2014 the file differs from the object it was saved from (stored {.val {stored}}, recomputed {.val {rlang::hash(obj)}})."
       )
     }
   }
