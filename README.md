@@ -32,6 +32,11 @@
 
 → **Run the demo** - download the [latest release ↗](https://github.com/SLINGhub/MRMhub/releases) and follow the bundled `readme.txt` to process the demo project end-to-end with both modules.
 
+## Documentation
+
+- **INTEGRATOR manual ↗** - <https://slinghub.github.io/MRMhub/integrator/> (setup, input files, msconvert)
+- **QUANT R package docs ↗** - <https://slinghub.github.io/MRMhub/quant/> (manual, tutorials, function reference)
+
 ## QUANT module usage
 
 INTEGRATOR runs as a desktop app (see [Quick Start ↗](https://slinghub.github.io/MRMhub/integrator/quickstart.html)). QUANT is an R package. The example below runs on the bundled demo data and can be extended in the same way to quantitation, drift/batch correction, QC metrics, and feature filtering:
@@ -57,11 +62,6 @@ plot_runscatter(
 # Export a multi-sheet QC report
 save_report_xlsx(mexp, path = "results.xlsx")
 ```
-
-## Documentation
-
-- **INTEGRATOR manual ↗** - <https://slinghub.github.io/MRMhub/integrator/> (setup, input files, msconvert)
-- **QUANT R package docs ↗** - <https://slinghub.github.io/MRMhub/quant/> (manual, tutorials, function reference)
 
 ## Authors & Contact
 
