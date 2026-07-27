@@ -9,6 +9,8 @@
 .claude/
 .agents/
 skills-lock.json
+CLAUDE.md
+.vscode/
 
 # R package build artifacts / stray outputs
 Rplots.pdf
@@ -30,6 +32,7 @@ inst/doc
 # Local dev notes (audit plan + learnings) - not part of the package
 dev-notes/
 docs-review/
+plan-*.prompt.md
 
 # Local, non-package share doc (not committed)
 integrator-fork-review.html
