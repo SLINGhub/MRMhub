@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Setting up a new peak integration project with MRMhub-INTEGRATOR">
+<meta name="description" content="Recent changes and new features in INTEGRATOR">
 
-<title>Quick Start – MRMhub-INTEGRATOR</title>
+<title>NEWS – MRMhub-INTEGRATOR</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -26,41 +26,6 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
-}
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -140,7 +105,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="./quickstart.html" aria-current="page"> 
+    <a class="nav-link" href="./quickstart.html"> 
 <span class="menu-text">Quick Start</span></a>
   </li>  
   <li class="nav-item dropdown ">
@@ -198,7 +163,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span class="menu-text">FAQ</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./news.html"> 
+    <a class="nav-link active" href="./news.html" aria-current="page"> 
 <span class="menu-text">NEWS</span></a>
   </li>  
 </ul>
@@ -232,13 +197,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#convert-the-raw-files-to-mzml" id="toc-convert-the-raw-files-to-mzml" class="nav-link active" data-scroll-target="#convert-the-raw-files-to-mzml">1. Convert the raw files to mzML</a></li>
-  <li><a href="#set-up-the-project" id="toc-set-up-the-project" class="nav-link" data-scroll-target="#set-up-the-project">2. Set up the project</a></li>
-  <li><a href="#prepare-the-input-files" id="toc-prepare-the-input-files" class="nav-link" data-scroll-target="#prepare-the-input-files">3. Prepare the input files</a></li>
-  <li><a href="#run-integrator" id="toc-run-integrator" class="nav-link" data-scroll-target="#run-integrator">4. Run INTEGRATOR</a></li>
-  <li><a href="#review-the-results" id="toc-review-the-results" class="nav-link" data-scroll-target="#review-the-results">5. Review the results</a></li>
-  <li><a href="#integration-results" id="toc-integration-results" class="nav-link" data-scroll-target="#integration-results">6. Integration results</a></li>
-  <li><a href="#post-processing" id="toc-post-processing" class="nav-link" data-scroll-target="#post-processing">7. Post-processing</a></li>
+  <li><a href="#latest-changes" id="toc-latest-changes" class="nav-link active" data-scroll-target="#latest-changes">Latest changes</a></li>
   </ul>
 </nav>
     </div>
@@ -247,12 +206,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Quick Start</h1>
+<h1 class="title">NEWS</h1>
 </div>
 
 <div>
   <div class="description">
-    <p>Setting up a new peak integration project with MRMhub-INTEGRATOR</p>
+    Recent changes and new features in INTEGRATOR
   </div>
 </div>
 
@@ -269,144 +228,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>This short tutorial presents the steps to create a basic <strong>peak integration project</strong>. Input files are prepared, the integration run, and result inspected and integration refined.</p>
-<div class="callout-spaced">
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Test data
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Every INTEGRATOR release bundles a complete demonstration dataset, raw data (<code>.mzML</code>) together with all required input files (see the <a href="demo.html">Demo</a>). It is the quickest way to obtain working files: run it directly as ready-made <strong>test data</strong> to follow the steps below, or copy its input files as <strong>templates</strong> when setting up a new analysis.</p>
-</div>
-</div>
-</div>
-<section id="convert-the-raw-files-to-mzml" class="level2">
-<h2 class="anchored" data-anchor-id="convert-the-raw-files-to-mzml">1. Convert the raw files to mzML</h2>
-<p>INTEGRATOR requires MS raw data in the open <strong>mzML</strong> format. Native vendor files (e.g.&nbsp;Thermo <code>.raw</code>, SCIEX <code>.wiff</code>, Agilent <code>.d</code>) must first be converted with ProteoWizard MSConvert (Windows only), which needs to be done only once per dataset <a href="msconvert.html">→ mzML conversion</a>.</p>
-</section>
-<section id="set-up-the-project" class="level2">
-<h2 class="anchored" data-anchor-id="set-up-the-project">2. Set up the project</h2>
-<p>A project is a single, self-contained folder holding the executable, input files, raw data, and results, keeping the full analysis and dataset transferable and reproducible. Assemble it as follows; see <a href="setup.html">Installing MRMhub-INTEGRATOR</a> for obtaining INTEGRATOR, the first-launch security prompt, and the full project layout.</p>
-<ol type="1">
-<li><strong>Create the project folder</strong> and move the <code>.mzML</code> files into a subfolder (e.g., <code>mzML/</code>).</li>
-<li><strong>Add the INTEGRATOR tools</strong> — the executables and the plotting script, from a <a href="https://github.com/SLINGhub/MRMhub/releases">release</a> or an existing project.</li>
-<li><strong>Add the input templates</strong> — the template <code>param.txt</code>, <code>run_order.csv</code>, and <code>feature_list.csv</code> bundled in a <a href="https://github.com/SLINGhub/MRMhub/releases">release</a>, or copied from an existing project.</li>
-</ol>
-<div class="filetree">
-<pre><code>my-project/
-├── MRMhub.exe / .app      ← peak-integration executable
-├── MRMhub-viz.exe / .app  ← visualiser (optional)
-├── MRMhub_plot.r          ← R script for creating chromatogram PDFs
-├── mzML/                  ← the .mzML files
-├── param.txt          ┐
-├── run_order.csv      ├  input templates (step 3)
-└── feature_list.csv   ┘</code></pre>
-<p><span class="tree-caption">Project folder layout prior to integration</span></p>
-</div>
-</section>
-<section id="prepare-the-input-files" class="level2">
-<h2 class="anchored" data-anchor-id="prepare-the-input-files">3. Prepare the input files</h2>
-<p>Edit and review the input files that configure the peak integration run — one global, and two defining the samples and the features. See the <a href="input-files.html">Input Files reference</a> for a description of all parameters.</p>
-<div class="compact-table">
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>File</th>
-<th>Configuration</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><a href="input-files.html#global-parameters-param.txt"><code>param.txt</code></a></td>
-<td>Name and location of the input and mzML files, the global peak-detection and border-finding settings, and the RT-shift correction parameters. <strong>Must be in the same folder as the MRMhub executable.</strong></td>
-</tr>
-<tr class="even">
-<td><a href="input-files.html#sample-list-run_order.csv"><code>run_order.csv</code></a></td>
-<td>The mzML files to process, listed in run order, optionally, the reference sample(s) for RT-shift estimation. <code>sample_type</code> is optional, with only blanks (<code>BLK</code>) being treated specially</td>
-</tr>
-<tr class="odd">
-<td><a href="input-files.html#transition-feature-list-feature_list.csv"><code>feature_list.csv</code></a></td>
-<td>Transition precursor and product <em>m/z</em> values, transition and feature identifiers, the expected feature RT, optional per-feature integration settings.</td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-<section id="run-integrator" class="level2">
-<h2 class="anchored" data-anchor-id="run-integrator">4. Run INTEGRATOR</h2>
-<p>INTEGRATOR is launched from the project folder and its terminal menu is worked through in order; see <a href="running.html">Processing Workflow</a> for the full reference. It is started by double-clicking <code>MRMhub</code> (macOS) or <code>MRMhub.exe</code> (Windows), or from a terminal opened in the project folder.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/MRMhub-Main.png" class="img-fluid figure-img" style="width:70.0%" alt="Screenshot of the INTEGRATOR terminal interface, showing the MRMHUB banner and its four-item menu: 1 Validate data; 2 RT-shift estimation and feature detection; 3 update integration bounds and areas using RT_matrix.csv; and 4 generate chromatogram PDFs (optional)."></p>
-<figcaption>The INTEGRATOR terminal menu.</figcaption>
-</figure>
-</div>
-<ol type="1">
-<li><strong>Data Validation</strong> — the input files are loaded and checked for inconsistencies (mzML files or transitions that are listed but missing, or present but unlisted). Report files are written only if problems are found (see file tree below)</li>
-<li><strong>Peak Finding &amp; RT-shift estimation</strong> — peaks are detected and the retention-time shift across the sequence is estimated. Produces <code>RT_matrix.csv</code> (the detected peaks with their per-sample integration borders), which is required for step 3.</li>
-<li><strong>Peak Integration</strong> — the peaks from step 2 are integrated. Produces <code>long.csv</code> (the canonical hand-off to QUANT), <code>quant_raw.csv</code> (wide-format peak areas), and the <code>misc/</code> folder (binary results used by MRMhub-viz and step 4).</li>
-<li><strong>Generate PDF results</strong> <em>(optional)</em> — the integrated chromatograms are plotted as PDFs, grouped into <code>by_transition/</code>, <code>by_transition_low/</code>, and <code>by_sample/</code>.</li>
-</ol>
-<p>The steps run in order, each using the previous one’s output (steps 1–3 for a new dataset; step 4 optional). The application can be closed and reopened between steps — intermediate files persist, so the run can be resumed. <strong>Editing any input file, however, requires restarting from step 1.</strong> The run adds these outputs to the project folder:</p>
-<div class="filetree">
-<pre><code>my-project/
-├── missing_files.txt     ┐
-├── missing_compounds.txt ├ step 1: validation reports (only if problems found)
-├── missing_details.txt   ┘
-├── RT_matrix.csv         ← step 2: peaks + per-sample borders
-├── long.csv              ← step 3: long-format integration results table 
-├── quant_raw.csv         ← step 3: wide-format peak areas
-├── misc/                 ← step 3: binary results (used for MRMhub-viz)
-├── by_transition/        ┐
-├── by_transition_low/    ├ step 4 (optional): chromatogram PDFs
-├── by_sample/            ┘
-└── …                     ← executable, mzML/, input files (unchanged)</code></pre>
-<p><span class="tree-caption">Files and folders added by the run, each annotated with the step that creates it</span></p>
-</div>
-<div class="callout callout-style-default callout-important callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Important
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>On first launch after download the operating system shows a one-time security prompt (macOS Gatekeeper / Windows “Unblock”). See <a href="setup.html#clearing-the-first-launch-security-prompt">clearing the security prompt</a>.</p>
-</div>
-</div>
-</section>
-<section id="review-the-results" class="level2">
-<h2 class="anchored" data-anchor-id="review-the-results">5. Review the results</h2>
-<p>The chromatograms and peak integration results can be reviewed in either of two ways:</p>
+<p>Binary releases are published on the <a href="https://github.com/SLINGhub/MRMhub/releases">GitHub Releases page</a>.</p>
+<section id="latest-changes" class="level2">
+<h2 class="anchored" data-anchor-id="latest-changes">Latest changes</h2>
 <ul>
-<li><strong>From the PDFs</strong> (if step 4 was run) — the per-transition and per-sample PDFs can be browsed quickly with a file previewer: macOS Quick Look (press <em>Space</em>) or the Windows File Explorer preview pane, switching transitions with the arrow keys and scrolling with the mouse wheel.</li>
-<li><strong>Interactively in the MRMhub-viz app</strong> — results are examined feature by feature. → <a href="viz.html">MRMhub-viz</a></li>
+<li><strong>Complete Rust source code</strong>, including the <strong>MRMhub-viz</strong> viewer app, with build instructions.</li>
+<li><strong>Per-feature baseline determination</strong>: the baseline mode (<code>default</code> 5th-percentile, <code>v_drop</code>, or valley-to-valley <code>v2v</code>) can be set globally or overridden individually for each feature.</li>
+<li><strong>Input files referenced by column name, not position</strong>: <code>run_order.csv</code> and <code>feature_list.csv</code> are matched on their header names, so columns may appear in any order, improving robustness.</li>
+<li><strong>Optional retention-time crop window</strong>: <code>crop_window</code> restricts retention-time alignment and peak integration to a window around the expected retention time, useful for static-MRM acquisitions that record the full retention-time range.</li>
+<li><strong>Explicit transition-to-chromatogram mapping</strong>: the optional <code>chromatogram_index</code> column selects which chromatogram ID to use when an mzML file contains multiple identical transitions.</li>
+<li><strong>Version number embedded in the code and executable</strong>, carrying version and publisher metadata so binaries are properly identified, reducing antivirus/SmartScreen warnings.</li>
 </ul>
-<p>Guided by the review, the global and per-feature settings can be refined and INTEGRATOR re-run, until the integration is satisfactory across the sequence. Individual peak boundaries can also be corrected per sample by editing <code>RT_matrix.csv</code> and re-running <strong>only step 3</strong> — re-running step 2 overwrites these manual edits.</p>
-<p><strong>Hit a problem?</strong> The <a href="faq.html">FAQ &amp; Troubleshooting</a> page covers the most frequent failure modes — a misread CSV, an unmatched transition, a zero area, or MRMhub-viz not loading.</p>
-</section>
-<section id="integration-results" class="level2">
-<h2 class="anchored" data-anchor-id="integration-results">6. Integration results</h2>
-<p>INTEGRATOR writes the integration results as different tables to the project folder:</p>
-<ul>
-<li><strong><code>quant_raw.csv</code></strong> (wide format) — a features × samples matrix of <strong>peak areas</strong> only, with the precursor and product <em>m/z</em> and the expected RT (from <code>feature_list.csv</code>) carried in the top rows.</li>
-<li><strong><code>long.csv</code></strong> (long format) — one row per <em>sample × feature</em>, with <strong>area, height, FWHM, and apex RT</strong> , and transition <em>m/z</em>, acquisition timestamp, and metadata from the input files.</li>
-<li><strong><code>RT_matrix.csv</code></strong> — the <strong>peak boundaries</strong> per feature and sample, produced in step 2. These can be edited to adjust individual peaks (see <a href="#review-the-results">Review the results</a>).</li>
-</ul>
-<p>See <a href="running.html#step-3-peak-integration">Processing Workflow</a> for the full definition of these file formats.</p>
-</section>
-<section id="post-processing" class="level2">
-<h2 class="anchored" data-anchor-id="post-processing">7. Post-processing</h2>
-<p>One recommended route is <strong>MRMhub QUANT</strong>, the post-processing module of MRMhub. This R package imports INTEGRATOR’s <code>long.csv</code> directly for normalisation, drift and batch correction, calibration, quality control, and reporting:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>mrmhub<span class="sc">::</span><span class="fu">import_data_mrmhub</span>(<span class="at">path =</span> <span class="st">"path/to/long.csv"</span>, <span class="at">import_metadata =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>→ <a href="https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.html">QUANT Quick Start ↗</a> · <a href="https://slinghub.github.io/MRMhub/quant/">QUANT documentation ↗</a></p>
 
 
 </section>

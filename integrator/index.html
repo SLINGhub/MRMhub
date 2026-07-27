@@ -162,8 +162,8 @@ ul.task-list li input[type="checkbox"] {
 <span class="menu-text">FAQ</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="https://github.com/SLINGhub/MRMhub/releases"> 
-<span class="menu-text">Changelog</span></a>
+    <a class="nav-link" href="./news.html"> 
+<span class="menu-text">NEWS</span></a>
   </li>  
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
@@ -254,6 +254,11 @@ ul.task-list li input[type="checkbox"] {
 <section id="post-processing-of-integration-results" class="level2">
 <h2 class="anchored" data-anchor-id="post-processing-of-integration-results">Post-processing of integration results</h2>
 <p>The results produced by INTEGRATOR can be used directly by the QUANT R package (<code>mrmhub</code>) for post-processing — normalisation, drift/batch correction, calibration, quality control, and reporting. See the <a href="https://slinghub.github.io/MRMhub/quant/">QUANT manual ↗</a> and the corresponding <a href="demo.html">Demo</a>.</p>
+</section>
+<section id="limitations" class="level2">
+<h2 class="anchored" data-anchor-id="limitations">Limitations</h2>
+<p>INTEGRATOR derives its speed from surveying peak features across all samples at once and sharing that information during integration, rather than treating each sample in isolation; this cross-sample approach does not compromise integration quality.</p>
+<p>Its limitations follow from this design and its intended scope. INTEGRATOR processes unit-resolution LC-MRM data from triple-quadrupole instruments only, not high-resolution (HRMS/PRM) acquisitions. It fits a straight-line baseline and applies no peak-shape deconvolution, so specialised or vendor software may integrate individual low-abundance or co-eluting peaks more accurately. The cross-sample retention-time alignment can fail on very noisy or irregular chromatograms. And because features are defined by consensus across samples, a peak present in only a few samples may be missed.</p>
 </section>
 </section>
 </div>

@@ -198,8 +198,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span class="menu-text">FAQ</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="https://github.com/SLINGhub/MRMhub/releases"> 
-<span class="menu-text">Changelog</span></a>
+    <a class="nav-link" href="./news.html"> 
+<span class="menu-text">NEWS</span></a>
   </li>  
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
@@ -360,7 +360,7 @@ END FUNCTION</code></pre>
 <section id="baseline-determination" class="level2">
 <h2 class="anchored" data-anchor-id="baseline-determination">Baseline determination</h2>
 <p>The baseline is determined on the <em>x</em> axis from the integration borders, while three modes are available for its position on the <em>y</em> axis.</p>
-<p>The default mode sets a horizontal baseline at the 5th percentile of the ion-trace intensities, which provides a stable estimate of the chromatographic background that is insensitive to the height of the peak itself. The <code>v_drop</code> mode instead places a horizontal baseline at the lowest intensity of the integrated region, dropping the baseline to the trace minimum. The valley-to-valley mode fits a sloped baseline between the points where the left and right integration borders intersect the ion trace, which is appropriate where the background rises or falls across the peak.</p>
+<p>The default mode — selected by leaving the <code>baseline</code> column empty — sets a horizontal baseline at the 5th percentile of the ion-trace intensities, which provides a stable estimate of the chromatographic background that is insensitive to the height of the peak itself. The <code>v_drop</code> mode instead places a horizontal baseline at the lowest intensity of the integrated region, dropping the baseline to the trace minimum. The valley-to-valley mode fits a sloped baseline between the points where the left and right integration borders intersect the ion trace, which is appropriate where the background rises or falls across the peak.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
