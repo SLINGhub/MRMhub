@@ -32,7 +32,7 @@ and removes them with a contribution-based subtraction ported from the LICAR met
 signal in a feature that should be empty, a species and its M+2 shoulder correlate strongly across
 injections, or the theoretical M+2 contribution from an adjacent same-class species exceeds a few
 percent of the target signal. It runs on raw feature intensities (`feature_intensity`) and applies to
-*every* sample — unlike drift and batch correction, which are fitted on QC samples only.
+*every* sample, unlike drift and batch correction, which are fitted on QC samples only.
 
 For MRM data the correction must be *fragment-based*: a heavy isotope's contribution depends on
 whether it lands on the retained product ion or the neutral loss. The whole-molecule `level = "MS1"`
@@ -45,10 +45,10 @@ covered in the [Isotopic interference correction](manual-12-interference-correct
 Automatic derivation needs one annotation: the `mrm_pattern` column on the `Features` metadata sheet,
 giving each feature its class + MRM pattern. The label encodes both the lipid class and the
 product-ion origin, so `calc_isotopic_interferences()` can build the correct fragment formula. The
-precursor and product m/z the derivation also needs — and the optional `polarity` that narrows the
-pattern choices — can come from the imported data (INTEGRATOR) *or* the metadata; only `mrm_pattern`
-must be annotated by hand. A `Features` sheet ready for correction looks like this — precursor/product
-m/z and `polarity` supplied by the import, with `mrm_pattern` added as the final column:
+precursor and product m/z the derivation also needs (and the optional `polarity` that narrows the
+pattern choices) can come from the imported data (INTEGRATOR) *or* the metadata; only `mrm_pattern`
+must be annotated by hand. A `Features` sheet ready for correction looks like this, with precursor/product
+m/z and `polarity` supplied by the import and `mrm_pattern` added as the final column:
 
 ```{r, eval = TRUE, echo = FALSE}
 tibble::tribble(
@@ -109,7 +109,7 @@ row of `annot_interferences` is one overlap, carrying its contribution factor in
 mexp@annot_interferences
 ```
 
-[`summarize_interferences()`](../reference/summarize_interferences.html) rolls this up — how many
+[`summarize_interferences()`](../reference/summarize_interferences.html) rolls this up: how many
 features are affected, split by source (auto-derived vs. declared) and overlap type, with the
 contribution-factor range:
 
@@ -130,7 +130,7 @@ chain ordering, and zero-clamping.
 mexp <- correct_isotopic_interferences(mexp)
 ```
 
-Run it **before** ISTD normalisation, drift, and batch correction — applied later it resets those
+Run it **before** ISTD normalisation, drift, and batch correction; applied later it resets those
 steps (with a warning), since they must use the corrected raw signal. Raw values are preserved in
 `feature_intensity_orig`. Declared interferences (in-source fragments, co-eluting isobars, or other
 overlaps you annotate) are applied with the sibling
@@ -156,7 +156,7 @@ mexp <- correct_interference_manual(
 Setting `updated_feature_id` renames the corrected feature so raw and corrected channels can coexist.
 Manual factors can come from a theoretical isotopologue calculation (`enviPat`), an empirical
 pure-standard injection (which also captures Q1/Q3 transmission and in-source effects), or published
-class-level tables — verify empirically when moving a method between instruments.
+class-level tables. Verify empirically when moving a method between instruments.
 
 ## 6. Verifying the correction
 
@@ -243,14 +243,14 @@ mexp <- calc_isotopic_interferences(
 ```
 
 It is **off by default** while the gate is validated. When enabled, inspect `annot_interferences`
-carefully — resolved pairs it drops (and, when retention data are missing, pairs it cannot verify) are
+carefully: resolved pairs it drops (and, when retention data are missing, pairs it cannot verify) are
 reported in the console.
 
 ## Next steps
 
-- [Isotopic interference correction](manual-12-interference-correction.html) — the conceptual reference
-- [Drift and Batch Correction](tutorial-04-drift-correction.html) — apply after interference correction
-- [Basic MRMhub Workflow](tutorial-02-basic-workflow.html) — full processing pipeline
-- [The MRMhubExperiment Data Object](manual-02-data-object.html#feature-variables) — how `_orig` postfixes preserve raw values
+- [Isotopic interference correction](manual-12-interference-correction.html): the conceptual reference
+- [Drift and batch correction](tutorial-04-drift-correction.html): apply after interference correction
+- [Basic MRMhub workflow](tutorial-02-basic-workflow.html): full processing pipeline
+- [The MRMhubExperiment data object](manual-02-data-object.html#feature-variables): how `_orig` postfixes preserve raw values
 
 ## References

@@ -141,7 +141,7 @@ mexp_res <- calibrate_by_reference(
 ```
 
 Unlike absolute calibration, the normalization results are stored as **ratios** in a new variable,
-`[VARIABLE]_normalized`, where `[VARIABLE]` is the input variable — e.g. `conc_normalized` or
+`[VARIABLE]_normalized`, where `[VARIABLE]` is the input variable, e.g. `conc_normalized` or
 `intensity_normalized`.
 
 The normalized values can be exported as `[VARIABLE]_normalized` with `save_dataset_csv()`. In the
@@ -242,5 +242,5 @@ gt::gt(tbl) |> gt::fmt_number(decimals = 3)
 
 ## Next steps
 
-- [External calibration and QC](recipe-01-ext-calibration-qc.html) — full calibration-curve workflow with QC
-- [Basic MRMhub workflow](tutorial-02-basic-workflow.html) — revisit the full pipeline
+- [External calibration and QC](recipe-01-ext-calibration-qc.html): full calibration-curve workflow with QC
+- [Basic MRMhub workflow](tutorial-02-basic-workflow.html): revisit the full pipeline

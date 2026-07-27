@@ -1,14 +1,14 @@
 ---
-title: "Metadata Tables & Matching"
+title: "Metadata tables & matching"
 output:
   rmarkdown::html_vignette:
     fig_width: 6
     fig_height: 2
 description: |
-  The metadata tables MRMhub uses — analyses, features, ISTDs, response curves and
-  QC concentrations — their structure, and how identifiers are matched to the data.
+  The metadata tables MRMhub uses (analyses, features, ISTDs, response curves and
+  QC concentrations), their structure, and how identifiers are matched to the data.
 vignette: >
-  %\VignetteIndexEntry{Metadata Tables & Matching}
+  %\VignetteIndexEntry{Metadata tables & matching}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 editor_options:
@@ -40,12 +40,12 @@ show_template <- function(sheet) {
 <p class="page-kind page-kind-manual">Manual</p>
 
 Metadata in this context refers to analysis metadata, i.e., data that annotate the
-analytical data. MRMhub stores it in five tables — analyses, features, internal
-standards, response curves, and calibration/QC concentrations — that are attached to an
+analytical data. MRMhub stores it in five tables (analyses, features, internal
+standards, response curves, and calibration/QC concentrations) that are attached to an
 `MRMhubExperiment` and linked to the measurements by identifier. This page documents the
 structure of each table and how identifiers are matched. For the steps to obtain the
 templates and import metadata, see
-[Import Metadata from Files or a Template](recipe-05-import-metadata.html).
+[Import metadata from files or a template](recipe-05-import-metadata.html).
 
 Integrity of metadata and data is essential for correct post-processing: MRMhub inspects
 imported data and metadata for completeness and for consistency of the IDs used across the
@@ -122,7 +122,7 @@ sample sheet still matches `"QC 01"` in the data.
 ::: {.callout .callout-caution}
 If analyses appear to be missing after `add_metadata()`, a difference in identifier
 spelling is the usual cause. Whitespace differences are always squished on both sides and
-no warning is issued for them — they are handled silently so a stray space cannot cause a
+no warning is issued for them: they are handled silently so a stray space cannot cause a
 hard-to-trace mapping failure. Other differences (a raw-data extension the import does not
 recognize, a typo, or a different naming scheme) are not normalized, and the affected
 analyses are dropped from the join with a warning.
@@ -130,7 +130,7 @@ analyses are dropped from the join with a warning.
 
 ## Next steps
 
-- [Import Metadata from Files or a Template](recipe-05-import-metadata.html) — the import steps
-- [Importing Analytical Data](manual-04-data-import.html) — importing the measurement data
-- [Sample Types & QC Roles](manual-06-sample-types.html) — the `qc_type` values that drive QC logic
-- [The MRMhubExperiment Data Object](manual-02-data-object.html) — where the metadata is stored
+- [Import metadata from files or a template](recipe-05-import-metadata.html): the import steps
+- [Importing analytical data](manual-04-data-import.html): importing the measurement data
+- [Sample types & QC roles](manual-06-sample-types.html): the `qc_type` values that drive QC logic
+- [The MRMhubExperiment data object](manual-02-data-object.html): where the metadata is stored

@@ -25,7 +25,7 @@ source("_common.R")
 Signal intensities in a mass-spectrometry run drift with injection order and shift between
 analytical batches. MRMhub corrects run-order drift by smoothing a trend through reference
 samples, and batch effects by median centering. Both operate on a data variable of an
-`MRMhubExperiment` — raw intensities, normalized intensities, or concentrations — and are
+`MRMhubExperiment` (raw intensities, normalized intensities, or concentrations) and are
 fitted on QC or study samples only, never mixed. After this tutorial you can select an appropriate correction method for a given
 QC design and apply drift and batch correction in the correct order.
 
@@ -172,7 +172,7 @@ plot_runscatter(
 
 ## 5. Batch-effect correction
 
-Batch effects — systematic differences between analytical batches — are corrected on their own with
+Batch effects (systematic differences between analytical batches) are corrected on their own with
 `correct_batch_centering()`. The following uses a seven-batch dataset to show the effect clearly.
 Each batch is centered on a reference QC type, here the study samples (`ref_qc_types = "SPL"`).
 
@@ -241,7 +241,7 @@ plot_runscatter(
 
 MRMhub provides four drift-correction methods. Loess and cubic spline are typically fitted on QC
 samples, Gaussian kernel on study samples; a fourth, GAM smoothing via `correct_drift_gam()`, is also
-available. See [Drift and Batch Correction (reference)](manual-07-corrections.html) for the full
+available. See [Drift and batch correction (reference)](manual-07-corrections.html) for the full
 parameter description of all four.
 
 | Method | Function | Reference | Typical use |
@@ -281,6 +281,6 @@ save_dataset_csv(
 
 ## Next steps
 
-- [RunScatter and PCA QC exploration](tutorial-05-run-scatter.html) — visualise run-order and batch effects
-- [Drift and Batch Correction (reference)](manual-07-corrections.html) — full method documentation
-- [Calibration by Reference Sample](tutorial-07-calibration-reference.html) — normalise to a reference material
+- [RunScatter and PCA QC exploration](tutorial-05-run-scatter.html): visualise run-order and batch effects
+- [Drift and batch correction (reference)](manual-07-corrections.html): full method documentation
+- [Calibration by a reference sample](tutorial-07-calibration-reference.html): normalise to a reference material

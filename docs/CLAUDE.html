@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,7 +34,6 @@
     <li><h6 class="dropdown-header" data-toc-skip>Techniques</h6></li>
     <li><a class="dropdown-item" href="articles/tutorial-04-drift-correction.html">Drift and batch correction</a></li>
     <li><a class="dropdown-item" href="articles/tutorial-07-calibration-reference.html">Calibration by reference sample</a></li>
-    <li><a class="dropdown-item" href="articles/tutorial-10-metadata-validation.html">Validating metadata</a></li>
     <li><a class="dropdown-item" href="articles/tutorial-11-interference-correction.html">Interference correction</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
@@ -47,6 +46,7 @@
     <li><a class="dropdown-item" href="articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
+    <li><a class="dropdown-item" href="articles/recipe-04-validate-metadata.html">Validate &amp; fix metadata</a></li>
     <li><a class="dropdown-item" href="articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul></li>
 <li class="nav-item dropdown">
@@ -66,6 +66,7 @@
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="articles/manual-08-visualization.html">Visualisation Functions</a></li>
+    <li><a class="dropdown-item" href="articles/manual-13-plot-customization.html">Customising Plots</a></li>
     <li><a class="dropdown-item" href="articles/manual-09-ai-assistants.html">Writing Pipelines with AI Assistants</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
@@ -75,7 +76,7 @@
     <li><a class="dropdown-item" href="articles/manual-10-troubleshooting.html">Troubleshooting &amp; FAQ</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
-<li class="nav-item"><a class="nav-link" href="news/index.html">News</a></li>
+<li class="nav-item"><a class="nav-link" href="news/index.html">NEWS</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://slinghub.github.io/MRMhub/">← MRMhub home</a></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://slinghub.github.io/MRMhub/integrator/">INTEGRATOR ↗</a></li>
 <li class="nav-item"><form class="form-inline" role="search">
@@ -126,6 +127,20 @@
 <code>plan-workflowDiagrams.prompt.md</code> — brand colour palette and design rules for inline-SVG/HTML flowcharts on the landing pages.</li>
 </ul><p>Consult them before structural changes to vignettes or the navbar. The untracked <code>tutorial-09-pca-exploration.Rmd</code>, <code>tutorial-10-metadata-validation.Rmd</code>, <code>tutorial-11-interference-correction.Rmd</code>, and <code>manual-08-visualization.Rmd</code> are work-in-progress outputs of this effort.</p>
 </div>
+<div class="section level2">
+<h2 id="working-through-a-plan-file">Working through a plan file<a class="anchor" aria-label="anchor" href="#working-through-a-plan-file"></a></h2>
+<p>When a <code>plan-*.prompt.md</code> is the active task, treat that file — not the chat — as the source of truth, so any fresh session resumes by reading it. The plan file carries a <strong>Checklist</strong> (<code>[ ]</code>/<code>[x]</code> items grouped into phases) and a <strong>Decisions &amp; gotchas</strong> list.</p>
+<ul><li>
+<strong>Scope a session to one phase.</strong> Do the next unchecked <code>[ ]</code> item; explore with subagents (<code>Explore</code>/Agent) before reading large source files, so big files stay out of the main context.</li>
+<li>
+<strong>Re-anchor each turn.</strong> Restate the active phase/step you’re working on as you go, so the plan stays in view and work doesn’t drift as context fills.</li>
+<li>
+<strong>Gate completion on evidence.</strong> A phase is not done until its check ran green (tests / <code><a href="https://devtools.r-lib.org/reference/check.html" class="external-link">devtools::check()</a></code>) and the output was shown — not just “looks done.”</li>
+<li>
+<strong>Check off tersely.</strong> Flip <code>[ ]</code>→<code>[x]</code> only; no completion summaries — the commit and diff carry the detail. Append to <strong>Decisions &amp; gotchas</strong> only for a non-obvious, reusable lesson, ≤1 line.</li>
+<li>
+<strong>Close a phase to disk before resetting context.</strong> Update the plan file, then stage the diff and propose a commit — <strong>never commit without Bo’s explicit OK</strong> (see the engineering-approach rules below). Git commits are the durable per-phase checkpoint.</li>
+</ul></div>
 <div class="section level2">
 <h2 id="common-commands-run-from-the-repo-root">Common commands (run from the repo root)<a class="anchor" aria-label="anchor" href="#common-commands-run-from-the-repo-root"></a></h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">

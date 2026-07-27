@@ -1,6 +1,7 @@
-# Interference Correction
+# Interference correction
 
-Tutorial
+Tutorial Advanced Prerequisites: [Basic
+workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md)
 
 In class-based targeted assays, the natural-abundance heavy
 isotopologues of one species can overlap the transition of a species two
@@ -13,7 +14,7 @@ signal in a feature that should be empty, a species and its M+2 shoulder
 correlate strongly across injections, or the theoretical M+2
 contribution from an adjacent same-class species exceeds a few percent
 of the target signal. It runs on raw feature intensities
-(`feature_intensity`) and applies to *every* sample — unlike drift and
+(`feature_intensity`) and applies to *every* sample, unlike drift and
 batch correction, which are fitted on QC samples only.
 
 For MRM data the correction must be *fragment-based*: a heavy isotope’s
@@ -26,9 +27,6 @@ interference
 correction](https://slinghub.github.io/MRMhub/quant/articles/manual-12-interference-correction.md)
 manual page.
 
-**Time** ~15 min  ·  **Level** Advanced  ·  **Prerequisites** [Basic
-workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md)
-
 ## 1. Preparing for isotopic correction
 
 Automatic derivation needs one annotation: the `mrm_pattern` column on
@@ -37,12 +35,12 @@ pattern. The label encodes both the lipid class and the product-ion
 origin, so
 [`calc_isotopic_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/calc_isotopic_interferences.md)
 can build the correct fragment formula. The precursor and product m/z
-the derivation also needs — and the optional `polarity` that narrows the
-pattern choices — can come from the imported data (INTEGRATOR) *or* the
+the derivation also needs (and the optional `polarity` that narrows the
+pattern choices) can come from the imported data (INTEGRATOR) *or* the
 metadata; only `mrm_pattern` must be annotated by hand. A `Features`
-sheet ready for correction looks like this — precursor/product m/z and
-`polarity` supplied by the import, with `mrm_pattern` added as the final
-column:
+sheet ready for correction looks like this, with precursor/product m/z
+and `polarity` supplied by the import and `mrm_pattern` added as the
+final column:
 
 | feature_id | feature_class | precursor_mz | product_mz | polarity | mrm_pattern |
 |:---|:---|---:|---:|:---|:---|
@@ -86,7 +84,7 @@ slot. Choose the derivation `level` to match the acquisition:
 
 ``` r
 
-# Class-based LC-MRM: fragment-level front/back correction (needs precursor + product m/z).
+# Class-based LC-MRM: fragment-level M+2 (needs precursor + product m/z).
 mexp <- calc_isotopic_interferences(mexp, level = "MRM")
 
 # Genuine MS1 / full-scan: whole-molecule M+2 (needs precursor m/z only).
@@ -104,8 +102,9 @@ option to keep only chromatographically co-eluting pairs.
 
 The two-stage API is a built-in *preview*: review the derived edges
 before subtracting anything. Each row of `annot_interferences` is one
-overlap, with its contribution factor `K` and an `overlap_type`
-(`m2_front`, `m2_back`, or `ms1_m2`):
+overlap, carrying its contribution factor in `interference_contribution`
+(the *K* of the subtraction formula) and an `overlap_type` (`m2_front`,
+`m2_back`, or `ms1_m2`):
 
 ``` r
 
@@ -113,7 +112,7 @@ mexp@annot_interferences
 ```
 
 [`summarize_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/summarize_interferences.md)
-rolls this up — how many features are affected, split by source
+rolls this up: how many features are affected, split by source
 (auto-derived vs. declared) and overlap type, with the
 contribution-factor range:
 
@@ -138,7 +137,7 @@ zero-clamping.
 mexp <- correct_isotopic_interferences(mexp)
 ```
 
-Run it **before** ISTD normalisation, drift, and batch correction —
+Run it **before** ISTD normalisation, drift, and batch correction;
 applied later it resets those steps (with a warning), since they must
 use the corrected raw signal. Raw values are preserved in
 `feature_intensity_orig`. Declared interferences (in-source fragments,
@@ -158,20 +157,19 @@ automatic derivation, use
 
 mexp <- correct_interference_manual(
   mexp,
-  variable                  = "feature_intensity",
-  feature                   = "PC 32:0",
-  interfering_feature       = "SM 36:1 M+3",
+  variable = "feature_intensity",
+  feature = "PC 32:0",
+  interfering_feature = "SM 36:1 M+3",
   interference_contribution = 0.0107,
-  neg_to_na                 = FALSE,
-  updated_feature_id        = NA
-)
+  neg_to_na = FALSE,
+  updated_feature_id = NA)
 ```
 
 Setting `updated_feature_id` renames the corrected feature so raw and
 corrected channels can coexist. Manual factors can come from a
 theoretical isotopologue calculation (`enviPat`), an empirical
 pure-standard injection (which also captures Q1/Q3 transmission and
-in-source effects), or published class-level tables — verify empirically
+in-source effects), or published class-level tables. Verify empirically
 when moving a method between instruments.
 
 ## 6. Verifying the correction
@@ -180,10 +178,13 @@ when moving a method between instruments.
 
 d <- get_analyticaldata(mexp, annotated = TRUE) |>
   dplyr::filter(feature_id == "PC 32:0") |>
-  dplyr::select(analysis_id, qc_type,
-                intensity_before = feature_intensity_orig,
-                intensity_after  = feature_intensity) |>
-  dplyr::mutate(pct_change = 100 * (intensity_after - intensity_before) / intensity_before)
+  dplyr::select(
+    analysis_id, qc_type,
+    intensity_before = feature_intensity_orig,
+    intensity_after = feature_intensity) |>
+  dplyr::mutate(
+    pct_change =
+      100 * (intensity_after - intensity_before) / intensity_before)
 
 summary(d$pct_change)
 ```
@@ -200,7 +201,11 @@ shows how many features were affected by which magnitude of correction
 plot_qc_interference_impact(mexp, qc_types = "SPL")
 ```
 
-![](tutorial-11-interference-correction_files/figure-html/unnamed-chunk-12-1.png)
+![Distribution of per-feature interference-correction magnitude in study
+samples](tutorial-11-interference-correction_files/figure-html/qc-impact-1.png)
+
+Figure 1. How many features were corrected at each magnitude (percent of
+signal removed) in the study samples.
 
 For a per-feature view,
 [`plot_interference_correction()`](https://slinghub.github.io/MRMhub/quant/reference/plot_interference_correction.md)
@@ -214,12 +219,19 @@ keeps only the largest. A blank approaching zero alongside study samples
 ``` r
 
 plot_interference_correction(
-  mexp, qc_types = "SPL", min_correction_pct = 40, sort_by_effect = "desc",
-  point_size = 1.5, point_alpha = 0.8
-)
+  mexp,
+  qc_types = "SPL",
+  min_correction_pct = 40,
+  sort_by_effect = "desc",
+  point_size = 1.5, point_alpha = 0.8)
 ```
 
-![](tutorial-11-interference-correction_files/figure-html/unnamed-chunk-13-1.png)
+![Per-feature residual signal after interference correction, split by QC
+type](tutorial-11-interference-correction_files/figure-html/per-feature-1.png)
+
+Figure 2. Per-feature residual signal after correction, as a percent of
+the uncorrected value, for features with at least 40% removed, split by
+QC type.
 
 Each point is one study sample; the box summarises all of them. `SPL`
 points have a transparent fill, so raise `point_size` / `point_alpha`
@@ -235,28 +247,29 @@ dropping chromatographically resolved pairs:
 
 ``` r
 
-mexp <- calc_isotopic_interferences(mexp, level = "MRM", check_coelution = TRUE)
+mexp <- calc_isotopic_interferences(
+  mexp, level = "MRM", check_coelution = TRUE)
 ```
 
 It is **off by default** while the gate is validated. When enabled,
-inspect `annot_interferences` carefully — resolved pairs it drops (and,
+inspect `annot_interferences` carefully: resolved pairs it drops (and,
 when retention data are missing, pairs it cannot verify) are reported in
 the console.
 
 ## Next steps
 
 - [Isotopic interference
-  correction](https://slinghub.github.io/MRMhub/quant/articles/manual-12-interference-correction.md)
-  — the conceptual reference
-- [Drift and Batch
-  Correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.md)
-  — apply after interference correction
+  correction](https://slinghub.github.io/MRMhub/quant/articles/manual-12-interference-correction.md):
+  the conceptual reference
+- [Drift and batch
+  correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.md):
+  apply after interference correction
 - [Basic MRMhub
-  Workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md)
-  — full processing pipeline
-- [The MRMhubExperiment Data
-  Object](https://slinghub.github.io/MRMhub/quant/articles/manual-02-data-object.html#feature-variables)
-  — how `_orig` postfixes preserve raw values
+  workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md):
+  full processing pipeline
+- [The MRMhubExperiment data
+  object](https://slinghub.github.io/MRMhub/quant/articles/manual-02-data-object.html#feature-variables):
+  how `_orig` postfixes preserve raw values
 
 ## References
 

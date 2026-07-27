@@ -1,5 +1,5 @@
 ---
-title: "Isotopic Interference Correction"
+title: "Isotopic interference correction"
 output:
   rmarkdown::html_vignette:
     fig_width: 7
@@ -9,7 +9,7 @@ description: |
   (MRM) and whole-molecule (MS1) derivation levels, the co-elution requirement,
   and the provenance of the derived contribution factors.
 vignette: >
-  %\VignetteIndexEntry{Isotopic Interference Correction}
+  %\VignetteIndexEntry{Isotopic interference correction}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 editor_options:
@@ -32,8 +32,8 @@ a contribution-based subtraction ported from the LICAR method [@gao2021LICARAppl
 for each affected (*victim*) feature it subtracts a proportion `K` of each *interfering* feature's
 area, where `K` is the interferer's theoretical M+2 relative abundance.
 
-This page is the conceptual reference for the correction. The step-by-step workflow — annotating
-`mrm_pattern`, deriving relationships, inspecting them, and applying the subtraction — is covered in
+This page is the conceptual reference for the correction. The step-by-step workflow (annotating
+`mrm_pattern`, deriving relationships, inspecting them, and applying the subtraction) is covered in
 the [Interference correction tutorial](tutorial-11-interference-correction.html).
 
 ## Two derivation levels, one subtraction engine
@@ -64,7 +64,7 @@ Under class-based separation a victim transition `(m, p)` can be perturbed by **
 interferers, each one M+2 lighter at the precursor. Their M+2 isotopologue reaches the victim's
 precursor window, but they differ in where that +2 sits relative to the product ion:
 
-- a **front** interferer shares the product ion (`ΔQ3 = 0`) — the +2 is on the neutral loss;
+- a **front** interferer shares the product ion (`ΔQ3 = 0`), the +2 is on the neutral loss;
 - a **back** interferer carries the +2 on the product ion itself (`ΔQ3 = +2`).
 
 Each contributes its own M+2 factor, so a victim can carry a front edge and a back edge
@@ -88,7 +88,7 @@ simultaneously. The engine composes them as `X − front − back`.
   <text x="300" y="152" font-family="sans-serif" font-size="9" fill="#2C3E50" text-anchor="middle">M+2 · ΔQ3=+2</text>
 </svg>
 
-## MRM correction is fragment-based — MS1 is not a fallback
+## MRM correction is fragment-based: MS1 is not a fallback
 
 ::: {.callout .callout-caution}
 **MS1 is never a substitute for MRM correction.** For MRM data the isotopic correction must be
@@ -96,7 +96,7 @@ simultaneously. The engine composes them as `X − front − back`.
 ends up on the retained product ion or on the neutral loss [@gao2021LICARApplicationIsotopic]. The
 whole-molecule (`level = "MS1"`) factor ignores that split and is valid **only** for genuine
 MS1 / full-scan measurements. It must **not** be used for MRM data that merely happens to lack a
-recorded product m/z — use `level = "MRM"` (and supply the product m/z) there.
+recorded product m/z. Use `level = "MRM"` (and supply the product m/z) there.
 `calc_isotopic_interferences()` warns when MS1 derivation is run on data whose product m/z differs
 from the precursor (i.e. real MRM transitions).
 :::
@@ -145,12 +145,12 @@ integration window captures essentially all of that interferer's M+2 peak.
 
 *Blue = victim peak; rose = the interferer's M+2 contribution; dashed = the victim integration window.*
 
-The co-elution gate (`check_coelution = TRUE`, the default when retention data are present) keeps an
-edge only when the interferer's apex falls inside the victim's integration window
+The optional co-elution gate (the experimental `check_coelution = TRUE`; the default is
+`check_coelution = FALSE`) keeps an edge only when the interferer's apex falls inside the victim's integration window
 (`feature_int_start`..`feature_int_end`, from the imported integration borders, or `feature_rt ± FWHM`
 where borders are absent). Chromatographically resolved pairs are dropped and reported, because
 subtracting a full `K·A` there would delete real victim signal. Border overlap alone is
-necessary but not sufficient — apex coincidence is the test. When no retention data are available the
+necessary but not sufficient. Apex coincidence is the test. When no retention data are available the
 gate cannot be evaluated, a warning is emitted, and all m/z-matched edges are kept. This gate is a
 deliberate enhancement over LICAR, which assumes class co-elution with no per-pair retention check.
 
@@ -167,21 +167,21 @@ The derived factors are theoretical isotope abundances and depend on the abundan
 Both engines are pinned to **`enviPat` version 2.8** [@loos2015NontargetEnviPat], the reference used
 for the golden parity tests; `calc_isotopic_interferences()` warns when a different version is
 installed. Because derivation is deterministic under that pin, re-importing the `mrm_pattern`
-annotation and re-running `calc_isotopic_interferences()` regenerates identical edges — the metadata alone reproduces the
+annotation and re-running `calc_isotopic_interferences()` regenerates identical edges. The metadata alone reproduces the
 correction. The exact factors additionally survive an `enviPat` upgrade because the derived
 `annot_interferences` table travels with the saved object and is written to the report workbook as a
 human-readable factor archive.
 
-Only the LICAR *data* — the per-class fragment offsets and the pattern labels — is vendored; the
+Only the LICAR *data* (the per-class fragment offsets and the pattern labels) is vendored; the
 abundance calculation, name parsing (rgoslin), and subtraction are `mrmhub`'s own. This correction is
 distinct from `¹³C`/`¹⁵N` natural-abundance metabolic-flux (MID) correction, which MRMhub does not
 perform.
 
 ## Next steps
 
-- [Interference correction](tutorial-11-interference-correction.html) — the step-by-step workflow
-- [Drift and Batch Correction](manual-07-corrections.html) — apply after interference correction
-- [The MRMhubExperiment Data Object](manual-02-data-object.html#feature-variables) — how `_orig` postfixes preserve raw values
-- [`calc_isotopic_interferences()`](../reference/calc_isotopic_interferences.html) · [`correct_isotopic_interferences()`](../reference/correct_isotopic_interferences.html) — function reference
+- [Interference correction](tutorial-11-interference-correction.html): the step-by-step workflow
+- [Drift and batch correction](manual-07-corrections.html): apply after interference correction
+- [The MRMhubExperiment data object](manual-02-data-object.html#feature-variables): how `_orig` postfixes preserve raw values
+- [`calc_isotopic_interferences()`](../reference/calc_isotopic_interferences.html) · [`correct_isotopic_interferences()`](../reference/correct_isotopic_interferences.html): function reference
 
 ## References

@@ -24,30 +24,30 @@ full argument reference for every function is in the
 
 ## Getting started
 
-- **[Installation](manual-00-installation.html)** — install `mrmhub` and load it.
-- **[Key Concepts & Glossary](manual-01-key-concepts.html)** — the data model, core terminology, and where QUANT fits in the MRMhub workflow.
+- **[Installation](manual-00-installation.html)**: install `mrmhub` and load it.
+- **[Key concepts & glossary](manual-01-key-concepts.html)**: the data model, core terminology, and where QUANT fits in the MRMhub workflow.
 
 ## Preparing and running
 
-- **[Importing Analytical Data](manual-04-data-import.html)** — choosing an importer and the file layout each one expects.
-- **[Importing Metadata](manual-05-metadata.html)** — attaching sample, feature, and internal-standard annotations.
-- **[Drift and Batch Correction](manual-07-corrections.html)** — correcting signal drift within runs and offsets between batches.
-- **[Quarto Workflows](manual-11-quarto-workflows.html)** — recording a pipeline as a `.qmd` notebook, coloured console output, and rendering to HTML, PDF, and Word.
+- **[Importing analytical data](manual-04-data-import.html)**: choosing an importer and the file layout each one expects.
+- **[Importing metadata](manual-05-metadata.html)**: attaching sample, feature, and internal-standard annotations.
+- **[Drift and batch correction](manual-07-corrections.html)**: correcting signal drift within runs and offsets between batches.
+- **[Quarto workflows](manual-11-quarto-workflows.html)**: recording a pipeline as a `.qmd` notebook, coloured console output, and rendering to HTML, PDF, and Word.
 
 ## Results and downstream use
 
-- **[Visualisation Functions](manual-08-visualization.html)** — RunScatter, PCA, run-sequence, and normalization-QC plots.
-- **[Writing Pipelines with AI Assistants](manual-09-ai-assistants.html)** — grounding LLMs (Claude, ChatGPT, local models) in the real API, and verifying what they produce.
+- **[Visualisation functions](manual-08-visualization.html)**: RunScatter, PCA, run-sequence, and normalization-QC plots.
+- **[Writing pipelines with AI assistants](manual-09-ai-assistants.html)**: grounding LLMs (Claude, ChatGPT, local models) in the real API, and verifying what they produce.
 
 ## Reference
 
-- **[The MRMhubExperiment Data Object](manual-02-data-object.html)** — the tables, identifiers, and feature variables of the central object.
-- **[Design Decisions](manual-03-design-decisions.html)** — why the package is built the way it is.
-- **[Sample Types & QC Roles](manual-06-sample-types.html)** — every sample-type (`qc_type`) label and its role in QC.
-- **[Troubleshooting & FAQ](manual-10-troubleshooting.html)** — frequent problems and how to resolve them.
+- **[The MRMhubExperiment data object](manual-02-data-object.html)**: the tables, identifiers, and feature variables of the central object.
+- **[Design decisions](manual-03-design-decisions.html)**: why the package is built the way it is.
+- **[Sample types & QC roles](manual-06-sample-types.html)**: every sample-type (`qc_type`) label and its role in QC.
+- **[Troubleshooting & FAQ](manual-10-troubleshooting.html)**: frequent problems and how to resolve them.
 
 ## See also
 
-- [Tutorials](tutorial-00-first-analysis.html) — worked, end-to-end examples
-- [Function reference](../reference/index.html) — full arguments for every function
-- [INTEGRATOR documentation](https://slinghub.github.io/MRMhub/integrator/) — upstream peak integration
+- [Tutorials](tutorial-00-first-analysis.html): worked, end-to-end examples
+- [Function reference](../reference/index.html): full arguments for every function
+- [INTEGRATOR documentation](https://slinghub.github.io/MRMhub/integrator/): upstream peak integration

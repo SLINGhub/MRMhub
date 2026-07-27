@@ -28,14 +28,14 @@ if (fs::file_exists("metadata_template.xlsx")) {
 
 <p class="page-meta"><span class="page-kind page-kind-tutorial">Tutorial</span> <span class="page-level">Beginner</span> <span class="page-prereq">Prerequisites: <a href="tutorial-00-first-analysis.html">Your first analysis</a></span></p>
 
-Every analysis begins with the analytical data — the pre-processed measurements
+Every analysis begins with the analytical data: the pre-processed measurements
 from the instrument, such as peak areas. That alone is already enough for some
 basic exploration, for example plotting signal intensities against injection
 order. Most processing, though, also draws on metadata: the information
 describing the samples and features behind those measurements. Some metadata
-travels with the data file itself — INTEGRATOR and MassHunter results in
+travels with the data file itself (INTEGRATOR and MassHunter results in
 particular can carry it, pulled in with the importer's `import_metadata`
-argument — while the rest is imported from separate sources. This tutorial
+argument) while the rest is imported from separate sources. This tutorial
 covers both, from a raw result file to a fully annotated `MRMhubExperiment`
 ready for processing.
 
@@ -88,8 +88,8 @@ and full documentation of every importer.
 
 ## 2. Metadata
 
-Metadata — the analysis metadata that describes and annotates the analytical
-data at the sample and feature level — is essential to the MRMhub workflow. Some
+Metadata (the analysis metadata that describes and annotates the analytical
+data at the sample and feature level) is essential to the MRMhub workflow. Some
 of it can be read straight from the imported result file, but more commonly the
 required metadata comes from other sources and has to be imported separately.
 Which tables are needed depends on the intended processing; see
@@ -108,8 +108,8 @@ Preparing it is often a manual step, collecting information from various sources
 To support this, MRMhub ships Excel templates that carry the expected column
 headers and usage notes for every supported metadata type. Starting from a
 template and filling it in is the recommended approach.
-`save_metadata_templates()` writes the workbook — `metadata_template.xlsx` by
-default — to the working directory:
+`save_metadata_templates()` writes the workbook (`metadata_template.xlsx` by
+default) to the working directory:
 
 ```{r save-templates, eval = TRUE, message = TRUE}
 save_metadata_templates()
@@ -160,13 +160,13 @@ mexp <- import_metadata_qcconcentrations(mexp, table = df_qcinfo)
 ## 5. Metadata from the MSOrganiser template
 
 Rather than importing each table on its own, all metadata can be collected in a
-single MSOrganiser template — an Excel file — and imported in one step. See
+single MSOrganiser template (an Excel file) and imported in one step. See
 [Importing metadata](manual-05-metadata.html) for that route and for the full
 set of metadata tables, templates and validation checks.
 
 ## Next steps
 
-- [Importing analytical data](manual-04-data-import.html) — decision guide and reference for every importer
-- [Importing metadata](manual-05-metadata.html) — metadata tables, templates and validation
-- [Validating metadata](recipe-04-validate-metadata.html) — checking metadata for common errors
-- [Basic MRMhub workflow](tutorial-02-basic-workflow.html) — a complete walkthrough from import to export
+- [Importing analytical data](manual-04-data-import.html): decision guide and reference for every importer
+- [Importing metadata](manual-05-metadata.html): metadata tables, templates and validation
+- [Validating metadata](recipe-04-validate-metadata.html): checking metadata for common errors
+- [Basic MRMhub workflow](tutorial-02-basic-workflow.html): a complete walkthrough from import to export

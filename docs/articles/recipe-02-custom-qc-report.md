@@ -1,23 +1,20 @@
-# Custom QC Report
+# Custom QC report
 
-Recipe
+Recipe Prerequisites: [Basic
+workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md)
 
-**Level** Intermediate  ·  **Output** Self-contained HTML report  · 
-**Requires** `gt`, `ggplot2`, `patchwork` (optional), `quarto` (for
-template rendering)
+A QC report gathers the quality indicators for a processed experiment
+into a single self-contained HTML file that can be shared, emailed or
+archived. This recipe assembles one from a fully processed
+`MRMhubExperiment`: a summary of sample and feature counts, the QC CV
+distribution, run-order scatter plots for the least reproducible
+features, a feature pass/fail table, calibration metrics where a
+calibration was run, and any excluded analyses. Each piece can be
+dropped into the parameterized Quarto template given at the end, so the
+same report regenerates for any study.
 
-## Goal
-
-Generate a self-contained HTML QC report that includes:
-
-- Summary statistics (feature counts, sample counts, batches)
-- CV distribution plots
-- Run-order scatter plots for key features
-- Calibration curve summaries (if applicable)
-- Feature pass/fail table
-- Flagged samples
-
-## Prerequisites
+The report reads an experiment that has already been through import,
+metadata annotation, normalization and QC-metric calculation:
 
 ``` r
 
@@ -26,17 +23,20 @@ library(dplyr)
 library(ggplot2)
 library(gt)
 
-# A fully processed MRMhubExperiment
 mexp <- readRDS("results/mexp_processed.rds")
 ```
 
-## Part 1: Summary Table
+## Summary table
+
+A compact overview: counts of analyses, samples, blanks and features,
+the number of batches, and whether drift and batch correction were
+applied.
 
 ``` r
 
 summary_tbl <- tibble::tibble(
   Metric = c("Total analyses", "Study samples (SPL)", "QC samples",
-             "Blanks", "Features (total)", "Features (passed QC)",
+             "Blanks", "Features (total)", "Features (measured)",
              "Batches", "Drift corrected?", "Batch corrected?"),
   Value = c(
     get_analysis_count(mexp),
@@ -46,15 +46,22 @@ summary_tbl <- tibble::tibble(
     nrow(mexp@annot_features),
     get_feature_count(mexp),
     length(unique(mexp@annot_analyses$batch_id)),
-    ifelse(length(mexp@var_drift_corrected) > 0, "Yes", "No"),
-    ifelse(length(mexp@var_batch_corrected) > 0, "Yes", "No")
+    ifelse(any(mexp@var_drift_corrected), "Yes", "No"),
+    ifelse(any(mexp@var_batch_corrected), "Yes", "No")
   )
 )
 
 summary_tbl |> gt::gt() |> gt::tab_header(title = "Study Summary")
 ```
 
-## Part 2: CV Distribution
+## CV distribution
+
+The coefficient of variation across the batch QC (BQC) samples is the
+primary precision metric; the histogram shows how many features fall
+within a chosen CV limit. The 30 % line here is illustrative. See
+[Sample types and QC
+roles](https://slinghub.github.io/MRMhub/quant/articles/manual-06-sample-types.md)
+for which QC types drive this metric.
 
 ``` r
 
@@ -74,11 +81,14 @@ ggplot(cv_data, aes(x = cv)) +
   theme_minimal()
 ```
 
-## Part 3: Run-Order Scatter (Worst Features)
+## Run-order scatter for the worst features
+
+Plotting the least reproducible features against acquisition order shows
+whether the high CV comes from drift, a step change between batches, or
+scattered outliers.
 
 ``` r
 
-# Plot run scatter for the 4 features with highest CV
 top_cv_features <- cv_data |>
   arrange(desc(cv)) |>
   head(4) |>
@@ -97,7 +107,12 @@ if (requireNamespace("patchwork", quietly = TRUE)) {
 }
 ```
 
-## Part 4: Feature Pass/Fail Table
+## Feature pass/fail table
+
+A per-feature verdict from the BQC CV and D-ratio. The thresholds below
+(CV ≤ 30 %, D-ratio ≤ 0.5) are illustrative defaults; MRMhub’s own
+feature filtering is applied with
+[`filter_features_qc()`](https://slinghub.github.io/MRMhub/quant/reference/filter_features_qc.md).
 
 ``` r
 
@@ -117,7 +132,9 @@ qc_table <- mexp@metrics_qc |>
 
 qc_table |>
   gt::gt() |>
-  gt::fmt_number(columns = c(norm_intensity_cv_bqc, normint_dratio_sd_bqc), decimals = 1) |>
+  gt::fmt_number(
+    columns = c(norm_intensity_cv_bqc, normint_dratio_sd_bqc),
+    decimals = 1) |>
   gt::data_color(
     columns = status,
     fn = function(x) ifelse(x == "PASS", "#d4e8d4", "#f8d4d4")
@@ -125,13 +142,19 @@ qc_table |>
   gt::tab_header(title = "Feature QC Summary")
 ```
 
-## Part 5: Calibration Summary (if applicable)
+## Calibration summary
+
+Where the experiment was quantified against external calibration curves,
+the fit metrics summarise each curve: model, weighting, R² and the
+calibrated range.
 
 ``` r
 
 if (nrow(mexp@metrics_calibration) > 0) {
   cal_summary <- get_calibration_metrics(mexp) |>
-    select(feature_id, r2, fit_model, fit_weighting, lowest_cal, highest_cal) |>
+    select(
+      feature_id, r2, fit_model, fit_weighting,
+      lowest_cal, highest_cal) |>
     arrange(r2)
 
   cal_summary |>
@@ -141,11 +164,14 @@ if (nrow(mexp@metrics_calibration) > 0) {
 }
 ```
 
-## Part 6: Flagged Samples
+## Excluded analyses
+
+Any analyses removed from processing and reporting, kept in the report
+for the audit trail.
 
 ``` r
 
-if (length(mexp@analyses_excluded) > 0) {
+if (!all(is.na(mexp@analyses_excluded))) {
   tibble::tibble(
     analysis_id = mexp@analyses_excluded,
     reason = "Excluded during processing"
@@ -153,7 +179,7 @@ if (length(mexp@analyses_excluded) > 0) {
 }
 ```
 
-## Parameterized Quarto Template
+## Parameterized Quarto template
 
 **Full template (click to expand)**
 
@@ -170,7 +196,7 @@ Save as `qc-report-template.qmd`:
       rds_path: "results/mexp_processed.rds"
     ---
 
-Then include each Part above as a code chunk in the template.
+Then include each section above as a code chunk in the template.
 
 Render the template:
 
@@ -183,7 +209,7 @@ quarto::quarto_render(
 
 ## Tips
 
-- **Self-contained HTML** — a single file that can be emailed or
+- **Self-contained HTML**: a single file that can be emailed or
   archived.
 - **Parameterize** the RDS path so the same template works for any
   study.
@@ -193,11 +219,11 @@ quarto::quarto_render(
 ## Next steps
 
 - [Basic MRMhub
-  Workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md)
-  — full processing before reporting
-- [External Calibration &
-  QC](https://slinghub.github.io/MRMhub/quant/articles/recipe-01-ext-calibration-qc.md)
-  — calibration workflow
+  workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md):
+  full processing before reporting
+- [External calibration &
+  QC](https://slinghub.github.io/MRMhub/quant/articles/recipe-01-ext-calibration-qc.md):
+  calibration workflow
 - [Troubleshooting &
-  FAQ](https://slinghub.github.io/MRMhub/quant/articles/manual-10-troubleshooting.md)
-  — common issues
+  FAQ](https://slinghub.github.io/MRMhub/quant/articles/manual-10-troubleshooting.md):
+  common issues

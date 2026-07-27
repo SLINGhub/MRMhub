@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Calibration by a Reference Sample • mrmhub</title>
+<title>Calibration by a reference sample • mrmhub</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
@@ -16,7 +16,12 @@
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
-<meta property="og:title" content="Calibration by a Reference Sample">
+<meta property="og:title" content="Calibration by a reference sample">
+<meta name="description" content="Re-calibrate or normalise concentrations against a reference sample (e.g. NIST SRM1950), apply it batch-wise, and check the reference bias.
+">
+<meta property="og:description" content="Re-calibrate or normalise concentrations against a reference sample (e.g. NIST SRM1950), apply it batch-wise, and check the reference bias.
+">
+<meta property="og:image" content="https://slinghub.github.io/MRMhub/quant/logo.svg">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -26,7 +31,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -57,7 +62,6 @@
     <li><h6 class="dropdown-header" data-toc-skip>Techniques</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-04-drift-correction.html">Drift and batch correction</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-07-calibration-reference.html">Calibration by reference sample</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-10-metadata-validation.html">Validating metadata</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-11-interference-correction.html">Interference correction</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
@@ -70,6 +74,7 @@
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-04-validate-metadata.html">Validate &amp; fix metadata</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul>
 </li>
@@ -91,6 +96,7 @@
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-13-plot-customization.html">Customising Plots</a></li>
     <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Writing Pipelines with AI Assistants</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
@@ -101,7 +107,7 @@
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">NEWS</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><a class="external-link nav-link" href="https://slinghub.github.io/MRMhub/">← MRMhub home</a></li>
@@ -122,7 +128,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.svg" class="logo" alt=""><h1>Calibration by a Reference Sample</h1>
+      <img src="../logo.svg" class="logo" alt=""><h1>Calibration by a reference sample</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/HEAD/vignettes/articles/tutorial-07-calibration-reference.Rmd" class="external-link"><code>vignettes/articles/tutorial-07-calibration-reference.Rmd</code></a></small>
@@ -131,33 +137,30 @@
 
     
     
-<p class="page-kind page-kind-tutorial">
-Tutorial
+<p class="page-meta">
+<span class="page-kind page-kind-tutorial">Tutorial</span> <span class="page-level">Intermediate</span> <span class="page-prereq">Prerequisites:
+<a href="tutorial-02-basic-workflow.html">Basic workflow</a></span>
 </p>
 <p>Feature abundances in samples can also be calibrated to corresponding
 abundances in a specified reference sample. MRMhub supports absolute
 (re-)calibration and normalization (relative calibration).</p>
 <p>Absolute calibration of feature abundances is based on known
-metabolite concentrations in a reference sample (e.g., NIST SRM1950
+metabolite concentrations in a reference sample (e.g. NIST SRM1950
 plasma). Normalization (relative calibration) is based on calculating
 the abundance ratios of features in samples and a reference sample.</p>
 <p>Both absolute and relative calibration are demonstrated below using
 NIST SRM1950 plasma samples that were measured as part of the same
 analysis.</p>
-<div class="callout callout-note">
-<p><strong>Time:</strong> ~15 min  |  <strong>Level:</strong>
-Intermediate  |  <strong>Prerequisites:</strong> <a href="tutorial-02-basic-workflow.html">Basic workflow</a></p>
-</div>
 <div class="section level2">
-<h2 id="import-data-and-metadata">Import data and metadata<a class="anchor" aria-label="anchor" href="#import-data-and-metadata"></a>
+<h2 id="import-data-and-metadata">1. Import data and metadata<a class="anchor" aria-label="anchor" href="#import-data-and-metadata"></a>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/SLINGhub/MRMhub" class="external-link">mrmhub</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Get example data paths</span></span>
-<span><span class="va">dat_file</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"S1P_MHQuant.csv"</span>, package <span class="op">=</span> <span class="st">"mrmhub"</span><span class="op">)</span></span>
-<span><span class="va">meta_file</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"S1P_metadata_tables.xlsx"</span>, package <span class="op">=</span> <span class="st">"mrmhub"</span><span class="op">)</span></span>
+<span><span class="va">dat_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"S1P_MHQuant.csv"</span>, package <span class="op">=</span> <span class="st">"mrmhub"</span><span class="op">)</span></span>
+<span><span class="va">meta_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"S1P_metadata_tables.xlsx"</span>, package <span class="op">=</span> <span class="st">"mrmhub"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Load data and metadata</span></span>
 <span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MRMhubExperiment.html">MRMhubExperiment</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -167,178 +170,228 @@ Intermediate  |  <strong>Prerequisites:</strong> <a href="tutorial-02-basic-wo
 <span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_metadata_istds.html">import_metadata_istds</a></span><span class="op">(</span><span class="va">mexp</span>, path <span class="op">=</span> <span class="va">meta_file</span>, sheet <span class="op">=</span> <span class="st">"ISTDs"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="load-known-analyte-concentrations-of-the-reference-sample">Load known analyte concentrations of the reference sample<a class="anchor" aria-label="anchor" href="#load-known-analyte-concentrations-of-the-reference-sample"></a>
+<h2 id="load-known-concentrations-of-the-reference-sample">2. Load known concentrations of the reference sample<a class="anchor" aria-label="anchor" href="#load-known-concentrations-of-the-reference-sample"></a>
 </h2>
 <p>A table of known analyte concentrations for the NIST SRM1950
-reference sample is added to the <code>MRMhubExperiment object</code>.
+reference sample is added to the <code>MRMhubExperiment</code> object.
 Note that the S1P concentrations in this table are for illustration
 only; the actual absolute S1P concentrations in NIST SRM1950 may differ
 significantly.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_metadata_qcconcentrations.html">import_metadata_qcconcentrations</a></span><span class="op">(</span><span class="va">mexp</span>, path <span class="op">=</span> <span class="va">meta_file</span>, sheet <span class="op">=</span> <span class="st">"QCconcentrations"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Analysis metadata associated with 65 analyses.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Feature metadata associated with 16 features.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Internal Standard metadata associated with 2 ISTDs.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">QC concentration metadata associated with 1 annotated samples and 6 annotated analytes</span></span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_metadata_qcconcentrations.html">import_metadata_qcconcentrations</a></span><span class="op">(</span><span class="va">mexp</span>, path <span class="op">=</span> <span class="va">meta_file</span>, sheet <span class="op">=</span> <span class="st">"QCconcentrations"</span><span class="op">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Analysis metadata associated with 65 analyses.</span></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Feature metadata associated with 16 features.</span></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Internal Standard metadata associated with 2 ISTDs.</span></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">QC concentration metadata associated with 1 annotated samples and 6 annotated analytes</span></code></pre>
+</div>
 </div>
 <div class="section level2">
-<h2 id="process-the-data">Process the data<a class="anchor" aria-label="anchor" href="#process-the-data"></a>
+<h2 id="process-the-data">3. Process the data<a class="anchor" aria-label="anchor" href="#process-the-data"></a>
 </h2>
 <p>The analysis was performed using HILIC chromatography; the isotope
 interferences from S1P 18:2;O2 M+2 and S1P 18:1;O2 M+2 must therefore be
 corrected. Initial quantification is then done using the spiked-in ISTD
 concentration.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Isotope correction</span></span>
-<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu">mrmhub</span><span class="fu">::</span><span class="fu"><a href="../reference/correct_custom_interferences.html">correct_custom_interferences</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Interference correction applied to 4 of 16 feature(s) (0 isotopic, 4 custom edge(s)).</span></span></span>
-<span></span>
-<span><span class="co"># Quantify the data</span></span>
-<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_by_istd.html">normalize_by_istd</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">14 features normalized with 2 ISTDs in 65 analyses.</span></span></span>
-<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/quantify_by_istd.html">quantify_by_istd</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">14 feature concentrations calculated based on 2 ISTDs and sample amounts of 65 analyses.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Concentrations are given in μmol/L.</span></span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Isotope-interference correction</span></span>
+<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/correct_custom_interferences.html">correct_custom_interferences</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Interference correction applied to 4 of 16 feature(s) (0 isotopic, 4 custom edge(s)).</span></code></pre>
+</div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="co"># Quantify against the internal standards</span></span>
+<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_by_istd.html">normalize_by_istd</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">14 features normalized with 2 ISTDs in 65 analyses.</span></code></pre>
+</div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/quantify_by_istd.html">quantify_by_istd</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">14 feature concentrations calculated based on 2 ISTDs and sample amounts of 65 analyses.</span></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Concentrations are given in μmol/L.</span></code></pre>
+</div>
 </div>
 <div class="section level2">
-<h2 id="absolute-calibration">Absolute calibration<a class="anchor" aria-label="anchor" href="#absolute-calibration"></a>
+<h2 id="absolute-calibration">4. Absolute calibration<a class="anchor" aria-label="anchor" href="#absolute-calibration"></a>
 </h2>
-<p>Absolute re-calibration is performed with the function
+<p>Absolute re-calibration is performed with
 <code><a href="../reference/calibrate_by_reference.html">calibrate_by_reference()</a></code>. The reference sample is set via
 <code>reference_sample_id</code>. Where multiple analyses of the same
-reference sample are present in the dataset, either the mean or median
-is calculated (defined via <code>summarize_fun</code>).</p>
+reference sample are present in the dataset, either their mean or median
+is used (defined via <code>summarize_fun</code>).</p>
 <p>The calibrated concentration is calculated as:</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>c</mi><mtext mathvariant="normal">calibrated</mtext><mtext mathvariant="normal">Analyte</mtext></msubsup><mo>=</mo><mfrac><msubsup><mi>c</mi><mtext mathvariant="normal">sample</mtext><mtext mathvariant="normal">Analyte</mtext></msubsup><msubsup><mi>c</mi><mtext mathvariant="normal">ref</mtext><mtext mathvariant="normal">Analyte</mtext></msubsup></mfrac><mo>×</mo><msubsup><mi>c</mi><mtext mathvariant="normal">known</mtext><mtext mathvariant="normal">Analyte</mtext></msubsup></mrow><annotation encoding="application/x-tex">
 c_\text{calibrated}^\text{Analyte} = \frac{c_\text{sample}^\text{Analyte}}{c_\text{ref}^\text{Analyte}} \times c_\text{known}^\text{Analyte}
 </annotation></semantics></math></p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mexp_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calibrate_by_reference.html">calibrate_by_reference</a></span><span class="op">(</span></span>
-<span>    data <span class="op">=</span> <span class="va">mexp</span>,</span>
-<span>    variable <span class="op">=</span> <span class="st">"conc"</span>,</span>
-<span>    reference_sample_id <span class="op">=</span> <span class="st">"SRM1950"</span>,</span>
-<span>    absolute_calibration <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>    batch_wise <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>    summarize_fun <span class="op">=</span> <span class="st">"mean"</span>,</span>
-<span>    undefined_conc_action <span class="op">=</span> <span class="st">"na"</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">One or more feature concentration are not defined in the reference sample SRM1950. `NA` will be returned for these features. To change this, modify `undefined_conc_action` argument.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">12 feature concentrations were re-calibrated using the reference sample SRM1950.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Concentrations are given in umol/L.</span></span></span></code></pre></div>
-<p>The re-calibrated concentrations are stored in the variable
-<code>conc</code> , overwriting any previously calculated
-concentrations. The original concentrations, however, are still
-available via the variable <code>conc_beforecal</code>.</p>
-<p>The re-calibrated concentrations can be exported as usual, and they
-also appear in the MRMhub XLSX report as concentrations.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Export absolute calibration concentrations</span></span>
-<span><span class="fu"><a href="../reference/save_dataset_csv.html">save_dataset_csv</a></span><span class="op">(</span><span class="va">mexp</span>, <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span>, variable <span class="op">=</span> <span class="st">"conc"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Concentration values for 65 analyses and 7 features have been exported to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpBeRpvR/filef86e47f73060.csv'.</span></span></span>
-<span>  </span>
-<span><span class="co"># Export non-calibrated concentrations</span></span>
-<span><span class="fu"><a href="../reference/save_dataset_csv.html">save_dataset_csv</a></span><span class="op">(</span><span class="va">mexp_res</span>, <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span>, variable <span class="op">=</span> <span class="st">"conc_beforecal"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Conc_beforecal values for 65 analyses and 16 features have been exported to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpBeRpvR/filef86e35891389.csv'.</span></span></span>
-<span></span>
-<span><span class="co"># Create XLSX report with calibrated concentrations as filtered dataset</span></span>
-<span><span class="fu"><a href="../reference/save_report_xlsx.html">save_report_xlsx</a></span><span class="op">(</span><span class="va">mexp_res</span>, <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".xlsx"</span><span class="op">)</span>, filtered_variable <span class="op">=</span> <span class="st">"conc"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The data processing report has been saved to </span><span style="color: #0000BB;">/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpBeRpvR/filef86e3a61a2d4.xlsx</span>.</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="normalization-relative-calibration">Normalization (relative calibration)<a class="anchor" aria-label="anchor" href="#normalization-relative-calibration"></a>
-</h2>
-<p>Normalization with a reference sample is performed with the
-<code><a href="../reference/calibrate_by_reference.html">calibrate_by_reference()</a></code> function, setting
-<code>absolute_calibration = FALSE</code>. As above, where multiple
-analyses of the same reference sample are present in the dataset, either
-the mean or median is calculated (defined via
-<code>summarize_fun</code>).</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mexp_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calibrate_by_reference.html">calibrate_by_reference</a></span><span class="op">(</span></span>
-<span>    data <span class="op">=</span> <span class="va">mexp</span>,</span>
-<span>    variable <span class="op">=</span> <span class="st">"conc"</span>,</span>
-<span>    reference_sample_id <span class="op">=</span> <span class="st">"SRM1950"</span>,</span>
-<span>    absolute_calibration <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>    summarize_fun <span class="op">=</span> <span class="st">"mean"</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">All features were normalized with reference sample SRM1950 features.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Unit is: sample [conc] / SRM1950 [conc]</span></span></span></code></pre></div>
-<p>The results of the normalization are stored, unlike for the absolute
-calibration, as ratios, in a new variable,
-<code>[VARIABLE]_normalized</code>, where
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi><mi>A</mi><mi>R</mi><mi>I</mi><mi>A</mi><mi>B</mi><mi>L</mi><mi>E</mi></mrow><annotation encoding="application/x-tex">VARIABLE</annotation></semantics></math>
-is the input variable, e.g., <code>conc_normalized</code> or
-<code>intensity_normalized</code>.</p>
-<p>The normalized concentrations can be exported as
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi><mi>A</mi><mi>R</mi><mi>I</mi><mi>A</mi><mi>B</mi><mi>L</mi><mi>E</mi></mrow><annotation encoding="application/x-tex">VARIABLE</annotation></semantics></math>_normalized
-using <code><a href="../reference/save_dataset_csv.html">save_dataset_csv()</a></code>. In the MRMhub XLSX report
-generated by <code><a href="../reference/save_report_xlsx.html">save_report_xlsx()</a></code>, the unfiltered dataset
-with normalized concentrations is included by default. To include the
-normalized concentrations as the filtered dataset, set
-<code>filtered_variable = “[VARIABLE]_normalized</code> as an
-argument.</p>
+<span>  data <span class="op">=</span> <span class="va">mexp</span>,</span>
+<span>  variable <span class="op">=</span> <span class="st">"conc"</span>,</span>
+<span>  reference_sample_id <span class="op">=</span> <span class="st">"SRM1950"</span>,</span>
+<span>  absolute_calibration <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  batch_wise <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  summarize_fun <span class="op">=</span> <span class="st">"mean"</span>,</span>
+<span>  undefined_conc_action <span class="op">=</span> <span class="st">"na"</span><span class="op">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">One or more feature concentration are not defined in the reference sample SRM1950. `NA` will be returned for these features. To change this, modify `undefined_conc_action` argument.</span></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">12 feature concentrations were re-calibrated using the reference sample SRM1950.</span></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Concentrations are given in umol/L.</span></code></pre>
+</div>
+<p>The re-calibrated concentrations are written to the variable
+<code>conc</code>, overwriting any previously calculated concentrations;
+the values from before calibration remain available as
+<code>conc_beforecal</code>. They can be exported as usual and also
+appear as concentrations in the MRMhub XLSX report.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Export NIST1950-normalized concentrations</span></span>
-<span><span class="fu"><a href="../reference/save_dataset_csv.html">save_dataset_csv</a></span><span class="op">(</span><span class="va">mexp_res</span>, <span class="st">"norm.csv"</span>, variable <span class="op">=</span> <span class="st">"conc_normalized"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Conc_normalized values for 65 analyses and 16 features have been exported to 'norm.csv'.</span></span></span>
-<span></span>
-<span><span class="co"># Create XLSX report with normalized concentrations as filtered dataset</span></span>
-<span><span class="fu"><a href="../reference/save_report_xlsx.html">save_report_xlsx</a></span><span class="op">(</span><span class="va">mexp_res</span>, path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".xlsx"</span><span class="op">)</span>, filtered_variable <span class="op">=</span> <span class="st">"conc_normalized"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The data processing report has been saved to </span><span style="color: #0000BB;">/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpBeRpvR/filef86e13961779.xlsx</span>.</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Export absolute-calibrated concentrations</span></span>
+<span><span class="fu"><a href="../reference/save_dataset_csv.html">save_dataset_csv</a></span><span class="op">(</span><span class="va">mexp_res</span>, <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span>, variable <span class="op">=</span> <span class="st">"conc"</span><span class="op">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Concentration values for 65 analyses and 7 features have been exported to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//Rtmpq1otvh/fileadd9475f4772.csv'.</span></code></pre>
+</div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="co"># Export non-calibrated concentrations</span></span>
+<span><span class="fu"><a href="../reference/save_dataset_csv.html">save_dataset_csv</a></span><span class="op">(</span><span class="va">mexp_res</span>, <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span>, variable <span class="op">=</span> <span class="st">"conc_beforecal"</span><span class="op">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Conc_beforecal values for 65 analyses and 16 features have been exported to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//Rtmpq1otvh/fileadd9404bb1f9.csv'.</span></code></pre>
+</div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="co"># Create XLSX report with calibrated concentrations as filtered dataset</span></span>
+<span><span class="fu"><a href="../reference/save_report_xlsx.html">save_report_xlsx</a></span><span class="op">(</span><span class="va">mexp_res</span>, <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".xlsx"</span><span class="op">)</span>, filtered_variable <span class="op">=</span> <span class="st">"conc"</span><span class="op">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The data processing report has been saved to </span><span style="color: #0000BB;">/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//Rtmpq1otvh/fileadd929917369.xlsx</span>.</code></pre>
+</div>
 </div>
 <div class="section level2">
-<h2 id="batch-wise-calibration">Batch-wise calibration<a class="anchor" aria-label="anchor" href="#batch-wise-calibration"></a>
+<h2 id="normalization-relative-calibration">5. Normalization (relative calibration)<a class="anchor" aria-label="anchor" href="#normalization-relative-calibration"></a>
+</h2>
+<p>Normalization against a reference sample is performed with the same
+function, setting <code>absolute_calibration = FALSE</code>. As above,
+where multiple analyses of the reference sample are present, either
+their mean or median is used (defined via
+<code>summarize_fun</code>).</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">mexp_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calibrate_by_reference.html">calibrate_by_reference</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">mexp</span>,</span>
+<span>  variable <span class="op">=</span> <span class="st">"conc"</span>,</span>
+<span>  reference_sample_id <span class="op">=</span> <span class="st">"SRM1950"</span>,</span>
+<span>  absolute_calibration <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  summarize_fun <span class="op">=</span> <span class="st">"mean"</span><span class="op">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">All features were normalized with reference sample SRM1950 features.</span></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Unit is: sample [conc] / SRM1950 [conc]</span></code></pre>
+</div>
+<p>Unlike absolute calibration, the normalization results are stored as
+<strong>ratios</strong> in a new variable,
+<code>[VARIABLE]_normalized</code>, where <code>[VARIABLE]</code> is the
+input variable, e.g. <code>conc_normalized</code> or
+<code>intensity_normalized</code>.</p>
+<p>The normalized values can be exported as
+<code>[VARIABLE]_normalized</code> with <code><a href="../reference/save_dataset_csv.html">save_dataset_csv()</a></code>.
+In the MRMhub XLSX report from <code><a href="../reference/save_report_xlsx.html">save_report_xlsx()</a></code>, the
+unfiltered dataset with normalized concentrations is included by
+default; to include them as the filtered dataset, set
+<code>filtered_variable = "[VARIABLE]_normalized"</code>.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Export NIST SRM1950-normalized concentrations</span></span>
+<span><span class="fu"><a href="../reference/save_dataset_csv.html">save_dataset_csv</a></span><span class="op">(</span><span class="va">mexp_res</span>, <span class="st">"norm.csv"</span>, variable <span class="op">=</span> <span class="st">"conc_normalized"</span><span class="op">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Conc_normalized values for 65 analyses and 16 features have been exported to 'norm.csv'.</span></code></pre>
+</div>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="co"># Create XLSX report with normalized concentrations as filtered dataset</span></span>
+<span><span class="fu"><a href="../reference/save_report_xlsx.html">save_report_xlsx</a></span><span class="op">(</span></span>
+<span>  <span class="va">mexp_res</span>,</span>
+<span>  path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".xlsx"</span><span class="op">)</span>,</span>
+<span>  filtered_variable <span class="op">=</span> <span class="st">"conc_normalized"</span><span class="op">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The data processing report has been saved to </span><span style="color: #0000BB;">/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//Rtmpq1otvh/fileadd979bf3e12.xlsx</span>.</code></pre>
+</div>
+</div>
+<div class="section level2">
+<h2 id="batch-wise-calibration">6. Batch-wise calibration<a class="anchor" aria-label="anchor" href="#batch-wise-calibration"></a>
 </h2>
 <p>Calibration can also be applied batch-wise, in which case each batch
-is calibrated separately with the data from the reference sample in the
-same batch. This is done by setting <code>batch_wise = TRUE</code> and
-can be used in both absolute and relative calibration.</p>
-<p>This approach can be used to correct batches or assays/plates using a
-reference material shared across the batches.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+is calibrated separately using the reference sample in the same batch.
+Set <code>batch_wise = TRUE</code>; this works for both absolute and
+relative calibration. It is useful to correct batches, assays, or plates
+using a reference material shared across them.</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mexp_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calibrate_by_reference.html">calibrate_by_reference</a></span><span class="op">(</span></span>
-<span>    data <span class="op">=</span> <span class="va">mexp</span>,</span>
-<span>    variable <span class="op">=</span> <span class="st">"conc"</span>,</span>
-<span>    reference_sample_id <span class="op">=</span> <span class="st">"SRM1950"</span>,</span>
-<span>    absolute_calibration <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>    batch_wise <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>    summarize_fun <span class="op">=</span> <span class="st">"mean"</span>,</span>
-<span>    undefined_conc_action <span class="op">=</span> <span class="st">"na"</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">One or more feature concentration are not defined in the reference sample SRM1950. `NA` will be returned for these features. To change this, modify `undefined_conc_action` argument.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">12 feature concentrations were batch-wise re-calibrated using the reference sample SRM1950.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Concentrations are given in umol/L.</span></span></span>
-<span></span>
-<span><span class="fu"><a href="../reference/save_dataset_csv.html">save_dataset_csv</a></span><span class="op">(</span><span class="va">mexp_res</span>, <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span>, variable <span class="op">=</span> <span class="st">"conc_beforecal"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Conc_beforecal values for 65 analyses and 16 features have been exported to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//RtmpBeRpvR/filef86e6997c273.csv'.</span></span></span></code></pre></div>
+<span>  data <span class="op">=</span> <span class="va">mexp</span>,</span>
+<span>  variable <span class="op">=</span> <span class="st">"conc"</span>,</span>
+<span>  reference_sample_id <span class="op">=</span> <span class="st">"SRM1950"</span>,</span>
+<span>  absolute_calibration <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  batch_wise <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  summarize_fun <span class="op">=</span> <span class="st">"mean"</span>,</span>
+<span>  undefined_conc_action <span class="op">=</span> <span class="st">"na"</span><span class="op">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">One or more feature concentration are not defined in the reference sample SRM1950. `NA` will be returned for these features. To change this, modify `undefined_conc_action` argument.</span></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">12 feature concentrations were batch-wise re-calibrated using the reference sample SRM1950.</span></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Concentrations are given in umol/L.</span></code></pre>
+</div>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="fu"><a href="../reference/save_dataset_csv.html">save_dataset_csv</a></span><span class="op">(</span><span class="va">mexp_res</span>, <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span>, variable <span class="op">=</span> <span class="st">"conc_beforecal"</span><span class="op">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Conc_beforecal values for 65 analyses and 16 features have been exported to '/var/folders/3r/ywcsb3896zj4_0xlb_70yvlh0000gn/T//Rtmpq1otvh/fileadd972cb45de.csv'.</span></code></pre>
+</div>
 </div>
 <div class="section level2">
-<h2 id="concentration-ratio-and-bias">Concentration ratio and bias<a class="anchor" aria-label="anchor" href="#concentration-ratio-and-bias"></a>
+<h2 id="concentration-ratio-and-bias">7. Concentration ratio and bias<a class="anchor" aria-label="anchor" href="#concentration-ratio-and-bias"></a>
 </h2>
 <p>To examine the ratio between measured and expected (known)
-concentrations in the reference samples, a table with concentration
-ratios can be generated using the code below.</p>
-<p>The ratio is calculated as follows:</p>
+concentrations in the reference samples, a table of concentration ratios
+can be generated with <code>store_conc_ratio = TRUE</code>. The ratio
+is</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>R</mi><mtext mathvariant="normal">ratio</mtext><mtext mathvariant="normal">Analyte</mtext></msubsup><mo>=</mo><mfrac><msubsup><mi>c</mi><mtext mathvariant="normal">measured</mtext><mtext mathvariant="normal">Analyte</mtext></msubsup><msubsup><mi>c</mi><mtext mathvariant="normal">expected</mtext><mtext mathvariant="normal">Analyte</mtext></msubsup></mfrac></mrow><annotation encoding="application/x-tex">
 R_\text{ratio}^\text{Analyte} = \frac{c_\text{measured}^\text{Analyte}}{c_\text{expected}^\text{Analyte}}
 </annotation></semantics></math></p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mexp_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calibrate_by_reference.html">calibrate_by_reference</a></span><span class="op">(</span></span>
-<span>    data <span class="op">=</span> <span class="va">mexp</span>,</span>
-<span>    variable <span class="op">=</span> <span class="st">"conc"</span>,</span>
-<span>    reference_sample_id <span class="op">=</span> <span class="st">"SRM1950"</span>,</span>
-<span>    absolute_calibration <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>    summarize_fun <span class="op">=</span> <span class="st">"mean"</span>,</span>
-<span>    undefined_conc_action <span class="op">=</span> <span class="st">"na"</span>,</span>
-<span>    store_conc_ratio <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">One or more feature concentration are not defined in the reference sample SRM1950. `NA` will be returned for these features. To change this, modify `undefined_conc_action` argument.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">12 feature concentrations were re-calibrated using the reference sample SRM1950.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Concentrations are given in umol/L.</span></span></span>
-<span></span>
-<span><span class="va">tbl_ref_bias</span> <span class="op">&lt;-</span> <span class="va">mexp_res</span><span class="op">$</span><span class="va">dataset</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">sample_id</span> <span class="op">==</span> <span class="st">"SRM1950"</span>, <span class="va">is_quantifier</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">feature_id</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  data <span class="op">=</span> <span class="va">mexp</span>,</span>
+<span>  variable <span class="op">=</span> <span class="st">"conc"</span>,</span>
+<span>  reference_sample_id <span class="op">=</span> <span class="st">"SRM1950"</span>,</span>
+<span>  absolute_calibration <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  summarize_fun <span class="op">=</span> <span class="st">"mean"</span>,</span>
+<span>  undefined_conc_action <span class="op">=</span> <span class="st">"na"</span>,</span>
+<span>  store_conc_ratio <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">One or more feature concentration are not defined in the reference sample SRM1950. `NA` will be returned for these features. To change this, modify `undefined_conc_action` argument.</span></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">12 feature concentrations were re-calibrated using the reference sample SRM1950.</span></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Concentrations are given in umol/L.</span></code></pre>
+</div>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="va">tbl_ref_bias</span> <span class="op">&lt;-</span> <span class="va">mexp_res</span><span class="op">$</span><span class="va">dataset</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">sample_id</span> <span class="op">==</span> <span class="st">"SRM1950"</span>, <span class="va">is_quantifier</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">feature_id</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>bias_mean <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">feature_conc_ratio</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/gt.html" class="external-link">gt</a></span><span class="op">(</span><span class="va">tbl_ref_bias</span><span class="op">)</span></span></code></pre></div>
@@ -832,20 +885,17 @@ R_\text{ratio}^\text{Analyte} = \frac{c_\text{measured}^\text{Analyte}}{c_\text{
 </tbody>
 </table>
 </div>
-<p>A ratio value of 1 indicates perfect agreement between the measured
-and expected concentrations.<br>
-Values greater than 1 suggest overestimation, while values less than 1
-indicate underestimation.<br>
-The ratio values can also be visualized or further analyzed to identify
-outliers or investigate potential issues in the analytical process or
-calibration.</p>
-<p>The ratio and bias of QC samples can also be calculated directly,
-without applying <code><a href="../reference/calibrate_by_reference.html">calibrate_by_reference()</a></code>. For
-illustration, the ratio and bias of the QC samples are calculated using
-the re-calibrated data from above; all corrected feature concentrations
-in the reference sample are expected to have no bias (0%) and a ratio of
-1.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<p>A ratio of 1 indicates perfect agreement between the measured and
+expected concentrations; values above 1 suggest overestimation and
+values below 1 underestimation. The ratios can also be visualised or
+analysed further to identify outliers or investigate issues in the
+analytical process or calibration.</p>
+<p>The ratio and bias of QC samples can also be obtained directly,
+without applying <code><a href="../reference/calibrate_by_reference.html">calibrate_by_reference()</a></code>. For illustration
+we compute them on the re-calibrated data above, where all corrected
+feature concentrations in the reference sample are expected to have no
+bias (0%) and a ratio of 1.</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_qc_bias_variability.html">get_qc_bias_variability</a></span><span class="op">(</span><span class="va">mexp_res</span>, qc_types <span class="op">=</span> <span class="st">"NIST"</span><span class="op">)</span></span>
 <span><span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/gt.html" class="external-link">gt</a></span><span class="op">(</span><span class="va">tbl</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/fmt_number.html" class="external-link">fmt_number</a></span><span class="op">(</span>decimals <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
 <div id="bwkkeulbfd" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
@@ -1379,10 +1429,10 @@ in the reference sample are expected to have no bias (0%) and a ratio of
 </tbody>
 </table>
 </div>
-<p>The bias and concentration ratios before the re-calibration can be
-viewed by using the <code>MRMhubExperiment</code> object that had no
-calibration applied</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<p>The bias and concentration ratios before re-calibration can be viewed
+from the <code>MRMhubExperiment</code> object that had no calibration
+applied.</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_qc_bias_variability.html">get_qc_bias_variability</a></span><span class="op">(</span><span class="va">mexp</span>, qc_types <span class="op">=</span> <span class="st">"NIST"</span>, with_conc_ratio <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/gt.html" class="external-link">gt</a></span><span class="op">(</span><span class="va">tbl</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/fmt_number.html" class="external-link">fmt_number</a></span><span class="op">(</span>decimals <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
 <div id="pbcyvkgufi" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
@@ -1929,11 +1979,11 @@ calibration applied</p>
 </h2>
 <ul>
 <li>
-<a href="recipe-01-ext-calibration-qc.html">External Calibration
-&amp; QC</a> — full calibration workflow with QC</li>
+<a href="recipe-01-ext-calibration-qc.html">External calibration and
+QC</a>: full calibration-curve workflow with QC</li>
 <li>
-<a href="tutorial-02-basic-workflow.html">Basic MRMhub Workflow</a>
-— revisit the full pipeline</li>
+<a href="tutorial-02-basic-workflow.html">Basic MRMhub workflow</a>:
+revisit the full pipeline</li>
 </ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

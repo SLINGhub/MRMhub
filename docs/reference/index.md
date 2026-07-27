@@ -258,6 +258,18 @@ Functions to plots diverse QC visualizatios.
 - [`plot_qc_interference_impact()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_interference_impact.md)
   : Plot the magnitude of interference correction as a histogram
 
+## Plot appearance defaults
+
+Set session-wide defaults (font size, point size, legend, strips) for
+the plotting functions. See the “Customising plots” article.
+
+- [`mrmhub_set_plot_defaults()`](https://slinghub.github.io/MRMhub/quant/reference/mrmhub_set_plot_defaults.md)
+  : Set global default appearance for MRMhub plots
+- [`mrmhub_get_plot_defaults()`](https://slinghub.github.io/MRMhub/quant/reference/mrmhub_get_plot_defaults.md)
+  : Report the global MRMhub plot defaults
+- [`mrmhub_reset_plot_defaults()`](https://slinghub.github.io/MRMhub/quant/reference/mrmhub_reset_plot_defaults.md)
+  : Clear the global MRMhub plot defaults
+
 ## Response Curves
 
 Functions to calculate and visualize response curves

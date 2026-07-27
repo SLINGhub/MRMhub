@@ -27,7 +27,7 @@ precision across different features and sample/QC types."><meta property="og:ima
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -54,7 +54,6 @@ precision across different features and sample/QC types."><meta property="og:ima
     <li><h6 class="dropdown-header" data-toc-skip>Techniques</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-04-drift-correction.html">Drift and batch correction</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-07-calibration-reference.html">Calibration by reference sample</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-10-metadata-validation.html">Validating metadata</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-11-interference-correction.html">Interference correction</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
@@ -67,6 +66,7 @@ precision across different features and sample/QC types."><meta property="og:ima
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-04-validate-metadata.html">Validate &amp; fix metadata</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul></li>
 <li class="nav-item dropdown">
@@ -86,6 +86,7 @@ precision across different features and sample/QC types."><meta property="og:ima
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-13-plot-customization.html">Customising Plots</a></li>
     <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Writing Pipelines with AI Assistants</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
@@ -95,7 +96,7 @@ precision across different features and sample/QC types."><meta property="og:ima
     <li><a class="dropdown-item" href="../articles/manual-10-troubleshooting.html">Troubleshooting &amp; FAQ</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">NEWS</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://slinghub.github.io/MRMhub/">← MRMhub home</a></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://slinghub.github.io/MRMhub/integrator/">INTEGRATOR ↗</a></li>
 <li class="nav-item"><form class="form-inline" role="search">
@@ -140,9 +141,17 @@ precision across different features and sample/QC types.</p>
 <span>  x_lim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">NA_real_</span>, <span class="cn">NA_real_</span><span class="op">)</span>,</span>
 <span>  y_lim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">NA_real_</span>, <span class="cn">NA_real_</span><span class="op">)</span>,</span>
 <span>  cols_page <span class="op">=</span> <span class="fl">5</span>,</span>
-<span>  point_size <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  point_size <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  point_alpha <span class="op">=</span> <span class="fl">0.5</span>,</span>
-<span>  font_base_size <span class="op">=</span> <span class="fl">8</span></span>
+<span>  font_base_size <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  autoscale <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  legend_position <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  legend_size <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  show_legend_title <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  title <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  strip_text_size <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  strip_bg_color <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  legend_bg_alpha <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -229,8 +238,63 @@ different feature classes (default is <code>5</code>). Only used if
 
 
 <dt id="arg-font-base-size">font_base_size<a class="anchor" aria-label="anchor" href="#arg-font-base-size"></a></dt>
-<dd><p>Numeric. Base font size (in points) for plot text.
-Default is 8.</p></dd>
+<dd><p>Numeric. Base font size (in points) for plot text; all
+plot text scales proportionally with this value. <code>NULL</code> (default) uses the
+global default set by <code><a href="mrmhub_set_plot_defaults.html">mrmhub_set_plot_defaults()</a></code> if one is in effect,
+otherwise an automatic size (derived from the facet-column count on paged
+plots, or the per-plot default shown in the Usage section above).</p></dd>
+
+
+<dt id="arg-autoscale">autoscale<a class="anchor" aria-label="anchor" href="#arg-autoscale"></a></dt>
+<dd><p>Logical. When <code>TRUE</code> (default), <code>font_base_size</code> and
+<code>point_size</code> left as <code>NULL</code> are sized automatically from <code>cols_page</code> (more
+facet columns per page give smaller text and points). Any value passed
+explicitly always takes precedence. When <code>FALSE</code>, unset sizes fall back to
+the single-plot defaults.</p></dd>
+
+
+<dt id="arg-legend-position">legend_position<a class="anchor" aria-label="anchor" href="#arg-legend-position"></a></dt>
+<dd><p>Optional legend placement. One of <code>"right"</code>,
+<code>"left"</code>, <code>"top"</code>, <code>"bottom"</code>, <code>"none"</code>; a corner keyword <code>"inside-tr"</code>,
+<code>"inside-tl"</code>, <code>"inside-br"</code>, <code>"inside-bl"</code>; or a numeric <code>c(x, y)</code> in
+<code>[0, 1]</code> coordinates. <code>NULL</code> (default) keeps the current placement, unless
+a global default is set with <code><a href="mrmhub_set_plot_defaults.html">mrmhub_set_plot_defaults()</a></code>.</p></dd>
+
+
+<dt id="arg-legend-size">legend_size<a class="anchor" aria-label="anchor" href="#arg-legend-size"></a></dt>
+<dd><p>Optional single multiplier of <code>font_base_size</code> (when
+<code>&lt;= 3</code>) or absolute point size (when <code>&gt; 3</code>) that scales the whole legend:
+text, title, key and the plotted symbols. <code>NULL</code> (default) leaves the
+legend unchanged.</p></dd>
+
+
+<dt id="arg-show-legend-title">show_legend_title<a class="anchor" aria-label="anchor" href="#arg-show-legend-title"></a></dt>
+<dd><p>Logical. <code>NULL</code> (default) keeps the legend title,
+unless a global default is set with <code><a href="mrmhub_set_plot_defaults.html">mrmhub_set_plot_defaults()</a></code>; <code>FALSE</code>
+hides it, <code>TRUE</code> forces it shown.</p></dd>
+
+
+<dt id="arg-title">title<a class="anchor" aria-label="anchor" href="#arg-title"></a></dt>
+<dd><p>Optional plot title. <code>NULL</code> (default) or <code>NA</code> shows no title; a
+character string is shown as the title.</p></dd>
+
+
+<dt id="arg-strip-text-size">strip_text_size<a class="anchor" aria-label="anchor" href="#arg-strip-text-size"></a></dt>
+<dd><p>Optional facet strip text size, as a multiplier of
+<code>font_base_size</code> (when <code>&lt;= 3</code>) or an absolute point size (when <code>&gt; 3</code>).
+<code>NULL</code> (default) inherits from <code>font_base_size</code>.</p></dd>
+
+
+<dt id="arg-strip-bg-color">strip_bg_color<a class="anchor" aria-label="anchor" href="#arg-strip-bg-color"></a></dt>
+<dd><p>Optional facet strip background fill colour. The strip
+text colour is set automatically for contrast (white on a dark fill, black
+on a light one). <code>NULL</code> (default) keeps the house dark-navy strips.</p></dd>
+
+
+<dt id="arg-legend-bg-alpha">legend_bg_alpha<a class="anchor" aria-label="anchor" href="#arg-legend-bg-alpha"></a></dt>
+<dd><p>Optional opacity (<code>[0, 1]</code>) of a white legend
+background box, useful for a readable inside legend drawn over points.
+<code>NULL</code> (default) leaves the legend background unchanged.</p></dd>
 
 </dl></div>
     <div class="section level2">

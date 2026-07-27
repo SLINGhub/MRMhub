@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Key Concepts &amp; Glossary • mrmhub</title>
+<title>Key concepts &amp; glossary • mrmhub</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
@@ -16,10 +16,10 @@
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
-<meta property="og:title" content="Key Concepts &amp; Glossary">
-<meta name="description" content="Core vocabulary of MRMhub — the data model, terminology, and the function-naming convention.
+<meta property="og:title" content="Key concepts &amp; glossary">
+<meta name="description" content="Core vocabulary of MRMhub: the data model, terminology, and the function-naming convention.
 ">
-<meta property="og:description" content="Core vocabulary of MRMhub — the data model, terminology, and the function-naming convention.
+<meta property="og:description" content="Core vocabulary of MRMhub: the data model, terminology, and the function-naming convention.
 ">
 <meta property="og:image" content="https://slinghub.github.io/MRMhub/quant/logo.svg">
 </head>
@@ -31,7 +31,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -62,7 +62,6 @@
     <li><h6 class="dropdown-header" data-toc-skip>Techniques</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-04-drift-correction.html">Drift and batch correction</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-07-calibration-reference.html">Calibration by reference sample</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-10-metadata-validation.html">Validating metadata</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-11-interference-correction.html">Interference correction</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
@@ -75,6 +74,7 @@
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-04-validate-metadata.html">Validate &amp; fix metadata</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul>
 </li>
@@ -96,6 +96,7 @@
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-13-plot-customization.html">Customising Plots</a></li>
     <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Writing Pipelines with AI Assistants</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
@@ -106,7 +107,7 @@
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">NEWS</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><a class="external-link nav-link" href="https://slinghub.github.io/MRMhub/">← MRMhub home</a></li>
@@ -133,7 +134,7 @@
 <script src="manual-01-key-concepts_files/selectize-0.12.0/selectize.min.js"></script><link href="manual-01-key-concepts_files/crosstalk-1.2.2/css/crosstalk.min.css" rel="stylesheet">
 <script src="manual-01-key-concepts_files/crosstalk-1.2.2/js/crosstalk.min.js"></script><div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.svg" class="logo" alt=""><h1>Key Concepts &amp; Glossary</h1>
+      <img src="../logo.svg" class="logo" alt=""><h1>Key concepts &amp; glossary</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/HEAD/vignettes/articles/manual-01-key-concepts.Rmd" class="external-link"><code>vignettes/articles/manual-01-key-concepts.Rmd</code></a></small>
@@ -148,19 +149,19 @@ Manual
 <p>MRMhub organizes targeted mass spectrometry data around two axes:
 <strong>analyses</strong>, the individual injections or samples in a
 run, and <strong>features</strong>, the distinct signals extracted from
-the MS data. Every measurement is a value — typically a peak area — at
-the intersection of one analysis and one feature, and all of these
-values are held together with their metadata in a single object, the
+the MS data. Every measurement is a value (typically a peak area) at the
+intersection of one analysis and one feature, and all of these values
+are held together with their metadata in a single object, the
 <code>MRMhubExperiment</code>. Functions take an
 <code>MRMhubExperiment</code> and return an updated one, and these calls
-are chained together to build a workflow. See <a href="manual-02-data-object.html">The MRMhubExperiment Data Object</a>
-for how the object is structured and <a href="manual-06-sample-types.html">Sample Types &amp; QC Roles</a> for
+are chained together to build a workflow. See <a href="manual-02-data-object.html">The MRMhubExperiment data object</a>
+for how the object is structured and <a href="manual-06-sample-types.html">Sample types &amp; QC roles</a> for
 the sample roles that drive its QC logic.</p>
 <div class="section level2">
 <h2 id="glossary">Glossary<a class="anchor" aria-label="anchor" href="#glossary"></a>
 </h2>
 <div class="datatables html-widget html-fill-item" id="htmlwidget-ac96cb3ee4656e2e9ec3" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-ac96cb3ee4656e2e9ec3">{"x":{"filter":"top","vertical":false,"filterHTML":"<tr>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n<\/tr>","data":[["analysis_id","feature_id","analyte_id","ISTD","RQC","qualifier","quantifier","drift correction","batch correction","long format","wide format","MRMhubExperiment","INTEGRATOR","MRMhub-QUANT"],["Unique identifier for each injection/sample in the run","Unique identifier for a feature (a distinct signal extracted from the MS data)","Identifier of the compound/analyte a feature measures; several features can share one analyte","Internal Standard — a spiked compound used for normalization","Response Quality Control — a serial-dilution (response) curve of the QC pool, used to assess linearity and response","A secondary MRM transition used to confirm compound identity","The primary MRM transition used for quantification","Statistical correction for signal drift across a run","Correction for systematic differences between analytical batches","One row per analysis × feature (tidy format)","One row per analysis, features as columns","The S4 object holding all data + metadata for a project","Standalone tool for peak integration from mzML files","The post-processing module (this R package, mrmhub): QC, normalization, quantitation, reporting"]],"container":"<table class=\"compact stripe\">\n  <thead>\n    <tr>\n      <th>Term<\/th>\n      <th>Definition<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":15,"dom":"ft","ordering":true,"columnDefs":[{"name":"Term","targets":0},{"name":"Definition","targets":1}],"order":[],"autoWidth":false,"orderClasses":false,"orderCellsTop":true,"lengthMenu":[10,15,25,50,100]}},"evals":[],"jsHooks":[]}</script><p>A feature and an analyte are not one-to-one: one analyte can give
+<script type="application/json" data-for="htmlwidget-ac96cb3ee4656e2e9ec3">{"x":{"filter":"top","vertical":false,"filterHTML":"<tr>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n<\/tr>","data":[["analysis_id","feature_id","analyte_id","ISTD","RQC","qualifier","quantifier","drift correction","batch correction","long format","wide format","MRMhubExperiment","INTEGRATOR","MRMhub-QUANT"],["Unique identifier for each injection/sample in the run","Unique identifier for a feature (a distinct signal extracted from the MS data)","Identifier of the compound/analyte a feature measures; several features can share one analyte","Internal Standard: a spiked compound used for normalization","Response Quality Control: a serial-dilution (response) curve of the QC pool, used to assess linearity and response","A secondary MRM transition used to confirm compound identity","The primary MRM transition used for quantification","Statistical correction for signal drift across a run","Correction for systematic differences between analytical batches","One row per analysis × feature (tidy format)","One row per analysis, features as columns","The S4 object holding all data + metadata for a project","Standalone tool for peak integration from mzML files","The post-processing module (this R package, mrmhub): QC, normalization, quantitation, reporting"]],"container":"<table class=\"compact stripe\">\n  <thead>\n    <tr>\n      <th>Term<\/th>\n      <th>Definition<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":15,"dom":"ft","ordering":true,"columnDefs":[{"name":"Term","targets":0},{"name":"Definition","targets":1}],"order":[],"autoWidth":false,"orderClasses":false,"orderCellsTop":true,"lengthMenu":[10,15,25,50,100]}},"evals":[],"jsHooks":[]}</script><p>A feature and an analyte are not one-to-one: one analyte can give
 several features (isotopes, adducts, transitions), and one feature can
 carry several analytes when they are isobaric or isomeric (e.g. SM/PC).
 The <code>feature_id</code> names the signal, while the
@@ -173,34 +174,34 @@ The <code>feature_id</code> names the signal, while the
 internalised the function names are largely predictable:</p>
 <ul>
 <li>
-<code>import_data_*()</code> — read raw integrated peak data from a
+<code>import_data_*()</code>: read raw integrated peak data from a
 given source</li>
 <li>
-<code>import_metadata_*()</code> — read an annotation table from a
+<code>import_metadata_*()</code>: read an annotation table from a
 given source</li>
 <li>
-<code><a href="../reference/add_metadata.html">add_metadata()</a></code> / <code>set_*()</code> — attach
+<code><a href="../reference/add_metadata.html">add_metadata()</a></code> / <code>set_*()</code>: attach
 annotation or assign a slot on the experiment</li>
 <li>
-<code>normalize_by_*()</code> — divide one variable by another
+<code>normalize_by_*()</code>: divide one variable by another
 (e.g. by ISTD)</li>
 <li>
-<code>correct_drift_*()</code> / <code>correct_batch_*()</code> —
+<code>correct_drift_*()</code> / <code>correct_batch_*()</code>:
 apply a named correction model</li>
 <li>
-<code>quantify_by_*()</code> — compute concentration values via a
+<code>quantify_by_*()</code>: compute concentration values via a
 given strategy</li>
 <li>
-<code>calc_*()</code> — compute per-feature or per-analysis
+<code>calc_*()</code>: compute per-feature or per-analysis
 metrics</li>
 <li>
-<code>filter_*()</code> — apply pass/fail thresholds</li>
+<code>filter_*()</code>: apply pass/fail thresholds</li>
 <li>
-<code>plot_*()</code> — return a ggplot2 object</li>
+<code>plot_*()</code>: return a ggplot2 object</li>
 <li>
-<code>save_*()</code> — write to disk</li>
+<code>save_*()</code>: write to disk</li>
 <li>
-<code>get_*()</code> — read a derived value from the experiment</li>
+<code>get_*()</code>: read a derived value from the experiment</li>
 </ul>
 </div>
 <div class="section level2">
@@ -208,16 +209,16 @@ metrics</li>
 </h2>
 <ul>
 <li>
-<a href="manual-02-data-object.html">The MRMhubExperiment Data
-Object</a> — the tables and identifiers in detail</li>
+<a href="manual-02-data-object.html">The MRMhubExperiment data
+object</a>: the tables and identifiers in detail</li>
 <li>
-<a href="manual-06-sample-types.html">Sample Types &amp; QC
-Roles</a> — the <code>qc_type</code> labels used throughout</li>
+<a href="manual-06-sample-types.html">Sample types &amp; QC
+roles</a>: the <code>qc_type</code> labels used throughout</li>
 <li>
-<a href="tutorial-02-basic-workflow.html">Basic MRMhub Workflow</a>
-— these functions in a real script</li>
+<a href="tutorial-02-basic-workflow.html">Basic MRMhub workflow</a>:
+these functions in a real script</li>
 <li>
-<a href="../reference/index.html">Function reference</a> — every
+<a href="../reference/index.html">Function reference</a>: every
 function with full parameter detail</li>
 </ul>
 </div>

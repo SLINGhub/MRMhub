@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Quarto Workflows • mrmhub</title>
+<title>Quarto workflows • mrmhub</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
@@ -16,7 +16,7 @@
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
-<meta property="og:title" content="Quarto Workflows">
+<meta property="og:title" content="Quarto workflows">
 <meta name="description" content="MRMhub: postprocessing and quality control of small molecule mass spectrometry data
 ">
 <meta property="og:description" content="MRMhub: postprocessing and quality control of small molecule mass spectrometry data
@@ -31,7 +31,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -62,7 +62,6 @@
     <li><h6 class="dropdown-header" data-toc-skip>Techniques</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-04-drift-correction.html">Drift and batch correction</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-07-calibration-reference.html">Calibration by reference sample</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-10-metadata-validation.html">Validating metadata</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-11-interference-correction.html">Interference correction</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
@@ -75,6 +74,7 @@
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-04-validate-metadata.html">Validate &amp; fix metadata</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul>
 </li>
@@ -96,6 +96,7 @@
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-13-plot-customization.html">Customising Plots</a></li>
     <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Writing Pipelines with AI Assistants</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
@@ -106,7 +107,7 @@
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">NEWS</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><a class="external-link nav-link" href="https://slinghub.github.io/MRMhub/">← MRMhub home</a></li>
@@ -131,7 +132,7 @@
 <script src="manual-11-quarto-workflows_files/dt-core-1.13.6/js/jquery.dataTables.min.js"></script><link href="manual-11-quarto-workflows_files/crosstalk-1.2.2/css/crosstalk.min.css" rel="stylesheet">
 <script src="manual-11-quarto-workflows_files/crosstalk-1.2.2/js/crosstalk.min.js"></script><div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.svg" class="logo" alt=""><h1>Quarto Workflows</h1>
+      <img src="../logo.svg" class="logo" alt=""><h1>Quarto workflows</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/HEAD/vignettes/articles/manual-11-quarto-workflows.Rmd" class="external-link"><code>vignettes/articles/manual-11-quarto-workflows.Rmd</code></a></small>
@@ -147,12 +148,12 @@ Manual
 single document that interleaves the processing code, its console
 feedback, and the resulting figures and tables. Rendering the document
 re-runs the whole pipeline from the raw import to the final report, so
-the record and the result never drift apart. The <a href="tutorial-12-workflow-builder.html">Workflow Builder</a> emits
+the record and the result never drift apart. The <a href="tutorial-12-workflow-builder.html">Workflow builder</a> emits
 exactly such a document; this page documents the conventions it follows
 and how to render them to HTML, PDF, and Word.</p>
-<p>Because MRMhub reports each processing step on the console —
-line-by-line, in colour, with a truncated list of the features or
-analyses affected — a rendered notebook doubles as an audit trail of
+<p>Because MRMhub reports each processing step on the console
+(line-by-line, in colour, with a truncated list of the features or
+analyses affected), a rendered notebook doubles as an audit trail of
 what each step did. Preserving that feedback in the rendered output is
 the main subject of this page.</p>
 <div class="section level2">
@@ -160,7 +161,7 @@ the main subject of this page.</p>
 </h2>
 <p>A workflow document reads its inputs and writes its report by
 <em>relative</em> path, so the notebook, its data, and its output live
-together in one project folder. The <a href="tutorial-02-basic-workflow.html">Basic MRMhub Workflow</a>
+together in one project folder. The <a href="tutorial-02-basic-workflow.html">Basic MRMhub workflow</a>
 sketches the recommended three-folder layout (<code>data/</code>, the
 notebook, <code>output/</code>); rendering from the project root then
 resolves every path without absolute references, and the folder can be
@@ -201,7 +202,7 @@ the top of a chunk, each prefixed with <code>#|</code>. The options
 below cover the needs of a processing notebook; the <a href="https://quarto.org/docs/computations/execution-options.html" class="external-link">Quarto
 documentation</a> is the complete reference.</p>
 <div class="datatables html-widget html-fill-item" id="htmlwidget-ac96cb3ee4656e2e9ec3" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-ac96cb3ee4656e2e9ec3">{"x":{"filter":"none","vertical":false,"data":[["#| label:","#| eval:","#| echo:","#| output:","#| warning:","#| message:","#| include:","#| cache:","#| fig-width:, fig-height:"],["A unique chunk name; also names any figure the chunk produces.","Whether to run the chunk (FALSE to show code without executing it).","Whether to show the source code in the output.","Whether to show the chunk's results (code output, figures).","Whether to show warnings raised while the chunk runs.","Whether to show messages — including MRMhub's console feedback.","FALSE runs the chunk but hides both code and output (e.g. setup).","Cache the chunk's results so an unchanged chunk is not re-run.","Size, in inches, of figures the chunk produces."]],"container":"<table class=\"compact stripe\">\n  <thead>\n    <tr>\n      <th>Option<\/th>\n      <th>Purpose<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","paging":false,"columnDefs":[{"name":"Option","targets":0},{"name":"Purpose","targets":1}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>MRMhub’s step feedback travels on the <em>message</em> stream, so a
+<script type="application/json" data-for="htmlwidget-ac96cb3ee4656e2e9ec3">{"x":{"filter":"none","vertical":false,"data":[["#| label:","#| eval:","#| echo:","#| output:","#| warning:","#| message:","#| include:","#| cache:","#| fig-width:, fig-height:"],["A unique chunk name; also names any figure the chunk produces.","Whether to run the chunk (FALSE to show code without executing it).","Whether to show the source code in the output.","Whether to show the chunk's results (code output, figures).","Whether to show warnings raised while the chunk runs.","Whether to show messages, including MRMhub's console feedback.","FALSE runs the chunk but hides both code and output (e.g. setup).","Cache the chunk's results so an unchanged chunk is not re-run.","Size, in inches, of figures the chunk produces."]],"container":"<table class=\"compact stripe\">\n  <thead>\n    <tr>\n      <th>Option<\/th>\n      <th>Purpose<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","paging":false,"columnDefs":[{"name":"Option","targets":0},{"name":"Purpose","targets":1}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>MRMhub’s step feedback travels on the <em>message</em> stream, so a
 chunk that runs a processing step should keep
 <code>#| message: true</code> (the default) to preserve it. A
 document-wide default can be set in the YAML front matter:</p>
@@ -219,7 +220,7 @@ while the surrounding prose is edited.</p>
 <div class="section level2">
 <h2 id="cli-output-in-colour-nicely-formatted">CLI output in colour, nicely formatted<a class="anchor" aria-label="anchor" href="#cli-output-in-colour-nicely-formatted"></a>
 </h2>
-<p>In an interactive R session MRMhub’s messages are already coloured —
+<p>In an interactive R session MRMhub’s messages are already coloured:
 green for a successful step, yellow for a caution, red for an error. In
 a non-interactive render, cli suppresses colour by default, so the same
 messages would arrive as plain text.
@@ -229,19 +230,19 @@ sequences to coloured HTML using the <strong>fansi</strong> package
 (installed automatically as a suggested dependency).</p>
 <div class="callout callout-note">
 <p>Colour applies to <strong>HTML</strong> output only. PDF and Word
-have no ANSI concept, so their console blocks render as plain — but
-still fully legible — monospaced text. The severity is never carried by
-colour alone: success, caution, and error lines remain distinguishable
-by their leading symbol and wording.</p>
+have no ANSI concept, so their console blocks render as plain (but still
+fully legible) monospaced text. The severity is never carried by colour
+alone: success, caution, and error lines remain distinguishable by their
+leading symbol and wording.</p>
 </div>
 <p><strong>What a message conveys.</strong> A processing message states
 a <strong>count</strong> and, where a subset of features or analyses is
 affected, an <strong>illustrative list</strong> of them. That list is
-deliberately truncated —
-<code>options(mrmhub.max_report_items = 10)</code> sets how many members
-are shown before the <code>…</code> — so a step touching hundreds of
-features still prints a single tidy line rather than a wall of
-identifiers.</p>
+deliberately truncated
+(<code>options(mrmhub.max_report_items = 10)</code> sets how many
+members are shown before the <code>…</code>), so a step touching
+hundreds of features still prints a single tidy line rather than a wall
+of identifiers.</p>
 <p><strong>Recovering the full list.</strong> Because the list is
 truncated for display, the message names the column in the returned
 object that carries the <em>complete</em> membership. The truncated
@@ -260,7 +261,7 @@ filter the object on that column and write it out:</p>
 the preview in every message at once.</p>
 </div>
 <p>An <strong>error</strong> aborts the pipeline before it returns an
-object, so — unlike a warning or success — there is no result to filter
+object, so (unlike a warning or success) there is no result to filter
 afterwards. An error message is therefore self-contained: it names the
 offending values inline and, for the metadata validation report, prints
 the full error/warning/note table before stopping. The traceback is kept
@@ -268,7 +269,7 @@ collapsed but remains reachable with
 <code><a href="https://rlang.r-lib.org/reference/last_error.html" class="external-link">rlang::last_trace()</a></code>.</p>
 </div>
 <div class="section level2">
-<h2 id="output-formats-html-pdf-and-word">Output formats — HTML, PDF, and Word<a class="anchor" aria-label="anchor" href="#output-formats-html-pdf-and-word"></a>
+<h2 id="output-formats-html-pdf-and-word">Output formats: HTML, PDF, and Word<a class="anchor" aria-label="anchor" href="#output-formats-html-pdf-and-word"></a>
 </h2>
 <p>The output format is declared in the YAML front matter; several may
 be combined, and each is produced by rendering the document once:</p>
@@ -287,7 +288,7 @@ scrollable, and needs no external tooling.</li>
 <li>
 <strong>PDF</strong> requires a LaTeX installation. The lightweight
 <a href="https://yihui.org/tinytex/" class="external-link">TinyTeX</a> distribution is
-sufficient — install it once with
+sufficient. Install it once with
 <code><a href="https://rdrr.io/pkg/tinytex/man/install_tinytex.html" class="external-link">tinytex::install_tinytex()</a></code>. The
 <code>include-in-header</code> snippet above switches the LaTeX body
 font to sans-serif using the default <code>pdflatex</code> engine,
@@ -308,7 +309,7 @@ live table interactivity.</li>
 <p>A workflow document hard-codes its input paths, so processing a
 second batch means editing the file. Declaring those values as Quarto
 <em>parameters</em> instead lets the same notebook render unchanged
-against different inputs — one report per batch or per project.
+against different inputs: one report per batch or per project.
 Parameters are listed in the YAML front matter with their defaults:</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">params</span><span class="kw">:</span></span>
 <span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="at">  </span><span class="fu">data_path</span><span class="kw">:</span><span class="at"> </span><span class="st">"data/batch01/"</span></span></code></pre></div>
@@ -326,8 +327,8 @@ batch is produced by overriding the parameter on the command line,</p>
 <span>  execute_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>data_path <span class="op">=</span> <span class="st">"data/batch02/"</span><span class="op">)</span>,</span>
 <span>  output_file <span class="op">=</span> <span class="st">"batch02.html"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>For a fuller worked example — a standalone report template rendered
-from a saved results object — see <a href="recipe-02-custom-qc-report.html">Custom QC Report</a>.</p>
+<p>For a fuller worked example (a standalone report template rendered
+from a saved results object), see <a href="recipe-02-custom-qc-report.html">Custom QC report</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="slides">Slides<a class="anchor" aria-label="anchor" href="#slides"></a>
@@ -341,8 +342,7 @@ from a saved results object — see <a href="recipe-02-custom-qc-report.html">Cu
 <code>echo: true</code> shows the code alongside its result, which suits
 a methods walk-through; <code>echo: false</code> shows only the figures
 and tables, which suits a results presentation. The processing chunks
-are unchanged from the HTML document — only the format block
-differs.</p>
+are unchanged from the HTML document. Only the format block differs.</p>
 <div class="callout callout-note">
 <p>Coloured console feedback renders reliably in an <strong>HTML
 document</strong>; on <code>revealjs</code> slides the console output is
@@ -355,18 +355,18 @@ rendering does not always preserve the coloured message blocks.</p>
 </h2>
 <ul>
 <li>
-<a href="tutorial-12-workflow-builder.html">Using the Workflow
-Builder</a> — generate a ready-to-render <code>.qmd</code> from your
-data and metadata files</li>
+<a href="tutorial-12-workflow-builder.html">Using the workflow
+builder</a>: generate a ready-to-render <code>.qmd</code> from your data
+and metadata files</li>
 <li>
-<a href="tutorial-02-basic-workflow.html">Basic MRMhub Workflow</a>
-— the pipeline a workflow document records, written by hand</li>
+<a href="tutorial-02-basic-workflow.html">Basic MRMhub workflow</a>:
+the pipeline a workflow document records, written by hand</li>
 <li>
-<a href="recipe-02-custom-qc-report.html">Custom QC Report</a> —
+<a href="recipe-02-custom-qc-report.html">Custom QC report</a>:
 render one notebook once per batch or project</li>
 <li>
 <a href="manual-10-troubleshooting.html">Troubleshooting &amp;
-FAQ</a> — resolving common rendering and processing problems</li>
+FAQ</a>: resolving common rendering and processing problems</li>
 </ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

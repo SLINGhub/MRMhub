@@ -1,23 +1,25 @@
-# Quantitative assay with Ext. calibration and QC
+# Quantitative assay with external calibration and QC
 
 Recipe
 
-This vignette demonstrates a simple workflow for a quantitative targeted
-assay with external calibration and quality control samples, as used
-e.g., in clinical chemistry or environmental analysis.
+This recipe walks through a quantitative targeted assay with external
+calibration and quality control samples, as used e.g. in clinical
+chemistry or environmental analysis.
 
-For this type of analysis the known/target concentrations for the
+For this type of analysis the known (target) concentrations for the
 calibrator and QC samples must be defined in the `QCconcentrations`
-metadata. This also requires that `sample_id` and `analyte_id` is
-defined for the corresponding analyses in the analysis, and for the
-features in the feature metadata tables, respectively.
+metadata. This also requires that `sample_id` is defined for the
+corresponding analyses in the analysis metadata, and `analyte_id` for
+the features in the feature metadata.
 
 ![Quality control concentration plot](images/qcconc.jpg)
 
 Quality control concentration plot
 
-The data and metadata are first imported from a MassHunter CSV file and
-an MSOrganiser template file. The datasets used in this example can be
+## Import data and metadata
+
+We import the analysis data from a MassHunter CSV file and the metadata
+from an MSOrganiser template. The datasets used in this example can be
 obtained from <https://github.com/SLINGhub/mrmhub/tree/main/data-raw>.
 
 ``` r
@@ -43,7 +45,8 @@ mexp <- import_data_masshunter(
 mexp <- import_metadata_msorganiser(
   mexp,
   path = "datasets/QuantLCMS_Example_MetadataTemplate.xlsx",
-  excl_unmatched_analyses = TRUE, ignore_warnings = TRUE)
+  excl_unmatched_analyses = TRUE,
+  ignore_warnings = TRUE)
 #> Warning: ! Unrecognized qc_type value(s): "IBLK".
 #> ℹ These are not standard QC types and may be dropped from QC metrics and plots
 #>   that expect them.
@@ -60,35 +63,40 @@ mexp <- import_metadata_msorganiser(
 #> -------------------------------------------------------------
 ```
 
-Next, the raw peak areas are normalized with the corresponding internal
-standard, and the regression fits for the external calibration curves
-are then calculated and plotted.
+## Fit the calibration curves
+
+The raw peak areas are normalized to their internal standards, then the
+regression fits for the external calibration curves are calculated and
+plotted. The regression model and weighting can also be specified per
+feature in the feature metadata.
 
 ``` r
 
 # Normalize data by internal standards (defined in feature metadata)
 mexp <- normalize_by_istd(mexp)
 
-# Calculate calibration results. The regression model and weighting 
-# can also be specified per feature in the feature metadata
+# Calculate calibration results
 mexp <- calc_calibration_results(
-  mexp, 
-  fit_overwrite  = TRUE,  # Set to FALSE if defined in metadata
-  fit_model = "quadratic", 
+  mexp,
+  fit_overwrite = TRUE, # set FALSE to use the fit defined in metadata
+  fit_model = "quadratic",
   fit_weighting = "1/x")
 
-# Plot calibration curves
-  plot_calibrationcurves(
-    data = mexp, zoom_n_points = 4,
-    fit_overwrite = TRUE,  # Set to FALSE if defined in metadata
-    fit_model = "quadratic",
-    fit_weighting = "1/x",log_scale = TRUE,
-    rows_page = 2,
-    cols_page = 4, show_progress = FALSE)
+# Plot the calibration curves
+plot_calibrationcurves(
+  data = mexp,
+  fit_overwrite = TRUE,
+  fit_model = "quadratic",
+  fit_weighting = "1/x",
+  zoom_n_points = 4,
+  log_scale = TRUE,
+  rows_page = 2, cols_page = 4, show_progress = FALSE)
 ```
 
-![Calibration
-plots](recipe-01-ext-calibration-qc_files/figure-html/unnamed-chunk-3-1.png)
+![External calibration curves per feature, fitted on a log
+scale](recipe-01-ext-calibration-qc_files/figure-html/calibrate-1.png)
+
+## Inspect the calibration metrics
 
 A summary of the calibration curve results can also be produced:
 
@@ -118,12 +126,13 @@ residual standard error of the regression and S is the slope of the
 calibration curve at zero concentration (the linear coefficient; the
 quadratic term does not contribute to this slope).
 
-Once the curves have been inspected and the quality of the analysis is
-satisfactory, the concentrations for all features in samples can be
-calculated using the external calibration curves.
+## Quantify samples and summarise QC
 
-A summary of the QC results (bias and variability) is calculated and
-shown below. The final concentration data is saved to a CSV file.
+Once the curves have been inspected and the quality of the analysis is
+satisfactory, the concentrations for all features in the samples are
+calculated from the external calibration curves. We then summarise the
+QC results (bias and variability) and save the final concentrations to a
+CSV file.
 
 ``` r
 
@@ -136,16 +145,17 @@ mexp <- quantify_by_calibration(
   fit_model = "quadratic",
   fit_weighting = "1/x")
 
-# get a table with QC results (bias and variability)
+# Get a table with QC results (bias and variability)
 tbl <- get_qc_bias_variability(mexp, qc_types = c("HQC", "LQC"))
 
-# Save a table with final concentration data
- save_dataset_csv( mexp, 
-                   path = "corticosteroid_conc.csv", 
-                   variable = "conc", 
-                   filter_data = FALSE)
- 
- print(tbl)
+# Save a table with the final concentration data
+save_dataset_csv(
+  mexp,
+  path = "corticosteroid_conc.csv",
+  variable = "conc",
+  filter_data = FALSE)
+
+print(tbl)
 #> # A tibble: 8 × 10
 #>   feature_id     sample_id qc_type     n conc_target conc_mean conc_sd cv_intra
 #>   <chr>          <chr>     <chr>   <int>       <dbl>     <dbl>   <dbl>    <dbl>
@@ -162,12 +172,12 @@ tbl <- get_qc_bias_variability(mexp, qc_types = c("HQC", "LQC"))
 
 ## Next steps
 
-- [Calibration by a Reference
-  Sample](https://slinghub.github.io/MRMhub/quant/articles/tutorial-07-calibration-reference.md)
-  — an alternative to external calibration curves
+- [Calibration by a reference
+  sample](https://slinghub.github.io/MRMhub/quant/articles/tutorial-07-calibration-reference.md):
+  an alternative to external calibration curves
 - [Custom QC
-  Report](https://slinghub.github.io/MRMhub/quant/articles/recipe-02-custom-qc-report.md)
-  — build a formatted QC report from processed data
+  report](https://slinghub.github.io/MRMhub/quant/articles/recipe-02-custom-qc-report.md):
+  build a formatted QC report from processed data
 - [Visualisation
-  Functions](https://slinghub.github.io/MRMhub/quant/articles/manual-08-visualization.md)
-  — the plotting reference, including calibration and QC plots
+  functions](https://slinghub.github.io/MRMhub/quant/articles/manual-08-visualization.md):
+  the plotting reference, including calibration and QC plots

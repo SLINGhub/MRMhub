@@ -50,8 +50,8 @@ into a single workbook, for labs that prefer an Excel-driven layout.
 
 ## Extract metadata from imported data
 
-If the imported data file already carries embedded metadata — for example an INTEGRATOR result with
-`qc_type`, `batch_id`, and `analysis_order` columns — `import_metadata_from_data()` lifts those
+If the imported data file already carries embedded metadata (for example an INTEGRATOR result with
+`qc_type`, `batch_id`, and `analysis_order` columns), `import_metadata_from_data()` lifts those
 columns into the annotation slots and links them to the dataset in a single call, returning the
 updated `MRMhubExperiment`.
 
@@ -67,7 +67,7 @@ myexp <- import_metadata_from_data(myexp)
 ```
 
 This is the fast path for data that already contains analysis metadata in the import file. For
-manual edits or additional annotation — ISTDs, calibration concentrations, biological covariates —
+manual edits or additional annotation (ISTDs, calibration concentrations, biological covariates),
 fill in the XLSX template above and use the per-table importers below.
 
 ## Import and validate annotation tables
@@ -98,8 +98,8 @@ myexp <- import_metadata_istds(
 )
 ```
 
-The importer checks the table against the data before attaching it — required columns, unique and
-consistent identifiers, and canonical `qc_type` labels — and reports any defect as a `cli` message
+The importer checks the table against the data before attaching it (required columns, unique and
+consistent identifiers, and canonical `qc_type` labels) and reports any defect as a `cli` message
 naming the offending table, column, and IDs. The [metadata tables reference](manual-05-metadata.html)
 lists the required columns and matching rules for each table. When annotation tables are assembled in
 R rather than read from a file, pass them to [`add_metadata()`](../reference/add_metadata.html) as a
@@ -128,7 +128,7 @@ annot_analyses <- annot_analyses |>
 <summary><strong><code>analysis_id</code> in data not found in annotation</strong></summary>
 
 Some injections in the imported dataset have no matching row in the annotation table. List them and
-inspect the difference — leading or trailing whitespace and case mismatches are the most frequent
+inspect the difference: leading or trailing whitespace and case mismatches are the most frequent
 causes.
 
 ```{r}
@@ -143,7 +143,7 @@ annot_analyses <- annot_analyses |>
   dplyr::mutate(analysis_id = trimws(analysis_id))
 ```
 
-`excl_unmatched_analyses = TRUE` in the importer drops unmatched analyses silently — useful only
+`excl_unmatched_analyses = TRUE` in the importer drops unmatched analyses silently, useful only
 when the omission is intentional, such as excluded conditioning injections.
 
 </details>
@@ -197,7 +197,7 @@ setdiff(data_features, annot_feat_ids)
 setdiff(annot_feat_ids, data_features)
 ```
 
-A common cause is differing encoding of special characters — parentheses, slashes, unicode escapes —
+A common cause is differing encoding of special characters (parentheses, slashes, unicode escapes)
 between the integration software output and a hand-edited Excel file.
 
 </details>
@@ -208,14 +208,14 @@ between the integration software output and a hand-edited Excel file.
   silently locked and read only in part.
 - Save CSVs as UTF-8 without BOM. Excel's default "CSV UTF-8" export adds a byte-order mark that
   shifts the first column header.
-- Avoid special characters in `analysis_id` and `feature_id` — parentheses, slashes, spaces. They
+- Avoid special characters in `analysis_id` and `feature_id`: parentheses, slashes, spaces. They
   survive R but complicate downstream column references; keep to letters, digits, underscores, and
   hyphens.
 - Keep the annotation file under version control alongside the data file.
 
 ## Next steps
 
-- [Sample types and QC roles](manual-06-sample-types.html) — canonical `qc_type` vocabulary
-- [Metadata tables and matching](manual-05-metadata.html) — required columns and identifier rules
-- [Importing metadata](recipe-05-import-metadata.html) — attaching metadata from files or a template
-- [Importing analytical data](manual-04-data-import.html) — importing peak-area / concentration data
+- [Sample types and QC roles](manual-06-sample-types.html): canonical `qc_type` vocabulary
+- [Metadata tables and matching](manual-05-metadata.html): required columns and identifier rules
+- [Importing metadata](recipe-05-import-metadata.html): attaching metadata from files or a template
+- [Importing analytical data](manual-04-data-import.html): importing peak-area / concentration data

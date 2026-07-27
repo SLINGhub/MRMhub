@@ -120,6 +120,29 @@ The results of the regression and the calculated LoD and LoQ values are
 stored in the `metrics_calibration` table of the returned
 `MRMhubExperiment` object.
 
+### Calibration coefficient columns
+
+The fitted curve is stored in **ascending** power order, following R's
+[`lm()`](https://rdrr.io/r/stats/lm.html) /
+[`poly()`](https://rdrr.io/r/stats/poly.html) convention. The model is
+
+`response = coef_a + coef_b * x + coef_c * x^2`
+
+- `coef_a` — intercept (0th-order term, `x^0`)
+
+- `coef_b` — 1st-order (linear) coefficient (`x^1`); the slope of a
+  linear fit
+
+- `coef_c` — 2nd-order (quadratic) coefficient (`x^2`); `NA` for a
+  linear fit
+
+Only linear and quadratic models are fitted, so there are no
+higher-order terms. This ascending order is the **reverse** of the
+descending `a*x^2 + b*x + c` form printed by some vendor software (e.g.
+Agilent MassHunter, where `a` is the quadratic term). When comparing
+against such an export, match coefficients by power (`coef_a` =
+intercept, `coef_c` = `x^2`), not by letter.
+
 ## References
 
 ICH Harmonised Tripartite Guideline. Validation of Analytical

@@ -75,7 +75,7 @@ has a decision flowchart and the full importer reference.
 
 ## 3. Add metadata
 
-Most processing steps need information absent from the data file —
+Most processing steps need information absent from the data file:
 internal-standard assignments, calibrant concentrations, sample amounts.
 Metadata can come from separate CSV or Excel files, from R data frames
 (see [Metadata
@@ -113,7 +113,7 @@ Setting `ignore_warnings = TRUE` lets it proceed; the warnings still
 appear in the console table, marked with an asterisk (`*`) in the
 `status` column, and should be reviewed so nothing critical is missed.
 [Validating and fixing
-metadata](https://slinghub.github.io/MRMhub/quant/articles/tutorial-10-metadata-validation.md)
+metadata](https://slinghub.github.io/MRMhub/quant/articles/recipe-04-validate-metadata.md)
 shows how to inspect and resolve them.
 
 ## 4. Process the data
@@ -145,13 +145,12 @@ myexp <- filter_features_qc(
   max.cv.conc.bqc = 25)
 ```
 
-The drift correction here fits on the study samples
-(`ref_qc_types = "SPL"`). Study-sample smoothing suits only large,
-well-randomised sample sets; the QC-based convention (Broadhurst et
-al. 2018) instead fits the drift trend on dedicated QC injections.
-MRMhub applies these steps in a recommended order — normalize, quantify,
-drift-correct, batch-correct, then filter — motivated in [Design
-decisions](https://slinghub.github.io/MRMhub/quant/articles/manual-03-design-decisions.md).
+The drift and batch corrections here are fitted on the study samples
+(`ref_qc_types = "SPL"`), which suits large, well-randomised sample
+sets. [Drift and batch
+correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.md)
+covers fitting on dedicated QC samples instead and how to choose a
+method.
 
 ## 5. Visualize results
 
@@ -204,20 +203,20 @@ saveRDS(myexp, file = tempfile(fileext = ".rds"), compress = TRUE)
 ```
 
 The `.rds` file preserves the entire `MRMhubExperiment`, so a colleague
-can open it in R and run their own plots and QC checks — reproducing the
+can open it in R and run their own plots and QC checks, reproducing the
 exact data state without re-running the pipeline.
 
 ## Next steps
 
 - [Lipidomics data
-  processing](https://slinghub.github.io/MRMhub/quant/articles/tutorial-03-lipidomics-workflow.md)
-  — a more detailed lipidomics example
+  processing](https://slinghub.github.io/MRMhub/quant/articles/tutorial-03-lipidomics-workflow.md):
+  a more detailed lipidomics example
 - [Drift and batch
-  correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.md)
-  — correction methods and diagnostics
+  correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.md):
+  correction methods and diagnostics
 - [Exploring QC: RunScatter and
-  PCA](https://slinghub.github.io/MRMhub/quant/articles/tutorial-05-run-scatter.md)
-  — QC visualisation and outlier screening
+  PCA](https://slinghub.github.io/MRMhub/quant/articles/tutorial-05-run-scatter.md):
+  QC visualisation and outlier screening
 - [External calibration and
-  QC](https://slinghub.github.io/MRMhub/quant/articles/recipe-01-ext-calibration-qc.md)
-  — quantitation with calibration curves
+  QC](https://slinghub.github.io/MRMhub/quant/articles/recipe-01-ext-calibration-qc.md):
+  quantitation with calibration curves

@@ -33,9 +33,17 @@ plot_pca(
   labels_threshold_mad = 3,
   shared_labeltext_hide = NA,
   label_font_size = 3,
-  point_size = 2,
-  point_alpha = 0.8,
-  font_base_size = 8,
+  point_size = NULL,
+  point_alpha = 0.7,
+  font_base_size = NULL,
+  legend_position = NULL,
+  legend_size = NULL,
+  show_legend_title = NULL,
+  title = NULL,
+  strip_text_size = NULL,
+  strip_bg_color = NULL,
+  legend_bg_alpha = NULL,
+  aspect_ratio = 1,
   ellipse_confidence_level = 0.95,
   ellipse_linewidth = 1,
   ellipse_fill = TRUE,
@@ -161,7 +169,64 @@ plot_pca(
 
 - font_base_size:
 
-  Numeric. Base font size (in points) for plot text. Default is 8.
+  Numeric. Base font size (in points) for plot text; all plot text
+  scales proportionally with this value. `NULL` (default) uses the
+  global default set by
+  [`mrmhub_set_plot_defaults()`](https://slinghub.github.io/MRMhub/quant/reference/mrmhub_set_plot_defaults.md)
+  if one is in effect, otherwise an automatic size (derived from the
+  facet-column count on paged plots, or the per-plot default shown in
+  the Usage section above).
+
+- legend_position:
+
+  Optional legend placement. One of `"right"`, `"left"`, `"top"`,
+  `"bottom"`, `"none"`; a corner keyword `"inside-tr"`, `"inside-tl"`,
+  `"inside-br"`, `"inside-bl"`; or a numeric `c(x, y)` in `[0, 1]`
+  coordinates. `NULL` (default) keeps the current placement, unless a
+  global default is set with
+  [`mrmhub_set_plot_defaults()`](https://slinghub.github.io/MRMhub/quant/reference/mrmhub_set_plot_defaults.md).
+
+- legend_size:
+
+  Optional single multiplier of `font_base_size` (when `<= 3`) or
+  absolute point size (when `> 3`) that scales the whole legend: text,
+  title, key and the plotted symbols. `NULL` (default) leaves the legend
+  unchanged.
+
+- show_legend_title:
+
+  Logical. `NULL` (default) keeps the legend title, unless a global
+  default is set with
+  [`mrmhub_set_plot_defaults()`](https://slinghub.github.io/MRMhub/quant/reference/mrmhub_set_plot_defaults.md);
+  `FALSE` hides it, `TRUE` forces it shown.
+
+- title:
+
+  Optional plot title. `NULL` (default) or `NA` shows no title; a
+  character string is shown as the title.
+
+- strip_text_size:
+
+  Optional facet strip text size, as a multiplier of `font_base_size`
+  (when `<= 3`) or an absolute point size (when `> 3`). `NULL` (default)
+  inherits from `font_base_size`.
+
+- strip_bg_color:
+
+  Optional facet strip background fill colour. The strip text colour is
+  set automatically for contrast (white on a dark fill, black on a light
+  one). `NULL` (default) keeps the house dark-navy strips.
+
+- legend_bg_alpha:
+
+  Optional opacity (`[0, 1]`) of a white legend background box, useful
+  for a readable inside legend drawn over points. `NULL` (default)
+  leaves the legend background unchanged.
+
+- aspect_ratio:
+
+  Panel aspect ratio (height/width). Default `1` gives a square score
+  plot (PC1/PC2 on the same visual scale); `NULL` leaves it free.
 
 - ellipse_confidence_level:
 

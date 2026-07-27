@@ -31,8 +31,8 @@ towards a curated table of lipid species concentrations ready for statistical
 analysis. Along the way we assess the analytical and data quality of the run,
 normalise and quantify against internal standards, correct for run-order drift
 and between-batch effects, filter features on QC criteria, and export the result.
-The dataset — a longitudinal plasma study (`sPerfect`) measured across six
-batches — is realistic enough to show the decisions a real analysis demands.
+The dataset (a longitudinal plasma study (`sPerfect`) measured across six
+batches) is realistic enough to show the decisions a real analysis demands.
 
 ```{r library}
 library(mrmhub)
@@ -61,7 +61,7 @@ myexp <- import_data_mrmhub(
 
 ## 2. A glimpse on the imported data
 
-The data is stored in long format — one row per analysis–feature pair — so each
+The data is stored in long format (one row per analysis–feature pair) so each
 measurement carries its own area, retention time, and metadata side by side.
 Print the working table below, or enter `View(myexp@dataset_orig)` in the console
 to browse and filter it in the RStudio viewer. For routine access it is cleaner
@@ -77,12 +77,12 @@ print(myexp@dataset)
 Before touching the signals, it is worth understanding how the run was
 structured. The plot below lays out the batch boundaries, the positions of the
 quality control (QC) samples, and the date, duration, and run time of the
-analysis — context that informs every later choice about drift, batches, and
+analysis: context that informs every later choice about drift, batches, and
 which QC type to trust. Setting `show_timestamp = TRUE` overlays acquisition
 times and reveals any long interruptions within or between batches.
 
 ```{r runsequence}
-#| fig.cap: !expr fig_cap("Run sequence of the analysis: batch structure, QC-sample positions, and acquisition timeline.")
+#| fig.cap: !expr fig_cap("Run sequence of the analysis (batch structure, QC-sample positions, and acquisition timeline).")
 #| fig.alt: RunSequence plot of the analysis showing batches and QC positions
 plot_runsequence(
   myexp,
@@ -172,16 +172,16 @@ plot_runscatter(
 
 ## 7. Adding detailed metadata
 
-Everything from here on — sample roles, ISTD assignments, spike amounts,
-concentrations — comes from the analysis metadata. The MRMhub Excel template
+Everything from here on (sample roles, ISTD assignments, spike amounts,
+concentrations) comes from the analysis metadata. The MRMhub Excel template
 collects, organises, and pre-validates it in one place; open the `.xlsx` file in
 the `datasets` folder to see its structure. On import the metadata is validated:
 a hard error (a duplicate or missing ID) stops the import with a summary of the
 problems, while softer issues are reported as warnings you can work through, or
 bypass with `ignore_warnings = TRUE`. We then fix the processing order to the
 injection sequence with `set_analysis_order()`, and tell MRMhub which of the
-imported signal variables to treat as the working feature intensity —
-`set_intensity_var("area")` — the value all subsequent calculations start from.
+imported signal variables to treat as the working feature intensity
+(`set_intensity_var("area")`), the value all subsequent calculations start from.
 
 ```{r import-metadata}
 #| message: true
@@ -225,7 +225,7 @@ plot_rla_boxplot(
 ## 9. PCA of all QC types
 
 Principal component analysis condenses all features into a few axes and gives a
-complementary overview of how the study and QC samples relate — useful for
+complementary overview of how the study and QC samples relate, useful for
 spotting batch effects, technical outliers, and systematic differences between
 sample types. Here it offers a second, independent view of the candidate outlier
 flagged by the RLA plot.
@@ -249,7 +249,7 @@ plot_pca(
 ## 10. Excluding technical outliers
 
 With the outlier corroborated by both plots, we remove it from all downstream
-processing using `exclude_analyses()`. The function does not delete any data — it
+processing using `exclude_analyses()`. The function does not delete any data: it
 sets the sample's `valid_analysis` flag to `FALSE`, so it is simply skipped in
 later steps and can be reinstated at any time. Replotting the PCA lets us confirm
 the effect of the exclusion on the sample structure.
@@ -311,7 +311,7 @@ plot_responsecurves(
 ## 12. Isotope interference correction
 
 Some peaks of interest are co-integrated with the isotopic peaks of other lipid
-species — for example the M+2 isotope of a species two mass units lighter falling
+species, for example the M+2 isotope of a species two mass units lighter falling
 in the same transition. `correct_custom_interferences()` subtracts these declared
 contributions from the raw feature intensities, reading which feature interferes
 with which, and by how much, from the metadata; the original values are preserved
@@ -336,8 +336,8 @@ peak area by the area of its assigned class-specific internal standard *within
 the same injection*, writing the ratio to `feature_norm_intensity`; this cancels
 most of the injection-to-injection and matrix variation shared by an analyte and
 its ISTD. `quantify_by_istd()` then converts those ratios into absolute
-concentrations from three quantities held in the metadata — the ISTD
-concentration in the spike solution, the spiked volume, and the sample amount —
+concentrations from three quantities held in the metadata (the ISTD
+concentration in the spike solution, the spiked volume, and the sample amount)
 and stores the result in `feature_conc`. Because both new variables sit beside
 the raw areas, the RLA and PCA plots above can be rerun on the normalised data
 with `variable = "norm_intensity"` or `variable = "conc"`.
@@ -357,7 +357,7 @@ differently, so its response can diverge from that of the analyte. Normalising
 against such an ISTD can then *add* variability rather than remove it. Because a
 good ISTD should reduce the coefficient of variation (CV), comparing the CV of QC
 and study samples before and after normalisation is a direct way to catch a
-misbehaving standard — a class whose CV rises after normalisation is a warning
+misbehaving standard: a class whose CV rises after normalisation is a warning
 sign worth investigating before trusting its concentrations.
 
 ```{r norm-effects}
@@ -390,7 +390,7 @@ which suits large, well-randomised sample sets like this longitudinal study;
 `kernel_size` sets the width of the smoothing window. The corrected values
 replace `conc`, the pre-correction values are kept in `conc_before`, and the
 fitted trend in `conc_before_fit`. The summary the function prints is not a formal
-diagnostic of the fit but a quick check — reported as a change in median CV —
+diagnostic of the fit but a quick check (reported as a change in median CV)
 that the correction improved precision without introducing artefacts. A scale
 correction along the fit is available via `scale_smooth = TRUE`.
 
@@ -508,8 +508,8 @@ The final curation step removes features that fail defined QC criteria.
 (minimum r², slope, and maximum y-intercept), the signal-to-blank ratio against
 process blanks, the absolute signal level as a proxy for the limit of detection,
 and the precision in the batch QCs (`max.cv.conc.bqc`). The criteria are applied
-*hierarchically* — a feature counts as failing CV only once it has passed the S/B
-and signal filters — and `features.to.keep` retains named species regardless. The
+*hierarchically* (a feature counts as failing CV only once it has passed the S/B
+and signal filters) and `features.to.keep` retains named species regardless. The
 filter can be run repeatedly, overwriting or, with `clear_existing = FALSE`,
 amending the previous set.
 
@@ -541,7 +541,7 @@ The plot below summarises the filtering per lipid class. Green segments count th
 species that passed every criterion; the remaining segments count those that
 failed each one. Because the criteria are hierarchical, a species is attributed
 to the *first* filter it fails (for example `CV`), having already cleared the
-lower ones (`S/B`, `LOD`) — so the counts partition the features rather than
+lower ones (`S/B`, `LOD`), so the counts partition the features rather than
 double-counting them.
 
 ```{r qc-summary-byclass}
@@ -552,7 +552,7 @@ plot_qc_summary_byclass(myexp)
 
 The next plot gives the same picture across all features, with the total retained,
 and adds a Venn diagram showing how many features each individual criterion
-excluded — and where those exclusions overlap.
+excluded, and where those exclusions overlap.
 
 ```{r qc-summary-overall}
 #| fig.cap: !expr fig_cap("Overall feature filtering summary with a Venn diagram of exclusion criteria.")
@@ -563,8 +563,8 @@ plot_qc_summary_overall(myexp)
 ## 20. Lipidome profile
 
 As a final sanity check, we plot the concentration profile of the filtered
-dataset. Comparing these values — the most abundant species, the summed
-concentration per class, or the ratios between classes — against in-house
+dataset. Comparing these values (the most abundant species, the summed
+concentration per class, or the ratios between classes) against in-house
 reference ranges or the literature is the quickest way to confirm that
 quantification landed in a plausible range and that no gross errors slipped
 through.
@@ -587,7 +587,7 @@ plot_abundanceprofile(
 
 The full post-processing can be written to a formatted Excel workbook, with
 separate sheets for the raw and processed datasets, the associated metadata, the
-per-feature QC metrics, and a record of the processing steps applied — a
+per-feature QC metrics, and a record of the processing steps applied: a
 self-contained account of how the numbers were produced.
 
 ```{r save-report}
@@ -613,7 +613,7 @@ save_dataset_csv(
 ## 22. Sharing the MRMhubExperiment dataset
 
 Finally, the whole `myexp` object can be serialized to an `RDS` file and shared.
-`RDS` files open in any R session — even without the mrmhub package installed —
+`RDS` files open in any R session (even without the mrmhub package installed)
 and the saved `MRMhubExperiment` can be reloaded for further processing,
 replotting, or inspection with mrmhub.
 
@@ -626,7 +626,7 @@ print(my_saved_exp)
 
 ## Next steps
 
-- [Drift and batch correction](tutorial-04-drift-correction.html) — correction methods and diagnostics in depth
-- [RunScatter and PCA QC exploration](tutorial-05-run-scatter.html) — QC visualisation in depth
-- [Interference correction](tutorial-11-interference-correction.html) — correcting isotopic and isobaric overlap
-- [External calibration & QC](recipe-01-ext-calibration-qc.html) — quantify with external calibration curves
+- [Drift and batch correction](tutorial-04-drift-correction.html): correction methods and diagnostics in depth
+- [RunScatter and PCA QC exploration](tutorial-05-run-scatter.html): QC visualisation in depth
+- [Interference correction](tutorial-11-interference-correction.html): correcting isotopic and isobaric overlap
+- [External calibration & QC](recipe-01-ext-calibration-qc.html): quantify with external calibration curves

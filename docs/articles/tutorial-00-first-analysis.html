@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Your First Analysis • mrmhub</title>
+<title>Your first analysis • mrmhub</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
@@ -16,10 +16,10 @@
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
-<meta property="og:title" content="Your First Analysis">
-<meta name="description" content="A 5-minute walkthrough: import demo data, inspect, normalize, and export.
+<meta property="og:title" content="Your first analysis">
+<meta name="description" content="A short walkthrough on the bundled demo data: import a result file, normalize by internal standard, inspect the run, and export: no external files needed.
 ">
-<meta property="og:description" content="A 5-minute walkthrough: import demo data, inspect, normalize, and export.
+<meta property="og:description" content="A short walkthrough on the bundled demo data: import a result file, normalize by internal standard, inspect the run, and export: no external files needed.
 ">
 <meta property="og:image" content="https://slinghub.github.io/MRMhub/quant/logo.svg">
 </head>
@@ -31,7 +31,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -62,7 +62,6 @@
     <li><h6 class="dropdown-header" data-toc-skip>Techniques</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-04-drift-correction.html">Drift and batch correction</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-07-calibration-reference.html">Calibration by reference sample</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-10-metadata-validation.html">Validating metadata</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-11-interference-correction.html">Interference correction</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
@@ -75,6 +74,7 @@
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-04-validate-metadata.html">Validate &amp; fix metadata</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul>
 </li>
@@ -96,6 +96,7 @@
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-13-plot-customization.html">Customising Plots</a></li>
     <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Writing Pipelines with AI Assistants</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
@@ -106,7 +107,7 @@
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">NEWS</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><a class="external-link nav-link" href="https://slinghub.github.io/MRMhub/">← MRMhub home</a></li>
@@ -127,7 +128,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.svg" class="logo" alt=""><h1>Your First Analysis</h1>
+      <img src="../logo.svg" class="logo" alt=""><h1>Your first analysis</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/HEAD/vignettes/articles/tutorial-00-first-analysis.Rmd" class="external-link"><code>vignettes/articles/tutorial-00-first-analysis.Rmd</code></a></small>
@@ -136,63 +137,124 @@
 
     
     
-<p class="page-kind page-kind-tutorial">
-Tutorial
+<p class="page-meta">
+<span class="page-kind page-kind-tutorial">Tutorial</span> <span class="page-level">Beginner</span> <span class="page-prereq">Prerequisites:
+<a href="manual-00-installation.html">MRMhub installed</a></span>
 </p>
-<p>This walkthrough produces a normalized dataset in under 5 minutes
-using bundled demo data; no external files are needed.</p>
-<div class="callout callout-note">
-<p><strong>Time</strong> ~5 min  ·  <strong>Level</strong> Beginner  · 
-<strong>Prerequisites</strong> <a href="manual-00-installation.html">MRMhub installed</a></p>
-</div>
+<p>This walkthrough takes an MRMhub result from import to a normalized,
+exportable dataset in a handful of lines, using demo data bundled with
+the package so nothing external is needed. It is the shortest path
+through the pipeline; the workflow tutorials that follow unpack each
+step in full.</p>
 <div class="section level2">
-<h2 id="the-complete-workflow-in-one-script">The complete workflow in one script<a class="anchor" aria-label="anchor" href="#the-complete-workflow-in-one-script"></a>
+<h2 id="run-the-complete-workflow">1. Run the complete workflow<a class="anchor" aria-label="anchor" href="#run-the-complete-workflow"></a>
 </h2>
-<p>The complete workflow on the bundled demo data is shown below. The
-printed summary and plot are produced by this code.</p>
+<p>The block below is the whole analysis: import the demo result,
+normalize each feature by its internal standard, and print the resulting
+object. Run it and you have a processed dataset.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/SLINGhub/MRMhub" class="external-link">mrmhub</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># 1. Import the bundled demo dataset (produced by INTEGRATOR)</span></span>
 <span><span class="va">demo_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"MRMhub_demo.tsv"</span>, package <span class="op">=</span> <span class="st">"mrmhub"</span><span class="op">)</span></span>
+<span></span>
 <span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MRMhubExperiment.html">MRMhubExperiment</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_data_mrmhub.html">import_data_mrmhub</a></span><span class="op">(</span><span class="va">mexp</span>, path <span class="op">=</span> <span class="va">demo_file</span>, import_metadata <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">mexp</span>                        <span class="co"># compact overview; status(mexp) prints the full report</span></span>
-<span></span>
-<span><span class="co"># 2. Normalise each feature by its internal standard</span></span>
-<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_by_istd.html">normalize_by_istd</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># 3. Inspect the normalised signal across the analytical run</span></span>
-<span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span><span class="va">mexp</span>, variable <span class="op">=</span> <span class="st">"norm_intensity"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="tutorial-00-first-analysis_files/figure-html/whole-thing-1.png" class="r-plt" alt="" width="100%"><img src="tutorial-00-first-analysis_files/figure-html/whole-thing-2.png" class="r-plt" alt="" width="100%"><img src="tutorial-00-first-analysis_files/figure-html/whole-thing-3.png" class="r-plt" alt="" width="100%"><img src="tutorial-00-first-analysis_files/figure-html/whole-thing-4.png" class="r-plt" alt="" width="100%"></p>
-<p><code><a href="../reference/build_workflow.html">build_workflow()</a></code> offers an interactive alternative — a
-point-and-click application that validates your data and metadata, warns
-about any pipeline mismatches, and generates an equivalent Quarto
-(<code>.qmd</code>) workflow to download (see <a href="tutorial-12-workflow-builder.html">Build a Workflow Without
-Code</a>) — while the code-first workflow above remains the reproducible
-path. What each line does is described below.</p>
+<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_data_mrmhub.html">import_data_mrmhub</a></span><span class="op">(</span><span class="va">mexp</span>, path <span class="op">=</span> <span class="va">demo_file</span>, import_metadata <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Imported 499 analyses with 28 features.</span></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #00BBBB;">ℹ</span> <span style="color: #00BB00;">feature_area</span> selected as default feature intensity. Modify with `set_intensity_var()`.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Analysis metadata associated with 499 analyses.</span></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Feature metadata associated with 28 features.</span></code></pre>
+</div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_by_istd.html">normalize_by_istd</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">19 features normalized with 9 ISTDs in 499 analyses.</span></code></pre>
+</div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">mexp</span></span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">MRMhubExperiment: </span> <span style="color: #00BBBB;">──────────────────────────────────────────────────────────</span></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="font-style: italic;">NA</span> | 499 analyses and 28 features | signal: <span style="color: #00BB00;">feature_area</span></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #0000BB;">Last step: </span><span style="color: #0000BB; font-weight: bold;">ISTD-normalized data</span></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Normalized <span style="color: #00BB00;">✔</span> Quantitated <span style="color: #BB0000;">✖</span> Drift/batch <span style="color: #BB0000;">✖</span> Filtered <span style="color: #BB0000;">✖</span></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #555555;">ℹ Use `status()` for the full processing and metadata report</span></code></pre>
+</div>
+<p>We then look at the normalized signal across the analytical run, the
+first thing to inspect for run-order drift.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span><span class="va">mexp</span>, variable <span class="op">=</span> <span class="st">"norm_intensity"</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<img src="tutorial-00-first-analysis_files/figure-html/runscatter-1.png" class="r-plt" alt="RunScatter of ISTD-normalized feature intensities against run order" width="700"><p class="caption">
+Figure 1. Internal-standard–normalized signal of each feature plotted
+against injection order.
+</p>
+</div>
+<div class="figure">
+<img src="tutorial-00-first-analysis_files/figure-html/runscatter-2.png" class="r-plt" alt="RunScatter of ISTD-normalized feature intensities against run order" width="700"><p class="caption">
+Figure 1. Internal-standard–normalized signal of each feature plotted
+against injection order.
+</p>
+</div>
+<div class="figure">
+<img src="tutorial-00-first-analysis_files/figure-html/runscatter-3.png" class="r-plt" alt="RunScatter of ISTD-normalized feature intensities against run order" width="700"><p class="caption">
+Figure 1. Internal-standard–normalized signal of each feature plotted
+against injection order.
+</p>
+</div>
+<div class="figure">
+<img src="tutorial-00-first-analysis_files/figure-html/runscatter-4.png" class="r-plt" alt="RunScatter of ISTD-normalized feature intensities against run order" width="700"><p class="caption">
+Figure 1. Internal-standard–normalized signal of each feature plotted
+against injection order.
+</p>
+</div>
+<p>Printing the object returns a compact status overview:
+<code>status(mexp)</code> prints the full report. If you prefer not to
+write code, <code><a href="../reference/build_workflow.html">build_workflow()</a></code> opens an interactive
+application that validates your data and metadata, flags pipeline
+mismatches, and generates an equivalent Quarto workflow to download (see
+<a href="tutorial-12-workflow-builder.html">Build a workflow without
+code</a>); the script above remains the reproducible path.</p>
 </div>
 <div class="section level2">
-<h2 id="what-the-script-does">What the script does<a class="anchor" aria-label="anchor" href="#what-the-script-does"></a>
+<h2 id="what-the-script-does">2. What the script does<a class="anchor" aria-label="anchor" href="#what-the-script-does"></a>
 </h2>
-<p>The imported object is an <code>MRMhubExperiment</code>, a structured
-container holding the peak area data, sample annotations, and feature
-metadata. A few helpers summarise what was imported, and
-<code><a href="../reference/normalize_by_istd.html">normalize_by_istd()</a></code> corrects for extraction and injection
-variability; its result is recorded in
-<code>mexp@is_istd_normalized</code>, and the original data is always
-preserved in <code>mexp@dataset_orig</code>.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<p>The importer returns an <code>MRMhubExperiment</code>: a structured
+container holding the peak-area data, the sample annotations, and the
+feature metadata together. <code><a href="../reference/normalize_by_istd.html">normalize_by_istd()</a></code> divides each
+feature by its assigned internal standard, correcting for extraction and
+injection variability. The ratio is stored in
+<code>feature_norm_intensity</code>, the <code>is_istd_normalized</code>
+flag is set, and the raw import is left untouched in the
+<code>dataset_orig</code> slot. A few helpers report what was
+imported:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/get_analysis_count.html">get_analysis_count</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span>   <span class="co"># number of analyses</span></span>
 <span><span class="fu"><a href="../reference/get_feature_count.html">get_feature_count</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span>    <span class="co"># number of features</span></span>
-<span><span class="fu"><a href="../reference/get_featurelist.html">get_featurelist</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span>      <span class="co"># the feature list</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/get_featurelist.html">get_featurelist</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span>      <span class="co"># the measured features</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="exporting">Exporting<a class="anchor" aria-label="anchor" href="#exporting"></a>
+<h2 id="export-the-results">3. Export the results<a class="anchor" aria-label="anchor" href="#export-the-results"></a>
 </h2>
-<p>Export the processed data to an Excel report (multiple sheets) or a
-tidy CSV:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<p>Write the processed data to a multi-sheet Excel report, or to a
+single tidy CSV:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/save_report_xlsx.html">save_report_xlsx</a></span><span class="op">(</span><span class="va">mexp</span>, path <span class="op">=</span> <span class="st">"my_first_results.xlsx"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/save_dataset_csv.html">save_dataset_csv</a></span><span class="op">(</span><span class="va">mexp</span>, path <span class="op">=</span> <span class="st">"my_first_results.csv"</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -201,17 +263,20 @@ tidy CSV:</p>
 </h2>
 <ul>
 <li>
-<a href="manual-01-key-concepts.html">Key Concepts &amp;
-Glossary</a> — understand the data model</li>
+<a href="manual-01-key-concepts.html">Key concepts and glossary</a>:
+understand the data model</li>
 <li>
 <a href="tutorial-01-prep-data.html">Preparing and importing
-data</a> — import your own data and metadata</li>
+data</a>: import your own data and metadata</li>
 <li>
-<a href="tutorial-02-basic-workflow.html">Basic MRMhub Workflow</a>
-— the full end-to-end pipeline</li>
+<a href="tutorial-02-basic-workflow.html">Basic MRMhub workflow</a>:
+the full end-to-end pipeline</li>
 <li>
-<a href="tutorial-03-lipidomics-workflow.html">Lipidomics Data
-Processing</a> — a detailed real-world workflow</li>
+<a href="tutorial-03-lipidomics-workflow.html">Lipidomics data
+processing</a>: a detailed real-world workflow</li>
+<li>
+<a href="manual-13-plot-customization.html">Customising plots</a>:
+size text, legends and points for reports</li>
 </ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

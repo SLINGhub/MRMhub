@@ -1,4 +1,4 @@
-# Drift and Batch Correction
+# Drift and batch correction
 
 Manual
 
@@ -8,12 +8,17 @@ The correction is based on user-selected reference sample types
 corrections can be applied to `intensity`, `norm_intensity`, or `conc`
 data.
 
-**Caution.** Drift and batch corrections must be fitted on dedicated
-*reference* samples (typically QC pools), never on study samples
-(Broadhurst et al. 2018). The
-[`correct_drift_gaussiankernel()`](https://slinghub.github.io/MRMhub/quant/reference/correct_drift_gaussiankernel.md)
-option that fits on study samples is the sole exception and is only safe
-for large, well-randomised cohorts.
+Which samples a correction is fitted on depends on the modelling method.
+The QC-based smoothers
+([`correct_drift_loess()`](https://slinghub.github.io/MRMhub/quant/reference/correct_drift_loess.md),
+[`correct_drift_cubicspline()`](https://slinghub.github.io/MRMhub/quant/reference/correct_drift_cubicspline.md))
+are fitted on the reference sample types selected with `ref_qc_types`,
+typically QC samples, i.e. the batch QC (`BQC`), or the technical QC
+(`TQC`) in case of clear instrument drifts, following the QC-based
+paradigm (Broadhurst et al. 2018). The gaussian-kernel method
+([`correct_drift_gaussiankernel()`](https://slinghub.github.io/MRMhub/quant/reference/correct_drift_gaussiankernel.md))
+instead fits on the study samples and is only appropriate for large,
+well-randomised cohorts.
 
 ## Drift correction (smoothing)
 
@@ -58,8 +63,8 @@ previously described QC-based drift correction methods, such as **QC-RSC
 (Quality Control Regularized Spline Correction)**, described in Dunn et
 al. (2011) and Kirwan et al. (2013).
 
-See the tutorial [Drift and Batch
-Correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.md)
+See the tutorial [Drift and batch
+correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.md)
 for more information on how to use these functions and plot the results.
 
 ## Batch-effect correction (centering)
@@ -70,18 +75,18 @@ whereby the scale of the batches can optionally also be normalized. The
 selected QC types (`ref_qc_types`) are used to calculate the medians,
 which are then used to align all other samples.
 
-See the tutorial [Drift and Batch
-Correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.md)
+See the tutorial [Drift and batch
+correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.md)
 for more information.
 
 ## Next steps
 
-- [Drift and Batch Correction
-  (tutorial)](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.md)
-  — worked examples of both corrections
+- [Drift and batch correction
+  (tutorial)](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.md):
+  worked examples of both corrections
 - [Exploring QC: RunScatter and
-  PCA](https://slinghub.github.io/MRMhub/quant/articles/tutorial-05-run-scatter.md)
-  — visualise run-order and batch effects
+  PCA](https://slinghub.github.io/MRMhub/quant/articles/tutorial-05-run-scatter.md):
+  visualise run-order and batch effects
 
 ## References
 

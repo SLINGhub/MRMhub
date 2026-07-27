@@ -35,7 +35,7 @@ analysis with lipidr.
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,7 +66,6 @@ analysis with lipidr.
     <li><h6 class="dropdown-header" data-toc-skip>Techniques</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-04-drift-correction.html">Drift and batch correction</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-07-calibration-reference.html">Calibration by reference sample</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-10-metadata-validation.html">Validating metadata</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-11-interference-correction.html">Interference correction</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
@@ -79,6 +78,7 @@ analysis with lipidr.
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-04-validate-metadata.html">Validate &amp; fix metadata</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul>
 </li>
@@ -100,6 +100,7 @@ analysis with lipidr.
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-13-plot-customization.html">Customising Plots</a></li>
     <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Writing Pipelines with AI Assistants</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
@@ -110,7 +111,7 @@ analysis with lipidr.
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">NEWS</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><a class="external-link nav-link" href="https://slinghub.github.io/MRMhub/">← MRMhub home</a></li>
@@ -145,9 +146,8 @@ analysis with lipidr.
 <a href="tutorial-02-basic-workflow.html">Basic workflow</a></span>
 </p>
 <p>Export a processed <code>MRMhubExperiment</code> to a Bioconductor <a href="https://bioconductor.org/packages/SummarizedExperiment/" class="external-link">SummarizedExperiment</a>,
-then take it downstream — differential abundance with
-<code>limma</code>, lipid-specific analysis with
-<code>lipidr</code>.</p>
+then take it downstream: differential abundance with <code>limma</code>,
+lipid-specific analysis with <code>lipidr</code>.</p>
 <div class="section level2">
 <h2 id="setup">1. Setup<a class="anchor" aria-label="anchor" href="#setup"></a>
 </h2>
@@ -208,14 +208,14 @@ it once with:</p>
 <tr class="even">
 <td><code><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData()</a></code></td>
 <td>
-<code>annot_features</code> — one row per
+<code>annot_features</code>: one row per
 <code>feature_id</code>
 </td>
 </tr>
 <tr class="odd">
 <td><code><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData()</a></code></td>
 <td>
-<code>annot_analyses</code> — one row per
+<code>annot_analyses</code>: one row per
 <code>analysis_id</code>
 </td>
 </tr>
@@ -256,23 +256,20 @@ and pass <code>filter_data = TRUE</code>:</p>
 <div class="section level2">
 <h2 id="subsetting-study-samples-only">4. Subsetting: study samples only<a class="anchor" aria-label="anchor" href="#subsetting-study-samples-only"></a>
 </h2>
-<p><strong>Everything is exported</strong> — internal standards, QC
+<p><strong>Everything is exported</strong>: internal standards, QC
 samples, blanks and calibrants are all present and flagged rather than
 dropped, because downstream tools need them: <code>lipidr</code>, for
-one, requires the internal-standard annotation. Subset to study samples
-in one line:</p>
+one, requires the internal-standard annotation. But nothing downstream
+reads <code>qc_type</code>, so a PCA, normalization or differential test
+will fold blanks, calibrants and QC replicates in with the study
+samples. Subset to study samples before any such analysis, here in one
+line:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">se_spl</span> <span class="op">&lt;-</span> <span class="va">se</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData</a></span><span class="op">(</span><span class="va">se</span><span class="op">)</span><span class="op">$</span><span class="va">is_istd</span>, <span class="va">se</span><span class="op">$</span><span class="va">qc_type</span> <span class="op">==</span> <span class="st">"SPL"</span><span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">se_spl</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1]  20 374</span></span></code></pre></div>
-<div class="callout callout-caution">
-<p><strong>Subset before any statistical analysis.</strong> Most tools
-include blanks, calibrants and QC replicates in a PCA, a normalization
-or a differential test and return results that look plausible and mean
-nothing. Nothing downstream understands <code>qc_type</code>.</p>
-</div>
 <p>QC metrics are deliberately <em>not</em> written to
-<code><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData()</a></code> — nothing downstream reads them, and QC filtering
+<code><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">rowData()</a></code>: nothing downstream reads them, and QC filtering
 belongs in MRMhub where it is tested. Use
 <code>filter_data = TRUE</code> as above, or
 <code><a href="../reference/save_feature_qc_metrics.html">save_feature_qc_metrics()</a></code> for the metrics themselves. To
@@ -292,7 +289,7 @@ directly on continuous data such as concentrations. Note that
 <code><a href="https://rdrr.io/pkg/limma/man/voom.html" class="external-link">voom()</a></code> is <strong>not</strong> used: it models count data
 and is invalid here.</p>
 <div class="callout callout-note">
-<p>The bundled <code>lipidomics_dataset</code> carries no phenotype —
+<p>The bundled <code>lipidomics_dataset</code> carries no phenotype:
 every study sample is plasma from the same longitudinal series. The
 grouping below is <strong>simulated to demonstrate the interface
 only</strong>; the p-values are meaningless by construction. With your
@@ -324,7 +321,7 @@ present in <code><a href="https://rdrr.io/pkg/SummarizedExperiment/man/Summarize
 <span><span class="co">#&gt; TG 48:1 [-18:1] 0.21339199 -4.809001 1.533404 0.12601528 0.4750705 -4.355608</span></span>
 <span><span class="co">#&gt; TG 48:2 [-16:0] 0.20881625 -4.975439 1.480413 0.13959852 0.4750705 -4.406757</span></span></code></pre></div>
 <p>Because <code><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData()</a></code> carries the full analysis annotation,
-covariates are available without extra joins — for example blocking on
+covariates are available without extra joins, for example blocking on
 batch:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">design</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/model.matrix.html" class="external-link">model.matrix</a></span><span class="op">(</span><span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">group</span> <span class="op">+</span> <span class="va">batch_id</span>, data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">se_spl</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
@@ -345,7 +342,7 @@ batch:</p>
 <code>feature_class</code>, <code>istd</code> from <code>is_istd</code>,
 plus the <code>summarized</code> / <code>logged</code> /
 <code>normalized</code> flags lipidr reads but does <strong>not</strong>
-validate — an object missing them constructs cleanly and then
+validate: an object missing them constructs cleanly and then
 misbehaves.</p>
 <div class="callout callout-caution">
 <p><strong>Use a peak-area scale variable with lipidr, not
@@ -353,7 +350,7 @@ concentrations.</strong> lipidr log-transforms with
 <code>log = TRUE</code> by default and <strong>clamps values below 1 to
 1</strong> first, which assumes Skyline peak-area magnitudes.
 Concentrations in µmol/L are mostly below 1, so they are silently
-flattened to <code>log2(1) = 0</code> — <code><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">eBayes()</a></code> then
+flattened to <code>log2(1) = 0</code>; <code><a href="https://rdrr.io/pkg/limma/man/ebayes.html" class="external-link">eBayes()</a></code> then
 reports zero residual variances and every fold change collapses. MRMhub
 warns when you export a mostly-sub-1 assay this way.</p>
 <p>The trigger is absolute scale, not concentration as such: the clamp
@@ -401,16 +398,16 @@ microarray studies. <em>Nucleic Acids Research</em>, 43(7), e47. <a href="doi:%5
 <ul>
 <li>
 <a href="recipe-03-mztab-export.html">Import &amp; export
-mzTab-M</a> — the standard exchange format for repositories such as
+mzTab-M</a>: the standard exchange format for repositories such as
 MetaboLights.</li>
 <li>
-<a href="manual-03-design-decisions.html">Design Decisions</a> — why
+<a href="manual-03-design-decisions.html">Design decisions</a>: why
 <code>MRMhubExperiment</code> is not itself a Bioconductor class.</li>
 <li>
 <a href="tutorial-03-lipidomics-workflow.html">Lipidomics
-workflow</a> — QC-filter features before exporting.</li>
+workflow</a>: QC-filter features before exporting.</li>
 <li>
-<a href="recipe-02-custom-qc-report.html">Custom QC report</a> —
+<a href="recipe-02-custom-qc-report.html">Custom QC report</a>:
 reporting straight from MRMhub.</li>
 </ul>
 </div>

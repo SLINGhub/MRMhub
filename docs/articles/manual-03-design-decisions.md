@@ -1,23 +1,19 @@
-# Design Decisions: Why This Architecture?
+# Design decisions behind MRMhub QUANT
 
 Manual
 
-## Audience
+This article documents the main architectural choices behind MRMhub
+QUANT and the reasoning for each. It is written for contributors and for
+users who want to understand how the package is structured before
+extending it. For a task-oriented introduction to running an analysis,
+see [Your first
+analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md).
 
-This article is for:
+## One S4 object holds data, metadata, and state
 
-- Power users who want to understand *why* QUANT works the way it does
-- Contributors who want to extend the package
-- Developers building tools on top of MRMhub
-
-To start processing data directly, see [Your First
-Analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md)
-instead.
-
-## Decision 1: S4 Class (MRMhubExperiment) vs Tidy Tibbles
-
-**Choice:** A single S4 object holds all data, metadata, and processing
-state.
+All data, metadata, and processing state for an experiment live in a
+single S4 object, `MRMhubExperiment`, rather than in loose tibbles
+passed between functions.
 
 **Alternatives considered**
 
@@ -27,36 +23,29 @@ state.
 | SummarizedExperiment (Bioconductor) | Models a feature × sample matrix, not a processing pipeline: no *typed* home for the original data, the processing state, or the non-rectangular annotation tables. Supported as an **export target** instead |
 | R6 class | Less formal than S4; no validity checking; mutable-by-reference is error-prone for data analysis |
 
-**Rationale:**
+Three properties motivate this. The object keeps the original data, the
+processed data, the annotation tables, and the processing flags
+together, so an analysis is traceable from raw import to final result.
+S4 validity methods check that data and metadata stay consistent, so
+analyses cannot be dropped from `dataset` without the corresponding
+annotations being accounted for. And the status flags
+(`is_istd_normalized`, `var_drift_corrected`, and the rest) record what
+has been applied, which lets later functions detect and refuse
+accidental double-processing.
 
-1.  **Traceability** — The S4 object bundles original data, processed
-    data, annotations, and processing flags in one place.
-
-2.  **Integrity checking** — S4 validity methods ensure data and
-    metadata stay in sync. Analyses cannot be accidentally deleted
-    without updating annotations.
-
-3.  **Pipeline state** — Flags like `is_istd_normalized`,
-    `var_drift_corrected` prevent accidental double-processing.
-
-4.  **Not SummarizedExperiment — but exports to it.** SE models a
-    feature × sample matrix. It offers no *typed* home for
-    `dataset_orig`, for the processing state, or for the annotation
-    tables that are not one-row-per-feature (`annot_responsecurves`,
-    `annot_qcconcentrations`, `metrics_calibration`) — they can only
-    ride along as an untyped `metadata()` list. And while `colData`
-    happily *carries* `qc_type` and `batch_id`, no Bioconductor class
-    *models* them, nor calibration curves or internal-standard
-    relationships: nothing downstream knows that a `PBLK` column is a
-    blank, or that one feature normalizes another. Enforcing that is the
-    work QUANT exists to do.
-
-    The argument is about the *internal* representation only. Several
-    parallel intensity variables are no obstacle — SE holds them as
-    parallel assays, which is exactly what the exporter relies on. Once
-    an experiment is processed,
-    [`save_dataset_summarizedexperiment()`](https://slinghub.github.io/MRMhub/quant/articles/tutorial-08-summarizedexperiment.md)
-    hands it to `limma`, `lipidr`, `POMA` and the rest of the ecosystem.
+QUANT does not use `SummarizedExperiment` as its internal
+representation, though it exports to one. SE models a feature × sample
+matrix and offers no typed home for `dataset_orig`, for the processing
+state, or for the annotation tables that are not one row per feature
+(`annot_responsecurves`, `annot_qcconcentrations`,
+`metrics_calibration`); those can only ride along in an untyped
+`metadata()` list. While `colData` can carry `qc_type` and `batch_id`,
+no Bioconductor class models them, nor calibration curves or
+internal-standard relationships. The distinction concerns only the
+internal representation: once an experiment is processed,
+[`save_dataset_summarizedexperiment()`](https://slinghub.github.io/MRMhub/quant/articles/tutorial-08-summarizedexperiment.md)
+hands it to the Bioconductor ecosystem (`limma`, `lipidr`, `POMA`),
+where the several parallel intensity variables map onto parallel assays.
 
 ``` r
 
@@ -73,10 +62,10 @@ slotNames("MRMhubExperiment")
 #> [25] "var_drift_corrected"    "var_batch_corrected"
 ```
 
-## Decision 2: Long-Format Data Exchange
+## Long-format data exchange
 
-**Choice:** The canonical data exchange format is a long CSV with one
-row per feature per sample.
+The canonical exchange format between INTEGRATOR and QUANT is a long CSV
+with one row per feature per sample.
 
 **Alternatives considered**
 
@@ -93,6 +82,11 @@ row per feature per sample.
 | Natural for ggplot2                       | Requires pivot before plotting  |
 | Explicit about missing vs zero            | Ambiguous NA meaning            |
 
+Long format handles a variable number of features per study without NA
+padding, is straightforward to filter, group, and join, and feeds
+directly into ggplot2 without an intermediate pivot. It also keeps the
+distinction between a missing value and a true zero explicit.
+
 ``` r
 
 # Expected long format:
@@ -103,11 +97,11 @@ row per feature per sample.
 # | Sample_002  | LPC_18:1   | 11234  | 2.30 |
 ```
 
-## Decision 3: Feature and analyte are distinct identifiers
+## Feature and analyte as distinct identifiers
 
-**Choice:** `feature_id` identifies a distinct signal extracted from the
-MS data, while `analyte_id` identifies the compound that signal
-measures. The two are kept separate because they are not one-to-one.
+`feature_id` identifies a distinct signal extracted from the MS data;
+`analyte_id` identifies the compound that signal measures. The two are
+kept separate because they are not one-to-one.
 
 **Alternatives considered**
 
@@ -116,24 +110,20 @@ measures. The two are kept separate because they are not one-to-one.
 | A single ID equating feature and compound | Cannot express one analyte measured by several features, nor one feature shared by isobaric analytes |
 | Transition-level IDs only | Loses the compound-level grouping needed for QC concentrations and reporting |
 
-**Rationale:** A feature is a distinct signal extracted from the MS
-data. Feature and analyte are not one-to-one: one analyte can give
-several features (isotopes, adducts, transitions), and one feature can
-carry several analytes when they are isobaric or isomeric (e.g. SM/PC).
-INTEGRATOR selects the quantifier signal for each feature, so by the
-time data reaches QUANT each `feature_id` is one value per sample, while
-`analyte_id` links the features that measure the same compound.
+One analyte can produce several features (isotopes, adducts,
+transitions), and one feature can carry several analytes when they are
+isobaric or isomeric, as with SM and PC species. INTEGRATOR selects one
+quantifier signal per feature, so by the time data reaches QUANT each
+`feature_id` holds one value per sample, while `analyte_id` links the
+features that measure the same compound.
 
-## Decision 4: Immutable Original Data
+## Immutable original data
 
-**Choice:** `dataset_orig` is never modified after import. All
-processing operates on `dataset`.
-
-**Why this matters**
-
-- **Reproducibility:** re-run any step without re-importing
-- **Debugging:** compare original vs processed to verify corrections
-- **Auditability:** the raw data is always accessible for review
+`dataset_orig` is never modified after import; all processing operates
+on `dataset`. Keeping the imported data untouched means any step can be
+re-run without re-importing, the processed values can be compared
+against the originals to verify a correction, and the raw data remains
+available for review at any point.
 
 ``` r
 
@@ -145,10 +135,11 @@ original <- mexp@dataset_orig |> dplyr::filter(feature_id == "LPC_18:1")
 processed <- mexp@dataset |> dplyr::filter(feature_id == "LPC_18:1")
 ```
 
-## Decision 5: QC-Centric Correction
+## QC-based drift and batch correction
 
-**Choice:** Drift and batch correction are exclusively based on QC
-samples, never study samples.
+Drift and batch corrections are typically fitted on QC samples; the
+gaussian-kernel method is the exception, fitting on study samples for
+large, well-randomised cohorts.
 
 **Alternatives considered**
 
@@ -159,13 +150,18 @@ samples, never study samples.
 
 Reference: Broadhurst et al. (2018). *Metabolomics*, 14, 72.
 
-**Implication:** Sufficient QC samples (≥ 5 per batch, evenly
-distributed) are required for correction to work well.
+Fitting on study samples would remove real biological variation together
+with the analytical trend, and an external reference alone is not always
+available and responds poorly to within-run drift. Fitting on QC samples
+therefore requires enough of them per batch (as a rule of thumb at least
+five, evenly distributed across the run) for the correction to be
+stable.
 
-## Decision 6: Explicit Processing Order
+## Processing order by convention, not enforcement
 
-**Choice:** Functions should be called in a specific order. The package
-communicates via status flags rather than enforcing with hard errors.
+Functions are intended to be called in a set order, but the package
+signals that order through status flags rather than enforcing it with
+hard errors.
 
 ``` r
 
@@ -181,17 +177,18 @@ communicates via status flags rather than enforcing with hard errors.
 # 9. filter_features_qc
 ```
 
-**Why not enforce strict order?**
+Strict enforcement is avoided because valid workflows legitimately skip
+steps: an assay without internal standards omits normalization, and a
+short single-batch run needs no drift correction. Hard errors would
+obstruct such exploratory reprocessing. The status flags record what has
+run and let each function warn when a prerequisite is missing, without
+blocking.
 
-- Some workflows skip steps (no ISTD, no drift correction)
-- Researchers need flexibility to experiment
-- Hard errors would frustrate exploratory analysis
-- Status flags provide guidance without blocking
+## Separation of INTEGRATOR and QUANT
 
-## Decision 7: Separation of INTEGRATOR and QUANT
-
-**Choice:** Raw data processing (peak integration) and post-processing
-(normalization, QC) are separate tools in different languages.
+Raw-data processing (peak detection and integration) and post-processing
+(normalization, quantitation, QC) are separate tools written in
+different languages.
 
 | INTEGRATOR                | QUANT (R)                |
 |---------------------------|--------------------------|
@@ -200,8 +197,8 @@ communicates via status flags rather than enforcing with hard errors.
 | Run once per study        | Run iteratively          |
 | No user decisions needed  | Many user decisions      |
 
-The interface is a CSV file. Either tool can be replaced independently,
-and data can be inspected at the handoff point.
+The interface between them is a CSV file, so either tool can be replaced
+independently and the data can be inspected at the handoff point.
 
 ## Why QUANT is an R package
 
@@ -217,21 +214,17 @@ produces the figures, the report, and the audit trail.
 
 ## Extending MRMhub
 
-**Guidelines for new functions**
-
-All functions should:
-
-1.  Accept `MRMhubExperiment` as first argument
-2.  Return `MRMhubExperiment` (for pipeline functions) or a result
-    object
-3.  Update relevant status flags
-4.  Not modify `dataset_orig`
+All processing functions follow the same contract: they take an
+`MRMhubExperiment` as the first argument, return an `MRMhubExperiment`
+(pipeline functions) or a result object, update the relevant status
+flags, and never modify `dataset_orig`. New code extends one of a few
+established patterns.
 
 | Extension type | Pattern |
 |----|----|
-| New correction method | `R/correct-*.R` — takes and returns `MRMhubExperiment` |
+| New correction method | `R/correct-*.R`: takes and returns `MRMhubExperiment` |
 | New importer | Add `parse_*` function, register in `import_data_main()` |
-| New plot | Follow `R/plots-*.R` — takes mexp, returns ggplot |
+| New plot | Follow `R/plots-*.R`: takes mexp, returns ggplot |
 | New QC metric | Extend [`calc_qc_metrics()`](https://slinghub.github.io/MRMhub/quant/reference/calc_qc_metrics.md) or add a helper |
 
 ## References
@@ -239,24 +232,15 @@ All functions should:
 - Broadhurst et al. (2018). Guidelines and considerations for the use of
   system suitability and quality control samples in mass spectrometry
   assays. *Metabolomics*, 14, 72.
-- Morgan M, Obenchain V, Hester J, Pagès H (2026). SummarizedExperiment:
-  A container (S4 class) for matrix-like assays.
-  <doi:%5B10.18129/B9.bioc.SummarizedExperiment>\](<https://doi.org/10.18129/B9.bioc.SummarizedExperiment>).
-  R package version 1.42.0,
-  <https://bioconductor.org/packages/SummarizedExperiment>.
-- Mohamed A, Molendijk J, Hill MM (2020). lipidr: A Software Tool for
-  Data Mining and Analysis of Lipidomics Datasets. *Journal of Proteome
-  Research*, 19(7), 2890–2897.
-  <doi:%5B10.1021/acs.jproteome.0c00082>\](<https://doi.org/10.1021/acs.jproteome.0c00082>).
 
 ## Next steps
 
-- [The MRMhubExperiment Data
-  Object](https://slinghub.github.io/MRMhub/quant/articles/manual-02-data-object.md)
-  — the object and its slots in detail
-- [Key Concepts &
-  Glossary](https://slinghub.github.io/MRMhub/quant/articles/manual-01-key-concepts.md)
-  — the vocabulary used throughout
-- [Drift and Batch
-  Correction](https://slinghub.github.io/MRMhub/quant/articles/manual-07-corrections.md)
-  — the QC-centric correction in practice
+- [The MRMhubExperiment data
+  object](https://slinghub.github.io/MRMhub/quant/articles/manual-02-data-object.md):
+  the object and its slots in detail
+- [Key concepts &
+  glossary](https://slinghub.github.io/MRMhub/quant/articles/manual-01-key-concepts.md):
+  the vocabulary used throughout
+- [Drift and batch
+  correction](https://slinghub.github.io/MRMhub/quant/articles/manual-07-corrections.md):
+  the QC-based correction in practice

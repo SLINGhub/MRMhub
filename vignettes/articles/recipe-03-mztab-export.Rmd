@@ -1,5 +1,5 @@
 ---
-title: "Import & Export mzTab-M"
+title: "Import and export mzTab-M"
 output:
   rmarkdown::html_vignette:
     fig_width: 7
@@ -9,7 +9,7 @@ description: |
   MRMhubExperiment for sharing or MetaboLights submission, and import results
   from tools such as Lipid Data Analyzer, MS-DIAL or MZmine.
 vignette: >
-  %\VignetteIndexEntry{Import & Export mzTab-M}
+  %\VignetteIndexEntry{Import and export mzTab-M}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -18,30 +18,24 @@ vignette: >
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>", eval = FALSE)
 ```
 
-<p class="page-kind page-kind-recipe">Recipe</p>
-
-::: {.callout .callout-note}
-**Level** Intermediate &nbsp;·&nbsp;
-**Output** `.mzTab` file (mzTab-M 2.0.0-M) &nbsp;·&nbsp;
-**Requires** a processed `MRMhubExperiment`
-:::
-
-## Goal
+<p class="page-meta"><span class="page-kind page-kind-recipe">Recipe</span> <span class="page-prereq">Prerequisites: <a href="tutorial-02-basic-workflow.html">Basic workflow</a></span></p>
 
 Export the quantitative results of a processed experiment to
 [mzTab-M](https://github.com/HUPO-PSI/mzTab-M), the HUPO-PSI community standard
-for reporting metabolomics / lipidomics quantification. mzTab-M is a plain,
-tab-delimited text format that opens in Excel yet is fully machine-readable,
-and is the format expected by repositories such as
-[MetaboLights](https://www.ebi.ac.uk/metabolights/).
+for reporting metabolomics and lipidomics quantification. mzTab-M is a plain,
+tab-delimited text format that opens in Excel yet is fully machine-readable, and
+is the format repositories such as
+[MetaboLights](https://www.ebi.ac.uk/metabolights/) expect. This recipe covers
+exporting a processed `MRMhubExperiment` to an mzTab-M 2.0.0-M file and importing
+mzTab-M produced by other tools.
 
-## Prerequisites
+The exporter reads an experiment that has been imported, normalized and
+quantified. Here we build one from the bundled `lipidomics_dataset`; in practice
+this would be your own processed object.
 
 ```{r}
 library(mrmhub)
 
-# A fully processed MRMhubExperiment. Here we build one from the bundled
-# `lipidomics_dataset`; in practice this would be your own processed object.
 mexp <- lipidomics_dataset |>
   normalize_by_istd() |>
   quantify_by_istd()
@@ -50,7 +44,7 @@ mexp <- lipidomics_dataset |>
 ## Basic export
 
 ```{r}
-# write to a temporary directory for this example; use your own path in practice
+# write to a temp dir for this example; use your own path in practice
 out_dir <- tempdir()
 
 save_dataset_mztab(mexp, file.path(out_dir, "experiment.mzTab"))
@@ -65,7 +59,10 @@ falls back to the raw `feature_intensity` and declares an
 Choose a different abundance variable with `variable`:
 
 ```{r}
-save_dataset_mztab(mexp, file.path(out_dir, "raw_areas.mzTab"), variable = "area")
+save_dataset_mztab(
+  mexp,
+  file.path(out_dir, "raw_areas.mzTab"),
+  variable = "area")
 save_dataset_mztab(
   mexp,
   file.path(out_dir, "intensities.mzTab"),
@@ -143,7 +140,7 @@ are imported best-effort as `batch_id` (mzTab-M has no analytical-batch concept)
 
 ## Next steps
 
-- [Custom QC Report](recipe-02-custom-qc-report.html) &mdash; a richer
+- [Custom QC report](recipe-02-custom-qc-report.html) &mdash; a richer
   human-readable report.
-- [The MRMhubExperiment Data Object](manual-02-data-object.html#feature-variables) &mdash; what
+- [The MRMhubExperiment data object](manual-02-data-object.html#feature-variables) &mdash; what
   `conc`, `intensity`, `area` and friends mean, and the slots behind the export.

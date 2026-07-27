@@ -1,27 +1,25 @@
-# Import & Export mzTab-M
+# Import and export mzTab-M
 
-Recipe
-
-**Level** Intermediate  ·  **Output** `.mzTab` file (mzTab-M 2.0.0-M)
- ·  **Requires** a processed `MRMhubExperiment`
-
-## Goal
+Recipe Prerequisites: [Basic
+workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md)
 
 Export the quantitative results of a processed experiment to
 [mzTab-M](https://github.com/HUPO-PSI/mzTab-M), the HUPO-PSI community
-standard for reporting metabolomics / lipidomics quantification. mzTab-M
-is a plain, tab-delimited text format that opens in Excel yet is fully
-machine-readable, and is the format expected by repositories such as
-[MetaboLights](https://www.ebi.ac.uk/metabolights/).
+standard for reporting metabolomics and lipidomics quantification.
+mzTab-M is a plain, tab-delimited text format that opens in Excel yet is
+fully machine-readable, and is the format repositories such as
+[MetaboLights](https://www.ebi.ac.uk/metabolights/) expect. This recipe
+covers exporting a processed `MRMhubExperiment` to an mzTab-M 2.0.0-M
+file and importing mzTab-M produced by other tools.
 
-## Prerequisites
+The exporter reads an experiment that has been imported, normalized and
+quantified. Here we build one from the bundled `lipidomics_dataset`; in
+practice this would be your own processed object.
 
 ``` r
 
 library(mrmhub)
 
-# A fully processed MRMhubExperiment. Here we build one from the bundled
-# `lipidomics_dataset`; in practice this would be your own processed object.
 mexp <- lipidomics_dataset |>
   normalize_by_istd() |>
   quantify_by_istd()
@@ -31,7 +29,7 @@ mexp <- lipidomics_dataset |>
 
 ``` r
 
-# write to a temporary directory for this example; use your own path in practice
+# write to a temp dir for this example; use your own path in practice
 out_dir <- tempdir()
 
 save_dataset_mztab(mexp, file.path(out_dir, "experiment.mzTab"))
@@ -47,7 +45,10 @@ Choose a different abundance variable with `variable`:
 
 ``` r
 
-save_dataset_mztab(mexp, file.path(out_dir, "raw_areas.mzTab"), variable = "area")
+save_dataset_mztab(
+  mexp,
+  file.path(out_dir, "raw_areas.mzTab"),
+  variable = "area")
 save_dataset_mztab(
   mexp,
   file.path(out_dir, "intensities.mzTab"),
@@ -136,9 +137,9 @@ has no analytical-batch concept).
 ## Next steps
 
 - [Custom QC
-  Report](https://slinghub.github.io/MRMhub/quant/articles/recipe-02-custom-qc-report.md)
+  report](https://slinghub.github.io/MRMhub/quant/articles/recipe-02-custom-qc-report.md)
   — a richer human-readable report.
-- [The MRMhubExperiment Data
-  Object](https://slinghub.github.io/MRMhub/quant/articles/manual-02-data-object.html#feature-variables)
+- [The MRMhubExperiment data
+  object](https://slinghub.github.io/MRMhub/quant/articles/manual-02-data-object.html#feature-variables)
   — what `conc`, `intensity`, `area` and friends mean, and the slots
   behind the export.

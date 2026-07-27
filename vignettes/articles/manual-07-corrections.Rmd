@@ -1,13 +1,14 @@
 ---
-title: "Drift and Batch Correction"
+title: "Drift and batch correction"
 output: 
   rmarkdown::html_vignette:
     fig_width: 6
     fig_height: 2
 description: |
-  MRMhub: postprocessing and quality control of small molecule mass spectrometry data 
+  Run-order drift and batch-effect correction: the available methods, their
+  parameters, and when to use each.
 vignette: >
-  %\VignetteIndexEntry{Drift and Batch Correction}
+  %\VignetteIndexEntry{Drift and batch correction}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 editor_options: 
@@ -30,7 +31,7 @@ relative to which all other samples are adjusted. The corrections can be
 applied to `intensity`, `norm_intensity`, or `conc` data.
 
 ::: {.callout .callout-caution}
-**Caution.** Drift and batch corrections must be fitted on dedicated *reference* samples (typically QC pools), never on study samples [@broadhurst2018GuidelinesConsiderationsUse]. The `correct_drift_gaussiankernel()` option that fits on study samples is the sole exception and is only safe for large, well-randomised cohorts.
+Which samples a correction is fitted on depends on the modelling method. The QC-based smoothers (`correct_drift_loess()`, `correct_drift_cubicspline()`) are fitted on the reference sample types selected with `ref_qc_types`, typically QC samples, i.e. the batch QC (`BQC`), or the technical QC (`TQC`) in case of clear instrument drifts, following the QC-based paradigm [@broadhurst2018GuidelinesConsiderationsUse]. The gaussian-kernel method (`correct_drift_gaussiankernel()`) instead fits on the study samples and is only appropriate for large, well-randomised cohorts.
 :::
 
 ## Drift correction (smoothing)
@@ -74,7 +75,7 @@ previously described QC-based drift correction methods, such as **QC-RSC
 @dunn2011ProceduresLargescaleMetabolic and
 @kirwan2013CharacterisingCorrectingBatch.
 
-See the tutorial [Drift and Batch Correction](tutorial-04-drift-correction.html) for more information
+See the tutorial [Drift and batch correction](tutorial-04-drift-correction.html) for more information
 on how to use these functions and plot the results.
 
 ## Batch-effect correction (centering)
@@ -85,11 +86,11 @@ optionally also be normalized. The selected QC types (`ref_qc_types`)
 are used to calculate the medians, which are then used to align all
 other samples.
 
-See the tutorial [Drift and Batch Correction](tutorial-04-drift-correction.html) for more information.
+See the tutorial [Drift and batch correction](tutorial-04-drift-correction.html) for more information.
 
 ## Next steps
 
-- [Drift and Batch Correction (tutorial)](tutorial-04-drift-correction.html) — worked examples of both corrections
-- [Exploring QC: RunScatter and PCA](tutorial-05-run-scatter.html) — visualise run-order and batch effects
+- [Drift and batch correction (tutorial)](tutorial-04-drift-correction.html): worked examples of both corrections
+- [Exploring QC: RunScatter and PCA](tutorial-05-run-scatter.html): visualise run-order and batch effects
 
 ## References

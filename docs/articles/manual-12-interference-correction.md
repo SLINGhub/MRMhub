@@ -1,4 +1,4 @@
-# Isotopic Interference Correction
+# Isotopic interference correction
 
 Manual
 
@@ -14,9 +14,9 @@ contribution-based subtraction ported from the LICAR method (Gao et al.
 theoretical M+2 relative abundance.
 
 This page is the conceptual reference for the correction. The
-step-by-step workflow — annotating `mrm_pattern`, deriving
-relationships, inspecting them, and applying the subtraction — is
-covered in the [Interference correction
+step-by-step workflow (annotating `mrm_pattern`, deriving relationships,
+inspecting them, and applying the subtraction) is covered in the
+[Interference correction
 tutorial](https://slinghub.github.io/MRMhub/quant/articles/tutorial-11-interference-correction.md).
 
 ## Two derivation levels, one subtraction engine
@@ -53,7 +53,7 @@ perturbed by **two different** interferers, each one M+2 lighter at the
 precursor. Their M+2 isotopologue reaches the victim’s precursor window,
 but they differ in where that +2 sits relative to the product ion:
 
-- a **front** interferer shares the product ion (`ΔQ3 = 0`) — the +2 is
+- a **front** interferer shares the product ion (`ΔQ3 = 0`), the +2 is
   on the neutral loss;
 - a **back** interferer carries the +2 on the product ion itself
   (`ΔQ3 = +2`).
@@ -64,7 +64,7 @@ and a back edge simultaneously. The engine composes them as
 
 ![](data:image/svg+xml;base64,PHN2ZyB2aWV3Ym94PSIwIDAgNDYwIDI1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9Im0veiBzY2F0dGVyIG9mIGZyb250IGFuZCBiYWNrIGludGVyZmVyZXJzIG92ZXJsYXBwaW5nIHRoZSB2aWN0aW0gdHJhbnNpdGlvbiI+PGRlZnM+PG1hcmtlciBpZD0iYWgiIG1hcmtlcndpZHRoPSI4IiBtYXJrZXJoZWlnaHQ9IjgiIHJlZng9IjYiIHJlZnk9IjMiIG9yaWVudD0iYXV0byI+PHBhdGggZD0iTTAsMCBMNiwzIEwwLDYgWiIgZmlsbD0iIzJDM0U1MCIgLz48L21hcmtlcj48L2RlZnM+PGxpbmUgeDE9IjU1IiB5MT0iMjA1IiB4Mj0iNDI1IiB5Mj0iMjA1IiBzdHJva2U9IiMyQzNFNTAiIHN0cm9rZS13aWR0aD0iMS4yIj48L2xpbmU+PGxpbmUgeDE9IjU1IiB5MT0iMjA1IiB4Mj0iNTUiIHkyPSIzMCIgc3Ryb2tlPSIjMkMzRTUwIiBzdHJva2Utd2lkdGg9IjEuMiI+PC9saW5lPjx0ZXh0IHg9IjI0MCIgeT0iMjM1IiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMSIgZmlsbD0iIzJDM0U1MCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+UTEKcHJlY3Vyc29yIG0veiDihpI8L3RleHQ+PHRleHQgeD0iMjAiIHk9IjEyMCIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTEiIGZpbGw9IiMyQzNFNTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHRyYW5zZm9ybT0icm90YXRlKC05MCAyMCAxMjApIj5RMwpwcm9kdWN0IG0veiDihpI8L3RleHQ+PGxpbmUgeDE9IjI1MCIgeTE9IjExMCIgeDI9IjMzMiIgeTI9IjExMCIgc3Ryb2tlPSIjMkMzRTUwIiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1kYXNoYXJyYXk9IjQgMyIgbWFya2VyLWVuZD0idXJsKCNhaCkiPjwvbGluZT48bGluZSB4MT0iMjUyIiB5MT0iMTc4IiB4Mj0iMzMzIiB5Mj0iMTE4IiBzdHJva2U9IiMyQzNFNTAiIHN0cm9rZS13aWR0aD0iMSIgc3Ryb2tlLWRhc2hhcnJheT0iNCAzIiBtYXJrZXItZW5kPSJ1cmwoI2FoKSI+PC9saW5lPjxjaXJjbGUgY3g9IjM0MCIgY3k9IjExMCIgcj0iOCIgZmlsbD0iIzVCOEZBOCIgc3Ryb2tlPSIjMkMzRTUwIiBzdHJva2Utd2lkdGg9IjEuNSI+PC9jaXJjbGU+PGNpcmNsZSBjeD0iMjUwIiBjeT0iMTEwIiByPSI2IiBmaWxsPSIjQzI3MTcxIiBzdHJva2U9IiM5YzRhNGEiIHN0cm9rZS13aWR0aD0iMSI+PC9jaXJjbGU+PGNpcmNsZSBjeD0iMjUwIiBjeT0iMTc4IiByPSI2IiBmaWxsPSIjRDQ5MTRFIiBzdHJva2U9IiM5YTY0MjciIHN0cm9rZS13aWR0aD0iMSI+PC9jaXJjbGU+PHRleHQgeD0iMzUyIiB5PSIxMDciIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjExIiBmaWxsPSIjMkMzRTUwIj52aWN0aW0KQiAobSwgcCk8L3RleHQ+PHRleHQgeD0iMTUwIiB5PSIxMDciIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjEwIiBmaWxsPSIjOWM0YTRhIj5mcm9udAoobeKIkjIsIHApPC90ZXh0Pjx0ZXh0IHg9IjE1MCIgeT0iMTgyIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzlhNjQyNyI+YmFjawoobeKIkjIsIHDiiJIyKTwvdGV4dD48dGV4dCB4PSIyOTIiIHk9IjEwMiIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iOSIgZmlsbD0iIzJDM0U1MCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+TSsyCsK3IM6UUTM9MDwvdGV4dD48dGV4dCB4PSIzMDAiIHk9IjE1MiIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iOSIgZmlsbD0iIzJDM0U1MCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+TSsyCsK3IM6UUTM9KzI8L3RleHQ+PC9zdmc+)
 
-## MRM correction is fragment-based — MS1 is not a fallback
+## MRM correction is fragment-based: MS1 is not a fallback
 
 **MS1 is never a substitute for MRM correction.** For MRM data the
 isotopic correction must be *fragment-based*: the contribution of a
@@ -72,8 +72,8 @@ heavy isotope to a transition depends on whether that isotope ends up on
 the retained product ion or on the neutral loss (Gao et al. 2021). The
 whole-molecule (`level = "MS1"`) factor ignores that split and is valid
 **only** for genuine MS1 / full-scan measurements. It must **not** be
-used for MRM data that merely happens to lack a recorded product m/z —
-use `level = "MRM"` (and supply the product m/z) there.
+used for MRM data that merely happens to lack a recorded product m/z.
+Use `level = "MRM"` (and supply the product m/z) there.
 [`calc_isotopic_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/calc_isotopic_interferences.md)
 warns when MS1 derivation is run on data whose product m/z differs from
 the precursor (i.e. real MRM transitions).
@@ -98,14 +98,14 @@ all of that interferer’s M+2 peak.
 *Blue = victim peak; rose = the interferer’s M+2 contribution; dashed =
 the victim integration window.*
 
-The co-elution gate (`check_coelution = TRUE`, the default when
-retention data are present) keeps an edge only when the interferer’s
-apex falls inside the victim’s integration window
+The optional co-elution gate (the experimental `check_coelution = TRUE`;
+the default is `check_coelution = FALSE`) keeps an edge only when the
+interferer’s apex falls inside the victim’s integration window
 (`feature_int_start`..`feature_int_end`, from the imported integration
 borders, or `feature_rt ± FWHM` where borders are absent).
 Chromatographically resolved pairs are dropped and reported, because
 subtracting a full `K·A` there would delete real victim signal. Border
-overlap alone is necessary but not sufficient — apex coincidence is the
+overlap alone is necessary but not sufficient. Apex coincidence is the
 test. When no retention data are available the gate cannot be evaluated,
 a warning is emitted, and all m/z-matched edges are kept. This gate is a
 deliberate enhancement over LICAR, which assumes class co-elution with
@@ -131,14 +131,14 @@ warns when a different version is installed. Because derivation is
 deterministic under that pin, re-importing the `mrm_pattern` annotation
 and re-running
 [`calc_isotopic_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/calc_isotopic_interferences.md)
-regenerates identical edges — the metadata alone reproduces the
+regenerates identical edges. The metadata alone reproduces the
 correction. The exact factors additionally survive an `enviPat` upgrade
 because the derived `annot_interferences` table travels with the saved
 object and is written to the report workbook as a human-readable factor
 archive.
 
-Only the LICAR *data* — the per-class fragment offsets and the pattern
-labels — is vendored; the abundance calculation, name parsing (rgoslin),
+Only the LICAR *data* (the per-class fragment offsets and the pattern
+labels) is vendored; the abundance calculation, name parsing (rgoslin),
 and subtraction are `mrmhub`’s own. This correction is distinct from
 `¹³C`/`¹⁵N` natural-abundance metabolic-flux (MID) correction, which
 MRMhub does not perform.
@@ -146,18 +146,18 @@ MRMhub does not perform.
 ## Next steps
 
 - [Interference
-  correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-11-interference-correction.md)
-  — the step-by-step workflow
-- [Drift and Batch
-  Correction](https://slinghub.github.io/MRMhub/quant/articles/manual-07-corrections.md)
-  — apply after interference correction
-- [The MRMhubExperiment Data
-  Object](https://slinghub.github.io/MRMhub/quant/articles/manual-02-data-object.html#feature-variables)
-  — how `_orig` postfixes preserve raw values
+  correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-11-interference-correction.md):
+  the step-by-step workflow
+- [Drift and batch
+  correction](https://slinghub.github.io/MRMhub/quant/articles/manual-07-corrections.md):
+  apply after interference correction
+- [The MRMhubExperiment data
+  object](https://slinghub.github.io/MRMhub/quant/articles/manual-02-data-object.html#feature-variables):
+  how `_orig` postfixes preserve raw values
 - [`calc_isotopic_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/calc_isotopic_interferences.md)
   ·
-  [`correct_isotopic_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/correct_isotopic_interferences.md)
-  — function reference
+  [`correct_isotopic_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/correct_isotopic_interferences.md):
+  function reference
 
 ## References
 

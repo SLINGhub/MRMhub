@@ -1,4 +1,4 @@
-# Sample Types & QC Roles
+# Sample types & QC roles
 
 Manual
 
@@ -23,20 +23,24 @@ traditional terminology in analytical and clinical chemistry.
 |----|----|----|
 | `SPL` | Unknowns | Study sample (“unknowns”) |
 | `BQC` | QC | Batch / Process QC |
+| `PQC` | QC | Process QC (or Pooled QC); see `BQC` |
 | `TQC` | QC | Technical QC |
+| `EQC` | QC | Equilibration QC; injected to equilibrate the system and check that it is stable and performing as expected |
 | `LQC` | QC | Low QC |
 | `MQC` | QC | Mid QC |
 | `HQC` | QC | High QC |
+| `QC` | QC | General QC sample (not strictly defined) |
 | `CAL` | Calibration | Calibration sample |
 | `RQC` | QC | Response QC (dilution series) |
 | `LTR` | Reference material | Long-Term Reference |
 | `NIST` | Reference material | NIST Standard Reference Material |
+| `EQA` | QC | External Quality Assessment sample, e.g. from proficiency-testing (PT) schemes |
 | `SST` | QA | System Suitability Test sample |
 | `PBLK` | Process blank | No matrix, processed with ISTD as all other samples |
-| `UBLK` | Blank | Unextracted Blank — no matrix, with ISTD, without undergoing sample processing |
-| `SBLK` | Blank | Solvent / double blank — no matrix, no ISTD, just solvents |
-| `IBLK` | Blank | Instrument Blank, with or without injection |
-| `MBLK` | Blank | Matrix Blank — matrix processed as samples but without ISTDs |
+| `UBLK` | Blank | Unextracted Blank: no matrix, with ISTD, without undergoing sample processing |
+| `SBLK` | Blank | Solvent / double blank: no matrix, no ISTD, just solvents |
+| `TBLK` | Blank | Technical blank (instrument blank) |
+| `MBLK` | Blank | Matrix Blank: matrix processed as samples but without ISTDs |
 
 ## Which samples are used where
 
@@ -101,15 +105,15 @@ colours defined in the package (`qc_type_col`).
 
 ## Next steps
 
-- [Key Concepts &
-  Glossary](https://slinghub.github.io/MRMhub/quant/articles/manual-01-key-concepts.md)
-  — broader terminology
+- [Key concepts &
+  glossary](https://slinghub.github.io/MRMhub/quant/articles/manual-01-key-concepts.md):
+  broader terminology
 - [Importing
-  Metadata](https://slinghub.github.io/MRMhub/quant/articles/manual-05-metadata.md)
-  — preparing the annotation files
-- [Drift and Batch
-  Correction](https://slinghub.github.io/MRMhub/quant/articles/manual-07-corrections.md)
-  — where the QC types are used
+  metadata](https://slinghub.github.io/MRMhub/quant/articles/manual-05-metadata.md):
+  preparing the annotation files
+- [Drift and batch
+  correction](https://slinghub.github.io/MRMhub/quant/articles/manual-07-corrections.md):
+  where the QC types are used
 
 ## References
 

@@ -22,20 +22,22 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>", eval = FALSE,
                       fig.width = 7, fig.height = 5, out.width = "100%")
 ```
 
+<p class="page-kind page-kind-manual">Manual</p>
+
 Every MRMhub `plot_*()` function returns a `ggplot2` object built from a shared house theme:
 faint grey gridlines, minor gridlines off, a thin panel border, and dark-navy facet strips with
 white labels. The theme is tuned to read well in a rendered report or a printed PDF without
 further adjustment. A small, consistent set of arguments exposes the appearance choices that
-otherwise required a trailing `+ theme(...)` on almost every call — text size, legend placement,
-and legend sizing — so a balanced figure can usually be produced from the plotting call alone.
+otherwise required a trailing `+ theme(...)` on almost every call (text size, legend placement,
+and legend sizing), so a balanced figure can usually be produced from the plotting call alone.
 The functions still return plain `ggplot2` objects, so the full grammar remains available for
 anything the arguments do not cover (see [With `+ theme()`](#with-theme)).
 
 ## The shared arguments
 
-Every plotting function accepts the three common arguments. The higher-use QC plots — `plot_pca()`,
+Every plotting function accepts the three common arguments. The higher-use QC plots (`plot_pca()`,
 `plot_pca_loading()`, `plot_runscatter()`, `plot_rla_boxplot()`, `plot_normalization_qc()` and
-`plot_qcmetrics_comparison()` — accept further arguments for finer legend and facet control.
+`plot_qcmetrics_comparison()`) accept further arguments for finer legend and facet control.
 
 | Argument | Applies to | Effect |
 |----------|-----------|--------|
@@ -55,8 +57,8 @@ plot at the house setting. Setting one overrides only that property.
 ## Setting defaults for a whole notebook
 
 The same appearance choices can be made once, for every subsequent plot, with
-`mrmhub_set_plot_defaults()`. This is convenient when a document targets a particular medium — a
-smaller base font and point size for a dense multi-panel report, say — and the choice should apply
+`mrmhub_set_plot_defaults()`. This is convenient when a document targets a particular medium (a
+smaller base font and point size for a dense multi-panel report, say) and the choice should apply
 throughout without repeating it on each call.
 
 ```{r}
@@ -108,7 +110,7 @@ plot_normalization_qc(mexp,
 ## Sizing text and symbols
 
 `font_base_size` is the single text knob: increasing it scales axis text, titles, strip labels and
-the legend together. `legend_size` scales the legend independently — its text, title, key box, and
+the legend together. `legend_size` scales the legend independently: its text, title, key box, and
 the plotted symbol (the glyph in the key, which a plain `legend.key.size` does not resize). A value
 of `3` or less is read as a multiplier of `font_base_size`; a larger value is an absolute point
 size. `strip_text_size` follows the same convention for facet labels.
@@ -122,12 +124,12 @@ plot_rt_vs_chain(mexp,
 
 The equivalent before these arguments existed required a hand-written `theme()` setting
 `legend.text`, `legend.title` and `legend.key.size`, plus a `guides(override.aes = ...)` to resize
-the glyph — the single `legend_size` argument replaces all four.
+the glyph. The single `legend_size` argument replaces all four.
 
 ## Automatic sizing on paged and faceted plots
 
-Plots that lay panels out in a grid — `plot_runscatter()`, `plot_responsecurves()`,
-`plot_qcmetrics_comparison()`, `plot_normalization_qc()` and `plot_rt_vs_chain()` — size their text
+Plots that lay panels out in a grid (`plot_runscatter()`, `plot_responsecurves()`,
+`plot_qcmetrics_comparison()`, `plot_normalization_qc()` and `plot_rt_vs_chain()`) size their text
 and points from the number of facet columns, since column count is the main driver of panel size.
 With `autoscale = TRUE` (the default), `font_base_size` and `point_size` left unset are filled from
 `cols_page`:
@@ -168,6 +170,6 @@ plot_pca(mexp, variable = "norm_intensity") +
 
 ## Next steps
 
-- [Visualisation Functions](manual-08-visualization.html) — the plotting functions by workflow stage
-- [Exploring QC: RunScatter and PCA](tutorial-05-run-scatter.html) — the plots in an interpretation walk-through
-- [Custom QC Report (recipe)](recipe-02-custom-qc-report.html) — combining plots into a report
+- [Visualisation functions](manual-08-visualization.html): the plotting functions by workflow stage
+- [Exploring QC: RunScatter and PCA](tutorial-05-run-scatter.html): the plots in an interpretation walk-through
+- [Custom QC report (recipe)](recipe-02-custom-qc-report.html): combining plots into a report

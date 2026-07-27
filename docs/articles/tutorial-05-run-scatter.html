@@ -17,6 +17,11 @@
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <meta property="og:title" content="Exploring QC: RunScatter and PCA">
+<meta name="description" content="Read run-order signal quality with RunScatter and multivariate structure with PCA, using the built-in lipidomics dataset.
+">
+<meta property="og:description" content="Read run-order signal quality with RunScatter and multivariate structure with PCA, using the built-in lipidomics dataset.
+">
+<meta property="og:image" content="https://slinghub.github.io/MRMhub/quant/logo.svg">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -26,7 +31,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -57,7 +62,6 @@
     <li><h6 class="dropdown-header" data-toc-skip>Techniques</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-04-drift-correction.html">Drift and batch correction</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-07-calibration-reference.html">Calibration by reference sample</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-10-metadata-validation.html">Validating metadata</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-11-interference-correction.html">Interference correction</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
@@ -70,6 +74,7 @@
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-04-validate-metadata.html">Validate &amp; fix metadata</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul>
 </li>
@@ -91,6 +96,7 @@
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-13-plot-customization.html">Customising Plots</a></li>
     <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Writing Pipelines with AI Assistants</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
@@ -101,7 +107,7 @@
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">NEWS</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><a class="external-link nav-link" href="https://slinghub.github.io/MRMhub/">← MRMhub home</a></li>
@@ -131,25 +137,24 @@
 
     
     
-<p class="page-kind page-kind-tutorial">
-Tutorial
+<p class="page-meta">
+<span class="page-kind page-kind-tutorial">Tutorial</span> <span class="page-level">Intermediate</span> <span class="page-prereq">Prerequisites:
+<a href="tutorial-02-basic-workflow.html">Basic workflow</a></span>
 </p>
 <p>This tutorial covers two complementary QC-exploration views on the
-built-in lipidomics dataset. <code><a href="../reference/plot_runscatter.html">plot_runscatter()</a></code> visualises a
-feature’s signal across the analysis sequence — helping to identify
-trends, detect outliers, and assess analytical performance — while
-Principal Component Analysis (<code><a href="../reference/plot_pca.html">plot_pca()</a></code>,
-<code><a href="../reference/plot_pca_loading.html">plot_pca_loading()</a></code>, <code><a href="../reference/detect_outlier_pca.html">detect_outlier_pca()</a></code>)
-provides a multivariate view for spotting injection outliers and
-residual batch effects. The RunScatter examples use a single feature
-(<code>TG 48:2 [-18:1]</code>).</p>
-<div class="callout callout-note">
-<p><strong>Time</strong> ~20 min  ·  <strong>Level</strong> Intermediate
- ·  <strong>Prerequisites</strong> <a href="tutorial-02-basic-workflow.html">Basic workflow</a></p>
-</div>
+built-in lipidomics dataset. <code><a href="../reference/plot_runscatter.html">plot_runscatter()</a></code> shows a
+feature’s signal across the analysis sequence, which helps to identify
+trends, detect outliers, and assess analytical performance. Principal
+component analysis (<code><a href="../reference/plot_pca.html">plot_pca()</a></code>,
+<code><a href="../reference/plot_pca_loading.html">plot_pca_loading()</a></code>, <code><a href="../reference/detect_outlier_pca.html">detect_outlier_pca()</a></code>) adds
+a multivariate view for spotting injection outliers and residual batch
+effects. The RunScatter examples all use a single feature,
+<code>TG 48:2 [-18:1]</code>.</p>
 <div class="section level2">
-<h2 id="setup">Setup<a class="anchor" aria-label="anchor" href="#setup"></a>
+<h2 id="setup">1. Setup<a class="anchor" aria-label="anchor" href="#setup"></a>
 </h2>
+<p>We load the dataset, normalise to internal standards, and compute the
+QC metrics that several of the plots below draw on.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/SLINGhub/MRMhub" class="external-link">mrmhub</a></span><span class="op">)</span></span>
 <span></span>
@@ -158,102 +163,136 @@ residual batch effects. The RunScatter examples use a single feature
 <span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_qc_metrics.html">calc_qc_metrics</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="basic-plot">Basic plot<a class="anchor" aria-label="anchor" href="#basic-plot"></a>
+<h2 id="basic-plot">2. Basic plot<a class="anchor" aria-label="anchor" href="#basic-plot"></a>
 </h2>
 <p>A minimal call plots all QC and sample types for one feature.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span><span class="va">mexp</span>, variable <span class="op">=</span> <span class="st">"intensity"</span>,</span>
-<span>                include_feature_filter <span class="op">=</span> <span class="st">"TG 48\\:2 \\[\\-18:1\\]"</span>,</span>
-<span>                rows_page <span class="op">=</span> <span class="fl">1</span>, cols_page <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="tutorial-05-run-scatter_files/figure-html/unnamed-chunk-2-1.png" class="r-plt" alt="Basic RunScatter plot of TG 48:2 [-18:1]
-" width="700"></p>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span></span>
+<span>  <span class="va">mexp</span>,</span>
+<span>  variable <span class="op">=</span> <span class="st">"intensity"</span>,</span>
+<span>  include_feature_filter <span class="op">=</span> <span class="st">"TG 48\\:2 \\[\\-18:1\\]"</span>,</span>
+<span>  rows_page <span class="op">=</span> <span class="fl">1</span>, cols_page <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<img src="tutorial-05-run-scatter_files/figure-html/basic-1.png" class="r-plt" alt="Basic RunScatter plot of TG 48:2 [-18:1]" width="700"><p class="caption">
+Figure 1. RunScatter of TG 48:2 [-18:1] across the analysis sequence,
+all sample types shown.
+</p>
+</div>
 </div>
 <div class="section level2">
-<h2 id="selecting-qc-types">Selecting QC types<a class="anchor" aria-label="anchor" href="#selecting-qc-types"></a>
+<h2 id="selecting-qc-types">3. Selecting QC types<a class="anchor" aria-label="anchor" href="#selecting-qc-types"></a>
 </h2>
 <p>Use <code>qc_types</code> to display only specific sample types.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span><span class="va">mexp</span>, variable <span class="op">=</span> <span class="st">"intensity"</span>,</span>
-<span>                include_feature_filter <span class="op">=</span> <span class="st">"TG 48\\:2 \\[\\-18:1\\]"</span>,</span>
-<span>                qc_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BQC"</span>, <span class="st">"SPL"</span><span class="op">)</span>,</span>
-<span>                rows_page <span class="op">=</span> <span class="fl">1</span>, cols_page <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="tutorial-05-run-scatter_files/figure-html/unnamed-chunk-3-1.png" class="r-plt" alt="RunScatter plot showing BQC and SPL only
-" width="700"></p>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span></span>
+<span>  <span class="va">mexp</span>,</span>
+<span>  variable <span class="op">=</span> <span class="st">"intensity"</span>,</span>
+<span>  include_feature_filter <span class="op">=</span> <span class="st">"TG 48\\:2 \\[\\-18:1\\]"</span>,</span>
+<span>  qc_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BQC"</span>, <span class="st">"SPL"</span><span class="op">)</span>,</span>
+<span>  rows_page <span class="op">=</span> <span class="fl">1</span>, cols_page <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<img src="tutorial-05-run-scatter_files/figure-html/qctypes-1.png" class="r-plt" alt="RunScatter plot showing BQC and SPL only" width="700"><p class="caption">
+Figure 2. RunScatter restricted to batch QC (BQC) and study (SPL)
+samples.
+</p>
+</div>
 </div>
 <div class="section level2">
-<h2 id="batch-display">Batch display<a class="anchor" aria-label="anchor" href="#batch-display"></a>
+<h2 id="batch-display">4. Batch display<a class="anchor" aria-label="anchor" href="#batch-display"></a>
 </h2>
 <p>Set <code>show_batches = TRUE</code> and
 <code>batch_zebra_stripe = TRUE</code> to highlight batch boundaries
 with alternating shaded areas.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span><span class="va">mexp</span>, variable <span class="op">=</span> <span class="st">"intensity"</span>,</span>
-<span>                include_feature_filter <span class="op">=</span> <span class="st">"TG 48\\:2 \\[\\-18:1\\]"</span>,</span>
-<span>                show_batches <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>                batch_zebra_stripe <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>                rows_page <span class="op">=</span> <span class="fl">1</span>, cols_page <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="tutorial-05-run-scatter_files/figure-html/unnamed-chunk-4-1.png" class="r-plt" alt="RunScatter plot with batch zebra stripes
-" width="700"></p>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span></span>
+<span>  <span class="va">mexp</span>,</span>
+<span>  variable <span class="op">=</span> <span class="st">"intensity"</span>,</span>
+<span>  include_feature_filter <span class="op">=</span> <span class="st">"TG 48\\:2 \\[\\-18:1\\]"</span>,</span>
+<span>  show_batches <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  batch_zebra_stripe <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  rows_page <span class="op">=</span> <span class="fl">1</span>, cols_page <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<img src="tutorial-05-run-scatter_files/figure-html/batches-1.png" class="r-plt" alt="RunScatter plot with batch zebra stripes" width="700"><p class="caption">
+Figure 3. RunScatter with batch boundaries marked by alternating zebra
+stripes.
+</p>
+</div>
 </div>
 <div class="section level2">
-<h2 id="reference-lines">Reference lines<a class="anchor" aria-label="anchor" href="#reference-lines"></a>
+<h2 id="reference-lines">5. Reference lines<a class="anchor" aria-label="anchor" href="#reference-lines"></a>
 </h2>
 <p>Show mean ± k × SD reference lines with
 <code>show_reference_lines = TRUE</code>. Use
 <code>reference_sd_shade</code> to display the range as a shaded band
 instead of lines.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span><span class="va">mexp</span>, variable <span class="op">=</span> <span class="st">"intensity"</span>,</span>
-<span>                include_feature_filter <span class="op">=</span> <span class="st">"TG 48\\:2 \\[\\-18:1\\]"</span>,</span>
-<span>                qc_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BQC"</span>, <span class="st">"SPL"</span><span class="op">)</span>,</span>
-<span>                show_reference_lines <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>                ref_qc_types <span class="op">=</span> <span class="st">"BQC"</span>,</span>
-<span>                reference_k_sd <span class="op">=</span> <span class="fl">2</span>,</span>
-<span>                reference_sd_shade <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>                rows_page <span class="op">=</span> <span class="fl">1</span>, cols_page <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="tutorial-05-run-scatter_files/figure-html/unnamed-chunk-5-1.png" class="r-plt" alt="RunScatter plot with mean ± 2 SD reference band
-" width="700"></p>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span></span>
+<span>  <span class="va">mexp</span>,</span>
+<span>  variable <span class="op">=</span> <span class="st">"intensity"</span>,</span>
+<span>  include_feature_filter <span class="op">=</span> <span class="st">"TG 48\\:2 \\[\\-18:1\\]"</span>,</span>
+<span>  qc_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BQC"</span>, <span class="st">"SPL"</span><span class="op">)</span>,</span>
+<span>  show_reference_lines <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  ref_qc_types <span class="op">=</span> <span class="st">"BQC"</span>,</span>
+<span>  reference_k_sd <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  reference_sd_shade <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  rows_page <span class="op">=</span> <span class="fl">1</span>, cols_page <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<img src="tutorial-05-run-scatter_files/figure-html/reflines-1.png" class="r-plt" alt="RunScatter plot with mean ± 2 SD reference band" width="700"><p class="caption">
+Figure 4. RunScatter with a mean ± 2 SD reference band computed from the
+BQC samples.
+</p>
+</div>
 </div>
 <div class="section level2">
-<h2 id="outlier-capping">Outlier capping<a class="anchor" aria-label="anchor" href="#outlier-capping"></a>
+<h2 id="outlier-capping">6. Outlier capping<a class="anchor" aria-label="anchor" href="#outlier-capping"></a>
 </h2>
 <p>Use <code>cap_outliers = TRUE</code> to cap extreme values based on
 MAD fences. This is useful when outliers obscure the trends of QC or
 study samples.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span><span class="va">mexp</span>, variable <span class="op">=</span> <span class="st">"intensity"</span>,</span>
-<span>                include_feature_filter <span class="op">=</span> <span class="st">"TG 48\\:2 \\[\\-18:1\\]"</span>,</span>
-<span>                cap_outliers <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>                cap_sample_k_mad <span class="op">=</span> <span class="fl">3</span>,</span>
-<span>                rows_page <span class="op">=</span> <span class="fl">1</span>, cols_page <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="tutorial-05-run-scatter_files/figure-html/unnamed-chunk-6-1.png" class="r-plt" alt="RunScatter plot with outlier capping
-" width="700"></p>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span></span>
+<span>  <span class="va">mexp</span>,</span>
+<span>  variable <span class="op">=</span> <span class="st">"intensity"</span>,</span>
+<span>  include_feature_filter <span class="op">=</span> <span class="st">"TG 48\\:2 \\[\\-18:1\\]"</span>,</span>
+<span>  cap_outliers <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  cap_sample_k_mad <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  rows_page <span class="op">=</span> <span class="fl">1</span>, cols_page <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<img src="tutorial-05-run-scatter_files/figure-html/capping-1.png" class="r-plt" alt="RunScatter plot with outlier capping" width="700"><p class="caption">
+Figure 5. RunScatter with extreme values capped at MAD-based fences.
+</p>
+</div>
 </div>
 <div class="section level2">
-<h2 id="log-scale">Log scale<a class="anchor" aria-label="anchor" href="#log-scale"></a>
+<h2 id="log-scale">7. Log scale<a class="anchor" aria-label="anchor" href="#log-scale"></a>
 </h2>
 <p>Set <code>log_scale = TRUE</code> to apply a log10 transformation to
 the y-axis. Zero or negative values are replaced with the minimum
 positive value divided by 5.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span><span class="va">mexp</span>, variable <span class="op">=</span> <span class="st">"intensity"</span>,</span>
-<span>                include_feature_filter <span class="op">=</span> <span class="st">"TG 48\\:2 \\[\\-18:1\\]"</span>,</span>
-<span>                log_scale <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>                rows_page <span class="op">=</span> <span class="fl">1</span>, cols_page <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="tutorial-05-run-scatter_files/figure-html/unnamed-chunk-7-1.png" class="r-plt" alt="RunScatter plot with log10 y-axis
-" width="700"></p>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span></span>
+<span>  <span class="va">mexp</span>,</span>
+<span>  variable <span class="op">=</span> <span class="st">"intensity"</span>,</span>
+<span>  include_feature_filter <span class="op">=</span> <span class="st">"TG 48\\:2 \\[\\-18:1\\]"</span>,</span>
+<span>  log_scale <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  rows_page <span class="op">=</span> <span class="fl">1</span>, cols_page <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<img src="tutorial-05-run-scatter_files/figure-html/logscale-1.png" class="r-plt" alt="RunScatter plot with log10 y-axis" width="700"><p class="caption">
+Figure 6. RunScatter with a log10-transformed y-axis.
+</p>
+</div>
 </div>
 <div class="section level2">
-<h2 id="removing-gaps-in-the-analysis-sequence">Removing gaps in the analysis sequence<a class="anchor" aria-label="anchor" href="#removing-gaps-in-the-analysis-sequence"></a>
+<h2 id="removing-gaps-in-the-analysis-sequence">8. Removing gaps in the analysis sequence<a class="anchor" aria-label="anchor" href="#removing-gaps-in-the-analysis-sequence"></a>
 </h2>
 <p>Gaps in the x-axis can arise in two ways:</p>
 <ol style="list-style-type: decimal">
 <li>
-<strong>Filtered QC types</strong> — when only a subset of QC types
+<strong>Filtered QC types</strong>: when only a subset of QC types
 is selected, the unselected positions leave gaps. Use
 <code>collapse_excluded = TRUE</code> to close them.</li>
 <li>
-<strong>Unannotated analyses</strong> — when some runs in the
+<strong>Unannotated analyses</strong>: when some runs in the
 analytical sequence have no corresponding entry in <code>@dataset</code>
 (e.g. solvent blanks or system suitability injections that were not
 imported), the analysis order contains discontinuities. Use
@@ -265,13 +304,19 @@ gap positions with vertical indicator lines.</li>
 <h3 id="collapsing-excluded-qc-types">Collapsing excluded QC types<a class="anchor" aria-label="anchor" href="#collapsing-excluded-qc-types"></a>
 </h3>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span><span class="va">mexp</span>, variable <span class="op">=</span> <span class="st">"intensity"</span>,</span>
-<span>                include_feature_filter <span class="op">=</span> <span class="st">"TG 48\\:2 \\[\\-18:1\\]"</span>,</span>
-<span>                qc_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"LTR"</span><span class="op">)</span>,</span>
-<span>                collapse_excluded <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>                rows_page <span class="op">=</span> <span class="fl">1</span>, cols_page <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="tutorial-05-run-scatter_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" alt="RunScatter plot with collapsed gaps from excluded QC types
-" width="700"></p>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span></span>
+<span>  <span class="va">mexp</span>,</span>
+<span>  variable <span class="op">=</span> <span class="st">"intensity"</span>,</span>
+<span>  include_feature_filter <span class="op">=</span> <span class="st">"TG 48\\:2 \\[\\-18:1\\]"</span>,</span>
+<span>  qc_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"LTR"</span><span class="op">)</span>,</span>
+<span>  collapse_excluded <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  rows_page <span class="op">=</span> <span class="fl">1</span>, cols_page <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<img src="tutorial-05-run-scatter_files/figure-html/collapse-1.png" class="r-plt" alt="RunScatter plot with collapsed gaps from excluded QC types" width="700"><p class="caption">
+Figure 7. RunScatter of a single QC type (LTR) with the excluded
+positions collapsed.
+</p>
+</div>
 </div>
 <div class="section level3">
 <h3 id="removing-gaps-from-unannotated-analyses">Removing gaps from unannotated analyses<a class="anchor" aria-label="anchor" href="#removing-gaps-from-unannotated-analyses"></a>
@@ -293,17 +338,22 @@ solvent blanks or system suitability injections are not imported.</p>
 <span>    <span class="st">"Longit_batch2_TQC14"</span>,</span>
 <span>    <span class="st">"Longit_batch2_TQC15"</span></span>
 <span>  <span class="op">)</span>,</span>
-<span>  clear_existing <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span><span class="op">)</span></span>
+<span>  clear_existing <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">mexp_gaps</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_by_istd.html">normalize_by_istd</a></span><span class="op">(</span><span class="va">mexp_gaps</span><span class="op">)</span></span>
 <span><span class="va">mexp_gaps</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_qc_metrics.html">calc_qc_metrics</a></span><span class="op">(</span><span class="va">mexp_gaps</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span><span class="va">mexp_gaps</span>, variable <span class="op">=</span> <span class="st">"intensity"</span>,</span>
-<span>                include_feature_filter <span class="op">=</span> <span class="st">"TG 48\\:2 \\[\\-18:1\\]"</span>,</span>
-<span>                remove_gaps <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>                rows_page <span class="op">=</span> <span class="fl">1</span>, cols_page <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="tutorial-05-run-scatter_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" alt="RunScatter plot with gap indicator lines
-" width="700"></p>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span></span>
+<span>  <span class="va">mexp_gaps</span>,</span>
+<span>  variable <span class="op">=</span> <span class="st">"intensity"</span>,</span>
+<span>  include_feature_filter <span class="op">=</span> <span class="st">"TG 48\\:2 \\[\\-18:1\\]"</span>,</span>
+<span>  remove_gaps <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  rows_page <span class="op">=</span> <span class="fl">1</span>, cols_page <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<img src="tutorial-05-run-scatter_files/figure-html/gaps-1.png" class="r-plt" alt="RunScatter plot with gap indicator lines" width="700"><p class="caption">
+Figure 8. RunScatter with vertical indicator lines marking the collapsed
+unannotated runs.
+</p>
+</div>
 </div>
 <div class="section level3">
 <h3 id="combining-both">Combining both<a class="anchor" aria-label="anchor" href="#combining-both"></a>
@@ -312,49 +362,59 @@ solvent blanks or system suitability injections are not imported.</p>
 unannotated runs, combine <code>collapse_excluded</code> and
 <code>remove_gaps</code> to produce a compact, fully annotated plot.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span><span class="va">mexp_gaps</span>, variable <span class="op">=</span> <span class="st">"intensity"</span>,</span>
-<span>                include_feature_filter <span class="op">=</span> <span class="st">"TG 48\\:2 \\[\\-18:1\\]"</span>,</span>
-<span>                qc_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BQC"</span><span class="op">)</span>,</span>
-<span>                collapse_excluded <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>                remove_gaps <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>                rows_page <span class="op">=</span> <span class="fl">1</span>, cols_page <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="tutorial-05-run-scatter_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" alt="RunScatter plot with collapsed excluded types and gap indicators
-" width="700"></p>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span></span>
+<span>  <span class="va">mexp_gaps</span>,</span>
+<span>  variable <span class="op">=</span> <span class="st">"intensity"</span>,</span>
+<span>  include_feature_filter <span class="op">=</span> <span class="st">"TG 48\\:2 \\[\\-18:1\\]"</span>,</span>
+<span>  qc_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BQC"</span><span class="op">)</span>,</span>
+<span>  collapse_excluded <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  remove_gaps <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  rows_page <span class="op">=</span> <span class="fl">1</span>, cols_page <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<img src="tutorial-05-run-scatter_files/figure-html/gaps-combined-1.png" class="r-plt" alt="RunScatter plot with collapsed excluded types and gap indicators" width="700"><p class="caption">
+Figure 9. RunScatter combining collapsed excluded types with gap
+indicators.
+</p>
+</div>
 </div>
 </div>
 <div class="section level2">
-<h2 id="label-wrapping">Label wrapping<a class="anchor" aria-label="anchor" href="#label-wrapping"></a>
+<h2 id="label-wrapping">9. Label wrapping<a class="anchor" aria-label="anchor" href="#label-wrapping"></a>
 </h2>
 <p>When feature names are long, strip labels can overflow. Set
 <code>label_wrap = TRUE</code> to wrap labels across multiple lines,
 controlled by <code>label_wrap_width</code>. Here we show three features
 to illustrate the effect on strip text.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span><span class="va">mexp</span>, variable <span class="op">=</span> <span class="st">"intensity"</span>,</span>
-<span>                include_feature_filter <span class="op">=</span> <span class="st">"TG 48\\:2 \\[\\-18:1\\]"</span>,</span>
-<span>                rows_page <span class="op">=</span> <span class="fl">1</span>, cols_page <span class="op">=</span> <span class="fl">3</span>,</span>
-<span>                specific_page <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>                label_wrap <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>                label_wrap_width <span class="op">=</span> <span class="fl">8</span><span class="op">)</span></span></code></pre></div>
-<p><img src="tutorial-05-run-scatter_files/figure-html/unnamed-chunk-12-1.png" class="r-plt" alt="RunScatter plot with wrapped strip labels
-" width="700"></p>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span></span>
+<span>  <span class="va">mexp</span>,</span>
+<span>  variable <span class="op">=</span> <span class="st">"intensity"</span>,</span>
+<span>  include_feature_filter <span class="op">=</span> <span class="st">"TG 48\\:2 \\[\\-18:1\\]"</span>,</span>
+<span>  label_wrap <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  label_wrap_width <span class="op">=</span> <span class="fl">8</span>,</span>
+<span>  rows_page <span class="op">=</span> <span class="fl">1</span>, cols_page <span class="op">=</span> <span class="fl">3</span>, specific_page <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<img src="tutorial-05-run-scatter_files/figure-html/labelwrap-1.png" class="r-plt" alt="RunScatter plot with wrapped strip labels" width="700"><p class="caption">
+Figure 10. RunScatter of three features with wrapped strip labels.
+</p>
+</div>
 </div>
 <div class="section level2">
-<h2 id="trend-curves">Trend curves<a class="anchor" aria-label="anchor" href="#trend-curves"></a>
+<h2 id="trend-curves">10. Trend curves<a class="anchor" aria-label="anchor" href="#trend-curves"></a>
 </h2>
 <p>Trend curves visualise the fitted signal used during drift or batch
-correction. They require a prior correction step —
+correction. They require a prior correction step.
 <code>show_trend = TRUE</code> will error if no drift or batch
 correction has been applied. To plot the values <em>before</em> the last
 correction, append <code>_before</code> to the variable name
 (e.g. <code>variable = "intensity_before"</code>); for the original
 uncorrected values use <code>_raw</code>
 (e.g. <code>variable = "intensity_raw"</code>).</p>
-<p>See the <a href="tutorial-04-drift-correction.html">Drift
-Correction</a> tutorial for a worked example.</p>
+<p>See the <a href="tutorial-04-drift-correction.html">drift and batch
+correction</a> tutorial for a worked example.</p>
 </div>
 <div class="section level2">
-<h2 id="principal-component-analysis-pca">Principal component analysis (PCA)<a class="anchor" aria-label="anchor" href="#principal-component-analysis-pca"></a>
+<h2 id="principal-component-analysis-pca">11. Principal component analysis (PCA)<a class="anchor" aria-label="anchor" href="#principal-component-analysis-pca"></a>
 </h2>
 <p>PCA is a routine multivariate check in targeted MS workflows: it
 helps spot injection outliers, visualise residual batch effects, and
@@ -372,12 +432,17 @@ ellipses (<code>qc_type</code>, <code>batch_id</code>, or
 <code>"none"</code>); a markedly dispersed QC cluster suggests
 insufficient normalisation or remaining instrument drift.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_pca.html">plot_pca</a></span><span class="op">(</span><span class="va">mexp</span>,</span>
-<span>         variable <span class="op">=</span> <span class="st">"norm_intensity"</span>,</span>
-<span>         qc_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BQC"</span>, <span class="st">"SPL"</span><span class="op">)</span>,</span>
-<span>         ellipse_variable <span class="op">=</span> <span class="st">"qc_type"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="tutorial-05-run-scatter_files/figure-html/unnamed-chunk-13-1.png" class="r-plt" alt="PCA score plot coloured by QC type
-" width="700"></p>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_pca.html">plot_pca</a></span><span class="op">(</span></span>
+<span>  <span class="va">mexp</span>,</span>
+<span>  variable <span class="op">=</span> <span class="st">"norm_intensity"</span>,</span>
+<span>  qc_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BQC"</span>, <span class="st">"SPL"</span><span class="op">)</span>,</span>
+<span>  ellipse_variable <span class="op">=</span> <span class="st">"qc_type"</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<img src="tutorial-05-run-scatter_files/figure-html/pca-score-qc-1.png" class="r-plt" alt="PCA score plot coloured by QC type" width="700"><p class="caption">
+Figure 11. PCA score plot coloured by QC type, with confidence ellipses
+per group.
+</p>
+</div>
 </div>
 <div class="section level3">
 <h3 id="score-plot-by-batch">Score plot by batch<a class="anchor" aria-label="anchor" href="#score-plot-by-batch"></a>
@@ -388,27 +453,35 @@ Running the same plot before and after
 <code><a href="../reference/correct_batch_centering.html">correct_batch_centering()</a></code> confirms that the batch ellipses
 overlap after correction.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_pca.html">plot_pca</a></span><span class="op">(</span><span class="va">mexp</span>,</span>
-<span>         variable <span class="op">=</span> <span class="st">"norm_intensity"</span>,</span>
-<span>         qc_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BQC"</span>, <span class="st">"SPL"</span><span class="op">)</span>,</span>
-<span>         ellipse_variable <span class="op">=</span> <span class="st">"batch_id"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="tutorial-05-run-scatter_files/figure-html/unnamed-chunk-14-1.png" class="r-plt" alt="PCA score plot coloured by batch
-" width="700"></p>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_pca.html">plot_pca</a></span><span class="op">(</span></span>
+<span>  <span class="va">mexp</span>,</span>
+<span>  variable <span class="op">=</span> <span class="st">"norm_intensity"</span>,</span>
+<span>  qc_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BQC"</span>, <span class="st">"SPL"</span><span class="op">)</span>,</span>
+<span>  ellipse_variable <span class="op">=</span> <span class="st">"batch_id"</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<img src="tutorial-05-run-scatter_files/figure-html/pca-score-batch-1.png" class="r-plt" alt="PCA score plot coloured by batch" width="700"><p class="caption">
+Figure 12. PCA score plot coloured by batch.
+</p>
+</div>
 </div>
 <div class="section level3">
 <h3 id="loadings">Loadings<a class="anchor" aria-label="anchor" href="#loadings"></a>
 </h3>
 <p>The loading plot identifies the features driving the principal
 components; features at the extremes contribute most to sample
-separation. A single feature dominating PC1 should be inspected — it is
+separation. A single feature dominating PC1 should be inspected: it is
 often a saturated or contaminated transition rather than a biological
 signal.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_pca_loading.html">plot_pca_loading</a></span><span class="op">(</span><span class="va">mexp</span>,</span>
-<span>                 variable <span class="op">=</span> <span class="st">"norm_intensity"</span>,</span>
-<span>                 qc_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BQC"</span>, <span class="st">"SPL"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="tutorial-05-run-scatter_files/figure-html/unnamed-chunk-15-1.png" class="r-plt" alt="PCA loadings plot
-" width="700"></p>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_pca_loading.html">plot_pca_loading</a></span><span class="op">(</span></span>
+<span>  <span class="va">mexp</span>,</span>
+<span>  variable <span class="op">=</span> <span class="st">"norm_intensity"</span>,</span>
+<span>  qc_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BQC"</span>, <span class="st">"SPL"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<img src="tutorial-05-run-scatter_files/figure-html/pca-loadings-1.png" class="r-plt" alt="PCA loadings plot" width="700"><p class="caption">
+Figure 13. PCA loadings identifying the features driving each component.
+</p>
+</div>
 </div>
 <div class="section level3">
 <h3 id="detecting-outlier-injections">Detecting outlier injections<a class="anchor" aria-label="anchor" href="#detecting-outlier-injections"></a>
@@ -420,19 +493,17 @@ chosen principal component lies outside a fence, defined as either
 with <code>fence_multiplicator</code> setting <em>k</em>. It returns the
 <code>analysis_id</code> values that exceed the fence on the selected
 component, or <code>NULL</code> if none are flagged.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">outlier_ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/detect_outlier_pca.html">detect_outlier_pca</a></span><span class="op">(</span></span>
-<span>  <span class="va">mexp</span>,</span>
-<span>  variable <span class="op">=</span> <span class="st">"intensity"</span>,</span>
-<span>  filter_data <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  pca_component <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  qc_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BQC"</span>, <span class="st">"SPL"</span><span class="op">)</span>,</span>
-<span>  outlier_detection <span class="op">=</span> <span class="st">"mad"</span>,</span>
-<span>  fence_multiplicator <span class="op">=</span> <span class="fl">4</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">outlier_ids</span></span>
-<span><span class="co">#&gt; [1] "Longit_batch6_51"</span></span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a>outlier_ids <span class="ot">&lt;-</span> <span class="fu">detect_outlier_pca</span>(</span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>  mexp,</span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a>  <span class="at">variable =</span> <span class="st">"intensity"</span>,</span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a>  <span class="at">filter_data =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a>  <span class="at">pca_component =</span> <span class="dv">1</span>,</span>
+<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a>  <span class="at">qc_types =</span> <span class="fu">c</span>(<span class="st">"BQC"</span>, <span class="st">"SPL"</span>),</span>
+<span id="cb16-7"><a href="#cb16-7" tabindex="-1"></a>  <span class="at">outlier_detection =</span> <span class="st">"mad"</span>,</span>
+<span id="cb16-8"><a href="#cb16-8" tabindex="-1"></a>  <span class="at">fence_multiplicator =</span> <span class="dv">4</span>)</span>
+<span id="cb16-9"><a href="#cb16-9" tabindex="-1"></a></span>
+<span id="cb16-10"><a href="#cb16-10" tabindex="-1"></a>outlier_ids</span>
+<span id="cb16-11"><a href="#cb16-11" tabindex="-1"></a>[<span class="dv">1</span>] <span class="st">"Longit_batch6_51"</span></span></code></pre></div>
 <details><summary><strong>Choice of fence method</strong>
 </summary>
 The SD-based fence is sensitive to the very outliers it tries to detect:
@@ -441,12 +512,12 @@ fence is robust to a few large deviations and is generally preferable
 for QC screening. A typical multiplier is
 <code>fence_multiplicator = 3</code> (≈99.7% under normality) or
 <code>4</code> for a more permissive screen. The function evaluates one
-principal component at a time — re-run with
+principal component at a time; re-run with
 <code>pca_component = 2</code> to screen PC2.
 </details><p>A sample flagged by PCA is a candidate for investigation, not a
 verdict. Outlier patterns frequently reflect genuine biology (e.g. a
 disease group or a sex difference), so an injection should be excluded
-only where a documented technical cause is identified — a failed
+only where a documented technical cause is identified: a failed
 injection, contamination, instrument fault, or sample-handling
 error.</p>
 </div>
@@ -454,9 +525,10 @@ error.</p>
 <h3 id="excluding-analyses-and-features">Excluding analyses and features<a class="anchor" aria-label="anchor" href="#excluding-analyses-and-features"></a>
 </h3>
 <p>After visual and documented confirmation, remove the offending
-injections or features. <code><a href="../reference/exclude_analyses.html">exclude_analyses()</a></code> /
-<code><a href="../reference/exclude_features.html">exclude_features()</a></code> set the affected rows aside for
-downstream steps while the original data remain in
+injections or features. <code><a href="../reference/exclude_analyses.html">exclude_analyses()</a></code> and
+<code><a href="../reference/exclude_features.html">exclude_features()</a></code> flip the affected rows’
+<code>valid_analysis</code> / <code>valid_feature</code> flag so
+downstream steps skip them, while the original data remain in
 <code>mexp@dataset_orig</code>; setting
 <code>clear_existing = TRUE</code> replaces any previous exclusion list
 rather than appending.</p>
@@ -524,14 +596,18 @@ confirmed</td>
 </h2>
 <ul>
 <li>
-<a href="tutorial-04-drift-correction.html">Drift and Batch
-Correction</a> — apply and inspect corrections</li>
+<a href="tutorial-04-drift-correction.html">Drift and batch
+correction</a>: apply and inspect corrections</li>
 <li>
-<a href="manual-08-visualization.html">Visualisation Functions</a> —
+<a href="manual-08-visualization.html">Visualisation functions</a>:
 the full list of plotting functions</li>
 <li>
-<a href="tutorial-02-basic-workflow.html">Basic MRMhub Workflow</a>
-— where these checks fit in the pipeline</li>
+<a href="manual-13-plot-customization.html">Customising plots</a>:
+sizing text, legends and points without <code>+ theme()</code>
+</li>
+<li>
+<a href="tutorial-02-basic-workflow.html">Basic MRMhub workflow</a>:
+where these checks fit in the pipeline</li>
 </ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

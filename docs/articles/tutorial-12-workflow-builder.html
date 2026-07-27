@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Build a Workflow Without Code • mrmhub</title>
+<title>Build a workflow without code • mrmhub</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
@@ -16,7 +16,7 @@
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
-<meta property="og:title" content="Build a Workflow Without Code">
+<meta property="og:title" content="Build a workflow without code">
 <meta name="description" content="Use the point-and-click builder to validate your data and metadata and generate a runnable Quarto workflow.
 ">
 <meta property="og:description" content="Use the point-and-click builder to validate your data and metadata and generate a runnable Quarto workflow.
@@ -31,7 +31,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -62,7 +62,6 @@
     <li><h6 class="dropdown-header" data-toc-skip>Techniques</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-04-drift-correction.html">Drift and batch correction</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-07-calibration-reference.html">Calibration by reference sample</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-10-metadata-validation.html">Validating metadata</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-11-interference-correction.html">Interference correction</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
@@ -75,6 +74,7 @@
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-04-validate-metadata.html">Validate &amp; fix metadata</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul>
 </li>
@@ -96,6 +96,7 @@
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-13-plot-customization.html">Customising Plots</a></li>
     <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Writing Pipelines with AI Assistants</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
@@ -106,7 +107,7 @@
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">NEWS</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><a class="external-link nav-link" href="https://slinghub.github.io/MRMhub/">← MRMhub home</a></li>
@@ -127,7 +128,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.svg" class="logo" alt=""><h1>Build a Workflow Without Code</h1>
+      <img src="../logo.svg" class="logo" alt=""><h1>Build a workflow without code</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/HEAD/vignettes/articles/tutorial-12-workflow-builder.Rmd" class="external-link"><code>vignettes/articles/tutorial-12-workflow-builder.Rmd</code></a></small>
@@ -136,21 +137,18 @@
 
     
     
-<p class="page-kind page-kind-tutorial">
-Tutorial
+<p class="page-meta">
+<span class="page-kind page-kind-tutorial">Tutorial</span> <span class="page-level">Beginner</span> <span class="page-prereq">Prerequisites:
+<a href="manual-00-installation.html">MRMhub installed</a></span>
 </p>
 <p><code><a href="../reference/build_workflow.html">build_workflow()</a></code> opens an interactive application that
 turns a data file and its metadata into a runnable Quarto
 (<code>.qmd</code>) workflow. It validates the inputs against the real
 importers, disables processing steps the metadata cannot support, and
-previews the generated document for download — while the code-first
+previews the generated document for download, while the code-first
 workflow it produces remains the reproducible artefact.</p>
-<div class="callout callout-note">
-<p><strong>Time</strong> ~5 min  ·  <strong>Level</strong> Beginner  · 
-<strong>Prerequisites</strong> <a href="manual-00-installation.html">MRMhub installed</a></p>
-</div>
 <div class="section level2">
-<h2 id="launching-the-builder">Launching the builder<a class="anchor" aria-label="anchor" href="#launching-the-builder"></a>
+<h2 id="launching-the-builder">1. Launching the builder<a class="anchor" aria-label="anchor" href="#launching-the-builder"></a>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/SLINGhub/MRMhub" class="external-link">mrmhub</a></span><span class="op">)</span></span>
@@ -165,42 +163,41 @@ data</strong> button, which loads the INTEGRATOR demo dataset shipped
 with the package.</p>
 </div>
 <div class="section level2">
-<h2 id="the-sidebar-step-by-step">The sidebar, step by step<a class="anchor" aria-label="anchor" href="#the-sidebar-step-by-step"></a>
+<h2 id="the-sidebar-step-by-step">2. The sidebar, step by step<a class="anchor" aria-label="anchor" href="#the-sidebar-step-by-step"></a>
 </h2>
 <p>The sidebar is worked top to bottom in four numbered sections.</p>
 <p><strong>1 · Data source.</strong> Choose the tool or format that
-produced the data — this selects the matching importer
-(<code><a href="../reference/import_data_mrmhub.html">import_data_mrmhub()</a></code>,
+produced the data (this selects the matching importer:
+<code><a href="../reference/import_data_mrmhub.html">import_data_mrmhub()</a></code>,
 <code><a href="../reference/import_data_masshunter.html">import_data_masshunter()</a></code>,
 <code><a href="../reference/import_data_skyline.html">import_data_skyline()</a></code>, or the generic
 <code><a href="../reference/import_data_csv_long.html">import_data_csv_long()</a></code> /
-<code><a href="../reference/import_data_csv_wide.html">import_data_csv_wide()</a></code>) — then upload the file. For a
+<code><a href="../reference/import_data_csv_wide.html">import_data_csv_wide()</a></code>), then upload the file. For a
 generic CSV the column names are not fixed, so a dialog opens to map
 them:</p>
 <ul>
 <li>
-<strong>Long CSV</strong> — pick the columns holding the
-<em>analysis id</em>, the <em>feature id</em>, and the <em>value</em>,
-plus what the value represents (area, height, intensity, concentration,
-or normalised intensity). These become a
-<code>column_mapping</code>.</li>
+<strong>Long CSV</strong>: pick the columns holding the <em>analysis
+id</em>, the <em>feature id</em>, and the <em>value</em>, plus what the
+value represents (area, height, intensity, concentration, or normalised
+intensity). These become a <code>column_mapping</code>.</li>
 <li>
-<strong>Wide CSV</strong> — state what the matrix values represent
+<strong>Wide CSV</strong>: state what the matrix values represent
 and, optionally, the analysis-id column and the index of the first
 feature column.</li>
 </ul>
 <div class="callout callout-caution">
-<p>Until a generic CSV’s columns are mapped the data cannot be validated
-— this is the same requirement <code><a href="../reference/import_data_csv_long.html">import_data_csv_long()</a></code>
-enforces when it reports a missing <code>feature_id</code> column. The
-other importers read fixed column names and need no mapping.</p>
+<p>Until a generic CSV’s columns are mapped the data cannot be
+validated: this is the same requirement
+<code><a href="../reference/import_data_csv_long.html">import_data_csv_long()</a></code> enforces when it reports a missing
+<code>feature_id</code> column. The other importers read fixed column
+names and need no mapping.</p>
 </div>
 <p><strong>2 · Metadata.</strong> Select where sample, feature, and
 internal-standard annotations come from: embedded in the data file, an
 MSOrganiser workbook, a multi-sheet metadata workbook, or
-<strong>individual files</strong> — separate CSVs for analyses,
-features, and ISTDs imported with
-<code><a href="../reference/import_metadata_analyses.html">import_metadata_analyses()</a></code>,
+<strong>individual files</strong>: separate CSVs for analyses, features,
+and ISTDs imported with <code><a href="../reference/import_metadata_analyses.html">import_metadata_analyses()</a></code>,
 <code><a href="../reference/import_metadata_features.html">import_metadata_features()</a></code>, and
 <code><a href="../reference/import_metadata_istds.html">import_metadata_istds()</a></code>.</p>
 <p><strong>3 · Project folder.</strong> Optionally point the builder at
@@ -214,7 +211,7 @@ file by the path shown in the <em>Data file path</em> field, which can
 be edited to an absolute path.</p>
 <p><strong>4 · Processing steps.</strong> Tick the steps to include.
 Steps whose metadata is absent are disabled and annotated with a short
-reason and an information icon carrying the full explanation — for
+reason and an information icon carrying the full explanation: for
 example, <em>Quantify by internal standard</em> is disabled with “No
 ISTD concentrations” until an ISTD concentration table is imported. See
 <a href="#reading-the-validation-panel">Reading the validation panel</a>
@@ -226,35 +223,35 @@ spline and LOESS use pooled QCs (the first of <code>BQC</code>,
 <code>TQC</code>, or <code>QC</code> present in the data). Batch
 centring reuses the same reference. The corrected feature variable is
 chosen automatically as the highest processing level the selected steps
-reach — <code>conc</code> once a quantification step is included,
+reach: <code>conc</code> once a quantification step is included,
 otherwise <code>norm_intensity</code>, otherwise raw
 <code>intensity</code>.</p>
 </div>
 <div class="section level2">
-<h2 id="reading-the-validation-panel">Reading the validation panel<a class="anchor" aria-label="anchor" href="#reading-the-validation-panel"></a>
+<h2 id="reading-the-validation-panel">3. Reading the validation panel<a class="anchor" aria-label="anchor" href="#reading-the-validation-panel"></a>
 </h2>
 <p>The <strong>Validation</strong> panel runs the selected steps’
 preconditions against the imported experiment and reports one line per
 finding:</p>
 <ul>
 <li>
-<strong>✗ error</strong> — the import failed, or a selected step
+<strong>✗ error</strong>: the import failed, or a selected step
 would abort (for example, <code><a href="../reference/normalize_by_istd.html">normalize_by_istd()</a></code> selected
 while no feature carries an <code>istd_feature_id</code>).</li>
 <li>
-<strong>⚠ warning</strong> — a step needs an upstream step or an
+<strong>⚠ warning</strong>: a step needs an upstream step or an
 optional field (for example, a drift reference QC type absent from the
 data).</li>
 <li>
-<strong>✓ ok</strong> — the data imported and the selected steps
-have no outstanding issues.</li>
+<strong>✓ ok</strong>: the data imported and the selected steps have
+no outstanding issues.</li>
 </ul>
 <p>Because the panel calls the same importer and precondition checks as
 a scripted run, a workflow that validates cleanly here runs the same way
 from the console.</p>
 </div>
 <div class="section level2">
-<h2 id="what-it-generates">What it generates<a class="anchor" aria-label="anchor" href="#what-it-generates"></a>
+<h2 id="what-it-generates">4. What it generates<a class="anchor" aria-label="anchor" href="#what-it-generates"></a>
 </h2>
 <p>The <strong>Generated workflow</strong> pane updates live as the
 sidebar changes. The YAML front matter records the title and the
@@ -270,7 +267,7 @@ requested output formats:</p>
 <p>The document then opens with a hidden setup chunk
 (<code>#| include: false</code>) that loads the package and calls
 <code><a href="../reference/mrmhub_enable_cli_color.html">mrmhub_enable_cli_color()</a></code>, so mrmhub’s coloured console
-feedback renders in the HTML output. See <a href="manual-11-quarto-workflows.html">Quarto Workflows</a> for the
+feedback renders in the HTML output. See <a href="manual-11-quarto-workflows.html">Quarto workflows</a> for the
 reporting options and output-format details.</p>
 <p>Each selected step then becomes its own <code>##</code> section with
 an <code>{r}</code> chunk. For the demo dataset with normalisation, ISTD
@@ -278,29 +275,33 @@ quantification, drift and batch correction, and QC filtering selected,
 and a project folder set, the emitted code is, in order:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MRMhubExperiment.html">MRMhubExperiment</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_data_mrmhub.html">import_data_mrmhub</a></span><span class="op">(</span><span class="va">mexp</span>, path <span class="op">=</span> <span class="st">"data/MRMhub_demo.tsv"</span>, import_metadata <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_data_mrmhub.html">import_data_mrmhub</a></span><span class="op">(</span></span>
+<span>  <span class="va">mexp</span>, path <span class="op">=</span> <span class="st">"data/MRMhub_demo.tsv"</span>, import_metadata <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_by_istd.html">normalize_by_istd</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span></span>
 <span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/quantify_by_istd.html">quantify_by_istd</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/correct_drift_gaussiankernel.html">correct_drift_gaussiankernel</a></span><span class="op">(</span><span class="va">mexp</span>, variable <span class="op">=</span> <span class="st">"conc"</span>, ref_qc_types <span class="op">=</span> <span class="st">"SPL"</span><span class="op">)</span></span>
-<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/correct_batch_centering.html">correct_batch_centering</a></span><span class="op">(</span><span class="va">mexp</span>, variable <span class="op">=</span> <span class="st">"conc"</span>, ref_qc_types <span class="op">=</span> <span class="st">"SPL"</span><span class="op">)</span></span>
+<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/correct_drift_gaussiankernel.html">correct_drift_gaussiankernel</a></span><span class="op">(</span></span>
+<span>  <span class="va">mexp</span>, variable <span class="op">=</span> <span class="st">"conc"</span>, ref_qc_types <span class="op">=</span> <span class="st">"SPL"</span><span class="op">)</span></span>
+<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/correct_batch_centering.html">correct_batch_centering</a></span><span class="op">(</span></span>
+<span>  <span class="va">mexp</span>, variable <span class="op">=</span> <span class="st">"conc"</span>, ref_qc_types <span class="op">=</span> <span class="st">"SPL"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_qc_metrics.html">calc_qc_metrics</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span></span>
-<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/filter_features_qc.html">filter_features_qc</a></span><span class="op">(</span><span class="va">mexp</span>, include_qualifier <span class="op">=</span> <span class="cn">FALSE</span>, include_istd <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/filter_features_qc.html">filter_features_qc</a></span><span class="op">(</span></span>
+<span>  <span class="va">mexp</span>, include_qualifier <span class="op">=</span> <span class="cn">FALSE</span>, include_istd <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/save_report_xlsx.html">save_report_xlsx</a></span><span class="op">(</span><span class="va">mexp</span>, path <span class="op">=</span> <span class="st">"output/results.xlsx"</span><span class="op">)</span></span></code></pre></div>
-<p>The emitted calls and their argument defaults mirror the <a href="tutorial-02-basic-workflow.html">Basic MRMhub Workflow</a>; the
+<p>The emitted calls and their argument defaults mirror the <a href="tutorial-02-basic-workflow.html">Basic MRMhub workflow</a>; the
 builder is a way to assemble that script, not a separate engine.
 <strong>Copy code</strong> copies the document to the clipboard, and
 <strong>Download .qmd</strong> (or the project button) writes it to
 disk.</p>
 </div>
 <div class="section level2">
-<h2 id="rendering-the-workflow">Rendering the workflow<a class="anchor" aria-label="anchor" href="#rendering-the-workflow"></a>
+<h2 id="rendering-the-workflow">5. Rendering the workflow<a class="anchor" aria-label="anchor" href="#rendering-the-workflow"></a>
 </h2>
 <p>The <strong>Output format(s)</strong> control writes the requested
-Quarto formats into the document’s YAML — HTML, Word
+Quarto formats into the document’s YAML: HTML, Word
 (<code>.docx</code>), and PDF may be combined. The PDF format is
 configured for a sans-serif typeface using the default LaTeX engine.
 Rendering is performed with Quarto once the document is saved:</p>
@@ -308,7 +309,7 @@ Rendering is performed with Quarto once the document is saved:</p>
 <div class="callout callout-tip">
 <p>The generated file is an ordinary Quarto document. Open it in
 RStudio, Positron, or VS Code, adjust paths or parameters, and run the
-chunks interactively — the builder is a starting point, not a black
+chunks interactively; the builder is a starting point, not a black
 box.</p>
 </div>
 <p>For scripted use, the same document can be produced without the
@@ -316,23 +317,23 @@ application by passing a specification list to
 <code><a href="../reference/generate_workflow_qmd.html">generate_workflow_qmd()</a></code>.</p>
 </div>
 <div class="section level2">
-<h2 id="next-steps">Next Steps<a class="anchor" aria-label="anchor" href="#next-steps"></a>
+<h2 id="next-steps">Next steps<a class="anchor" aria-label="anchor" href="#next-steps"></a>
 </h2>
 <ul>
 <li>
-<a href="tutorial-00-first-analysis.html">Your First Analysis</a> —
+<a href="tutorial-00-first-analysis.html">Your first analysis</a>:
 the equivalent five-minute workflow written by hand</li>
 <li>
-<a href="tutorial-02-basic-workflow.html">Basic MRMhub Workflow</a>
-— the full pipeline the builder mirrors</li>
+<a href="tutorial-02-basic-workflow.html">Basic MRMhub workflow</a>:
+the full pipeline the builder mirrors</li>
 <li>
-<a href="manual-04-data-import.html">Importing Analytical Data</a> —
+<a href="manual-04-data-import.html">Importing analytical data</a>:
 file formats and the importer decision tree</li>
 <li>
-<a href="manual-05-metadata.html">Importing Metadata</a> — metadata
+<a href="manual-05-metadata.html">Importing metadata</a>: metadata
 tables and their required columns</li>
 <li>
-<a href="manual-11-quarto-workflows.html">Quarto Workflows</a> — the
+<a href="manual-11-quarto-workflows.html">Quarto workflows</a>: the
 setup chunk, coloured console output, and rendering to HTML, PDF, and
 Word</li>
 </ul>

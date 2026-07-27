@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Import &amp; Export mzTab-M • mrmhub</title>
+<title>Import and export mzTab-M • mrmhub</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
@@ -16,7 +16,7 @@
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
-<meta property="og:title" content="Import &amp; Export mzTab-M">
+<meta property="og:title" content="Import and export mzTab-M">
 <meta name="description" content="Exchange data with the HUPO-PSI mzTab-M standard format: export a processed
 MRMhubExperiment for sharing or MetaboLights submission, and import results
 from tools such as Lipid Data Analyzer, MS-DIAL or MZmine.
@@ -35,7 +35,7 @@ from tools such as Lipid Data Analyzer, MS-DIAL or MZmine.
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,7 +66,6 @@ from tools such as Lipid Data Analyzer, MS-DIAL or MZmine.
     <li><h6 class="dropdown-header" data-toc-skip>Techniques</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-04-drift-correction.html">Drift and batch correction</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-07-calibration-reference.html">Calibration by reference sample</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-10-metadata-validation.html">Validating metadata</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-11-interference-correction.html">Interference correction</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
@@ -79,6 +78,7 @@ from tools such as Lipid Data Analyzer, MS-DIAL or MZmine.
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-04-validate-metadata.html">Validate &amp; fix metadata</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul>
 </li>
@@ -100,6 +100,7 @@ from tools such as Lipid Data Analyzer, MS-DIAL or MZmine.
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-13-plot-customization.html">Customising Plots</a></li>
     <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Writing Pipelines with AI Assistants</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
@@ -110,7 +111,7 @@ from tools such as Lipid Data Analyzer, MS-DIAL or MZmine.
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">NEWS</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><a class="external-link nav-link" href="https://slinghub.github.io/MRMhub/">← MRMhub home</a></li>
@@ -131,7 +132,7 @@ from tools such as Lipid Data Analyzer, MS-DIAL or MZmine.
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.svg" class="logo" alt=""><h1>Import &amp; Export mzTab-M</h1>
+      <img src="../logo.svg" class="logo" alt=""><h1>Import and export mzTab-M</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/HEAD/vignettes/articles/recipe-03-mztab-export.Rmd" class="external-link"><code>vignettes/articles/recipe-03-mztab-export.Rmd</code></a></small>
@@ -140,40 +141,33 @@ from tools such as Lipid Data Analyzer, MS-DIAL or MZmine.
 
     
     
-<p class="page-kind page-kind-recipe">
-Recipe
+<p class="page-meta">
+<span class="page-kind page-kind-recipe">Recipe</span> <span class="page-prereq">Prerequisites:
+<a href="tutorial-02-basic-workflow.html">Basic workflow</a></span>
 </p>
-<div class="callout callout-note">
-<p><strong>Level</strong> Intermediate  ·  <strong>Output</strong>
-<code>.mzTab</code> file (mzTab-M 2.0.0-M)  ·  <strong>Requires</strong>
-a processed <code>MRMhubExperiment</code></p>
-</div>
-<div class="section level2">
-<h2 id="goal">Goal<a class="anchor" aria-label="anchor" href="#goal"></a>
-</h2>
 <p>Export the quantitative results of a processed experiment to <a href="https://github.com/HUPO-PSI/mzTab-M" class="external-link">mzTab-M</a>, the HUPO-PSI
-community standard for reporting metabolomics / lipidomics
+community standard for reporting metabolomics and lipidomics
 quantification. mzTab-M is a plain, tab-delimited text format that opens
-in Excel yet is fully machine-readable, and is the format expected by
-repositories such as <a href="https://www.ebi.ac.uk/metabolights/" class="external-link">MetaboLights</a>.</p>
-</div>
-<div class="section level2">
-<h2 id="prerequisites">Prerequisites<a class="anchor" aria-label="anchor" href="#prerequisites"></a>
-</h2>
+in Excel yet is fully machine-readable, and is the format repositories
+such as <a href="https://www.ebi.ac.uk/metabolights/" class="external-link">MetaboLights</a>
+expect. This recipe covers exporting a processed
+<code>MRMhubExperiment</code> to an mzTab-M 2.0.0-M file and importing
+mzTab-M produced by other tools.</p>
+<p>The exporter reads an experiment that has been imported, normalized
+and quantified. Here we build one from the bundled
+<code>lipidomics_dataset</code>; in practice this would be your own
+processed object.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/SLINGhub/MRMhub" class="external-link">mrmhub</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># A fully processed MRMhubExperiment. Here we build one from the bundled</span></span>
-<span><span class="co"># `lipidomics_dataset`; in practice this would be your own processed object.</span></span>
 <span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="va">lipidomics_dataset</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/normalize_by_istd.html">normalize_by_istd</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/quantify_by_istd.html">quantify_by_istd</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-</div>
 <div class="section level2">
 <h2 id="basic-export">Basic export<a class="anchor" aria-label="anchor" href="#basic-export"></a>
 </h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># write to a temporary directory for this example; use your own path in practice</span></span>
+<code class="sourceCode R"><span><span class="co"># write to a temp dir for this example; use your own path in practice</span></span>
 <span><span class="va">out_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/save_dataset_mztab.html">save_dataset_mztab</a></span><span class="op">(</span><span class="va">mexp</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">out_dir</span>, <span class="st">"experiment.mzTab"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
@@ -185,7 +179,10 @@ back to the raw <code>feature_intensity</code> and declares an
 “Arbitrary quantification unit”.</p>
 <p>Choose a different abundance variable with <code>variable</code>:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/save_dataset_mztab.html">save_dataset_mztab</a></span><span class="op">(</span><span class="va">mexp</span>, <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">out_dir</span>, <span class="st">"raw_areas.mzTab"</span><span class="op">)</span>, variable <span class="op">=</span> <span class="st">"area"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/save_dataset_mztab.html">save_dataset_mztab</a></span><span class="op">(</span></span>
+<span>  <span class="va">mexp</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">out_dir</span>, <span class="st">"raw_areas.mzTab"</span><span class="op">)</span>,</span>
+<span>  variable <span class="op">=</span> <span class="st">"area"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/save_dataset_mztab.html">save_dataset_mztab</a></span><span class="op">(</span></span>
 <span>  <span class="va">mexp</span>,</span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">out_dir</span>, <span class="st">"intensities.mzTab"</span><span class="op">)</span>,</span>
@@ -298,11 +295,11 @@ and must be supplied with <code><a href="../reference/add_metadata.html">add_met
 </h2>
 <ul>
 <li>
-<a href="recipe-02-custom-qc-report.html">Custom QC Report</a> — a
+<a href="recipe-02-custom-qc-report.html">Custom QC report</a> — a
 richer human-readable report.</li>
 <li>
 <a href="manual-02-data-object.html#feature-variables">The
-MRMhubExperiment Data Object</a> — what <code>conc</code>,
+MRMhubExperiment data object</a> — what <code>conc</code>,
 <code>intensity</code>, <code>area</code> and friends mean, and the
 slots behind the export.</li>
 </ul>

@@ -1,5 +1,5 @@
 ---
-title: "Writing Pipelines with AI Assistants"
+title: "Writing pipelines with AI assistants"
 output:
   rmarkdown::html_vignette:
     fig_width: 6
@@ -9,7 +9,7 @@ description: |
   write MRMhub QUANT pipelines -- how to ground them in the real API, and how to
   verify what they produce.
 vignette: >
-  %\VignetteIndexEntry{Writing Pipelines with AI Assistants}
+  %\VignetteIndexEntry{Writing pipelines with AI assistants}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 editor_options:
@@ -31,7 +31,7 @@ MRMhub QUANT analysis code in R. It explains how to give the model an accurate
 picture of the package, and how to check the code it returns.
 
 It assumes familiarity with the basic workflow. To process data directly, start
-with [Your First Analysis](tutorial-00-first-analysis.html).
+with [Your first analysis](tutorial-00-first-analysis.html).
 
 ## The problem: a specialised package the model has not memorised
 
@@ -183,7 +183,7 @@ draft to be checked, never as an answer to be trusted.
   it does not exist -- regardless of how convincing it looks.
 - **Confirm the step order** matches the recommended pipeline and that drift and
   batch corrections are fitted on QC samples, not study samples. See
-  [Design Decisions](manual-03-design-decisions.html) for why the order and the
+  [Design decisions](manual-03-design-decisions.html) for why the order and the
   QC-only rule matter.
 - **Inspect the numbers**, not just that the script runs without error. A
   pipeline can complete and still be wrong -- the wrong normalisation, the wrong
@@ -209,6 +209,6 @@ which keeps everything on-device.
 
 ## Next Steps
 
-- [Design Decisions](manual-03-design-decisions.html) — the conventions an assistant must respect: the `mexp -> mexp` pattern and the pipeline order
-- [Key Concepts & Glossary](manual-01-key-concepts.html) — the data model and terminology to give the model (and yourself) a shared vocabulary
-- [Your First Analysis](tutorial-00-first-analysis.html) — a hand-written baseline pipeline to compare generated code against
+- [Design decisions](manual-03-design-decisions.html): the conventions an assistant must respect: the `mexp -> mexp` pattern and the pipeline order
+- [Key concepts & glossary](manual-01-key-concepts.html): the data model and terminology to give the model (and yourself) a shared vocabulary
+- [Your first analysis](tutorial-00-first-analysis.html): a hand-written baseline pipeline to compare generated code against

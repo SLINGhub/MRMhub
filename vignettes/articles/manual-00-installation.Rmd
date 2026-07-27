@@ -25,8 +25,8 @@ options(dplyr.print_max = 10)
 
 ## Requirements
 
-- **R ≥ 4.1** — install from [CRAN](https://cran.r-project.org)
-- **An IDE** — [Positron](https://positron.posit.co), [RStudio](https://posit.co/download/rstudio-desktop/), or [VS Code](https://code.visualstudio.com)
+- **R ≥ 4.1**: install from [CRAN](https://cran.r-project.org)
+- **An IDE**: [Positron](https://positron.posit.co), [RStudio](https://posit.co/download/rstudio-desktop/), or [VS Code](https://code.visualstudio.com)
 
 MRMhub's core functionality requires no R coding skills, but basic familiarity with R and an IDE is needed to run and adapt the workflows.
 
@@ -61,7 +61,7 @@ The same command works on Windows, macOS, and Linux. `pak` pulls prebuilt binari
 library(mrmhub)
 ```
 
-If this loads without error, you are ready to go — head to [Your First Analysis](tutorial-00-first-analysis.html).
+If this loads without error, you are ready to go. Head to [Your first analysis](tutorial-00-first-analysis.html).
 
 ## Troubleshooting Common Errors
 
@@ -85,7 +85,7 @@ A longer list, covering proxies, mixed R installations on macOS, and INTEGRATOR 
 
 ## Next steps
 
-- [Key Concepts & Glossary](manual-01-key-concepts.html) — core vocabulary and the MRMhubExperiment object
-- [Your First Analysis](tutorial-00-first-analysis.html) — a short end-to-end walkthrough
+- [Key concepts & glossary](manual-01-key-concepts.html): core vocabulary and the MRMhubExperiment object
+- [Your first analysis](tutorial-00-first-analysis.html): a short end-to-end walkthrough
 - Questions or bug reports? File an issue on [GitHub](https://github.com/SLINGhub/MRMhub/issues), or contact the authors directly.
 

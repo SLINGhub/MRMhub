@@ -5,7 +5,7 @@ workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-wor
 
 Export a processed `MRMhubExperiment` to a Bioconductor
 [SummarizedExperiment](https://bioconductor.org/packages/SummarizedExperiment/),
-then take it downstream — differential abundance with `limma`,
+then take it downstream: differential abundance with `limma`,
 lipid-specific analysis with `lipidr`.
 
 ## 1. Setup
@@ -62,8 +62,8 @@ SummarizedExperiment convention.
 | Component | mrmhub source |
 |----|----|
 | [`assays()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html) | one matrix per feature variable, named without the `feature_` prefix |
-| [`rowData()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html) | `annot_features` — one row per `feature_id` |
-| [`colData()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html) | `annot_analyses` — one row per `analysis_id` |
+| [`rowData()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html) | `annot_features`: one row per `feature_id` |
+| [`colData()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html) | `annot_analyses`: one row per `analysis_id` |
 | `metadata()` | title, analysis type, processing status, `is_*` flags, concentration unit, MRMhub version |
 
 The parallel feature variables become **parallel assays**, so raw,
@@ -105,10 +105,13 @@ se_filt <- save_dataset_summarizedexperiment(mexp_filt, filter_data = TRUE)
 
 ## 4. Subsetting: study samples only
 
-**Everything is exported** — internal standards, QC samples, blanks and
+**Everything is exported**: internal standards, QC samples, blanks and
 calibrants are all present and flagged rather than dropped, because
 downstream tools need them: `lipidr`, for one, requires the
-internal-standard annotation. Subset to study samples in one line:
+internal-standard annotation. But nothing downstream reads `qc_type`, so
+a PCA, normalization or differential test will fold blanks, calibrants
+and QC replicates in with the study samples. Subset to study samples
+before any such analysis, here in one line:
 
 ``` r
 
@@ -117,15 +120,10 @@ dim(se_spl)
 #> [1]  20 374
 ```
 
-**Subset before any statistical analysis.** Most tools include blanks,
-calibrants and QC replicates in a PCA, a normalization or a differential
-test and return results that look plausible and mean nothing. Nothing
-downstream understands `qc_type`.
-
 QC metrics are deliberately *not* written to
-[`rowData()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html)
-— nothing downstream reads them, and QC filtering belongs in MRMhub
-where it is tested. Use `filter_data = TRUE` as above, or
+[`rowData()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html):
+nothing downstream reads them, and QC filtering belongs in MRMhub where
+it is tested. Use `filter_data = TRUE` as above, or
 [`save_feature_qc_metrics()`](https://slinghub.github.io/MRMhub/quant/reference/save_feature_qc_metrics.md)
 for the metrics themselves. To attach them to the features anyway:
 
@@ -145,7 +143,7 @@ continuous data such as concentrations. Note that
 [`voom()`](https://rdrr.io/pkg/limma/man/voom.html) is **not** used: it
 models count data and is invalid here.
 
-The bundled `lipidomics_dataset` carries no phenotype — every study
+The bundled `lipidomics_dataset` carries no phenotype: every study
 sample is plasma from the same longitudinal series. The grouping below
 is **simulated to demonstrate the interface only**; the p-values are
 meaningless by construction. With your own data, the group would come
@@ -182,7 +180,7 @@ topTable(fit, number = 5)
 Because
 [`colData()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html)
 carries the full analysis annotation, covariates are available without
-extra joins — for example blocking on batch:
+extra joins, for example blocking on batch:
 
 ``` r
 
@@ -205,14 +203,14 @@ le <- save_dataset_summarizedexperiment(
 MRMhub fills in what lipidr requires: `Molecule` from `feature_id`,
 `Class` from `feature_class`, `istd` from `is_istd`, plus the
 `summarized` / `logged` / `normalized` flags lipidr reads but does
-**not** validate — an object missing them constructs cleanly and then
+**not** validate: an object missing them constructs cleanly and then
 misbehaves.
 
 **Use a peak-area scale variable with lipidr, not concentrations.**
 lipidr log-transforms with `log = TRUE` by default and **clamps values
 below 1 to 1** first, which assumes Skyline peak-area magnitudes.
 Concentrations in µmol/L are mostly below 1, so they are silently
-flattened to `log2(1) = 0` —
+flattened to `log2(1) = 0`;
 [`eBayes()`](https://rdrr.io/pkg/limma/man/ebayes.html) then reports
 zero residual variances and every fold change collapses. MRMhub warns
 when you export a mostly-sub-1 assay this way.
@@ -262,14 +260,14 @@ plot_results_volcano(de_results, show.labels = FALSE)
 ## Next steps
 
 - [Import & export
-  mzTab-M](https://slinghub.github.io/MRMhub/quant/articles/recipe-03-mztab-export.md)
-  — the standard exchange format for repositories such as MetaboLights.
+  mzTab-M](https://slinghub.github.io/MRMhub/quant/articles/recipe-03-mztab-export.md):
+  the standard exchange format for repositories such as MetaboLights.
 - [Design
-  Decisions](https://slinghub.github.io/MRMhub/quant/articles/manual-03-design-decisions.md)
-  — why `MRMhubExperiment` is not itself a Bioconductor class.
+  decisions](https://slinghub.github.io/MRMhub/quant/articles/manual-03-design-decisions.md):
+  why `MRMhubExperiment` is not itself a Bioconductor class.
 - [Lipidomics
-  workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-03-lipidomics-workflow.md)
-  — QC-filter features before exporting.
+  workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-03-lipidomics-workflow.md):
+  QC-filter features before exporting.
 - [Custom QC
-  report](https://slinghub.github.io/MRMhub/quant/articles/recipe-02-custom-qc-report.md)
-  — reporting straight from MRMhub.
+  report](https://slinghub.github.io/MRMhub/quant/articles/recipe-02-custom-qc-report.md):
+  reporting straight from MRMhub.

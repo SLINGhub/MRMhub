@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Writing Pipelines with AI Assistants • mrmhub</title>
+<title>Writing pipelines with AI assistants • mrmhub</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
@@ -16,7 +16,7 @@
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
-<meta property="og:title" content="Writing Pipelines with AI Assistants">
+<meta property="og:title" content="Writing pipelines with AI assistants">
 <meta name="description" content="How to use large language models (Claude, ChatGPT, or local models) to help
 write MRMhub QUANT pipelines -- how to ground them in the real API, and how to
 verify what they produce.
@@ -35,7 +35,7 @@ verify what they produce.
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,7 +66,6 @@ verify what they produce.
     <li><h6 class="dropdown-header" data-toc-skip>Techniques</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-04-drift-correction.html">Drift and batch correction</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-07-calibration-reference.html">Calibration by reference sample</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-10-metadata-validation.html">Validating metadata</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-11-interference-correction.html">Interference correction</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
@@ -79,6 +78,7 @@ verify what they produce.
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-04-validate-metadata.html">Validate &amp; fix metadata</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul>
 </li>
@@ -100,6 +100,7 @@ verify what they produce.
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-13-plot-customization.html">Customising Plots</a></li>
     <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Writing Pipelines with AI Assistants</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
@@ -110,7 +111,7 @@ verify what they produce.
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">NEWS</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><a class="external-link nav-link" href="https://slinghub.github.io/MRMhub/">← MRMhub home</a></li>
@@ -131,7 +132,7 @@ verify what they produce.
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.svg" class="logo" alt=""><h1>Writing Pipelines with AI Assistants</h1>
+      <img src="../logo.svg" class="logo" alt=""><h1>Writing pipelines with AI assistants</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/HEAD/vignettes/articles/manual-09-ai-assistants.Rmd" class="external-link"><code>vignettes/articles/manual-09-ai-assistants.Rmd</code></a></small>
@@ -153,7 +154,7 @@ the model an accurate picture of the package, and how to check the code
 it returns.</p>
 <p>It assumes familiarity with the basic workflow. To process data
 directly, start with <a href="tutorial-00-first-analysis.html">Your
-First Analysis</a>.</p>
+first analysis</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="the-problem-a-specialised-package-the-model-has-not-memorised">The problem: a specialised package the model has not memorised<a class="anchor" aria-label="anchor" href="#the-problem-a-specialised-package-the-model-has-not-memorised"></a>
@@ -327,7 +328,7 @@ looks.</li>
 <strong>Confirm the step order</strong> matches the recommended
 pipeline and that drift and batch corrections are fitted on QC samples,
 not study samples. See <a href="manual-03-design-decisions.html">Design
-Decisions</a> for why the order and the QC-only rule matter.</li>
+decisions</a> for why the order and the QC-only rule matter.</li>
 <li>
 <strong>Inspect the numbers</strong>, not just that the script runs
 without error. A pipeline can complete and still be wrong – the wrong
@@ -360,16 +361,16 @@ which keeps everything on-device.</p>
 </h2>
 <ul>
 <li>
-<a href="manual-03-design-decisions.html">Design Decisions</a> — the
+<a href="manual-03-design-decisions.html">Design decisions</a>: the
 conventions an assistant must respect: the <code>mexp -&gt; mexp</code>
 pattern and the pipeline order</li>
 <li>
-<a href="manual-01-key-concepts.html">Key Concepts &amp;
-Glossary</a> — the data model and terminology to give the model (and
+<a href="manual-01-key-concepts.html">Key concepts &amp;
+glossary</a>: the data model and terminology to give the model (and
 yourself) a shared vocabulary</li>
 <li>
-<a href="tutorial-00-first-analysis.html">Your First Analysis</a> —
-a hand-written baseline pipeline to compare generated code against</li>
+<a href="tutorial-00-first-analysis.html">Your first analysis</a>: a
+hand-written baseline pipeline to compare generated code against</li>
 </ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

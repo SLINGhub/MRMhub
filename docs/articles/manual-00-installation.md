@@ -4,8 +4,8 @@ Manual
 
 ## Requirements
 
-- **R ≥ 4.1** — install from [CRAN](https://cran.r-project.org)
-- **An IDE** — [Positron](https://positron.posit.co),
+- **R ≥ 4.1**: install from [CRAN](https://cran.r-project.org)
+- **An IDE**: [Positron](https://positron.posit.co),
   [RStudio](https://posit.co/download/rstudio-desktop/), or [VS
   Code](https://code.visualstudio.com)
 
@@ -46,8 +46,8 @@ needed. If `pak` is unavailable, use
 library(mrmhub)
 ```
 
-If this loads without error, you are ready to go — head to [Your First
-Analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md).
+If this loads without error, you are ready to go. Head to [Your first
+analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md).
 
 ## Troubleshooting Common Errors
 
@@ -76,12 +76,12 @@ FAQ](https://slinghub.github.io/MRMhub/quant/articles/manual-10-troubleshooting.
 
 ## Next steps
 
-- [Key Concepts &
-  Glossary](https://slinghub.github.io/MRMhub/quant/articles/manual-01-key-concepts.md)
-  — core vocabulary and the MRMhubExperiment object
-- [Your First
-  Analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md)
-  — a short end-to-end walkthrough
+- [Key concepts &
+  glossary](https://slinghub.github.io/MRMhub/quant/articles/manual-01-key-concepts.md):
+  core vocabulary and the MRMhubExperiment object
+- [Your first
+  analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md):
+  a short end-to-end walkthrough
 - Questions or bug reports? File an issue on
   [GitHub](https://github.com/SLINGhub/MRMhub/issues), or contact the
   authors directly.

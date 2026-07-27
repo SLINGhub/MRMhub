@@ -22,7 +22,7 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>", eval = FALSE)
 
 Export a processed `MRMhubExperiment` to a Bioconductor
 [SummarizedExperiment](https://bioconductor.org/packages/SummarizedExperiment/),
-then take it downstream — differential abundance with `limma`, lipid-specific
+then take it downstream: differential abundance with `limma`, lipid-specific
 analysis with `lipidr`.
 
 ## 1. Setup
@@ -75,8 +75,8 @@ convention.
 | Component | mrmhub source |
 |---|---|
 | `assays()` | one matrix per feature variable, named without the `feature_` prefix |
-| `rowData()` | `annot_features` — one row per `feature_id` |
-| `colData()` | `annot_analyses` — one row per `analysis_id` |
+| `rowData()` | `annot_features`: one row per `feature_id` |
+| `colData()` | `annot_analyses`: one row per `analysis_id` |
 | `metadata()` | title, analysis type, processing status, `is_*` flags, concentration unit, MRMhub version |
 
 The parallel feature variables become **parallel assays**, so raw, normalized
@@ -115,12 +115,12 @@ se_filt <- save_dataset_summarizedexperiment(mexp_filt, filter_data = TRUE)
 
 ## 4. Subsetting: study samples only
 
-**Everything is exported** — internal standards, QC samples, blanks and
+**Everything is exported**: internal standards, QC samples, blanks and
 calibrants are all present and flagged rather than dropped, because downstream
 tools need them: `lipidr`, for one, requires the internal-standard annotation.
 But nothing downstream reads `qc_type`, so a PCA, normalization or differential
 test will fold blanks, calibrants and QC replicates in with the study samples.
-Subset to study samples before any such analysis — here in one line:
+Subset to study samples before any such analysis, here in one line:
 
 ```{r}
 se_spl <- se[!rowData(se)$is_istd, se$qc_type == "SPL"]
@@ -128,7 +128,7 @@ dim(se_spl)
 #> [1]  20 374
 ```
 
-QC metrics are deliberately *not* written to `rowData()` — nothing downstream
+QC metrics are deliberately *not* written to `rowData()`: nothing downstream
 reads them, and QC filtering belongs in MRMhub where it is tested. Use
 `filter_data = TRUE` as above, or `save_feature_qc_metrics()` for the metrics
 themselves. To attach them to the features anyway:
@@ -148,7 +148,7 @@ data such as concentrations. Note that `voom()` is **not** used: it models count
 data and is invalid here.
 
 ::: {.callout .callout-note}
-The bundled `lipidomics_dataset` carries no phenotype — every study sample is
+The bundled `lipidomics_dataset` carries no phenotype: every study sample is
 plasma from the same longitudinal series. The grouping below is **simulated to
 demonstrate the interface only**; the p-values are meaningless by construction.
 With your own data, the group would come from your sample metadata and already
@@ -182,7 +182,7 @@ topTable(fit, number = 5)
 ```
 
 Because `colData()` carries the full analysis annotation, covariates are
-available without extra joins — for example blocking on batch:
+available without extra joins, for example blocking on batch:
 
 ```{r}
 design <- model.matrix(~ 0 + group + batch_id, data = colData(se_spl))
@@ -202,14 +202,14 @@ le <- save_dataset_summarizedexperiment(
 
 MRMhub fills in what lipidr requires: `Molecule` from `feature_id`, `Class` from
 `feature_class`, `istd` from `is_istd`, plus the `summarized` / `logged` /
-`normalized` flags lipidr reads but does **not** validate — an object missing
+`normalized` flags lipidr reads but does **not** validate: an object missing
 them constructs cleanly and then misbehaves.
 
 ::: {.callout .callout-caution}
 **Use a peak-area scale variable with lipidr, not concentrations.** lipidr
 log-transforms with `log = TRUE` by default and **clamps values below 1 to 1**
 first, which assumes Skyline peak-area magnitudes. Concentrations in µmol/L are
-mostly below 1, so they are silently flattened to `log2(1) = 0` — `eBayes()` then
+mostly below 1, so they are silently flattened to `log2(1) = 0`; `eBayes()` then
 reports zero residual variances and every fold change collapses. MRMhub warns
 when you export a mostly-sub-1 assay this way.
 
@@ -255,7 +255,7 @@ plot_results_volcano(de_results, show.labels = FALSE)
 
 ## Next steps
 
-- [Import & export mzTab-M](recipe-03-mztab-export.html) — the standard exchange format for repositories such as MetaboLights.
-- [Design Decisions](manual-03-design-decisions.html) — why `MRMhubExperiment` is not itself a Bioconductor class.
-- [Lipidomics workflow](tutorial-03-lipidomics-workflow.html) — QC-filter features before exporting.
-- [Custom QC report](recipe-02-custom-qc-report.html) — reporting straight from MRMhub.
+- [Import & export mzTab-M](recipe-03-mztab-export.html): the standard exchange format for repositories such as MetaboLights.
+- [Design decisions](manual-03-design-decisions.html): why `MRMhubExperiment` is not itself a Bioconductor class.
+- [Lipidomics workflow](tutorial-03-lipidomics-workflow.html): QC-filter features before exporting.
+- [Custom QC report](recipe-02-custom-qc-report.html): reporting straight from MRMhub.

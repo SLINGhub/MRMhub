@@ -2,7 +2,7 @@
 title: "Your first analysis"
 description: >
   A short walkthrough on the bundled demo data: import a result file, normalize
-  by internal standard, inspect the run, and export — no external files needed.
+  by internal standard, inspect the run, and export: no external files needed.
 output:
   rmarkdown::html_vignette:
     fig_width: 6
@@ -55,7 +55,7 @@ to inspect for run-order drift.
 plot_runscatter(mexp, variable = "norm_intensity")
 ```
 
-Printing the object returns a compact status overview — `status(mexp)` prints the
+Printing the object returns a compact status overview: `status(mexp)` prints the
 full report. If you prefer not to write code, `build_workflow()` opens an
 interactive application that validates your data and metadata, flags pipeline
 mismatches, and generates an equivalent Quarto workflow to download (see
@@ -91,8 +91,8 @@ save_dataset_csv(mexp, path = "my_first_results.csv")
 
 ## Next steps
 
-- [Key concepts and glossary](manual-01-key-concepts.html) — understand the data model
-- [Preparing and importing data](tutorial-01-prep-data.html) — import your own data and metadata
-- [Basic MRMhub workflow](tutorial-02-basic-workflow.html) — the full end-to-end pipeline
-- [Lipidomics data processing](tutorial-03-lipidomics-workflow.html) — a detailed real-world workflow
-- [Customising plots](manual-13-plot-customization.html) — size text, legends and points for reports
+- [Key concepts and glossary](manual-01-key-concepts.html): understand the data model
+- [Preparing and importing data](tutorial-01-prep-data.html): import your own data and metadata
+- [Basic MRMhub workflow](tutorial-02-basic-workflow.html): the full end-to-end pipeline
+- [Lipidomics data processing](tutorial-03-lipidomics-workflow.html): a detailed real-world workflow
+- [Customising plots](manual-13-plot-customization.html): size text, legends and points for reports

@@ -1,4 +1,4 @@
-# Import Metadata from Files or a Template
+# Import metadata from files or a template
 
 Recipe
 
@@ -7,8 +7,8 @@ an `MRMhubExperiment` after the analytical data has been imported.
 Metadata can be added table by table from individual files, from the
 sheets of a single Excel workbook, from R `data.frame` objects, or in
 one step from an MSOrganiser template. For the structure of each table,
-see [Metadata Tables &
-Matching](https://slinghub.github.io/MRMhub/quant/articles/manual-05-metadata.md).
+see [Metadata tables &
+matching](https://slinghub.github.io/MRMhub/quant/articles/manual-05-metadata.md).
 
 ## Obtain the templates
 
@@ -23,8 +23,8 @@ mrmhub::save_metadata_templates()
 ## Import from files and sheets
 
 The analytical data is imported first, as outlined in [Importing
-Analytical
-Data](https://slinghub.github.io/MRMhub/quant/articles/manual-04-data-import.md),
+analytical
+data](https://slinghub.github.io/MRMhub/quant/articles/manual-04-data-import.md),
 reading only the peak areas (`import_metadata = FALSE`).
 
 ``` r
@@ -53,7 +53,7 @@ mexp <- import_metadata_features(
 ```
 
 Metadata can also be read from the sheets of a single Excel workbook,
-keeping all tables in one file — here the internal-standard metadata:
+keeping all tables in one file, here the internal-standard metadata:
 
 ``` r
 
@@ -76,7 +76,7 @@ mexp <- import_metadata_qcconcentrations(mexp, table = df_qcinfo)
 ## Import an MSOrganiser template
 
 Alternatively, all metadata can be imported in one step from an
-MSOrganiser template — an Excel file providing tables for every metadata
+MSOrganiser template, an Excel file providing tables for every metadata
 type, with built-in validity and integrity checks. Obtain it from
 <https://github.com/SLINGhub/mrmhub> or save it directly:
 
@@ -98,12 +98,12 @@ mexp <- import_metadata_msorganiser(
 
 ## Next steps
 
-- [Metadata Tables &
-  Matching](https://slinghub.github.io/MRMhub/quant/articles/manual-05-metadata.md)
-  — the structure of each metadata table
-- [Validating
-  metadata](https://slinghub.github.io/MRMhub/quant/articles/tutorial-10-metadata-validation.md)
-  — checking metadata before processing
-- [Importing Analytical
-  Data](https://slinghub.github.io/MRMhub/quant/articles/manual-04-data-import.md)
-  — importing the measurement data
+- [Metadata tables &
+  matching](https://slinghub.github.io/MRMhub/quant/articles/manual-05-metadata.md):
+  the structure of each metadata table
+- [Validating and fixing
+  metadata](https://slinghub.github.io/MRMhub/quant/articles/recipe-04-validate-metadata.md):
+  checking metadata before processing
+- [Importing analytical
+  data](https://slinghub.github.io/MRMhub/quant/articles/manual-04-data-import.md):
+  importing the measurement data

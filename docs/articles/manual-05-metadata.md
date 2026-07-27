@@ -1,16 +1,15 @@
-# Metadata Tables & Matching
+# Metadata tables & matching
 
 Manual
 
 Metadata in this context refers to analysis metadata, i.e., data that
-annotate the analytical data. MRMhub stores it in five tables —
-analyses, features, internal standards, response curves, and
-calibration/QC concentrations — that are attached to an
-`MRMhubExperiment` and linked to the measurements by identifier. This
-page documents the structure of each table and how identifiers are
-matched. For the steps to obtain the templates and import metadata, see
-[Import Metadata from Files or a
-Template](https://slinghub.github.io/MRMhub/quant/articles/recipe-05-import-metadata.md).
+annotate the analytical data. MRMhub stores it in five tables (analyses,
+features, internal standards, response curves, and calibration/QC
+concentrations) that are attached to an `MRMhubExperiment` and linked to
+the measurements by identifier. This page documents the structure of
+each table and how identifiers are matched. For the steps to obtain the
+templates and import metadata, see [Import metadata from files or a
+template](https://slinghub.github.io/MRMhub/quant/articles/recipe-05-import-metadata.md).
 
 Integrity of metadata and data is essential for correct post-processing:
 MRMhub inspects imported data and metadata for completeness and for
@@ -132,7 +131,7 @@ If analyses appear to be missing after
 [`add_metadata()`](https://slinghub.github.io/MRMhub/quant/reference/add_metadata.md),
 a difference in identifier spelling is the usual cause. Whitespace
 differences are always squished on both sides and no warning is issued
-for them — they are handled silently so a stray space cannot cause a
+for them: they are handled silently so a stray space cannot cause a
 hard-to-trace mapping failure. Other differences (a raw-data extension
 the import does not recognize, a typo, or a different naming scheme) are
 not normalized, and the affected analyses are dropped from the join with
@@ -140,15 +139,15 @@ a warning.
 
 ## Next steps
 
-- [Import Metadata from Files or a
-  Template](https://slinghub.github.io/MRMhub/quant/articles/recipe-05-import-metadata.md)
-  — the import steps
-- [Importing Analytical
-  Data](https://slinghub.github.io/MRMhub/quant/articles/manual-04-data-import.md)
-  — importing the measurement data
-- [Sample Types & QC
-  Roles](https://slinghub.github.io/MRMhub/quant/articles/manual-06-sample-types.md)
-  — the `qc_type` values that drive QC logic
-- [The MRMhubExperiment Data
-  Object](https://slinghub.github.io/MRMhub/quant/articles/manual-02-data-object.md)
-  — where the metadata is stored
+- [Import metadata from files or a
+  template](https://slinghub.github.io/MRMhub/quant/articles/recipe-05-import-metadata.md):
+  the import steps
+- [Importing analytical
+  data](https://slinghub.github.io/MRMhub/quant/articles/manual-04-data-import.md):
+  importing the measurement data
+- [Sample types & QC
+  roles](https://slinghub.github.io/MRMhub/quant/articles/manual-06-sample-types.md):
+  the `qc_type` values that drive QC logic
+- [The MRMhubExperiment data
+  object](https://slinghub.github.io/MRMhub/quant/articles/manual-02-data-object.md):
+  where the metadata is stored

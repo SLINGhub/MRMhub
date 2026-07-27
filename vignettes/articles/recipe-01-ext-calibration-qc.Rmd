@@ -148,6 +148,6 @@ print(tbl)
 
 ## Next steps
 
-- [Calibration by a reference sample](tutorial-07-calibration-reference.html) — an alternative to external calibration curves
-- [Custom QC report](recipe-02-custom-qc-report.html) — build a formatted QC report from processed data
-- [Visualisation functions](manual-08-visualization.html) — the plotting reference, including calibration and QC plots
+- [Calibration by a reference sample](tutorial-07-calibration-reference.html): an alternative to external calibration curves
+- [Custom QC report](recipe-02-custom-qc-report.html): build a formatted QC report from processed data
+- [Visualisation functions](manual-08-visualization.html): the plotting reference, including calibration and QC plots

@@ -28,14 +28,14 @@ plot_calibrationcurves(
   output_pdf = FALSE,
   path = NA,
   return_plots = FALSE,
-  point_size = 1.5,
+  point_size = NULL,
   point_color = NA,
   point_fill = NA,
   point_shape = NA,
   line_width = 0.7,
   line_color = "#4575b4",
   ribbon_fill = "#e6f6ff",
-  font_base_size = 8,
+  font_base_size = NULL,
   rows_page = 4,
   cols_page = 5,
   specific_page = NA,
@@ -192,7 +192,13 @@ plot_calibrationcurves(
 
 - font_base_size:
 
-  Numeric. Base font size (in points) for plot text. Default is 8.
+  Numeric. Base font size (in points) for plot text; all plot text
+  scales proportionally with this value. `NULL` (default) uses the
+  global default set by
+  [`mrmhub_set_plot_defaults()`](https://slinghub.github.io/MRMhub/quant/reference/mrmhub_set_plot_defaults.md)
+  if one is in effect, otherwise an automatic size (derived from the
+  facet-column count on paged plots, or the per-plot default shown in
+  the Usage section above).
 
 - rows_page:
 

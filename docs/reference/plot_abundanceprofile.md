@@ -28,7 +28,7 @@ plot_abundanceprofile(
   x_label = NA,
   y_axis_position = "right",
   segment_width = 0.25,
-  font_base_size = 8,
+  font_base_size = NULL,
   grid_major_color = "grey50",
   grid_major_linewidth = 0.1,
   grid_minor_color = "grey50",
@@ -162,7 +162,13 @@ plot_abundanceprofile(
 
 - font_base_size:
 
-  Numeric. Base font size (in points) for plot text. Default is 8.
+  Numeric. Base font size (in points) for plot text; all plot text
+  scales proportionally with this value. `NULL` (default) uses the
+  global default set by
+  [`mrmhub_set_plot_defaults()`](https://slinghub.github.io/MRMhub/quant/reference/mrmhub_set_plot_defaults.md)
+  if one is in effect, otherwise an automatic size (derived from the
+  facet-column count on paged plots, or the per-plot default shown in
+  the Usage section above).
 
 - grid_major_color:
 

@@ -153,10 +153,10 @@ plot_runscatter(
 
 Gaps in the x-axis can arise in two ways:
 
-1. **Filtered QC types** — when only a subset of QC types is selected, the
+1. **Filtered QC types**: when only a subset of QC types is selected, the
    unselected positions leave gaps. Use `collapse_excluded = TRUE` to close
    them.
-2. **Unannotated analyses** — when some runs in the analytical sequence have no
+2. **Unannotated analyses**: when some runs in the analytical sequence have no
    corresponding entry in `@dataset` (e.g. solvent blanks or system
    suitability injections that were not imported), the analysis order contains
    discontinuities. Use `remove_gaps = TRUE` to collapse these and mark the
@@ -258,7 +258,7 @@ plot_runscatter(
 ## 10. Trend curves
 
 Trend curves visualise the fitted signal used during drift or batch correction. They require a
-prior correction step — `show_trend = TRUE` will error if no drift or batch correction has been
+prior correction step. `show_trend = TRUE` will error if no drift or batch correction has been
 applied. To plot the values *before* the last correction, append `_before` to the variable name
 (e.g. `variable = "intensity_before"`); for the original uncorrected values use `_raw`
 (e.g. `variable = "intensity_raw"`).
@@ -311,7 +311,7 @@ plot_pca(
 
 The loading plot identifies the features driving the principal components; features at the
 extremes contribute most to sample separation. A single feature dominating PC1 should be
-inspected — it is often a saturated or contaminated transition rather than a biological
+inspected: it is often a saturated or contaminated transition rather than a biological
 signal.
 
 ```{r pca-loadings}
@@ -353,13 +353,13 @@ The SD-based fence is sensitive to the very outliers it tries to detect: a singl
 observation inflates the SD estimate. The MAD-based fence is robust to a few large
 deviations and is generally preferable for QC screening. A typical multiplier is
 `fence_multiplicator = 3` (≈99.7% under normality) or `4` for a more permissive screen.
-The function evaluates one principal component at a time — re-run with `pca_component = 2`
+The function evaluates one principal component at a time; re-run with `pca_component = 2`
 to screen PC2.
 </details>
 
 A sample flagged by PCA is a candidate for investigation, not a verdict. Outlier patterns
 frequently reflect genuine biology (e.g. a disease group or a sex difference), so an
-injection should be excluded only where a documented technical cause is identified — a
+injection should be excluded only where a documented technical cause is identified: a
 failed injection, contamination, instrument fault, or sample-handling error.
 
 ### Excluding analyses and features
@@ -396,7 +396,7 @@ mexp <- exclude_features(mexp, features = c("PC 32:0"), clear_existing = FALSE)
 
 ## Next steps
 
-- [Drift and batch correction](tutorial-04-drift-correction.html) — apply and inspect corrections
-- [Visualisation functions](manual-08-visualization.html) — the full list of plotting functions
-- [Customising plots](manual-13-plot-customization.html) — sizing text, legends and points without `+ theme()`
-- [Basic MRMhub workflow](tutorial-02-basic-workflow.html) — where these checks fit in the pipeline
+- [Drift and batch correction](tutorial-04-drift-correction.html): apply and inspect corrections
+- [Visualisation functions](manual-08-visualization.html): the full list of plotting functions
+- [Customising plots](manual-13-plot-customization.html): sizing text, legends and points without `+ theme()`
+- [Basic MRMhub workflow](tutorial-02-basic-workflow.html): where these checks fit in the pipeline

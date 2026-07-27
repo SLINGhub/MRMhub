@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Design Decisions: Why This Architecture? • mrmhub</title>
+<title>Design decisions behind MRMhub QUANT • mrmhub</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
@@ -16,12 +16,12 @@
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
-<meta property="og:title" content="Design Decisions: Why This Architecture?">
-<meta name="description" content="Explains the key design decisions behind MRMhub QUANT -- for power users
-and contributors who want to understand or extend the package.
+<meta property="og:title" content="Design decisions behind MRMhub QUANT">
+<meta name="description" content="The main architectural choices behind MRMhub QUANT and the reasoning for
+each -- for contributors and users who want to understand or extend the package.
 ">
-<meta property="og:description" content="Explains the key design decisions behind MRMhub QUANT -- for power users
-and contributors who want to understand or extend the package.
+<meta property="og:description" content="The main architectural choices behind MRMhub QUANT and the reasoning for
+each -- for contributors and users who want to understand or extend the package.
 ">
 <meta property="og:image" content="https://slinghub.github.io/MRMhub/quant/logo.svg">
 </head>
@@ -33,7 +33,7 @@ and contributors who want to understand or extend the package.
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -64,7 +64,6 @@ and contributors who want to understand or extend the package.
     <li><h6 class="dropdown-header" data-toc-skip>Techniques</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-04-drift-correction.html">Drift and batch correction</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-07-calibration-reference.html">Calibration by reference sample</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-10-metadata-validation.html">Validating metadata</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-11-interference-correction.html">Interference correction</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
@@ -77,6 +76,7 @@ and contributors who want to understand or extend the package.
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-04-validate-metadata.html">Validate &amp; fix metadata</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul>
 </li>
@@ -98,6 +98,7 @@ and contributors who want to understand or extend the package.
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-13-plot-customization.html">Customising Plots</a></li>
     <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Writing Pipelines with AI Assistants</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
@@ -108,7 +109,7 @@ and contributors who want to understand or extend the package.
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">NEWS</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><a class="external-link nav-link" href="https://slinghub.github.io/MRMhub/">← MRMhub home</a></li>
@@ -129,7 +130,7 @@ and contributors who want to understand or extend the package.
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.svg" class="logo" alt=""><h1>Design Decisions: Why This Architecture?</h1>
+      <img src="../logo.svg" class="logo" alt=""><h1>Design decisions behind MRMhub QUANT</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/HEAD/vignettes/articles/manual-03-design-decisions.Rmd" class="external-link"><code>vignettes/articles/manual-03-design-decisions.Rmd</code></a></small>
@@ -141,24 +142,18 @@ and contributors who want to understand or extend the package.
 <p class="page-kind page-kind-manual">
 Manual
 </p>
+<p>This article documents the main architectural choices behind MRMhub
+QUANT and the reasoning for each. It is written for contributors and for
+users who want to understand how the package is structured before
+extending it. For a task-oriented introduction to running an analysis,
+see <a href="tutorial-00-first-analysis.html">Your first
+analysis</a>.</p>
 <div class="section level2">
-<h2 id="audience">Audience<a class="anchor" aria-label="anchor" href="#audience"></a>
+<h2 id="one-s4-object-holds-data-metadata-and-state">One S4 object holds data, metadata, and state<a class="anchor" aria-label="anchor" href="#one-s4-object-holds-data-metadata-and-state"></a>
 </h2>
-<p>This article is for:</p>
-<ul>
-<li>Power users who want to understand <em>why</em> QUANT works the way
-it does</li>
-<li>Contributors who want to extend the package</li>
-<li>Developers building tools on top of MRMhub</li>
-</ul>
-<p>To start processing data directly, see <a href="tutorial-00-first-analysis.html">Your First Analysis</a>
-instead.</p>
-</div>
-<div class="section level2">
-<h2 id="decision-1-s4-class-mrmhubexperiment-vs-tidy-tibbles">Decision 1: S4 Class (MRMhubExperiment) vs Tidy Tibbles<a class="anchor" aria-label="anchor" href="#decision-1-s4-class-mrmhubexperiment-vs-tidy-tibbles"></a>
-</h2>
-<p><strong>Choice:</strong> A single S4 object holds all data, metadata,
-and processing state.</p>
+<p>All data, metadata, and processing state for an experiment live in a
+single S4 object, <code>MRMhubExperiment</code>, rather than in loose
+tibbles passed between functions.</p>
 <details><summary><strong>Alternatives considered</strong>
 </summary><table class="table">
 <colgroup>
@@ -188,38 +183,30 @@ target</strong> instead</td>
 error-prone for data analysis</td>
 </tr>
 </tbody>
-</table></details><p><strong>Rationale:</strong></p>
-<ol style="list-style-type: decimal">
-<li><p><strong>Traceability</strong> — The S4 object bundles original
-data, processed data, annotations, and processing flags in one
-place.</p></li>
-<li><p><strong>Integrity checking</strong> — S4 validity methods ensure
-data and metadata stay in sync. Analyses cannot be accidentally deleted
-without updating annotations.</p></li>
-<li><p><strong>Pipeline state</strong> — Flags like
-<code>is_istd_normalized</code>, <code>var_drift_corrected</code>
-prevent accidental double-processing.</p></li>
-<li>
-<p><strong>Not SummarizedExperiment — but exports to it.</strong> SE
-models a feature × sample matrix. It offers no <em>typed</em> home for
-<code>dataset_orig</code>, for the processing state, or for the
-annotation tables that are not one-row-per-feature
-(<code>annot_responsecurves</code>, <code>annot_qcconcentrations</code>,
-<code>metrics_calibration</code>) — they can only ride along as an
-untyped <code>metadata()</code> list. And while <code>colData</code>
-happily <em>carries</em> <code>qc_type</code> and <code>batch_id</code>,
-no Bioconductor class <em>models</em> them, nor calibration curves or
-internal-standard relationships: nothing downstream knows that a
-<code>PBLK</code> column is a blank, or that one feature normalizes
-another. Enforcing that is the work QUANT exists to do.</p>
-<p>The argument is about the <em>internal</em> representation only.
-Several parallel intensity variables are no obstacle — SE holds them as
-parallel assays, which is exactly what the exporter relies on. Once an
-experiment is processed, <a href="tutorial-08-summarizedexperiment.html"><code>save_dataset_summarizedexperiment()</code></a>
-hands it to <code>limma</code>, <code>lipidr</code>, <code>POMA</code>
-and the rest of the ecosystem.</p>
-</li>
-</ol>
+</table></details><p>Three properties motivate this. The object keeps the original data,
+the processed data, the annotation tables, and the processing flags
+together, so an analysis is traceable from raw import to final result.
+S4 validity methods check that data and metadata stay consistent, so
+analyses cannot be dropped from <code>dataset</code> without the
+corresponding annotations being accounted for. And the status flags
+(<code>is_istd_normalized</code>, <code>var_drift_corrected</code>, and
+the rest) record what has been applied, which lets later functions
+detect and refuse accidental double-processing.</p>
+<p>QUANT does not use <code>SummarizedExperiment</code> as its internal
+representation, though it exports to one. SE models a feature × sample
+matrix and offers no typed home for <code>dataset_orig</code>, for the
+processing state, or for the annotation tables that are not one row per
+feature (<code>annot_responsecurves</code>,
+<code>annot_qcconcentrations</code>, <code>metrics_calibration</code>);
+those can only ride along in an untyped <code>metadata()</code> list.
+While <code>colData</code> can carry <code>qc_type</code> and
+<code>batch_id</code>, no Bioconductor class models them, nor
+calibration curves or internal-standard relationships. The distinction
+concerns only the internal representation: once an experiment is
+processed, <a href="tutorial-08-summarizedexperiment.html"><code>save_dataset_summarizedexperiment()</code></a>
+hands it to the Bioconductor ecosystem (<code>limma</code>,
+<code>lipidr</code>, <code>POMA</code>), where the several parallel
+intensity variables map onto parallel assays.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># The object structure:</span></span>
 <span><span class="fu">slotNames</span><span class="op">(</span><span class="st">"MRMhubExperiment"</span><span class="op">)</span></span>
@@ -234,9 +221,9 @@ and the rest of the ecosystem.</p>
 <span><span class="co">#&gt; [25] "var_drift_corrected"    "var_batch_corrected"</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="decision-2-long-format-data-exchange">Decision 2: Long-Format Data Exchange<a class="anchor" aria-label="anchor" href="#decision-2-long-format-data-exchange"></a>
+<h2 id="long-format-data-exchange">Long-format data exchange<a class="anchor" aria-label="anchor" href="#long-format-data-exchange"></a>
 </h2>
-<p><strong>Choice:</strong> The canonical data exchange format is a long
+<p>The canonical exchange format between INTEGRATOR and QUANT is a long
 CSV with one row per feature per sample.</p>
 <details><summary><strong>Alternatives considered</strong>
 </summary><table class="table">
@@ -287,6 +274,10 @@ filtering</td>
 </tr>
 </tbody>
 </table>
+<p>Long format handles a variable number of features per study without
+NA padding, is straightforward to filter, group, and join, and feeds
+directly into ggplot2 without an intermediate pivot. It also keeps the
+distinction between a missing value and a true zero explicit.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Expected long format:</span></span>
 <span><span class="co"># | analysis_id | feature_id | area   | rt   |</span></span>
@@ -296,12 +287,11 @@ filtering</td>
 <span><span class="co"># | Sample_002  | LPC_18:1   | 11234  | 2.30 |</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="decision-3-feature-and-analyte-are-distinct-identifiers">Decision 3: Feature and analyte are distinct identifiers<a class="anchor" aria-label="anchor" href="#decision-3-feature-and-analyte-are-distinct-identifiers"></a>
+<h2 id="feature-and-analyte-as-distinct-identifiers">Feature and analyte as distinct identifiers<a class="anchor" aria-label="anchor" href="#feature-and-analyte-as-distinct-identifiers"></a>
 </h2>
-<p><strong>Choice:</strong> <code>feature_id</code> identifies a
-distinct signal extracted from the MS data, while
-<code>analyte_id</code> identifies the compound that signal measures.
-The two are kept separate because they are not one-to-one.</p>
+<p><code>feature_id</code> identifies a distinct signal extracted from
+the MS data; <code>analyte_id</code> identifies the compound that signal
+measures. The two are kept separate because they are not one-to-one.</p>
 <details><summary><strong>Alternatives considered</strong>
 </summary><table class="table">
 <colgroup>
@@ -324,32 +314,24 @@ feature shared by isobaric analytes</td>
 reporting</td>
 </tr>
 </tbody>
-</table></details><p><strong>Rationale:</strong> A feature is a distinct signal extracted
-from the MS data. Feature and analyte are not one-to-one: one analyte
-can give several features (isotopes, adducts, transitions), and one
-feature can carry several analytes when they are isobaric or isomeric
-(e.g. SM/PC). INTEGRATOR selects the quantifier signal for each feature,
-so by the time data reaches QUANT each <code>feature_id</code> is one
-value per sample, while <code>analyte_id</code> links the features that
-measure the same compound.</p>
+</table></details><p>One analyte can produce several features (isotopes, adducts,
+transitions), and one feature can carry several analytes when they are
+isobaric or isomeric, as with SM and PC species. INTEGRATOR selects one
+quantifier signal per feature, so by the time data reaches QUANT each
+<code>feature_id</code> holds one value per sample, while
+<code>analyte_id</code> links the features that measure the same
+compound.</p>
 </div>
 <div class="section level2">
-<h2 id="decision-4-immutable-original-data">Decision 4: Immutable Original Data<a class="anchor" aria-label="anchor" href="#decision-4-immutable-original-data"></a>
+<h2 id="immutable-original-data">Immutable original data<a class="anchor" aria-label="anchor" href="#immutable-original-data"></a>
 </h2>
-<p><strong>Choice:</strong> <code>dataset_orig</code> is never modified
-after import. All processing operates on <code>dataset</code>.</p>
-<details><summary><strong>Why this matters</strong>
-</summary><ul>
-<li>
-<strong>Reproducibility:</strong> re-run any step without
-re-importing</li>
-<li>
-<strong>Debugging:</strong> compare original vs processed to verify
-corrections</li>
-<li>
-<strong>Auditability:</strong> the raw data is always accessible for
-review</li>
-</ul></details><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<p><code>dataset_orig</code> is never modified after import; all
+processing operates on <code>dataset</code>. Keeping the imported data
+untouched means any step can be re-run without re-importing, the
+processed values can be compared against the originals to verify a
+correction, and the raw data remains available for review at any
+point.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># You can always reset:</span></span>
 <span><span class="va">mexp</span><span class="op">@</span><span class="va">dataset</span> <span class="op">&lt;-</span> <span class="va">mexp</span><span class="op">@</span><span class="va">dataset_orig</span></span>
 <span></span>
@@ -358,10 +340,11 @@ review</li>
 <span><span class="va">processed</span> <span class="op">&lt;-</span> <span class="va">mexp</span><span class="op">@</span><span class="va">dataset</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">feature_id</span> <span class="op">==</span> <span class="st">"LPC_18:1"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="decision-5-qc-centric-correction">Decision 5: QC-Centric Correction<a class="anchor" aria-label="anchor" href="#decision-5-qc-centric-correction"></a>
+<h2 id="qc-based-drift-and-batch-correction">QC-based drift and batch correction<a class="anchor" aria-label="anchor" href="#qc-based-drift-and-batch-correction"></a>
 </h2>
-<p><strong>Choice:</strong> Drift and batch correction are exclusively
-based on QC samples, never study samples.</p>
+<p>Drift and batch corrections are typically fitted on QC samples; the
+gaussian-kernel method is the exception, fitting on study samples for
+large, well-randomised cohorts.</p>
 <details><summary><strong>Alternatives considered</strong>
 </summary><table class="table">
 <colgroup>
@@ -385,15 +368,19 @@ based on QC samples, never study samples.</p>
 </table>
 <p>Reference: Broadhurst et al. (2018). <em>Metabolomics</em>, 14,
 72.</p>
-</details><p><strong>Implication:</strong> Sufficient QC samples (≥ 5 per batch,
-evenly distributed) are required for correction to work well.</p>
+</details><p>Fitting on study samples would remove real biological variation
+together with the analytical trend, and an external reference alone is
+not always available and responds poorly to within-run drift. Fitting on
+QC samples therefore requires enough of them per batch (as a rule of
+thumb at least five, evenly distributed across the run) for the
+correction to be stable.</p>
 </div>
 <div class="section level2">
-<h2 id="decision-6-explicit-processing-order">Decision 6: Explicit Processing Order<a class="anchor" aria-label="anchor" href="#decision-6-explicit-processing-order"></a>
+<h2 id="processing-order-by-convention-not-enforcement">Processing order by convention, not enforcement<a class="anchor" aria-label="anchor" href="#processing-order-by-convention-not-enforcement"></a>
 </h2>
-<p><strong>Choice:</strong> Functions should be called in a specific
-order. The package communicates via status flags rather than enforcing
-with hard errors.</p>
+<p>Functions are intended to be called in a set order, but the package
+signals that order through status flags rather than enforcing it with
+hard errors.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Recommended order:</span></span>
 <span><span class="co"># 1. import</span></span>
@@ -405,20 +392,19 @@ with hard errors.</p>
 <span><span class="co"># 7. quantify_by_*</span></span>
 <span><span class="co"># 8. calc_qc_metrics</span></span>
 <span><span class="co"># 9. filter_features_qc</span></span></code></pre></div>
-<details><summary><strong>Why not enforce strict order?</strong>
-</summary><ul>
-<li>Some workflows skip steps (no ISTD, no drift correction)</li>
-<li>Researchers need flexibility to experiment</li>
-<li>Hard errors would frustrate exploratory analysis</li>
-<li>Status flags provide guidance without blocking</li>
-</ul></details>
+<p>Strict enforcement is avoided because valid workflows legitimately
+skip steps: an assay without internal standards omits normalization, and
+a short single-batch run needs no drift correction. Hard errors would
+obstruct such exploratory reprocessing. The status flags record what has
+run and let each function warn when a prerequisite is missing, without
+blocking.</p>
 </div>
 <div class="section level2">
-<h2 id="decision-7-separation-of-integrator-and-quant">Decision 7: Separation of INTEGRATOR and QUANT<a class="anchor" aria-label="anchor" href="#decision-7-separation-of-integrator-and-quant"></a>
+<h2 id="separation-of-integrator-and-quant">Separation of INTEGRATOR and QUANT<a class="anchor" aria-label="anchor" href="#separation-of-integrator-and-quant"></a>
 </h2>
-<p><strong>Choice:</strong> Raw data processing (peak integration) and
-post-processing (normalization, QC) are separate tools in different
-languages.</p>
+<p>Raw-data processing (peak detection and integration) and
+post-processing (normalization, quantitation, QC) are separate tools
+written in different languages.</p>
 <table class="table">
 <thead><tr class="header">
 <th>INTEGRATOR</th>
@@ -443,8 +429,9 @@ languages.</p>
 </tr>
 </tbody>
 </table>
-<p>The interface is a CSV file. Either tool can be replaced
-independently, and data can be inspected at the handoff point.</p>
+<p>The interface between them is a CSV file, so either tool can be
+replaced independently and the data can be inspected at the handoff
+point.</p>
 </div>
 <div class="section level2">
 <h2 id="why-quant-is-an-r-package">Why QUANT is an R package<a class="anchor" aria-label="anchor" href="#why-quant-is-an-r-package"></a>
@@ -463,16 +450,12 @@ produces the figures, the report, and the audit trail.</p>
 <div class="section level2">
 <h2 id="extending-mrmhub">Extending MRMhub<a class="anchor" aria-label="anchor" href="#extending-mrmhub"></a>
 </h2>
-<details><summary><strong>Guidelines for new functions</strong>
-</summary><p>All functions should:</p>
-<ol style="list-style-type: decimal">
-<li>Accept <code>MRMhubExperiment</code> as first argument</li>
-<li>Return <code>MRMhubExperiment</code> (for pipeline functions) or a
-result object</li>
-<li>Update relevant status flags</li>
-<li>Not modify <code>dataset_orig</code>
-</li>
-</ol>
+<p>All processing functions follow the same contract: they take an
+<code>MRMhubExperiment</code> as the first argument, return an
+<code>MRMhubExperiment</code> (pipeline functions) or a result object,
+update the relevant status flags, and never modify
+<code>dataset_orig</code>. New code extends one of a few established
+patterns.</p>
 <table class="table">
 <colgroup>
 <col width="64%">
@@ -486,7 +469,7 @@ result object</li>
 <tr class="odd">
 <td>New correction method</td>
 <td>
-<code>R/correct-*.R</code> — takes and returns
+<code>R/correct-*.R</code>: takes and returns
 <code>MRMhubExperiment</code>
 </td>
 </tr>
@@ -498,14 +481,14 @@ result object</li>
 </tr>
 <tr class="odd">
 <td>New plot</td>
-<td>Follow <code>R/plots-*.R</code> — takes mexp, returns ggplot</td>
+<td>Follow <code>R/plots-*.R</code>: takes mexp, returns ggplot</td>
 </tr>
 <tr class="even">
 <td>New QC metric</td>
 <td>Extend <code><a href="../reference/calc_qc_metrics.html">calc_qc_metrics()</a></code> or add a helper</td>
 </tr>
 </tbody>
-</table></details>
+</table>
 </div>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
@@ -514,12 +497,6 @@ result object</li>
 <li>Broadhurst et al. (2018). Guidelines and considerations for the use
 of system suitability and quality control samples in mass spectrometry
 assays. <em>Metabolomics</em>, 14, 72.</li>
-<li>Morgan M, Obenchain V, Hester J, Pagès H (2026).
-SummarizedExperiment: A container (S4 class) for matrix-like assays. <a href="doi:%5B10.18129/B9.bioc.SummarizedExperiment" class="uri">doi:[10.18129/B9.bioc.SummarizedExperiment</a>](<a href="https://doi.org/10.18129/B9.bioc.SummarizedExperiment" class="external-link uri">https://doi.org/10.18129/B9.bioc.SummarizedExperiment</a>).
-R package version 1.42.0, <a href="https://bioconductor.org/packages/SummarizedExperiment" class="external-link uri">https://bioconductor.org/packages/SummarizedExperiment</a>.</li>
-<li>Mohamed A, Molendijk J, Hill MM (2020). lipidr: A Software Tool for
-Data Mining and Analysis of Lipidomics Datasets. <em>Journal of Proteome
-Research</em>, 19(7), 2890–2897. <a href="doi:%5B10.1021/acs.jproteome.0c00082" class="uri">doi:[10.1021/acs.jproteome.0c00082</a>](<a href="https://doi.org/10.1021/acs.jproteome.0c00082" class="external-link uri">https://doi.org/10.1021/acs.jproteome.0c00082</a>).</li>
 </ul>
 </div>
 <div class="section level2">
@@ -527,14 +504,14 @@ Research</em>, 19(7), 2890–2897. <a href="doi:%5B10.1021/acs.jproteome.0c00082
 </h2>
 <ul>
 <li>
-<a href="manual-02-data-object.html">The MRMhubExperiment Data
-Object</a> — the object and its slots in detail</li>
+<a href="manual-02-data-object.html">The MRMhubExperiment data
+object</a>: the object and its slots in detail</li>
 <li>
-<a href="manual-01-key-concepts.html">Key Concepts &amp;
-Glossary</a> — the vocabulary used throughout</li>
+<a href="manual-01-key-concepts.html">Key concepts &amp;
+glossary</a>: the vocabulary used throughout</li>
 <li>
-<a href="manual-07-corrections.html">Drift and Batch Correction</a>
-— the QC-centric correction in practice</li>
+<a href="manual-07-corrections.html">Drift and batch correction</a>:
+the QC-based correction in practice</li>
 </ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

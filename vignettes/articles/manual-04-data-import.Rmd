@@ -1,5 +1,5 @@
 ---
-title: "Importing Analytical Data"
+title: "Importing analytical data"
 output:
   rmarkdown::html_vignette:
     fig_width: 6
@@ -7,7 +7,7 @@ output:
 description: |
   Importing analytical data from different sources into an MRMhubExperiment.
 vignette: >
-  %\VignetteIndexEntry{Importing Analytical Data}
+  %\VignetteIndexEntry{Importing analytical data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 editor_options:
@@ -66,7 +66,7 @@ When the analytical results contain metadata, such as sample and feature
 annotations, these can be imported into the `MRMhubExperiment` object as well. The
 imported metadata is checked for integrity and consistency and then added to the
 annotation tables; to include it, set the argument `import_metadata = TRUE` (see
-[Importing Metadata](manual-05-metadata.html)).
+[Importing metadata](manual-05-metadata.html)).
 
 ## MRMhub / INTEGRATOR
 
@@ -169,7 +169,7 @@ the software and are not edited by hand, whereas the generic wide and long CSV
 tables are prepared manually. The full column reference for each format is given
 on its linked function reference page.
 
-### MRMhub / INTEGRATOR — long CSV/TSV {#str-mrmhub}
+### MRMhub / INTEGRATOR: long CSV/TSV {#str-mrmhub}
 
 The long output has one row per analysis × feature, tab- or comma-separated.
 Besides the columns shown it also carries `internal_standard`, `time_stamp`,
@@ -185,7 +185,7 @@ show_head(
 )
 ```
 
-### Agilent MassHunter Quant — wide CSV {#str-masshunter}
+### Agilent MassHunter Quant: wide CSV {#str-masshunter}
 
 A MassHunter Quant export is wide with a two-row header. The first header row
 groups columns by compound (`<Compound> Method` and `<Compound> Results` blocks)
@@ -196,8 +196,8 @@ after a leading `Sample` block; the second row holds the actual sub-headers. The
 <thead>
 <tr>
   <th colspan="4" style="text-align:center; border-bottom:2px solid #5B8FA8;">Sample</th>
-  <th colspan="4" style="text-align:center; border-bottom:2px solid #D4914E;">CE 18:1 — Method</th>
-  <th colspan="3" style="text-align:center; border-bottom:2px solid #6B9E5E;">CE 18:1 — Results</th>
+  <th colspan="4" style="text-align:center; border-bottom:2px solid #D4914E;">CE 18:1: Method</th>
+  <th colspan="3" style="text-align:center; border-bottom:2px solid #6B9E5E;">CE 18:1: Results</th>
   <th rowspan="2" style="vertical-align:bottom;">…</th>
 </tr>
 <tr>
@@ -220,7 +220,7 @@ after a leading `Sample` block; the second row holds the actual sub-headers. The
 </tbody>
 </table>
 
-### Skyline (small molecule) — long CSV {#str-skyline}
+### Skyline (small molecule): long CSV {#str-skyline}
 
 The *Molecule Transition Results* export has one row per transition result;
 `Replicate Name` becomes `analysis_id`, `Molecule Name` becomes `feature_id`, and
@@ -271,7 +271,7 @@ are removed and internal runs of whitespace are collapsed to a single space, so
 `"QC  01"` and `"QC 01"` become the same value. Raw-data file extensions
 (`.mzML`, `.d`, `.raw`, `.wiff`, `.wiff2`, `.lcd`, `.chrom`, case-insensitive)
 are stripped from `analysis_id`, and only a genuine *trailing* extension is
-removed — a name such as `Study.data_01.d` keeps its internal `.data`.
+removed. A name such as `Study.data_01.d` keeps its internal `.data`.
 
 The identical normalization is applied when metadata is imported. This is what
 lets an `analysis_id` typed into a metadata sheet match the one derived from a
@@ -280,7 +280,7 @@ silently when data and metadata are joined.
 
 ::: {.callout .callout-note}
 This normalization is **always** applied, on both data and metadata, and **no
-warning is issued** when whitespace is removed — it is silent by design.
+warning is issued** when whitespace is removed, it is silent by design.
 Stray spaces are a common and hard-to-trace cause of identifiers failing to map
 between data and metadata, so they are removed rather than reported. The one
 visible consequence is that two identifiers differing *only* by whitespace
@@ -290,7 +290,7 @@ feature appearing to be measured twice in one analysis).
 
 ## Next steps
 
-- [Importing Metadata](manual-05-metadata.html) — attach and validate sample and feature annotations
-- [The MRMhubExperiment Data Object](manual-02-data-object.html) — the object the data is loaded into
-- [Basic MRMhub Workflow](tutorial-02-basic-workflow.html) — start processing the imported data
-- [Function reference](../reference/index.html) — full arguments for every importer
+- [Importing metadata](manual-05-metadata.html): attach and validate sample and feature annotations
+- [The MRMhubExperiment data object](manual-02-data-object.html): the object the data is loaded into
+- [Basic MRMhub workflow](tutorial-02-basic-workflow.html): start processing the imported data
+- [Function reference](../reference/index.html): full arguments for every importer

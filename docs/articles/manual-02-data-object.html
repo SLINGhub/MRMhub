@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>The MRMhubExperiment Data Object • mrmhub</title>
+<title>The MRMhubExperiment data object • mrmhub</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
@@ -16,7 +16,7 @@
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
-<meta property="og:title" content="The MRMhubExperiment Data Object">
+<meta property="og:title" content="The MRMhubExperiment data object">
 <meta name="description" content="The primary data container of the MRMhub workflow: its data and metadata
 tables, the identifiers that link them, and the feature variables it stores.
 ">
@@ -33,7 +33,7 @@ tables, the identifiers that link them, and the feature variables it stores.
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -64,7 +64,6 @@ tables, the identifiers that link them, and the feature variables it stores.
     <li><h6 class="dropdown-header" data-toc-skip>Techniques</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-04-drift-correction.html">Drift and batch correction</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-07-calibration-reference.html">Calibration by reference sample</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-10-metadata-validation.html">Validating metadata</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-11-interference-correction.html">Interference correction</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
@@ -77,6 +76,7 @@ tables, the identifiers that link them, and the feature variables it stores.
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-04-validate-metadata.html">Validate &amp; fix metadata</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul>
 </li>
@@ -98,6 +98,7 @@ tables, the identifiers that link them, and the feature variables it stores.
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-13-plot-customization.html">Customising Plots</a></li>
     <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Writing Pipelines with AI Assistants</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
@@ -108,7 +109,7 @@ tables, the identifiers that link them, and the feature variables it stores.
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">NEWS</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><a class="external-link nav-link" href="https://slinghub.github.io/MRMhub/">← MRMhub home</a></li>
@@ -135,7 +136,7 @@ tables, the identifiers that link them, and the feature variables it stores.
 <script src="manual-02-data-object_files/nouislider-7.0.10/jquery.nouislider.min.js"></script><link href="manual-02-data-object_files/selectize-0.12.0/selectize.bootstrap3.css" rel="stylesheet">
 <script src="manual-02-data-object_files/selectize-0.12.0/selectize.min.js"></script><div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.svg" class="logo" alt=""><h1>The MRMhubExperiment Data Object</h1>
+      <img src="../logo.svg" class="logo" alt=""><h1>The MRMhubExperiment data object</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/HEAD/vignettes/articles/manual-02-data-object.Rmd" class="external-link"><code>vignettes/articles/manual-02-data-object.Rmd</code></a></small>
@@ -158,13 +159,13 @@ subsequent steps. The data within the object is organized into
 <strong>data</strong> and <strong>metadata</strong> categories, each
 divided into tables (data frames).</p>
 <div style="text-align: center; margin: 2em 0;">
-<svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 600 280" style="max-width: 600px; width: 100%; height: auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;"><rect x="5" y="5" width="590" height="270" rx="10" fill="#f8f9fa" stroke="#5B8FA8" stroke-width="2"></rect><text x="300" y="30" text-anchor="middle" font-weight="700" font-size="14" fill="#2C3E50">MRMhubExperiment</text><line x1="20" y1="40" x2="580" y2="40" stroke="#dee2e6"></line><rect x="20" y="55" width="270" height="100" rx="6" fill="#d6e4eb" stroke="#5B8FA8"></rect><text x="155" y="75" text-anchor="middle" font-weight="600" font-size="12" fill="#2C3E50">DATA</text><text x="35" y="95" font-size="10" fill="#333">dataset_orig — original
-imported data</text><text x="35" y="112" font-size="10" fill="#333">dataset — annotated and
-processed data</text><text x="35" y="129" font-size="10" fill="#333">dataset_filtered —
-QC-filtered output</text><text x="35" y="146" font-size="10" fill="#333">metrics_qc — QC metrics
-per feature</text><rect x="310" y="55" width="270" height="100" rx="6" fill="#f5e0c8" stroke="#D4914E"></rect><text x="445" y="75" text-anchor="middle" font-weight="600" font-size="12" fill="#2C3E50">METADATA</text><text x="325" y="95" font-size="10" fill="#333">annot_analyses —
-sample/run annotations</text><text x="325" y="112" font-size="10" fill="#333">annot_features —
-feature annotations</text><text x="325" y="129" font-size="10" fill="#333">annot_istds — ISTD
+<svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 600 280" style="max-width: 600px; width: 100%; height: auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;"><rect x="5" y="5" width="590" height="270" rx="10" fill="#f8f9fa" stroke="#5B8FA8" stroke-width="2"></rect><text x="300" y="30" text-anchor="middle" font-weight="700" font-size="14" fill="#2C3E50">MRMhubExperiment</text><line x1="20" y1="40" x2="580" y2="40" stroke="#dee2e6"></line><rect x="20" y="55" width="270" height="100" rx="6" fill="#d6e4eb" stroke="#5B8FA8"></rect><text x="155" y="75" text-anchor="middle" font-weight="600" font-size="12" fill="#2C3E50">DATA</text><text x="35" y="95" font-size="10" fill="#333">dataset_orig: original
+imported data</text><text x="35" y="112" font-size="10" fill="#333">dataset: annotated and
+processed data</text><text x="35" y="129" font-size="10" fill="#333">dataset_filtered:
+QC-filtered output</text><text x="35" y="146" font-size="10" fill="#333">metrics_qc: QC metrics
+per feature</text><rect x="310" y="55" width="270" height="100" rx="6" fill="#f5e0c8" stroke="#D4914E"></rect><text x="445" y="75" text-anchor="middle" font-weight="600" font-size="12" fill="#2C3E50">METADATA</text><text x="325" y="95" font-size="10" fill="#333">annot_analyses:
+sample/run annotations</text><text x="325" y="112" font-size="10" fill="#333">annot_features: feature
+annotations</text><text x="325" y="129" font-size="10" fill="#333">annot_istds: ISTD
 concentrations</text><text x="325" y="146" font-size="10" fill="#333">annot_batches /
 annot_qcconcentrations / …</text><rect x="20" y="170" width="560" height="50" rx="6" fill="#d8e6d4" stroke="#6B9E5E"></rect><text x="300" y="192" text-anchor="middle" font-weight="600" font-size="12" fill="#2C3E50">STATUS
 AND FLAGS</text><text x="300" y="210" text-anchor="middle" font-size="10" fill="#333">is_istd_normalized,
@@ -185,7 +186,7 @@ read:</p>
 <code class="sourceCode R"><span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MRMhubExperiment.html">MRMhubExperiment</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/data_load_example.html">data_load_example</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/normalize_by_istd.html">normalize_by_istd</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<details><summary><strong>New to R?</strong> — what <code>|&gt;</code> and
+<details><summary><strong>New to R?</strong>: what <code>|&gt;</code> and
 <code>&lt;-</code> do
 </summary><code>&lt;-</code> assigns the value on its right to the name on its
 left, so <code>mexp &lt;- MRMhubExperiment()</code> stores the new
@@ -221,7 +222,7 @@ processing step, and a one-line summary of which steps have been
 applied.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mexp</span>                    <span class="co"># or print(mexp)</span></span></code></pre></div>
-<p><code><a href="../reference/status.html">status()</a></code> prints the full dashboard — sample composition
+<p><code><a href="../reference/status.html">status()</a></code> prints the full dashboard: sample composition
 by QC type, feature composition, which metadata tables are populated,
 the state of every processing step, and any manually excluded analyses
 or features. It is the quickest way to confirm where a dataset stands in
@@ -229,33 +230,39 @@ the workflow.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/status.html">status</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span></span></code></pre></div>
 <p>The full list of accessor and processing functions is given in the <a href="../reference/index.html">function reference</a>.</p>
-<details><summary><strong>Under the hood</strong> — the full slot structure
+<details><summary><strong>Under the hood</strong>: the full slot structure
 </summary><p><code>MRMhubExperiment</code> is an S4 object with the following
 slots. The status flags (<code>is_*</code>,
 <code>var_*_corrected</code>) record which steps have been applied and
 are consulted by later functions to enforce the recommended processing
 order:</p>
 <pre><code>MRMhubExperiment
-  ├─ title:                 chr "My LCMS Assay"
-  ├─ analysis_type:         chr NA
-  ├─ feature_intensity_var: chr "feature_area"
-  ├─ dataset_orig:          tibble [400 × 26]
-  ├─ dataset:               tibble [400 × 26]
-  ├─ dataset_filtered:      tibble [0 × 14]
-  ├─ annot_analyses:        tibble [25 × 13]
-  ├─ annot_features:        tibble [16 × 16]
-  ├─ annot_istds:           tibble [8 × 4]
-  ├─ annot_responsecurves:  tibble [0 × 3]
-  ├─ annot_qcconcentrations: tibble [32 × 5]
-  ├─ annot_batches:         tibble [1 × 4]
-  ├─ metrics_qc:            tibble [0 × 0]
-  ├─ metrics_calibration:   tibble [4 × 15]
-  ├─ status_processing:     chr "Calibration-quantitated data"
-  ├─ is_istd_normalized:    logi TRUE
-  ├─ is_quantitated:        logi TRUE
-  ├─ is_filtered:           logi FALSE
-  ├─ var_drift_corrected:   Named logi [1:3]
-  └─ var_batch_corrected:   Named logi [1:3]</code></pre>
+  ├─ title:                  chr "My LCMS Assay"
+  ├─ analysis_type:          chr "lipidomics"
+  ├─ feature_intensity_var:  chr "feature_area"
+  ├─ conc_analyte_unit:      chr "pmol"
+  ├─ dataset_orig:           tibble [14471 × 21]
+  ├─ dataset:                tibble [14471 × 23]
+  ├─ dataset_filtered:       tibble [0 × 14]
+  ├─ annot_analyses:         tibble [499 × 13]
+  ├─ annot_features:         tibble [29 × 18]
+  ├─ annot_istds:            tibble [9 × 5]
+  ├─ annot_responsecurves:   tibble [12 × 5]
+  ├─ annot_qcconcentrations: tibble [0 × 5]
+  ├─ annot_studysamples:     tibble [0 × 0]
+  ├─ annot_batches:          tibble [6 × 4]
+  ├─ annot_interferences:    tibble [0 × 5]
+  ├─ metrics_qc:             tibble [0 × 0]
+  ├─ metrics_calibration:    tibble [0 × 0]
+  ├─ status_processing:      chr "ISTD-quantitated data"
+  ├─ is_istd_normalized:     logi TRUE
+  ├─ is_quantitated:         logi TRUE
+  ├─ is_filtered:            logi FALSE
+  ├─ is_isotope_corr:        logi FALSE
+  ├─ analyses_excluded:      logi NA
+  ├─ features_excluded:      logi NA
+  ├─ var_drift_corrected:    Named logi [1:3] FALSE FALSE FALSE
+  └─ var_batch_corrected:    Named logi [1:3] FALSE FALSE FALSE</code></pre>
 </details>
 </div>
 </div>
@@ -296,40 +303,57 @@ identifiers described in the next section.</p>
 <tr class="even">
 <td>Data</td>
 <td><code>metrics_qc</code></td>
-<td>Information and quality-control metrics for features.</td>
+<td>Information and quality-control metrics per feature.</td>
 </tr>
 <tr class="odd">
+<td>Data</td>
+<td><code>metrics_calibration</code></td>
+<td>Calibration metrics per feature, from external calibration
+curves.</td>
+</tr>
+<tr class="even">
 <td>Metadata</td>
 <td><code>annot_analyses</code></td>
 <td>Sample categories, amounts, dilutions, processing batches, run
 order.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>Metadata</td>
 <td><code>annot_features</code></td>
 <td>Internal standards for normalization, response factors,
 classification, quantifiers.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>Metadata</td>
 <td><code>annot_istds</code></td>
 <td>Concentrations of internal standards added to samples.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>Metadata</td>
 <td><code>annot_batches</code></td>
 <td>Start and end boundaries for each defined batch.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>Metadata</td>
 <td><code>annot_responsecurves</code></td>
 <td>Response curves: sample amounts across dilution steps.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>Metadata</td>
 <td><code>annot_qcconcentrations</code></td>
 <td>Concentrations of labelled and unlabelled standards in calibration
 and QC materials.</td>
+</tr>
+<tr class="even">
+<td>Metadata</td>
+<td><code>annot_studysamples</code></td>
+<td>Optional annotation of the study samples.</td>
+</tr>
+<tr class="odd">
+<td>Metadata</td>
+<td><code>annot_interferences</code></td>
+<td>Interference relationships between features, feeding the
+interference-correction engine.</td>
 </tr>
 </tbody>
 </table>
@@ -397,12 +421,11 @@ normalize raw intensities.</td>
 </tr>
 </tbody>
 </table>
-<p>All identifiers are whitespace-normalized on import —
-leading/trailing spaces removed and internal runs collapsed — and
-raw-data file extensions are stripped from <code>analysis_id</code>,
-using the same rules for data and metadata so the two join reliably. See
-<a href="manual-04-data-import.html#identifier-normalization">Importing
-Analytical Data</a> for details.</p>
+<p>All identifiers are whitespace-normalized on import (leading/trailing
+spaces removed and internal runs collapsed) and raw-data file extensions
+are stripped from <code>analysis_id</code>, using the same rules for
+data and metadata so the two join reliably. See <a href="manual-04-data-import.html#identifier-normalization">Importing
+analytical data</a> for details.</p>
 <p>The <code>qc_type</code> field categorizes samples by their
 analytical purpose and is used throughout the package. It combines
 standardized terms introduced by <span class="citation">Broadhurst et
@@ -410,19 +433,18 @@ al. (2018)</span> (SPL, BQC, TQC, LTR, RQC) with traditional terminology
 from analytical and clinical chemistry (LQC, MQC, HQC, CAL, NIST, SST,
 and the blank types). Each <code>qc_type</code> is shown with a
 consistent colour scheme and point shape across all MRMhub plots; the
-full list and their roles is given in <a href="manual-06-sample-types.html">Sample Types &amp; QC Roles</a>.</p>
+full list and their roles is given in <a href="manual-06-sample-types.html">Sample types &amp; QC roles</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="feature-variables">Feature variables<a class="anchor" aria-label="anchor" href="#feature-variables"></a>
 </h2>
 <p>Feature variables store the values associated with a feature in a
 specific sample. They describe, for example, the absolute or relative
-abundance, the chromatographic retention time, the peak shape, and —
-when processed data are imported — properties such as measurement
-accuracy. A feature variable can be referred to by its internal name,
-which always starts with <code>feature_</code>
-(e.g. <code>feature_intensity</code>), or by its short name
-(e.g. <code>conc</code>, <code>intensity</code>,
+abundance, the chromatographic retention time, the peak shape, and (when
+processed data are imported) properties such as measurement accuracy. A
+feature variable can be referred to by its internal name, which always
+starts with <code>feature_</code> (e.g. <code>feature_intensity</code>),
+or by its short name (e.g. <code>conc</code>, <code>intensity</code>,
 <code>norm_intensity</code>, <code>rt</code>), and many processing and
 plotting functions take a <code>variable</code> argument that selects
 which one to use.</p>
@@ -432,8 +454,8 @@ variable holds the raw signal (e.g. peak area) retrieved from one of the
 original feature variables; all variables downstream are the result of
 processing:</p>
 <div class="datatables html-widget html-fill-item" id="htmlwidget-ac96cb3ee4656e2e9ec3" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-ac96cb3ee4656e2e9ec3">{"x":{"filter":"none","vertical":false,"data":[["intensity","norm_intensity","pmol_total","conc","conc_normalized","conc_bias"],["feature_intensity","feature_norm_intensity","feature_pmol_total","feature_conc","feature_conc_normalized","feature_conc_ratio"],["Raw signal intensity. A copy of area, height, response, or intensity from the imported raw data.","Internal standard-normalized raw signal intensity.","Total feature (analyte) amount in the measured sample (pmol/sample).","Feature (analyte) concentration.","Normalized concentration (e.g. by a reference sample or other methods).","Ratio of measured to expected concentration; generated by calibrate_by_reference()."]],"container":"<table class=\"compact stripe\">\n  <thead>\n    <tr>\n      <th>Short Name<\/th>\n      <th>Internal Name<\/th>\n      <th>Description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":10,"ordering":false,"columnDefs":[{"name":"Short Name","targets":0},{"name":"Internal Name","targets":1},{"name":"Description","targets":2}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>Some processing steps overwrite feature values with re-calculated
-ones — for example feature area after interference correction, or
+<script type="application/json" data-for="htmlwidget-ac96cb3ee4656e2e9ec3">{"x":{"filter":"none","vertical":false,"data":[["intensity","norm_intensity","pmol_total","conc","conc_normalized","conc_ratio"],["feature_intensity","feature_norm_intensity","feature_pmol_total","feature_conc","feature_conc_normalized","feature_conc_ratio"],["Raw signal intensity. A copy of area, height, response, or intensity from the imported raw data.","Internal standard-normalized raw signal intensity.","Total feature (analyte) amount in the measured sample (pmol/sample).","Feature (analyte) concentration.","Normalized concentration (e.g. by a reference sample or other methods).","Ratio of measured to expected concentration; generated by calibrate_by_reference()."]],"container":"<table class=\"compact stripe\">\n  <thead>\n    <tr>\n      <th>Short Name<\/th>\n      <th>Internal Name<\/th>\n      <th>Description<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"t","pageLength":10,"ordering":false,"columnDefs":[{"name":"Short Name","targets":0},{"name":"Internal Name","targets":1},{"name":"Description","targets":2}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>Some processing steps overwrite feature values with re-calculated
+ones, for example feature area after interference correction, or
 concentrations after drift/batch correction or reference-sample
 re-calibration. In these cases the original values are kept in a backup
 variable, so the earlier state remains available; the backup is named
@@ -458,16 +480,16 @@ variable can be set manually with <code><a href="../reference/set_intensity_var.
 </h2>
 <ul>
 <li>
-<a href="manual-04-data-import.html">Importing Analytical Data</a> —
+<a href="manual-04-data-import.html">Importing analytical data</a>:
 load a peak table into a new object</li>
 <li>
-<a href="manual-06-sample-types.html">Sample Types &amp; QC
-Roles</a> — the full list of <code>qc_type</code> labels</li>
+<a href="manual-06-sample-types.html">Sample types &amp; QC
+roles</a>: the full list of <code>qc_type</code> labels</li>
 <li>
-<a href="manual-03-design-overview.html">Design Overview</a> — how
+<a href="manual-03-design-decisions.html">Design decisions</a>: how
 data flows through the pipeline</li>
 <li>
-<a href="../reference/index.html">Function reference</a> — accessors
+<a href="../reference/index.html">Function reference</a>: accessors
 and processing functions</li>
 </ul>
 </div>

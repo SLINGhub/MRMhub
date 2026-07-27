@@ -31,7 +31,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -62,7 +62,6 @@
     <li><h6 class="dropdown-header" data-toc-skip>Techniques</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-04-drift-correction.html">Drift and batch correction</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-07-calibration-reference.html">Calibration by reference sample</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-10-metadata-validation.html">Validating metadata</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-11-interference-correction.html">Interference correction</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
@@ -75,6 +74,7 @@
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-04-validate-metadata.html">Validate &amp; fix metadata</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul>
 </li>
@@ -96,6 +96,7 @@
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-13-plot-customization.html">Customising Plots</a></li>
     <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Writing Pipelines with AI Assistants</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
@@ -106,7 +107,7 @@
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">NEWS</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><a class="external-link nav-link" href="https://slinghub.github.io/MRMhub/">← MRMhub home</a></li>
@@ -136,12 +137,18 @@
 
     
     
+<p class="page-kind page-kind-manual">
+Manual
+</p>
+<p>This page collects the errors and questions that come up most often
+when installing and using MRMhub QUANT, grouped by where they occur in
+the workflow. Each entry expands to a diagnosis and a fix.</p>
 <div class="section level2">
-<h2 id="installation-issues">Installation Issues<a class="anchor" aria-label="anchor" href="#installation-issues"></a>
+<h2 id="installation-issues">Installation issues<a class="anchor" aria-label="anchor" href="#installation-issues"></a>
 </h2>
 <p>The single most common cause of failed installations is that one of
 MRMhub’s dependencies is currently <em>loaded</em> in the active R
-session — typically <code>rlang</code>, <code>cli</code>,
+session, typically <code>rlang</code>, <code>cli</code>,
 <code>vctrs</code>, <code>dplyr</code>, <code>tibble</code>, or
 <code>ggplot2</code>. RStudio and Positron load several of these on
 startup (Environment pane, Plots pane), so a “fresh session” via
@@ -205,10 +212,12 @@ and resolves the dependency graph in one pass.</p>
 (Suggests dependency failure)
 </summary><p>By default
 <code>remotes::install_github(..., dependencies = TRUE)</code> installs
-every Suggests dependency too. A single broken Suggests package —
-e.g. <code>lancer</code> (a non-CRAN GitHub package required only for
-LICAR-style interference correction) when the network blocks GitHub
-clones — aborts the whole install. Fix:</p>
+every Suggests dependency too. A single broken Suggests package,
+e.g. <code>lancer</code> (a non-CRAN GitHub package needed only for the
+optional response-curve saturation statistics of
+<code>get_response_curve_stats(with_saturation_stats = TRUE)</code>)
+when the network blocks GitHub clones, aborts the whole install.
+Fix:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Install only the strictly required dependencies</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span></span>
@@ -234,7 +243,7 @@ avoids the toolchain entirely.</p>
 </details><hr>
 </div>
 <div class="section level2">
-<h2 id="data-import-issues">Data Import Issues<a class="anchor" aria-label="anchor" href="#data-import-issues"></a>
+<h2 id="data-import-issues">Data import issues<a class="anchor" aria-label="anchor" href="#data-import-issues"></a>
 </h2>
 <details><summary><strong>“Column X not found” or unexpected column names</strong>
 </summary><p>The CSV uses different column names than expected. Check with:</p>
@@ -254,7 +263,7 @@ check)</li>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># For semicolon-separated files:</span></span>
 <span><span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html" class="external-link">read_csv2</a></span><span class="op">(</span><span class="st">"your_file.csv"</span>, n_max <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></code></pre></div>
-</details><details><summary><strong>“No features found” after import</strong>
+</details><details><summary><strong>Features in the data don’t match the feature annotation</strong>
 </summary><p>The feature names in the data file do not match those in the feature
 annotation. Check for:</p>
 <ul>
@@ -279,17 +288,22 @@ files</a> for a visual decision flowchart.</p>
 </details><hr>
 </div>
 <div class="section level2">
-<h2 id="processing-issues">Processing Issues<a class="anchor" aria-label="anchor" href="#processing-issues"></a>
+<h2 id="processing-issues">Processing issues<a class="anchor" aria-label="anchor" href="#processing-issues"></a>
 </h2>
-<details><summary><strong>All values are NA after normalisation</strong>
-</summary><p>Most likely cause: the ISTD assignment is missing or incorrect.</p>
+<details><summary><strong>Normalised values are NA</strong>
+</summary><p><code><a href="../reference/normalize_by_istd.html">normalize_by_istd()</a></code> does not fail silently: it warns
+when a feature cannot be normalised, e.g. <em>“For N feature(s) no ISTD
+was defined, normalized intensities will be NA”</em>, or when the
+internal-standard row is missing from a group or had zero intensity. The
+usual cause is a missing or incorrect ISTD assignment:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Check ISTD assignments</span></span>
 <span><span class="va">mexp</span><span class="op">@</span><span class="va">annot_features</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">feature_id</span>, <span class="va">istd_feature_id</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">istd_feature_id</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>If <code>istd_feature_id</code> is <code>NA</code>, normalization
-divides by nothing → <code>NA</code> result.</p>
+<p>Each feature must reference an internal standard via
+<code>istd_feature_id</code>, and that ISTD must itself be present as a
+feature (<code>is_istd</code>) in every analysis.</p>
 </details><details><summary><strong>Drift correction makes data worse</strong>
 </summary><p>This can happen when:</p>
 <ul>
@@ -313,7 +327,7 @@ batches.</p>
 </details><hr>
 </div>
 <div class="section level2">
-<h2 id="object-and-data-access">Object and Data Access<a class="anchor" aria-label="anchor" href="#object-and-data-access"></a>
+<h2 id="object-and-data-access">Object and data access<a class="anchor" aria-label="anchor" href="#object-and-data-access"></a>
 </h2>
 <details><summary><strong>How do I extract the final data as a data frame?</strong>
 </summary><div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
@@ -337,7 +351,7 @@ batches.</p>
 </details><hr>
 </div>
 <div class="section level2">
-<h2 id="qc-and-filtering">QC and Filtering<a class="anchor" aria-label="anchor" href="#qc-and-filtering"></a>
+<h2 id="qc-and-filtering">QC and filtering<a class="anchor" aria-label="anchor" href="#qc-and-filtering"></a>
 </h2>
 <details><summary><strong>What do the QC metrics mean?</strong>
 </summary><table class="table">
@@ -383,15 +397,23 @@ batches.</p>
 <div class="section level2">
 <h2 id="calibration">Calibration<a class="anchor" aria-label="anchor" href="#calibration"></a>
 </h2>
-<details><summary><strong>“No calibration points found”</strong>
-</summary><p>The calibration annotation does not match sample labels in the data.
-Check that <code>annot_qcconcentrations</code> uses the same
-<code>analysis_id</code> values as the data.</p>
+<details><summary><strong>“Calibration curve annotations for N features are
+missing”</strong>
+</summary><p>The QC-concentration metadata does not cover the features being
+quantified. The <code>annot_qcconcentrations</code> table is keyed on
+<code>sample_id</code> and <code>analyte_id</code> (not
+<code>analysis_id</code>), so check that both match the values in the
+data. Features without a matching curve can be skipped by setting
+<code>ignore_missing_annotation = TRUE</code>.</p>
 </details><details><summary><strong>Calibration curve has R² &lt; 0.9</strong>
 </summary><p>Consider:</p>
 <ul>
 <li>Removing outlier calibration points</li>
-<li>Using a different weighting scheme (1/x or 1/x²)</li>
+<li>Changing the fit with <code>fit_model</code> (linear or quadratic)
+or <code>fit_weighting</code> (<code>"none"</code>, <code>"1/x"</code>,
+<code>"1/x^2"</code>), set globally or per feature via the
+<code>curve_fit_model</code> / <code>curve_fit_weighting</code> metadata
+columns</li>
 <li>Checking for saturation at high concentrations</li>
 </ul>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
@@ -403,7 +425,23 @@ Check that <code>annot_qcconcentrations</code> uses the same
 <div class="section level2">
 <h2 id="faq">FAQ<a class="anchor" aria-label="anchor" href="#faq"></a>
 </h2>
-<details><summary><strong>Can I use MRMhub with non-MRM data (e.g., PRM, SRM)?</strong>
+<details><summary><strong>Can I change the default text size (or point size, legend) in
+plots?</strong>
+</summary><p>Yes. <code><a href="../reference/mrmhub_set_plot_defaults.html">mrmhub_set_plot_defaults()</a></code> sets session-wide
+defaults for the shared appearance arguments of the
+<code>plot_*()</code> functions, so a smaller base font or point size
+can be set once at the top of a notebook instead of on every call:</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/mrmhub_set_plot_defaults.html">mrmhub_set_plot_defaults</a></span><span class="op">(</span>font_base_size <span class="op">=</span> <span class="fl">8</span>, point_size <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span></span></code></pre></div>
+<p>Besides <code>font_base_size</code> and <code>point_size</code>, it
+accepts <code>legend_position</code>, <code>legend_size</code>,
+<code>show_legend_title</code> and <code>strip_bg_color</code>. A value
+passed directly to a plotting function always overrides the global
+default. Use <code><a href="../reference/mrmhub_get_plot_defaults.html">mrmhub_get_plot_defaults()</a></code> to see the active
+settings and <code><a href="../reference/mrmhub_reset_plot_defaults.html">mrmhub_reset_plot_defaults()</a></code> to clear them.
+See <a href="manual-13-plot-customization.html">Plot customization</a>
+for the full reference.</p>
+</details><details><summary><strong>Can I use MRMhub with non-MRM data (e.g., PRM, SRM)?</strong>
 </summary><p>Yes, provided the data can be formatted as a long CSV with feature
 IDs and peak areas. The processing is agnostic to acquisition mode.</p>
 </details><details><summary><strong>Can I process only one batch?</strong>
@@ -419,14 +457,14 @@ Issues</a></p>
 </details><hr>
 </div>
 <div class="section level2">
-<h2 id="next-steps">Next Steps<a class="anchor" aria-label="anchor" href="#next-steps"></a>
+<h2 id="next-steps">Next steps<a class="anchor" aria-label="anchor" href="#next-steps"></a>
 </h2>
 <ul>
 <li>
-<a href="manual-03-design-decisions.html">Design Overview</a> —
-understand the full pipeline</li>
+<a href="manual-03-design-decisions.html">Design decisions behind
+MRMhub QUANT</a>: why the pipeline is built this way</li>
 <li>
-<a href="manual-00-installation.html">Installation</a> — diagnose
+<a href="manual-00-installation.html">Installation</a>: diagnose
 setup problems with <code><a href="../reference/check_setup.html">check_setup()</a></code>
 </li>
 </ul>

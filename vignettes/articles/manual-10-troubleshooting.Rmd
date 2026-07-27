@@ -16,10 +16,16 @@ vignette: >
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>", eval = FALSE)
 ```
 
-## Installation Issues
+<p class="page-kind page-kind-manual">Manual</p>
+
+This page collects the errors and questions that come up most often when
+installing and using MRMhub QUANT, grouped by where they occur in the workflow.
+Each entry expands to a diagnosis and a fix.
+
+## Installation issues
 
 The single most common cause of failed installations is that one of MRMhub's dependencies is
-currently *loaded* in the active R session — typically `rlang`, `cli`, `vctrs`, `dplyr`, `tibble`,
+currently *loaded* in the active R session, typically `rlang`, `cli`, `vctrs`, `dplyr`, `tibble`,
 or `ggplot2`. RStudio and Positron load several of these on startup (Environment pane, Plots
 pane), so a "fresh session" via *Restart R* is sometimes not enough on Windows. When in doubt,
 **quit the IDE entirely** and reopen it before installing.
@@ -110,9 +116,9 @@ Sys.setenv(https_proxy = "http://proxy.example.com:8080")
 <summary><strong>"installation of package 'X' had non-zero exit status"</strong> (Suggests dependency failure)</summary>
 
 By default `remotes::install_github(..., dependencies = TRUE)` installs every Suggests dependency
-too. A single broken Suggests package — e.g. `lancer` (a non-CRAN GitHub package required only for
-LICAR-style interference correction) when the network blocks GitHub clones — aborts the whole
-install. Fix:
+too. A single broken Suggests package, e.g. `lancer` (a non-CRAN GitHub package needed only for
+the optional response-curve saturation statistics of `get_response_curve_stats(with_saturation_stats = TRUE)`)
+when the network blocks GitHub clones, aborts the whole install. Fix:
 
 ```{r}
 # Install only the strictly required dependencies
@@ -148,7 +154,7 @@ entirely.
 
 ---
 
-## Data Import Issues
+## Data import issues
 
 <details>
 <summary><strong>"Column X not found" or unexpected column names</strong></summary>
@@ -174,7 +180,7 @@ readr::read_csv2("your_file.csv", n_max = 5)
 </details>
 
 <details>
-<summary><strong>"No features found" after import</strong></summary>
+<summary><strong>Features in the data don't match the feature annotation</strong></summary>
 
 The feature names in the data file do not match those in the feature annotation.
 Check for:
@@ -203,12 +209,15 @@ See [Import and prepare data files](manual-04-data-import.html) for a visual dec
 
 ---
 
-## Processing Issues
+## Processing issues
 
 <details>
-<summary><strong>All values are NA after normalisation</strong></summary>
+<summary><strong>Normalised values are NA</strong></summary>
 
-Most likely cause: the ISTD assignment is missing or incorrect.
+`normalize_by_istd()` does not fail silently: it warns when a feature cannot be
+normalised, e.g. *"For N feature(s) no ISTD was defined, normalized intensities
+will be NA"*, or when the internal-standard row is missing from a group or had
+zero intensity. The usual cause is a missing or incorrect ISTD assignment:
 
 ```{r}
 # Check ISTD assignments
@@ -217,7 +226,8 @@ mexp@annot_features |>
   dplyr::filter(is.na(istd_feature_id))
 ```
 
-If `istd_feature_id` is `NA`, normalization divides by nothing → `NA` result.
+Each feature must reference an internal standard via `istd_feature_id`, and that
+ISTD must itself be present as a feature (`is_istd`) in every analysis.
 
 </details>
 
@@ -255,7 +265,7 @@ introduce artefacts.
 
 ---
 
-## Object and Data Access
+## Object and data access
 
 <details>
 <summary><strong>How do I extract the final data as a data frame?</strong></summary>
@@ -297,7 +307,7 @@ mexp@dataset <- mexp@dataset_orig
 
 ---
 
-## QC and Filtering
+## QC and filtering
 
 <details>
 <summary><strong>What do the QC metrics mean?</strong></summary>
@@ -337,11 +347,12 @@ mexp <- filter_features_qc(
 ## Calibration
 
 <details>
-<summary><strong>"No calibration points found"</strong></summary>
+<summary><strong>"Calibration curve annotations for N features are missing"</strong></summary>
 
-The calibration annotation does not match sample labels in the data.
-Check that `annot_qcconcentrations` uses the same `analysis_id` values
-as the data.
+The QC-concentration metadata does not cover the features being quantified. The
+`annot_qcconcentrations` table is keyed on `sample_id` and `analyte_id` (not
+`analysis_id`), so check that both match the values in the data. Features without
+a matching curve can be skipped by setting `ignore_missing_annotation = TRUE`.
 
 </details>
 
@@ -351,7 +362,9 @@ as the data.
 Consider:
 
 - Removing outlier calibration points
-- Using a different weighting scheme (1/x or 1/x²)
+- Changing the fit with `fit_model` (linear or quadratic) or `fit_weighting`
+  (`"none"`, `"1/x"`, `"1/x^2"`), set globally or per feature via the
+  `curve_fit_model` / `curve_fit_weighting` metadata columns
 - Checking for saturation at high concentrations
 
 ```{r}
@@ -365,6 +378,26 @@ get_calibration_metrics(mexp) |>
 ---
 
 ## FAQ
+
+<details>
+<summary><strong>Can I change the default text size (or point size, legend) in plots?</strong></summary>
+
+Yes. `mrmhub_set_plot_defaults()` sets session-wide defaults for the shared
+appearance arguments of the `plot_*()` functions, so a smaller base font or point
+size can be set once at the top of a notebook instead of on every call:
+
+```{r}
+mrmhub_set_plot_defaults(font_base_size = 8, point_size = 0.8)
+```
+
+Besides `font_base_size` and `point_size`, it accepts `legend_position`,
+`legend_size`, `show_legend_title` and `strip_bg_color`. A value passed directly
+to a plotting function always overrides the global default. Use
+`mrmhub_get_plot_defaults()` to see the active settings and
+`mrmhub_reset_plot_defaults()` to clear them. See
+[Plot customization](manual-13-plot-customization.html) for the full reference.
+
+</details>
 
 <details>
 <summary><strong>Can I use MRMhub with non-MRM data (e.g., PRM, SRM)?</strong></summary>
@@ -399,7 +432,7 @@ correction. Consider processing batches separately and merging.
 
 ---
 
-## Next Steps
+## Next steps
 
-- [Design Overview](manual-03-design-decisions.html) — understand the full pipeline
-- [Installation](manual-00-installation.html) — diagnose setup problems with `check_setup()`
+- [Design decisions behind MRMhub QUANT](manual-03-design-decisions.html): why the pipeline is built this way
+- [Installation](manual-00-installation.html): diagnose setup problems with `check_setup()`

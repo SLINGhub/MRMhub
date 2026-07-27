@@ -101,6 +101,31 @@ untracked `tutorial-09-pca-exploration.Rmd`,
 `manual-08-visualization.Rmd` are work-in-progress outputs of this
 effort.
 
+## Working through a plan file
+
+When a `plan-*.prompt.md` is the active task, treat that file — not the
+chat — as the source of truth, so any fresh session resumes by reading
+it. The plan file carries a **Checklist** (`[ ]`/`[x]` items grouped
+into phases) and a **Decisions & gotchas** list.
+
+- **Scope a session to one phase.** Do the next unchecked `[ ]` item;
+  explore with subagents (`Explore`/Agent) before reading large source
+  files, so big files stay out of the main context.
+- **Re-anchor each turn.** Restate the active phase/step you’re working
+  on as you go, so the plan stays in view and work doesn’t drift as
+  context fills.
+- **Gate completion on evidence.** A phase is not done until its check
+  ran green (tests /
+  [`devtools::check()`](https://devtools.r-lib.org/reference/check.html))
+  and the output was shown — not just “looks done.”
+- **Check off tersely.** Flip `[ ]`→`[x]` only; no completion summaries
+  — the commit and diff carry the detail. Append to **Decisions &
+  gotchas** only for a non-obvious, reusable lesson, ≤1 line.
+- **Close a phase to disk before resetting context.** Update the plan
+  file, then stage the diff and propose a commit — **never commit
+  without Bo’s explicit OK** (see the engineering-approach rules below).
+  Git commits are the durable per-phase checkpoint.
+
 ## Common commands (run from the repo root)
 
 ``` r
