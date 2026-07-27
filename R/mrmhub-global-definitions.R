@@ -120,7 +120,21 @@ pkg.env$qc_type_annotation <- list(
     "LTR",
     "SPL",
     "SST",
-    "MBLK"
+    "MBLK",
+    "BLK"
+  ),
+  # Vendor / instrument sample-type labels mapped to canonical qc_type levels.
+  # Applied (case-insensitively) by resolve_qc_type() before the known-set test,
+  # so e.g. a MassHunter "Type" column imports without spurious warnings. Pure
+  # case variants ("Cal", "qc") need no entry -- they resolve via the
+  # case-insensitive match to qc_type_levels. Single source of truth: extend
+  # this table rather than hard-coding aliases at the call site.
+  qc_type_aliases = c(
+    "Sample" = "SPL",
+    "Blank" = "BLK",
+    "DoubleBlank" = "SBLK",
+    "MatrixBlank" = "MBLK",
+    "ResponseCheck" = "RQC"
   ),
   # Study samples + routine QC types (excludes blanks, calibrators, and response
   # curves). Single source for the `qc_types = NA` default of the QC overview
@@ -156,7 +170,8 @@ pkg.env$qc_type_annotation <- list(
     "PBLK" = "#216651",
     "SPL" = "#8e9b9e",
     "SST" = "#bafc03",
-    "MBLK" = "black"
+    "MBLK" = "black",
+    "BLK" = "#4d4d4d"
   ),
   qc_type_fillcol = c(
     "SBLK" = "#f891ff",
@@ -178,7 +193,8 @@ pkg.env$qc_type_annotation <- list(
     "PBLK" = "#e4f2c4",
     "SPL" = "NA",
     "SST" = "#aaaeaf",
-    "MBLK" = "black"
+    "MBLK" = "black",
+    "BLK" = "#bdbdbd"
   ),
   qc_type_shape = c(
     "SBLK" = 23,
@@ -200,7 +216,8 @@ pkg.env$qc_type_annotation <- list(
     "PBLK" = 23,
     "SPL" = 21,
     "SST" = 10,
-    "MBLK" = 10
+    "MBLK" = 10,
+    "BLK" = 23
   )
 )
 

@@ -446,6 +446,36 @@ test_that("clean_analysis_metadata strips extensions like the data side (bug 2.1
   expect_equal(nrow(joined), 3L)
 })
 
+test_that("clean_analysis_metadata resolves qc_type case variants and vendor aliases without warning", {
+  meta <- expect_no_warning(clean_analysis_metadata(data.frame(
+    analysis_id = paste0("s", 1:8),
+    qc_type = c(
+      "Cal", # case variant of CAL (case-insensitive match)
+      "qc", # case variant of QC
+      "MatrixBlank", # vendor alias -> MBLK
+      "ResponseCheck", # vendor alias -> RQC
+      "DoubleBlank", # vendor alias -> SBLK (solvent / double blank)
+      "Blank", # vendor alias -> BLK (generic blank, now a standard type)
+      "BLK", # INTEGRATOR raw blank token, now recognized
+      "Sample" # pre-existing alias -> SPL
+    )
+  )))
+  expect_equal(
+    meta$qc_type,
+    c("CAL", "QC", "MBLK", "RQC", "SBLK", "BLK", "BLK", "SPL")
+  )
+})
+
+test_that("clean_analysis_metadata still warns on a genuinely unknown qc_type", {
+  expect_warning(
+    clean_analysis_metadata(data.frame(
+      analysis_id = c("s1", "s2"),
+      qc_type = c("SPL", "Frobnicate")
+    )),
+    "Unrecognized"
+  )
+})
+
 test_that("clean_response_metadata strips analysis_id extensions consistently (bug 2.1)", {
   tbl <- data.frame(
     analysis_id = c("Study.data_01.d", "sample.wiff2"),

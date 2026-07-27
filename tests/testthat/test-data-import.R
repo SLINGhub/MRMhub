@@ -605,14 +605,15 @@ test_that("Imports multiple MH Quant .csv files into one MRMhubExperiment", {
 test_that("Imports MH with Calc. Conc or Final Conc. and Exp. Conc missing Name (sample name) and Sample header", {
   mexp <- MRMhubExperiment()
 
+  # MassHunter native sample types (Sample/Cal/QC) now resolve to canonical
+  # qc_type levels, so the import no longer warns about unrecognized qc_type.
   expect_message(
-    expect_warning(
+    expect_no_warning(
       mexp <- import_data_masshunter(
         mexp,
         test_path("testdata/masshunter/QuantLCMS_Example_MassHunter.csv"),
         expand_qualifier_names = TRUE
-      ),
-      "Unrecognized qc_type"
+      )
     ),
     "Imported 25 analyses with 16 features (8 quantifiers, 8 qualifiers)",
     fixed = TRUE
@@ -625,14 +626,11 @@ test_that("Imports MH with Calc. Conc or Final Conc. and Exp. Conc missing Name 
   ))
 
   expect_message(
-    expect_warning(
-      mexp <- import_data_masshunter(
-        mexp,
-        test_path("testdata/masshunter/QuantLCMS_Example_MassHunter.csv"),
-        expand_qualifier_names = TRUE,
-        conc_column = "conc_calc"
-      ),
-      "Unrecognized qc_type"
+    mexp <- import_data_masshunter(
+      mexp,
+      test_path("testdata/masshunter/QuantLCMS_Example_MassHunter.csv"),
+      expand_qualifier_names = TRUE,
+      conc_column = "conc_calc"
     ),
     "Imported 25 analyses with 16 features (8 quantifiers, 8 qualifiers)",
     fixed = TRUE
@@ -645,16 +643,13 @@ test_that("Imports MH with Calc. Conc or Final Conc. and Exp. Conc missing Name 
   ))
 
   expect_message(
-    expect_warning(
-      mexp <- import_data_masshunter(
-        mexp,
-        test_path(
-          "testdata/masshunter/QuantLCMS_Example_MassHunter_FinalConc.csv"
-        ),
-        expand_qualifier_names = TRUE,
-        conc_column = "conc_calc"
+    mexp <- import_data_masshunter(
+      mexp,
+      test_path(
+        "testdata/masshunter/QuantLCMS_Example_MassHunter_FinalConc.csv"
       ),
-      "Unrecognized qc_type"
+      expand_qualifier_names = TRUE,
+      conc_column = "conc_calc"
     ),
     "Imported 25 analyses with 16 features (8 quantifiers, 8 qualifiers)",
     fixed = TRUE
@@ -667,16 +662,13 @@ test_that("Imports MH with Calc. Conc or Final Conc. and Exp. Conc missing Name 
   ))
 
   expect_message(
-    expect_warning(
-      mexp <- import_data_masshunter(
-        mexp,
-        test_path(
-          "testdata/masshunter/QuantLCMS_Example_MassHunter_CalcConc.csv"
-        ),
-        expand_qualifier_names = TRUE,
-        conc_column = "conc_calc"
+    mexp <- import_data_masshunter(
+      mexp,
+      test_path(
+        "testdata/masshunter/QuantLCMS_Example_MassHunter_CalcConc.csv"
       ),
-      "Unrecognized qc_type"
+      expand_qualifier_names = TRUE,
+      conc_column = "conc_calc"
     ),
     "Imported 25 analyses with 16 features (8 quantifiers, 8 qualifiers)",
     fixed = TRUE
@@ -689,28 +681,22 @@ test_that("Imports MH with Calc. Conc or Final Conc. and Exp. Conc missing Name 
   ))
 
   expect_message(
-    expect_warning(
-      mexp <- import_data_masshunter(
-        mexp,
-        test_path(
-          "testdata/masshunter/QuantLCMS_Example_MassHunter-NoHdrSampleName.csv"
-        ),
-        expand_qualifier_names = TRUE
+    mexp <- import_data_masshunter(
+      mexp,
+      test_path(
+        "testdata/masshunter/QuantLCMS_Example_MassHunter-NoHdrSampleName.csv"
       ),
-      "Unrecognized qc_type"
+      expand_qualifier_names = TRUE
     ),
     "Imported 25 analyses with 16 features (8 quantifiers, 8 qualifiers)",
     fixed = TRUE
   )
 
   expect_message(
-    expect_warning(
-      mexp <- import_data_masshunter(
-        mexp,
-        test_path("testdata/masshunter/QuantLCMS_Example_MassHunter.csv"),
-        expand_qualifier_names = TRUE
-      ),
-      "Unrecognized qc_type"
+    mexp <- import_data_masshunter(
+      mexp,
+      test_path("testdata/masshunter/QuantLCMS_Example_MassHunter.csv"),
+      expand_qualifier_names = TRUE
     ),
     "Imported 25 analyses with 16 features (8 quantifiers, 8 qualifiers)",
     fixed = TRUE

@@ -1674,6 +1674,24 @@ get_metadata_table <- function(dataset = NULL, path = NULL, sheet = NULL) {
 }
 
 
+# Resolve incoming qc_type tokens to canonical mrmhub qc_type levels:
+#  1. explicit vendor aliases (case-insensitive) -- e.g. MassHunter "MatrixBlank"
+#  2. case-insensitive match to a standard level -- e.g. vendor "Cal" -> "CAL"
+# Unrecognized tokens pass through unchanged (warned about by the caller). NA is
+# left as NA (the caller maps it to the SPL default).
+resolve_qc_type <- function(x) {
+  levels <- pkg.env$qc_type_annotation$qc_type_levels
+  aliases <- pkg.env$qc_type_annotation$qc_type_aliases
+  am <- match(toupper(x), toupper(names(aliases)))
+  hit <- !is.na(am)
+  x[hit] <- unname(aliases[am[hit]])
+  lm <- match(toupper(x), toupper(levels))
+  canon <- !is.na(lm)
+  x[canon] <- levels[lm[canon]]
+  x
+}
+
+
 clean_analysis_metadata <- function(d_analyses) {
   names(d_analyses) <- tolower(names(d_analyses))
 
@@ -1816,13 +1834,10 @@ clean_analysis_metadata <- function(d_analyses) {
       )[tolower(stringr::str_squish(as.character(.data$valid_analysis)))]),
       # Squish before the alias/known-set tests: the data side squishes qc_type,
       # so an internal double space (" Sample", "B QC") must be collapsed here
-      # too or it fails the `== "Sample"` alias and drops to NA at factor().
+      # too or it fails the alias lookup and drops to NA at factor().
       qc_type = stringr::str_squish(as.character(.data$qc_type)),
-      qc_type = if_else(
-        .data$qc_type == "Sample" | is.na(.data$qc_type),
-        "SPL",
-        .data$qc_type
-      ),
+      qc_type = resolve_qc_type(.data$qc_type),
+      qc_type = if_else(is.na(.data$qc_type), "SPL", .data$qc_type),
       annot_order_num = dplyr::row_number()
     ) |>
     mutate(across(where(is.character), str_squish)) |>
@@ -1836,10 +1851,13 @@ clean_analysis_metadata <- function(d_analyses) {
   qc_unknown <- !is.na(d_analyses$qc_type) &
     !(d_analyses$qc_type %in% qc_levels)
   if (any(qc_unknown)) {
+    aliases <- pkg.env$qc_type_annotation$qc_type_aliases
+    alias_hint <- paste0(names(aliases), " = ", unname(aliases))
     cli::cli_warn(c(
       "!" = "Unrecognized {.field qc_type} value(s): {.val {unique(d_analyses$qc_type[qc_unknown])}}.",
       "i" = "These are not standard QC types and may be dropped from QC metrics and plots that expect them.",
-      "i" = "Standard values: {.val {qc_levels}} ({.val Sample} is an alias for {.val SPL})."
+      "i" = "Standard values (matched case-insensitively): {.val {qc_levels}}.",
+      "i" = "Recognized vendor aliases: {.val {alias_hint}}."
     ))
   }
 

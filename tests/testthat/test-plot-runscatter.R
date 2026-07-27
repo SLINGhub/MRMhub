@@ -207,11 +207,14 @@ test_that("plot_runscatter filter work", {
 
 # check diverse feature filters
 test_that("plot_runscatter with unknown qc_types", {
-  # This fixture deliberately contains non-standard QC types; the expected
-  # "Unrecognized qc_type" import warning is asserted in test-data-import.R.
+  # This fixture deliberately contains non-standard QC types (XYX, MyQC); the
+  # expected "Unrecognized qc_type" import warning is asserted in
+  # test-data-import.R. BLK is now a standard type, so it is predefined.
   mexp_newqc <- suppressWarnings(import_data_csv(
     data = MRMhubExperiment(),
-    path = test_path("testdata/plain-wide/plain_wide_dataset2_22rows_unknownQC.csv"),
+    path = test_path(
+      "testdata/plain-wide/plain_wide_dataset2_22rows_unknownQC.csv"
+    ),
     variable_name = "conc",
     analysis_id_col = "analysis_id",
     import_metadata = TRUE
@@ -227,7 +230,7 @@ test_that("plot_runscatter with unknown qc_types", {
       point_size = 10,
       return_plots = TRUE
     ),
-    "QC types 'XYX, MyQC, BLK' not predefined in MRMhub and will be displayed in black with auto-assigned shapes",
+    "QC types 'XYX, MyQC' not predefined in MRMhub and will be displayed in black with auto-assigned shapes",
     fixed = TRUE
   )
 
@@ -1274,8 +1277,12 @@ test_that("plot_runscatter remove_gaps plot_range uses original order", {
 test_that("plot_runscatter accepts a multi-value ref_qc_types without a length-1 coercion crash", {
   expect_no_error(
     plot_runscatter(
-      data = mexp, variable = "intensity", rows_page = 3, cols_page = 4,
-      return_plots = TRUE, show_reference_lines = TRUE,
+      data = mexp,
+      variable = "intensity",
+      rows_page = 3,
+      cols_page = 4,
+      return_plots = TRUE,
+      show_reference_lines = TRUE,
       ref_qc_types = c("BQC", "TQC")
     )
   )
@@ -1370,7 +1377,8 @@ test_that("cap_top_n_outliers caps the n highest points per feature to one value
     dplyr::summarise(
       top3_one_value = dplyr::n_distinct(
         utils::head(sort(.data$value_mod, decreasing = TRUE), 3)
-      ) == 1,
+      ) ==
+        1,
       .groups = "drop"
     )
   # Capping collapses the top 3 of a feature to a single value (was 3 distinct).
@@ -1407,11 +1415,13 @@ test_that("each MAD cap constrains independently of the other and of cap_top_n",
   expect_false(any(is.na(s_only$value_mod)))
   expect_false(any(is.na(q_only$value_mod)))
   expect_false(any(is.na(both$value_mod)))
-  expect_false(any(is.na(capped_runscatter_data(
-    cap_sample_k_mad = 3,
-    cap_qc_k_mad = 3,
-    cap_top_n_outliers = 2
-  )$value_mod)))
+  expect_false(any(is.na(
+    capped_runscatter_data(
+      cap_sample_k_mad = 3,
+      cap_qc_k_mad = 3,
+      cap_top_n_outliers = 2
+    )$value_mod
+  )))
 })
 
 # page_orientation was never validated -> a typo silently produced a portrait PDF.
