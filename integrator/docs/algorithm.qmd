@@ -165,9 +165,10 @@ calculated.
 The baseline is determined on the *x* axis from the integration borders, while three modes are
 available for its position on the *y* axis.
 
-The default mode sets a horizontal baseline at the 5th percentile of the ion-trace intensities,
-which provides a stable estimate of the chromatographic background that is insensitive to the height
-of the peak itself. The `v_drop` mode instead places a horizontal baseline at the lowest intensity
+The default mode — selected by leaving the `baseline` column empty — sets a horizontal baseline at
+the 5th percentile of the ion-trace intensities, which provides a stable estimate of the
+chromatographic background that is insensitive to the height of the peak itself. The `v_drop` mode
+instead places a horizontal baseline at the lowest intensity
 of the integrated region, dropping the baseline to the trace minimum. The valley-to-valley mode fits
 a sloped baseline between the points where the left and right integration borders intersect the ion
 trace, which is appropriate where the background rises or falls across the peak.

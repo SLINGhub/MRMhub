@@ -75,6 +75,20 @@ post-processing — normalisation, drift/batch correction, calibration, quality 
 reporting. See the [QUANT manual ↗](https://slinghub.github.io/MRMhub/quant/) and the corresponding
 [Demo](demo.html).
 
+## Limitations
+
+INTEGRATOR derives its speed from surveying peak features across all samples at once and sharing
+that information during integration, rather than treating each sample in isolation; this
+cross-sample approach does not compromise integration quality.
+
+Its limitations follow from this design and its intended scope. INTEGRATOR processes
+unit-resolution LC-MRM data from triple-quadrupole instruments only, not high-resolution
+(HRMS/PRM) acquisitions. It fits a straight-line baseline and applies no peak-shape
+deconvolution, so specialised or vendor software may integrate individual low-abundance or
+co-eluting peaks more accurately. The cross-sample retention-time alignment can fail on very noisy
+or irregular chromatograms. And because features are defined by consensus across samples, a peak
+present in only a few samples may be missed.
+
 :::
 
 ::: {.g-col-12 .g-col-lg-3 .info-panel}
