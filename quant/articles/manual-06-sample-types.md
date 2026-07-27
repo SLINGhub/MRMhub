@@ -41,6 +41,7 @@ traditional terminology in analytical and clinical chemistry.
 | `SBLK` | Blank | Solvent / double blank: no matrix, no ISTD, just solvents |
 | `TBLK` | Blank | Technical blank (instrument blank) |
 | `MBLK` | Blank | Matrix Blank: matrix processed as samples but without ISTDs |
+| `BLK` | Blank | Generic blank, when the specific blank type is unknown or unspecified |
 
 ## Which samples are used where
 
@@ -59,10 +60,15 @@ summarises the usual roles.
 ## Setting the sample type in the annotation
 
 The analysis annotation must have a column called `sample_type` or
-`qc_type`. Labels are case-sensitive and must be given in uppercase
-exactly as listed above, every analysis must carry a label, and QC
-samples used as drift/batch anchors should be evenly distributed across
-the run (at least five per batch for reliable drift correction).
+`qc_type`. Labels are matched case-insensitively against the types
+listed above (so `CAL`, `Cal`, and `cal` are equivalent), and a small
+set of vendor labels is recognised as aliases: `Sample` → `SPL`, `Blank`
+→ `BLK`, `DoubleBlank` → `SBLK`, `MatrixBlank` → `MBLK`, and
+`ResponseCheck` → `RQC`. Unrecognised labels are retained but dropped
+from QC metrics and plots that expect a standard type. Every analysis
+must carry a label, and QC samples used as drift/batch anchors should be
+evenly distributed across the run (at least five per batch for reliable
+drift correction).
 
     analysis_id,sample_type,batch_id,analysis_order
     Inj_001,SBLK,Batch_1,1
@@ -102,6 +108,7 @@ colours defined in the package (`qc_type_col`).
 | `UBLK`                       | magenta      |     |
 | `PBLK`                       | green        |     |
 | `MBLK`                       | black        |     |
+| `BLK`                        | grey         |     |
 
 ## Next steps
 

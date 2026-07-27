@@ -274,6 +274,12 @@ processing</td>
 <td>Blank</td>
 <td>Matrix Blank: matrix processed as samples but without ISTDs</td>
 </tr>
+<tr class="odd">
+<td><code>BLK</code></td>
+<td>Blank</td>
+<td>Generic blank, when the specific blank type is unknown or
+unspecified</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -333,11 +339,17 @@ user-selected (<code>ref_qc_types</code>), typically the QC pool
 <h2 id="setting-the-sample-type-in-the-annotation">Setting the sample type in the annotation<a class="anchor" aria-label="anchor" href="#setting-the-sample-type-in-the-annotation"></a>
 </h2>
 <p>The analysis annotation must have a column called
-<code>sample_type</code> or <code>qc_type</code>. Labels are
-case-sensitive and must be given in uppercase exactly as listed above,
-every analysis must carry a label, and QC samples used as drift/batch
-anchors should be evenly distributed across the run (at least five per
-batch for reliable drift correction).</p>
+<code>sample_type</code> or <code>qc_type</code>. Labels are matched
+case-insensitively against the types listed above (so <code>CAL</code>,
+<code>Cal</code>, and <code>cal</code> are equivalent), and a small set
+of vendor labels is recognised as aliases: <code>Sample</code> →
+<code>SPL</code>, <code>Blank</code> → <code>BLK</code>,
+<code>DoubleBlank</code> → <code>SBLK</code>, <code>MatrixBlank</code> →
+<code>MBLK</code>, and <code>ResponseCheck</code> → <code>RQC</code>.
+Unrecognised labels are retained but dropped from QC metrics and plots
+that expect a standard type. Every analysis must carry a label, and QC
+samples used as drift/batch anchors should be evenly distributed across
+the run (at least five per batch for reliable drift correction).</p>
 <pre><code>analysis_id,sample_type,batch_id,analysis_order
 Inj_001,SBLK,Batch_1,1
 Inj_002,BQC,Batch_1,2
@@ -463,6 +475,11 @@ exact line colours defined in the package
 <td><code>MBLK</code></td>
 <td>black</td>
 <td><span style="display:inline-block; width:40px; height:14px; background:#000000; border-radius:3px;"></span></td>
+</tr>
+<tr class="odd">
+<td><code>BLK</code></td>
+<td>grey</td>
+<td><span style="display:inline-block; width:40px; height:14px; background:#4d4d4d; border-radius:3px;"></span></td>
 </tr>
 </tbody>
 </table>

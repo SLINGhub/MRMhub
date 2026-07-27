@@ -34,12 +34,6 @@ mexp <- import_data_masshunter(
   data = mexp,
   path = "QuantLCMS_Example_MassHunter.csv",
   import_metadata = TRUE)
-#> Warning: ! Unrecognized qc_type value(s): "Cal".
-#> ℹ These are not standard QC types and may be dropped from QC metrics and plots
-#>   that expect them.
-#> ℹ Standard values: "SBLK", "TBLK", "UBLK", "HQC", "MQC", "LQC", "QC", "PBLK",
-#>   "CAL", "EQA", "PQC", "TQC", "BQC", "RQC", "EQC", "NIST", "LTR", "SPL", "SST",
-#>   and "MBLK" ("Sample" is an alias for "SPL").
 
 # Import metadata from an MSOrganiser template file
 mexp <- import_metadata_msorganiser(
@@ -50,9 +44,11 @@ mexp <- import_metadata_msorganiser(
 #> Warning: ! Unrecognized qc_type value(s): "IBLK".
 #> ℹ These are not standard QC types and may be dropped from QC metrics and plots
 #>   that expect them.
-#> ℹ Standard values: "SBLK", "TBLK", "UBLK", "HQC", "MQC", "LQC", "QC", "PBLK",
-#>   "CAL", "EQA", "PQC", "TQC", "BQC", "RQC", "EQC", "NIST", "LTR", "SPL", "SST",
-#>   and "MBLK" ("Sample" is an alias for "SPL").
+#> ℹ Standard values (matched case-insensitively): "SBLK", "TBLK", "UBLK", "HQC",
+#>   "MQC", "LQC", "QC", "PBLK", "CAL", "EQA", "PQC", "TQC", "BQC", "RQC", "EQC",
+#>   "NIST", "LTR", "SPL", …, "MBLK", and "BLK".
+#> ℹ Recognized vendor aliases: "Sample = SPL", "Blank = BLK", "DoubleBlank =
+#>   SBLK", "MatrixBlank = MBLK", and "ResponseCheck = RQC".
 #> Found no errors, no warnings, and 1 note in the metadata.
 #> -------------------------------------------------------------
 #>   Type  Table    Column    Issue                        Count
