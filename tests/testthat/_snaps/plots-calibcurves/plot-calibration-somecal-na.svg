@@ -88,7 +88,7 @@
 <polygon points='135.67,188.99 138.18,184.66 133.17,184.66 ' style='stroke-width: 0.52; stroke: #F27507; fill: #F5C969;' />
 <polygon points='135.67,195.87 138.18,191.53 133.17,191.53 ' style='stroke-width: 0.52; stroke: #F27507; fill: #F5C969;' />
 <polygon points='135.67,201.82 138.18,197.48 133.17,197.48 ' style='stroke-width: 0.52; stroke: #F27507; fill: #F5C969;' />
-<text x='37.96' y='44.18' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='24.68px' lengthAdjust='spacingAndGlyphs'>Quadratic</text>
+<text x='37.96' y='44.18' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='35.43px' lengthAdjust='spacingAndGlyphs'>Quadratic, 1/x</text>
 <text x='37.96' y='52.38' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='29.90px' lengthAdjust='spacingAndGlyphs'>R² = 1.0000</text>
 <text x='37.96' y='60.57' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='1.58px' lengthAdjust='spacingAndGlyphs'> </text>
 <line x1='24.52' y1='278.40' x2='24.52' y2='276.98' style='stroke-width: 0.64; stroke: #CCCCCC;' />
@@ -206,7 +206,7 @@
 <polygon points='466.06,188.65 468.56,184.31 463.55,184.31 ' style='stroke-width: 0.52; stroke: #F27507; fill: #F5C969;' />
 <polygon points='466.06,185.08 468.56,180.75 463.55,180.75 ' style='stroke-width: 0.52; stroke: #F27507; fill: #F5C969;' />
 <polygon points='466.06,201.58 468.56,197.24 463.55,197.24 ' style='stroke-width: 0.52; stroke: #F27507; fill: #F5C969;' />
-<text x='368.34' y='44.18' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='24.68px' lengthAdjust='spacingAndGlyphs'>Quadratic</text>
+<text x='368.34' y='44.18' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='35.43px' lengthAdjust='spacingAndGlyphs'>Quadratic, 1/x</text>
 <text x='368.34' y='52.38' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='29.90px' lengthAdjust='spacingAndGlyphs'>R² = 1.0000</text>
 <text x='368.34' y='60.57' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='1.58px' lengthAdjust='spacingAndGlyphs'> </text>
 <line x1='354.90' y1='278.40' x2='354.90' y2='276.98' style='stroke-width: 0.64; stroke: #CCCCCC;' />
@@ -313,7 +313,7 @@
 <polygon points='132.31,476.93 134.81,472.60 129.81,472.60 ' style='stroke-width: 0.52; stroke: #F27507; fill: #F5C969;' />
 <polygon points='132.31,486.85 134.81,482.52 129.81,482.52 ' style='stroke-width: 0.52; stroke: #F27507; fill: #F5C969;' />
 <polygon points='132.31,496.82 134.81,492.48 129.81,492.48 ' style='stroke-width: 0.52; stroke: #F27507; fill: #F5C969;' />
-<text x='37.96' y='319.32' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='24.68px' lengthAdjust='spacingAndGlyphs'>Quadratic</text>
+<text x='37.96' y='319.32' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='35.43px' lengthAdjust='spacingAndGlyphs'>Quadratic, 1/x</text>
 <text x='37.96' y='327.51' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='29.90px' lengthAdjust='spacingAndGlyphs'>R² = 0.9614</text>
 <text x='37.96' y='335.71' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='1.58px' lengthAdjust='spacingAndGlyphs'> </text>
 <line x1='44.28' y1='553.54' x2='44.28' y2='552.12' style='stroke-width: 0.64; stroke: #CCCCCC;' />
@@ -421,7 +421,7 @@
 <polygon points='462.69,405.63 465.19,401.29 460.19,401.29 ' style='stroke-width: 0.52; stroke: #F27507; fill: #F5C969;' />
 <polygon points='462.69,392.02 465.19,387.69 460.19,387.69 ' style='stroke-width: 0.52; stroke: #F27507; fill: #F5C969;' />
 <polygon points='462.69,415.77 465.19,411.44 460.19,411.44 ' style='stroke-width: 0.52; stroke: #F27507; fill: #F5C969;' />
-<text x='368.34' y='319.32' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='24.68px' lengthAdjust='spacingAndGlyphs'>Quadratic</text>
+<text x='368.34' y='319.32' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='35.43px' lengthAdjust='spacingAndGlyphs'>Quadratic, 1/x</text>
 <text x='368.34' y='327.51' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='29.90px' lengthAdjust='spacingAndGlyphs'>R² = 0.9989</text>
 <text x='368.34' y='335.71' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='1.58px' lengthAdjust='spacingAndGlyphs'> </text>
 <line x1='374.66' y1='553.54' x2='374.66' y2='552.12' style='stroke-width: 0.64; stroke: #CCCCCC;' />

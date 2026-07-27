@@ -55,7 +55,7 @@
 <polygon points='53.71,257.34 56.21,253.00 51.21,253.00 ' style='stroke-width: 0.52; stroke: #F27507; fill: #F5C969;' />
 <polygon points='53.71,258.64 56.21,254.31 51.21,254.31 ' style='stroke-width: 0.52; stroke: #F27507; fill: #F5C969;' />
 <polygon points='53.71,260.01 56.21,255.68 51.21,255.68 ' style='stroke-width: 0.52; stroke: #F27507; fill: #F5C969;' />
-<text x='38.08' y='40.08' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='24.68px' lengthAdjust='spacingAndGlyphs'>Quadratic</text>
+<text x='38.08' y='40.08' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='35.43px' lengthAdjust='spacingAndGlyphs'>Quadratic, 1/x</text>
 <text x='38.08' y='48.28' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='43.97px' lengthAdjust='spacingAndGlyphs'>Regression failed</text>
 <rect x='23.85' y='30.11' width='313.02' height='248.29' style='stroke-width: 0.78; stroke: #B3B3B3;' />
 </g>
@@ -92,7 +92,7 @@
 <polygon points='381.42,55.60 383.92,51.26 378.92,51.26 ' style='stroke-width: 0.52; stroke: #F27507; fill: #F5C969;' />
 <polygon points='381.42,44.29 383.92,39.95 378.92,39.95 ' style='stroke-width: 0.52; stroke: #F27507; fill: #F5C969;' />
 <polygon points='381.42,66.09 383.92,61.76 378.92,61.76 ' style='stroke-width: 0.52; stroke: #F27507; fill: #F5C969;' />
-<text x='365.79' y='40.08' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='24.68px' lengthAdjust='spacingAndGlyphs'>Quadratic</text>
+<text x='365.79' y='40.08' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='35.43px' lengthAdjust='spacingAndGlyphs'>Quadratic, 1/x</text>
 <text x='365.79' y='48.28' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='43.97px' lengthAdjust='spacingAndGlyphs'>Regression failed</text>
 <rect x='351.56' y='30.11' width='313.02' height='248.29' style='stroke-width: 0.78; stroke: #B3B3B3;' />
 </g>
@@ -134,7 +134,7 @@
 <polygon points='53.28,537.64 55.78,533.30 50.77,533.30 ' style='stroke-width: 0.52; stroke: #F27507; fill: #F5C969;' />
 <polygon points='53.28,537.95 55.78,533.61 50.77,533.61 ' style='stroke-width: 0.52; stroke: #F27507; fill: #F5C969;' />
 <polygon points='53.28,539.99 55.78,535.65 50.77,535.65 ' style='stroke-width: 0.52; stroke: #F27507; fill: #F5C969;' />
-<text x='38.08' y='315.22' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='24.68px' lengthAdjust='spacingAndGlyphs'>Quadratic</text>
+<text x='38.08' y='315.22' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='35.43px' lengthAdjust='spacingAndGlyphs'>Quadratic, 1/x</text>
 <text x='38.08' y='323.41' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='43.97px' lengthAdjust='spacingAndGlyphs'>Regression failed</text>
 <rect x='23.85' y='305.25' width='313.02' height='248.29' style='stroke-width: 0.78; stroke: #B3B3B3;' />
 </g>
@@ -178,7 +178,7 @@
 <polygon points='380.99,536.21 383.49,531.88 378.49,531.88 ' style='stroke-width: 0.52; stroke: #F27507; fill: #F5C969;' />
 <polygon points='380.99,538.71 383.49,534.38 378.49,534.38 ' style='stroke-width: 0.52; stroke: #F27507; fill: #F5C969;' />
 <polygon points='380.99,539.27 383.49,534.94 378.49,534.94 ' style='stroke-width: 0.52; stroke: #F27507; fill: #F5C969;' />
-<text x='365.79' y='315.22' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='24.68px' lengthAdjust='spacingAndGlyphs'>Quadratic</text>
+<text x='365.79' y='315.22' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='35.43px' lengthAdjust='spacingAndGlyphs'>Quadratic, 1/x</text>
 <text x='365.79' y='323.41' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='43.97px' lengthAdjust='spacingAndGlyphs'>Regression failed</text>
 <rect x='351.56' y='305.25' width='313.02' height='248.29' style='stroke-width: 0.78; stroke: #B3B3B3;' />
 </g>

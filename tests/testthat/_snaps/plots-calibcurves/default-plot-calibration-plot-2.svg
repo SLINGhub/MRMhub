@@ -62,7 +62,7 @@
 <polygon points='51.89,265.11 54.40,260.77 49.39,260.77 ' style='stroke-width: 0.52; stroke: #F27507; fill: #F5C969;' />
 <polygon points='51.89,265.80 54.40,261.47 49.39,261.47 ' style='stroke-width: 0.52; stroke: #F27507; fill: #F5C969;' />
 <polygon points='51.89,266.33 54.40,261.99 49.39,261.99 ' style='stroke-width: 0.52; stroke: #F27507; fill: #F5C969;' />
-<text x='41.48' y='44.18' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='24.68px' lengthAdjust='spacingAndGlyphs'>Quadratic</text>
+<text x='41.48' y='44.18' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='35.43px' lengthAdjust='spacingAndGlyphs'>Quadratic, 1/x</text>
 <text x='41.48' y='52.38' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='29.90px' lengthAdjust='spacingAndGlyphs'>R² = 1.0000</text>
 <text x='41.48' y='60.57' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='1.58px' lengthAdjust='spacingAndGlyphs'> </text>
 <rect x='27.41' y='30.11' width='309.46' height='248.29' style='stroke-width: 0.78; stroke: #B3B3B3;' />
@@ -121,7 +121,7 @@
 <polygon points='379.60,262.48 382.11,258.14 377.10,258.14 ' style='stroke-width: 0.52; stroke: #F27507; fill: #F5C969;' />
 <polygon points='379.60,261.85 382.11,257.51 377.10,257.51 ' style='stroke-width: 0.52; stroke: #F27507; fill: #F5C969;' />
 <polygon points='379.60,264.37 382.11,260.04 377.10,260.04 ' style='stroke-width: 0.52; stroke: #F27507; fill: #F5C969;' />
-<text x='369.19' y='44.18' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='15.82px' lengthAdjust='spacingAndGlyphs'>Linear</text>
+<text x='369.19' y='44.18' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='26.57px' lengthAdjust='spacingAndGlyphs'>Linear, 1/x</text>
 <text x='369.19' y='52.38' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='29.90px' lengthAdjust='spacingAndGlyphs'>R² = 0.9974</text>
 <text x='369.19' y='60.57' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='1.58px' lengthAdjust='spacingAndGlyphs'> </text>
 <rect x='355.12' y='30.11' width='309.46' height='248.29' style='stroke-width: 0.78; stroke: #B3B3B3;' />
@@ -177,7 +177,7 @@
 <polygon points='61.66,527.33 64.16,523.00 59.15,523.00 ' style='stroke-width: 0.52; stroke: #F27507; fill: #F5C969;' />
 <polygon points='61.66,529.71 64.16,525.37 59.15,525.37 ' style='stroke-width: 0.52; stroke: #F27507; fill: #F5C969;' />
 <polygon points='61.66,531.78 64.16,527.44 59.15,527.44 ' style='stroke-width: 0.52; stroke: #F27507; fill: #F5C969;' />
-<text x='41.48' y='319.32' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='24.68px' lengthAdjust='spacingAndGlyphs'>Quadratic</text>
+<text x='41.48' y='319.32' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='35.43px' lengthAdjust='spacingAndGlyphs'>Quadratic, 1/x</text>
 <text x='41.48' y='327.51' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='29.90px' lengthAdjust='spacingAndGlyphs'>R² = 0.9804</text>
 <text x='41.48' y='335.71' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='1.58px' lengthAdjust='spacingAndGlyphs'> </text>
 <rect x='27.41' y='305.25' width='309.46' height='248.29' style='stroke-width: 0.78; stroke: #B3B3B3;' />
@@ -232,7 +232,7 @@
 <polygon points='389.37,527.02 391.87,522.69 386.87,522.69 ' style='stroke-width: 0.52; stroke: #F27507; fill: #F5C969;' />
 <polygon points='389.37,518.16 391.87,513.82 386.87,513.82 ' style='stroke-width: 0.52; stroke: #F27507; fill: #F5C969;' />
 <polygon points='389.37,531.67 391.87,527.34 386.87,527.34 ' style='stroke-width: 0.52; stroke: #F27507; fill: #F5C969;' />
-<text x='369.19' y='319.32' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='15.82px' lengthAdjust='spacingAndGlyphs'>Linear</text>
+<text x='369.19' y='319.32' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='26.57px' lengthAdjust='spacingAndGlyphs'>Linear, 1/x</text>
 <text x='369.19' y='327.51' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='29.90px' lengthAdjust='spacingAndGlyphs'>R² = 0.8952</text>
 <text x='369.19' y='335.71' style='font-size: 5.69px; font-style: italic; fill: #5C5C5C; font-family: sans;' textLength='1.58px' lengthAdjust='spacingAndGlyphs'> </text>
 <rect x='355.12' y='305.25' width='309.46' height='248.29' style='stroke-width: 0.78; stroke: #B3B3B3;' />

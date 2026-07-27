@@ -1052,11 +1052,16 @@ plot_calibcurves_page <- function(
   if (nrow(d_pred |> filter(!is.na(.data$concentration))) > 0) {
     d_calib_stats <- d_calib_stats |>
       mutate(
+        weighting_label = stringr::str_remove(.data$fit_weighting, "\\^")
+      ) |>
+      mutate(
         label = if_else(
           .data$reg_failed_cal_1,
-          glue::glue("{stringr::str_to_title(fit_model)}\nRegression failed"),
           glue::glue(
-            "{stringr::str_to_title(fit_model)}\nR\u00B2 = {sprintf('%.4f', .data$r2_cal_1)}\n{txt}"
+            "{stringr::str_to_title(.data$fit_model)}, {weighting_label}\nRegression failed"
+          ),
+          glue::glue(
+            "{stringr::str_to_title(.data$fit_model)}, {weighting_label}\nR\u00B2 = {sprintf('%.4f', .data$r2_cal_1)}\n{txt}"
           )
         )
       )
