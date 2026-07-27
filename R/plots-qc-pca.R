@@ -424,7 +424,15 @@ plot_pca <- function(
         fill = if (ellipse_fill) {
           ggplot2::guide_legend(
             title = ellipse_legend_title,
-            override.aes = list(size = 1, alpha = ellipse_alpha)
+            # Only override the legend-key glyph here when the caller has NOT
+            # set `legend_size`: in that case `mrmhub_style_layer()` adds its own
+            # `override.aes` on the merged qc_type legend, and two override.aes
+            # specs on one guide make ggplot warn "Duplicated `override.aes`".
+            override.aes = if (is.null(legend_size)) {
+              list(size = 1, alpha = ellipse_alpha)
+            } else {
+              list()
+            }
           )
         } else {
           "none"

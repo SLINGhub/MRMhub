@@ -135,6 +135,31 @@ test_that("plot_pca works", {
   # )
 })
 
+test_that("plot_pca with legend_size + filled ellipse draws without a duplicated override.aes warning", {
+  # Regression: setting `legend_size` makes mrmhub_style_layer() add an
+  # override.aes on the merged qc_type legend; a filled ellipse used to add a
+  # second one, and ggplot warned "Duplicated `override.aes` is ignored." at
+  # draw time. The two override.aes specs must not coexist on one guide.
+  p <- suppressMessages(plot_pca(
+    mexp,
+    variable = "intensity",
+    ellipse_variable = "qc_type",
+    ellipse_fill = TRUE,
+    ellipse_alpha = 0.3,
+    legend_size = 0.7,
+    filter_data = FALSE
+  ))
+  w <- character()
+  withCallingHandlers(
+    ggplot2::ggplot_build(p),
+    warning = function(cnd) {
+      w <<- c(w, conditionMessage(cnd))
+      invokeRestart("muffleWarning")
+    }
+  )
+  expect_false(any(grepl("override.aes", w, fixed = TRUE)))
+})
+
 test_that("plot_pca filter work", {
   expect_message(
     p <- plot_pca(
@@ -462,12 +487,18 @@ test_that("plot_pca does not crash when labels are suppressed (labels_threshold_
   # NULL / NA are the documented ways to suppress labels; both previously crashed
   # (`if (logical(0))` for NULL, missing `d_outlier` for NA).
   expect_no_error(suppressMessages(plot_pca(
-    mexp, variable = "intensity", ellipse_variable = "none",
-    filter_data = FALSE, labels_threshold_mad = NULL
+    mexp,
+    variable = "intensity",
+    ellipse_variable = "none",
+    filter_data = FALSE,
+    labels_threshold_mad = NULL
   )))
   expect_no_error(suppressMessages(plot_pca(
-    mexp, variable = "intensity", ellipse_variable = "none",
-    filter_data = FALSE, labels_threshold_mad = NA
+    mexp,
+    variable = "intensity",
+    ellipse_variable = "none",
+    filter_data = FALSE,
+    labels_threshold_mad = NA
   )))
 })
 
@@ -477,8 +508,11 @@ test_that("plot_pca drops a zero-variance feature with a warning, not a prcomp c
   mexp_zv@dataset$feature_intensity[mexp_zv@dataset$feature_id == f1] <- 1000
   expect_message(
     p <- plot_pca(
-      mexp_zv, variable = "intensity", ellipse_variable = "none",
-      filter_data = FALSE, labels_threshold_mad = NA
+      mexp_zv,
+      variable = "intensity",
+      ellipse_variable = "none",
+      filter_data = FALSE,
+      labels_threshold_mad = NA
     ),
     "zero variance"
   )
