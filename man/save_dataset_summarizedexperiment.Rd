@@ -44,7 +44,7 @@ the Bioconductor container for feature x sample data, and optionally to a
 \code{LipidomicsExperiment} for use with
 \href{https://www.lipidr.org}{lipidr}. This opens the experiment to the
 Bioconductor ecosystem - \code{limma} for differential abundance, \code{POMA} and \code{pmp}
-for preprocessing, \code{ComplexHeatmap} for visualization.
+for preprocessing.
 }
 \details{
 \strong{Layout.} Features are rows and analyses are columns, following the
