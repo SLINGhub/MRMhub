@@ -177,7 +177,7 @@ reference:
   - MRMhubExperiment
   - MRMhubExperiment-class
   - $,MRMhubExperiment-method
-  - status
+  - mrmhub_status
   - set_analysis_order
   - get_batch_boundaries
   - data_sum_features

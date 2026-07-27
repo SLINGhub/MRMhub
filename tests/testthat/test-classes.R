@@ -60,11 +60,11 @@ test_that("compact show method displays title and signal", {
   expect_match(compact, "Normalized")
 })
 
-test_that("status() displays composition, metadata and exclusions", {
+test_that("mrmhub_status() displays composition, metadata and exclusions", {
   compact <- toString(cli::cli_fmt(print(mexp)))
   expect_match(compact, "feature_area")
 
-  text_output <- toString(cli::cli_fmt(status(mexp)))
+  text_output <- toString(cli::cli_fmt(mrmhub_status(mexp)))
   expect_match(text_output, "Analyses manually excluded")
   mexp <- exclude_analyses(
     mexp,
@@ -72,7 +72,7 @@ test_that("status() displays composition, metadata and exclusions", {
     clear_existing = TRUE
   )
   mexp <- exclude_features(mexp, c("PC 32:1", "PC 40:8"), clear_existing = TRUE)
-  text_output <- toString(cli::cli_fmt(status(mexp)))
+  text_output <- toString(cli::cli_fmt(mrmhub_status(mexp)))
   expect_match(text_output, "Longit_batch1_4", fixed = TRUE)
   expect_match(text_output, "PC 32:1, and PC 40:8", fixed = TRUE)
 })

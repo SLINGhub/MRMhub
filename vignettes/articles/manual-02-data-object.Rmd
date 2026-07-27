@@ -115,13 +115,13 @@ summary of which steps have been applied.
 mexp                    # or print(mexp)
 ```
 
-`status()` prints the full dashboard: sample composition by QC type, feature
+`mrmhub_status()` prints the full dashboard: sample composition by QC type, feature
 composition, which metadata tables are populated, the state of every processing
 step, and any manually excluded analyses or features. It is the quickest way to
 confirm where a dataset stands in the workflow.
 
 ```{r, eval = FALSE}
-status(mexp)
+mrmhub_status(mexp)
 ```
 
 The full list of accessor and processing functions is given in the

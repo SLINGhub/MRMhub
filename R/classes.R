@@ -298,7 +298,7 @@ check_data <- function(data = NULL) {
 
 # Compact one-screen overview shown when a MRMhubExperiment is printed. The full
 # dashboard (sample/feature composition, metadata, per-step status) lives in
-# `status()`.
+# `mrmhub_status()`.
 setMethod("show", "MRMhubExperiment", function(object) {
   n_analyses <- length(unique(object@dataset$analysis_id))
   n_features <- length(unique(object@dataset$feature_id))
@@ -321,7 +321,7 @@ setMethod("show", "MRMhubExperiment", function(object) {
     "Normalized {get_status_flag(object@is_istd_normalized)}  Quantitated {get_status_flag(object@is_quantitated)}  Drift/batch {get_status_flag(corrected)}  Filtered {get_status_flag(object@is_filtered)}"
   )
   cli::cli_text(cli::col_grey(
-    "{cli::symbol$info} Use {.code status()} for the full processing and metadata report"
+    "{cli::symbol$info} Use {.code mrmhub_status()} for the full processing and metadata report"
   ))
   invisible(object)
 })
@@ -337,9 +337,9 @@ setMethod("show", "MRMhubExperiment", function(object) {
 #' @param object A [`MRMhubExperiment`][MRMhubExperiment-class] object.
 #' @return The `object`, invisibly.
 #' @examples
-#' status(MRMhubExperiment(title = "Test", analysis_type = "lipidomics"))
+#' mrmhub_status(MRMhubExperiment(title = "Test", analysis_type = "lipidomics"))
 #' @export
-status <- function(object) {
+mrmhub_status <- function(object) {
   check_data(object)
 
   d <- object@dataset

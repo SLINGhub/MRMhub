@@ -55,7 +55,7 @@ to inspect for run-order drift.
 plot_runscatter(mexp, variable = "norm_intensity")
 ```
 
-Printing the object returns a compact status overview: `status(mexp)` prints the
+Printing the object returns a compact status overview: `mrmhub_status(mexp)` prints the
 full report. If you prefer not to write code, `build_workflow()` opens an
 interactive application that validates your data and metadata, flags pipeline
 mismatches, and generates an equivalent Quarto workflow to download (see

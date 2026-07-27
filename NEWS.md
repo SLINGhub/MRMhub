@@ -25,8 +25,8 @@ This release focuses on usability, robustness, and new analysis capabilities.
   directly to Bioconductor `SummarizedExperiment` and `lipidr`
   `LipidomicsExperiment` objects for downstream analysis.
 
-* **Further new features**: mzTab-M import and export, and a `status()`
-  dashboard with compact object printing for a quick overview.
+* **Further new features**: mzTab-M import and export, and a status dashboard
+  (`mrmhub_status()`) with compact object printing for a quick overview.
 
 * **Improved robustness, speed, and stability**: better handling of missing
   values and analytical-sequence gaps, faster QC-metric computation, and many
