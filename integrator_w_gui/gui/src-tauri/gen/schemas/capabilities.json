@@ -1,1 +1,0 @@
-{"default":{"identifier":"default","description":"permissions for the main integrator window","local":true,"windows":["main"],"permissions":["core:default","dialog:allow-open"]}}

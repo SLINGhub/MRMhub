@@ -29,6 +29,7 @@ inst/doc
 
 # Local dev notes (audit plan + learnings) - not part of the package
 dev-notes/
+docs-review/
 
 # Local, non-package share doc (not committed)
 integrator-fork-review.html
