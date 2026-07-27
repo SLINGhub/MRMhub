@@ -1,6 +1,5 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://slinghub.github.io/MRMhub/quant/404.html</loc></url>
-<url><loc>https://slinghub.github.io/MRMhub/quant/CLAUDE.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/CODE_OF_CONDUCT.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/CONTRIBUTING.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/LICENSE.html</loc></url>
@@ -39,14 +38,6 @@
 <url><loc>https://slinghub.github.io/MRMhub/quant/authors.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/index.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/news/index.html</loc></url>
-<url><loc>https://slinghub.github.io/MRMhub/quant/plan-articleRework.prompt.html</loc></url>
-<url><loc>https://slinghub.github.io/MRMhub/quant/plan-cliConsoleReview.prompt.html</loc></url>
-<url><loc>https://slinghub.github.io/MRMhub/quant/plan-docsStructureReview.prompt.html</loc></url>
-<url><loc>https://slinghub.github.io/MRMhub/quant/plan-documentationRevision.prompt.html</loc></url>
-<url><loc>https://slinghub.github.io/MRMhub/quant/plan-fileRenaming.prompt.html</loc></url>
-<url><loc>https://slinghub.github.io/MRMhub/quant/plan-integratorThemeAlignment.prompt.html</loc></url>
-<url><loc>https://slinghub.github.io/MRMhub/quant/plan-isotopeCorrectionFull.prompt.html</loc></url>
-<url><loc>https://slinghub.github.io/MRMhub/quant/plan-workflowDiagrams.prompt.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/add_metadata.html</loc></url>

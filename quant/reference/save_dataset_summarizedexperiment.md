@@ -7,8 +7,7 @@ to a
 the Bioconductor container for feature x sample data, and optionally to
 a `LipidomicsExperiment` for use with [lipidr](https://www.lipidr.org).
 This opens the experiment to the Bioconductor ecosystem - `limma` for
-differential abundance, `POMA` and `pmp` for preprocessing,
-`ComplexHeatmap` for visualization.
+differential abundance, `POMA` and `pmp` for preprocessing.
 
 ## Usage
 
