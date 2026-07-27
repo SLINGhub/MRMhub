@@ -149,11 +149,12 @@ mrmhub_autoscale_sizes <- function(
 #' @param legend_bg_alpha Opacity (`[0, 1]`) of a white legend background box,
 #'   for a readable inside legend drawn over points.
 #' @param aspect_ratio Panel aspect ratio (height/width); `NULL` leaves it free.
-#' @param legend_aes Aesthetics whose glyph size is overridden when
-#'   `legend_size` is set. Defaults to `"colour"`, which resizes the shared key
-#'   of the (usually merged colour/shape/fill) legend without emitting ggplot's
-#'   "Duplicated `override.aes`" warning. Pass more aesthetics only for a
-#'   legend driven solely by another aesthetic.
+#' @param legend_aes Aesthetics whose legend guide is set when `legend_size` is
+#'   set. Defaults to `"colour"`. Only the first aesthetic carries the glyph-size
+#'   `override.aes`; that alone resizes the shared key of a merged
+#'   colour/shape/fill legend, so passing several aesthetics never emits ggplot's
+#'   "Duplicated `override.aes`" warning. Lead with the aesthetic that drives the
+#'   legend if it is not `colour`.
 #'
 #' @return A list of ggplot layers, or `NULL` if no argument was supplied.
 #' @noRd
@@ -222,11 +223,20 @@ mrmhub_style_layer <- function(
     # must be overridden on each mapped aesthetic. Convert the point size (pt)
     # to ggplot's mm-based `size`/`linewidth` scale so the glyph tracks the text.
     glyph <- sz / ggplot2::.pt
+    # A merged legend (colour+fill+shape all mapped to one variable) needs only
+    # one `override.aes` to resize its shared key; a second one on the same key
+    # triggers ggplot's "Duplicated `override.aes`" warning. So carry the
+    # override on the first aesthetic only -- any extra `legend_aes` get a plain
+    # guide, which still merges but adds no duplicate override.
     overrides <- stats::setNames(
-      lapply(legend_aes, function(a) {
-        ggplot2::guide_legend(
-          override.aes = list(size = glyph, linewidth = glyph)
-        )
+      lapply(seq_along(legend_aes), function(i) {
+        if (i == 1L) {
+          ggplot2::guide_legend(
+            override.aes = list(size = glyph, linewidth = glyph)
+          )
+        } else {
+          ggplot2::guide_legend()
+        }
       }),
       legend_aes
     )

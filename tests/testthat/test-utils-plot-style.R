@@ -74,3 +74,19 @@ test_that("legend_aes controls which guides get an override", {
   g <- mrmhub_style_layer(legend_size = 1, legend_aes = "colour")[[2]]
   expect_equal(names(g$guides), "colour")
 })
+
+test_that("legend_size with multiple merged aesthetics emits no override.aes warning", {
+  # A caller passing legend_aes = c("colour", "fill") on a merged colour+fill
+  # legend previously produced two override.aes on one shared key -> ggplot's
+  # "Duplicated `override.aes` is ignored" warning. Only one override is needed
+  # to resize the merged key.
+  p <- ggplot(mtcars, aes(wt, mpg, colour = factor(cyl), fill = factor(cyl))) +
+    geom_point(shape = 21)
+  f <- withr::local_tempfile(fileext = ".png")
+  expect_no_warning(ggplot2::ggsave(
+    f,
+    p + mrmhub_style_layer(legend_size = 1, legend_aes = c("colour", "fill")),
+    width = 4,
+    height = 3
+  ))
+})
