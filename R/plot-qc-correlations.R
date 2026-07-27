@@ -67,6 +67,8 @@ get_feature_correlations <- function(tbl, cor_min_neg, cor_min) {
 #'   file. When `FALSE`, plots are directly plotted.
 #' @param path The file path for saving the PDF. Must be defined if
 #'   `output_pdf` is `TRUE`.
+#' @param create_dir A logical value. If `TRUE` (the default) and `output_pdf`
+#'   is `TRUE`, the parent directory of `path` is created if it does not yet exist.
 #' @param return_plots Logical. If `TRUE`, returns the plots as a list of
 #'   `ggplot` objects.
 #' @param rows_page Number of rows of plots per page.
@@ -110,6 +112,7 @@ plot_feature_correlations <- function(
   min_median_value = NA,
   output_pdf = FALSE,
   path = NA,
+  create_dir = TRUE,
   return_plots = FALSE,
   rows_page = 4,
   cols_page = 5,
@@ -257,6 +260,7 @@ plot_feature_correlations <- function(
       path,
       paste0(path, ".pdf")
     )
+    ensure_output_dir(path, create_dir)
     if (page_orientation == "LANDSCAPE") {
       pdf(
         file = path,

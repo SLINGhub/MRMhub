@@ -16,6 +16,7 @@ plot_runscatter(
   plot_range = NA,
   output_pdf = FALSE,
   path = NA,
+  create_dir = TRUE,
   multithreading = FALSE,
   return_plots = FALSE,
   show_batches = TRUE,
@@ -100,6 +101,9 @@ the same way as \code{include_feature_filter}. \code{NA} or \code{""} ignores th
 \item{output_pdf}{Logical, whether to save the plot as a PDF file.}
 
 \item{path}{File name for the PDF output.}
+
+\item{create_dir}{A logical value. If \code{TRUE} (the default) and \code{output_pdf}
+is \code{TRUE}, the parent directory of \code{path} is created if it does not yet exist.}
 
 \item{multithreading}{Logical, whether to use parallel processing to speed up plot generation.}
 

@@ -22,6 +22,7 @@ plot_calibrationcurves(
   exclude_feature_filter = NA,
   output_pdf = FALSE,
   path = NA,
+  create_dir = TRUE,
   return_plots = FALSE,
   point_size = NULL,
   point_color = NA,
@@ -101,6 +102,9 @@ the same way as \code{include_feature_filter}. \code{NA} or \code{""} ignores th
 \code{FALSE}.}
 
 \item{path}{File path for saving the PDF. Default is an empty string.}
+
+\item{create_dir}{A logical value. If \code{TRUE} (the default) and \code{output_pdf}
+is \code{TRUE}, the parent directory of \code{path} is created if it does not yet exist.}
 
 \item{return_plots}{Logical, if \code{TRUE}, returns plots as a list of \code{ggplot}
 objects. Default is \code{FALSE}.}

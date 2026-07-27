@@ -29,6 +29,8 @@
 #'   file. When `FALSE`, plots are directly plotted.
 #' @param path The file path for saving the PDF. Must be defined if
 #'   `output_pdf` is `TRUE`.
+#' @param create_dir A logical value. If `TRUE` (the default) and `output_pdf`
+#'   is `TRUE`, the parent directory of `path` is created if it does not yet exist.
 #' @param return_plots Logical. If `TRUE`, returns the plots as a list of
 #'   `ggplot` objects.
 #' @param color_curves A vector of colors for the curves. If `NULL` (default),
@@ -95,6 +97,7 @@ plot_responsecurves <- function(
   # Output settings
   output_pdf = FALSE,
   path = NA,
+  create_dir = TRUE,
   return_plots = FALSE,
 
   # Plot customization
@@ -258,6 +261,7 @@ plot_responsecurves <- function(
       path,
       paste0(path, ".pdf")
     )
+    ensure_output_dir(path, create_dir)
     if (page_orientation == "LANDSCAPE") {
       pdf(
         file = path,

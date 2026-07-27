@@ -395,6 +395,16 @@ test_that("save_dataset_rds() respects overwrite = FALSE", {
   )
 })
 
+test_that("save_dataset_rds() writes an uncompressed file that round-trips", {
+  f_gz <- withr::local_tempfile(fileext = ".rds")
+  f_raw <- withr::local_tempfile(fileext = ".rds")
+  suppressMessages(save_dataset_rds(mexp, f_gz, compress = TRUE))
+  suppressMessages(save_dataset_rds(mexp, f_raw, compress = FALSE))
+
+  expect_gt(file.info(f_raw)$size, file.info(f_gz)$size)
+  expect_equal(suppressMessages(read_dataset_rds(f_raw)), mexp)
+})
+
 test_that("read_dataset_rds() aborts on a non-MRMhubExperiment file", {
   f <- withr::local_tempfile(fileext = ".rds")
   saveRDS(1:10, f)
@@ -435,4 +445,73 @@ test_that("read_dataset_rds() prints the full status when show_status = TRUE", {
     read_dataset_rds(f, show_status = TRUE),
     "Processing Status"
   )
+})
+
+
+# ---- create_dir: auto-create the output directory ----------------------------
+
+test_that("ensure_output_dir() creates a missing parent directory when create_dir = TRUE", {
+  root <- withr::local_tempdir()
+  target <- file.path(root, "nested", "sub", "file.csv")
+  expect_false(dir.exists(dirname(target)))
+  ensure_output_dir(target, create_dir = TRUE)
+  expect_true(dir.exists(dirname(target)))
+})
+
+test_that("ensure_output_dir() does nothing when create_dir = FALSE", {
+  root <- withr::local_tempdir()
+  target <- file.path(root, "nope", "file.csv")
+  ensure_output_dir(target, create_dir = FALSE)
+  expect_false(dir.exists(dirname(target)))
+})
+
+test_that("ensure_output_dir() is a no-op for NA or empty paths", {
+  expect_silent(ensure_output_dir(NA_character_))
+  expect_silent(ensure_output_dir(""))
+})
+
+test_that("save_dataset_csv() creates a missing output directory (create_dir = TRUE)", {
+  root <- withr::local_tempdir()
+  path <- file.path(root, "newdir", "conc.csv")
+  expect_false(dir.exists(dirname(path)))
+  suppressMessages(save_dataset_csv(mexp, path = path, variable = "conc"))
+  expect_true(file.exists(path))
+})
+
+test_that("save_dataset_csv() errors when the directory is missing and create_dir = FALSE", {
+  root <- withr::local_tempdir()
+  path <- file.path(root, "missing", "conc.csv")
+  expect_error(
+    suppressMessages(
+      save_dataset_csv(mexp, path = path, variable = "conc", create_dir = FALSE)
+    )
+  )
+  expect_false(file.exists(path))
+})
+
+test_that("save_dataset_rds() creates a missing output directory (create_dir = TRUE)", {
+  root <- withr::local_tempdir()
+  path <- file.path(root, "newdir", "mexp.rds")
+  expect_false(dir.exists(dirname(path)))
+  suppressMessages(save_dataset_rds(mexp, path = path))
+  expect_true(file.exists(path))
+})
+
+test_that("save_dataset_rds() errors when the directory is missing and create_dir = FALSE", {
+  root <- withr::local_tempdir()
+  path <- file.path(root, "missing", "mexp.rds")
+  expect_error(
+    suppressWarnings(
+      suppressMessages(save_dataset_rds(mexp, path = path, create_dir = FALSE))
+    )
+  )
+  expect_false(file.exists(path))
+})
+
+test_that("save_report_xlsx() creates a missing output directory (create_dir = TRUE)", {
+  root <- withr::local_tempdir()
+  path <- file.path(root, "newdir", "report.xlsx")
+  expect_false(dir.exists(dirname(path)))
+  suppressMessages(save_report_xlsx(mexp, path = path))
+  expect_true(file.exists(path))
 })

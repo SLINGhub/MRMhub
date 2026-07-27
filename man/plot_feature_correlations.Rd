@@ -20,6 +20,7 @@ plot_feature_correlations(
   min_median_value = NA,
   output_pdf = FALSE,
   path = NA,
+  create_dir = TRUE,
   return_plots = FALSE,
   rows_page = 4,
   cols_page = 5,
@@ -89,6 +90,9 @@ file. When \code{FALSE}, plots are directly plotted.}
 
 \item{path}{The file path for saving the PDF. Must be defined if
 \code{output_pdf} is \code{TRUE}.}
+
+\item{create_dir}{A logical value. If \code{TRUE} (the default) and \code{output_pdf}
+is \code{TRUE}, the parent directory of \code{path} is created if it does not yet exist.}
 
 \item{return_plots}{Logical. If \code{TRUE}, returns the plots as a list of
 \code{ggplot} objects.}

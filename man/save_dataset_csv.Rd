@@ -14,7 +14,8 @@ save_dataset_csv(
   include_istd = NA,
   include_feature_filter = NA,
   exclude_feature_filter = NA,
-  add_qctype = NA
+  add_qctype = NA,
+  create_dir = TRUE
 )
 }
 \arguments{
@@ -47,6 +48,9 @@ still work. \code{NA} or \code{""} ignores the filter.}
 the same way as \code{include_feature_filter}. \code{NA} or \code{""} ignores the filter.}
 
 \item{add_qctype}{Add the QC type as column}
+
+\item{create_dir}{A logical value. If \code{TRUE} (the default), the parent
+directory of \code{path} is created if it does not yet exist.}
 }
 \description{
 This function exports specific unprocessed or processed feature variable

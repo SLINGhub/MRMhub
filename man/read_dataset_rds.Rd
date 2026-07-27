@@ -31,6 +31,15 @@ If the file carries an embedded content fingerprint (see \code{\link[=save_datas
 it is verified against the reloaded object: a match confirms the file holds the
 object it was saved from, and the fingerprint is printed so it can be compared
 with a recorded value.
+
+This function only adds the class check, fingerprint verification and console
+feedback on top of \code{\link[=readRDS]{readRDS()}}; the file itself is a plain R serialization.
+It can therefore always be reopened with base R's \code{readRDS()} without
+\pkg{mrmhub}, and every slot (the \code{dataset}, the \verb{annot_*} metadata tables, the
+QC and calibration metrics) is stored as an ordinary tibble that can be
+inspected via the \code{@} slots or \code{\link[=attributes]{attributes()}}. \pkg{mrmhub} is only required to
+re-plot or re-process the object — which makes the \code{.rds} a convenient
+self-contained archive of a complete analysis.
 }
 \examples{
 mexp <- data_load_example()

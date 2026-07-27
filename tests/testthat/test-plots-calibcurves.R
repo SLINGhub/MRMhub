@@ -615,3 +615,43 @@ test_that("plot_calibrationcurves axes render >=3 non-empty labels", {
   expect_gte(length(axis_labels(p_log[[1]], "x")), 3)
   expect_gte(length(axis_labels(p_log[[1]], "y")), 3)
 })
+
+test_that("plot_calibrationcurves() creates a missing PDF output directory (create_dir = TRUE)", {
+  root <- withr::local_tempdir()
+  path <- file.path(root, "plots", "calib.pdf")
+  expect_false(dir.exists(dirname(path)))
+  p <- plot_calibrationcurves(
+    data = mexp,
+    fit_overwrite = TRUE,
+    fit_model = "quadratic",
+    fit_weighting = "1/x",
+    rows_page = 2,
+    cols_page = 2,
+    output_pdf = TRUE,
+    path = path,
+    show_progress = FALSE
+  )
+  expect_null(p)
+  expect_true(dir.exists(dirname(path)))
+  expect_true(fs::file_exists(path))
+})
+
+test_that("plot_calibrationcurves() errors writing a PDF into a missing dir when create_dir = FALSE", {
+  root <- withr::local_tempdir()
+  path <- file.path(root, "missing", "calib.pdf")
+  expect_error(
+    plot_calibrationcurves(
+      data = mexp,
+      fit_overwrite = TRUE,
+      fit_model = "quadratic",
+      fit_weighting = "1/x",
+      rows_page = 2,
+      cols_page = 2,
+      output_pdf = TRUE,
+      path = path,
+      create_dir = FALSE,
+      show_progress = FALSE
+    )
+  )
+  expect_false(fs::file_exists(path))
+})

@@ -1,3 +1,23 @@
+# Ensure the parent directory of `path` exists before a `save_*()` or
+# `plot_*(output_pdf = TRUE)` writer opens it. When `create_dir` is TRUE (the
+# default) and the directory is missing, it is created recursively, so writing
+# into a fresh output folder needs no separate `dir.create()`. A no-op when the
+# directory already exists, or when `path` is `NA`/empty (e.g. a plot call with
+# `output_pdf = FALSE`).
+ensure_output_dir <- function(path, create_dir = TRUE) {
+  if (
+    !isTRUE(create_dir) || length(path) != 1 || is.na(path) || !nzchar(path)
+  ) {
+    return(invisible(FALSE))
+  }
+  dir <- dirname(path)
+  if (nzchar(dir) && !dir.exists(dir)) {
+    dir.create(dir, recursive = TRUE, showWarnings = FALSE)
+    return(invisible(TRUE))
+  }
+  invisible(FALSE)
+}
+
 #' Write a data-processing report (Excel)
 #'
 #' Generates a data processing report from a `MRMhubExperiment` object and writes it to an Excel file.
@@ -30,6 +50,8 @@
 #' name will be included in the sheet name. Default is "conc".
 #' @param normalized_variable A character string indicating if and which normalized feature values  (by reference sample) to include in the report.See also `[calibrate_by_reference()]`.
 #' @param overwrite A logical value indicating whether to overwrite the file if it already exists. Default is `TRUE`.
+#' @param create_dir A logical value. If `TRUE` (the default), the parent
+#'   directory of `path` is created if it does not yet exist.
 #' @details
 #' If certain data sets are not available, the function includes empty tables for the corresponding dataset.
 #'
@@ -56,7 +78,8 @@ save_report_xlsx <- function(
   path,
   filtered_variable = "conc",
   normalized_variable = NA,
-  overwrite = TRUE
+  overwrite = TRUE,
+  create_dir = TRUE
 ) {
   check_data(data)
 
@@ -446,6 +469,7 @@ save_report_xlsx <- function(
   #   wb <- openxlsx2::wb_remove_worksheet(wb, 9)
   # }
 
+  ensure_output_dir(path, create_dir)
   openxlsx2::wb_save(
     wb = wb,
     file = path,
@@ -488,6 +512,8 @@ save_report_xlsx <- function(
 #' @param exclude_feature_filter Feature(s) to exclude by `feature_id`, matched
 #'   the same way as `include_feature_filter`. `NA` or `""` ignores the filter.
 #' @param add_qctype Add the QC type as column
+#' @param create_dir A logical value. If `TRUE` (the default), the parent
+#'   directory of `path` is created if it does not yet exist.
 #'
 #' @seealso
 #' [normalize_by_istd()], [quantify_by_istd()], [quantify_by_calibration()], [calibrate_by_reference()]
@@ -503,7 +529,8 @@ save_dataset_csv <- function(
   include_istd = NA,
   include_feature_filter = NA,
   exclude_feature_filter = NA,
-  add_qctype = NA
+  add_qctype = NA,
+  create_dir = TRUE
 ) {
   check_data(data)
   if (missing(path) || !rlang::is_string(path) || is.na(path)) {
@@ -597,6 +624,7 @@ save_dataset_csv <- function(
       values_fn = check_single_pivot_value
     )
 
+  ensure_output_dir(path, create_dir)
   readr::write_csv(ds, file = path, col_names = TRUE)
   if (variable_strip == "conc") {
     variable_strip <- "concentration"
@@ -736,6 +764,18 @@ save_metadata_msorganiser_template <- function(
 #' identical object. [read_dataset_rds()] reads the file back and verifies the
 #' fingerprint.
 #'
+#' @section Archiving:
+#' The file is a plain R serialization, so it can always be reopened with base R's
+#' `readRDS()` — \pkg{mrmhub} is not required just to read it. Every slot (the
+#' `dataset`, the `annot_*` metadata tables, and the QC and calibration metrics)
+#' is stored as an ordinary tibble and can be inspected via the `@` slots or
+#' [attributes()], which makes the `.rds` a convenient self-contained archive of a
+#' complete analysis. \pkg{mrmhub} (a compatible version) is only needed to
+#' re-plot or re-process the object through its methods. For long-term, cross-tool
+#' preservation, complement the `.rds` with an open-standard export
+#' ([save_dataset_mztab()], [save_dataset_summarizedexperiment()] or
+#' [save_dataset_csv()]).
+#'
 #' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] object to save.
 #' @param path A character string with the file path. If it does not end in
 #'   `.rds`, the extension is appended automatically.
@@ -743,8 +783,14 @@ save_metadata_msorganiser_template <- function(
 #'   object is computed with [rlang::hash()], embedded in the saved file and
 #'   printed. The fingerprint is stored as an object attribute and is stripped
 #'   again by [read_dataset_rds()], so it does not affect the reloaded object.
+#' @param compress A logical value passed to [saveRDS()]. If `TRUE` (the default),
+#'   the file is gzip-compressed (typically about ten times smaller); `FALSE`
+#'   writes it uncompressed (faster, but much larger). Either way the file is read
+#'   back identically — the compression is detected automatically on load.
 #' @param overwrite A logical value indicating whether to overwrite the file if it
 #'   already exists. Default is `TRUE`.
+#' @param create_dir A logical value. If `TRUE` (the default), the parent
+#'   directory of `path` is created if it does not yet exist.
 #'
 #' @return The `path` written to, invisibly.
 #'
@@ -757,7 +803,14 @@ save_metadata_msorganiser_template <- function(
 #' save_dataset_rds(mexp, path)
 #'
 #' @export
-save_dataset_rds <- function(data = NULL, path, hash = TRUE, overwrite = TRUE) {
+save_dataset_rds <- function(
+  data = NULL,
+  path,
+  hash = TRUE,
+  compress = TRUE,
+  overwrite = TRUE,
+  create_dir = TRUE
+) {
   check_data(data)
   if (missing(path) || !rlang::is_string(path) || is.na(path)) {
     cli::cli_abort(
@@ -782,7 +835,8 @@ save_dataset_rds <- function(data = NULL, path, hash = TRUE, overwrite = TRUE) {
     attr(data, "mrmhub_hash") <- h
   }
 
-  saveRDS(data, file = path)
+  ensure_output_dir(path, create_dir)
+  saveRDS(data, file = path, compress = compress)
 
   mh_success("MRMhubExperiment saved to {.file {path}}.")
   if (hash) {
@@ -805,6 +859,15 @@ save_dataset_rds <- function(data = NULL, path, hash = TRUE, overwrite = TRUE) {
 #' it is verified against the reloaded object: a match confirms the file holds the
 #' object it was saved from, and the fingerprint is printed so it can be compared
 #' with a recorded value.
+#'
+#' This function only adds the class check, fingerprint verification and console
+#' feedback on top of [readRDS()]; the file itself is a plain R serialization.
+#' It can therefore always be reopened with base R's `readRDS()` without
+#' \pkg{mrmhub}, and every slot (the `dataset`, the `annot_*` metadata tables, the
+#' QC and calibration metrics) is stored as an ordinary tibble that can be
+#' inspected via the `@` slots or [attributes()]. \pkg{mrmhub} is only required to
+#' re-plot or re-process the object — which makes the `.rds` a convenient
+#' self-contained archive of a complete analysis.
 #'
 #' @param path A character string with the path to the `.rds` file.
 #' @param verify A logical value. If `TRUE` (default) and the file carries an

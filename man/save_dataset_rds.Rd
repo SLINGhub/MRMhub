@@ -4,7 +4,14 @@
 \alias{save_dataset_rds}
 \title{Save a complete \code{MRMhubExperiment} as an RDS file}
 \usage{
-save_dataset_rds(data = NULL, path, hash = TRUE, overwrite = TRUE)
+save_dataset_rds(
+  data = NULL,
+  path,
+  hash = TRUE,
+  compress = TRUE,
+  overwrite = TRUE,
+  create_dir = TRUE
+)
 }
 \arguments{
 \item{data}{A \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object to save.}
@@ -17,8 +24,16 @@ object is computed with \code{\link[rlang:hash]{rlang::hash()}}, embedded in the
 printed. The fingerprint is stored as an object attribute and is stripped
 again by \code{\link[=read_dataset_rds]{read_dataset_rds()}}, so it does not affect the reloaded object.}
 
+\item{compress}{A logical value passed to \code{\link[=saveRDS]{saveRDS()}}. If \code{TRUE} (the default),
+the file is gzip-compressed (typically about ten times smaller); \code{FALSE}
+writes it uncompressed (faster, but much larger). Either way the file is read
+back identically — the compression is detected automatically on load.}
+
 \item{overwrite}{A logical value indicating whether to overwrite the file if it
 already exists. Default is \code{TRUE}.}
+
+\item{create_dir}{A logical value. If \code{TRUE} (the default), the parent
+directory of \code{path} is created if it does not yet exist.}
 }
 \value{
 The \code{path} written to, invisibly.
@@ -37,6 +52,20 @@ confirm that a reloaded file — or a copy shared with a colleague — holds the
 identical object. \code{\link[=read_dataset_rds]{read_dataset_rds()}} reads the file back and verifies the
 fingerprint.
 }
+\section{Archiving}{
+
+The file is a plain R serialization, so it can always be reopened with base R's
+\code{readRDS()} — \pkg{mrmhub} is not required just to read it. Every slot (the
+\code{dataset}, the \verb{annot_*} metadata tables, and the QC and calibration metrics)
+is stored as an ordinary tibble and can be inspected via the \code{@} slots or
+\code{\link[=attributes]{attributes()}}, which makes the \code{.rds} a convenient self-contained archive of a
+complete analysis. \pkg{mrmhub} (a compatible version) is only needed to
+re-plot or re-process the object through its methods. For long-term, cross-tool
+preservation, complement the \code{.rds} with an open-standard export
+(\code{\link[=save_dataset_mztab]{save_dataset_mztab()}}, \code{\link[=save_dataset_summarizedexperiment]{save_dataset_summarizedexperiment()}} or
+\code{\link[=save_dataset_csv]{save_dataset_csv()}}).
+}
+
 \examples{
 mexp <- data_load_example()
 path <- file.path(tempdir(), "example_mexp.rds")

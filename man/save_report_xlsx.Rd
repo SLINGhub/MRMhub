@@ -9,7 +9,8 @@ save_report_xlsx(
   path,
   filtered_variable = "conc",
   normalized_variable = NA,
-  overwrite = TRUE
+  overwrite = TRUE,
+  create_dir = TRUE
 )
 }
 \arguments{
@@ -26,6 +27,9 @@ name will be included in the sheet name. Default is "conc".}
 \item{normalized_variable}{A character string indicating if and which normalized feature values  (by reference sample) to include in the report.See also \verb{[calibrate_by_reference()]}.}
 
 \item{overwrite}{A logical value indicating whether to overwrite the file if it already exists. Default is \code{TRUE}.}
+
+\item{create_dir}{A logical value. If \code{TRUE} (the default), the parent
+directory of \code{path} is created if it does not yet exist.}
 }
 \value{
 The function does not return a value. It writes the report to the specified Excel file.

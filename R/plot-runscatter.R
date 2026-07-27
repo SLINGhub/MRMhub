@@ -62,6 +62,8 @@
 #'
 #' @param output_pdf Logical, whether to save the plot as a PDF file.
 #' @param path File name for the PDF output.
+#' @param create_dir A logical value. If `TRUE` (the default) and `output_pdf`
+#'   is `TRUE`, the parent directory of `path` is created if it does not yet exist.
 #' @param multithreading Logical, whether to use parallel processing to speed up plot generation.
 #' @param return_plots Logical, whether to return the list of ggplot objects.
 #'
@@ -147,6 +149,7 @@ plot_runscatter <- function(
   # Output settings
   output_pdf = FALSE,
   path = NA,
+  create_dir = TRUE,
   multithreading = FALSE,
   return_plots = FALSE,
 
@@ -675,6 +678,7 @@ plot_runscatter <- function(
       path,
       paste0(path, ".pdf")
     )
+    ensure_output_dir(path, create_dir)
     if (multithreading) {
       tmp_dir <- fs::dir_create(fs::path_temp("mrmhub_plotpages"))
       page_group_files <- paste0(

@@ -64,6 +64,8 @@
 #' @param output_pdf Logical, if `TRUE`, saves plots as a PDF file. Default is
 #'   `FALSE`.
 #' @param path File path for saving the PDF. Default is an empty string.
+#' @param create_dir A logical value. If `TRUE` (the default) and `output_pdf`
+#'   is `TRUE`, the parent directory of `path` is created if it does not yet exist.
 #' @param return_plots Logical, if `TRUE`, returns plots as a list of `ggplot`
 #'   objects. Default is `FALSE`.
 #' @param point_size Size of points in the plot. Default is 1.5.
@@ -116,6 +118,7 @@ plot_calibrationcurves <- function(
   exclude_feature_filter = NA,
   output_pdf = FALSE,
   path = NA,
+  create_dir = TRUE,
   return_plots = FALSE,
   point_size = NULL,
   point_color = NA,
@@ -528,6 +531,7 @@ plot_calibrationcurves <- function(
       path,
       paste0(path, ".pdf")
     )
+    ensure_output_dir(path, create_dir)
     if (page_orientation == "LANDSCAPE") {
       pdf(
         file = path,
