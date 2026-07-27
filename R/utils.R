@@ -63,7 +63,9 @@ coerce_checked <- function(
   }
   chr[!is.na(chr) & chr == ""] <- NA_character_
   out <- suppressWarnings(target(chr))
-  failed <- !is.na(chr) & is.na(out)
+  # is.na() is TRUE for NaN, so a cell R parsed to NaN (e.g. INTEGRATOR's "NaN"
+  # for an unmeasurable FWHM) would be misread as a parse failure — exclude it.
+  failed <- !is.na(chr) & is.na(out) & !is.nan(out)
   if (any(failed)) {
     bad <- unique(chr[failed])
     cli::cli_warn(c(

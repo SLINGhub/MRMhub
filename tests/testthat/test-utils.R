@@ -30,6 +30,14 @@ test_that("coerce_checked treats blanks as NA without warning", {
   expect_equal(res, c(1, NA, NA, NA))
 })
 
+test_that("coerce_checked parses NaN/Inf literals silently", {
+  # INTEGRATOR writes "NaN" for an unmeasurable FWHM; it is a valid value, not a
+  # parse failure, and must not warn.
+  expect_silent(res <- coerce_checked(c("1.2", "NaN", "Inf", "-Inf"), column = "x"))
+  expect_equal(res, c(1.2, NaN, Inf, -Inf))
+  expect_true(is.nan(res[2]))
+})
+
 test_that("coerce_checked warns on non-blank parse failures and names the column", {
   expect_warning(
     res <- coerce_checked(c("1.2", "oops", "3", "N/A"), column = "myCol"),
