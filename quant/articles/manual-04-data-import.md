@@ -1,4 +1,4 @@
-# Importing Analytical Data
+# Importing analytical data
 
 Manual
 
@@ -24,7 +24,7 @@ annotations, these can be imported into the `MRMhubExperiment` object as
 well. The imported metadata is checked for integrity and consistency and
 then added to the annotation tables; to include it, set the argument
 `import_metadata = TRUE` (see [Importing
-Metadata](https://slinghub.github.io/MRMhub/quant/articles/manual-05-metadata.md)).
+metadata](https://slinghub.github.io/MRMhub/quant/articles/manual-05-metadata.md)).
 
 ## MRMhub / INTEGRATOR
 
@@ -137,7 +137,7 @@ whereas the generic wide and long CSV tables are prepared manually. The
 full column reference for each format is given on its linked function
 reference page.
 
-### MRMhub / INTEGRATOR — long CSV/TSV
+### MRMhub / INTEGRATOR: long CSV/TSV
 
 The long output has one row per analysis × feature, tab- or
 comma-separated. Besides the columns shown it also carries
@@ -163,7 +163,7 @@ show_head(
 
 First 3 rows of `MRMhub_demo.tsv` (showing 6 of 18 columns) {.table}
 
-### Agilent MassHunter Quant — wide CSV
+### Agilent MassHunter Quant: wide CSV
 
 A MassHunter Quant export is wide with a two-row header. The first
 header row groups columns by compound (`<Compound> Method` and
@@ -171,13 +171,13 @@ header row groups columns by compound (`<Compound> Method` and
 row holds the actual sub-headers. The `Method`/`Results` blocks repeat
 for every compound (quantifiers and qualifiers).
 
-| Sample |  |  |  | CE 18:1 — Method |  |  |  | CE 18:1 — Results |  |  | … |
+| Sample |  |  |  | CE 18:1: Method |  |  |  | CE 18:1: Results |  |  | … |
 |----|----|----|----|----|----|----|----|----|----|----|----|
 | Data File | Name | Type | Acq. Date-Time | Precursor Ion | Product Ion | Collision Energy | RT | RT | Area | FWHM |  |
 | 001\_…01.d | 001\_…01 | Sample | 4/12/18 18:28 | 668.6 | 369.3 | 10 | 7.16 | 7.16 | 5152996 | 0.081 |  |
 | 002\_…02.d | 002\_…02 | Sample | 4/12/18 18:39 | 668.6 | 369.3 | 10 | 7.16 | 7.16 | 4789505 | 0.080 |  |
 
-### Skyline (small molecule) — long CSV
+### Skyline (small molecule): long CSV
 
 The *Molecule Transition Results* export has one row per transition
 result; `Replicate Name` becomes `analysis_id`, `Molecule Name` becomes
@@ -260,7 +260,7 @@ trailing spaces are removed and internal runs of whitespace are
 collapsed to a single space, so `"QC 01"` and `"QC 01"` become the same
 value. Raw-data file extensions (`.mzML`, `.d`, `.raw`, `.wiff`,
 `.wiff2`, `.lcd`, `.chrom`, case-insensitive) are stripped from
-`analysis_id`, and only a genuine *trailing* extension is removed — a
+`analysis_id`, and only a genuine *trailing* extension is removed. A
 name such as `Study.data_01.d` keeps its internal `.data`.
 
 The identical normalization is applied when metadata is imported. This
@@ -269,7 +269,7 @@ derived from a data-file name; without it, a stray space would cause the
 analysis to be dropped silently when data and metadata are joined.
 
 This normalization is **always** applied, on both data and metadata, and
-**no warning is issued** when whitespace is removed — it is silent by
+**no warning is issued** when whitespace is removed, it is silent by
 design. Stray spaces are a common and hard-to-trace cause of identifiers
 failing to map between data and metadata, so they are removed rather
 than reported. The one visible consequence is that two identifiers
@@ -280,14 +280,14 @@ twice in one analysis).
 ## Next steps
 
 - [Importing
-  Metadata](https://slinghub.github.io/MRMhub/quant/articles/manual-05-metadata.md)
-  — attach and validate sample and feature annotations
-- [The MRMhubExperiment Data
-  Object](https://slinghub.github.io/MRMhub/quant/articles/manual-02-data-object.md)
-  — the object the data is loaded into
+  metadata](https://slinghub.github.io/MRMhub/quant/articles/manual-05-metadata.md):
+  attach and validate sample and feature annotations
+- [The MRMhubExperiment data
+  object](https://slinghub.github.io/MRMhub/quant/articles/manual-02-data-object.md):
+  the object the data is loaded into
 - [Basic MRMhub
-  Workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md)
-  — start processing the imported data
+  workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md):
+  start processing the imported data
 - [Function
-  reference](https://slinghub.github.io/MRMhub/quant/reference/index.md)
-  — full arguments for every importer
+  reference](https://slinghub.github.io/MRMhub/quant/reference/index.md):
+  full arguments for every importer

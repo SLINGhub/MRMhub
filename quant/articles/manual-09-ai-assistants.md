@@ -1,4 +1,4 @@
-# Writing Pipelines with AI Assistants
+# Writing pipelines with AI assistants
 
 Manual
 
@@ -11,8 +11,8 @@ the model an accurate picture of the package, and how to check the code
 it returns.
 
 It assumes familiarity with the basic workflow. To process data
-directly, start with [Your First
-Analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md).
+directly, start with [Your first
+analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md).
 
 ## The problem: a specialised package the model has not memorised
 
@@ -176,7 +176,7 @@ code as a draft to be checked, never as an answer to be trusted.
 - **Confirm the step order** matches the recommended pipeline and that
   drift and batch corrections are fitted on QC samples, not study
   samples. See [Design
-  Decisions](https://slinghub.github.io/MRMhub/quant/articles/manual-03-design-decisions.md)
+  decisions](https://slinghub.github.io/MRMhub/quant/articles/manual-03-design-decisions.md)
   for why the order and the QC-only rule matter.
 - **Inspect the numbers**, not just that the script runs without error.
   A pipeline can complete and still be wrong – the wrong normalisation,
@@ -203,13 +203,13 @@ machine, use a locally hosted model, which keeps everything on-device.
 ## Next Steps
 
 - [Design
-  Decisions](https://slinghub.github.io/MRMhub/quant/articles/manual-03-design-decisions.md)
-  — the conventions an assistant must respect: the `mexp -> mexp`
-  pattern and the pipeline order
-- [Key Concepts &
-  Glossary](https://slinghub.github.io/MRMhub/quant/articles/manual-01-key-concepts.md)
-  — the data model and terminology to give the model (and yourself) a
+  decisions](https://slinghub.github.io/MRMhub/quant/articles/manual-03-design-decisions.md):
+  the conventions an assistant must respect: the `mexp -> mexp` pattern
+  and the pipeline order
+- [Key concepts &
+  glossary](https://slinghub.github.io/MRMhub/quant/articles/manual-01-key-concepts.md):
+  the data model and terminology to give the model (and yourself) a
   shared vocabulary
-- [Your First
-  Analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md)
-  — a hand-written baseline pipeline to compare generated code against
+- [Your first
+  analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md):
+  a hand-written baseline pipeline to compare generated code against

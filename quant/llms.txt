@@ -10,21 +10,18 @@ with any intensity data — from
 Skyline, Agilent MassHunter, or generic CSV files. MRMhub-QUANT
 features:
 
-- **Reproducible pipelines.** Create reproducible computational
-  pipelines with QC vizualizations. Script, re-run, and share it.
-- **Flexible workflows.** Metabolomics and lipidomics data
-  post-processing using dedicated customizable functions.
-- **A single data object.** Data, metadata, and processing details are
-  stored in single sharable data object (`MRMhubExperiment`).
+- **Reproducible pipelines.** Script, re-run, and share, with QC
+  visualisations at every step.
+- **Flexible workflows.** Customisable functions for metabolomics and
+  lipidomics post-processing.
+- **A single data object.** Data, metadata, and processing state live in
+  one shareable `MRMhubExperiment`.
 
 ![](data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdib3g9IjAgMCA5NjAgMTgyIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9Ik1STWh1Yi1RVUFOVCB3b3JrZmxvdyBpbiBmaXZlIHN0YWdlcywgZWFjaCB3aXRoIGl0cyBrZXkgYWN0aW9ucy4gSW1wb3J0IGFuZCBWYWxpZGF0ZTogaW1wb3J0IGRhdGEsIGFkZCBtZXRhZGF0YSwgdmFsaWRhdGUgSURzLCBzZXQgcnVuIG9yZGVyLiBRdWFudGlmeTogSVNURCBub3JtYWxpc2F0aW9uLCBxdWFudGlmeSBieSBJU1RELCBjYWxpYnJhdGlvbiBjdXJ2ZXMsIHJlZmVyZW5jZSBjYWxpYnJhdGlvbi4gQ29ycmVjdDogZHJpZnQgY29ycmVjdGlvbiwgYmF0Y2ggZWZmZWN0cywgaW50ZXJmZXJlbmNlcy4gUUMgYW5kIEZpbHRlcjogUUMgbWV0cmljcywgUENBIGFuZCBydW4tc2NhdHRlciwgb3V0bGllciBkZXRlY3Rpb24sIGZlYXR1cmUgZmlsdGVyaW5nLiBSZXBvcnQ6IEV4Y2VsIGFuZCBDU1YsIG16VGFiLU0sIFFDIHJlcG9ydHMsIHNoYXJlYWJsZSBvYmplY3QuIiBzdHlsZT0id2lkdGg6IDEwMCU7IGhlaWdodDogYXV0bzsgZm9udC1mYW1pbHk6IC1hcHBsZS1zeXN0ZW0sIEJsaW5rTWFjU3lzdGVtRm9udCwgJiMzOTtTZWdvZSBVSSYjMzk7LCBSb2JvdG8sIHNhbnMtc2VyaWY7Ij48c3R5bGU+CiAgICAucS1hcnJvdyB7IGN1cnNvcjogcG9pbnRlcjsgdHJhbnNpdGlvbjogb3BhY2l0eSAwLjJzOyB9CiAgICAucS1saW5rOmhvdmVyIC5xLWFycm93IHsgb3BhY2l0eTogMC44MjsgfQogICAgLnEtbGluazpob3ZlciAucS1uYW1lIHsgdGV4dC1kZWNvcmF0aW9uOiB1bmRlcmxpbmU7IHRleHQtdW5kZXJsaW5lLW9mZnNldDogMnB4OyB9CiAgICAucS1uYW1lIHsgZm9udC1zaXplOiAyMHB4OyBmb250LXdlaWdodDogNzAwOyBmaWxsOiAjMkMzRTUwOyBwb2ludGVyLWV2ZW50czogbm9uZTsgfQogICAgLnEtaXRlbSB7IGZvbnQtc2l6ZTogMTZweDsgZmlsbDogIzQ2NTM1ZjsgcG9pbnRlci1ldmVudHM6IG5vbmU7IH0KICAgIC5xLWRpdiB7IHN0cm9rZTogI2RmZTRlODsgc3Ryb2tlLXdpZHRoOiAxOyB9CiAgPC9zdHlsZT4KPGxpbmUgY2xhc3M9InEtZGl2IiB4MT0iMjM0IiB5MT0iNzAiIHgyPSIyMzQiIHkyPSIxNzYiPjwvbGluZT48bGluZSBjbGFzcz0icS1kaXYiIHgxPSI0MzMiIHkxPSI3MCIgeDI9IjQzMyIgeTI9IjE3NiI+PC9saW5lPjxsaW5lIGNsYXNzPSJxLWRpdiIgeDE9IjU5NiIgeTE9IjcwIiB4Mj0iNTk2IiB5Mj0iMTc2Ij48L2xpbmU+PGxpbmUgY2xhc3M9InEtZGl2IiB4MT0iNzY2IiB5MT0iNzAiIHgyPSI3NjYiIHkyPSIxNzYiPjwvbGluZT48YSBocmVmPSJodHRwczovL3NsaW5naHViLmdpdGh1Yi5pby9NUk1odWIvcXVhbnQvYXJ0aWNsZXMvbWFudWFsLTA0LWRhdGEtaW1wb3J0Lm1kIj48cG9seWdvbiBjbGFzcz0icS1hcnJvdyIgcG9pbnRzPSI0LDQgMjMxLDQgMjU1LDMwIDIzMSw1NiA0LDU2IiBmaWxsPSIjZDZlNGViIj48L3BvbHlnb24+PHRleHQgY2xhc3M9InEtbmFtZSIgeD0iMTE4IiB5PSIzNyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+SW1wb3J0ICZhbXA7IFZhbGlkYXRlPC90ZXh0PjwvYT4gPHRleHQgY2xhc3M9InEtaXRlbSIgeD0iMjAiIHk9Ijg4Ij5JbXBvcnQgZGF0YTwvdGV4dD48dGV4dCBjbGFzcz0icS1pdGVtIiB4PSIyMCIgeT0iMTEyIj5BZGQgbWV0YWRhdGE8L3RleHQ+PHRleHQgY2xhc3M9InEtaXRlbSIgeD0iMjAiIHk9IjEzNiI+VmFsaWRhdGUgSURzPC90ZXh0Pjx0ZXh0IGNsYXNzPSJxLWl0ZW0iIHg9IjIwIiB5PSIxNjAiPlNldCBydW4gb3JkZXI8L3RleHQ+PGEgaHJlZj0iaHR0cHM6Ly9zbGluZ2h1Yi5naXRodWIuaW8vTVJNaHViL3F1YW50L2FydGljbGVzL3R1dG9yaWFsLTAyLWJhc2ljLXdvcmtmbG93Lm1kIj48cG9seWdvbiBjbGFzcz0icS1hcnJvdyIgcG9pbnRzPSIyMzcsNCA0MzAsNCA0NTQsMzAgNDMwLDU2IDIzNyw1NiAyNjEsMzAiIGZpbGw9IiNkOGU2ZDQiPjwvcG9seWdvbj48dGV4dCBjbGFzcz0icS1uYW1lIiB4PSIzMzQiIHk9IjM3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5RdWFudGlmeTwvdGV4dD48L2E+IDx0ZXh0IGNsYXNzPSJxLWl0ZW0iIHg9IjI1MyIgeT0iODgiPklTVEQgbm9ybWFsaXNhdGlvbjwvdGV4dD48dGV4dCBjbGFzcz0icS1pdGVtIiB4PSIyNTMiIHk9IjExMiI+UXVhbnRpZnkgYnkgSVNURDwvdGV4dD48dGV4dCBjbGFzcz0icS1pdGVtIiB4PSIyNTMiIHk9IjEzNiI+Q2FsaWJyYXRpb24gY3VydmVzPC90ZXh0Pjx0ZXh0IGNsYXNzPSJxLWl0ZW0iIHg9IjI1MyIgeT0iMTYwIj5SZWZlcmVuY2UgY2FsaWJyYXRpb248L3RleHQ+PGEgaHJlZj0iaHR0cHM6Ly9zbGluZ2h1Yi5naXRodWIuaW8vTVJNaHViL3F1YW50L2FydGljbGVzL21hbnVhbC0wNy1jb3JyZWN0aW9ucy5tZCI+PHBvbHlnb24gY2xhc3M9InEtYXJyb3ciIHBvaW50cz0iNDM2LDQgNTkzLDQgNjE3LDMwIDU5Myw1NiA0MzYsNTYgNDYwLDMwIiBmaWxsPSIjZWNkMmQyIj48L3BvbHlnb24+PHRleHQgY2xhc3M9InEtbmFtZSIgeD0iNTE1IiB5PSIzNyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+Q29ycmVjdDwvdGV4dD48L2E+IDx0ZXh0IGNsYXNzPSJxLWl0ZW0iIHg9IjQ1MiIgeT0iODgiPkRyaWZ0IGNvcnJlY3Rpb248L3RleHQ+PHRleHQgY2xhc3M9InEtaXRlbSIgeD0iNDUyIiB5PSIxMTIiPkJhdGNoIGVmZmVjdHM8L3RleHQ+PHRleHQgY2xhc3M9InEtaXRlbSIgeD0iNDUyIiB5PSIxMzYiPkludGVyZmVyZW5jZXM8L3RleHQ+PGEgaHJlZj0iaHR0cHM6Ly9zbGluZ2h1Yi5naXRodWIuaW8vTVJNaHViL3F1YW50L2FydGljbGVzL3R1dG9yaWFsLTA1LXJ1bi1zY2F0dGVyLm1kIj48cG9seWdvbiBjbGFzcz0icS1hcnJvdyIgcG9pbnRzPSI1OTksNCA3NjMsNCA3ODcsMzAgNzYzLDU2IDU5OSw1NiA2MjMsMzAiIGZpbGw9IiNkNmU0ZWIiPjwvcG9seWdvbj48dGV4dCBjbGFzcz0icS1uYW1lIiB4PSI2ODEiIHk9IjM3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5RQyAmYW1wOyBGaWx0ZXI8L3RleHQ+PC9hPiA8dGV4dCBjbGFzcz0icS1pdGVtIiB4PSI2MTUiIHk9Ijg4Ij5RQyBtZXRyaWNzPC90ZXh0Pjx0ZXh0IGNsYXNzPSJxLWl0ZW0iIHg9IjYxNSIgeT0iMTEyIj5QQ0EgJmFtcDsgcnVuLXNjYXR0ZXI8L3RleHQ+PHRleHQgY2xhc3M9InEtaXRlbSIgeD0iNjE1IiB5PSIxMzYiPk91dGxpZXIgZGV0ZWN0aW9uPC90ZXh0Pjx0ZXh0IGNsYXNzPSJxLWl0ZW0iIHg9IjYxNSIgeT0iMTYwIj5GZWF0dXJlIGZpbHRlcmluZzwvdGV4dD48YSBocmVmPSJodHRwczovL3NsaW5naHViLmdpdGh1Yi5pby9NUk1odWIvcXVhbnQvYXJ0aWNsZXMvcmVjaXBlLTAyLWN1c3RvbS1xYy1yZXBvcnQubWQiPjxwb2x5Z29uIGNsYXNzPSJxLWFycm93IiBwb2ludHM9Ijc2OSw0IDkyNiw0IDk1MCwzMCA5MjYsNTYgNzY5LDU2IDc5MywzMCIgZmlsbD0iI2M4Y2ZkNiI+PC9wb2x5Z29uPjx0ZXh0IGNsYXNzPSJxLW5hbWUiIHg9Ijg0OCIgeT0iMzciIHRleHQtYW5jaG9yPSJtaWRkbGUiPlJlcG9ydDwvdGV4dD48L2E+IDx0ZXh0IGNsYXNzPSJxLWl0ZW0iIHg9Ijc4NSIgeT0iODgiPkV4Y2VsICZhbXA7IENTVjwvdGV4dD48dGV4dCBjbGFzcz0icS1pdGVtIiB4PSI3ODUiIHk9IjExMiI+bXpUYWItTTwvdGV4dD48dGV4dCBjbGFzcz0icS1pdGVtIiB4PSI3ODUiIHk9IjEzNiI+UUMgcmVwb3J0czwvdGV4dD48dGV4dCBjbGFzcz0icS1pdGVtIiB4PSI3ODUiIHk9IjE2MCI+U2hhcmVhYmxlIG9iamVjdDwvdGV4dD48L3N2Zz4=)
 
 Visualise at each step with [QC
 plots](https://slinghub.github.io/MRMhub/quant/articles/manual-08-visualization.md)
 — RunScatter, PCA, run-sequence, normalization QC.
-
-[Run your first analysis (5 min)
-→](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md)
 
 Prefer point-and-click?
 [`build_workflow()`](https://slinghub.github.io/MRMhub/quant/reference/build_workflow.md)
@@ -342,6 +339,18 @@ Functions to plots diverse QC visualizatios.
 - [`plot_qc_interference_impact()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_interference_impact.md)
   : Plot the magnitude of interference correction as a histogram
 
+## Plot appearance defaults
+
+Set session-wide defaults (font size, point size, legend, strips) for
+the plotting functions. See the “Customising plots” article.
+
+- [`mrmhub_set_plot_defaults()`](https://slinghub.github.io/MRMhub/quant/reference/mrmhub_set_plot_defaults.md)
+  : Set global default appearance for MRMhub plots
+- [`mrmhub_get_plot_defaults()`](https://slinghub.github.io/MRMhub/quant/reference/mrmhub_get_plot_defaults.md)
+  : Report the global MRMhub plot defaults
+- [`mrmhub_reset_plot_defaults()`](https://slinghub.github.io/MRMhub/quant/reference/mrmhub_reset_plot_defaults.md)
+  : Clear the global MRMhub plot defaults
+
 ## Response Curves
 
 Functions to calculate and visualize response curves
@@ -434,58 +443,59 @@ spectrometry is also available.
 
   Install mrmhub, verify your setup, and fix common install errors.
 
-- [Key Concepts &
-  Glossary](https://slinghub.github.io/MRMhub/quant/articles/manual-01-key-concepts.md):
+- [Key concepts &
+  glossary](https://slinghub.github.io/MRMhub/quant/articles/manual-01-key-concepts.md):
 
-  Core vocabulary of MRMhub — the data model, terminology, and the
+  Core vocabulary of MRMhub: the data model, terminology, and the
   function-naming convention.
 
-- [The MRMhubExperiment Data
-  Object](https://slinghub.github.io/MRMhub/quant/articles/manual-02-data-object.md):
+- [The MRMhubExperiment data
+  object](https://slinghub.github.io/MRMhub/quant/articles/manual-02-data-object.md):
 
   The primary data container of the MRMhub workflow: its data and
   metadata tables, the identifiers that link them, and the feature
   variables it stores.
 
-- [Design Decisions: Why This
-  Architecture?](https://slinghub.github.io/MRMhub/quant/articles/manual-03-design-decisions.md):
+- [Design decisions behind MRMhub
+  QUANT](https://slinghub.github.io/MRMhub/quant/articles/manual-03-design-decisions.md):
 
-  Explains the key design decisions behind MRMhub QUANT – for power
-  users and contributors who want to understand or extend the package.
+  The main architectural choices behind MRMhub QUANT and the reasoning
+  for each – for contributors and users who want to understand or extend
+  the package.
 
-- [Importing Analytical
-  Data](https://slinghub.github.io/MRMhub/quant/articles/manual-04-data-import.md):
+- [Importing analytical
+  data](https://slinghub.github.io/MRMhub/quant/articles/manual-04-data-import.md):
 
   Importing analytical data from different sources into an
   MRMhubExperiment.
 
-- [Metadata Tables &
-  Matching](https://slinghub.github.io/MRMhub/quant/articles/manual-05-metadata.md):
+- [Metadata tables &
+  matching](https://slinghub.github.io/MRMhub/quant/articles/manual-05-metadata.md):
 
-  The metadata tables MRMhub uses — analyses, features, ISTDs, response
-  curves and QC concentrations — their structure, and how identifiers
+  The metadata tables MRMhub uses (analyses, features, ISTDs, response
+  curves and QC concentrations), their structure, and how identifiers
   are matched to the data.
 
-- [Sample Types & QC
-  Roles](https://slinghub.github.io/MRMhub/quant/articles/manual-06-sample-types.md):
+- [Sample types & QC
+  roles](https://slinghub.github.io/MRMhub/quant/articles/manual-06-sample-types.md):
 
   Reference for the QC-type labels used in MRMhub and their roles in
   quality control and data processing.
 
-- [Drift and Batch
-  Correction](https://slinghub.github.io/MRMhub/quant/articles/manual-07-corrections.md):
+- [Drift and batch
+  correction](https://slinghub.github.io/MRMhub/quant/articles/manual-07-corrections.md):
 
-  MRMhub: postprocessing and quality control of small molecule mass
-  spectrometry data
+  Run-order drift and batch-effect correction: the available methods,
+  their parameters, and when to use each.
 
 - [Visualisation
-  Functions](https://slinghub.github.io/MRMhub/quant/articles/manual-08-visualization.md):
+  functions](https://slinghub.github.io/MRMhub/quant/articles/manual-08-visualization.md):
 
   Reference for the MRMhub plotting functions, grouped by workflow
   stage, with the canonical argument forms and customisation guidance.
 
-- [Writing Pipelines with AI
-  Assistants](https://slinghub.github.io/MRMhub/quant/articles/manual-09-ai-assistants.md):
+- [Writing pipelines with AI
+  assistants](https://slinghub.github.io/MRMhub/quant/articles/manual-09-ai-assistants.md):
 
   How to use large language models (Claude, ChatGPT, or local models) to
   help write MRMhub QUANT pipelines – how to ground them in the real
@@ -498,18 +508,25 @@ spectrometry is also available.
   QUANT.
 
 - [Quarto
-  Workflows](https://slinghub.github.io/MRMhub/quant/articles/manual-11-quarto-workflows.md):
+  workflows](https://slinghub.github.io/MRMhub/quant/articles/manual-11-quarto-workflows.md):
 
   MRMhub: postprocessing and quality control of small molecule mass
   spectrometry data
 
-- [Isotopic Interference
-  Correction](https://slinghub.github.io/MRMhub/quant/articles/manual-12-interference-correction.md):
+- [Isotopic interference
+  correction](https://slinghub.github.io/MRMhub/quant/articles/manual-12-interference-correction.md):
 
   Reference for MRMhub’s isotopic interference correction: the
   fragment-based (MRM) and whole-molecule (MS1) derivation levels, the
   co-elution requirement, and the provenance of the derived contribution
   factors.
+
+- [Customising
+  plots](https://slinghub.github.io/MRMhub/quant/articles/manual-13-plot-customization.md):
+
+  How the shared appearance arguments of the MRMhub plotting functions
+  control text size, legend placement, and automatic sizing, so a
+  balanced figure needs little or no manual ggplot2 theming.
 
 - [Manual](https://slinghub.github.io/MRMhub/quant/articles/manual-index.md):
 
@@ -517,19 +534,19 @@ spectrometry is also available.
 
 - [MRMhub](https://slinghub.github.io/MRMhub/quant/articles/mrmhub.md):
 
-- [Quantitative assay with Ext. calibration and
+- [Quantitative assay with external calibration and
   QC](https://slinghub.github.io/MRMhub/quant/articles/recipe-01-ext-calibration-qc.md):
 
-  MRMhub: Postprocessing and Quality Control of Small-Molecule Mass
-  Spectrometry Data
+  Quantify a targeted assay from external calibration curves and check
+  the result against calibrator and QC samples.
 
 - [Custom QC
-  Report](https://slinghub.github.io/MRMhub/quant/articles/recipe-02-custom-qc-report.md):
+  report](https://slinghub.github.io/MRMhub/quant/articles/recipe-02-custom-qc-report.md):
 
   Create a detailed HTML QC report from a processed MRMhubExperiment
   using a parameterized Quarto template.
 
-- [Import & Export
+- [Import and export
   mzTab-M](https://slinghub.github.io/MRMhub/quant/articles/recipe-03-mztab-export.md):
 
   Exchange data with the HUPO-PSI mzTab-M standard format: export a
@@ -537,24 +554,31 @@ spectrometry is also available.
   import results from tools such as Lipid Data Analyzer, MS-DIAL or
   MZmine.
 
-- [Import Metadata from Files or a
-  Template](https://slinghub.github.io/MRMhub/quant/articles/recipe-05-import-metadata.md):
+- [Validating and fixing
+  metadata](https://slinghub.github.io/MRMhub/quant/articles/recipe-04-validate-metadata.md):
 
-  Attach sample, feature, ISTD and QC metadata to an MRMhubExperiment —
+  Validate analysis, feature, and ISTD annotations against imported
+  data, diagnose the common defects, and generate a metadata template.
+
+- [Import metadata from files or a
+  template](https://slinghub.github.io/MRMhub/quant/articles/recipe-05-import-metadata.md):
+
+  Attach sample, feature, ISTD and QC metadata to an MRMhubExperiment,
   file by file, from Excel sheets, from a data.frame, or in one step
   from an MSOrganiser template.
 
-- [Your First
-  Analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md):
+- [Your first
+  analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md):
 
-  A 5-minute walkthrough: import demo data, inspect, normalize, and
-  export.
+  A short walkthrough on the bundled demo data: import a result file,
+  normalize by internal standard, inspect the run, and export: no
+  external files needed.
 
 - [Preparing and importing
   data](https://slinghub.github.io/MRMhub/quant/articles/tutorial-01-prep-data.md):
 
-  How to prepare data files and import analytical data and metadata into
-  MRMhub.
+  Import analytical data from the supported platforms and bring in the
+  sample and feature metadata that the MRMhub workflow depends on.
 
 - [A basic MRMhub
   workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md):
@@ -562,11 +586,12 @@ spectrometry is also available.
   A realistic end-to-end workflow, from project setup through drift and
   batch correction, QC filtering, and export.
 
-- [Lipidomics Data
-  Processing](https://slinghub.github.io/MRMhub/quant/articles/tutorial-03-lipidomics-workflow.md):
+- [Lipidomics data
+  processing](https://slinghub.github.io/MRMhub/quant/articles/tutorial-03-lipidomics-workflow.md):
 
-  MRMhub: Postprocessing and Quality Control of Small-Molecule Mass
-  Spectrometry Data
+  Post-process a targeted lipidomics run from peak areas to a curated,
+  quantified dataset: quality assessment, ISTD normalisation, drift and
+  batch correction, and QC filtering.
 
 - [Drift and batch
   correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.md):
@@ -577,8 +602,15 @@ spectrometry is also available.
 - [Exploring QC: RunScatter and
   PCA](https://slinghub.github.io/MRMhub/quant/articles/tutorial-05-run-scatter.md):
 
-- [Calibration by a Reference
-  Sample](https://slinghub.github.io/MRMhub/quant/articles/tutorial-07-calibration-reference.md):
+  Read run-order signal quality with RunScatter and multivariate
+  structure with PCA, using the built-in lipidomics dataset.
+
+- [Calibration by a reference
+  sample](https://slinghub.github.io/MRMhub/quant/articles/tutorial-07-calibration-reference.md):
+
+  Re-calibrate or normalise concentrations against a reference sample
+  (e.g. NIST SRM1950), apply it batch-wise, and check the reference
+  bias.
 
 - [Export to Bioconductor
   (SummarizedExperiment)](https://slinghub.github.io/MRMhub/quant/articles/tutorial-08-summarizedexperiment.md):
@@ -587,23 +619,15 @@ spectrometry is also available.
   SummarizedExperiment, and take it downstream: differential abundance
   with limma, or lipid-specific analysis with lipidr.
 
-- [Validating and Fixing
-  Metadata](https://slinghub.github.io/MRMhub/quant/articles/tutorial-10-metadata-validation.md):
-
-  How to validate analysis, feature, and ISTD annotations before
-  processing, diagnose common defects, and generate a metadata template
-  from your data.
-
 - [Interference
-  Correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-11-interference-correction.md):
+  correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-11-interference-correction.md):
 
-  Annotate mrm_pattern, derive isotopic interference relationships
-  automatically with calc_isotopic_interferences(), inspect them, and
-  apply the subtraction with correct_isotopic_interferences(). Declared
-  and single-pair manual corrections are also covered.
+  Derive and subtract isotopic (M+2) interferences in class-based
+  targeted assays: annotate mrm_pattern, auto-derive the overlaps,
+  inspect, and correct.
 
-- [Build a Workflow Without
-  Code](https://slinghub.github.io/MRMhub/quant/articles/tutorial-12-workflow-builder.md):
+- [Build a workflow without
+  code](https://slinghub.github.io/MRMhub/quant/articles/tutorial-12-workflow-builder.md):
 
   Use the point-and-click builder to validate your data and metadata and
   generate a runnable Quarto workflow.

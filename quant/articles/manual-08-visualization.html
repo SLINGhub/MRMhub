@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Visualisation Functions • mrmhub</title>
+<title>Visualisation functions • mrmhub</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
@@ -16,7 +16,7 @@
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
-<meta property="og:title" content="Visualisation Functions">
+<meta property="og:title" content="Visualisation functions">
 <meta name="description" content="Reference for the MRMhub plotting functions, grouped by workflow stage,
 with the canonical argument forms and customisation guidance.
 ">
@@ -33,7 +33,7 @@ with the canonical argument forms and customisation guidance.
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -64,7 +64,6 @@ with the canonical argument forms and customisation guidance.
     <li><h6 class="dropdown-header" data-toc-skip>Techniques</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-04-drift-correction.html">Drift and batch correction</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-07-calibration-reference.html">Calibration by reference sample</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-10-metadata-validation.html">Validating metadata</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-11-interference-correction.html">Interference correction</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
@@ -77,6 +76,7 @@ with the canonical argument forms and customisation guidance.
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-04-validate-metadata.html">Validate &amp; fix metadata</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul>
 </li>
@@ -98,6 +98,7 @@ with the canonical argument forms and customisation guidance.
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-13-plot-customization.html">Customising Plots</a></li>
     <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Writing Pipelines with AI Assistants</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
@@ -108,7 +109,7 @@ with the canonical argument forms and customisation guidance.
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">NEWS</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><a class="external-link nav-link" href="https://slinghub.github.io/MRMhub/">← MRMhub home</a></li>
@@ -129,7 +130,7 @@ with the canonical argument forms and customisation guidance.
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.svg" class="logo" alt=""><h1>Visualisation Functions</h1>
+      <img src="../logo.svg" class="logo" alt=""><h1>Visualisation functions</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/development/vignettes/articles/manual-08-visualization.Rmd" class="external-link"><code>vignettes/articles/manual-08-visualization.Rmd</code></a></small>
@@ -138,6 +139,9 @@ with the canonical argument forms and customisation guidance.
 
     
     
+<p class="page-kind page-kind-manual">
+Manual
+</p>
 <p>MRMhub provides plotting functions covering every stage of the
 workflow. All functions return <code>ggplot2</code> objects (or, for
 paged outputs, a list of <code>ggplot2</code> objects), so the standard
@@ -256,7 +260,7 @@ which they are most useful.</p>
 </h2>
 <div class="section level3">
 <h3 id="plot_runsequence-sequence-overview">
-<code>plot_runsequence()</code> — sequence overview<a class="anchor" aria-label="anchor" href="#plot_runsequence-sequence-overview"></a>
+<code>plot_runsequence()</code>: sequence overview<a class="anchor" aria-label="anchor" href="#plot_runsequence-sequence-overview"></a>
 </h3>
 <p>The run-sequence plot summarises the acquisition design: QC type
 positions, batch boundaries, and the analysis timeline. It is an
@@ -278,7 +282,7 @@ number.</p>
 </h2>
 <div class="section level3">
 <h3 id="plot_runscatter-values-vs-analysis-order">
-<code>plot_runscatter()</code> — values vs analysis order<a class="anchor" aria-label="anchor" href="#plot_runscatter-values-vs-analysis-order"></a>
+<code>plot_runscatter()</code>: values vs analysis order<a class="anchor" aria-label="anchor" href="#plot_runscatter-values-vs-analysis-order"></a>
 </h3>
 <p>The primary plot for drift and batch QC. Plots a feature variable
 (intensity, normalised intensity, concentration) against the analysis
@@ -300,7 +304,7 @@ feature lists.</p>
 </div>
 <div class="section level3">
 <h3 id="plot_abundanceprofile-feature-abundance-distribution">
-<code>plot_abundanceprofile()</code> — feature abundance
+<code>plot_abundanceprofile()</code>: feature abundance
 distribution<a class="anchor" aria-label="anchor" href="#plot_abundanceprofile-feature-abundance-distribution"></a>
 </h3>
 <p>Shows the abundance distribution of each feature, grouped by class.
@@ -321,7 +325,7 @@ lists) and <code>qc_types</code> must specify a single QC type.</p>
 </h2>
 <div class="section level3">
 <h3 id="plot_rla_boxplot-relative-log-abundance-per-analysis">
-<code>plot_rla_boxplot()</code> — relative log-abundance per
+<code>plot_rla_boxplot()</code>: relative log-abundance per
 analysis<a class="anchor" aria-label="anchor" href="#plot_rla_boxplot-relative-log-abundance-per-analysis"></a>
 </h3>
 <p>A boxplot per analysis of
@@ -336,7 +340,7 @@ bias.</p>
 </div>
 <div class="section level3">
 <h3 id="plot_normalization_qc-before-vs-after-comparison">
-<code>plot_normalization_qc()</code> — before-vs-after
+<code>plot_normalization_qc()</code>: before-vs-after
 comparison<a class="anchor" aria-label="anchor" href="#plot_normalization_qc-before-vs-after-comparison"></a>
 </h3>
 <p>Compares pre- and post-normalisation values for QC samples in three
@@ -359,11 +363,11 @@ increase typically indicates an incorrect ISTD pairing.</p>
 </h2>
 <div class="section level3">
 <h3 id="plot_pca-score-plot">
-<code>plot_pca()</code> — score plot<a class="anchor" aria-label="anchor" href="#plot_pca-score-plot"></a>
+<code>plot_pca()</code>: score plot<a class="anchor" aria-label="anchor" href="#plot_pca-score-plot"></a>
 </h3>
 <p>Two-dimensional PCA score plot with confidence ellipses grouped by
 <code>qc_type</code>, <code>batch_id</code>, or <code>"none"</code>. See
-<a href="tutorial-05-run-scatter.html">QC Exploration with PCA</a> for
+<a href="tutorial-05-run-scatter.html">QC exploration with PCA</a> for
 an interpretation walk-through.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_pca.html">plot_pca</a></span><span class="op">(</span><span class="va">mexp</span>,</span>
@@ -373,7 +377,7 @@ an interpretation walk-through.</p>
 </div>
 <div class="section level3">
 <h3 id="plot_pca_loading-loadings">
-<code>plot_pca_loading()</code> — loadings<a class="anchor" aria-label="anchor" href="#plot_pca_loading-loadings"></a>
+<code>plot_pca_loading()</code>: loadings<a class="anchor" aria-label="anchor" href="#plot_pca_loading-loadings"></a>
 </h3>
 <p>Loadings on the first two PCs. Features at the extremes drive sample
 separation; a single feature dominating PC1 should be inspected with
@@ -385,7 +389,7 @@ separation; a single feature dominating PC1 should be inspected with
 </div>
 <div class="section level3">
 <h3 id="plot_feature_correlations-correlation-heatmap">
-<code>plot_feature_correlations()</code> — correlation heatmap<a class="anchor" aria-label="anchor" href="#plot_feature_correlations-correlation-heatmap"></a>
+<code>plot_feature_correlations()</code>: correlation heatmap<a class="anchor" aria-label="anchor" href="#plot_feature_correlations-correlation-heatmap"></a>
 </h3>
 <p>Pairwise correlation matrix across features, useful for identifying
 redundant transitions and flagging candidate isobaric interferences.</p>
@@ -400,7 +404,7 @@ redundant transitions and flagging candidate isobaric interferences.</p>
 </h2>
 <div class="section level3">
 <h3 id="plot_qcmetrics_comparison-pairwise-qc-metric-scatter">
-<code>plot_qcmetrics_comparison()</code> — pairwise QC-metric
+<code>plot_qcmetrics_comparison()</code>: pairwise QC-metric
 scatter<a class="anchor" aria-label="anchor" href="#plot_qcmetrics_comparison-pairwise-qc-metric-scatter"></a>
 </h3>
 <p>Plots one QC metric against another, computed across features. The
@@ -425,7 +429,7 @@ typically a misassigned ISTD.</p>
 <div class="section level3">
 <h3 id="plot_qc_summary_byclass-plot_qc_summary_overall-filter-outcome">
 <code>plot_qc_summary_byclass()</code> /
-<code>plot_qc_summary_overall()</code> — filter outcome<a class="anchor" aria-label="anchor" href="#plot_qc_summary_byclass-plot_qc_summary_overall-filter-outcome"></a>
+<code>plot_qc_summary_overall()</code>: filter outcome<a class="anchor" aria-label="anchor" href="#plot_qc_summary_byclass-plot_qc_summary_overall-filter-outcome"></a>
 </h3>
 <p>After <code><a href="../reference/filter_features_qc.html">filter_features_qc()</a></code>, these two functions
 summarise how many features passed each filter rule, broken down by
@@ -441,7 +445,7 @@ feature class (<code>_byclass</code>) or aggregated
 </h2>
 <div class="section level3">
 <h3 id="plot_calibrationcurves-calibration-fits">
-<code>plot_calibrationcurves()</code> — calibration fits<a class="anchor" aria-label="anchor" href="#plot_calibrationcurves-calibration-fits"></a>
+<code>plot_calibrationcurves()</code>: calibration fits<a class="anchor" aria-label="anchor" href="#plot_calibrationcurves-calibration-fits"></a>
 </h3>
 <p>After <code><a href="../reference/quantify_by_calibration.html">quantify_by_calibration()</a></code>, plots calibration
 response vs concentration with the fitted model, the calibration points,
@@ -456,7 +460,7 @@ with <code>fit_overwrite = "linear"</code> or
 </div>
 <div class="section level3">
 <h3 id="plot_responsecurves-rqc-linearity">
-<code>plot_responsecurves()</code> — RQC linearity<a class="anchor" aria-label="anchor" href="#plot_responsecurves-rqc-linearity"></a>
+<code>plot_responsecurves()</code>: RQC linearity<a class="anchor" aria-label="anchor" href="#plot_responsecurves-rqc-linearity"></a>
 </h3>
 <p>Plots feature response across an RQC dilution series. The fitted
 slope and R² values report on the linearity of the assay in the range of
@@ -472,7 +476,7 @@ summary.</p>
 </h2>
 <div class="section level3">
 <h3 id="plot_rt_vs_chain-retention-time-vs-chain-length-lipidomics">
-<code>plot_rt_vs_chain()</code> — retention time vs chain length
+<code>plot_rt_vs_chain()</code>: retention time vs chain length
 (lipidomics)<a class="anchor" aria-label="anchor" href="#plot_rt_vs_chain-retention-time-vs-chain-length-lipidomics"></a>
 </h3>
 <p>For lipidomics methods using class-based chromatography, plots RT
@@ -483,7 +487,7 @@ linear relationship within a class point to mis-identified features.</p>
 </div>
 <div class="section level3">
 <h3 id="plot_matrixeffects-matrix-effect-overview">
-<code>plot_matrixeffects()</code> — matrix-effect overview<a class="anchor" aria-label="anchor" href="#plot_matrixeffects-matrix-effect-overview"></a>
+<code>plot_matrixeffects()</code>: matrix-effect overview<a class="anchor" aria-label="anchor" href="#plot_matrixeffects-matrix-effect-overview"></a>
 </h3>
 <p>Compares ISTD response in matrix-containing QCs against solvent-only
 injections to flag matrix-effect outliers.</p>
@@ -492,11 +496,11 @@ injections to flag matrix-effect outliers.</p>
 </div>
 <div class="section level3">
 <h3 id="plot_interference_correction-interference-annotations">
-<code>plot_interference_correction()</code> — interference
+<code>plot_interference_correction()</code>: interference
 annotations<a class="anchor" aria-label="anchor" href="#plot_interference_correction-interference-annotations"></a>
 </h3>
 <p>QC overview for features with interference annotations (see <a href="tutorial-11-interference-correction.html">Interference
-Correction</a>).</p>
+correction</a>).</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_interference_correction.html">plot_interference_correction</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -504,11 +508,20 @@ Correction</a>).</p>
 <div class="section level2">
 <h2 id="customisation-and-export">Customisation and export<a class="anchor" aria-label="anchor" href="#customisation-and-export"></a>
 </h2>
+<p>Text size, legend placement and legend sizing are controlled directly
+through shared arguments (<code>font_base_size</code>,
+<code>legend_position</code>, <code>legend_size</code>, and, on the core
+QC plots, <code>strip_text_size</code>, <code>show_legend_title</code>,
+<code>legend_bg_alpha</code>); paged and faceted plots size their text
+and points automatically from <code>cols_page</code>. See <a href="manual-13-plot-customization.html">Customising plots</a> for the
+full argument reference.</p>
 <div class="section level3">
 <h3 id="ggplot2-layering">ggplot2 layering<a class="anchor" aria-label="anchor" href="#ggplot2-layering"></a>
 </h3>
-<p>All functions return <code>ggplot2</code> objects, so themes, scales,
-and titles can be appended in the usual way.</p>
+<p>All functions return <code>ggplot2</code> objects, so anything the
+arguments above do not cover (bespoke themes, scales, titles) can be
+appended in the usual way, and a trailing <code><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme()</a></code> overrides
+the house theme.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span><span class="va">mexp</span>, variable <span class="op">=</span> <span class="st">"norm_intensity"</span>, qc_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BQC"</span>, <span class="st">"SPL"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">9</span><span class="op">)</span> <span class="op">+</span></span>
@@ -557,18 +570,18 @@ figure:</p>
 <ul>
 <li>
 <a href="tutorial-05-run-scatter.html">Exploring QC: RunScatter and
-PCA</a> — <code><a href="../reference/plot_runscatter.html">plot_runscatter()</a></code>, <code><a href="../reference/plot_pca.html">plot_pca()</a></code> and
+PCA</a>: <code><a href="../reference/plot_runscatter.html">plot_runscatter()</a></code>, <code><a href="../reference/plot_pca.html">plot_pca()</a></code> and
 outlier screening</li>
 <li>
-<a href="tutorial-04-drift-correction.html">Drift and Batch
-Correction (tutorial)</a> — <code><a href="../reference/plot_runscatter.html">plot_runscatter()</a></code> in
+<a href="tutorial-04-drift-correction.html">Drift and batch
+correction (tutorial)</a>: <code><a href="../reference/plot_runscatter.html">plot_runscatter()</a></code> in
 context</li>
 <li>
-<a href="recipe-01-ext-calibration-qc.html">External Calibration
-&amp; QC (recipe)</a> — calibration plots in workflow</li>
+<a href="recipe-01-ext-calibration-qc.html">External calibration
+&amp; QC (recipe)</a>: calibration plots in workflow</li>
 <li>
-<a href="recipe-02-custom-qc-report.html">Custom QC Report
-(recipe)</a> — combine plots in a report</li>
+<a href="recipe-02-custom-qc-report.html">Custom QC report
+(recipe)</a>: combine plots in a report</li>
 </ul>
 </div>
 </div>

@@ -1,9 +1,15 @@
 # Troubleshooting and FAQ
 
-## Installation Issues
+Manual
+
+This page collects the errors and questions that come up most often when
+installing and using MRMhub QUANT, grouped by where they occur in the
+workflow. Each entry expands to a diagnosis and a fix.
+
+## Installation issues
 
 The single most common cause of failed installations is that one of
-MRMhub’s dependencies is currently *loaded* in the active R session —
+MRMhub’s dependencies is currently *loaded* in the active R session,
 typically `rlang`, `cli`, `vctrs`, `dplyr`, `tibble`, or `ggplot2`.
 RStudio and Positron load several of these on startup (Environment pane,
 Plots pane), so a “fresh session” via *Restart R* is sometimes not
@@ -88,10 +94,11 @@ Sys.setenv(https_proxy = "http://proxy.example.com:8080")
 dependency failure)
 
 By default `remotes::install_github(..., dependencies = TRUE)` installs
-every Suggests dependency too. A single broken Suggests package —
-e.g. `lancer` (a non-CRAN GitHub package required only for LICAR-style
-interference correction) when the network blocks GitHub clones — aborts
-the whole install. Fix:
+every Suggests dependency too. A single broken Suggests package,
+e.g. `lancer` (a non-CRAN GitHub package needed only for the optional
+response-curve saturation statistics of
+`get_response_curve_stats(with_saturation_stats = TRUE)`) when the
+network blocks GitHub clones, aborts the whole install. Fix:
 
 ``` r
 
@@ -126,7 +133,7 @@ the toolchain entirely.
 
 ------------------------------------------------------------------------
 
-## Data Import Issues
+## Data import issues
 
 **“Column X not found” or unexpected column names**
 
@@ -152,7 +159,7 @@ Common causes:
 readr::read_csv2("your_file.csv", n_max = 5)
 ```
 
-**“No features found” after import**
+**Features in the data don’t match the feature annotation**
 
 The feature names in the data file do not match those in the feature
 annotation. Check for:
@@ -179,11 +186,16 @@ for a visual decision flowchart.
 
 ------------------------------------------------------------------------
 
-## Processing Issues
+## Processing issues
 
-**All values are NA after normalisation**
+**Normalised values are NA**
 
-Most likely cause: the ISTD assignment is missing or incorrect.
+[`normalize_by_istd()`](https://slinghub.github.io/MRMhub/quant/reference/normalize_by_istd.md)
+does not fail silently: it warns when a feature cannot be normalised,
+e.g. *“For N feature(s) no ISTD was defined, normalized intensities will
+be NA”*, or when the internal-standard row is missing from a group or
+had zero intensity. The usual cause is a missing or incorrect ISTD
+assignment:
 
 ``` r
 
@@ -193,8 +205,9 @@ mexp@annot_features |>
   dplyr::filter(is.na(istd_feature_id))
 ```
 
-If `istd_feature_id` is `NA`, normalization divides by nothing → `NA`
-result.
+Each feature must reference an internal standard via `istd_feature_id`,
+and that ISTD must itself be present as a feature (`is_istd`) in every
+analysis.
 
 **Drift correction makes data worse**
 
@@ -225,7 +238,7 @@ pool differs between batches, centering will introduce artefacts.
 
 ------------------------------------------------------------------------
 
-## Object and Data Access
+## Object and data access
 
 **How do I extract the final data as a data frame?**
 
@@ -261,7 +274,7 @@ mexp@dataset <- mexp@dataset_orig
 
 ------------------------------------------------------------------------
 
-## QC and Filtering
+## QC and filtering
 
 **What do the QC metrics mean?**
 
@@ -295,18 +308,23 @@ mexp <- filter_features_qc(
 
 ## Calibration
 
-**“No calibration points found”**
+**“Calibration curve annotations for N features are missing”**
 
-The calibration annotation does not match sample labels in the data.
-Check that `annot_qcconcentrations` uses the same `analysis_id` values
-as the data.
+The QC-concentration metadata does not cover the features being
+quantified. The `annot_qcconcentrations` table is keyed on `sample_id`
+and `analyte_id` (not `analysis_id`), so check that both match the
+values in the data. Features without a matching curve can be skipped by
+setting `ignore_missing_annotation = TRUE`.
 
 **Calibration curve has R² \< 0.9**
 
 Consider:
 
 - Removing outlier calibration points
-- Using a different weighting scheme (1/x or 1/x²)
+- Changing the fit with `fit_model` (linear or quadratic) or
+  `fit_weighting` (`"none"`, `"1/x"`, `"1/x^2"`), set globally or per
+  feature via the `curve_fit_model` / `curve_fit_weighting` metadata
+  columns
 - Checking for saturation at high concentrations
 
 ``` r
@@ -319,6 +337,29 @@ get_calibration_metrics(mexp) |>
 ------------------------------------------------------------------------
 
 ## FAQ
+
+**Can I change the default text size (or point size, legend) in plots?**
+
+Yes.
+[`mrmhub_set_plot_defaults()`](https://slinghub.github.io/MRMhub/quant/reference/mrmhub_set_plot_defaults.md)
+sets session-wide defaults for the shared appearance arguments of the
+`plot_*()` functions, so a smaller base font or point size can be set
+once at the top of a notebook instead of on every call:
+
+``` r
+
+mrmhub_set_plot_defaults(font_base_size = 8, point_size = 0.8)
+```
+
+Besides `font_base_size` and `point_size`, it accepts `legend_position`,
+`legend_size`, `show_legend_title` and `strip_bg_color`. A value passed
+directly to a plotting function always overrides the global default. Use
+[`mrmhub_get_plot_defaults()`](https://slinghub.github.io/MRMhub/quant/reference/mrmhub_get_plot_defaults.md)
+to see the active settings and
+[`mrmhub_reset_plot_defaults()`](https://slinghub.github.io/MRMhub/quant/reference/mrmhub_reset_plot_defaults.md)
+to clear them. See [Plot
+customization](https://slinghub.github.io/MRMhub/quant/articles/manual-13-plot-customization.md)
+for the full reference.
 
 **Can I use MRMhub with non-MRM data (e.g., PRM, SRM)?**
 
@@ -341,11 +382,11 @@ drift correction. Consider processing batches separately and merging.
 
 ------------------------------------------------------------------------
 
-## Next Steps
+## Next steps
 
-- [Design
-  Overview](https://slinghub.github.io/MRMhub/quant/articles/manual-03-design-decisions.md)
-  — understand the full pipeline
-- [Installation](https://slinghub.github.io/MRMhub/quant/articles/manual-00-installation.md)
-  — diagnose setup problems with
+- [Design decisions behind MRMhub
+  QUANT](https://slinghub.github.io/MRMhub/quant/articles/manual-03-design-decisions.md):
+  why the pipeline is built this way
+- [Installation](https://slinghub.github.io/MRMhub/quant/articles/manual-00-installation.md):
+  diagnose setup problems with
   [`check_setup()`](https://slinghub.github.io/MRMhub/quant/reference/check_setup.md)

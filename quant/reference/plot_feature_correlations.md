@@ -31,13 +31,13 @@ plot_feature_correlations(
   cols_page = 5,
   specific_page = NA,
   page_orientation = "LANDSCAPE",
-  point_size = 1,
+  point_size = NULL,
   point_alpha = 0.8,
   point_stroke = 0.3,
   line_width = 0.5,
   line_color = "orange",
   line_alpha = 0.5,
-  font_base_size = 8,
+  font_base_size = NULL,
   show_progress = TRUE
 )
 ```
@@ -183,7 +183,13 @@ plot_feature_correlations(
 
 - font_base_size:
 
-  Numeric. Base font size (in points) for plot text. Default is 8.
+  Numeric. Base font size (in points) for plot text; all plot text
+  scales proportionally with this value. `NULL` (default) uses the
+  global default set by
+  [`mrmhub_set_plot_defaults()`](https://slinghub.github.io/MRMhub/quant/reference/mrmhub_set_plot_defaults.md)
+  if one is in effect, otherwise an automatic size (derived from the
+  facet-column count on paged plots, or the per-plot default shown in
+  the Usage section above).
 
 - show_progress:
 

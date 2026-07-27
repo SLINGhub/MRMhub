@@ -1,4 +1,6 @@
-# Visualisation Functions
+# Visualisation functions
+
+Manual
 
 MRMhub provides plotting functions covering every stage of the workflow.
 All functions return `ggplot2` objects (or, for paged outputs, a list of
@@ -40,7 +42,7 @@ mexp <- readRDS("results/mexp_processed.rds")
 
 ## Acquisition design
 
-### `plot_runsequence()` — sequence overview
+### `plot_runsequence()`: sequence overview
 
 The run-sequence plot summarises the acquisition design: QC type
 positions, batch boundaries, and the analysis timeline. It is an
@@ -61,7 +63,7 @@ would not be visible against the analysis sequence number.
 
 ## Drift, batch, and per-feature inspection
 
-### `plot_runscatter()` — values vs analysis order
+### `plot_runscatter()`: values vs analysis order
 
 The primary plot for drift and batch QC. Plots a feature variable
 (intensity, normalised intensity, concentration) against the analysis
@@ -83,7 +85,7 @@ pre-correction values, and `variable = "intensity"` / `"conc"` for
 post-correction. Setting `output_pdf = TRUE` and a `path` writes a
 multi-page PDF, which is practical for large feature lists.
 
-### `plot_abundanceprofile()` — feature abundance distribution
+### `plot_abundanceprofile()`: feature abundance distribution
 
 Shows the abundance distribution of each feature, grouped by class.
 Useful for inspecting class coverage and identifying features at the
@@ -103,7 +105,7 @@ must specify a single QC type.
 
 ## Normalisation QC
 
-### `plot_rla_boxplot()` — relative log-abundance per analysis
+### `plot_rla_boxplot()`: relative log-abundance per analysis
 
 A boxplot per analysis of `log2(value / median_across_analyses)`. Width
 and centring of the box reflect injection-level variability. Useful
@@ -117,7 +119,7 @@ plot_rla_boxplot(mexp,
                  qc_types = c("BQC", "SPL"))
 ```
 
-### `plot_normalization_qc()` — before-vs-after comparison
+### `plot_normalization_qc()`: before-vs-after comparison
 
 Compares pre- and post-normalisation values for QC samples in three
 layouts (`plot_type`): `"scatter"` (point cloud), `"diff"` (signed
@@ -138,10 +140,10 @@ plot_normalization_qc(mexp,
 
 ## Multivariate QC
 
-### `plot_pca()` — score plot
+### `plot_pca()`: score plot
 
 Two-dimensional PCA score plot with confidence ellipses grouped by
-`qc_type`, `batch_id`, or `"none"`. See [QC Exploration with
+`qc_type`, `batch_id`, or `"none"`. See [QC exploration with
 PCA](https://slinghub.github.io/MRMhub/quant/articles/tutorial-05-run-scatter.md)
 for an interpretation walk-through.
 
@@ -153,7 +155,7 @@ plot_pca(mexp,
          ellipse_variable  = "qc_type")
 ```
 
-### `plot_pca_loading()` — loadings
+### `plot_pca_loading()`: loadings
 
 Loadings on the first two PCs. Features at the extremes drive sample
 separation; a single feature dominating PC1 should be inspected with
@@ -167,7 +169,7 @@ plot_pca_loading(mexp,
                  qc_types = c("BQC", "SPL"))
 ```
 
-### `plot_feature_correlations()` — correlation heatmap
+### `plot_feature_correlations()`: correlation heatmap
 
 Pairwise correlation matrix across features, useful for identifying
 redundant transitions and flagging candidate isobaric interferences.
@@ -181,7 +183,7 @@ plot_feature_correlations(mexp,
 
 ## QC metrics and filtering
 
-### `plot_qcmetrics_comparison()` — pairwise QC-metric scatter
+### `plot_qcmetrics_comparison()`: pairwise QC-metric scatter
 
 Plots one QC metric against another, computed across features. The
 variable names follow the pattern `{variable}_cv_{qctype}`
@@ -207,7 +209,7 @@ Points below the equality line indicate features for which CV was
 reduced by normalisation; points above indicate features made worse,
 typically a misassigned ISTD.
 
-### `plot_qc_summary_byclass()` / `plot_qc_summary_overall()` — filter outcome
+### `plot_qc_summary_byclass()` / `plot_qc_summary_overall()`: filter outcome
 
 After
 [`filter_features_qc()`](https://slinghub.github.io/MRMhub/quant/reference/filter_features_qc.md),
@@ -222,7 +224,7 @@ plot_qc_summary_byclass(mexp)
 
 ## External calibration and response curves
 
-### `plot_calibrationcurves()` — calibration fits
+### `plot_calibrationcurves()`: calibration fits
 
 After
 [`quantify_by_calibration()`](https://slinghub.github.io/MRMhub/quant/reference/quantify_by_calibration.md),
@@ -240,7 +242,7 @@ plot_calibrationcurves(mexp,
 The fit model is taken from the calibration setup unless overridden with
 `fit_overwrite = "linear"` or `"quadratic"`.
 
-### `plot_responsecurves()` — RQC linearity
+### `plot_responsecurves()`: RQC linearity
 
 Plots feature response across an RQC dilution series. The fitted slope
 and R² values report on the linearity of the assay in the range of the
@@ -256,7 +258,7 @@ plot_responsecurves(mexp,
 
 ## Method-specific checks
 
-### `plot_rt_vs_chain()` — retention time vs chain length (lipidomics)
+### `plot_rt_vs_chain()`: retention time vs chain length (lipidomics)
 
 For lipidomics methods using class-based chromatography, plots RT
 against carbon number, separated by class. Outliers from the expected
@@ -267,7 +269,7 @@ linear relationship within a class point to mis-identified features.
 plot_rt_vs_chain(mexp)
 ```
 
-### `plot_matrixeffects()` — matrix-effect overview
+### `plot_matrixeffects()`: matrix-effect overview
 
 Compares ISTD response in matrix-containing QCs against solvent-only
 injections to flag matrix-effect outliers.
@@ -277,11 +279,11 @@ injections to flag matrix-effect outliers.
 plot_matrixeffects(mexp)
 ```
 
-### `plot_interference_correction()` — interference annotations
+### `plot_interference_correction()`: interference annotations
 
 QC overview for features with interference annotations (see
 [Interference
-Correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-11-interference-correction.md)).
+correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-11-interference-correction.md)).
 
 ``` r
 
@@ -290,10 +292,21 @@ plot_interference_correction(mexp)
 
 ## Customisation and export
 
+Text size, legend placement and legend sizing are controlled directly
+through shared arguments (`font_base_size`, `legend_position`,
+`legend_size`, and, on the core QC plots, `strip_text_size`,
+`show_legend_title`, `legend_bg_alpha`); paged and faceted plots size
+their text and points automatically from `cols_page`. See [Customising
+plots](https://slinghub.github.io/MRMhub/quant/articles/manual-13-plot-customization.md)
+for the full argument reference.
+
 ### ggplot2 layering
 
-All functions return `ggplot2` objects, so themes, scales, and titles
-can be appended in the usual way.
+All functions return `ggplot2` objects, so anything the arguments above
+do not cover (bespoke themes, scales, titles) can be appended in the
+usual way, and a trailing
+[`theme()`](https://ggplot2.tidyverse.org/reference/theme.html)
+overrides the house theme.
 
 ``` r
 
@@ -350,19 +363,17 @@ p_seq / (p_pca | p_rla)
 ### Next steps
 
 - [Exploring QC: RunScatter and
-  PCA](https://slinghub.github.io/MRMhub/quant/articles/tutorial-05-run-scatter.md)
-  —
+  PCA](https://slinghub.github.io/MRMhub/quant/articles/tutorial-05-run-scatter.md):
   [`plot_runscatter()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.md),
   [`plot_pca()`](https://slinghub.github.io/MRMhub/quant/reference/plot_pca.md)
   and outlier screening
-- [Drift and Batch Correction
-  (tutorial)](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.md)
-  —
+- [Drift and batch correction
+  (tutorial)](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.md):
   [`plot_runscatter()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.md)
   in context
-- [External Calibration & QC
-  (recipe)](https://slinghub.github.io/MRMhub/quant/articles/recipe-01-ext-calibration-qc.md)
-  — calibration plots in workflow
-- [Custom QC Report
-  (recipe)](https://slinghub.github.io/MRMhub/quant/articles/recipe-02-custom-qc-report.md)
-  — combine plots in a report
+- [External calibration & QC
+  (recipe)](https://slinghub.github.io/MRMhub/quant/articles/recipe-01-ext-calibration-qc.md):
+  calibration plots in workflow
+- [Custom QC report
+  (recipe)](https://slinghub.github.io/MRMhub/quant/articles/recipe-02-custom-qc-report.md):
+  combine plots in a report

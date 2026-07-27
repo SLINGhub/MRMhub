@@ -31,7 +31,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -62,7 +62,6 @@
     <li><h6 class="dropdown-header" data-toc-skip>Techniques</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-04-drift-correction.html">Drift and batch correction</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-07-calibration-reference.html">Calibration by reference sample</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-10-metadata-validation.html">Validating metadata</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-11-interference-correction.html">Interference correction</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
@@ -75,6 +74,7 @@
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-04-validate-metadata.html">Validate &amp; fix metadata</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul>
 </li>
@@ -96,6 +96,7 @@
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-13-plot-customization.html">Customising Plots</a></li>
     <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Writing Pipelines with AI Assistants</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
@@ -106,7 +107,7 @@
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">NEWS</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><a class="external-link nav-link" href="https://slinghub.github.io/MRMhub/">← MRMhub home</a></li>
@@ -202,7 +203,7 @@ a decision flowchart and the full importer reference.</p>
 <div class="section level2">
 <h2 id="add-metadata">3. Add metadata<a class="anchor" aria-label="anchor" href="#add-metadata"></a>
 </h2>
-<p>Most processing steps need information absent from the data file —
+<p>Most processing steps need information absent from the data file:
 internal-standard assignments, calibrant concentrations, sample amounts.
 Metadata can come from separate CSV or Excel files, from R data frames
 (see <a href="manual-05-metadata.html">Metadata import</a>), or from an
@@ -238,7 +239,7 @@ MSOrganiser template:</p>
 import. Setting <code>ignore_warnings = TRUE</code> lets it proceed; the
 warnings still appear in the console table, marked with an asterisk
 (<code>*</code>) in the <code>status</code> column, and should be
-reviewed so nothing critical is missed. <a href="tutorial-10-metadata-validation.html">Validating and fixing
+reviewed so nothing critical is missed. <a href="recipe-04-validate-metadata.html">Validating and fixing
 metadata</a> shows how to inspect and resolve them.</p>
 </div>
 <div class="section level2">
@@ -267,12 +268,11 @@ between-batch effects, and filter features on QC criteria.</p>
 <span>  include_istd <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  min.signalblank.median.spl.sblk <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  max.cv.conc.bqc <span class="op">=</span> <span class="fl">25</span><span class="op">)</span></span></code></pre></div>
-<p>The drift correction here fits on the study samples
-(<code>ref_qc_types = "SPL"</code>). Study-sample smoothing suits only
-large, well-randomised sample sets; the QC-based convention (Broadhurst
-et al. 2018) instead fits the drift trend on dedicated QC injections.
-MRMhub applies these steps in a recommended order — normalize, quantify,
-drift-correct, batch-correct, then filter — motivated in <a href="manual-03-design-decisions.html">Design decisions</a>.</p>
+<p>The drift and batch corrections here are fitted on the study samples
+(<code>ref_qc_types = "SPL"</code>), which suits large, well-randomised
+sample sets. <a href="tutorial-04-drift-correction.html">Drift and batch
+correction</a> covers fitting on dedicated QC samples instead and how to
+choose a method.</p>
 </div>
 <div class="section level2">
 <h2 id="visualize-results">5. Visualize results<a class="anchor" aria-label="anchor" href="#visualize-results"></a>
@@ -320,7 +320,7 @@ the complete processing state.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">saveRDS</a></span><span class="op">(</span><span class="va">myexp</span>, file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".rds"</span><span class="op">)</span>, compress <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>The <code>.rds</code> file preserves the entire
 <code>MRMhubExperiment</code>, so a colleague can open it in R and run
-their own plots and QC checks — reproducing the exact data state without
+their own plots and QC checks, reproducing the exact data state without
 re-running the pipeline.</p>
 </div>
 <div class="section level2">
@@ -329,16 +329,16 @@ re-running the pipeline.</p>
 <ul>
 <li>
 <a href="tutorial-03-lipidomics-workflow.html">Lipidomics data
-processing</a> — a more detailed lipidomics example</li>
+processing</a>: a more detailed lipidomics example</li>
 <li>
 <a href="tutorial-04-drift-correction.html">Drift and batch
-correction</a> — correction methods and diagnostics</li>
+correction</a>: correction methods and diagnostics</li>
 <li>
 <a href="tutorial-05-run-scatter.html">Exploring QC: RunScatter and
-PCA</a> — QC visualisation and outlier screening</li>
+PCA</a>: QC visualisation and outlier screening</li>
 <li>
 <a href="recipe-01-ext-calibration-qc.html">External calibration and
-QC</a> — quantitation with calibration curves</li>
+QC</a>: quantitation with calibration curves</li>
 </ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

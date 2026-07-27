@@ -1,18 +1,16 @@
-# Build a Workflow Without Code
+# Build a workflow without code
 
-Tutorial
+Tutorial Beginner Prerequisites: [MRMhub
+installed](https://slinghub.github.io/MRMhub/quant/articles/manual-00-installation.md)
 
 [`build_workflow()`](https://slinghub.github.io/MRMhub/quant/reference/build_workflow.md)
 opens an interactive application that turns a data file and its metadata
 into a runnable Quarto (`.qmd`) workflow. It validates the inputs
 against the real importers, disables processing steps the metadata
-cannot support, and previews the generated document for download — while
+cannot support, and previews the generated document for download, while
 the code-first workflow it produces remains the reproducible artefact.
 
-**Time** ~5 min  ·  **Level** Beginner  ·  **Prerequisites** [MRMhub
-installed](https://slinghub.github.io/MRMhub/quant/articles/manual-00-installation.md)
-
-## Launching the builder
+## 1. Launching the builder
 
 ``` r
 
@@ -28,30 +26,30 @@ installed). To try the builder without any files of your own, use the
 **Load bundled demo data** button, which loads the INTEGRATOR demo
 dataset shipped with the package.
 
-## The sidebar, step by step
+## 2. The sidebar, step by step
 
 The sidebar is worked top to bottom in four numbered sections.
 
-**1 · Data source.** Choose the tool or format that produced the data —
-this selects the matching importer
-([`import_data_mrmhub()`](https://slinghub.github.io/MRMhub/quant/reference/import_data_mrmhub.md),
+**1 · Data source.** Choose the tool or format that produced the data
+(this selects the matching importer:
+[`import_data_mrmhub()`](https://slinghub.github.io/MRMhub/quant/reference/import_data_mrmhub.md),
 [`import_data_masshunter()`](https://slinghub.github.io/MRMhub/quant/reference/import_data_masshunter.md),
 [`import_data_skyline()`](https://slinghub.github.io/MRMhub/quant/reference/import_data_skyline.md),
 or the generic
 [`import_data_csv_long()`](https://slinghub.github.io/MRMhub/quant/reference/import_data_csv_long.md)
 /
-[`import_data_csv_wide()`](https://slinghub.github.io/MRMhub/quant/reference/import_data_csv_wide.md))
-— then upload the file. For a generic CSV the column names are not
-fixed, so a dialog opens to map them:
+[`import_data_csv_wide()`](https://slinghub.github.io/MRMhub/quant/reference/import_data_csv_wide.md)),
+then upload the file. For a generic CSV the column names are not fixed,
+so a dialog opens to map them:
 
-- **Long CSV** — pick the columns holding the *analysis id*, the
-  *feature id*, and the *value*, plus what the value represents (area,
-  height, intensity, concentration, or normalised intensity). These
-  become a `column_mapping`.
-- **Wide CSV** — state what the matrix values represent and, optionally,
+- **Long CSV**: pick the columns holding the *analysis id*, the *feature
+  id*, and the *value*, plus what the value represents (area, height,
+  intensity, concentration, or normalised intensity). These become a
+  `column_mapping`.
+- **Wide CSV**: state what the matrix values represent and, optionally,
   the analysis-id column and the index of the first feature column.
 
-Until a generic CSV’s columns are mapped the data cannot be validated —
+Until a generic CSV’s columns are mapped the data cannot be validated:
 this is the same requirement
 [`import_data_csv_long()`](https://slinghub.github.io/MRMhub/quant/reference/import_data_csv_long.md)
 enforces when it reports a missing `feature_id` column. The other
@@ -59,7 +57,7 @@ importers read fixed column names and need no mapping.
 
 **2 · Metadata.** Select where sample, feature, and internal-standard
 annotations come from: embedded in the data file, an MSOrganiser
-workbook, a multi-sheet metadata workbook, or **individual files** —
+workbook, a multi-sheet metadata workbook, or **individual files**:
 separate CSVs for analyses, features, and ISTDs imported with
 [`import_metadata_analyses()`](https://slinghub.github.io/MRMhub/quant/reference/import_metadata_analyses.md),
 [`import_metadata_features()`](https://slinghub.github.io/MRMhub/quant/reference/import_metadata_features.md),
@@ -76,7 +74,7 @@ the *Data file path* field, which can be edited to an absolute path.
 
 **4 · Processing steps.** Tick the steps to include. Steps whose
 metadata is absent are disabled and annotated with a short reason and an
-information icon carrying the full explanation — for example, *Quantify
+information icon carrying the full explanation: for example, *Quantify
 by internal standard* is disabled with “No ISTD concentrations” until an
 ISTD concentration table is imported. See [Reading the validation
 panel](#reading-the-validation-panel) below.
@@ -87,28 +85,28 @@ Gaussian kernel uses study samples (`SPL`); spline and LOESS use pooled
 QCs (the first of `BQC`, `TQC`, or `QC` present in the data). Batch
 centring reuses the same reference. The corrected feature variable is
 chosen automatically as the highest processing level the selected steps
-reach — `conc` once a quantification step is included, otherwise
+reach: `conc` once a quantification step is included, otherwise
 `norm_intensity`, otherwise raw `intensity`.
 
-## Reading the validation panel
+## 3. Reading the validation panel
 
 The **Validation** panel runs the selected steps’ preconditions against
 the imported experiment and reports one line per finding:
 
-- **✗ error** — the import failed, or a selected step would abort (for
+- **✗ error**: the import failed, or a selected step would abort (for
   example,
   [`normalize_by_istd()`](https://slinghub.github.io/MRMhub/quant/reference/normalize_by_istd.md)
   selected while no feature carries an `istd_feature_id`).
-- **⚠ warning** — a step needs an upstream step or an optional field
-  (for example, a drift reference QC type absent from the data).
-- **✓ ok** — the data imported and the selected steps have no
-  outstanding issues.
+- **⚠ warning**: a step needs an upstream step or an optional field (for
+  example, a drift reference QC type absent from the data).
+- **✓ ok**: the data imported and the selected steps have no outstanding
+  issues.
 
 Because the panel calls the same importer and precondition checks as a
 scripted run, a workflow that validates cleanly here runs the same way
 from the console.
 
-## What it generates
+## 4. What it generates
 
 The **Generated workflow** pane updates live as the sidebar changes. The
 YAML front matter records the title and the requested output formats:
@@ -129,7 +127,7 @@ that loads the package and calls
 [`mrmhub_enable_cli_color()`](https://slinghub.github.io/MRMhub/quant/reference/mrmhub_enable_cli_color.md),
 so mrmhub’s coloured console feedback renders in the HTML output. See
 [Quarto
-Workflows](https://slinghub.github.io/MRMhub/quant/articles/manual-11-quarto-workflows.md)
+workflows](https://slinghub.github.io/MRMhub/quant/articles/manual-11-quarto-workflows.md)
 for the reporting options and output-format details.
 
 Each selected step then becomes its own `##` section with an `{r}`
@@ -140,33 +138,37 @@ folder set, the emitted code is, in order:
 ``` r
 
 mexp <- MRMhubExperiment()
-mexp <- import_data_mrmhub(mexp, path = "data/MRMhub_demo.tsv", import_metadata = TRUE)
+mexp <- import_data_mrmhub(
+  mexp, path = "data/MRMhub_demo.tsv", import_metadata = TRUE)
 
 mexp <- normalize_by_istd(mexp)
 mexp <- quantify_by_istd(mexp)
 
-mexp <- correct_drift_gaussiankernel(mexp, variable = "conc", ref_qc_types = "SPL")
-mexp <- correct_batch_centering(mexp, variable = "conc", ref_qc_types = "SPL")
+mexp <- correct_drift_gaussiankernel(
+  mexp, variable = "conc", ref_qc_types = "SPL")
+mexp <- correct_batch_centering(
+  mexp, variable = "conc", ref_qc_types = "SPL")
 
 mexp <- calc_qc_metrics(mexp)
-mexp <- filter_features_qc(mexp, include_qualifier = FALSE, include_istd = FALSE)
+mexp <- filter_features_qc(
+  mexp, include_qualifier = FALSE, include_istd = FALSE)
 
 save_report_xlsx(mexp, path = "output/results.xlsx")
 ```
 
 The emitted calls and their argument defaults mirror the [Basic MRMhub
-Workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md);
+workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md);
 the builder is a way to assemble that script, not a separate engine.
 **Copy code** copies the document to the clipboard, and **Download
 .qmd** (or the project button) writes it to disk.
 
-## Rendering the workflow
+## 5. Rendering the workflow
 
 The **Output format(s)** control writes the requested Quarto formats
-into the document’s YAML — HTML, Word (`.docx`), and PDF may be
-combined. The PDF format is configured for a sans-serif typeface using
-the default LaTeX engine. Rendering is performed with Quarto once the
-document is saved:
+into the document’s YAML: HTML, Word (`.docx`), and PDF may be combined.
+The PDF format is configured for a sans-serif typeface using the default
+LaTeX engine. Rendering is performed with Quarto once the document is
+saved:
 
 ``` bash
 quarto render mrmhub_workflow.qmd
@@ -174,27 +176,27 @@ quarto render mrmhub_workflow.qmd
 
 The generated file is an ordinary Quarto document. Open it in RStudio,
 Positron, or VS Code, adjust paths or parameters, and run the chunks
-interactively — the builder is a starting point, not a black box.
+interactively; the builder is a starting point, not a black box.
 
 For scripted use, the same document can be produced without the
 application by passing a specification list to
 [`generate_workflow_qmd()`](https://slinghub.github.io/MRMhub/quant/reference/generate_workflow_qmd.md).
 
-## Next Steps
+## Next steps
 
-- [Your First
-  Analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md)
-  — the equivalent five-minute workflow written by hand
+- [Your first
+  analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md):
+  the equivalent five-minute workflow written by hand
 - [Basic MRMhub
-  Workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md)
-  — the full pipeline the builder mirrors
-- [Importing Analytical
-  Data](https://slinghub.github.io/MRMhub/quant/articles/manual-04-data-import.md)
-  — file formats and the importer decision tree
+  workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md):
+  the full pipeline the builder mirrors
+- [Importing analytical
+  data](https://slinghub.github.io/MRMhub/quant/articles/manual-04-data-import.md):
+  file formats and the importer decision tree
 - [Importing
-  Metadata](https://slinghub.github.io/MRMhub/quant/articles/manual-05-metadata.md)
-  — metadata tables and their required columns
+  metadata](https://slinghub.github.io/MRMhub/quant/articles/manual-05-metadata.md):
+  metadata tables and their required columns
 - [Quarto
-  Workflows](https://slinghub.github.io/MRMhub/quant/articles/manual-11-quarto-workflows.md)
-  — the setup chunk, coloured console output, and rendering to HTML,
-  PDF, and Word
+  workflows](https://slinghub.github.io/MRMhub/quant/articles/manual-11-quarto-workflows.md):
+  the setup chunk, coloured console output, and rendering to HTML, PDF,
+  and Word

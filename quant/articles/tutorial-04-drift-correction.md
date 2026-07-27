@@ -6,11 +6,11 @@ workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-wor
 Signal intensities in a mass-spectrometry run drift with injection order
 and shift between analytical batches. MRMhub corrects run-order drift by
 smoothing a trend through reference samples, and batch effects by median
-centering. Both operate on a data variable of an `MRMhubExperiment` —
-raw intensities, normalized intensities, or concentrations — and are
-fitted on QC or study samples only, never mixed. After this tutorial you
-can select an appropriate correction method for a given QC design and
-apply drift and batch correction in the correct order.
+centering. Both operate on a data variable of an `MRMhubExperiment` (raw
+intensities, normalized intensities, or concentrations) and are fitted
+on QC or study samples only, never mixed. After this tutorial you can
+select an appropriate correction method for a given QC design and apply
+drift and batch correction in the correct order.
 
 ## 1. Import data
 
@@ -191,7 +191,7 @@ median-centering batch correction; batches are aligned.
 
 ## 5. Batch-effect correction
 
-Batch effects — systematic differences between analytical batches — are
+Batch effects (systematic differences between analytical batches) are
 corrected on their own with
 [`correct_batch_centering()`](https://slinghub.github.io/MRMhub/quant/reference/correct_batch_centering.md).
 The following uses a seven-batch dataset to show the effect clearly.
@@ -287,7 +287,7 @@ MRMhub provides four drift-correction methods. Loess and cubic spline
 are typically fitted on QC samples, Gaussian kernel on study samples; a
 fourth, GAM smoothing via
 [`correct_drift_gam()`](https://slinghub.github.io/MRMhub/quant/reference/correct_drift_gam.md),
-is also available. See [Drift and Batch Correction
+is also available. See [Drift and batch correction
 (reference)](https://slinghub.github.io/MRMhub/quant/articles/manual-07-corrections.md)
 for the full parameter description of all four.
 
@@ -332,11 +332,11 @@ save_dataset_csv(
 ## Next steps
 
 - [RunScatter and PCA QC
-  exploration](https://slinghub.github.io/MRMhub/quant/articles/tutorial-05-run-scatter.md)
-  — visualise run-order and batch effects
-- [Drift and Batch Correction
-  (reference)](https://slinghub.github.io/MRMhub/quant/articles/manual-07-corrections.md)
-  — full method documentation
-- [Calibration by Reference
-  Sample](https://slinghub.github.io/MRMhub/quant/articles/tutorial-07-calibration-reference.md)
-  — normalise to a reference material
+  exploration](https://slinghub.github.io/MRMhub/quant/articles/tutorial-05-run-scatter.md):
+  visualise run-order and batch effects
+- [Drift and batch correction
+  (reference)](https://slinghub.github.io/MRMhub/quant/articles/manual-07-corrections.md):
+  full method documentation
+- [Calibration by a reference
+  sample](https://slinghub.github.io/MRMhub/quant/articles/tutorial-07-calibration-reference.md):
+  normalise to a reference material

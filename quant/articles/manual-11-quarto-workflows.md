@@ -1,4 +1,4 @@
-# Quarto Workflows
+# Quarto workflows
 
 Manual
 
@@ -8,13 +8,13 @@ interleaves the processing code, its console feedback, and the resulting
 figures and tables. Rendering the document re-runs the whole pipeline
 from the raw import to the final report, so the record and the result
 never drift apart. The [Workflow
-Builder](https://slinghub.github.io/MRMhub/quant/articles/tutorial-12-workflow-builder.md)
+builder](https://slinghub.github.io/MRMhub/quant/articles/tutorial-12-workflow-builder.md)
 emits exactly such a document; this page documents the conventions it
 follows and how to render them to HTML, PDF, and Word.
 
-Because MRMhub reports each processing step on the console —
-line-by-line, in colour, with a truncated list of the features or
-analyses affected — a rendered notebook doubles as an audit trail of
+Because MRMhub reports each processing step on the console
+(line-by-line, in colour, with a truncated list of the features or
+analyses affected), a rendered notebook doubles as an audit trail of
 what each step did. Preserving that feedback in the rendered output is
 the main subject of this page.
 
@@ -23,7 +23,7 @@ the main subject of this page.
 A workflow document reads its inputs and writes its report by *relative*
 path, so the notebook, its data, and its output live together in one
 project folder. The [Basic MRMhub
-Workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md)
+workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md)
 sketches the recommended three-folder layout (`data/`, the notebook,
 `output/`); rendering from the project root then resolves every path
 without absolute references, and the folder can be archived or shared as
@@ -86,7 +86,7 @@ render while the surrounding prose is edited.
 
 ## CLI output in colour, nicely formatted
 
-In an interactive R session MRMhub’s messages are already coloured —
+In an interactive R session MRMhub’s messages are already coloured:
 green for a successful step, yellow for a caution, red for an error. In
 a non-interactive render, cli suppresses colour by default, so the same
 messages would arrive as plain text.
@@ -96,16 +96,16 @@ converts the emitted ANSI sequences to coloured HTML using the **fansi**
 package (installed automatically as a suggested dependency).
 
 Colour applies to **HTML** output only. PDF and Word have no ANSI
-concept, so their console blocks render as plain — but still fully
-legible — monospaced text. The severity is never carried by colour
-alone: success, caution, and error lines remain distinguishable by their
+concept, so their console blocks render as plain (but still fully
+legible) monospaced text. The severity is never carried by colour alone:
+success, caution, and error lines remain distinguishable by their
 leading symbol and wording.
 
 **What a message conveys.** A processing message states a **count** and,
 where a subset of features or analyses is affected, an **illustrative
-list** of them. That list is deliberately truncated —
-`options(mrmhub.max_report_items = 10)` sets how many members are shown
-before the `…` — so a step touching hundreds of features still prints a
+list** of them. That list is deliberately truncated
+(`options(mrmhub.max_report_items = 10)` sets how many members are shown
+before the `…`), so a step touching hundreds of features still prints a
 single tidy line rather than a wall of identifiers.
 
 **Recovering the full list.** Because the list is truncated for display,
@@ -128,15 +128,15 @@ Raise `options(mrmhub.max_report_items = 50)` (or pass
 `max_report_items` to a function that reports lists) to widen the
 preview in every message at once.
 
-An **error** aborts the pipeline before it returns an object, so —
-unlike a warning or success — there is no result to filter afterwards.
-An error message is therefore self-contained: it names the offending
-values inline and, for the metadata validation report, prints the full
+An **error** aborts the pipeline before it returns an object, so (unlike
+a warning or success) there is no result to filter afterwards. An error
+message is therefore self-contained: it names the offending values
+inline and, for the metadata validation report, prints the full
 error/warning/note table before stopping. The traceback is kept
 collapsed but remains reachable with
 [`rlang::last_trace()`](https://rlang.r-lib.org/reference/last_error.html).
 
-## Output formats — HTML, PDF, and Word
+## Output formats: HTML, PDF, and Word
 
 The output format is declared in the YAML front matter; several may be
 combined, and each is produced by rendering the document once:
@@ -155,8 +155,8 @@ format:
   console feedback, keeps interactive tables scrollable, and needs no
   external tooling.
 - **PDF** requires a LaTeX installation. The lightweight
-  [TinyTeX](https://yihui.org/tinytex/) distribution is sufficient —
-  install it once with
+  [TinyTeX](https://yihui.org/tinytex/) distribution is sufficient.
+  Install it once with
   [`tinytex::install_tinytex()`](https://rdrr.io/pkg/tinytex/man/install_tinytex.html).
   The `include-in-header` snippet above switches the LaTeX body font to
   sans-serif using the default `pdflatex` engine, matching the look the
@@ -176,7 +176,7 @@ quarto render mrmhub_workflow.qmd
 A workflow document hard-codes its input paths, so processing a second
 batch means editing the file. Declaring those values as Quarto
 *parameters* instead lets the same notebook render unchanged against
-different inputs — one report per batch or per project. Parameters are
+different inputs: one report per batch or per project. Parameters are
 listed in the YAML front matter with their defaults:
 
 ``` yaml
@@ -209,9 +209,9 @@ quarto::quarto_render(
 )
 ```
 
-For a fuller worked example — a standalone report template rendered from
-a saved results object — see [Custom QC
-Report](https://slinghub.github.io/MRMhub/quant/articles/recipe-02-custom-qc-report.md).
+For a fuller worked example (a standalone report template rendered from
+a saved results object), see [Custom QC
+report](https://slinghub.github.io/MRMhub/quant/articles/recipe-02-custom-qc-report.md).
 
 ## Slides
 
@@ -227,7 +227,7 @@ format:
 Each `##` heading becomes a slide. Setting `echo: true` shows the code
 alongside its result, which suits a methods walk-through; `echo: false`
 shows only the figures and tables, which suits a results presentation.
-The processing chunks are unchanged from the HTML document — only the
+The processing chunks are unchanged from the HTML document. Only the
 format block differs.
 
 Coloured console feedback renders reliably in an **HTML document**; on
@@ -237,15 +237,15 @@ the coloured message blocks.
 
 ## Next Steps
 
-- [Using the Workflow
-  Builder](https://slinghub.github.io/MRMhub/quant/articles/tutorial-12-workflow-builder.md)
-  — generate a ready-to-render `.qmd` from your data and metadata files
+- [Using the workflow
+  builder](https://slinghub.github.io/MRMhub/quant/articles/tutorial-12-workflow-builder.md):
+  generate a ready-to-render `.qmd` from your data and metadata files
 - [Basic MRMhub
-  Workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md)
-  — the pipeline a workflow document records, written by hand
+  workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md):
+  the pipeline a workflow document records, written by hand
 - [Custom QC
-  Report](https://slinghub.github.io/MRMhub/quant/articles/recipe-02-custom-qc-report.md)
-  — render one notebook once per batch or project
+  report](https://slinghub.github.io/MRMhub/quant/articles/recipe-02-custom-qc-report.md):
+  render one notebook once per batch or project
 - [Troubleshooting &
-  FAQ](https://slinghub.github.io/MRMhub/quant/articles/manual-10-troubleshooting.md)
-  — resolving common rendering and processing problems
+  FAQ](https://slinghub.github.io/MRMhub/quant/articles/manual-10-troubleshooting.md):
+  resolving common rendering and processing problems

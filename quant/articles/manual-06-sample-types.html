@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Sample Types &amp; QC Roles • mrmhub</title>
+<title>Sample types &amp; QC roles • mrmhub</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
@@ -16,7 +16,7 @@
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
-<meta property="og:title" content="Sample Types &amp; QC Roles">
+<meta property="og:title" content="Sample types &amp; QC roles">
 <meta name="description" content="Reference for the QC-type labels used in MRMhub and their roles in quality
 control and data processing.
 ">
@@ -33,7 +33,7 @@ control and data processing.
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -64,7 +64,6 @@ control and data processing.
     <li><h6 class="dropdown-header" data-toc-skip>Techniques</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-04-drift-correction.html">Drift and batch correction</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-07-calibration-reference.html">Calibration by reference sample</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-10-metadata-validation.html">Validating metadata</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-11-interference-correction.html">Interference correction</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
@@ -77,6 +76,7 @@ control and data processing.
     <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-04-validate-metadata.html">Validate &amp; fix metadata</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul>
 </li>
@@ -98,6 +98,7 @@ control and data processing.
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-13-plot-customization.html">Customising Plots</a></li>
     <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Writing Pipelines with AI Assistants</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
@@ -108,7 +109,7 @@ control and data processing.
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">NEWS</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><a class="external-link nav-link" href="https://slinghub.github.io/MRMhub/">← MRMhub home</a></li>
@@ -129,7 +130,7 @@ control and data processing.
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.svg" class="logo" alt=""><h1>Sample Types &amp; QC Roles</h1>
+      <img src="../logo.svg" class="logo" alt=""><h1>Sample types &amp; QC roles</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/development/vignettes/articles/manual-06-sample-types.Rmd" class="external-link"><code>vignettes/articles/manual-06-sample-types.Rmd</code></a></small>
@@ -180,9 +181,21 @@ chemistry.</p>
 <td>Batch / Process QC</td>
 </tr>
 <tr class="odd">
+<td><code>PQC</code></td>
+<td>QC</td>
+<td>Process QC (or Pooled QC); see <code>BQC</code>
+</td>
+</tr>
+<tr class="even">
 <td><code>TQC</code></td>
 <td>QC</td>
 <td>Technical QC</td>
+</tr>
+<tr class="odd">
+<td><code>EQC</code></td>
+<td>QC</td>
+<td>Equilibration QC; injected to equilibrate the system and check that
+it is stable and performing as expected</td>
 </tr>
 <tr class="even">
 <td><code>LQC</code></td>
@@ -200,24 +213,35 @@ chemistry.</p>
 <td>High QC</td>
 </tr>
 <tr class="odd">
+<td><code>QC</code></td>
+<td>QC</td>
+<td>General QC sample (not strictly defined)</td>
+</tr>
+<tr class="even">
 <td><code>CAL</code></td>
 <td>Calibration</td>
 <td>Calibration sample</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>RQC</code></td>
 <td>QC</td>
 <td>Response QC (dilution series)</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>LTR</code></td>
 <td>Reference material</td>
 <td>Long-Term Reference</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>NIST</code></td>
 <td>Reference material</td>
 <td>NIST Standard Reference Material</td>
+</tr>
+<tr class="even">
+<td><code>EQA</code></td>
+<td>QC</td>
+<td>External Quality Assessment sample, e.g. from proficiency-testing
+(PT) schemes</td>
 </tr>
 <tr class="odd">
 <td><code>SST</code></td>
@@ -232,23 +256,23 @@ chemistry.</p>
 <tr class="odd">
 <td><code>UBLK</code></td>
 <td>Blank</td>
-<td>Unextracted Blank — no matrix, with ISTD, without undergoing sample
+<td>Unextracted Blank: no matrix, with ISTD, without undergoing sample
 processing</td>
 </tr>
 <tr class="even">
 <td><code>SBLK</code></td>
 <td>Blank</td>
-<td>Solvent / double blank — no matrix, no ISTD, just solvents</td>
+<td>Solvent / double blank: no matrix, no ISTD, just solvents</td>
 </tr>
 <tr class="odd">
-<td><code>IBLK</code></td>
+<td><code>TBLK</code></td>
 <td>Blank</td>
-<td>Instrument Blank, with or without injection</td>
+<td>Technical blank (instrument blank)</td>
 </tr>
 <tr class="even">
 <td><code>MBLK</code></td>
 <td>Blank</td>
-<td>Matrix Blank — matrix processed as samples but without ISTDs</td>
+<td>Matrix Blank: matrix processed as samples but without ISTDs</td>
 </tr>
 </tbody>
 </table>
@@ -448,14 +472,14 @@ exact line colours defined in the package
 </h2>
 <ul>
 <li>
-<a href="manual-01-key-concepts.html">Key Concepts &amp;
-Glossary</a> — broader terminology</li>
+<a href="manual-01-key-concepts.html">Key concepts &amp;
+glossary</a>: broader terminology</li>
 <li>
-<a href="manual-05-metadata.html">Importing Metadata</a> — preparing
+<a href="manual-05-metadata.html">Importing metadata</a>: preparing
 the annotation files</li>
 <li>
-<a href="manual-07-corrections.html">Drift and Batch Correction</a>
-— where the QC types are used</li>
+<a href="manual-07-corrections.html">Drift and batch correction</a>:
+where the QC types are used</li>
 </ul>
 </div>
 <div class="section level2 unnumbered">

@@ -44,18 +44,18 @@ Baseline path = `main:quant/vignettes/articles/<original>.Rmd`.
 
 | Article | Main-branch original | Mode | Status |
 |----|----|----|----|
-| tutorial-00-first-analysis | *(none — Claude-era)* | tutorial | to verify |
-| tutorial-01-prep-data | `T01_prepdata` | tutorial | pending |
+| tutorial-00-first-analysis | *(none — Claude-era)* | tutorial | reworked — for review/build |
+| tutorial-01-prep-data | `T01_prepdata` | tutorial | reworked — for review/build |
 | tutorial-02-basic-workflow | `T02_settingup_workflow` | tutorial | done (OLD method — revisit?) |
-| **tutorial-03-lipidomics-workflow** | `T01_targetlipidomics_workflow` | tutorial | **NEXT (flagship)** |
+| tutorial-03-lipidomics-workflow | `T01_targetlipidomics_workflow` | tutorial | done (flagship reference) |
 | tutorial-04-drift-correction | `T_DriftCorrect` | tutorial | done (OLD method — revisit?) |
-| tutorial-05-run-scatter | `T_RunScatter` | tutorial | pending |
-| tutorial-07-calibration-reference | `T_CalibRef` | tutorial | pending |
+| tutorial-05-run-scatter | `T_RunScatter` | tutorial | reworked — for review/build |
+| tutorial-07-calibration-reference | `T_CalibRef` | tutorial | reworked — for review/build |
 | tutorial-08-summarizedexperiment | *(none — Claude-era)* | tutorial | done |
-| tutorial-10-metadata-validation | *(none — Claude-era)* | tutorial | to verify |
-| tutorial-11-interference-correction | *(none — Claude-era)* | tutorial | to verify |
-| tutorial-12-workflow-builder | *(none — Claude-era)* | tutorial | to verify |
-| recipe-01-ext-calibration-qc | `R01_quantms` | recipe | pending |
+| recipe-04-validate-metadata (was tutorial-10-metadata-validation) | *(none — Claude-era)* | recipe | reworked + renamed tutorial→recipe — for review/build |
+| tutorial-11-interference-correction | *(none — Claude-era)* | tutorial | reworked — for review/build |
+| tutorial-12-workflow-builder | *(none — Claude-era)* | tutorial | reworked — for review/build |
+| recipe-01-ext-calibration-qc | `R01_quantms` | recipe | reworked — for review/build |
 | recipe-02-custom-qc-report | *(none — Claude-era)* | recipe | to verify |
 | recipe-03-mztab-export | *(none — Claude-era)* | recipe | to verify |
 | recipe-05-import-metadata | *(from manual-05 split)* | recipe | done |
