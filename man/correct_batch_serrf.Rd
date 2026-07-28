@@ -11,6 +11,8 @@ correct_batch_serrf(
   n_correlated = 10,
   num_trees = 500,
   seed = 1L,
+  num_threads = 1L,
+  show_progress = TRUE,
   replace_previous = TRUE,
   feature_list = NULL,
   replace_exisiting_trendcurves = FALSE
@@ -32,6 +34,12 @@ predictors per feature. Default \code{10}.}
 
 \item{seed}{Random seed for \code{\link[ranger:ranger]{ranger::ranger()}}, for reproducibility.
 Default \code{1}.}
+
+\item{num_threads}{Threads per random forest passed to \code{\link[ranger:ranger]{ranger::ranger()}}.
+Default \code{1}; kept low because batches are already corrected in parallel and
+each forest trains on a small QC set.}
+
+\item{show_progress}{Show a progress bar over batches. Default \code{TRUE}.}
 
 \item{replace_previous}{Replace a previous batch correction (\code{TRUE}, default)
 or apply on top of it.}
@@ -73,6 +81,10 @@ malbacR's QC/sample correlation intersection). Random forests are fit with
 \code{\link[ranger:ranger]{ranger::ranger()}} and a fixed \code{seed}, so results are reproducible. Users are
 encouraged to validate results against the reference SERRF implementation for
 their data.
+
+Batches are corrected independently and in parallel via \code{mirai} (through
+\code{\link[purrr:in_parallel]{purrr::in_parallel()}}); set up workers with \code{\link[mirai:daemons]{mirai::daemons()}} beforehand to
+use them, otherwise the batches are processed sequentially.
 }
 \examples{
 \dontshow{if (rlang::is_installed("ranger")) withAutoprint(\{ # examplesIf}

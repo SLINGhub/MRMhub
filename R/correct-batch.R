@@ -568,6 +568,10 @@ fun_batch_combat <- function(
 #' encouraged to validate results against the reference SERRF implementation for
 #' their data.
 #'
+#' Batches are corrected independently and in parallel via `mirai` (through
+#' [purrr::in_parallel()]); set up workers with [mirai::daemons()] beforehand to
+#' use them, otherwise the batches are processed sequentially.
+#'
 #' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] object.
 #' @param variable The variable to correct: one of "intensity", "norm_intensity",
 #'   or "conc".
@@ -578,6 +582,10 @@ fun_batch_combat <- function(
 #' @param num_trees Number of trees per random forest. Default `500`.
 #' @param seed Random seed for [ranger::ranger()], for reproducibility.
 #'   Default `1`.
+#' @param num_threads Threads per random forest passed to [ranger::ranger()].
+#'   Default `1`; kept low because batches are already corrected in parallel and
+#'   each forest trains on a small QC set.
+#' @param show_progress Show a progress bar over batches. Default `TRUE`.
 #' @param replace_previous Replace a previous batch correction (`TRUE`, default)
 #'   or apply on top of it.
 #' @param feature_list Optional feature selection (character vector or a single
@@ -607,6 +615,8 @@ correct_batch_serrf <- function(
   n_correlated = 10,
   num_trees = 500,
   seed = 1L,
+  num_threads = 1L,
+  show_progress = TRUE,
   replace_previous = TRUE,
   feature_list = NULL,
   replace_exisiting_trendcurves = FALSE
@@ -627,7 +637,9 @@ correct_batch_serrf <- function(
     ref_qc_types = ref_qc_types,
     n_correlated = n_correlated,
     num_trees = num_trees,
-    seed = seed
+    seed = seed,
+    num_threads = num_threads,
+    show_progress = show_progress
   )
   finalize_batch_correction(
     ctx,
@@ -637,16 +649,18 @@ correct_batch_serrf <- function(
   )
 }
 
-# SERRF engine: per batch, per feature, train a random forest on the reference
-# QCs (predictors = the batch's most-correlated features) and remove the
-# predicted systematic error. Normalization arithmetic follows the malbacR
+# SERRF engine: correct each batch independently (SERRF's per-batch random
+# forests share no state across batches), parallelised over batches with mirai
+# via purrr::in_parallel(). Normalization arithmetic follows the malbacR
 # reference; predictor selection uses the per-batch QC Spearman correlation.
 fun_batch_serrf <- function(
   ds,
   ref_qc_types,
   n_correlated = 10,
   num_trees = 500,
-  seed = 1L
+  seed = 1L,
+  num_threads = 1L,
+  show_progress = TRUE
 ) {
   meta <- ds |>
     dplyr::distinct(.data$analysis_id, .data$qc_type, .data$batch_id)
@@ -665,65 +679,49 @@ fun_batch_serrf <- function(
   ok <- apply(is.finite(mat) & mat > 0, 1, all)
   ok_feat <- feat[ok]
 
-  corrected <- mat
-  was_ok <- matrix(FALSE, nrow(mat), ncol(mat), dimnames = dimnames(mat))
-
+  # Pooled (across all batches) per-feature QC / non-QC medians -- the SERRF
+  # rescaling anchors, shared by every batch task.
   qc_median <- apply(mat[, is_qc, drop = FALSE], 1, median, na.rm = TRUE)
   nq_median <- apply(mat[, !is_qc, drop = FALSE], 1, median, na.rm = TRUE)
 
-  for (b in ubatch) {
-    qc_b <- which(is_qc & batch == b)
-    nq_b <- which(!is_qc & batch == b)
-    if (length(qc_b) < 2 || length(ok_feat) < 2) {
-      next
-    }
+  # One self-contained task per batch, holding only that batch's column slice.
+  # Workers are set up by the user with mirai::daemons(); without them
+  # purrr::in_parallel() runs the tasks sequentially.
+  batch_data <- purrr::map(ubatch, function(b) {
+    cols <- which(batch == b)
+    list(cols = cols, mat_b = mat[, cols, drop = FALSE], is_qc_b = is_qc[cols])
+  })
 
-    # Per-batch feature-feature Spearman correlation on the reference QCs.
-    # (Scaling is a no-op for Spearman, so it is omitted.)
-    cormat <- suppressWarnings(stats::cor(
-      t(mat[ok, qc_b, drop = FALSE]),
-      method = "spearman"
-    ))
-    rownames(cormat) <- colnames(cormat) <- ok_feat
+  results <- batch_data |>
+    purrr::map(
+      .f = purrr::in_parallel(
+        ~ serrf_one_batch(
+          .x,
+          ok_feat = ok_feat,
+          qc_median = qc_median,
+          nq_median = nq_median,
+          n_correlated = n_correlated,
+          num_trees = num_trees,
+          seed = seed,
+          num_threads = num_threads
+        ),
+        serrf_one_batch = serrf_one_batch,
+        ok_feat = ok_feat,
+        qc_median = qc_median,
+        nq_median = nq_median,
+        n_correlated = n_correlated,
+        num_trees = num_trees,
+        seed = seed,
+        num_threads = num_threads
+      ),
+      .progress = show_progress
+    )
 
-    for (f in ok_feat) {
-      ord <- order(abs(cormat[, f]), decreasing = TRUE)
-      sel <- setdiff(ok_feat[ord], f)
-      sel <- sel[seq_len(min(n_correlated, length(sel)))]
-      if (length(sel) < 1) {
-        next
-      }
-
-      x_qc <- scale(t(mat[sel, qc_b, drop = FALSE]))
-      x_nq <- scale(t(mat[sel, nq_b, drop = FALSE]))
-      x_qc[!is.finite(x_qc)] <- 0
-      x_nq[!is.finite(x_nq)] <- 0
-      colnames(x_qc) <- colnames(x_nq) <- paste0("var", seq_len(ncol(x_qc)))
-
-      y_qc <- mat[f, qc_b] - mean(mat[f, qc_b])
-      model <- ranger::ranger(
-        y ~ .,
-        data = data.frame(y = y_qc, x_qc),
-        num.trees = num_trees,
-        seed = seed
-      )
-
-      pred_qc <- stats::predict(model, data = data.frame(x_qc))$predictions
-      norm_qc <- mat[f, qc_b] /
-        ((pred_qc + mean(mat[f, qc_b])) / qc_median[f])
-      serrf_qc <- norm_qc / (median(norm_qc, na.rm = TRUE) / qc_median[f])
-      corrected[f, qc_b] <- serrf_qc
-      was_ok[f, qc_b] <- is.finite(serrf_qc)
-
-      if (length(nq_b) > 0) {
-        pred_nq <- stats::predict(model, data = data.frame(x_nq))$predictions
-        norm_nq <- mat[f, nq_b] /
-          ((pred_nq + mean(mat[f, nq_b])) / nq_median[f])
-        serrf_nq <- norm_nq / (median(norm_nq, na.rm = TRUE) / nq_median[f])
-        corrected[f, nq_b] <- serrf_nq
-        was_ok[f, nq_b] <- is.finite(serrf_nq)
-      }
-    }
+  corrected <- mat
+  was_ok <- matrix(FALSE, nrow(mat), ncol(mat), dimnames = dimnames(mat))
+  for (res in results) {
+    corrected[, res$cols] <- res$corrected
+    was_ok[, res$cols] <- res$was_ok
   }
 
   # Any non-finite result reverts to the original value, flagged uncorrected.
@@ -770,6 +768,83 @@ fun_batch_serrf <- function(
       "y_fit_after_adj",
       "was_corrected"
     )
+}
+
+
+# SERRF worker for a single batch: for each ok feature, pick the top-N
+# QC-correlated features as predictors, train a random forest on the batch's
+# reference QCs, and remove the predicted systematic error from all of the
+# batch's samples. Self-contained (only base + ranger) so it ships to mirai
+# workers; operates on the batch column slice `dat$mat_b` with local indices.
+serrf_one_batch <- function(
+  dat,
+  ok_feat,
+  qc_median,
+  nq_median,
+  n_correlated,
+  num_trees,
+  seed,
+  num_threads
+) {
+  mat_b <- dat$mat_b
+  is_qc_b <- dat$is_qc_b
+  out <- mat_b
+  was <- matrix(FALSE, nrow(mat_b), ncol(mat_b), dimnames = dimnames(mat_b))
+  qc_l <- which(is_qc_b)
+  nq_l <- which(!is_qc_b)
+  if (length(qc_l) < 2 || length(ok_feat) < 2) {
+    return(list(cols = dat$cols, corrected = out, was_ok = was))
+  }
+
+  # Per-batch feature-feature Spearman correlation on the reference QCs.
+  # (Scaling is a no-op for Spearman, so it is omitted.)
+  cormat <- suppressWarnings(stats::cor(
+    t(mat_b[ok_feat, qc_l, drop = FALSE]),
+    method = "spearman"
+  ))
+  rownames(cormat) <- colnames(cormat) <- ok_feat
+
+  for (f in ok_feat) {
+    ord <- order(abs(cormat[, f]), decreasing = TRUE)
+    sel <- setdiff(ok_feat[ord], f)
+    sel <- sel[seq_len(min(n_correlated, length(sel)))]
+    if (length(sel) < 1) {
+      next
+    }
+
+    x_qc <- scale(t(mat_b[sel, qc_l, drop = FALSE]))
+    x_nq <- scale(t(mat_b[sel, nq_l, drop = FALSE]))
+    x_qc[!is.finite(x_qc)] <- 0
+    x_nq[!is.finite(x_nq)] <- 0
+    colnames(x_qc) <- colnames(x_nq) <- paste0("var", seq_len(ncol(x_qc)))
+
+    y_qc <- mat_b[f, qc_l] - mean(mat_b[f, qc_l])
+    model <- ranger::ranger(
+      y ~ .,
+      data = data.frame(y = y_qc, x_qc),
+      num.trees = num_trees,
+      seed = seed,
+      num.threads = num_threads
+    )
+
+    pred_qc <- stats::predict(model, data = data.frame(x_qc))$predictions
+    norm_qc <- mat_b[f, qc_l] /
+      ((pred_qc + mean(mat_b[f, qc_l])) / qc_median[[f]])
+    serrf_qc <- norm_qc / (median(norm_qc, na.rm = TRUE) / qc_median[[f]])
+    out[f, qc_l] <- serrf_qc
+    was[f, qc_l] <- is.finite(serrf_qc)
+
+    if (length(nq_l) > 0) {
+      pred_nq <- stats::predict(model, data = data.frame(x_nq))$predictions
+      norm_nq <- mat_b[f, nq_l] /
+        ((pred_nq + mean(mat_b[f, nq_l])) / nq_median[[f]])
+      serrf_nq <- norm_nq / (median(norm_nq, na.rm = TRUE) / nq_median[[f]])
+      out[f, nq_l] <- serrf_nq
+      was[f, nq_l] <- is.finite(serrf_nq)
+    }
+  }
+
+  list(cols = dat$cols, corrected = out, was_ok = was)
 }
 
 
