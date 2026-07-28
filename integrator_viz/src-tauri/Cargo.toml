@@ -1,6 +1,6 @@
 [package]
 name = "mrmhub-viz"
-version = "0.9.8"
+version = "0.9.9"
 description = "MRMhub-viz — interactive viewer for INTEGRATOR peak-integration results"
 authors = ["Guo Shou Teo (National University of Singapore)"]
 edition = "2021"

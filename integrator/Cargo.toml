@@ -1,6 +1,6 @@
 [package]
 name = "MRMhub-integrator"
-version = "0.9.8"
+version = "0.9.9"
 edition = "2024"
 authors = ["Guo Shou Teo (National University of Singapore)"]
 description = "INTEGRATOR — automated peak detection and integration for targeted MRM mass spectrometry (part of MRMhub)."
