@@ -95,6 +95,38 @@ struct QQ {
     baseline: String,
     index: Option<u16>,
 }
+// returns a normalized header token for flexible csv column matching
+fn normalized_header(header: &str) -> String {
+    header
+        .trim()
+        .split_once(' ')
+        .map_or(header.trim(), |(prefix, _)| prefix)
+        .trim_matches(|character: char| character == '(' || character == ')')
+        .chars()
+        .map(|character| match character {
+            ' ' | '-' => '_',
+            _ => character.to_ascii_lowercase(),
+        })
+        .collect()
+}
+
+// finds a csv column by any accepted header name
+fn find_col(header: &csv::StringRecord, names: &[&str]) -> Option<usize> {
+    let names = names
+        .iter()
+        .map(|name| normalized_header(name))
+        .collect::<Vec<_>>();
+    header.iter().position(|column| {
+        let column = normalized_header(column);
+        names.iter().any(|name| &column == name)
+    })
+}
+
+// finds a required csv column, with a clear upstream-compatible error
+fn require_col(header: &csv::StringRecord, names: &[&str]) -> Result<usize, Box<dyn Error>> {
+    find_col(header, names).ok_or_else(|| format!("{} column not found!", names[0]).into())
+}
+
 // reads and validates the transition assay
 fn read_assay(assay_f: &Path) -> Result<Vec<QQ>, Box<dyn Error>> {
     fn cell(record: &csv::StringRecord, column: usize) -> &str {
@@ -107,38 +139,36 @@ fn read_assay(assay_f: &Path) -> Result<Vec<QQ>, Box<dyn Error>> {
         .trim(csv::Trim::All)
         .from_path(assay_f)?;
     let headers = rdr.headers()?.clone();
-    let normalized_headers: Vec<String> = headers
-        .iter()
-        .map(|header| header.trim().to_ascii_lowercase())
-        .collect();
-    let find_column = |name: &str| {
-        let name = name.to_ascii_lowercase();
-        normalized_headers.iter().position(|header| header == &name)
-    };
-    let find_column_containing = |needle: &str| {
-        let needle = needle.to_ascii_lowercase();
-        normalized_headers
-            .iter()
-            .position(|header| header.contains(&needle))
-    };
-    let compound_col = find_column("compound name").unwrap_or(0);
-    let transition_col = find_column("transition name").unwrap_or(1);
-    let istd_col = find_column("istd").unwrap_or(2);
-    let precursor_col = find_column("precursor ion").unwrap_or(3);
-    let product_col = find_column("product ion").unwrap_or(4);
-    let rt_col = find_column("rt").unwrap_or(5);
-    let uniform_col = find_column("uniform_width (y/n)")
-        .or_else(|| find_column("uniform width"))
-        .or_else(|| find_column_containing("uniform"))
-        .unwrap_or(6);
-    let left_bound_col = find_column_containing("left integration bound").unwrap_or(7);
-    let right_bound_col = find_column_containing("right integration bound").unwrap_or(8);
-    let fixed_col = find_column("fixed(y/n)")
-        .or_else(|| find_column("fixed"))
-        .or_else(|| find_column_containing("fixed"));
-    let peak_width_col = find_column("peak width").or_else(|| find_column("peak_width"));
-    let baseline_col = find_column("baseline");
-    let index_col = find_column("chromatogram index");
+    let compound_col = require_col(&headers, &["Feature_ID", "Compound Name"])?;
+    let transition_col = require_col(&headers, &["Transition_Name", "Transition Name"])?;
+    let istd_col = require_col(&headers, &["ISTD_Feature_ID", "ISTD"])?;
+    let precursor_col = require_col(&headers, &["Precursor_mz", "Precursor Ion"])?;
+    let product_col = require_col(&headers, &["Product_mz", "Product Ion"])?;
+    let rt_col = require_col(&headers, &["RT"])?;
+    let uniform_col = require_col(
+        &headers,
+        &["uniform_width", "uniform_width (y/n)", "uniform width"],
+    )?;
+    let left_bound_col = require_col(
+        &headers,
+        &[
+            "begin_RT",
+            "left integration bound",
+            "left integration bound (integration will not start earlier than the set RT)",
+        ],
+    )?;
+    let right_bound_col = require_col(
+        &headers,
+        &[
+            "end_RT",
+            "right integration bound",
+            "right integration bound (integration must end before the set RT)",
+        ],
+    )?;
+    let fixed_col = find_col(&headers, &["fixed", "fixed(y/n)"]);
+    let peak_width_col = find_col(&headers, &["peak_width", "peak width"]);
+    let baseline_col = find_col(&headers, &["baseline"]);
+    let index_col = find_col(&headers, &["chromatogram_index", "chromatogram index"]);
     let mut records: Vec<csv::StringRecord> = rdr.into_records().collect::<Result<_, _>>()?;
     let is_yes = |value: &str| {
         matches!(
@@ -540,24 +570,35 @@ fn filter_mzml<'a, 'b>(
 // describes one row of ordered batch information
 type FileO = (String, String, String, bool, bool, usize);
 // reads and sorts the batch information by filename
-fn read_file_ord(batch_i_file: &Path) -> std::io::Result<Vec<FileO>> {
+fn read_file_ord(batch_i_file: &Path) -> Result<Vec<FileO>, Box<dyn Error>> {
     let mut rdr = csv::ReaderBuilder::new()
         .comment(Some(b'#'))
         .has_headers(true)
         .trim(csv::Trim::All)
         .from_path(batch_i_file)?;
-    let ncol = rdr.headers()?.len();
+    let headers = rdr.headers()?.clone();
+    let filename_col = require_col(&headers, &["file_name", "file name"])?;
+    let batch_col = require_col(&headers, &["batch"])?;
+    let sample_type_col = require_col(&headers, &["sample_type", "sample type"])?;
+    let reference_col = require_col(
+        &headers,
+        &[
+            "reference",
+            "reference (indicate at least one sample to be used for RT shift estimation)",
+        ],
+    )?;
+    let learn_col = find_col(&headers, &["learn"]);
     let mut file_ord: Vec<_> = rdr
         .into_records()
         .enumerate()
         .map(|(i, rec)| {
             rec.map(|x| {
                 (
-                    x[0].to_string(),
-                    x[1].to_string(),
-                    x[2].to_string(),
-                    !x[3].trim().is_empty(),
-                    ncol < 5 || !x[4].trim().is_empty(),
+                    x[filename_col].to_string(),
+                    x[batch_col].to_string(),
+                    x[sample_type_col].to_string(),
+                    !x[reference_col].trim().is_empty(),
+                    learn_col.map_or(true, |column| !x[column].trim().is_empty()),
                     i,
                 )
             })

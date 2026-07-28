@@ -17,6 +17,8 @@ const TRANS_L: &str = "trans_list.bin";
 const TRANS_BL: &str = "trans_baseline.bin";
 // names the mzml sample list file
 const MZML_L: &str = "mzML_list.txt";
+// names the worker version reported by the command line
+const VERSION: &str = env!("CARGO_PKG_VERSION");
 use std::error::Error;
 use std::path::PathBuf;
 // stores the parameters used across the integration workflow
@@ -37,6 +39,11 @@ struct Param {
 fn main() -> Result<(), Box<dyn Error>> {
     let mut args = std::env::args();
     args.next();
+    let arg1 = args.next();
+    if matches!(arg1.as_deref(), Some("--version" | "-V")) {
+        println!("MRMhub INTEGRATOR {VERSION}");
+        return Ok(());
+    }
     let project_dir = std::env::var_os("MRMHUB_PROJECT_DIR")
         .map(PathBuf::from)
         .unwrap_or(std::env::current_exe()?.parent().unwrap().to_path_buf());
@@ -45,7 +52,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     rayon::ThreadPoolBuilder::new()
         .num_threads(param_t.num_t)
         .build_global()?;
-    match args.next().as_deref() {
+    match arg1.as_deref() {
         Some("1") => read_mzml::read(&param_t)?,
         Some("2") => feat::detect(&param_t)?,
         Some("3") => get_auc::calc_auc()?,

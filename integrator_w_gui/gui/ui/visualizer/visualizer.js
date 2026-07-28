@@ -265,6 +265,12 @@ function graphDimensions() {
   };
 }
 
+// keeps the current graph text size as the maximum, only shrinking labels when
+// the graph is squeezed below the default dimensions
+function graphFontScale(width, height, baseWidth = 400, baseHeight = 160) {
+  return Math.max(0.68, Math.min(1, width / baseWidth, height / baseHeight));
+}
+
 // reads and normalizes the optional manual graph range
 function graphRange() {
   let start = elements.rtStart.valueAsNumber || 0;
@@ -469,7 +475,8 @@ function renderQcGraph(title, values, width) {
     .create("svg")
     .attr("class", "visualizer-chart qc-chart")
     .attr("width", width)
-    .attr("height", height);
+    .attr("height", height)
+    .style("--graph-font-scale", graphFontScale(width, height, 400, 200));
   svg
     .append("text")
     .attr("class", "chart-title")
@@ -674,7 +681,8 @@ function renderTrace(
     .create("svg")
     .attr("class", "chromatogram-chart visualizer-chart-overlay")
     .attr("width", width)
-    .attr("height", height);
+    .attr("height", height)
+    .style("--graph-font-scale", graphFontScale(width, height));
   const plotClip = addPlotClip(svg, width, height);
   const plotLayer = svg.append("g").attr("clip-path", plotClip);
   const xAxis = svg
