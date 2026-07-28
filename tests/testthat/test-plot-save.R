@@ -51,8 +51,14 @@ test_that("resolve_plot_formats builds one path per explicit format", {
 })
 
 test_that("resolve_plot_formats errors on an unusable path or format", {
-  expect_error(resolve_plot_formats("fig"), "Cannot determine the output format")
-  expect_error(resolve_plot_formats("fig.docx"), "Cannot determine the output format")
+  expect_error(
+    resolve_plot_formats("fig"),
+    "Cannot determine the output format"
+  )
+  expect_error(
+    resolve_plot_formats("fig.docx"),
+    "Cannot determine the output format"
+  )
   expect_error(resolve_plot_formats("fig", format = "eps"), "Unsupported")
   expect_error(resolve_plot_formats(""), "non-empty file path")
 })
@@ -94,7 +100,7 @@ test_that("resolve_plot_device returns a function for every format", {
 })
 
 test_that("PDF preserves non-ASCII text", {
-  skip_if_not(isTRUE(capabilities("cairo")))
+  skip_if_not(cairo_pdf_usable())
   skip_if_not_installed("pdftools")
   # grDevices::pdf() transliterates outside its single-byte encoding: an en dash
   # becomes "-" and U+2265 becomes ">=". Unit labels and statistical annotations
@@ -112,7 +118,7 @@ test_that("PDF preserves non-ASCII text", {
 })
 
 test_that("multi-page PDF also preserves non-ASCII text", {
-  skip_if_not(isTRUE(capabilities("cairo")))
+  skip_if_not(cairo_pdf_usable())
   skip_if_not_installed("qpdf")
   dir <- withr::local_tempdir()
   target <- file.path(dir, "unicode-pages.pdf")
@@ -128,6 +134,33 @@ test_that("multi-page PDF also preserves non-ASCII text", {
   expect_equal(qpdf::pdf_length(target), 2)
 })
 
+test_that("PDF output falls back to a working device when cairo is unusable", {
+  skip_if_not_installed("pdftools")
+  # `capabilities("cairo")` can be TRUE while the device fails to open (macOS
+  # without XQuartz), which previously left `save_plot()` writing no file at all.
+  # The fallback to `grDevices::pdf()` must still produce a readable PDF.
+  testthat::local_mocked_bindings(cairo_pdf_usable = function() FALSE)
+  dir <- withr::local_tempdir()
+
+  single <- file.path(dir, "fallback.pdf")
+  suppressMessages(save_plot(simple_plot(), single, width = 100, height = 80))
+  expect_gt(file.size(single), 0)
+  expect_equal(
+    pdftools::pdf_pagesize(single)$width[[1]],
+    100 / 25.4 * 72,
+    tolerance = 0.01
+  )
+
+  multi <- file.path(dir, "fallback-pages.pdf")
+  suppressMessages(save_plot(
+    list(simple_plot(), simple_plot()),
+    multi,
+    width = 100,
+    height = 80
+  ))
+  expect_gt(file.size(multi), 0)
+})
+
 test_that("TIFF is LZW-compressed by default but can be overridden", {
   skip_if_not_installed("ragg")
   # ragg::agg_tiff() writes uncompressed TIFF by default -- tens of MB at
@@ -137,7 +170,13 @@ test_that("TIFF is LZW-compressed by default but can be overridden", {
   dir <- withr::local_tempdir()
   lzw <- file.path(dir, "lzw.tiff")
   raw <- file.path(dir, "raw.tiff")
-  suppressMessages(save_plot(simple_plot(), lzw, width = 100, height = 80, dpi = 300))
+  suppressMessages(save_plot(
+    simple_plot(),
+    lzw,
+    width = 100,
+    height = 80,
+    dpi = 300
+  ))
   suppressMessages(save_plot(
     simple_plot(),
     raw,
@@ -212,7 +251,13 @@ test_that("save_plot returns paths invisibly when show_plot = FALSE", {
   target <- file.path(dir, "silent.pdf")
 
   res <- withVisible(suppressMessages(
-    save_plot(simple_plot(), target, width = 100, height = 80, show_plot = FALSE)
+    save_plot(
+      simple_plot(),
+      target,
+      width = 100,
+      height = 80,
+      show_plot = FALSE
+    )
   ))
 
   expect_false(res$visible)

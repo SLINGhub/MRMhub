@@ -53,7 +53,9 @@ convert_to_inches <- function(value, units, dpi, arg = "width") {
 #' @return A named character vector of paths, names being the formats.
 #' @noRd
 resolve_plot_formats <- function(path, format = NULL) {
-  if (!is.character(path) || length(path) != 1L || is.na(path) || !nzchar(path)) {
+  if (
+    !is.character(path) || length(path) != 1L || is.na(path) || !nzchar(path)
+  ) {
     cli::cli_abort("{.arg path} must be a single non-empty file path.")
   }
 
@@ -72,7 +74,10 @@ resolve_plot_formats <- function(path, format = NULL) {
   }
 
   format <- tolower(as.character(format))
-  unknown <- setdiff(format, c(mrmhub_plot_formats, names(mrmhub_plot_format_aliases)))
+  unknown <- setdiff(
+    format,
+    c(mrmhub_plot_formats, names(mrmhub_plot_format_aliases))
+  )
   if (length(unknown) > 0) {
     cli::cli_abort(c(
       "Unsupported {.arg format}: {.val {unknown}}.",
@@ -85,6 +90,37 @@ resolve_plot_formats <- function(path, format = NULL) {
   stem <- if (known_ext) tools::file_path_sans_ext(path) else path
   stats::setNames(paste0(stem, ".", fmts), fmts)
 }
+
+# Whether the cairo PDF device can actually be opened here. `capabilities("cairo")`
+# only reports that R was *built* with cairo, not that the device loads: on macOS
+# the cairo DLL links against XQuartz's libXrender, so without XQuartz
+# `capabilities()` is TRUE yet `cairo_pdf()` fails to load, opens no device and
+# writes no file. Probe the device once and cache the result.
+cairo_pdf_usable <- local({
+  cached <- NULL
+  function() {
+    if (!is.null(cached)) {
+      return(cached)
+    }
+    ok <- isTRUE(capabilities("cairo")) &&
+      tryCatch(
+        {
+          tmp <- tempfile(fileext = ".pdf")
+          on.exit(unlink(tmp), add = TRUE)
+          before <- grDevices::dev.cur()
+          suppressWarnings(grDevices::cairo_pdf(filename = tmp))
+          opened <- !identical(grDevices::dev.cur(), before)
+          if (opened) {
+            grDevices::dev.off()
+          }
+          opened && file.exists(tmp) && file.size(tmp) > 0
+        },
+        error = function(e) FALSE
+      )
+    cached <<- ok
+    ok
+  }
+})
 
 #' Select the graphics device function for a format
 #'
@@ -103,8 +139,8 @@ resolve_plot_device <- function(format) {
     # transliterates anything outside it -- an en dash becomes "-", a "greater
     # than or equal" sign becomes ">=". Unit labels such as "umol/L" and
     # statistical annotations routinely carry such characters, so the cairo
-    # device is preferred wherever R was built with it.
-    pdf = if (isTRUE(capabilities("cairo"))) {
+    # device is preferred wherever it can actually be opened.
+    pdf = if (cairo_pdf_usable()) {
       function(filename, ...) {
         grDevices::cairo_pdf(filename = filename, ...)
       }
@@ -399,7 +435,7 @@ write_multipage_pdf <- function(
 ) {
   # Same reasoning as the single-page PDF device in `resolve_plot_device()`:
   # cairo preserves non-ASCII text, which `grDevices::pdf()` transliterates.
-  if (isTRUE(capabilities("cairo"))) {
+  if (cairo_pdf_usable()) {
     args <- list(
       filename = path,
       onefile = TRUE,
