@@ -205,6 +205,18 @@ Rendering is performed with Quarto once the document is saved:
 quarto render mrmhub_workflow.qmd
 ```
 
+::: {.callout .callout-note}
+Quarto's `fig-width`, `fig-height` and `fig-dpi` control the figure *embedded in the rendered
+document*. `save_plot()` controls a *standalone file* at an exact physical size. The two are
+independent: a manuscript figure needs the latter, because its width must match the journal's
+column specification regardless of how the notebook happens to display it.
+
+```{r}
+#| eval: false
+save_plot(p, "figures/fig3", format = c("pdf", "png"), width = 180, height = 200)
+```
+:::
+
 ## Parameters
 
 A workflow document hard-codes its input paths, so processing a second batch

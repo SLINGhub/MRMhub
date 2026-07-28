@@ -25,6 +25,7 @@ Imports:
     forcats,
     fs,
     glue,
+    lifecycle,
     lubridate,
     purrr,
     readr,
@@ -47,6 +48,8 @@ Suggests:
     ggpmisc,
     ggnewscale,
     covr,
+    ragg,
+    svglite,
     fansi,
     lancer,
     rgoslin,
@@ -54,7 +57,9 @@ Suggests:
     ggExtra,
     MASS,
     mgcv,
+    ranger,
     rmarkdown,
+    sva,
     bibtex,
     here,
     testthat (>= 3.0.0),
@@ -91,6 +96,7 @@ Collate:
     'check-setup.R'
     'mrmhub-global-definitions.R'
     'classes.R'
+    'correct-batch.R'
     'correct-drift-batch.R'
     'correct-isotope.R'
     'data-combine-datasets.R'
@@ -118,6 +124,7 @@ Collate:
     'plot-qc-correlations.R'
     'plot-qc-matrixeffects.R'
     'plot-runscatter.R'
+    'plot-save.R'
     'plots-calibcurves.R'
     'plots-eda.R'
     'plots-qc-cv.R'

@@ -496,10 +496,31 @@ plot_runscatter(
   show_trend = TRUE,
   output_pdf = TRUE,
   path = "./output/runscatter_after-drift-batch-correction.pdf",
+  page_width = 297, page_height = 210,
   cols_page = 2, rows_page = 2,
   show_progress = TRUE
 )
 ```
+
+`page_width` and `page_height` set the page size; without them an A4 page is used, oriented by
+`page_orientation`.
+
+::: {.callout .callout-tip}
+The single figures made earlier in this workflow are saved with `save_plot()`, which writes any plot
+at a defined size and resolution and can produce several formats in one call:
+
+```{r}
+#| eval: false
+save_plot(
+  plot_pca(myexp, variable = "conc", qc_types = c("BQC", "SPL")),
+  path = "./output/pca", format = c("pdf", "png"),
+  width = 180, height = 120
+)
+```
+
+See [Saving plots](manual-08-visualization.html#saving-plots) for the available formats and when to
+prefer a vector or a raster one.
+:::
 
 ## 18. QC-based feature filtering
 

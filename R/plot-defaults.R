@@ -23,11 +23,15 @@
 #'   value `<= 3` is a multiplier of `font_base_size`, larger values are points.
 #' @param show_legend_title `FALSE` hides legend titles.
 #' @param strip_bg_color Facet strip background fill (strip text auto-contrasts).
+#' @param units Default unit for the `width` and `height` of [save_plot()]:
+#'   `"mm"` (the built-in default), `"cm"`, `"in"`, `"pt"` or `"px"`.
+#' @param dpi Default resolution in dots per inch for the raster formats of
+#'   [save_plot()]. The built-in default is `300`.
 #'
 #' @return Invisibly, a named list of the option values as they were before this
 #'   call (as returned by [options()]).
-#' @seealso [mrmhub_reset_plot_defaults()], [mrmhub_get_plot_defaults()] and the
-#'   `vignette("manual-13-plot-customization")` article.
+#' @seealso [mrmhub_reset_plot_defaults()], [mrmhub_get_plot_defaults()],
+#'   [save_plot()] and the `vignette("manual-13-plot-customization")` article.
 #' @examples
 #' old <- mrmhub_set_plot_defaults(font_base_size = 8, point_size = 0.8)
 #' # ... make plots with the smaller defaults ...
@@ -39,7 +43,9 @@ mrmhub_set_plot_defaults <- function(
   legend_position = NULL,
   legend_size = NULL,
   show_legend_title = NULL,
-  strip_bg_color = NULL
+  strip_bg_color = NULL,
+  units = NULL,
+  dpi = NULL
 ) {
   new <- list(
     mrmhub.font_base_size = font_base_size,
@@ -47,7 +53,9 @@ mrmhub_set_plot_defaults <- function(
     mrmhub.legend_position = legend_position,
     mrmhub.legend_size = legend_size,
     mrmhub.show_legend_title = show_legend_title,
-    mrmhub.strip_bg_color = strip_bg_color
+    mrmhub.strip_bg_color = strip_bg_color,
+    mrmhub.units = units,
+    mrmhub.dpi = dpi
   )
   new <- new[!vapply(new, is.null, logical(1))]
   invisible(options(new))
@@ -96,5 +104,7 @@ mrmhub_get_plot_defaults <- function() {
   "mrmhub.legend_position",
   "mrmhub.legend_size",
   "mrmhub.show_legend_title",
-  "mrmhub.strip_bg_color"
+  "mrmhub.strip_bg_color",
+  "mrmhub.units",
+  "mrmhub.dpi"
 )

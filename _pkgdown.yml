@@ -115,7 +115,7 @@ navbar:
         href: articles/manual-08-visualization.html
       - text: Customising Plots
         href: articles/manual-13-plot-customization.html
-      - text: Writing Pipelines with AI Assistants
+      - text: Getting Help from an AI Assistant
         href: articles/manual-09-ai-assistants.html
       - text: '-------'
       - text: Reference
@@ -265,6 +265,8 @@ reference:
   - correct_drift_loess
   - correct_drift_gam
   - correct_batch_centering
+  - correct_batch_combat
+  - correct_batch_serrf
 - title: Quality Control and Filtering
   description: |
     Functions to calculate feature QC metrics and apply QC filtering, and vizualize the filtering results.
@@ -291,14 +293,16 @@ reference:
   - plot_qcmetrics_comparison
   - plot_interference_correction
   - plot_qc_interference_impact
-- title: Plot appearance defaults
+- title: Plot Defaults and Export
   description: |
-    Set session-wide defaults (font size, point size, legend, strips) for the
-    plotting functions. See the "Customising plots" article.
+    Set session-wide defaults (font size, point size, legend, strips, save units
+    and resolution) for the plotting functions, and write figures to file at a
+    defined size. See the "Customising plots" article.
   contents:
   - mrmhub_set_plot_defaults
   - mrmhub_get_plot_defaults
   - mrmhub_reset_plot_defaults
+  - save_plot
 - title: Response Curves
   description: |
     Functions to calculate and visualize response curves

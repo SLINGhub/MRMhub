@@ -36,7 +36,7 @@ full argument reference for every function is in the
 
 ## Results and downstream use
 
-- **[Visualisation functions](manual-08-visualization.html)**: RunScatter, PCA, run-sequence, and normalization-QC plots.
+- **[Visualisation functions](manual-08-visualization.html)**: RunScatter, PCA, run-sequence, and normalization-QC plots, and exporting figures at a defined size and resolution.
 - **[Writing pipelines with AI assistants](manual-09-ai-assistants.html)**: grounding LLMs (Claude, ChatGPT, local models) in the real API, and verifying what they produce.
 
 ## Reference

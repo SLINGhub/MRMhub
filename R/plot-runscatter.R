@@ -103,7 +103,9 @@
 #' @param rows_page Number of rows per page.
 #' @param cols_page Number of columns per page.
 #' @param specific_page Show/save a specific page number only. `NA` plots/saves all pages.
-#' @param page_orientation Page orientation, "LANDSCAPE" or "PORTRAIT".
+#' @param page_orientation Page orientation, "LANDSCAPE" or "PORTRAIT". Ignored
+#'   when `page_width` and `page_height` are given.
+#' @template page_size
 #' @template font_base_size
 #' @template autoscale
 #' @template legend_args
@@ -129,8 +131,11 @@
 #' @param label_wrap_width Integer. Maximum width in characters for wrapped labels when
 #'   `label_wrap = TRUE`. Default is `25`. Ignored when `label_wrap = FALSE`.
 #'
+#' @template plot_devices
+#'
 #' @return A list of `ggplot` objects if `return_plots = TRUE`, otherwise
 #'   `NULL` (the plots are drawn to the active device or written to a PDF).
+#' @seealso [save_plot()] to save a single figure in any format.
 #' @family QC plots
 #' @export
 
@@ -201,6 +206,9 @@ plot_runscatter <- function(
   cols_page = 3,
   specific_page = NA,
   page_orientation = "LANDSCAPE",
+  page_width = NULL,
+  page_height = NULL,
+  page_units = "mm",
 
   # Others
   y_label_text = NA,
@@ -226,6 +234,12 @@ plot_runscatter <- function(
   # Check the validity of input data
   check_data(data)
   rlang::arg_match(page_orientation, c("LANDSCAPE", "PORTRAIT"))
+  page_size <- resolve_page_size(
+    page_width,
+    page_height,
+    page_units,
+    page_orientation
+  )
 
   .sizes <- mrmhub_autoscale_sizes(
     cols_page,
@@ -594,7 +608,7 @@ plot_runscatter <- function(
     rows_page = rows_page,
     show_trend = show_trend,
     output_pdf = output_pdf,
-    page_orientation = page_orientation,
+    page_size = page_size,
     point_size = point_size,
     cap_outliers = cap_outliers,
     point_alpha = point_alpha,
@@ -765,7 +779,7 @@ runscatter_plot_pages <- function(
   rows_page,
   show_trend,
   output_pdf,
-  page_orientation,
+  page_size,
   point_size,
   cap_outliers,
   point_alpha,
@@ -1399,8 +1413,10 @@ runscatter_plot_pages <- function(
       #paper = "A4r",
       useDingbats = use_dingbats,
       useKerning = TRUE,
-      width = ifelse(page_orientation == "LANDSCAPE", 28 / 2.54, 20 / 2.54),
-      height = ifelse(page_orientation == "LANDSCAPE", 20 / 2.54, 28 / 2.54)
+      # `paper` is deliberately left at its "special" default here, so the
+      # width/height below define the page.
+      width = page_size$width,
+      height = page_size$height
     )
   }
 

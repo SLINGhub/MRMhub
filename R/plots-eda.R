@@ -649,6 +649,9 @@ plot_dotboxplus <- function(
   class_per_page = TRUE,
   output_pdf = FALSE,
   path = NULL,
+  page_width = NULL,
+  page_height = NULL,
+  page_units = "mm",
   scale_text = 1,
   scale_signf = 1,
   point_size = 1
@@ -738,7 +741,21 @@ plot_dotboxplus <- function(
   }
 
   if (output_pdf) {
-    pdf(file = path, onefile = TRUE, paper = "A4r", width = 10, height = 8)
+    # Historical default here is 10 x 8 in on A4 landscape, not the 28 x 20 cm
+    # used by the paged plot functions, so it is spelled out rather than taken
+    # from `resolve_page_size()`.
+    page_size <- if (is.null(page_width) && is.null(page_height)) {
+      list(width = 10, height = 8, paper = "A4r")
+    } else {
+      resolve_page_size(page_width, page_height, page_units)
+    }
+    pdf(
+      file = path,
+      onefile = TRUE,
+      paper = page_size$paper,
+      width = page_size$width,
+      height = page_size$height
+    )
     print(plt_list$plt)
     dev.off()
   } else {

@@ -297,3 +297,50 @@ mrmhub_style_layer <- function(
   }
   layers
 }
+
+#' Resolve the PDF page size of the paged `plot_*()` functions
+#'
+#' Internal helper turning the `page_width`/`page_height`/`page_units` arguments
+#' of the paged plot functions into the `width`, `height` and `paper` arguments
+#' of [grDevices::pdf()]. When both dimensions are `NULL` the historical A4
+#' defaults are used (280 x 200 mm, keyed on `page_orientation`) together with
+#' the matching `paper` keyword, so output is unchanged. When a custom size is
+#' given, `paper` must be `"special"` -- a `paper` keyword otherwise overrides
+#' `width` and `height` in [grDevices::pdf()].
+#'
+#' @param page_width,page_height Page size in `page_units`, or `NULL` for the
+#'   A4 default. Both must be supplied together.
+#' @param page_units Unit of `page_width`/`page_height`: `"mm"` (default),
+#'   `"cm"`, `"in"` or `"pt"`.
+#' @param page_orientation `"LANDSCAPE"` or `"PORTRAIT"`; used only when the
+#'   default page size applies.
+#' @return A list with `width` and `height` in inches, and `paper`.
+#' @noRd
+resolve_page_size <- function(
+  page_width = NULL,
+  page_height = NULL,
+  page_units = "mm",
+  page_orientation = "LANDSCAPE"
+) {
+  if (is.null(page_width) != is.null(page_height)) {
+    cli::cli_abort(
+      "{.arg page_width} and {.arg page_height} must both be given, or both be {.code NULL}."
+    )
+  }
+
+  if (is.null(page_width)) {
+    landscape <- identical(page_orientation, "LANDSCAPE")
+    return(list(
+      width = if (landscape) 28 / 2.54 else 20 / 2.54,
+      height = if (landscape) 20 / 2.54 else 28 / 2.54,
+      paper = if (landscape) "A4r" else "A4"
+    ))
+  }
+
+  page_units <- rlang::arg_match(page_units, c("mm", "cm", "in", "pt"))
+  list(
+    width = convert_to_inches(page_width, page_units, dpi = NA, arg = "page_width"),
+    height = convert_to_inches(page_height, page_units, dpi = NA, arg = "page_height"),
+    paper = "special"
+  )
+}

@@ -10,7 +10,8 @@
 #' @importFrom fs is_dir path_tidy file_exists dir_ls
 #' @importFrom ggplot2 ggplot aes Stat unit geom_point geom_line geom_abline margin coord_flip geom_text geom_bar geom_segment scale_y_discrete scale_x_discrete scale_y_log10 xlab ylab vars theme facet_wrap position_jitter scale_color_manual labs scale_fill_manual theme_light geom_vline geom_rect geom_vline scale_fill_manual scale_shape_manual expand_limits geom_smooth geom_hline scale_y_continuous element_blank element_text theme_bw stat_ellipse element_rect element_line expansion scale_x_continuous geom_boxplot ggtitle position_dodge
 #' @importFrom glue glue
-#' @importFrom grDevices pdf dev.off dev.flush
+#' @importFrom grDevices pdf svg png tiff jpeg dev.off dev.flush
+#' @importFrom lifecycle deprecated
 #' @importFrom methods is validObject
 #' @importFrom purrr map_dfr map
 #' @importFrom rlang .data ensym sym := arg_match is_na are_na caller_env check_installed

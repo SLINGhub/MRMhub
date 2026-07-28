@@ -90,3 +90,48 @@ test_that("legend_size with multiple merged aesthetics emits no override.aes war
     height = 3
   ))
 })
+
+# --- resolve_page_size -------------------------------------------------------
+
+test_that("resolve_page_size keeps the historical A4 defaults", {
+  landscape <- resolve_page_size(page_orientation = "LANDSCAPE")
+  expect_equal(landscape$width, 28 / 2.54)
+  expect_equal(landscape$height, 20 / 2.54)
+  expect_equal(landscape$paper, "A4r")
+
+  portrait <- resolve_page_size(page_orientation = "PORTRAIT")
+  expect_equal(portrait$width, 20 / 2.54)
+  expect_equal(portrait$height, 28 / 2.54)
+  expect_equal(portrait$paper, "A4")
+})
+
+test_that("resolve_page_size converts a custom size and switches paper", {
+  # `paper` must become "special", otherwise grDevices::pdf() ignores the size
+  mm <- resolve_page_size(180, 240)
+  expect_equal(mm$width, 180 / 25.4)
+  expect_equal(mm$height, 240 / 25.4)
+  expect_equal(mm$paper, "special")
+
+  expect_equal(resolve_page_size(10, 8, "in")$width, 10)
+  expect_equal(resolve_page_size(720, 360, "pt")$height, 5)
+})
+
+test_that("resolve_page_size ignores orientation once a size is given", {
+  a <- resolve_page_size(180, 240, "mm", "LANDSCAPE")
+  b <- resolve_page_size(180, 240, "mm", "PORTRAIT")
+  expect_equal(a, b)
+})
+
+test_that("resolve_page_size requires both dimensions", {
+  expect_error(resolve_page_size(page_width = 180), "must both be given")
+  expect_error(resolve_page_size(page_height = 240), "must both be given")
+})
+
+test_that("resolve_page_size rejects unsupported units and sizes", {
+  expect_error(resolve_page_size(180, 240, "px"))
+  expect_error(resolve_page_size(-5, 240, "mm"), "single positive number")
+})
+
+test_that("resolve_page_size defaults to mm", {
+  expect_equal(resolve_page_size(180, 240), resolve_page_size(180, 240, "mm"))
+})

@@ -78,13 +78,33 @@ previously described QC-based drift correction methods, such as **QC-RSC
 See the tutorial [Drift and batch correction](tutorial-04-drift-correction.html) for more information
 on how to use these functions and plot the results.
 
-## Batch-effect correction (centering)
+## Batch-effect correction
 
-`MRMhub` currently supports median centering-based batch correction
-`correct_batch_centering()`, whereby the scale of the batches can
-optionally also be normalized. The selected QC types (`ref_qc_types`)
-are used to calculate the medians, which are then used to align all
-other samples.
+`MRMhub` provides three batch-correction methods. Batch correction is applied
+after normalization and, where used, drift correction.
+
+- **Median centering** (`correct_batch_centering()`) aligns the per-batch medians
+  of the selected QC types (`ref_qc_types`), following the QC-based paradigm
+  [@broadhurst2018GuidelinesConsiderationsUse]; the scale of the batches can
+  optionally also be equalized. This is the default, most robust choice.
+- **ComBat** (`correct_batch_combat()`) applies the empirical-Bayes location and
+  scale model of @johnson2007AdjustingBatchEffects, shrinking the batch estimates
+  across features. Unlike the other two methods, ComBat estimates batch effects
+  from all samples rather than from the reference QCs; supply `covariates` to
+  protect biological signal on unbalanced designs.
+- **SERRF** (`correct_batch_serrf()`) removes systematic error with per-feature
+  random forests trained on the reference QCs, using each feature's most
+  correlated features as predictors [@fan2019SystematicErrorRemoval]. It captures
+  non-linear batch and drift effects jointly and is best suited to larger panels
+  with dense QC coverage.
+
+::: {.callout .callout-caution}
+`correct_batch_combat()` and `correct_batch_serrf()` are **experimental**. ComBat
+requires the optional `sva` package and SERRF the optional `ranger` package. The
+SERRF implementation adapts the reference code in the `malbacR` package
+[@leach2023MalbacRPackage]; validate results against the reference implementation
+for your data.
+:::
 
 See the tutorial [Drift and batch correction](tutorial-04-drift-correction.html) for more information.
 

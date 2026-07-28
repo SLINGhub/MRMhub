@@ -1660,182 +1660,23 @@ correct_batch_centering <- function(
   replace_exisiting_trendcurves = FALSE,
   ...
 ) {
-  check_data(data)
-
-  if (!all(ref_qc_types %in% unique(data@dataset$qc_type))) {
-    cli::cli_abort(
-      "One or more specified `qc_types` are not present in the dataset. Please verify data or analysis metadata."
-    )
-  }
-
   if (!log_transform_internal && correct_scale) {
     cli_abort(
       "Currently data must be log-transformed for batch scaling. Please set `log_transform_internal = TRUE`"
     )
   }
 
-  variable_strip <- str_remove(variable, "feature_")
-  rlang::arg_match(variable_strip, c("intensity", "norm_intensity", "conc"))
-  variable <- stringr::str_c("feature_", variable_strip)
-  variable_sym <- rlang::sym(variable)
-  variable_raw <- paste0(variable, "_raw")
-  variable_before <- paste0(variable, "_before")
-  variable_before_sym <- rlang::sym(variable_before)
-  variable_fit <- paste0(variable_before, "_fit")
-  variable_raw_fit <- paste0(variable_raw, "_fit")
-  variable_fit_sym <- rlang::sym(variable_fit)
-  variable_raw_fit_sym <- rlang::sym(variable_raw_fit)
-  variable_fit_after <- paste0(variable, "_fit_after")
-  variable_fit_after_sym <- rlang::sym(variable_fit_after)
-  variable_smoothed_fit_after <- paste0(variable, "_smoothed_fit_after")
-  variable_smoothed <- paste0(variable, "_smoothed")
+  ctx <- prepare_batch_correction(
+    data,
+    variable,
+    ref_qc_types,
+    feature_list = feature_list,
+    log_transform_internal = log_transform_internal,
+    replace_previous = replace_previous,
+    replace_exisiting_trendcurves = replace_exisiting_trendcurves
+  )
 
-  check_var_in_dataset(data@dataset, variable)
-
-  # start from raw data, previous drift correction will be overwritten
-  # if no drift correction has been applied yet, make a copy of the original (raw) data of the specified variable
-
-  is_first_correction <- FALSE
-
-  if (data@var_drift_corrected[[variable]]) {
-    # Drift-corrected data
-    if (data@var_batch_corrected[[variable]]) {
-      # Drift  AND batch-corrected data
-      if (replace_previous) {
-        mh_warn(
-          "Replacing previous `{variable_strip}` batch correction of drift-corrected data."
-        )
-        # use drift corrected data and apply correction on top, replacing any previous batch correction
-        data@dataset[[variable]] <- data@dataset[[variable_smoothed]]
-        data@dataset[[variable_fit_after]] <- data@dataset[[
-          variable_smoothed_fit_after
-        ]]
-      } else {
-        mh_warn(
-          "Adding batch correction on top of previous `{variable_strip}` drift and batch corrections."
-        )
-        # use main variable (e.g. conc) and add correction on top
-        #data@dataset[[variable]] <- data@dataset[[variable]]
-      }
-    } else {
-      # Drift but NOT batch-corrected data
-      # replace_previous will have no effect as no previous batch correction has beem applied
-
-      data@dataset[[variable_smoothed]] <- data@dataset[[variable]]
-      data@dataset[[variable_smoothed_fit_after]] <- data@dataset[[
-        variable_fit_after
-      ]]
-
-      mh_warn(
-        "Adding batch correction on top of `{variable_strip}` drift-correction."
-      )
-    }
-  } else {
-    # Data is NOT drift corrected
-    if (data@var_batch_corrected[[variable]]) {
-      # Only batch-corrected data (no previous drift correction)
-      if (replace_previous) {
-        mh_warn(
-          "Replacing previous `{variable_strip}` batch correction."
-        )
-        # use drift corrected data and apply correction on top, replacing any previous batch correction
-        data@dataset[[variable]] <- data@dataset[[variable_before]]
-        data@dataset[[variable_fit_after]] <- data@dataset[[variable_fit]]
-      } else {
-        mh_warn(
-          "Adding batch correction on top of previous `{variable_strip}` batch correction."
-        )
-        # use main variable (e.g. conc) and add correction on top
-        #data@dataset[[variable]] <- data@dataset[[variable]]
-      }
-    } else {
-      # Uncorrected data (raw)
-      mh_warn(
-        "Adding batch correction to `{variable_strip}` data."
-      )
-      #Store raw data
-      is_first_correction <- TRUE
-      data@dataset[[variable_raw]] <- data@dataset[[variable]]
-
-      # Use median horizontal lines to indicate fits if data was not drift corrected before
-      data@dataset <- data@dataset |>
-        mutate(
-          !!variable_fit_sym := median(
-            .data[[variable_sym]][.data$qc_type %in% ref_qc_types],
-            na.rm = TRUE
-          ),
-          .by = c("feature_id", "batch_id")
-        )
-      data@dataset[[variable_fit_after]] <- data@dataset[[variable_fit]]
-    }
-  }
-
-  if (replace_exisiting_trendcurves) {
-    data@dataset <- data@dataset |>
-      mutate(
-        !!variable_fit_sym := median(
-          .data[[variable_sym]][.data$qc_type %in% ref_qc_types],
-          na.rm = TRUE
-        ),
-        .by = c("feature_id", "batch_id")
-      )
-    data@dataset[[variable_fit_after]] <- data@dataset[[variable_fit]]
-  }
-
-  ds <- data@dataset |>
-    select(any_of(c(
-      "analysis_id",
-      "feature_id",
-      "qc_type",
-      "batch_id",
-      y_fit_after = variable_fit_after,
-      y = variable
-    )))
-
-  if (!is.null(feature_list)) {
-    if (length(feature_list) == 1) {
-      ds <- ds |>
-        dplyr::filter(stringr::str_detect(.data$feature_id, feature_list))
-      if (nrow(ds) == 0) {
-        cli::cli_abort(
-          "The feature filter set via `feature_list` does not match any feature in the dataset."
-        )
-      }
-    } else {
-      if (!all(feature_list %in% unique(ds$feature_id))) {
-        cli::cli_abort(
-          "One or more feature(s) specified with `feature_list` are not present in the dataset."
-        )
-      }
-
-      ds <- ds |> dplyr::filter(.data$feature_id %in% feature_list)
-    }
-  }
-
-  # Zero/negative values cannot be log-transformed: log10(<=0) gives -Inf/NaN,
-  # which propagates through the centering and silently turns valid rows into
-  # NaN. Set them to NA and report, mirroring the guard in `correct_drift()`.
-  if (log_transform_internal) {
-    count_negative_or_zero <- ds |>
-      group_by(.data$feature_id) |>
-      summarise(count = sum(.data$y <= 0, na.rm = TRUE)) |>
-      filter(.data$count > 0)
-    if (nrow(count_negative_or_zero) > 0) {
-      ds$y[ds$y <= 0] <- NA_real_
-      mh_warn(
-        "{nrow(count_negative_or_zero)} feature(s) contain one or more zero or negative `{variable_strip}` values. Verify your data or use `log_transform_internal = FALSE`."
-      )
-    }
-  }
-
-  nbatches <- length(unique(ds$batch_id))
-  if (nbatches < 2) {
-    cli_abort(
-      "Batch correction was not applied as there is only one batch."
-    )
-  }
-
-  d_res <- ds |>
+  d_res <- ctx$ds |>
     group_by(.data$feature_id) |>
     nest() |>
     mutate(
@@ -1849,137 +1690,11 @@ correct_batch_centering <- function(
     unnest(cols = c("res")) |>
     select(-"data")
 
-  # A batch with no usable reference-QC anchor for a feature is left uncorrected
-  # (originals kept, `was_corrected = FALSE` from `fun_batch.correction`) rather
-  # than NA-wiping valid study samples. Report those feature/batch combinations.
-  # A feature/batch with no data at all for `variable` was not skipped for lack of
-  # a reference-QC anchor -- there was nothing to correct -- so reporting it here
-  # would name the wrong cause. (ISTD concentrations are constant and get NA-ed by
-  # the drift smoothing, which already reports them.)
-  d_uncorrected <- d_res |>
-    dplyr::ungroup() |>
-    dplyr::filter(!.data$was_corrected) |>
-    dplyr::filter(any(!is.na(.data$y)), .by = c("feature_id", "batch_id")) |>
-    dplyr::distinct(.data$feature_id, .data$batch_id)
-  if (nrow(d_uncorrected) > 0) {
-    cli::cli_warn(c(
-      "!" = "{nrow(d_uncorrected)} feature/batch combination{?s} had no usable reference-QC ({.val {ref_qc_types}}) values and {cli::qty(nrow(d_uncorrected))}{?was/were} left uncorrected; original values were kept.",
-      "i" = "Affected feature{?s}: {.val {unique(d_uncorrected$feature_id)}}"
-    ))
-  }
-
-  d_res_sum <- d_res |>
-    group_by(.data$feature_id) |>
-    summarise(
-      cv_before = cv(.data$y[.data$qc_type == "SPL"], na.rm = TRUE),
-      cv_after = cv(.data$y_adj[.data$qc_type == "SPL"], na.rm = TRUE),
-      cv_diff = .data$cv_after - .data$cv_before,
-    ) |>
-    ungroup() |>
-    summarise(
-      cv_before = median(.data$cv_before, na.rm = TRUE),
-      cv_after = median(.data$cv_after, na.rm = TRUE),
-      cv_diff_median = median(.data$cv_diff, na.rm = TRUE),
-      cv_diff_min = format(
-        round(min(.data$cv_diff, na.rm = TRUE), 1),
-        nsmall = 2
-      ),
-      cv_diff_max = format(
-        round(max(.data$cv_diff, na.rm = TRUE), 1),
-        nsmall = 2
-      ),
-      cv_diff_text = format(round(.data$cv_diff_median, 1), nsmall = 1)
-    ) |>
-    ungroup()
-
-  nfeat <- length(unique(d_res$feature_id)) # get_feature_count(data, is_istd = FALSE)
-
-  # Print summary
-  var_names <- case_when(
-    variable_strip == "conc" ~ "concentrations",
-    variable_strip == "norm_intensity" ~ "normalized intensities",
-    variable_strip == "intensity" ~ "intensities"
+  finalize_batch_correction(
+    ctx,
+    d_res,
+    method_phrase = "Batch median-centering"
   )
-
-  if (data@var_drift_corrected[[variable]]) {
-    mh_success(
-      "Batch median-centering of {nbatches} batches was applied to drift-corrected {var_names} of {if_else(all(is.na(feature_list)), 'all', 'the selected')} {nfeat} features."
-    )
-  } else {
-    mh_success(
-      "Batch median-centering of {nbatches} batches was applied to raw {var_names} of {if_else(all(is.na(feature_list)), 'all', 'the selected')} {nfeat} features."
-    )
-  }
-  # Print stats
-
-  text_change <- case_when(
-    round(d_res_sum$cv_after, 2) - round(d_res_sum$cv_before, 2) >= 0.01 ~
-      "increased from",
-    round(d_res_sum$cv_after, 2) - round(d_res_sum$cv_before, 2) <= -0.01 ~
-      "decreased from",
-    round(d_res_sum$cv_after, 2) - round(d_res_sum$cv_before, 2) == 0 ~
-      "remained the same at",
-    TRUE ~ "remained similar at"
-  )
-
-  cli_alert_info(cli::col_grey(
-    "The median per-feature CV change of all features in study samples was {.strong {formatC(d_res_sum$cv_diff_median, format = 'f', digits = 2)}%} (range: {formatC(d_res_sum$cv_diff_min, format = 'f', digits = 2)}% to {formatC(d_res_sum$cv_diff_max, format = 'f', digits = 2)}%; a positive value means the CV increased).  The median CV across all features {.strong {text_change}} {.strong {formatC(d_res_sum$cv_before, format = 'f', digits = 2)}% {ifelse(str_detect(text_change, 'remained'), '',  paste0('to ', formatC(d_res_sum$cv_after, format = 'f', digits = 2),'%'))}}."
-  ))
-
-  # Return data
-
-  data@dataset <- data@dataset |>
-    left_join(
-      d_res |> select(-"y_fit_after"),
-      by = c("analysis_id", "feature_id", "qc_type", "batch_id")
-    ) |>
-    replace_na(list(was_corrected = FALSE)) |>
-    mutate(
-      # Snapshot the pre-correction value and fit BEFORE the main variable is
-      # reassigned. For features not selected via `feature_list`
-      # (was_corrected = FALSE) keep their current values instead of NA-wiping
-      # the _before / _fit_after snapshots.
-      !!variable_raw_fit_sym := if (is_first_correction) {
-        .data[[variable_fit_after]]
-      } else {
-        !!variable_raw_fit_sym
-      },
-      !!variable_before_sym := if_else(
-        .data$was_corrected,
-        .data$y,
-        !!variable_sym
-      ),
-      !!variable_fit_after_sym := if_else(
-        .data$was_corrected,
-        .data$y_fit_after_adj,
-        .data[[variable_fit_after]]
-      ),
-      !!variable_sym := if_else(
-        .data$was_corrected,
-        .data$y_adj,
-        !!variable_sym
-      ),
-      !!variable_fit_sym := .data[[variable_fit]]
-    ) |>
-    select(-"y_adj", -"y_fit_after_adj", -"y", -"was_corrected")
-
-  # Invalidate downstream processed data
-  if (variable == "feature_intensity") {
-    data <- update_after_normalization(data, FALSE)
-  } else if (variable == "feature_norm_intensity") {
-    data <- update_after_quantitation(data, FALSE)
-  }
-
-  data@status_processing <- if (any(data@var_drift_corrected)) {
-    glue::glue("Drift-Batch-corrected {var_names}")
-  } else {
-    glue::glue("Batch-corrected {var_names}")
-  }
-
-  data@var_batch_corrected[[variable]] <- TRUE
-  data@is_filtered <- FALSE
-  data@metrics_qc <- data@metrics_qc[FALSE, ]
-  data
 }
 
 

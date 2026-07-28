@@ -1,15 +1,15 @@
 ---
-title: "Writing pipelines with AI assistants"
+title: "Getting help from an AI assistant"
 output:
   rmarkdown::html_vignette:
     fig_width: 6
     fig_height: 2
 description: |
-  How to use large language models (Claude, ChatGPT, or local models) to help
-  write MRMhub QUANT pipelines -- how to ground them in the real API, and how to
-  verify what they produce.
+  How a lab scientist can use Claude, ChatGPT, or a local model to help plan,
+  write, and troubleshoot MRMhub QUANT workflows -- accurately, and without
+  exposing study data.
 vignette: >
-  %\VignetteIndexEntry{Writing pipelines with AI assistants}
+  %\VignetteIndexEntry{Getting help from an AI assistant}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 editor_options:
@@ -23,192 +23,202 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>", eval = FALSE)
 
 <p class="page-kind page-kind-manual">Manual</p>
 
-## Audience
+## Who this is for
 
-This article is for analysts who want to use a large language model (LLM) --
-Claude, ChatGPT, or a locally hosted model -- as an assistant when writing
-MRMhub QUANT analysis code in R. It explains how to give the model an accurate
-picture of the package, and how to check the code it returns.
+You run targeted MS assays and have a chat assistant open -- Claude Desktop,
+ChatGPT, or a model running on your own machine -- and you would like it to help
+with the analysis in MRMhub QUANT. You may write a little R, or none at all.
 
-It assumes familiarity with the basic workflow. To process data directly, start
-with [Your first analysis](tutorial-00-first-analysis.html).
+An assistant can genuinely help here, but only if you set it up correctly. Out
+of the box it has read very little about a specialised, young package like
+MRMhub, so it tends to guess. This page shows the everyday tasks it is good at,
+the one step that makes its answers reliable, and the two rules that keep your
+results and your data safe. If you have never run the package by hand, start
+with [Your first analysis](tutorial-00-first-analysis.html) so you have a
+baseline to compare against.
 
-## The problem: a specialised package the model has not memorised
+## What it can -- and cannot -- do for you
 
-General-purpose LLMs are trained on large volumes of common R code, but `mrmhub`
-is a specialised, comparatively young package. A model asked to "write an MRMhub
-pipeline" from memory alone tends to fail in two characteristic ways:
+An assistant is a fast, patient explainer and a first-draft writer. It is not a
+substitute for running the analysis or for your own judgement.
 
-- **Invented function names.** The model produces plausible-sounding calls that
-  do not exist -- `normalize()` in place of `normalize_by_istd()`, or a single
-  `run_pipeline()` that was never written. The names look right and the code
-  will not run.
-- **Ignored conventions.** MRMhub has a load-bearing design: every processing
-  function takes an `MRMhubExperiment` and returns a modified one
-  (`mexp -> mexp`), and the steps follow a recommended order. A model unaware of
-  this may pass bare data frames, reorder steps, or fit drift corrections on
-  study samples rather than QC samples.
+**Good at**
 
-Both problems have the same cause -- the model is guessing rather than reading
--- and the same remedy: give it the package's own reference material as context.
+- Explaining a step or a concept in plain language ("why is drift correction
+  fitted on QC samples only?").
+- Drafting R code for your workflow, which you then run.
+- Reading an R error message and suggesting a fix.
+- Helping you plan an analysis from a description of your samples and standards.
 
-## What MRMhub provides for an LLM
+**Not able to**
 
-The pkgdown documentation site publishes, alongside the human-facing HTML, a set
-of machine-readable files intended for exactly this purpose. They are generated
-automatically on every site build and require no setup:
+- Run your data or check that the numbers are right -- only you can do that.
+- Guarantee the code is correct; it can produce plausible code that fails.
+- Know MRMhub's functions reliably unless you show it the package's own
+  documentation first.
 
-- **An `llms.txt` index** --
-  <https://slinghub.github.io/MRMhub/quant/llms.txt>. This follows the
-  [llms.txt](https://llmstxt.org/) convention: a single Markdown file with a
-  short package overview followed by grouped links to every exported function and
-  every article. It is a compact map of the entire API in one file.
-- **A Markdown mirror of every page.** Each reference and article page is also
-  published as plain Markdown -- for example
-  <https://slinghub.github.io/MRMhub/quant/reference/normalize_by_istd.md>.
-  These carry the full argument list and description without the navigation,
-  styling, and inline SVG of the rendered HTML, which a model would otherwise
-  have to parse and partly discard.
+That last point is the one worth acting on, and it is easy.
 
-Feeding these to the model turns it from guessing to reading: it can see which
-functions exist and what arguments they take.
+## Make its answers accurate: show it the package's own docs
 
-## Three ways to provide the context
+Left to memory, an assistant invents function names that sound right but do not
+exist -- `normalize()` instead of `normalize_by_istd()`, or a single
+`run_pipeline()` that was never written. The fix is to give it the package's real
+reference and tell it to use only what it finds there.
 
-### 1. Paste it in (any assistant, no setup)
+MRMhub publishes a compact map of its entire interface as a single file, built
+automatically with the documentation site:
 
-The most portable approach works with any chat interface. Open the `llms.txt`
-URL, copy its contents, and paste it into the conversation with an instruction
-to use only what it contains. When the exact arguments of a function matter,
-follow the link to that function's `.md` page and paste that too.
+<https://slinghub.github.io/MRMhub/quant/llms.txt>
 
-A prompt template:
+Open that link, copy the contents into your chat, and start with an instruction
+like this:
 
 ```text
-I am writing an analysis in R using the package `mrmhub`. Below is the
-package's API index. Use ONLY functions that appear in it -- if you are
+I am analysing targeted MS data in R with the package mrmhub. Below is the
+package's function reference. Use ONLY functions that appear in it. If you are
 unsure a function exists, say so rather than inventing one.
 
-<paste the contents of https://slinghub.github.io/MRMhub/quant/llms.txt>
-
-Task: write a script that imports MassHunter data, normalises by internal
-standard, corrects for signal drift, quantifies against a calibration curve,
-computes QC metrics, filters features, and writes an Excel report. Keep the
-`mexp <- f(mexp, ...)` pattern for every step.
+<paste the contents of https://slinghub.github.io/MRMhub/quant/llms.txt here>
 ```
 
-### 2. Let the assistant fetch it (browsing-capable models)
+If your assistant can browse the web -- Claude with web access, ChatGPT with
+browsing -- you can skip the copy-and-paste and simply give it the link, asking
+it to read that page and follow the links to individual function pages as needed.
 
-Assistants that can retrieve web pages -- Claude with web access, ChatGPT with
-browsing, Perplexity, and similar -- need only the URL. Give them the `llms.txt`
-address and ask them to read it and follow the links to individual reference
-pages as needed. This avoids copy-and-paste and lets the model pull the exact
-page for each function it uses.
+## Common tasks
 
-### 3. Agentic and local tools
+Each task below is a short prompt you can adapt. Paste the reference first (or set
+it up once, further down) so the assistant is working from the real interface.
 
-Coding assistants that operate on a project -- Claude Code, Cursor, Continue,
-and comparable tools, including those backed by a local model through Ollama --
-can take `llms.txt` and the `.md` reference pages as a knowledge source, so the
-generated code is grounded in the real API as it is written.
+### Understand a step
 
-Local models deserve a note of caution: a smaller model running on a
-workstation has memorised even less of a niche package than a large hosted one,
-so it is *more* dependent on being given this context, not less. Provide the
-reference material explicitly and keep the requested task narrow.
+```text
+In one short paragraph, explain what correct_drift_loess() does and why drift
+and batch corrections in mrmhub are fitted on QC samples, not study samples.
+```
 
-### What about just the GitHub link?
+### Draft a script for your workflow
 
-A natural shortcut is to give the assistant the repository URL
-(<https://github.com/SLINGhub/MRMhub>) instead. Whether this works depends on
-the tool. A repository-aware or agentic tool (option 3) reads the actual source,
-roxygen documentation included, so the repository -- or a local clone -- is an
-excellent starting point. A browsing chat assistant (option 2), by contrast,
-typically fetches only the rendered README and the top-level file listing in a
-single request; it does not read every source file, so it sees a handful of
-functions rather than the full API, and the repository also mixes in the
-INTEGRATOR sources and the documentation sites. For that reason `llms.txt`
-remains the better single entry point for chat assistants -- one request yields
-the complete, curated API map. Supplying both the `llms.txt` URL and the
-repository link covers either kind of tool.
+Ask for a complete script, and insist it keep MRMhub's core pattern: every
+processing step takes an `MRMhubExperiment` and returns an updated one.
 
-## A worked example
+```text
+Write an R script using mrmhub that imports my data, normalises by internal
+standard, corrects signal drift, quantifies against calibration curves,
+computes QC metrics, filters failing features, and writes an Excel report.
+Keep the mexp <- f(mexp, ...) pattern for every step, in recommended order.
+```
 
-Grounded in the API index, a model should produce a script that uses real
-function names and respects the pipeline order. The result for the task above
-looks like the following -- which is also a useful template to write by hand:
+A grounded assistant should return real function names in the right order. The
+runnable core looks like the block below; it imports the bundled demo so it works
+as is, and you would swap in your own file:
 
 ```{r}
 library(mrmhub)
 
-# Import analytical data and its embedded metadata
-mexp <- MRMhubExperiment(title = "Example assay")
-mexp <- import_data_masshunter(mexp, path = "data.csv", import_metadata = TRUE)
+# Bundled demo file, so this runs as written; use your own file instead
+demo <- system.file("extdata", "MRMhub_demo.tsv", package = "mrmhub")
 
-# Normalise each feature by its internal standard
+mexp <- MRMhubExperiment()
+mexp <- import_data_mrmhub(mexp, path = demo, import_metadata = TRUE)
+
+# Normalise each feature by its internal standard -> feature_norm_intensity
 mexp <- normalize_by_istd(mexp)
-
-# Correct within-run signal drift (fitted on QC samples only)
-mexp <- correct_drift_loess(mexp, variable = "norm_intensity")
-
-# Quantify against calibration curves
-mexp <- quantify_by_calibration(mexp)
-
-# Compute QC metrics, then filter features that fail them
-mexp <- calc_qc_metrics(mexp)
-mexp <- filter_features_qc(mexp)
 
 # Write the multi-sheet Excel report
 save_report_xlsx(mexp, path = "results.xlsx")
 ```
 
-Every call here follows the `mexp -> mexp` pattern, and the order matches the
-recommended pipeline. That is what the context makes possible; it is not
-guaranteed. The next section is how to confirm it.
+From that base, ask the assistant to add drift correction, calibration, QC
+metrics, and filtering for your own data; the full pipeline and its order are laid
+out in [Basic MRMhub workflow](tutorial-02-basic-workflow.html).
 
-## Do not trust -- verify
+### Explain and fix an error
 
-Grounding reduces errors but does not eliminate them. Treat generated code as a
-draft to be checked, never as an answer to be trusted.
+Paste the error together with the line that produced it -- the assistant reads
+both far better than a description.
+
+```text
+Running this line: mexp <- normalize_by_istd(mexp)
+I get this error: <paste the exact error message>
+What does it mean, and how do I fix it?
+```
+
+### Choose or understand a parameter
+
+Point it at that function's reference page, published alongside the map above (for
+example `.../quant/reference/filter_features_qc.md`), and ask what an argument
+controls and how to set it for your assay.
+
+### Plan the analysis
+
+```text
+My samples are plasma extracts with stable-isotope-labelled internal standards
+and a 7-point external calibration curve. Which mrmhub steps apply, in what
+order, and where do QC samples come in?
+```
+
+## Set it up once
+
+If you use the assistant regularly, load the reference once instead of pasting it
+into every chat. In **Claude**, create a Project and add the `llms.txt` file (and
+a manual page or two) to its knowledge. In **ChatGPT**, do the same with a Project
+or a custom GPT, attaching the same files as knowledge. Every conversation in that
+Project is then grounded in the real interface from the start.
+
+## The no-code shortcut: `build_workflow()`
+
+If you would rather not write R at all, the package gives the assistant a head
+start. `build_workflow()` opens an interactive application: you point it at your
+data and metadata, tick the processing steps you want, and it validates your
+inputs and generates a correct, runnable Quarto (`.qmd`) workflow to download (see
+[Build a workflow without code](tutorial-12-workflow-builder.html)).
+
+Handing that generated script to an assistant -- to explain a step, or to adjust
+one part -- is far safer than asking it to write a pipeline from nothing, because
+it starts from something already valid.
+
+## Two rules you cannot skip
 
 ::: {.callout .callout-caution}
-**Verify every AI-generated pipeline before relying on its results.**
+**Verify every AI-generated pipeline before trusting its results.**
 
-- **Run it on data you understand** -- the bundled demo dataset is ideal
-  (`system.file("extdata", "MRMhub_demo.tsv", package = "mrmhub")`). Read the
-  errors; a hallucinated function surfaces immediately as "could not find
-  function".
+- **Run it on data you understand** first -- the bundled demo
+  (`system.file("extdata", "MRMhub_demo.tsv", package = "mrmhub")`) is ideal. A
+  made-up function fails immediately as "could not find function".
 - **Cross-check every function name** against the
-  [function reference](../reference/index.html). If a call is not listed there,
-  it does not exist -- regardless of how convincing it looks.
-- **Confirm the step order** matches the recommended pipeline and that drift and
-  batch corrections are fitted on QC samples, not study samples. See
-  [Design decisions](manual-03-design-decisions.html) for why the order and the
-  QC-only rule matter.
-- **Inspect the numbers**, not just that the script runs without error. A
-  pipeline can complete and still be wrong -- the wrong normalisation, the wrong
-  calibration model. Sanity-check against QC plots and metrics.
+  [function reference](../reference/index.html). If a call is not listed there, it
+  does not exist, however convincing it looks.
+- **Confirm the step order** and that drift and batch corrections are fitted on QC
+  samples, not study samples. See
+  [Design decisions](manual-03-design-decisions.html) for why this matters.
+- **Inspect the numbers**, not just that the script ran. A pipeline can complete
+  and still be wrong. Sanity-check against QC plots and metrics.
 :::
-
-`build_workflow()` offers a complementary starting point: it launches an
-interactive application that validates your data and metadata, warns about
-pipeline mismatches, and generates a correct, runnable Quarto (`.qmd`) workflow.
-Handing that generated script to an assistant as a base -- rather than asking it
-to write one from nothing -- gives the model a scaffold that is already valid.
-
-## Data privacy
 
 ::: {.callout .callout-caution}
-**Do not paste study data into a cloud LLM.** Sample intensities, subject
-metadata, and unpublished results sent to a hosted assistant leave your control
-and may be retained or used by the provider. Share *code and the API map* --
-`llms.txt`, reference pages, and function calls -- not the measurements
-themselves. When the data cannot leave the machine, use a locally hosted model,
-which keeps everything on-device.
+**Do not paste study data into a cloud assistant.** Sample intensities, subject
+metadata, and unpublished results sent to a hosted service leave your control and
+may be retained. Share *code and the function map* -- `llms.txt`, reference pages,
+and the function calls themselves -- never the measurements. When the data must
+stay on the machine, use a locally hosted model, which keeps everything
+on-device.
 :::
 
-## Next Steps
+## Going further
 
-- [Design decisions](manual-03-design-decisions.html): the conventions an assistant must respect: the `mexp -> mexp` pattern and the pipeline order
-- [Key concepts & glossary](manual-01-key-concepts.html): the data model and terminology to give the model (and yourself) a shared vocabulary
-- [Your first analysis](tutorial-00-first-analysis.html): a hand-written baseline pipeline to compare generated code against
+More capable tooling exists for those who want it. Agentic coding assistants such
+as Claude Code and Cursor operate directly on a project folder and can read the
+package source as they write. Claude Desktop can connect to your files through an
+MCP connector, though their contents then reach the provider like any other
+message. Locally hosted models (through Ollama or LM Studio) keep everything
+on-device, but a smaller local model has memorised even less of a niche package,
+so it depends *more* on being shown the reference, not less. Whichever you use,
+the two rules above still apply.
+
+## Next steps
+
+- [Design decisions](manual-03-design-decisions.html): the conventions an assistant must respect -- the `mexp -> mexp` pattern and the pipeline order
+- [Key concepts and glossary](manual-01-key-concepts.html): the data model and terms to share with the assistant
+- [Your first analysis](tutorial-00-first-analysis.html): a hand-run baseline to compare generated code against

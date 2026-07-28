@@ -92,12 +92,17 @@
 #' @param cols_page Number of plot columns. Default is 5.
 #' @param specific_page Show/save a specific page number only. `NA` plots/saves all pages.
 #' @param page_orientation Orientation of PDF, either `"LANDSCAPE"` or
-#'   `"PORTRAIT"`. Default is `"LANDSCAPE"`.
+#'   `"PORTRAIT"`. Default is `"LANDSCAPE"`. Ignored when `page_width` and
+#'   `page_height` are given.
 #' @param show_progress Logical. If `TRUE`, displays a progress bar during
 #'   plot creation.
 #'
+#' @template page_size
+#' @template plot_devices
+#'
 #' @return A list of `ggplot` objects if `return_plots = TRUE`, otherwise
 #'   `NULL` (the plots are drawn to the active device or written to a PDF).
+#' @seealso [save_plot()] to save a single figure in any format.
 #' @family calibration plots
 #' @export
 plot_calibrationcurves <- function(
@@ -132,6 +137,9 @@ plot_calibrationcurves <- function(
   cols_page = 5,
   specific_page = NA,
   page_orientation = "LANDSCAPE",
+  page_width = NULL,
+  page_height = NULL,
+  page_units = "mm",
   # Progress bar settings
   show_progress = TRUE
 ) {
@@ -139,6 +147,12 @@ plot_calibrationcurves <- function(
   font_base_size <- resolve_plot_opt(font_base_size, "font_base_size", 8)
   point_size <- resolve_plot_opt(point_size, "point_size", 1.5)
   rlang::arg_match(page_orientation, c("LANDSCAPE", "PORTRAIT"))
+  page_size <- resolve_page_size(
+    page_width,
+    page_height,
+    page_units,
+    page_orientation
+  )
 
   variable_strip <- str_remove(variable, "feature_")
   rlang::arg_match(
@@ -532,25 +546,14 @@ plot_calibrationcurves <- function(
       paste0(path, ".pdf")
     )
     ensure_output_dir(path, create_dir)
-    if (page_orientation == "LANDSCAPE") {
-      pdf(
-        file = path,
-        onefile = TRUE,
-        paper = "A4r",
-        useDingbats = FALSE,
-        width = 28 / 2.54,
-        height = 20 / 2.54
-      )
-    } else {
-      pdf(
-        file = path,
-        onefile = TRUE,
-        paper = "A4",
-        useDingbats = FALSE,
-        height = 28 / 2.54,
-        width = 20 / 2.54
-      )
-    }
+    pdf(
+      file = path,
+      onefile = TRUE,
+      paper = page_size$paper,
+      useDingbats = FALSE,
+      width = page_size$width,
+      height = page_size$height
+    )
   } # nocov end
 
   # Determine the range of pages to generate

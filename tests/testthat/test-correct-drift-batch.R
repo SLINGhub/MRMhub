@@ -2453,3 +2453,77 @@ test_that("correct_drift() fails friendly on an invalid smooth_fun", {
     "must be a smoothing function"
   )
 })
+
+
+test_that("correct_batch_combat corrects and stays workflow-compatible", {
+  skip_if_not_installed("sva")
+
+  expect_message(
+    mexp_cb <- suppressWarnings(correct_batch_combat(
+      mexp,
+      variable = "conc",
+      ref_qc_types = "BQC"
+    )),
+    "ComBat batch correction of 6 batches was applied to raw concentrations of all 29 features",
+    fixed = TRUE
+  )
+
+  # status flag flipped and QC metrics invalidated -> pipeline-compatible
+  expect_true(mexp_cb@var_batch_corrected[["feature_conc"]])
+  expect_false(mexp_cb@is_filtered)
+  expect_equal(nrow(mexp_cb@metrics_qc), 0L)
+
+  # snapshot columns are populated so plot_runscatter() keeps working
+  expect_true(all(
+    c("feature_conc_before", "feature_conc_before_fit") %in%
+      colnames(mexp_cb@dataset)
+  ))
+
+  # downstream QC metric calculation runs on the corrected object
+  expect_no_error(suppressMessages(calc_qc_metrics(mexp_cb)))
+})
+
+test_that("correct_batch_serrf corrects, is reproducible, workflow-compatible", {
+  skip_if_not_installed("ranger")
+
+  expect_message(
+    mexp_sr <- suppressWarnings(correct_batch_serrf(
+      mexp,
+      variable = "conc",
+      ref_qc_types = "BQC",
+      seed = 1L
+    )),
+    "SERRF normalization of 6 batches was applied to raw concentrations of all 29 features",
+    fixed = TRUE
+  )
+
+  expect_true(mexp_sr@var_batch_corrected[["feature_conc"]])
+  expect_false(mexp_sr@is_filtered)
+
+  # a fixed seed makes the random forests reproducible
+  mexp_sr2 <- suppressWarnings(suppressMessages(correct_batch_serrf(
+    mexp,
+    variable = "conc",
+    ref_qc_types = "BQC",
+    seed = 1L
+  )))
+  expect_equal(mexp_sr@dataset$feature_conc, mexp_sr2@dataset$feature_conc)
+
+  expect_no_error(suppressMessages(calc_qc_metrics(mexp_sr)))
+})
+
+test_that("model-based batch methods abort on a single batch", {
+  skip_if_not_installed("sva")
+
+  mexp_1b <- mexp
+  mexp_1b@dataset$batch_id <- "1"
+  expect_error(
+    suppressMessages(correct_batch_combat(
+      mexp_1b,
+      variable = "conc",
+      ref_qc_types = "BQC"
+    )),
+    "only one batch",
+    fixed = TRUE
+  )
+})

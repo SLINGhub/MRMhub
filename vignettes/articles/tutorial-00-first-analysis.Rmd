@@ -81,12 +81,18 @@ get_featurelist(mexp)      # the measured features
 
 ## 3. Export the results
 
-Write the processed data to a multi-sheet Excel report, or to a single tidy CSV:
+Write the processed data to a multi-sheet Excel report, or to a single tidy CSV. Figures are saved
+the same way, at a size you specify (in mm by default):
 
 ```{r export}
 #| eval: false
 save_report_xlsx(mexp, path = "my_first_results.xlsx")
 save_dataset_csv(mexp, path = "my_first_results.csv")
+
+save_plot(
+  plot_pca(mexp, variable = "norm_intensity"),
+  path = "my_first_pca.pdf", width = 180, height = 120
+)
 ```
 
 ## Next steps
@@ -95,4 +101,6 @@ save_dataset_csv(mexp, path = "my_first_results.csv")
 - [Preparing and importing data](tutorial-01-prep-data.html): import your own data and metadata
 - [Basic MRMhub workflow](tutorial-02-basic-workflow.html): the full end-to-end pipeline
 - [Lipidomics data processing](tutorial-03-lipidomics-workflow.html): a detailed real-world workflow
+- [Visualisation functions](manual-08-visualization.html): the QC plots, and saving figures at a defined size
 - [Customising plots](manual-13-plot-customization.html): size text, legends and points for reports
+- [Getting help from an AI assistant](manual-09-ai-assistants.html): use Claude or ChatGPT to help write and troubleshoot your workflow, accurately and safely

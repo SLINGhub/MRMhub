@@ -1,3 +1,32 @@
+# mrmhub 0.9.9 (development)
+
+* **New `save_plot()`**: writes any plot from a `plot_*()` function to a file at
+  a defined physical size and resolution, replacing hand-written
+  `ggplot2::ggsave()` calls. Sizes are given in `mm` (default), `cm`, `in`, `pt`
+  or `px`; formats are `pdf`, `svg`, `png`, `tiff` and `jpeg`, taken from the
+  file extension or from an explicit `format`, which may name several formats to
+  write in one call. It accepts a `ggplot`, a `patchwork` composition, the result
+  list of `plot_rla_boxplot()`, and a list of plots, which becomes a multi-page
+  PDF. The optional `ragg` and `svglite` packages are used automatically when
+  installed, with a `grDevices` fallback otherwise.
+
+* **Page size on the paged plot functions**: `plot_runscatter()`,
+  `plot_calibrationcurves()`, `plot_responsecurves()` and
+  `plot_feature_correlations()` gain `page_width`, `page_height` and
+  `page_units`, replacing the previously hardcoded 28 x 20 cm A4 page. Left
+  unset, the A4 default and `page_orientation` behave exactly as before.
+
+* **`mrmhub_set_plot_defaults()`** gains `units` and `dpi`, so the unit and
+  resolution used by `save_plot()` can be set once for a whole notebook. Figure
+  width and height remain explicit at each call.
+
+* **New batch-correction methods (experimental)**: `correct_batch_combat()`
+  applies empirical-Bayes ComBat (Johnson et al. 2007, via the optional `sva`
+  package) and `correct_batch_serrf()` applies SERRF random-forest normalization
+  (Fan et al. 2019, via the optional `ranger` package), complementing the
+  existing `correct_batch_centering()`. All three now share the same
+  correction scaffolding.
+
 # mrmhub 0.9.8
 
 This release focuses on usability, robustness, and new analysis capabilities.

@@ -36,6 +36,9 @@ plot_calibrationcurves(
   cols_page = 5,
   specific_page = NA,
   page_orientation = "LANDSCAPE",
+  page_width = NULL,
+  page_height = NULL,
+  page_units = "mm",
   show_progress = TRUE
 )
 }
@@ -146,7 +149,16 @@ plots, or the per-plot default shown in the Usage section above).}
 \item{specific_page}{Show/save a specific page number only. \code{NA} plots/saves all pages.}
 
 \item{page_orientation}{Orientation of PDF, either \code{"LANDSCAPE"} or
-\code{"PORTRAIT"}. Default is \code{"LANDSCAPE"}.}
+\code{"PORTRAIT"}. Default is \code{"LANDSCAPE"}. Ignored when \code{page_width} and
+\code{page_height} are given.}
+
+\item{page_width, page_height}{Size of a PDF page, in \code{page_units}. Both must
+be given together. \code{NULL} (default) uses an A4 page of 280 x 200 mm,
+oriented by \code{page_orientation}. When an explicit size is given,
+\code{page_orientation} has no effect.}
+
+\item{page_units}{Unit of \code{page_width} and \code{page_height}: \code{"mm"} (default),
+\code{"cm"}, \code{"in"} or \code{"pt"}.}
 
 \item{show_progress}{Logical. If \code{TRUE}, displays a progress bar during
 plot creation.}
@@ -175,7 +187,41 @@ both direct plotting within R and saving plots as PDF files. Additionally,
 plots can be returned as a list of ggplot2 objects for further manipulation
 or integration into other analyses.
 }
+\section{Preferred formats and devices}{
+\tabular{llll}{
+   Purpose \tab Format \tab Device used \tab Typical \code{dpi} \cr
+   Journal figure, vector (default choice) \tab \code{"pdf"} \tab \code{grDevices::pdf(useDingbats = FALSE)} \tab n/a \cr
+   Figure for further editing (Illustrator, Inkscape) \tab \code{"svg"} \tab \code{svglite::svglite}, else \code{grDevices::svg} \tab n/a \cr
+   Slides, Quarto HTML, GitHub \tab \code{"png"} \tab \code{ragg::agg_png}, else \code{grDevices::png} \tab 150-300 \cr
+   Journal requiring raster submission \tab \code{"tiff"} \tab \code{ragg::agg_tiff}, else \code{grDevices::tiff} \tab 300-600 \cr
+}
+
+
+Prefer a \strong{vector} format (\code{pdf}, \code{svg}) for publication: text stays
+selectable and searchable, and lines stay sharp at any magnification.
+
+Prefer a \strong{raster} format (\code{png}, \code{tiff}) when a plot draws very many marks
+-- a \code{\link[=plot_runscatter]{plot_runscatter()}} page covering several thousand analyses, or a dense
+\code{\link[=plot_pca]{plot_pca()}} score plot. Every point becomes a separate object in a PDF, so
+such figures produce very large files that are slow to open and to typeset.
+Saving them at 300-600 dpi instead keeps the file small with no visible loss.
+
+The optional packages \code{ragg} and \code{svglite} are used automatically when
+installed, giving better text rendering, system-font support and smaller SVG
+files. When they are absent the equivalent \code{grDevices} device is used and the
+output is still correct. Installing both is recommended:
+\code{install.packages(c("ragg", "svglite"))}.
+
+Multi-page output from the paged plot functions (\code{\link[=plot_runscatter]{plot_runscatter()}},
+\code{\link[=plot_calibrationcurves]{plot_calibrationcurves()}}, \code{\link[=plot_responsecurves]{plot_responsecurves()}},
+\code{\link[=plot_feature_correlations]{plot_feature_correlations()}}) is PDF only, which is the only format that
+holds many pages in one file. Use \code{\link[=save_plot]{save_plot()}} for single figures in any of
+the other formats.
+}
+
 \seealso{
+\code{\link[=save_plot]{save_plot()}} to save a single figure in any format.
+
 Other calibration plots:
 \code{\link[=plot_responsecurves]{plot_responsecurves()}}
 }

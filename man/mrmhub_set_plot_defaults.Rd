@@ -10,7 +10,9 @@ mrmhub_set_plot_defaults(
   legend_position = NULL,
   legend_size = NULL,
   show_legend_title = NULL,
-  strip_bg_color = NULL
+  strip_bg_color = NULL,
+  units = NULL,
+  dpi = NULL
 )
 }
 \arguments{
@@ -28,6 +30,12 @@ value \verb{<= 3} is a multiplier of \code{font_base_size}, larger values are po
 \item{show_legend_title}{\code{FALSE} hides legend titles.}
 
 \item{strip_bg_color}{Facet strip background fill (strip text auto-contrasts).}
+
+\item{units}{Default unit for the \code{width} and \code{height} of \code{\link[=save_plot]{save_plot()}}:
+\code{"mm"} (the built-in default), \code{"cm"}, \code{"in"}, \code{"pt"} or \code{"px"}.}
+
+\item{dpi}{Default resolution in dots per inch for the raster formats of
+\code{\link[=save_plot]{save_plot()}}. The built-in default is \code{300}.}
 }
 \value{
 Invisibly, a named list of the option values as they were before this
@@ -55,6 +63,6 @@ old <- mrmhub_set_plot_defaults(font_base_size = 8, point_size = 0.8)
 options(old) # restore
 }
 \seealso{
-\code{\link[=mrmhub_reset_plot_defaults]{mrmhub_reset_plot_defaults()}}, \code{\link[=mrmhub_get_plot_defaults]{mrmhub_get_plot_defaults()}} and the
-\code{vignette("manual-13-plot-customization")} article.
+\code{\link[=mrmhub_reset_plot_defaults]{mrmhub_reset_plot_defaults()}}, \code{\link[=mrmhub_get_plot_defaults]{mrmhub_get_plot_defaults()}},
+\code{\link[=save_plot]{save_plot()}} and the \code{vignette("manual-13-plot-customization")} article.
 }

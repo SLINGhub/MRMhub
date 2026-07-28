@@ -76,7 +76,7 @@ get_feature_correlations <- function(tbl, cor_min_neg, cor_min) {
 #' @param specific_page An integer specifying a specific page to plot. If
 #'   `NA` (default), all pages are plotted.
 #' @param page_orientation Orientation of the PDF paper: `"LANDSCAPE"` or
-#'   `"PORTRAIT"`.
+#'   `"PORTRAIT"`. Ignored when `page_width` and `page_height` are given.
 #'
 #' @param point_size A numeric value indicating the size of points in
 #' millimeters. Default is 1.
@@ -91,8 +91,12 @@ get_feature_correlations <- function(tbl, cor_min_neg, cor_min) {
 #' @param show_progress Logical. If `TRUE`, displays a progress bar during
 #'   plot creation.
 #'
+#' @template page_size
+#' @template plot_devices
+#'
 #' @return A `ggplot` object showing scatter plots of highly correlated feature pairs.
 #' Returns `NULL` if no correlations meet the threshold criteria.
+#' @seealso [save_plot()] to save a single figure in any format.
 #' @family QC plots
 #' @export
 
@@ -118,6 +122,9 @@ plot_feature_correlations <- function(
   cols_page = 5,
   specific_page = NA,
   page_orientation = "LANDSCAPE",
+  page_width = NULL,
+  page_height = NULL,
+  page_units = "mm",
   point_size = NULL,
   point_alpha = 0.8,
   point_stroke = 0.3,
@@ -131,6 +138,12 @@ plot_feature_correlations <- function(
   font_base_size <- resolve_plot_opt(font_base_size, "font_base_size", 8)
   point_size <- resolve_plot_opt(point_size, "point_size", 1)
   rlang::arg_match(page_orientation, c("LANDSCAPE", "PORTRAIT"))
+  page_size <- resolve_page_size(
+    page_width,
+    page_height,
+    page_units,
+    page_orientation
+  )
 
   variable <- str_remove(variable, "feature_")
   rlang::arg_match(
@@ -261,25 +274,14 @@ plot_feature_correlations <- function(
       paste0(path, ".pdf")
     )
     ensure_output_dir(path, create_dir)
-    if (page_orientation == "LANDSCAPE") {
-      pdf(
-        file = path,
-        onefile = TRUE,
-        paper = "A4r",
-        useDingbats = FALSE,
-        width = 28 / 2.54,
-        height = 20 / 2.54
-      )
-    } else {
-      pdf(
-        file = path,
-        onefile = TRUE,
-        paper = "A4",
-        useDingbats = FALSE,
-        height = 28 / 2.54,
-        width = 20 / 2.54
-      )
-    }
+    pdf(
+      file = path,
+      onefile = TRUE,
+      paper = page_size$paper,
+      useDingbats = FALSE,
+      width = page_size$width,
+      height = page_size$height
+    )
   } # nocov end
 
   # Determine the range of pages to generate

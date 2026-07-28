@@ -71,14 +71,18 @@
 #' @param specific_page An integer specifying a specific page to plot. If
 #'   `NA` (default), all pages are plotted.
 #' @param page_orientation Orientation of the PDF paper: `"LANDSCAPE"` or
-#'   `"PORTRAIT"`.
+#'   `"PORTRAIT"`. Ignored when `page_width` and `page_height` are given.
 #' @param show_progress Logical. If `TRUE`, displays a progress bar during
 #'   plot creation.
+#'
+#' @template page_size
+#' @template plot_devices
 #'
 #' @return If `return_plots` is `TRUE`, a list of `ggplot` objects is
 #'   returned. Otherwise, the function saves the plot output or does not return
 #'   anything.
 #'
+#' @seealso [save_plot()] to save a single figure in any format.
 #' @family calibration plots
 #' @export
 #'
@@ -123,6 +127,9 @@ plot_responsecurves <- function(
   r2_vstep = 0.06,
   specific_page = NA,
   page_orientation = "LANDSCAPE",
+  page_width = NULL,
+  page_height = NULL,
+  page_units = "mm",
 
   # Progress bar settings
   show_progress = TRUE
@@ -135,6 +142,12 @@ plot_responsecurves <- function(
   # -------------------------------------------
   check_data(data)
   rlang::arg_match(page_orientation, c("LANDSCAPE", "PORTRAIT"))
+  page_size <- resolve_page_size(
+    page_width,
+    page_height,
+    page_units,
+    page_orientation
+  )
 
   .sizes <- mrmhub_autoscale_sizes(
     cols_page,
@@ -262,25 +275,14 @@ plot_responsecurves <- function(
       paste0(path, ".pdf")
     )
     ensure_output_dir(path, create_dir)
-    if (page_orientation == "LANDSCAPE") {
-      pdf(
-        file = path,
-        onefile = TRUE,
-        paper = "A4r",
-        useDingbats = FALSE,
-        width = 28 / 2.54,
-        height = 20 / 2.54
-      )
-    } else {
-      pdf(
-        file = path,
-        onefile = TRUE,
-        paper = "A4",
-        useDingbats = FALSE,
-        height = 28 / 2.54,
-        width = 20 / 2.54
-      )
-    }
+    pdf(
+      file = path,
+      onefile = TRUE,
+      paper = page_size$paper,
+      useDingbats = FALSE,
+      width = page_size$width,
+      height = page_size$height
+    )
   } # nocov end
 
   # Determine the range of pages to generate
