@@ -400,9 +400,11 @@ in, pt, px):
 
 ```{r}
 #| eval: false
-p <- plot_pca(mexp, variable = "norm_intensity", ellipse_variable = "batch_id")
-save_plot(p, "output/pca_batch.pdf", width = 180, height = 120)
+plot_pca(mexp, variable = "norm_intensity", ellipse_variable = "batch_id") |>
+  save_plot("output/pca_batch.pdf", width = 180, height = 120)
 ```
+
+The plot is returned visibly, so the figure still appears in the notebook alongside being saved.
 
 Dense score plots and long run-scatter pages are often better saved as PNG or TIFF than as PDF ---
 see [Saving plots](manual-08-visualization.html#saving-plots).

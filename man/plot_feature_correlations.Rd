@@ -154,7 +154,7 @@ This plot can be used to visually inspect highly correlated features, that may r
 \section{Preferred formats and devices}{
 \tabular{llll}{
    Purpose \tab Format \tab Device used \tab Typical \code{dpi} \cr
-   Journal figure, vector (default choice) \tab \code{"pdf"} \tab \code{grDevices::pdf(useDingbats = FALSE)} \tab n/a \cr
+   Journal figure, vector (default choice) \tab \code{"pdf"} \tab \code{grDevices::cairo_pdf}, else \code{grDevices::pdf} \tab n/a \cr
    Figure for further editing (Illustrator, Inkscape) \tab \code{"svg"} \tab \code{svglite::svglite}, else \code{grDevices::svg} \tab n/a \cr
    Slides, Quarto HTML, GitHub \tab \code{"png"} \tab \code{ragg::agg_png}, else \code{grDevices::png} \tab 150-300 \cr
    Journal requiring raster submission \tab \code{"tiff"} \tab \code{ragg::agg_tiff}, else \code{grDevices::tiff} \tab 300-600 \cr
@@ -175,6 +175,12 @@ installed, giving better text rendering, system-font support and smaller SVG
 files. When they are absent the equivalent \code{grDevices} device is used and the
 output is still correct. Installing both is recommended:
 \code{install.packages(c("ragg", "svglite"))}.
+
+PDF output uses the cairo device wherever R was built with cairo support
+(\code{capabilities("cairo")}), because plain \code{grDevices::pdf()} writes text in a
+single-byte encoding and silently transliterates anything outside it -- an en
+dash becomes \code{-}, \code{>=} replaces the proper symbol. Unit labels such as
+\code{umol/L} and statistical annotations routinely depend on those glyphs.
 
 Multi-page output from the paged plot functions (\code{\link[=plot_runscatter]{plot_runscatter()}},
 \code{\link[=plot_calibrationcurves]{plot_calibrationcurves()}}, \code{\link[=plot_responsecurves]{plot_responsecurves()}},

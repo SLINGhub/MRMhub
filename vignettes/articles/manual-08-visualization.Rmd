@@ -315,20 +315,40 @@ list the formats; each file gets the matching extension.
 save_plot(p, "figures/pca_batch", format = c("pdf", "png"), width = 180, height = 120)
 ```
 
+The plot is returned visibly, so piping into `save_plot()` still renders the figure in the notebook
+and saving needs no separate line:
+
+```{r}
+plot_pca(mexp, variable = "norm_intensity", ellipse_variable = "batch_id") |>
+  save_plot("figures/pca_batch.pdf", width = 180, height = 120)
+```
+
+In a script or a loop, where re-drawing a dense figure is wasted work, `show_plot = FALSE` skips it
+and returns the written paths instead:
+
+```{r}
+paths <- save_plot(p, "figures/pca_batch.pdf", width = 180, height = 120,
+                   show_plot = FALSE)
+```
+
+(With `show_plot = TRUE` the paths are still available, as the `"paths"` attribute of the returned
+plot.)
+
 `save_plot()` also accepts what the plot functions return around a plot: the result list of
 `plot_rla_boxplot()` (it picks up the `plot` element), a `patchwork` composition, and a list of
 plots, which becomes a multi-page PDF.
 
 ```{r}
 pages <- plot_runscatter(mexp, variable = "norm_intensity", return_plots = TRUE)
-save_plot(pages, "figures/runscatter_all.pdf", width = 280, height = 200)
+save_plot(pages, "figures/runscatter_all.pdf", width = 280, height = 200,
+          show_plot = FALSE)
 ```
 
 ### Choosing a format
 
 | Purpose | Format | Device used | Typical `dpi` |
 |---|---|---|---|
-| Journal figure, vector (default choice) | `"pdf"` | `grDevices::pdf()` | n/a |
+| Journal figure, vector (default choice) | `"pdf"` | `grDevices::cairo_pdf`, else `grDevices::pdf` | n/a |
 | Figure for further editing (Illustrator, Inkscape) | `"svg"` | `svglite::svglite`, else `grDevices::svg` | n/a |
 | Slides, Quarto HTML, GitHub | `"png"` | `ragg::agg_png`, else `grDevices::png` | 150--300 |
 | Journal requiring raster submission | `"tiff"` | `ragg::agg_tiff`, else `grDevices::tiff` | 300--600 |
@@ -346,6 +366,11 @@ The optional packages `ragg` and `svglite` are used automatically when installed
 rendering, system-font support and smaller SVG files. Without them the equivalent `grDevices` device
 is used and the output is still correct. Installing both is recommended:
 `install.packages(c("ragg", "svglite"))`.
+
+PDF output uses the cairo device wherever R was built with cairo support, because plain
+`grDevices::pdf()` writes text in a single-byte encoding and silently transliterates anything
+outside it --- an en dash becomes `-`, and `≥` becomes `>=`. Unit labels such as `µmol/L` and
+statistical annotations depend on those glyphs surviving.
 :::
 
 ### Setting the unit and resolution once

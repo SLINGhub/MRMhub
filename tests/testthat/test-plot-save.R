@@ -93,6 +93,41 @@ test_that("resolve_plot_device returns a function for every format", {
   }
 })
 
+test_that("PDF preserves non-ASCII text", {
+  skip_if_not(isTRUE(capabilities("cairo")))
+  skip_if_not_installed("pdftools")
+  # grDevices::pdf() transliterates outside its single-byte encoding: an en dash
+  # becomes "-" and U+2265 becomes ">=". Unit labels and statistical annotations
+  # depend on those glyphs surviving.
+  dir <- withr::local_tempdir()
+  target <- file.path(dir, "unicode.pdf")
+
+  p <- simple_plot() + ggplot2::labs(y = "Conc (µmol/L)")
+  expect_no_warning(suppressMessages(
+    save_plot(p, target, width = 100, height = 80, show_plot = FALSE)
+  ))
+
+  txt <- paste(pdftools::pdf_text(target), collapse = "")
+  expect_match(txt, "µmol/L", fixed = TRUE)
+})
+
+test_that("multi-page PDF also preserves non-ASCII text", {
+  skip_if_not(isTRUE(capabilities("cairo")))
+  skip_if_not_installed("qpdf")
+  dir <- withr::local_tempdir()
+  target <- file.path(dir, "unicode-pages.pdf")
+
+  pages <- list(
+    simple_plot() + ggplot2::labs(y = "Conc (µmol/L)"),
+    simple_plot() + ggplot2::labs(y = "Conc (µmol/L)")
+  )
+  expect_no_warning(suppressMessages(
+    save_plot(pages, target, width = 200, height = 150, show_plot = FALSE)
+  ))
+
+  expect_equal(qpdf::pdf_length(target), 2)
+})
+
 test_that("TIFF is LZW-compressed by default but can be overridden", {
   skip_if_not_installed("ragg")
   # ragg::agg_tiff() writes uncompressed TIFF by default -- tens of MB at
@@ -142,13 +177,59 @@ test_that("save_plot writes a single file and returns its path", {
   target <- file.path(dir, "fig.pdf")
 
   expect_message(
-    out <- save_plot(simple_plot(), target, width = 100, height = 80),
+    out <- save_plot(
+      simple_plot(),
+      target,
+      width = 100,
+      height = 80,
+      show_plot = FALSE
+    ),
     "Saved plot"
   )
 
   expect_equal(out, target)
   expect_true(file.exists(target))
   expect_gt(file.size(target), 0)
+})
+
+test_that("save_plot returns the plot visibly so a piped call still renders", {
+  dir <- withr::local_tempdir()
+  target <- file.path(dir, "shown.pdf")
+
+  res <- withVisible(suppressMessages(
+    save_plot(simple_plot(), target, width = 100, height = 80)
+  ))
+
+  expect_true(res$visible)
+  expect_true(inherits(res$value, "ggplot"))
+  expect_equal(attr(res$value, "paths"), target)
+  # the returned object must still be a printable plot
+  expect_no_error(print(res$value))
+})
+
+test_that("save_plot returns paths invisibly when show_plot = FALSE", {
+  dir <- withr::local_tempdir()
+  target <- file.path(dir, "silent.pdf")
+
+  res <- withVisible(suppressMessages(
+    save_plot(simple_plot(), target, width = 100, height = 80, show_plot = FALSE)
+  ))
+
+  expect_false(res$visible)
+  expect_equal(res$value, target)
+  expect_true(file.exists(target))
+})
+
+test_that("save_plot returns the page list for multi-page output", {
+  dir <- withr::local_tempdir()
+  target <- file.path(dir, "pages.pdf")
+  pages <- list(simple_plot("one"), simple_plot("two"))
+
+  out <- suppressMessages(save_plot(pages, target, width = 200, height = 150))
+
+  expect_type(out, "list")
+  expect_length(out, 2)
+  expect_equal(attr(out, "paths"), target)
 })
 
 test_that("save_plot writes one file per requested format", {
@@ -159,7 +240,8 @@ test_that("save_plot writes one file per requested format", {
     file.path(dir, "fig"),
     format = c("pdf", "png"),
     width = 100,
-    height = 80
+    height = 80,
+    show_plot = FALSE
   ))
 
   expect_equal(basename(out), c("fig.pdf", "fig.png"))

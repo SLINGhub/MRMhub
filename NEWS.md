@@ -7,8 +7,12 @@
   file extension or from an explicit `format`, which may name several formats to
   write in one call. It accepts a `ggplot`, a `patchwork` composition, the result
   list of `plot_rla_boxplot()`, and a list of plots, which becomes a multi-page
-  PDF. The optional `ragg` and `svglite` packages are used automatically when
-  installed, with a `grDevices` fallback otherwise.
+  PDF. The plot is returned visibly, so `plot_*() |> save_plot()` still renders
+  the figure in a Quarto or R Markdown chunk; `show_plot = FALSE` skips the
+  re-draw and returns the written paths instead. The optional `ragg` and
+  `svglite` packages are used automatically when installed, and PDF output uses
+  the cairo device where available so that non-ASCII text (`µmol/L`, en dashes,
+  `≥`) survives; plain `grDevices` devices are the fallback throughout.
 
 * **Page size on the paged plot functions**: `plot_runscatter()`,
   `plot_calibrationcurves()`, `plot_responsecurves()` and

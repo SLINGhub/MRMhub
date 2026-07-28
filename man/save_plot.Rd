@@ -16,6 +16,7 @@ save_plot(
   bg = NULL,
   create_dir = TRUE,
   overwrite = TRUE,
+  show_plot = TRUE,
   ...
 )
 }
@@ -58,10 +59,20 @@ directory of \code{path} is created if it does not yet exist.}
 \item{overwrite}{A logical value indicating whether existing files may be
 overwritten. Default is \code{TRUE}.}
 
+\item{show_plot}{A logical value. If \code{TRUE} (the default), the plot is
+returned \emph{visibly}, so that piping into \code{save_plot()} still renders the
+figure in a Quarto or R Markdown chunk and the call reads as one statement.
+The written paths are then attached as a \code{"paths"} attribute. If \code{FALSE},
+nothing is drawn and the paths are returned invisibly, which is preferable
+in scripts and loops where re-drawing a dense figure is wasted work.}
+
 \item{...}{Further arguments passed to the graphics device.}
 }
 \value{
-Invisibly, a character vector of the paths written.
+If \code{show_plot = TRUE}, the plot itself, visibly, with the written
+paths in its \code{"paths"} attribute. If \code{show_plot = FALSE}, invisibly, a
+character vector of the paths written. For multi-page output the list of
+plots is returned in place of a single plot.
 }
 \description{
 Writes a plot created by any of the \verb{plot_*()} functions to a file at a
@@ -73,7 +84,7 @@ written in several formats in one call.
 \section{Preferred formats and devices}{
 \tabular{llll}{
    Purpose \tab Format \tab Device used \tab Typical \code{dpi} \cr
-   Journal figure, vector (default choice) \tab \code{"pdf"} \tab \code{grDevices::pdf(useDingbats = FALSE)} \tab n/a \cr
+   Journal figure, vector (default choice) \tab \code{"pdf"} \tab \code{grDevices::cairo_pdf}, else \code{grDevices::pdf} \tab n/a \cr
    Figure for further editing (Illustrator, Inkscape) \tab \code{"svg"} \tab \code{svglite::svglite}, else \code{grDevices::svg} \tab n/a \cr
    Slides, Quarto HTML, GitHub \tab \code{"png"} \tab \code{ragg::agg_png}, else \code{grDevices::png} \tab 150-300 \cr
    Journal requiring raster submission \tab \code{"tiff"} \tab \code{ragg::agg_tiff}, else \code{grDevices::tiff} \tab 300-600 \cr
@@ -95,6 +106,12 @@ files. When they are absent the equivalent \code{grDevices} device is used and t
 output is still correct. Installing both is recommended:
 \code{install.packages(c("ragg", "svglite"))}.
 
+PDF output uses the cairo device wherever R was built with cairo support
+(\code{capabilities("cairo")}), because plain \code{grDevices::pdf()} writes text in a
+single-byte encoding and silently transliterates anything outside it -- an en
+dash becomes \code{-}, \code{>=} replaces the proper symbol. Unit labels such as
+\code{umol/L} and statistical annotations routinely depend on those glyphs.
+
 Multi-page output from the paged plot functions (\code{\link[=plot_runscatter]{plot_runscatter()}},
 \code{\link[=plot_calibrationcurves]{plot_calibrationcurves()}}, \code{\link[=plot_responsecurves]{plot_responsecurves()}},
 \code{\link[=plot_feature_correlations]{plot_feature_correlations()}}) is PDF only, which is the only format that
@@ -109,12 +126,21 @@ p <- plot_pca(mexp, variable = "norm_intensity", qc_types = c("BQC", "SPL"))
 # A single figure, sized in mm (the default unit)
 save_plot(p, "output/pca.pdf", width = 180, height = 120)
 
+# In a notebook: save and show the figure in one statement
+plot_pca(mexp, variable = "norm_intensity") |>
+  save_plot("output/pca.pdf", width = 180, height = 120)
+
 # The same figure as vector and raster in one call
 save_plot(p, "output/pca", format = c("pdf", "png"), width = 180, height = 120)
 
+# In a script or loop, skip the re-draw and collect the paths
+paths <- save_plot(p, "output/pca.pdf", width = 180, height = 120,
+                   show_plot = FALSE)
+
 # Every runscatter page in one multi-page PDF
 pages <- plot_runscatter(mexp, variable = "conc", return_plots = TRUE)
-save_plot(pages, "output/runscatter.pdf", width = 280, height = 200)
+save_plot(pages, "output/runscatter.pdf", width = 280, height = 200,
+          show_plot = FALSE)
 }
 
 }

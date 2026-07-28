@@ -511,12 +511,12 @@ at a defined size and resolution and can produce several formats in one call:
 
 ```{r}
 #| eval: false
-save_plot(
-  plot_pca(myexp, variable = "conc", qc_types = c("BQC", "SPL")),
-  path = "./output/pca", format = c("pdf", "png"),
-  width = 180, height = 120
-)
+plot_pca(myexp, variable = "conc", qc_types = c("BQC", "SPL")) |>
+  save_plot(path = "./output/pca", format = c("pdf", "png"),
+            width = 180, height = 120)
 ```
+
+The plot is returned visibly, so it still appears in the notebook while being written to file.
 
 See [Saving plots](manual-08-visualization.html#saving-plots) for the available formats and when to
 prefer a vector or a raster one.

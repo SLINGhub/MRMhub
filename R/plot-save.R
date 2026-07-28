@@ -88,9 +88,8 @@ resolve_plot_formats <- function(path, format = NULL) {
 
 #' Select the graphics device function for a format
 #'
-#' Prefers `ragg` (raster formats) and `svglite` (SVG) when installed, falling
-#' back to the equivalent `grDevices` device. PDF always uses
-#' `grDevices::pdf(useDingbats = FALSE)`, matching the multi-page writers.
+#' Prefers `ragg` (raster formats), `svglite` (SVG) and the cairo PDF device
+#' when available, falling back to the equivalent plain `grDevices` device.
 #'
 #' @param format One of [mrmhub_plot_formats].
 #' @return A function suitable for the `device` argument of [ggplot2::ggsave()].
@@ -100,8 +99,19 @@ resolve_plot_device <- function(format) {
 
   switch(
     format,
-    pdf = function(filename, ...) {
-      grDevices::pdf(file = filename, ..., useDingbats = FALSE)
+    # `grDevices::pdf()` writes text in a single-byte encoding and silently
+    # transliterates anything outside it -- an en dash becomes "-", a "greater
+    # than or equal" sign becomes ">=". Unit labels such as "umol/L" and
+    # statistical annotations routinely carry such characters, so the cairo
+    # device is preferred wherever R was built with it.
+    pdf = if (isTRUE(capabilities("cairo"))) {
+      function(filename, ...) {
+        grDevices::cairo_pdf(filename = filename, ...)
+      }
+    } else {
+      function(filename, ...) {
+        grDevices::pdf(file = filename, ..., useDingbats = FALSE)
+      }
     },
     svg = if (has("svglite")) {
       getExportedValue("svglite", "svglite")
@@ -226,12 +236,21 @@ as_plot_list <- function(plot) {
 #'   directory of `path` is created if it does not yet exist.
 #' @param overwrite A logical value indicating whether existing files may be
 #'   overwritten. Default is `TRUE`.
+#' @param show_plot A logical value. If `TRUE` (the default), the plot is
+#'   returned *visibly*, so that piping into `save_plot()` still renders the
+#'   figure in a Quarto or R Markdown chunk and the call reads as one statement.
+#'   The written paths are then attached as a `"paths"` attribute. If `FALSE`,
+#'   nothing is drawn and the paths are returned invisibly, which is preferable
+#'   in scripts and loops where re-drawing a dense figure is wasted work.
 #' @param ... Further arguments passed to the graphics device.
 #'
 #' @template save_dimensions
 #' @template plot_devices
 #'
-#' @return Invisibly, a character vector of the paths written.
+#' @return If `show_plot = TRUE`, the plot itself, visibly, with the written
+#'   paths in its `"paths"` attribute. If `show_plot = FALSE`, invisibly, a
+#'   character vector of the paths written. For multi-page output the list of
+#'   plots is returned in place of a single plot.
 #'
 #' @seealso [mrmhub_set_plot_defaults()] to set `units` and `dpi` once for a
 #'   whole notebook, [plot_runscatter()] and the other paged plot functions for
@@ -244,12 +263,21 @@ as_plot_list <- function(plot) {
 #' # A single figure, sized in mm (the default unit)
 #' save_plot(p, "output/pca.pdf", width = 180, height = 120)
 #'
+#' # In a notebook: save and show the figure in one statement
+#' plot_pca(mexp, variable = "norm_intensity") |>
+#'   save_plot("output/pca.pdf", width = 180, height = 120)
+#'
 #' # The same figure as vector and raster in one call
 #' save_plot(p, "output/pca", format = c("pdf", "png"), width = 180, height = 120)
 #'
+#' # In a script or loop, skip the re-draw and collect the paths
+#' paths <- save_plot(p, "output/pca.pdf", width = 180, height = 120,
+#'                    show_plot = FALSE)
+#'
 #' # Every runscatter page in one multi-page PDF
 #' pages <- plot_runscatter(mexp, variable = "conc", return_plots = TRUE)
-#' save_plot(pages, "output/runscatter.pdf", width = 280, height = 200)
+#' save_plot(pages, "output/runscatter.pdf", width = 280, height = 200,
+#'           show_plot = FALSE)
 #' }
 #'
 #' @export
@@ -265,6 +293,7 @@ save_plot <- function(
   bg = NULL,
   create_dir = TRUE,
   overwrite = TRUE,
+  show_plot = TRUE,
   ...
 ) {
   if (missing(width) || missing(height)) {
@@ -337,7 +366,18 @@ save_plot <- function(
     "Saved plot ({width} x {height} {units}) to {.path {paste(targets, collapse = ', ')}}"
   )
 
-  invisible(unname(targets))
+  paths <- unname(targets)
+
+  if (!isTRUE(show_plot)) {
+    return(invisible(paths))
+  }
+
+  # Returned visibly so that `plot_*() |> save_plot()` still renders the figure
+  # in a knitr chunk. The paths ride along as an attribute rather than being
+  # lost.
+  out <- if (parsed$multipage) parsed$plots else parsed$plots[[1]]
+  attr(out, "paths") <- paths
+  out
 }
 
 #' Write a list of plots as a multi-page PDF
@@ -346,7 +386,7 @@ save_plot <- function(
 #' @param path Output file path.
 #' @param width_in,height_in Page size in inches.
 #' @param bg Background colour, or `NULL`.
-#' @param ... Further arguments passed to [grDevices::pdf()].
+#' @param ... Further arguments passed to the PDF device.
 #' @return Invisibly, `path`.
 #' @noRd
 write_multipage_pdf <- function(
@@ -357,18 +397,32 @@ write_multipage_pdf <- function(
   bg = NULL,
   ...
 ) {
-  args <- list(
-    file = path,
-    onefile = TRUE,
-    paper = "special",
-    useDingbats = FALSE,
-    width = width_in,
-    height = height_in,
-    ...
-  )
-  if (!is.null(bg)) args$bg <- bg
+  # Same reasoning as the single-page PDF device in `resolve_plot_device()`:
+  # cairo preserves non-ASCII text, which `grDevices::pdf()` transliterates.
+  if (isTRUE(capabilities("cairo"))) {
+    args <- list(
+      filename = path,
+      onefile = TRUE,
+      width = width_in,
+      height = height_in,
+      ...
+    )
+    if (!is.null(bg)) args$bg <- bg
+    do.call(grDevices::cairo_pdf, args)
+  } else {
+    args <- list(
+      file = path,
+      onefile = TRUE,
+      paper = "special",
+      useDingbats = FALSE,
+      width = width_in,
+      height = height_in,
+      ...
+    )
+    if (!is.null(bg)) args$bg <- bg
+    do.call(grDevices::pdf, args)
+  }
 
-  do.call(grDevices::pdf, args)
   on.exit(grDevices::dev.off(), add = TRUE)
   for (p in plots) print(p)
   invisible(path)
