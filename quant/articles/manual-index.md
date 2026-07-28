@@ -37,7 +37,8 @@ reference](https://slinghub.github.io/MRMhub/quant/reference/index.md).
 
 - **[Visualisation
   functions](https://slinghub.github.io/MRMhub/quant/articles/manual-08-visualization.md)**:
-  RunScatter, PCA, run-sequence, and normalization-QC plots.
+  RunScatter, PCA, run-sequence, and normalization-QC plots, and
+  exporting figures at a defined size and resolution.
 - **[Writing pipelines with AI
   assistants](https://slinghub.github.io/MRMhub/quant/articles/manual-09-ai-assistants.md)**:
   grounding LLMs (Claude, ChatGPT, local models) in the real API, and

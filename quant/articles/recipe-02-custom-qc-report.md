@@ -215,6 +215,11 @@ quarto::quarto_render(
   study.
 - **Date stamp** (`date: today`) for an audit trail.
 - **Session info** at the end for reproducibility.
+- **Export the figures too**:
+  `save_plot(p, "figures/cv", format = c("pdf", "png"), width = 180, height = 120)`
+  writes a print-ready vector file and a web-ready raster one in a
+  single call. See [Saving
+  plots](https://slinghub.github.io/MRMhub/quant/articles/manual-08-visualization.html#saving-plots).
 
 ## Next steps
 

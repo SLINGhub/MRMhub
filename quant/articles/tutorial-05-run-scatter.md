@@ -447,6 +447,23 @@ mexp <- exclude_features(mexp, features = c("PC 32:0"), clear_existing = FALSE)
 | One feature dominates loadings on PC1 | Saturation, contamination, or single-transition artefact | Inspect with [`plot_runscatter()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.md); exclude feature if confirmed |
 | BQC tight, SPL spread | Genuine biological variability | Proceed |
 
+Any of the figures above can be written to a file with
+[`save_plot()`](https://slinghub.github.io/MRMhub/quant/reference/save_plot.md),
+at a size given in mm (or cm, in, pt, px):
+
+``` r
+
+plot_pca(mexp, variable = "norm_intensity", ellipse_variable = "batch_id") |>
+  save_plot("output/pca_batch.pdf", width = 180, height = 120)
+```
+
+The plot is returned visibly, so the figure still appears in the
+notebook alongside being saved.
+
+Dense score plots and long run-scatter pages are often better saved as
+PNG or TIFF than as PDF — see [Saving
+plots](https://slinghub.github.io/MRMhub/quant/articles/manual-08-visualization.html#saving-plots).
+
 ## Next steps
 
 - [Drift and batch

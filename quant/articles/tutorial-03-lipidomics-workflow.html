@@ -44,6 +44,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-get-started" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Get Started</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-get-started">
 <li><a class="dropdown-item" href="../articles/manual-00-installation.html">Installation</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-13-intro-to-r-quarto-mrmhub.html">Intro to R, Quarto &amp; MRMhub</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
     <li><a class="dropdown-item" href="../articles/manual-01-key-concepts.html">Key Concepts &amp; Glossary</a></li>
     <li><a class="dropdown-item" href="../articles/manual-10-troubleshooting.html">Troubleshooting &amp; FAQ</a></li>
@@ -53,6 +54,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-tutorials" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Tutorials</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-tutorials">
 <li><h6 class="dropdown-header" data-toc-skip>Start here</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-13-intro-to-r-quarto-mrmhub.html">Intro to R, Quarto &amp; MRMhub</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-12-workflow-builder.html">Build a workflow (no code)</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-01-prep-data.html">Preparing &amp; importing data</a></li>
@@ -97,7 +99,7 @@
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
     <li><a class="dropdown-item" href="../articles/manual-13-plot-customization.html">Customising Plots</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Writing Pipelines with AI Assistants</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Getting Help from an AI Assistant</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-02-data-object.html">The MRMhubExperiment Data Object</a></li>
@@ -177,7 +179,7 @@ RStudio you can expand <code>myexp</code> in the Environment pane.</p>
 <pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Imported 499 analyses with 503 features.</span></code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code><span style="color: #00BBBB;">ℹ</span> <span style="color: #00BB00;">feature_area</span> selected as default feature intensity. Modify with `set_intensity_var()`.</code></pre>
+<pre><code><span style="color: #00BBBB;">ℹ</span> <span style="color: #00BB00;">feature_area selected as default feature intensity. Modify with `set_intensity_var()`.</span></code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Analysis metadata associated with 499 analyses.</span></code></pre>
@@ -387,12 +389,12 @@ calculations start from.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/set_analysis_order.html">set_analysis_order</a></span><span class="op">(</span><span class="va">myexp</span>, order_by <span class="op">=</span> <span class="st">"timestamp"</span><span class="op">)</span></span></code></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Analysis order set to </span><span style="color: #0000BB;">"timestamp"</span></code></pre>
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Analysis order set to "timestamp"</span></code></pre>
 </div>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/set_intensity_var.html">set_intensity_var</a></span><span class="op">(</span><span class="va">myexp</span>, variable_name <span class="op">=</span> <span class="st">"area"</span><span class="op">)</span></span></code></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Default feature intensity variable set to </span><span style="color: #0000BB;">"feature_area"</span></code></pre>
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Default feature intensity variable set to "feature_area"</span></code></pre>
 </div>
 </div>
 <div class="section level2">
@@ -762,9 +764,27 @@ construct for more intricate patterns.</p>
 <span>  show_trend <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  output_pdf <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  path <span class="op">=</span> <span class="st">"./output/runscatter_after-drift-batch-correction.pdf"</span>,</span>
+<span>  page_width <span class="op">=</span> <span class="fl">297</span>, page_height <span class="op">=</span> <span class="fl">210</span>,</span>
 <span>  cols_page <span class="op">=</span> <span class="fl">2</span>, rows_page <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  show_progress <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
+<p><code>page_width</code> and <code>page_height</code> set the page
+size; without them an A4 page is used, oriented by
+<code>page_orientation</code>.</p>
+<div class="callout callout-tip">
+<p>The single figures made earlier in this workflow are saved with
+<code><a href="../reference/save_plot.html">save_plot()</a></code>, which writes any plot at a defined size and
+resolution and can produce several formats in one call:</p>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_pca.html">plot_pca</a></span><span class="op">(</span><span class="va">myexp</span>, variable <span class="op">=</span> <span class="st">"conc"</span>, qc_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BQC"</span>, <span class="st">"SPL"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="../reference/save_plot.html">save_plot</a></span><span class="op">(</span>path <span class="op">=</span> <span class="st">"./output/pca"</span>, format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pdf"</span>, <span class="st">"png"</span><span class="op">)</span>,</span>
+<span>            width <span class="op">=</span> <span class="fl">180</span>, height <span class="op">=</span> <span class="fl">120</span><span class="op">)</span></span></code></pre></div>
+<p>The plot is returned visibly, so it still appears in the notebook
+while being written to file.</p>
+<p>See <a href="manual-08-visualization.html#saving-plots">Saving
+plots</a> for the available formats and when to prefer a vector or a
+raster one.</p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="qc-based-feature-filtering">18. QC-based feature filtering<a class="anchor" aria-label="anchor" href="#qc-based-feature-filtering"></a>
@@ -780,7 +800,7 @@ once it has passed the S/B and signal filters) and
 <code>features.to.keep</code> retains named species regardless. The
 filter can be run repeatedly, overwriting or, with
 <code>clear_existing = FALSE</code>, amending the previous set.</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/filter_features_qc.html">filter_features_qc</a></span><span class="op">(</span></span>
 <span>  <span class="va">myexp</span>,</span>
 <span>  clear_existing <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -806,13 +826,13 @@ filter can be run repeatedly, overwriting or, with
 <pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">QC metrics calculated for 502 features across 7 sample types, including normalized-intensity, concentration, and response-curve statistics.</span></code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code><span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">The QC parameter </span><span style="color: #00BB00;">min.intensity.median.spl</span> contains NAs for the following features: LPC O-22:1, PC 34:5, PC 35:1, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC P-32:1 M+1. These features failed QC.</code></pre>
+<pre><code><span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">The QC parameter min.intensity.median.spl contains NAs for the following features: LPC O-22:1, PC 34:5, PC 35:1, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC P-32:1 M+1. These features failed QC.</span></code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code><span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">The QC parameter </span><span style="color: #00BB00;">min.signalblank.median.spl.pblk</span> contains NAs for the following features: LPC O-22:1, PC 34:5, PC 35:1, PG 36:2, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC .... These features failed QC.</code></pre>
+<pre><code><span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">The QC parameter min.signalblank.median.spl.pblk contains NAs for the following features: LPC O-22:1, PC 34:5, PC 35:1, PG 36:2, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC .... These features failed QC.</span></code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code><span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">The QC parameter </span><span style="color: #00BB00;">max.cv.conc.bqc</span> contains NAs for the following features: Cer d18:1/12:0 (ISTD) [M-H20&gt;264], Cer d18:1/25:0 (ISTD) [M-H20&gt;264], Hex2Cer.... These features failed QC.</code></pre>
+<pre><code><span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">The QC parameter max.cv.conc.bqc contains NAs for the following features: Cer d18:1/12:0 (ISTD) [M-H20&gt;264], Cer d18:1/25:0 (ISTD) [M-H20&gt;264], Hex2Cer.... These features failed QC.</span></code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code><span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">The following features were forced to be retained despite not meeting filtering criteria: CE 16:0, CE 20:4, CE 22:5, and CE 22:6</span></code></pre>
@@ -831,7 +851,7 @@ hierarchical, a species is attributed to the <em>first</em> filter it
 fails (for example <code>CV</code>), having already cleared the lower
 ones (<code>S/B</code>, <code>LOD</code>), so the counts partition the
 features rather than double-counting them.</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_qc_summary_byclass.html">plot_qc_summary_byclass</a></span><span class="op">(</span><span class="va">myexp</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="tutorial-03-lipidomics-workflow_files/figure-html/qc-summary-byclass-1.png" class="r-plt" alt="Feature QC filter summary by lipid class" width="700"><p class="caption">
@@ -842,7 +862,7 @@ species passing all criteria.
 <p>The next plot gives the same picture across all features, with the
 total retained, and adds a Venn diagram showing how many features each
 individual criterion excluded, and where those exclusions overlap.</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_qc_summary_overall.html">plot_qc_summary_overall</a></span><span class="op">(</span><span class="va">myexp</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="tutorial-03-lipidomics-workflow_files/figure-html/qc-summary-overall-1.png" class="r-plt" alt="Overall feature filter summary with Venn diagram" width="700"><p class="caption">
@@ -860,7 +880,7 @@ summed concentration per class, or the ratios between classes) against
 in-house reference ranges or the literature is the quickest way to
 confirm that quantification landed in a plausible range and that no
 gross errors slipped through.</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_abundanceprofile.html">plot_abundanceprofile</a></span><span class="op">(</span></span>
 <span>  <span class="va">myexp</span>,</span>
 <span>  variable <span class="op">=</span> <span class="st">"conc"</span>,</span>
@@ -884,15 +904,15 @@ workbook, with separate sheets for the raw and processed datasets, the
 associated metadata, the per-feature QC metrics, and a record of the
 processing steps applied: a self-contained account of how the numbers
 were produced.</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/save_report_xlsx.html">save_report_xlsx</a></span><span class="op">(</span><span class="va">myexp</span>, path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".xlsx"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The data processing report of experiment 'sPerfect' has been saved to </span><span style="color: #0000BB;">/tmp/RtmpmhZT0Z/file304836dfcb2b.xlsx</span>.</code></pre>
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The data processing report of experiment 'sPerfect' has been saved to /tmp/RtmpppCsTy/file33d35279c0fc.xlsx.</span></code></pre>
 </div>
 <p>For downstream statistics it is often easier to export a single flat,
 wide CSV of a chosen data subset. This is the format used to share the
 data for the statistical analysis in the next part of the workshop.</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/save_dataset_csv.html">save_dataset_csv</a></span><span class="op">(</span></span>
 <span>  <span class="va">myexp</span>,</span>
 <span>  path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span>,</span>
@@ -910,7 +930,7 @@ data for the statistical analysis in the next part of the workshop.</p>
 session (even without the mrmhub package installed) and the saved
 <code>MRMhubExperiment</code> can be reloaded for further processing,
 replotting, or inspection with mrmhub.</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".rds"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">saveRDS</a></span><span class="op">(</span><span class="va">myexp</span>, file <span class="op">=</span> <span class="va">path</span>, compress <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">my_saved_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span>file <span class="op">=</span> <span class="va">path</span><span class="op">)</span></span>

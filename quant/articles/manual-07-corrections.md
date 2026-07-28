@@ -67,13 +67,39 @@ See the tutorial [Drift and batch
 correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.md)
 for more information on how to use these functions and plot the results.
 
-## Batch-effect correction (centering)
+## Batch-effect correction
 
-`MRMhub` currently supports median centering-based batch correction
-[`correct_batch_centering()`](https://slinghub.github.io/MRMhub/quant/reference/correct_batch_centering.md),
-whereby the scale of the batches can optionally also be normalized. The
-selected QC types (`ref_qc_types`) are used to calculate the medians,
-which are then used to align all other samples.
+`MRMhub` provides three batch-correction methods. Batch correction is
+applied after normalization and, where used, drift correction.
+
+- **Median centering**
+  ([`correct_batch_centering()`](https://slinghub.github.io/MRMhub/quant/reference/correct_batch_centering.md))
+  aligns the per-batch medians of the selected QC types
+  (`ref_qc_types`), following the QC-based paradigm (Broadhurst et al.
+  2018); the scale of the batches can optionally also be equalized. This
+  is the default, most robust choice.
+- **ComBat**
+  ([`correct_batch_combat()`](https://slinghub.github.io/MRMhub/quant/reference/correct_batch_combat.md))
+  applies the empirical-Bayes location and scale model of Johnson et al.
+  (2007), shrinking the batch estimates across features. Unlike the
+  other two methods, ComBat estimates batch effects from all samples
+  rather than from the reference QCs; supply `covariates` to protect
+  biological signal on unbalanced designs.
+- **SERRF**
+  ([`correct_batch_serrf()`](https://slinghub.github.io/MRMhub/quant/reference/correct_batch_serrf.md))
+  removes systematic error with per-feature random forests trained on
+  the reference QCs, using each feature’s most correlated features as
+  predictors (Fan et al. 2019). It captures non-linear batch and drift
+  effects jointly and is best suited to larger panels with dense QC
+  coverage.
+
+[`correct_batch_combat()`](https://slinghub.github.io/MRMhub/quant/reference/correct_batch_combat.md)
+and
+[`correct_batch_serrf()`](https://slinghub.github.io/MRMhub/quant/reference/correct_batch_serrf.md)
+are **experimental**. ComBat requires the optional `sva` package and
+SERRF the optional `ranger` package. The SERRF implementation adapts the
+reference code in the `malbacR` package (Leach et al. 2023); validate
+results against the reference implementation for your data.
 
 See the tutorial [Drift and batch
 correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.md)
@@ -102,8 +128,23 @@ Using Gas Chromatography and Liquid Chromatography Coupled to Mass
 Spectrometry.” *Nature Protocols* 6 (7): 1060–83.
 <https://doi.org/10.1038/nprot.2011.335>.
 
+Fan, Sili, Tobias Kind, Tomas Cajka, et al. 2019. “Systematic Error
+Removal Using Random Forest for Normalizing Large-Scale Untargeted
+Lipidomics Data.” *Analytical Chemistry* 91 (5): 3590–96.
+<https://doi.org/10.1021/acs.analchem.8b05592>.
+
+Johnson, W. Evan, Cheng Li, and Ariel Rabinovic. 2007. “Adjusting Batch
+Effects in Microarray Expression Data Using Empirical Bayes Methods.”
+*Biostatistics* 8 (1): 118–27.
+<https://doi.org/10.1093/biostatistics/kxj037>.
+
 Kirwan, J. A., D. I. Broadhurst, R. L. Davidson, and M. R. Viant. 2013.
 “Characterising and Correcting Batch Variation in an Automated Direct
 Infusion Mass Spectrometry (DIMS) Metabolomics Workflow.” *Analytical
 and Bioanalytical Chemistry* 405 (15): 5147–57.
 <https://doi.org/10.1007/s00216-013-6856-7>.
+
+Leach, Damon L., Kelly A. Trujillo, Rachel A. Richardson, et al. 2023.
+“malbacR: A Package for Standardized Implementation of Batch Correction
+Methods for Omics Data.” *Metabolites* 13 (11): 1130.
+<https://doi.org/10.3390/metabo13111130>.

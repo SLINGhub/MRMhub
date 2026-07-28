@@ -46,6 +46,7 @@ parameters, and when to use each.
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-get-started" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Get Started</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-get-started">
 <li><a class="dropdown-item" href="../articles/manual-00-installation.html">Installation</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-13-intro-to-r-quarto-mrmhub.html">Intro to R, Quarto &amp; MRMhub</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
     <li><a class="dropdown-item" href="../articles/manual-01-key-concepts.html">Key Concepts &amp; Glossary</a></li>
     <li><a class="dropdown-item" href="../articles/manual-10-troubleshooting.html">Troubleshooting &amp; FAQ</a></li>
@@ -55,6 +56,7 @@ parameters, and when to use each.
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-tutorials" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Tutorials</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-tutorials">
 <li><h6 class="dropdown-header" data-toc-skip>Start here</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-13-intro-to-r-quarto-mrmhub.html">Intro to R, Quarto &amp; MRMhub</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-12-workflow-builder.html">Build a workflow (no code)</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-01-prep-data.html">Preparing &amp; importing data</a></li>
@@ -99,7 +101,7 @@ parameters, and when to use each.
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
     <li><a class="dropdown-item" href="../articles/manual-13-plot-customization.html">Customising Plots</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Writing Pipelines with AI Assistants</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Getting Help from an AI Assistant</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-02-data-object.html">The MRMhubExperiment Data Object</a></li>
@@ -233,13 +235,42 @@ and batch correction</a> for more information on how to use these
 functions and plot the results.</p>
 </div>
 <div class="section level2">
-<h2 id="batch-effect-correction-centering">Batch-effect correction (centering)<a class="anchor" aria-label="anchor" href="#batch-effect-correction-centering"></a>
+<h2 id="batch-effect-correction">Batch-effect correction<a class="anchor" aria-label="anchor" href="#batch-effect-correction"></a>
 </h2>
-<p><code>MRMhub</code> currently supports median centering-based batch
-correction <code><a href="../reference/correct_batch_centering.html">correct_batch_centering()</a></code>, whereby the scale of
-the batches can optionally also be normalized. The selected QC types
-(<code>ref_qc_types</code>) are used to calculate the medians, which are
-then used to align all other samples.</p>
+<p><code>MRMhub</code> provides three batch-correction methods. Batch
+correction is applied after normalization and, where used, drift
+correction.</p>
+<ul>
+<li>
+<strong>Median centering</strong>
+(<code><a href="../reference/correct_batch_centering.html">correct_batch_centering()</a></code>) aligns the per-batch medians of
+the selected QC types (<code>ref_qc_types</code>), following the
+QC-based paradigm <span class="citation">(Broadhurst et al.
+2018)</span>; the scale of the batches can optionally also be equalized.
+This is the default, most robust choice.</li>
+<li>
+<strong>ComBat</strong> (<code><a href="../reference/correct_batch_combat.html">correct_batch_combat()</a></code>)
+applies the empirical-Bayes location and scale model of <span class="citation">Johnson et al. (2007)</span>, shrinking the batch
+estimates across features. Unlike the other two methods, ComBat
+estimates batch effects from all samples rather than from the reference
+QCs; supply <code>covariates</code> to protect biological signal on
+unbalanced designs.</li>
+<li>
+<strong>SERRF</strong> (<code><a href="../reference/correct_batch_serrf.html">correct_batch_serrf()</a></code>) removes
+systematic error with per-feature random forests trained on the
+reference QCs, using each feature’s most correlated features as
+predictors <span class="citation">(Fan et al. 2019)</span>. It captures
+non-linear batch and drift effects jointly and is best suited to larger
+panels with dense QC coverage.</li>
+</ul>
+<div class="callout callout-caution">
+<p><code><a href="../reference/correct_batch_combat.html">correct_batch_combat()</a></code> and
+<code><a href="../reference/correct_batch_serrf.html">correct_batch_serrf()</a></code> are <strong>experimental</strong>.
+ComBat requires the optional <code>sva</code> package and SERRF the
+optional <code>ranger</code> package. The SERRF implementation adapts
+the reference code in the <code>malbacR</code> package <span class="citation">(Leach et al. 2023)</span>; validate results against
+the reference implementation for your data.</p>
+</div>
 <p>See the tutorial <a href="tutorial-04-drift-correction.html">Drift
 and batch correction</a> for more information.</p>
 </div>
@@ -272,11 +303,28 @@ Dunn, Warwick B., David Broadhurst, Paul Begley, et al. 2011.
 Plasma Using Gas Chromatography and Liquid Chromatography Coupled to
 Mass Spectrometry.”</span> <em>Nature Protocols</em> 6 (7): 1060–83. <a href="https://doi.org/10.1038/nprot.2011.335" class="external-link">https://doi.org/10.1038/nprot.2011.335</a>.
 </div>
+<div id="ref-fan2019SystematicErrorRemoval" class="csl-entry">
+Fan, Sili, Tobias Kind, Tomas Cajka, et al. 2019. <span>“Systematic
+Error Removal Using Random Forest for Normalizing Large-Scale Untargeted
+Lipidomics Data.”</span> <em>Analytical Chemistry</em> 91 (5): 3590–96.
+<a href="https://doi.org/10.1021/acs.analchem.8b05592" class="external-link">https://doi.org/10.1021/acs.analchem.8b05592</a>.
+</div>
+<div id="ref-johnson2007AdjustingBatchEffects" class="csl-entry">
+Johnson, W. Evan, Cheng Li, and Ariel Rabinovic. 2007. <span>“Adjusting
+Batch Effects in Microarray Expression Data Using Empirical Bayes
+Methods.”</span> <em>Biostatistics</em> 8 (1): 118–27. <a href="https://doi.org/10.1093/biostatistics/kxj037" class="external-link">https://doi.org/10.1093/biostatistics/kxj037</a>.
+</div>
 <div id="ref-kirwan2013CharacterisingCorrectingBatch" class="csl-entry">
 Kirwan, J. A., D. I. Broadhurst, R. L. Davidson, and M. R. Viant. 2013.
 <span>“Characterising and Correcting Batch Variation in an Automated
 Direct Infusion Mass Spectrometry (DIMS) Metabolomics Workflow.”</span>
 <em>Analytical and Bioanalytical Chemistry</em> 405 (15): 5147–57. <a href="https://doi.org/10.1007/s00216-013-6856-7" class="external-link">https://doi.org/10.1007/s00216-013-6856-7</a>.
+</div>
+<div id="ref-leach2023MalbacRPackage" class="csl-entry">
+Leach, Damon L., Kelly A. Trujillo, Rachel A. Richardson, et al. 2023.
+<span>“malbacR: A Package for Standardized Implementation of Batch
+Correction Methods for Omics Data.”</span> <em>Metabolites</em> 13 (11):
+1130. <a href="https://doi.org/10.3390/metabo13111130" class="external-link">https://doi.org/10.3390/metabo13111130</a>.
 </div>
 </div>
 </div>

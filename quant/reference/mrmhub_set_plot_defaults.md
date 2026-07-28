@@ -17,7 +17,9 @@ mrmhub_set_plot_defaults(
   legend_position = NULL,
   legend_size = NULL,
   show_legend_title = NULL,
-  strip_bg_color = NULL
+  strip_bg_color = NULL,
+  units = NULL,
+  dpi = NULL
 )
 ```
 
@@ -50,6 +52,18 @@ mrmhub_set_plot_defaults(
 
   Facet strip background fill (strip text auto-contrasts).
 
+- units:
+
+  Default unit for the `width` and `height` of
+  [`save_plot()`](https://slinghub.github.io/MRMhub/quant/reference/save_plot.md):
+  `"mm"` (the built-in default), `"cm"`, `"in"`, `"pt"` or `"px"`.
+
+- dpi:
+
+  Default resolution in dots per inch for the raster formats of
+  [`save_plot()`](https://slinghub.github.io/MRMhub/quant/reference/save_plot.md).
+  The built-in default is `300`.
+
 ## Value
 
 Invisibly, a named list of the option values as they were before this
@@ -68,7 +82,8 @@ a set can be undone with `options(old)` or scoped to a block with
 ## See also
 
 [`mrmhub_reset_plot_defaults()`](https://slinghub.github.io/MRMhub/quant/reference/mrmhub_reset_plot_defaults.md),
-[`mrmhub_get_plot_defaults()`](https://slinghub.github.io/MRMhub/quant/reference/mrmhub_get_plot_defaults.md)
+[`mrmhub_get_plot_defaults()`](https://slinghub.github.io/MRMhub/quant/reference/mrmhub_get_plot_defaults.md),
+[`save_plot()`](https://slinghub.github.io/MRMhub/quant/reference/save_plot.md)
 and the `vignette("manual-13-plot-customization")` article.
 
 ## Examples

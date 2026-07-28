@@ -202,6 +202,20 @@ save_dataset_csv(
 saveRDS(myexp, file = tempfile(fileext = ".rds"), compress = TRUE)
 ```
 
+Figures are exported with
+[`save_plot()`](https://slinghub.github.io/MRMhub/quant/reference/save_plot.md),
+which writes any plot at a defined size (in mm by default) and, given a
+path without an extension, in several formats at once:
+
+``` r
+
+p <- plot_pca(myexp, variable = "conc")
+
+save_plot(p, path = tempfile(), format = c("pdf", "png"), width = 180, height = 120)
+```
+
+![](tutorial-02-basic-workflow_files/figure-html/save-figure-1.png)
+
 The `.rds` file preserves the entire `MRMhubExperiment`, so a colleague
 can open it in R and run their own plots and QC checks, reproducing the
 exact data state without re-running the pipeline.

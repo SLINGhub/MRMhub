@@ -58,6 +58,18 @@ call.
 mrmhub_set_plot_defaults(font_base_size = 8, point_size = 0.8)
 ```
 
+The unit and resolution used when saving figures with
+[`save_plot()`](https://slinghub.github.io/MRMhub/quant/reference/save_plot.md)
+can be set the same way, so only the width and height need repeating on
+each call:
+
+``` r
+
+mrmhub_set_plot_defaults(units = "mm", dpi = 600)
+
+save_plot(p, "figures/pca.png", width = 180, height = 120)
+```
+
 The resolution order for every argument is: a value passed explicitly to
 a plotting function wins, then the global default set here, then the
 function’s built-in default (including the automatic `cols_page` sizing
@@ -82,7 +94,13 @@ single section with
 [`withr::local_options()`](https://withr.r-lib.org/reference/with_options.html)
 rather than set for the whole session. The arguments that can be set
 globally are `font_base_size`, `point_size`, `legend_position`,
-`legend_size`, `show_legend_title` and `strip_bg_color`.
+`legend_size`, `show_legend_title`, `strip_bg_color`, and `units` and
+`dpi` for
+[`save_plot()`](https://slinghub.github.io/MRMhub/quant/reference/save_plot.md).
+
+Figure width and height are deliberately *not* settable globally: the
+physical size of a saved figure should be readable from the call that
+writes it.
 
 ## Placing the legend
 

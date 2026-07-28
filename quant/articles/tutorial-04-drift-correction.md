@@ -281,6 +281,42 @@ scaling](tutorial-04-drift-correction_files/figure-html/batch-scale-1.png)
 Figure 8. Concentrations after batch correction with variance scaling;
 both location and spread are consistent across batches.
 
+### Alternative batch-correction methods (experimental)
+
+Besides median centering, two model-based methods are available. Both
+are experimental and require an optional package.
+
+**ComBat** \[@johnson2007AdjustingBatchEffects\] applies an
+empirical-Bayes location and scale adjustment, shrinking the batch
+estimates across features (requires the `sva` package). Unlike centering
+and SERRF, it estimates batch effects from all samples; pass
+`covariates` to protect biology on unbalanced designs.
+
+``` r
+
+myexp_batch <- correct_batch_combat(
+  myexp_batch,
+  variable = "conc",
+  ref_qc_types = "SPL"
+)
+```
+
+**SERRF** \[@fan2019SystematicErrorRemoval\] trains a per-feature random
+forest on the reference QCs and removes the predicted systematic error,
+capturing non-linear batch and drift effects jointly (requires the
+`ranger` package). It suits larger panels with dense QC coverage; the
+implementation adapts the `malbacR` reference
+\[@leach2023MalbacRPackage\].
+
+``` r
+
+myexp_batch <- correct_batch_serrf(
+  myexp_batch,
+  variable = "conc",
+  ref_qc_types = "SPL"
+)
+```
+
 ## 6. Choosing a drift-correction method
 
 MRMhub provides four drift-correction methods. Loess and cubic spline

@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Writing pipelines with AI assistants • mrmhub</title>
+<title>Getting help from an AI assistant • mrmhub</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
@@ -16,14 +16,14 @@
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
-<meta property="og:title" content="Writing pipelines with AI assistants">
-<meta name="description" content="How to use large language models (Claude, ChatGPT, or local models) to help
-write MRMhub QUANT pipelines -- how to ground them in the real API, and how to
-verify what they produce.
+<meta property="og:title" content="Getting help from an AI assistant">
+<meta name="description" content="How a lab scientist can use Claude, ChatGPT, or a local model to help plan,
+write, and troubleshoot MRMhub QUANT workflows -- accurately, and without
+exposing study data.
 ">
-<meta property="og:description" content="How to use large language models (Claude, ChatGPT, or local models) to help
-write MRMhub QUANT pipelines -- how to ground them in the real API, and how to
-verify what they produce.
+<meta property="og:description" content="How a lab scientist can use Claude, ChatGPT, or a local model to help plan,
+write, and troubleshoot MRMhub QUANT workflows -- accurately, and without
+exposing study data.
 ">
 <meta property="og:image" content="https://slinghub.github.io/MRMhub/quant/logo.svg">
 </head>
@@ -48,6 +48,7 @@ verify what they produce.
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-get-started" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Get Started</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-get-started">
 <li><a class="dropdown-item" href="../articles/manual-00-installation.html">Installation</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-13-intro-to-r-quarto-mrmhub.html">Intro to R, Quarto &amp; MRMhub</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
     <li><a class="dropdown-item" href="../articles/manual-01-key-concepts.html">Key Concepts &amp; Glossary</a></li>
     <li><a class="dropdown-item" href="../articles/manual-10-troubleshooting.html">Troubleshooting &amp; FAQ</a></li>
@@ -57,6 +58,7 @@ verify what they produce.
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-tutorials" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Tutorials</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-tutorials">
 <li><h6 class="dropdown-header" data-toc-skip>Start here</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-13-intro-to-r-quarto-mrmhub.html">Intro to R, Quarto &amp; MRMhub</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-12-workflow-builder.html">Build a workflow (no code)</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-01-prep-data.html">Preparing &amp; importing data</a></li>
@@ -101,7 +103,7 @@ verify what they produce.
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
     <li><a class="dropdown-item" href="../articles/manual-13-plot-customization.html">Customising Plots</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Writing Pipelines with AI Assistants</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Getting Help from an AI Assistant</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-02-data-object.html">The MRMhubExperiment Data Object</a></li>
@@ -132,7 +134,7 @@ verify what they produce.
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.svg" class="logo" alt=""><h1>Writing pipelines with AI assistants</h1>
+      <img src="../logo.svg" class="logo" alt=""><h1>Getting help from an AI assistant</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/development/vignettes/articles/manual-09-ai-assistants.Rmd" class="external-link"><code>vignettes/articles/manual-09-ai-assistants.Rmd</code></a></small>
@@ -145,232 +147,226 @@ verify what they produce.
 Manual
 </p>
 <div class="section level2">
-<h2 id="audience">Audience<a class="anchor" aria-label="anchor" href="#audience"></a>
+<h2 id="who-this-is-for">Who this is for<a class="anchor" aria-label="anchor" href="#who-this-is-for"></a>
 </h2>
-<p>This article is for analysts who want to use a large language model
-(LLM) – Claude, ChatGPT, or a locally hosted model – as an assistant
-when writing MRMhub QUANT analysis code in R. It explains how to give
-the model an accurate picture of the package, and how to check the code
-it returns.</p>
-<p>It assumes familiarity with the basic workflow. To process data
-directly, start with <a href="tutorial-00-first-analysis.html">Your
-first analysis</a>.</p>
+<p>You run targeted MS assays and have a chat assistant open – Claude
+Desktop, ChatGPT, or a model running on your own machine – and you would
+like it to help with the analysis in MRMhub QUANT. You may write a
+little R, or none at all.</p>
+<p>An assistant can genuinely help here, but only if you set it up
+correctly. Out of the box it has read very little about a specialised,
+young package like MRMhub, so it tends to guess. This page shows the
+everyday tasks it is good at, the one step that makes its answers
+reliable, and the two rules that keep your results and your data safe.
+If you have never run the package by hand, start with <a href="tutorial-00-first-analysis.html">Your first analysis</a> so you
+have a baseline to compare against.</p>
 </div>
 <div class="section level2">
-<h2 id="the-problem-a-specialised-package-the-model-has-not-memorised">The problem: a specialised package the model has not memorised<a class="anchor" aria-label="anchor" href="#the-problem-a-specialised-package-the-model-has-not-memorised"></a>
+<h2 id="what-it-can-and-cannot-do-for-you">What it can – and cannot – do for you<a class="anchor" aria-label="anchor" href="#what-it-can-and-cannot-do-for-you"></a>
 </h2>
-<p>General-purpose LLMs are trained on large volumes of common R code,
-but <code>mrmhub</code> is a specialised, comparatively young package. A
-model asked to “write an MRMhub pipeline” from memory alone tends to
-fail in two characteristic ways:</p>
+<p>An assistant is a fast, patient explainer and a first-draft writer.
+It is not a substitute for running the analysis or for your own
+judgement.</p>
+<p><strong>Good at</strong></p>
 <ul>
-<li>
-<strong>Invented function names.</strong> The model produces
-plausible-sounding calls that do not exist – <code>normalize()</code> in
-place of <code><a href="../reference/normalize_by_istd.html">normalize_by_istd()</a></code>, or a single
-<code>run_pipeline()</code> that was never written. The names look right
-and the code will not run.</li>
-<li>
-<strong>Ignored conventions.</strong> MRMhub has a load-bearing
-design: every processing function takes an <code>MRMhubExperiment</code>
-and returns a modified one (<code>mexp -&gt; mexp</code>), and the steps
-follow a recommended order. A model unaware of this may pass bare data
-frames, reorder steps, or fit drift corrections on study samples rather
-than QC samples.</li>
+<li>Explaining a step or a concept in plain language (“why is drift
+correction fitted on QC samples only?”).</li>
+<li>Drafting R code for your workflow, which you then run.</li>
+<li>Reading an R error message and suggesting a fix.</li>
+<li>Helping you plan an analysis from a description of your samples and
+standards.</li>
 </ul>
-<p>Both problems have the same cause – the model is guessing rather than
-reading – and the same remedy: give it the package’s own reference
-material as context.</p>
-</div>
-<div class="section level2">
-<h2 id="what-mrmhub-provides-for-an-llm">What MRMhub provides for an LLM<a class="anchor" aria-label="anchor" href="#what-mrmhub-provides-for-an-llm"></a>
-</h2>
-<p>The pkgdown documentation site publishes, alongside the human-facing
-HTML, a set of machine-readable files intended for exactly this purpose.
-They are generated automatically on every site build and require no
-setup:</p>
+<p><strong>Not able to</strong></p>
 <ul>
-<li>
-<strong>An <code>llms.txt</code> index</strong> – <a href="https://slinghub.github.io/MRMhub/quant/llms.txt" class="uri">https://slinghub.github.io/MRMhub/quant/llms.txt</a>. This
-follows the <a href="https://llmstxt.org/" class="external-link">llms.txt</a> convention: a
-single Markdown file with a short package overview followed by grouped
-links to every exported function and every article. It is a compact map
-of the entire API in one file.</li>
-<li>
-<strong>A Markdown mirror of every page.</strong> Each reference and
-article page is also published as plain Markdown – for example <a href="https://slinghub.github.io/MRMhub/quant/reference/normalize_by_istd.md" class="uri">https://slinghub.github.io/MRMhub/quant/reference/normalize_by_istd.md</a>.
-These carry the full argument list and description without the
-navigation, styling, and inline SVG of the rendered HTML, which a model
-would otherwise have to parse and partly discard.</li>
+<li>Run your data or check that the numbers are right – only you can do
+that.</li>
+<li>Guarantee the code is correct; it can produce plausible code that
+fails.</li>
+<li>Know MRMhub’s functions reliably unless you show it the package’s
+own documentation first.</li>
 </ul>
-<p>Feeding these to the model turns it from guessing to reading: it can
-see which functions exist and what arguments they take.</p>
+<p>That last point is the one worth acting on, and it is easy.</p>
 </div>
 <div class="section level2">
-<h2 id="three-ways-to-provide-the-context">Three ways to provide the context<a class="anchor" aria-label="anchor" href="#three-ways-to-provide-the-context"></a>
+<h2 id="make-its-answers-accurate-show-it-the-packages-own-docs">Make its answers accurate: show it the package’s own docs<a class="anchor" aria-label="anchor" href="#make-its-answers-accurate-show-it-the-packages-own-docs"></a>
 </h2>
-<div class="section level3">
-<h3 id="paste-it-in-any-assistant-no-setup">1. Paste it in (any assistant, no setup)<a class="anchor" aria-label="anchor" href="#paste-it-in-any-assistant-no-setup"></a>
-</h3>
-<p>The most portable approach works with any chat interface. Open the
-<code>llms.txt</code> URL, copy its contents, and paste it into the
-conversation with an instruction to use only what it contains. When the
-exact arguments of a function matter, follow the link to that function’s
-<code>.md</code> page and paste that too.</p>
-<p>A prompt template:</p>
-<pre class="text"><code>I am writing an analysis in R using the package `mrmhub`. Below is the
-package's API index. Use ONLY functions that appear in it -- if you are
+<p>Left to memory, an assistant invents function names that sound right
+but do not exist – <code>normalize()</code> instead of
+<code><a href="../reference/normalize_by_istd.html">normalize_by_istd()</a></code>, or a single
+<code>run_pipeline()</code> that was never written. The fix is to give
+it the package’s real reference and tell it to use only what it finds
+there.</p>
+<p>MRMhub publishes a compact map of its entire interface as a single
+file, built automatically with the documentation site:</p>
+<p><a href="https://slinghub.github.io/MRMhub/quant/llms.txt" class="uri">https://slinghub.github.io/MRMhub/quant/llms.txt</a></p>
+<p>Open that link, copy the contents into your chat, and start with an
+instruction like this:</p>
+<pre class="text"><code>I am analysing targeted MS data in R with the package mrmhub. Below is the
+package's function reference. Use ONLY functions that appear in it. If you are
 unsure a function exists, say so rather than inventing one.
 
-&lt;paste the contents of https://slinghub.github.io/MRMhub/quant/llms.txt&gt;
-
-Task: write a script that imports MassHunter data, normalises by internal
-standard, corrects for signal drift, quantifies against a calibration curve,
-computes QC metrics, filters features, and writes an Excel report. Keep the
-`mexp &lt;- f(mexp, ...)` pattern for every step.</code></pre>
-</div>
-<div class="section level3">
-<h3 id="let-the-assistant-fetch-it-browsing-capable-models">2. Let the assistant fetch it (browsing-capable models)<a class="anchor" aria-label="anchor" href="#let-the-assistant-fetch-it-browsing-capable-models"></a>
-</h3>
-<p>Assistants that can retrieve web pages – Claude with web access,
-ChatGPT with browsing, Perplexity, and similar – need only the URL. Give
-them the <code>llms.txt</code> address and ask them to read it and
-follow the links to individual reference pages as needed. This avoids
-copy-and-paste and lets the model pull the exact page for each function
-it uses.</p>
-</div>
-<div class="section level3">
-<h3 id="agentic-and-local-tools">3. Agentic and local tools<a class="anchor" aria-label="anchor" href="#agentic-and-local-tools"></a>
-</h3>
-<p>Coding assistants that operate on a project – Claude Code, Cursor,
-Continue, and comparable tools, including those backed by a local model
-through Ollama – can take <code>llms.txt</code> and the <code>.md</code>
-reference pages as a knowledge source, so the generated code is grounded
-in the real API as it is written.</p>
-<p>Local models deserve a note of caution: a smaller model running on a
-workstation has memorised even less of a niche package than a large
-hosted one, so it is <em>more</em> dependent on being given this
-context, not less. Provide the reference material explicitly and keep
-the requested task narrow.</p>
-</div>
-<div class="section level3">
-<h3 id="what-about-just-the-github-link">What about just the GitHub link?<a class="anchor" aria-label="anchor" href="#what-about-just-the-github-link"></a>
-</h3>
-<p>A natural shortcut is to give the assistant the repository URL (<a href="https://github.com/SLINGhub/MRMhub" class="external-link uri">https://github.com/SLINGhub/MRMhub</a>) instead. Whether
-this works depends on the tool. A repository-aware or agentic tool
-(option 3) reads the actual source, roxygen documentation included, so
-the repository – or a local clone – is an excellent starting point. A
-browsing chat assistant (option 2), by contrast, typically fetches only
-the rendered README and the top-level file listing in a single request;
-it does not read every source file, so it sees a handful of functions
-rather than the full API, and the repository also mixes in the
-INTEGRATOR sources and the documentation sites. For that reason
-<code>llms.txt</code> remains the better single entry point for chat
-assistants – one request yields the complete, curated API map. Supplying
-both the <code>llms.txt</code> URL and the repository link covers either
-kind of tool.</p>
-</div>
+&lt;paste the contents of https://slinghub.github.io/MRMhub/quant/llms.txt here&gt;</code></pre>
+<p>If your assistant can browse the web – Claude with web access,
+ChatGPT with browsing – you can skip the copy-and-paste and simply give
+it the link, asking it to read that page and follow the links to
+individual function pages as needed.</p>
 </div>
 <div class="section level2">
-<h2 id="a-worked-example">A worked example<a class="anchor" aria-label="anchor" href="#a-worked-example"></a>
+<h2 id="common-tasks">Common tasks<a class="anchor" aria-label="anchor" href="#common-tasks"></a>
 </h2>
-<p>Grounded in the API index, a model should produce a script that uses
-real function names and respects the pipeline order. The result for the
-task above looks like the following – which is also a useful template to
-write by hand:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<p>Each task below is a short prompt you can adapt. Paste the reference
+first (or set it up once, further down) so the assistant is working from
+the real interface.</p>
+<div class="section level3">
+<h3 id="understand-a-step">Understand a step<a class="anchor" aria-label="anchor" href="#understand-a-step"></a>
+</h3>
+<pre class="text"><code>In one short paragraph, explain what correct_drift_loess() does and why drift
+and batch corrections in mrmhub are fitted on QC samples, not study samples.</code></pre>
+</div>
+<div class="section level3">
+<h3 id="draft-a-script-for-your-workflow">Draft a script for your workflow<a class="anchor" aria-label="anchor" href="#draft-a-script-for-your-workflow"></a>
+</h3>
+<p>Ask for a complete script, and insist it keep MRMhub’s core pattern:
+every processing step takes an <code>MRMhubExperiment</code> and returns
+an updated one.</p>
+<pre class="text"><code>Write an R script using mrmhub that imports my data, normalises by internal
+standard, corrects signal drift, quantifies against calibration curves,
+computes QC metrics, filters failing features, and writes an Excel report.
+Keep the mexp &lt;- f(mexp, ...) pattern for every step, in recommended order.</code></pre>
+<p>A grounded assistant should return real function names in the right
+order. The runnable core looks like the block below; it imports the
+bundled demo so it works as is, and you would swap in your own file:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/SLINGhub/MRMhub" class="external-link">mrmhub</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Import analytical data and its embedded metadata</span></span>
-<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MRMhubExperiment.html">MRMhubExperiment</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Example assay"</span><span class="op">)</span></span>
-<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_data_masshunter.html">import_data_masshunter</a></span><span class="op">(</span><span class="va">mexp</span>, path <span class="op">=</span> <span class="st">"data.csv"</span>, import_metadata <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co"># Bundled demo file, so this runs as written; use your own file instead</span></span>
+<span><span class="va">demo</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"MRMhub_demo.tsv"</span>, package <span class="op">=</span> <span class="st">"mrmhub"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Normalise each feature by its internal standard</span></span>
+<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MRMhubExperiment.html">MRMhubExperiment</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_data_mrmhub.html">import_data_mrmhub</a></span><span class="op">(</span><span class="va">mexp</span>, path <span class="op">=</span> <span class="va">demo</span>, import_metadata <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Normalise each feature by its internal standard -&gt; feature_norm_intensity</span></span>
 <span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_by_istd.html">normalize_by_istd</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Correct within-run signal drift (fitted on QC samples only)</span></span>
-<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/correct_drift_loess.html">correct_drift_loess</a></span><span class="op">(</span><span class="va">mexp</span>, variable <span class="op">=</span> <span class="st">"norm_intensity"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Quantify against calibration curves</span></span>
-<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/quantify_by_calibration.html">quantify_by_calibration</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Compute QC metrics, then filter features that fail them</span></span>
-<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_qc_metrics.html">calc_qc_metrics</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span></span>
-<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/filter_features_qc.html">filter_features_qc</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Write the multi-sheet Excel report</span></span>
 <span><span class="fu"><a href="../reference/save_report_xlsx.html">save_report_xlsx</a></span><span class="op">(</span><span class="va">mexp</span>, path <span class="op">=</span> <span class="st">"results.xlsx"</span><span class="op">)</span></span></code></pre></div>
-<p>Every call here follows the <code>mexp -&gt; mexp</code> pattern, and
-the order matches the recommended pipeline. That is what the context
-makes possible; it is not guaranteed. The next section is how to confirm
-it.</p>
+<p>From that base, ask the assistant to add drift correction,
+calibration, QC metrics, and filtering for your own data; the full
+pipeline and its order are laid out in <a href="tutorial-02-basic-workflow.html">Basic MRMhub workflow</a>.</p>
+</div>
+<div class="section level3">
+<h3 id="explain-and-fix-an-error">Explain and fix an error<a class="anchor" aria-label="anchor" href="#explain-and-fix-an-error"></a>
+</h3>
+<p>Paste the error together with the line that produced it – the
+assistant reads both far better than a description.</p>
+<pre class="text"><code>Running this line: mexp &lt;- normalize_by_istd(mexp)
+I get this error: &lt;paste the exact error message&gt;
+What does it mean, and how do I fix it?</code></pre>
+</div>
+<div class="section level3">
+<h3 id="choose-or-understand-a-parameter">Choose or understand a parameter<a class="anchor" aria-label="anchor" href="#choose-or-understand-a-parameter"></a>
+</h3>
+<p>Point it at that function’s reference page, published alongside the
+map above (for example
+<code>.../quant/reference/filter_features_qc.md</code>), and ask what an
+argument controls and how to set it for your assay.</p>
+</div>
+<div class="section level3">
+<h3 id="plan-the-analysis">Plan the analysis<a class="anchor" aria-label="anchor" href="#plan-the-analysis"></a>
+</h3>
+<pre class="text"><code>My samples are plasma extracts with stable-isotope-labelled internal standards
+and a 7-point external calibration curve. Which mrmhub steps apply, in what
+order, and where do QC samples come in?</code></pre>
+</div>
 </div>
 <div class="section level2">
-<h2 id="do-not-trust-verify">Do not trust – verify<a class="anchor" aria-label="anchor" href="#do-not-trust-verify"></a>
+<h2 id="set-it-up-once">Set it up once<a class="anchor" aria-label="anchor" href="#set-it-up-once"></a>
 </h2>
-<p>Grounding reduces errors but does not eliminate them. Treat generated
-code as a draft to be checked, never as an answer to be trusted.</p>
+<p>If you use the assistant regularly, load the reference once instead
+of pasting it into every chat. In <strong>Claude</strong>, create a
+Project and add the <code>llms.txt</code> file (and a manual page or
+two) to its knowledge. In <strong>ChatGPT</strong>, do the same with a
+Project or a custom GPT, attaching the same files as knowledge. Every
+conversation in that Project is then grounded in the real interface from
+the start.</p>
+</div>
+<div class="section level2">
+<h2 id="the-no-code-shortcut-build_workflow">The no-code shortcut: <code>build_workflow()</code><a class="anchor" aria-label="anchor" href="#the-no-code-shortcut-build_workflow"></a>
+</h2>
+<p>If you would rather not write R at all, the package gives the
+assistant a head start. <code><a href="../reference/build_workflow.html">build_workflow()</a></code> opens an
+interactive application: you point it at your data and metadata, tick
+the processing steps you want, and it validates your inputs and
+generates a correct, runnable Quarto (<code>.qmd</code>) workflow to
+download (see <a href="tutorial-12-workflow-builder.html">Build a
+workflow without code</a>).</p>
+<p>Handing that generated script to an assistant – to explain a step, or
+to adjust one part – is far safer than asking it to write a pipeline
+from nothing, because it starts from something already valid.</p>
+</div>
+<div class="section level2">
+<h2 id="two-rules-you-cannot-skip">Two rules you cannot skip<a class="anchor" aria-label="anchor" href="#two-rules-you-cannot-skip"></a>
+</h2>
 <div class="callout callout-caution">
-<p><strong>Verify every AI-generated pipeline before relying on its
+<p><strong>Verify every AI-generated pipeline before trusting its
 results.</strong></p>
 <ul>
 <li>
-<strong>Run it on data you understand</strong> – the bundled demo
-dataset is ideal
-(<code>system.file("extdata", "MRMhub_demo.tsv", package = "mrmhub")</code>).
-Read the errors; a hallucinated function surfaces immediately as “could
-not find function”.</li>
+<strong>Run it on data you understand</strong> first – the bundled
+demo
+(<code>system.file("extdata", "MRMhub_demo.tsv", package = "mrmhub")</code>)
+is ideal. A made-up function fails immediately as “could not find
+function”.</li>
 <li>
 <strong>Cross-check every function name</strong> against the <a href="../reference/index.html">function reference</a>. If a call is not
-listed there, it does not exist – regardless of how convincing it
-looks.</li>
+listed there, it does not exist, however convincing it looks.</li>
 <li>
-<strong>Confirm the step order</strong> matches the recommended
-pipeline and that drift and batch corrections are fitted on QC samples,
-not study samples. See <a href="manual-03-design-decisions.html">Design
-decisions</a> for why the order and the QC-only rule matter.</li>
+<strong>Confirm the step order</strong> and that drift and batch
+corrections are fitted on QC samples, not study samples. See <a href="manual-03-design-decisions.html">Design decisions</a> for why this
+matters.</li>
 <li>
-<strong>Inspect the numbers</strong>, not just that the script runs
-without error. A pipeline can complete and still be wrong – the wrong
-normalisation, the wrong calibration model. Sanity-check against QC
+<strong>Inspect the numbers</strong>, not just that the script ran.
+A pipeline can complete and still be wrong. Sanity-check against QC
 plots and metrics.</li>
 </ul>
 </div>
-<p><code><a href="../reference/build_workflow.html">build_workflow()</a></code> offers a complementary starting point:
-it launches an interactive application that validates your data and
-metadata, warns about pipeline mismatches, and generates a correct,
-runnable Quarto (<code>.qmd</code>) workflow. Handing that generated
-script to an assistant as a base – rather than asking it to write one
-from nothing – gives the model a scaffold that is already valid.</p>
-</div>
-<div class="section level2">
-<h2 id="data-privacy">Data privacy<a class="anchor" aria-label="anchor" href="#data-privacy"></a>
-</h2>
 <div class="callout callout-caution">
-<p><strong>Do not paste study data into a cloud LLM.</strong> Sample
-intensities, subject metadata, and unpublished results sent to a hosted
-assistant leave your control and may be retained or used by the
-provider. Share <em>code and the API map</em> – <code>llms.txt</code>,
-reference pages, and function calls – not the measurements themselves.
-When the data cannot leave the machine, use a locally hosted model,
-which keeps everything on-device.</p>
+<p><strong>Do not paste study data into a cloud assistant.</strong>
+Sample intensities, subject metadata, and unpublished results sent to a
+hosted service leave your control and may be retained. Share <em>code
+and the function map</em> – <code>llms.txt</code>, reference pages, and
+the function calls themselves – never the measurements. When the data
+must stay on the machine, use a locally hosted model, which keeps
+everything on-device.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="next-steps">Next Steps<a class="anchor" aria-label="anchor" href="#next-steps"></a>
+<h2 id="going-further">Going further<a class="anchor" aria-label="anchor" href="#going-further"></a>
+</h2>
+<p>More capable tooling exists for those who want it. Agentic coding
+assistants such as Claude Code and Cursor operate directly on a project
+folder and can read the package source as they write. Claude Desktop can
+connect to your files through an MCP connector, though their contents
+then reach the provider like any other message. Locally hosted models
+(through Ollama or LM Studio) keep everything on-device, but a smaller
+local model has memorised even less of a niche package, so it depends
+<em>more</em> on being shown the reference, not less. Whichever you use,
+the two rules above still apply.</p>
+</div>
+<div class="section level2">
+<h2 id="next-steps">Next steps<a class="anchor" aria-label="anchor" href="#next-steps"></a>
 </h2>
 <ul>
 <li>
 <a href="manual-03-design-decisions.html">Design decisions</a>: the
-conventions an assistant must respect: the <code>mexp -&gt; mexp</code>
+conventions an assistant must respect – the <code>mexp -&gt; mexp</code>
 pattern and the pipeline order</li>
 <li>
-<a href="manual-01-key-concepts.html">Key concepts &amp;
-glossary</a>: the data model and terminology to give the model (and
-yourself) a shared vocabulary</li>
+<a href="manual-01-key-concepts.html">Key concepts and glossary</a>:
+the data model and terms to share with the assistant</li>
 <li>
 <a href="tutorial-00-first-analysis.html">Your first analysis</a>: a
-hand-written baseline pipeline to compare generated code against</li>
+hand-run baseline to compare generated code against</li>
 </ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

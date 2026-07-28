@@ -18,6 +18,7 @@
       <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-get-started" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Get Started</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-get-started"><li><a class="dropdown-item" href="../articles/manual-00-installation.html">Installation</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-13-intro-to-r-quarto-mrmhub.html">Intro to R, Quarto &amp; MRMhub</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
     <li><a class="dropdown-item" href="../articles/manual-01-key-concepts.html">Key Concepts &amp; Glossary</a></li>
     <li><a class="dropdown-item" href="../articles/manual-10-troubleshooting.html">Troubleshooting &amp; FAQ</a></li>
@@ -25,6 +26,7 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-tutorials" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Tutorials</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-tutorials"><li><h6 class="dropdown-header" data-toc-skip>Start here</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-13-intro-to-r-quarto-mrmhub.html">Intro to R, Quarto &amp; MRMhub</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-12-workflow-builder.html">Build a workflow (no code)</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-01-prep-data.html">Preparing &amp; importing data</a></li>
@@ -67,7 +69,7 @@
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
     <li><a class="dropdown-item" href="../articles/manual-13-plot-customization.html">Customising Plots</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Writing Pipelines with AI Assistants</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Getting Help from an AI Assistant</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-02-data-object.html">The MRMhubExperiment Data Object</a></li>
@@ -102,10 +104,12 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_calibration_metrics</span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  include_qualifier <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  with_lod <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  with_loq <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  with_coefficients <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  with_sigma <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  with_sigma <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  summary_table <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -115,6 +119,11 @@
 
 <dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
 <dd><p>A <code><a href="MRMhubExperiment-class.html">MRMhubExperiment</a></code> object with QC metrics.</p></dd>
+
+
+<dt id="arg-include-qualifier">include_qualifier<a class="anchor" aria-label="anchor" href="#arg-include-qualifier"></a></dt>
+<dd><p>Whether to include qualifier features. When <code>FALSE</code>,
+only quantifier features are returned. Default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-with-lod">with_lod<a class="anchor" aria-label="anchor" href="#arg-with-lod"></a></dt>
@@ -131,6 +140,16 @@
 
 <dt id="arg-with-sigma">with_sigma<a class="anchor" aria-label="anchor" href="#arg-with-sigma"></a></dt>
 <dd><p>Whether to include sigma in output. Default is <code>TRUE</code>.</p></dd>
+
+
+<dt id="arg-summary-table">summary_table<a class="anchor" aria-label="anchor" href="#arg-summary-table"></a></dt>
+<dd><p>When <code>TRUE</code>, return a compact, display-formatted summary
+tibble (<code>analyte</code>, <code>fit_model</code>, <code>fit_weighting</code>, <code>r2</code>, <code>lod</code>, <code>loq</code>) with
+<code>r2</code> rounded to 5 decimals and <code>lod</code>/<code>loq</code> to 3 significant figures. This is
+a presentation view for reporting; the values are <strong>rounded</strong>, so do not use
+it for downstream computation. <code>lod</code>/<code>loq</code> follow <code>with_lod</code>/<code>with_loq</code>. The
+<code>with_coefficients</code>/<code>with_sigma</code> flags are ignored in this mode. Default is
+<code>FALSE</code> (full, unrounded metrics).</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -149,7 +168,7 @@ See its documentation for details.</p><div class="section">
 <li><p><code>fit_weighting</code>: Weighting method used in fitting.</p></li>
 <li><p><code>lowest_cal</code>: Lowest nonzero calibration concentration.</p></li>
 <li><p><code>highest_cal</code>: Highest calibration concentration.</p></li>
-<li><p><code>r2</code>: R-squared value, indicating goodness of fit. For a <strong>weighted</strong>
+<li><p><code>r2</code>: R² value, indicating goodness of fit. For a <strong>weighted</strong>
 fit this is the weighted coefficient of determination (computed from weighted
 sums of squares), matching the value reported by vendor software such as
 Agilent MassHunter for the same weighted curve.</p></li>

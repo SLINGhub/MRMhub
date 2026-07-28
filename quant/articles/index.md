@@ -57,12 +57,12 @@
   Reference for the MRMhub plotting functions, grouped by workflow
   stage, with the canonical argument forms and customisation guidance.
 
-- [Writing pipelines with AI
-  assistants](https://slinghub.github.io/MRMhub/quant/articles/manual-09-ai-assistants.md):
+- [Getting help from an AI
+  assistant](https://slinghub.github.io/MRMhub/quant/articles/manual-09-ai-assistants.md):
 
-  How to use large language models (Claude, ChatGPT, or local models) to
-  help write MRMhub QUANT pipelines – how to ground them in the real
-  API, and how to verify what they produce.
+  How a lab scientist can use Claude, ChatGPT, or a local model to help
+  plan, write, and troubleshoot MRMhub QUANT workflows – accurately, and
+  without exposing study data.
 
 - [Troubleshooting and
   FAQ](https://slinghub.github.io/MRMhub/quant/articles/manual-10-troubleshooting.md):
@@ -194,3 +194,9 @@
 
   Use the point-and-click builder to validate your data and metadata and
   generate a runnable Quarto workflow.
+
+- [Introduction to R, Quarto, and
+  MRMhub](https://slinghub.github.io/MRMhub/quant/articles/tutorial-13-intro-to-r-quarto-mrmhub.md):
+
+  Install R and an IDE, create a Quarto project, and run a complete
+  MRMhub analysis in it — written for readers new to R and Quarto.

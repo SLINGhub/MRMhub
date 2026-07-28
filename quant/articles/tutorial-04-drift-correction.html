@@ -44,6 +44,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-get-started" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Get Started</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-get-started">
 <li><a class="dropdown-item" href="../articles/manual-00-installation.html">Installation</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-13-intro-to-r-quarto-mrmhub.html">Intro to R, Quarto &amp; MRMhub</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
     <li><a class="dropdown-item" href="../articles/manual-01-key-concepts.html">Key Concepts &amp; Glossary</a></li>
     <li><a class="dropdown-item" href="../articles/manual-10-troubleshooting.html">Troubleshooting &amp; FAQ</a></li>
@@ -53,6 +54,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-tutorials" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Tutorials</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-tutorials">
 <li><h6 class="dropdown-header" data-toc-skip>Start here</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-13-intro-to-r-quarto-mrmhub.html">Intro to R, Quarto &amp; MRMhub</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-12-workflow-builder.html">Build a workflow (no code)</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-01-prep-data.html">Preparing &amp; importing data</a></li>
@@ -97,7 +99,7 @@
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
     <li><a class="dropdown-item" href="../articles/manual-13-plot-customization.html">Customising Plots</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Writing Pipelines with AI Assistants</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Getting Help from an AI Assistant</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-02-data-object.html">The MRMhubExperiment Data Object</a></li>
@@ -383,6 +385,36 @@ Figure 8. Concentrations after batch correction with variance scaling;
 both location and spread are consistent across batches.
 </p>
 </div>
+<div class="section level3">
+<h3 id="alternative-batch-correction-methods-experimental">Alternative batch-correction methods (experimental)<a class="anchor" aria-label="anchor" href="#alternative-batch-correction-methods-experimental"></a>
+</h3>
+<p>Besides median centering, two model-based methods are available. Both
+are experimental and require an optional package.</p>
+<p><strong>ComBat</strong> <span class="citation">[@johnson2007AdjustingBatchEffects]</span> applies an
+empirical-Bayes location and scale adjustment, shrinking the batch
+estimates across features (requires the <code>sva</code> package).
+Unlike centering and SERRF, it estimates batch effects from all samples;
+pass <code>covariates</code> to protect biology on unbalanced
+designs.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">myexp_batch</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/correct_batch_combat.html">correct_batch_combat</a></span><span class="op">(</span></span>
+<span>  <span class="va">myexp_batch</span>,</span>
+<span>  variable <span class="op">=</span> <span class="st">"conc"</span>,</span>
+<span>  ref_qc_types <span class="op">=</span> <span class="st">"SPL"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><strong>SERRF</strong> <span class="citation">[@fan2019SystematicErrorRemoval]</span> trains a
+per-feature random forest on the reference QCs and removes the predicted
+systematic error, capturing non-linear batch and drift effects jointly
+(requires the <code>ranger</code> package). It suits larger panels with
+dense QC coverage; the implementation adapts the <code>malbacR</code>
+reference <span class="citation">[@leach2023MalbacRPackage]</span>.</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">myexp_batch</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/correct_batch_serrf.html">correct_batch_serrf</a></span><span class="op">(</span></span>
+<span>  <span class="va">myexp_batch</span>,</span>
+<span>  variable <span class="op">=</span> <span class="st">"conc"</span>,</span>
+<span>  ref_qc_types <span class="op">=</span> <span class="st">"SPL"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
 </div>
 <div class="section level2">
 <h2 id="choosing-a-drift-correction-method">6. Choosing a drift-correction method<a class="anchor" aria-label="anchor" href="#choosing-a-drift-correction-method"></a>
@@ -430,7 +462,7 @@ four.</p>
 <p>Loess uses locally weighted regression and is less sensitive to
 individual outlier QCs than a cubic spline; its <code>span</code>
 controls smoothness.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mexp_drift_loess</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/correct_drift_loess.html">correct_drift_loess</a></span><span class="op">(</span></span>
 <span>  <span class="va">myexp</span>,</span>
 <span>  variable <span class="op">=</span> <span class="st">"conc"</span>,</span>
@@ -444,7 +476,7 @@ controls smoothness.</p>
 </h2>
 <p>Continue processing the corrected object with MRMhub functions, or
 export the corrected variable to CSV.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/save_dataset_csv.html">save_dataset_csv</a></span><span class="op">(</span></span>
 <span>  <span class="va">mexp_drift</span>,</span>
 <span>  path <span class="op">=</span> <span class="st">"drift-batch-corrected-conc-data.csv"</span>,</span>

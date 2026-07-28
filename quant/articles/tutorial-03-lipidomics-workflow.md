@@ -656,10 +656,33 @@ plot_runscatter(
   show_trend = TRUE,
   output_pdf = TRUE,
   path = "./output/runscatter_after-drift-batch-correction.pdf",
+  page_width = 297, page_height = 210,
   cols_page = 2, rows_page = 2,
   show_progress = TRUE
 )
 ```
+
+`page_width` and `page_height` set the page size; without them an A4
+page is used, oriented by `page_orientation`.
+
+The single figures made earlier in this workflow are saved with
+[`save_plot()`](https://slinghub.github.io/MRMhub/quant/reference/save_plot.md),
+which writes any plot at a defined size and resolution and can produce
+several formats in one call:
+
+``` r
+
+plot_pca(myexp, variable = "conc", qc_types = c("BQC", "SPL")) |>
+  save_plot(path = "./output/pca", format = c("pdf", "png"),
+            width = 180, height = 120)
+```
+
+The plot is returned visibly, so it still appears in the notebook while
+being written to file.
+
+See [Saving
+plots](https://slinghub.github.io/MRMhub/quant/articles/manual-08-visualization.html#saving-plots)
+for the available formats and when to prefer a vector or a raster one.
 
 ## 18. QC-based feature filtering
 
@@ -785,7 +808,7 @@ produced.
 save_report_xlsx(myexp, path = tempfile(fileext = ".xlsx"))
 ```
 
-    ✔ The data processing report of experiment 'sPerfect' has been saved to /tmp/RtmpmhZT0Z/file304836dfcb2b.xlsx.
+    ✔ The data processing report of experiment 'sPerfect' has been saved to /tmp/RtmpppCsTy/file33d35279c0fc.xlsx.
 
 For downstream statistics it is often easier to export a single flat,
 wide CSV of a chosen data subset. This is the format used to share the

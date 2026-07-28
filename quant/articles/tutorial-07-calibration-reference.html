@@ -44,6 +44,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-get-started" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Get Started</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-get-started">
 <li><a class="dropdown-item" href="../articles/manual-00-installation.html">Installation</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-13-intro-to-r-quarto-mrmhub.html">Intro to R, Quarto &amp; MRMhub</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
     <li><a class="dropdown-item" href="../articles/manual-01-key-concepts.html">Key Concepts &amp; Glossary</a></li>
     <li><a class="dropdown-item" href="../articles/manual-10-troubleshooting.html">Troubleshooting &amp; FAQ</a></li>
@@ -53,6 +54,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-tutorials" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Tutorials</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-tutorials">
 <li><h6 class="dropdown-header" data-toc-skip>Start here</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-13-intro-to-r-quarto-mrmhub.html">Intro to R, Quarto &amp; MRMhub</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-12-workflow-builder.html">Build a workflow (no code)</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-01-prep-data.html">Preparing &amp; importing data</a></li>
@@ -97,7 +99,7 @@
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
     <li><a class="dropdown-item" href="../articles/manual-13-plot-customization.html">Customising Plots</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Writing Pipelines with AI Assistants</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Getting Help from an AI Assistant</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-02-data-object.html">The MRMhubExperiment Data Object</a></li>
@@ -189,7 +191,7 @@ significantly.</p>
 <pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Internal Standard metadata associated with 2 ISTDs.</span></code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">QC concentration metadata associated with 1 annotated samples and 6 annotated analytes</span></code></pre>
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">QC concentration metadata associated with 1 samples and 6 analytes</span></code></pre>
 </div>
 </div>
 <div class="section level2">
@@ -260,21 +262,21 @@ appear as concentrations in the MRMhub XLSX report.</p>
 <code class="sourceCode R"><span><span class="co"># Export absolute-calibrated concentrations</span></span>
 <span><span class="fu"><a href="../reference/save_dataset_csv.html">save_dataset_csv</a></span><span class="op">(</span><span class="va">mexp_res</span>, <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span>, variable <span class="op">=</span> <span class="st">"conc"</span><span class="op">)</span></span></code></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Concentration values for 65 analyses and 7 features have been exported to '/tmp/RtmpLXj97Q/file35915919f303.csv'.</span></code></pre>
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Concentration values for 65 analyses and 7 features have been exported to '/tmp/RtmpOlUM63/file39294447f8.csv'.</span></code></pre>
 </div>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># Export non-calibrated concentrations</span></span>
 <span><span class="fu"><a href="../reference/save_dataset_csv.html">save_dataset_csv</a></span><span class="op">(</span><span class="va">mexp_res</span>, <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span>, variable <span class="op">=</span> <span class="st">"conc_beforecal"</span><span class="op">)</span></span></code></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Conc_beforecal values for 65 analyses and 16 features have been exported to '/tmp/RtmpLXj97Q/file35915198d63c.csv'.</span></code></pre>
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Conc_beforecal values for 65 analyses and 16 features have been exported to '/tmp/RtmpOlUM63/file39294b47e35c.csv'.</span></code></pre>
 </div>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># Create XLSX report with calibrated concentrations as filtered dataset</span></span>
 <span><span class="fu"><a href="../reference/save_report_xlsx.html">save_report_xlsx</a></span><span class="op">(</span><span class="va">mexp_res</span>, <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".xlsx"</span><span class="op">)</span>, filtered_variable <span class="op">=</span> <span class="st">"conc"</span><span class="op">)</span></span></code></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The data processing report has been saved to </span><span style="color: #0000BB;">/tmp/RtmpLXj97Q/file35911a958cbe.xlsx</span>.</code></pre>
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The data processing report has been saved to /tmp/RtmpOlUM63/file392939cd6761.xlsx.</span></code></pre>
 </div>
 </div>
 <div class="section level2">
@@ -323,7 +325,7 @@ default; to include them as the filtered dataset, set
 <span>  path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".xlsx"</span><span class="op">)</span>,</span>
 <span>  filtered_variable <span class="op">=</span> <span class="st">"conc_normalized"</span><span class="op">)</span></span></code></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The data processing report has been saved to </span><span style="color: #0000BB;">/tmp/RtmpLXj97Q/file35917daa139b.xlsx</span>.</code></pre>
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The data processing report has been saved to /tmp/RtmpOlUM63/file392928d30a58.xlsx.</span></code></pre>
 </div>
 </div>
 <div class="section level2">
@@ -356,7 +358,7 @@ using a reference material shared across them.</p>
 <code class="sourceCode R"><span></span>
 <span><span class="fu"><a href="../reference/save_dataset_csv.html">save_dataset_csv</a></span><span class="op">(</span><span class="va">mexp_res</span>, <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span>, variable <span class="op">=</span> <span class="st">"conc_beforecal"</span><span class="op">)</span></span></code></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Conc_beforecal values for 65 analyses and 16 features have been exported to '/tmp/RtmpLXj97Q/file35913d6de2a2.csv'.</span></code></pre>
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Conc_beforecal values for 65 analyses and 16 features have been exported to '/tmp/RtmpOlUM63/file39294959b23d.csv'.</span></code></pre>
 </div>
 </div>
 <div class="section level2">

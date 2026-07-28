@@ -210,6 +210,10 @@ Function for drift and batch correction correction
   : Drift correction by generalized additive model (GAM) smoothing
 - [`correct_batch_centering()`](https://slinghub.github.io/MRMhub/quant/reference/correct_batch_centering.md)
   : Batch centering correction
+- [`correct_batch_combat()`](https://slinghub.github.io/MRMhub/quant/reference/correct_batch_combat.md)
+  **\[experimental\]** : ComBat batch correction
+- [`correct_batch_serrf()`](https://slinghub.github.io/MRMhub/quant/reference/correct_batch_serrf.md)
+  **\[experimental\]** : SERRF batch correction
 
 ## Quality Control and Filtering
 
@@ -258,10 +262,11 @@ Functions to plots diverse QC visualizatios.
 - [`plot_qc_interference_impact()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_interference_impact.md)
   : Plot the magnitude of interference correction as a histogram
 
-## Plot appearance defaults
+## Plot Defaults and Export
 
-Set session-wide defaults (font size, point size, legend, strips) for
-the plotting functions. See the “Customising plots” article.
+Set session-wide defaults (font size, point size, legend, strips, save
+units and resolution) for the plotting functions, and write figures to
+file at a defined size. See the “Customising plots” article.
 
 - [`mrmhub_set_plot_defaults()`](https://slinghub.github.io/MRMhub/quant/reference/mrmhub_set_plot_defaults.md)
   : Set global default appearance for MRMhub plots
@@ -269,6 +274,8 @@ the plotting functions. See the “Customising plots” article.
   : Report the global MRMhub plot defaults
 - [`mrmhub_reset_plot_defaults()`](https://slinghub.github.io/MRMhub/quant/reference/mrmhub_reset_plot_defaults.md)
   : Clear the global MRMhub plot defaults
+- [`save_plot()`](https://slinghub.github.io/MRMhub/quant/reference/save_plot.md)
+  : Save a plot to a file
 
 ## Response Curves
 
@@ -286,12 +293,26 @@ in different formats.
 
 - [`save_report_xlsx()`](https://slinghub.github.io/MRMhub/quant/reference/save_report_xlsx.md)
   : Write a data-processing report (Excel)
+
+- [`save_dataset_rds()`](https://slinghub.github.io/MRMhub/quant/reference/save_dataset_rds.md)
+  :
+
+  Save a complete `MRMhubExperiment` as an RDS file
+
+- [`read_dataset_rds()`](https://slinghub.github.io/MRMhub/quant/reference/read_dataset_rds.md)
+  :
+
+  Read a complete `MRMhubExperiment` from an RDS file
+
 - [`save_dataset_csv()`](https://slinghub.github.io/MRMhub/quant/reference/save_dataset_csv.md)
   : Export data to a CSV file
+
 - [`save_dataset_mztab()`](https://slinghub.github.io/MRMhub/quant/reference/save_dataset_mztab.md)
   : Export an experiment to mzTab-M (HUPO-PSI)
+
 - [`save_dataset_summarizedexperiment()`](https://slinghub.github.io/MRMhub/quant/reference/save_dataset_summarizedexperiment.md)
   : Export an experiment to a Bioconductor SummarizedExperiment
+
 - [`save_feature_qc_metrics()`](https://slinghub.github.io/MRMhub/quant/reference/save_feature_qc_metrics.md)
   : Save feature QC metrics to CSV
 

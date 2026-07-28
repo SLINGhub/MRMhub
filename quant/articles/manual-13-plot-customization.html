@@ -48,6 +48,7 @@ figure needs little or no manual ggplot2 theming.
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-get-started" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Get Started</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-get-started">
 <li><a class="dropdown-item" href="../articles/manual-00-installation.html">Installation</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-13-intro-to-r-quarto-mrmhub.html">Intro to R, Quarto &amp; MRMhub</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
     <li><a class="dropdown-item" href="../articles/manual-01-key-concepts.html">Key Concepts &amp; Glossary</a></li>
     <li><a class="dropdown-item" href="../articles/manual-10-troubleshooting.html">Troubleshooting &amp; FAQ</a></li>
@@ -57,6 +58,7 @@ figure needs little or no manual ggplot2 theming.
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-tutorials" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Tutorials</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-tutorials">
 <li><h6 class="dropdown-header" data-toc-skip>Start here</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-13-intro-to-r-quarto-mrmhub.html">Intro to R, Quarto &amp; MRMhub</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-12-workflow-builder.html">Build a workflow (no code)</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-01-prep-data.html">Preparing &amp; importing data</a></li>
@@ -101,7 +103,7 @@ figure needs little or no manual ggplot2 theming.
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
     <li><a class="dropdown-item" href="../articles/manual-13-plot-customization.html">Customising Plots</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Writing Pipelines with AI Assistants</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Getting Help from an AI Assistant</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-02-data-object.html">The MRMhubExperiment Data Object</a></li>
@@ -240,12 +242,19 @@ point size for a dense multi-panel report, say) and the choice should
 apply throughout without repeating it on each call.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/mrmhub_set_plot_defaults.html">mrmhub_set_plot_defaults</a></span><span class="op">(</span>font_base_size <span class="op">=</span> <span class="fl">8</span>, point_size <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span></span></code></pre></div>
+<p>The unit and resolution used when saving figures with
+<code><a href="../reference/save_plot.html">save_plot()</a></code> can be set the same way, so only the width and
+height need repeating on each call:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/mrmhub_set_plot_defaults.html">mrmhub_set_plot_defaults</a></span><span class="op">(</span>units <span class="op">=</span> <span class="st">"mm"</span>, dpi <span class="op">=</span> <span class="fl">600</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/save_plot.html">save_plot</a></span><span class="op">(</span><span class="va">p</span>, <span class="st">"figures/pca.png"</span>, width <span class="op">=</span> <span class="fl">180</span>, height <span class="op">=</span> <span class="fl">120</span><span class="op">)</span></span></code></pre></div>
 <p>The resolution order for every argument is: a value passed explicitly
 to a plotting function wins, then the global default set here, then the
 function’s built-in default (including the automatic
 <code>cols_page</code> sizing on faceted plots). A one-off call
 therefore still overrides the global setting:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># uses the global font_base_size = 8 set above</span></span>
 <span><span class="fu"><a href="../reference/plot_pca.html">plot_pca</a></span><span class="op">(</span><span class="va">mexp</span>, variable <span class="op">=</span> <span class="st">"norm_intensity"</span><span class="op">)</span></span>
 <span></span>
@@ -259,7 +268,12 @@ so they can also be scoped to a single section with
 session. The arguments that can be set globally are
 <code>font_base_size</code>, <code>point_size</code>,
 <code>legend_position</code>, <code>legend_size</code>,
-<code>show_legend_title</code> and <code>strip_bg_color</code>.</p>
+<code>show_legend_title</code>, <code>strip_bg_color</code>, and
+<code>units</code> and <code>dpi</code> for
+<code><a href="../reference/save_plot.html">save_plot()</a></code>.</p>
+<p>Figure width and height are deliberately <em>not</em> settable
+globally: the physical size of a saved figure should be readable from
+the call that writes it.</p>
 </div>
 <div class="section level2">
 <h2 id="placing-the-legend">Placing the legend<a class="anchor" aria-label="anchor" href="#placing-the-legend"></a>
@@ -305,7 +319,7 @@ coordinate.</p>
 <p>All plots default to <code>"right"</code>. For a legend drawn inside
 the panel over the points, a translucent background box
 (<code>legend_bg_alpha</code>) keeps it readable:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_normalization_qc.html">plot_normalization_qc</a></span><span class="op">(</span><span class="va">mexp</span>,</span>
 <span>  before_norm_var <span class="op">=</span> <span class="st">"intensity"</span>,</span>
 <span>  after_norm_var  <span class="op">=</span> <span class="st">"norm_intensity"</span>,</span>
@@ -325,7 +339,7 @@ plain <code>legend.key.size</code> does not resize). A value of
 <code>font_base_size</code>; a larger value is an absolute point size.
 <code>strip_text_size</code> follows the same convention for facet
 labels.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_rt_vs_chain.html">plot_rt_vs_chain</a></span><span class="op">(</span><span class="va">mexp</span>,</span>
 <span>  font_base_size  <span class="op">=</span> <span class="fl">6</span>,</span>
 <span>  legend_position <span class="op">=</span> <span class="st">"right"</span>,</span>
@@ -379,7 +393,7 @@ filled from <code>cols_page</code>:</p>
 </table>
 <p>A value passed explicitly always wins, so autoscaling only fills what
 is left unset:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># 3-column page: text and points sized automatically</span></span>
 <span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span><span class="va">mexp</span>, variable <span class="op">=</span> <span class="st">"norm_intensity"</span>, cols_page <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
 <span></span>
@@ -400,7 +414,7 @@ by default.</p>
 reachable through ordinary ggplot2 layering, appended after the plotting
 call. A trailing <code><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme()</a></code> takes precedence, so it also
 serves as an override for any house-theme element.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_pca.html">plot_pca</a></span><span class="op">(</span><span class="va">mexp</span>, variable <span class="op">=</span> <span class="st">"norm_intensity"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>panel.grid.minor <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"PCA of normalised intensities"</span><span class="op">)</span></span></code></pre></div>

@@ -119,12 +119,18 @@ get_featurelist(mexp)      # the measured features
 ## 3. Export the results
 
 Write the processed data to a multi-sheet Excel report, or to a single
-tidy CSV:
+tidy CSV. Figures are saved the same way, at a size you specify (in mm
+by default):
 
 ``` r
 
 save_report_xlsx(mexp, path = "my_first_results.xlsx")
 save_dataset_csv(mexp, path = "my_first_results.csv")
+
+save_plot(
+  plot_pca(mexp, variable = "norm_intensity"),
+  path = "my_first_pca.pdf", width = 180, height = 120
+)
 ```
 
 ## Next steps
@@ -141,6 +147,13 @@ save_dataset_csv(mexp, path = "my_first_results.csv")
 - [Lipidomics data
   processing](https://slinghub.github.io/MRMhub/quant/articles/tutorial-03-lipidomics-workflow.md):
   a detailed real-world workflow
+- [Visualisation
+  functions](https://slinghub.github.io/MRMhub/quant/articles/manual-08-visualization.md):
+  the QC plots, and saving figures at a defined size
 - [Customising
   plots](https://slinghub.github.io/MRMhub/quant/articles/manual-13-plot-customization.md):
   size text, legends and points for reports
+- [Getting help from an AI
+  assistant](https://slinghub.github.io/MRMhub/quant/articles/manual-09-ai-assistants.md):
+  use Claude or ChatGPT to help write and troubleshoot your workflow,
+  accurately and safely

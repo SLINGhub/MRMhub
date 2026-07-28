@@ -13,7 +13,8 @@ save_report_xlsx(
   path,
   filtered_variable = "conc",
   normalized_variable = NA,
-  overwrite = TRUE
+  overwrite = TRUE,
+  create_dir = TRUE
 )
 ```
 
@@ -49,6 +50,11 @@ save_report_xlsx(
 
   A logical value indicating whether to overwrite the file if it already
   exists. Default is `TRUE`.
+
+- create_dir:
+
+  A logical value. If `TRUE` (the default), the parent directory of
+  `path` is created if it does not yet exist.
 
 ## Value
 

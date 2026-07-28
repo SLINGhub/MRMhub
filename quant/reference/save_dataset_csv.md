@@ -17,7 +17,8 @@ save_dataset_csv(
   include_istd = NA,
   include_feature_filter = NA,
   exclude_feature_filter = NA,
-  add_qctype = NA
+  add_qctype = NA,
+  create_dir = TRUE
 )
 ```
 
@@ -80,6 +81,11 @@ save_dataset_csv(
 - add_qctype:
 
   Add the QC type as column
+
+- create_dir:
+
+  A logical value. If `TRUE` (the default), the parent directory of
+  `path` is created if it does not yet exist.
 
 ## See also
 

@@ -18,6 +18,7 @@
       <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-get-started" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Get Started</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-get-started"><li><a class="dropdown-item" href="../articles/manual-00-installation.html">Installation</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-13-intro-to-r-quarto-mrmhub.html">Intro to R, Quarto &amp; MRMhub</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
     <li><a class="dropdown-item" href="../articles/manual-01-key-concepts.html">Key Concepts &amp; Glossary</a></li>
     <li><a class="dropdown-item" href="../articles/manual-10-troubleshooting.html">Troubleshooting &amp; FAQ</a></li>
@@ -25,6 +26,7 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-tutorials" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Tutorials</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-tutorials"><li><h6 class="dropdown-header" data-toc-skip>Start here</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-13-intro-to-r-quarto-mrmhub.html">Intro to R, Quarto &amp; MRMhub</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-12-workflow-builder.html">Build a workflow (no code)</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-01-prep-data.html">Preparing &amp; importing data</a></li>
@@ -67,7 +69,7 @@
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
     <li><a class="dropdown-item" href="../articles/manual-13-plot-customization.html">Customising Plots</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Writing Pipelines with AI Assistants</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Getting Help from an AI Assistant</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-02-data-object.html">The MRMhubExperiment Data Object</a></li>
@@ -605,6 +607,20 @@
 
         </dt>
         <dd>Batch centering correction</dd>
+
+        <dt>
+
+          <code><a href="correct_batch_combat.html">correct_batch_combat()</a></code>
+          <span class="badge lifecycle lifecycle-experimental">experimental</span>
+        </dt>
+        <dd>ComBat batch correction</dd>
+
+        <dt>
+
+          <code><a href="correct_batch_serrf.html">correct_batch_serrf()</a></code>
+          <span class="badge lifecycle lifecycle-experimental">experimental</span>
+        </dt>
+        <dd>SERRF batch correction</dd>
       </dl></div><div class="section level2">
       <h2 id="quality-control-and-filtering">Quality Control and Filtering<a class="anchor" aria-label="anchor" href="#quality-control-and-filtering"></a></h2>
 
@@ -750,9 +766,9 @@
         </dt>
         <dd>Plot the magnitude of interference correction as a histogram</dd>
       </dl></div><div class="section level2">
-      <h2 id="plot-appearance-defaults">Plot appearance defaults<a class="anchor" aria-label="anchor" href="#plot-appearance-defaults"></a></h2>
+      <h2 id="plot-defaults-and-export">Plot Defaults and Export<a class="anchor" aria-label="anchor" href="#plot-defaults-and-export"></a></h2>
 
-      <div class="section-desc"><p>Set session-wide defaults (font size, point size, legend, strips) for the plotting functions. See the “Customising plots” article.</p></div>
+      <div class="section-desc"><p>Set session-wide defaults (font size, point size, legend, strips, save units and resolution) for the plotting functions, and write figures to file at a defined size. See the “Customising plots” article.</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -779,6 +795,13 @@
 
         </dt>
         <dd>Clear the global MRMhub plot defaults</dd>
+
+        <dt>
+
+          <code><a href="save_plot.html">save_plot()</a></code>
+
+        </dt>
+        <dd>Save a plot to a file</dd>
       </dl></div><div class="section level2">
       <h2 id="response-curves">Response Curves<a class="anchor" aria-label="anchor" href="#response-curves"></a></h2>
 
@@ -818,6 +841,20 @@
 
         </dt>
         <dd>Write a data-processing report (Excel)</dd>
+
+        <dt>
+
+          <code><a href="save_dataset_rds.html">save_dataset_rds()</a></code>
+
+        </dt>
+        <dd>Save a complete <code>MRMhubExperiment</code> as an RDS file</dd>
+
+        <dt>
+
+          <code><a href="read_dataset_rds.html">read_dataset_rds()</a></code>
+
+        </dt>
+        <dd>Read a complete <code>MRMhubExperiment</code> from an RDS file</dd>
 
         <dt>
 

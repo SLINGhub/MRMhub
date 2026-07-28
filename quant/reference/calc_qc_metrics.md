@@ -194,8 +194,8 @@ The calculated metrics are stored in the `metrics_qc` table of the
   [`get_response_curve_stats()`](https://slinghub.github.io/MRMhub/quant/reference/get_response_curve_stats.md)
   for additional details.
 
-  - `r2_rqc_#`: R-squared value of the linear regression for the
-    response curve, representing the goodness of fit.
+  - `r2_rqc_#`: R² value of the linear regression for the response
+    curve, representing the goodness of fit.
 
   - `slopenorm_rqc_#`: Normalized slope of the linear regression for the
     response curve, indicating the relationship between the response and
@@ -216,7 +216,7 @@ The calculated metrics are stored in the `metrics_qc` table of the
 
   - `highest_cal`: The highest calibration concentration.
 
-  - `r.squared`: R-squared value indicating the goodness of fit.
+  - `r.squared`: R² value indicating the goodness of fit.
 
   - `coef_a`: The intercept of the regression line (both **linear** and
     **quadratic** fits).

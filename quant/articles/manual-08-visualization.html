@@ -46,6 +46,7 @@ with the canonical argument forms and customisation guidance.
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-get-started" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Get Started</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-get-started">
 <li><a class="dropdown-item" href="../articles/manual-00-installation.html">Installation</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-13-intro-to-r-quarto-mrmhub.html">Intro to R, Quarto &amp; MRMhub</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
     <li><a class="dropdown-item" href="../articles/manual-01-key-concepts.html">Key Concepts &amp; Glossary</a></li>
     <li><a class="dropdown-item" href="../articles/manual-10-troubleshooting.html">Troubleshooting &amp; FAQ</a></li>
@@ -55,6 +56,7 @@ with the canonical argument forms and customisation guidance.
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-tutorials" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Tutorials</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-tutorials">
 <li><h6 class="dropdown-header" data-toc-skip>Start here</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-13-intro-to-r-quarto-mrmhub.html">Intro to R, Quarto &amp; MRMhub</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-12-workflow-builder.html">Build a workflow (no code)</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-01-prep-data.html">Preparing &amp; importing data</a></li>
@@ -99,7 +101,7 @@ with the canonical argument forms and customisation guidance.
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
     <li><a class="dropdown-item" href="../articles/manual-13-plot-customization.html">Customising Plots</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Writing Pipelines with AI Assistants</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Getting Help from an AI Assistant</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-02-data-object.html">The MRMhubExperiment Data Object</a></li>
@@ -530,30 +532,162 @@ the house theme.</p>
 <div class="section level3">
 <h3 id="saving-plots">Saving plots<a class="anchor" aria-label="anchor" href="#saving-plots"></a>
 </h3>
-<p>For a single plot:</p>
+<p><code><a href="../reference/save_plot.html">save_plot()</a></code> writes any plot to a file at a defined
+physical size and resolution. Sizes are given in <code>mm</code> by
+default, matching how journals specify figure widths, and
+<code>cm</code>, <code>in</code>, <code>pt</code> and <code>px</code>
+are also accepted.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_pca.html">plot_pca</a></span><span class="op">(</span><span class="va">mexp</span>,</span>
 <span>              variable <span class="op">=</span> <span class="st">"norm_intensity"</span>,</span>
 <span>              qc_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BQC"</span>, <span class="st">"SPL"</span><span class="op">)</span>,</span>
 <span>              ellipse_variable <span class="op">=</span> <span class="st">"batch_id"</span><span class="op">)</span></span>
-<span><span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html" class="external-link">ggsave</a></span><span class="op">(</span><span class="st">"figures/pca_batch.png"</span>, <span class="va">p</span>, width <span class="op">=</span> <span class="fl">8</span>, height <span class="op">=</span> <span class="fl">6</span>, dpi <span class="op">=</span> <span class="fl">300</span><span class="op">)</span></span></code></pre></div>
-<p>For paged outputs (<code><a href="../reference/plot_runscatter.html">plot_runscatter()</a></code>,
-<code><a href="../reference/plot_calibrationcurves.html">plot_calibrationcurves()</a></code>), use the function’s built-in
-<code>output_pdf = TRUE</code> and <code>path</code> arguments to write
-a multi-page PDF directly, rather than iterating in user code.</p>
+<span></span>
+<span><span class="fu"><a href="../reference/save_plot.html">save_plot</a></span><span class="op">(</span><span class="va">p</span>, <span class="st">"figures/pca_batch.pdf"</span>, width <span class="op">=</span> <span class="fl">180</span>, height <span class="op">=</span> <span class="fl">120</span><span class="op">)</span></span></code></pre></div>
+<p>The same figure can be written in several formats in one call. Give a
+path without an extension and list the formats; each file gets the
+matching extension.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/save_plot.html">save_plot</a></span><span class="op">(</span><span class="va">p</span>, <span class="st">"figures/pca_batch"</span>, format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pdf"</span>, <span class="st">"png"</span><span class="op">)</span>, width <span class="op">=</span> <span class="fl">180</span>, height <span class="op">=</span> <span class="fl">120</span><span class="op">)</span></span></code></pre></div>
+<p>The plot is returned visibly, so piping into <code><a href="../reference/save_plot.html">save_plot()</a></code>
+still renders the figure in the notebook and saving needs no separate
+line:</p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_pca.html">plot_pca</a></span><span class="op">(</span><span class="va">mexp</span>, variable <span class="op">=</span> <span class="st">"norm_intensity"</span>, ellipse_variable <span class="op">=</span> <span class="st">"batch_id"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="../reference/save_plot.html">save_plot</a></span><span class="op">(</span><span class="st">"figures/pca_batch.pdf"</span>, width <span class="op">=</span> <span class="fl">180</span>, height <span class="op">=</span> <span class="fl">120</span><span class="op">)</span></span></code></pre></div>
+<p>In a script or a loop, where re-drawing a dense figure is wasted
+work, <code>show_plot = FALSE</code> skips it and returns the written
+paths instead:</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">paths</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/save_plot.html">save_plot</a></span><span class="op">(</span><span class="va">p</span>, <span class="st">"figures/pca_batch.pdf"</span>, width <span class="op">=</span> <span class="fl">180</span>, height <span class="op">=</span> <span class="fl">120</span>,</span>
+<span>                   show_plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<p>(With <code>show_plot = TRUE</code> the paths are still available, as
+the <code>"paths"</code> attribute of the returned plot.)</p>
+<p><code><a href="../reference/save_plot.html">save_plot()</a></code> also accepts what the plot functions return
+around a plot: the result list of <code><a href="../reference/plot_rla_boxplot.html">plot_rla_boxplot()</a></code> (it
+picks up the <code>plot</code> element), a <code>patchwork</code>
+composition, and a list of plots, which becomes a multi-page PDF.</p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">pages</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span><span class="va">mexp</span>, variable <span class="op">=</span> <span class="st">"norm_intensity"</span>, return_plots <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/save_plot.html">save_plot</a></span><span class="op">(</span><span class="va">pages</span>, <span class="st">"figures/runscatter_all.pdf"</span>, width <span class="op">=</span> <span class="fl">280</span>, height <span class="op">=</span> <span class="fl">200</span>,</span>
+<span>          show_plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<div class="section level4">
+<h4 id="choosing-a-format">Choosing a format<a class="anchor" aria-label="anchor" href="#choosing-a-format"></a>
+</h4>
+<table class="table">
+<colgroup>
+<col width="25%">
+<col width="25%">
+<col width="25%">
+<col width="25%">
+</colgroup>
+<thead><tr class="header">
+<th>Purpose</th>
+<th>Format</th>
+<th>Device used</th>
+<th>Typical <code>dpi</code>
+</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>Journal figure, vector (default choice)</td>
+<td><code>"pdf"</code></td>
+<td>
+<code><a href="https://rdrr.io/r/grDevices/cairo.html" class="external-link">grDevices::cairo_pdf</a></code>, else
+<code><a href="https://rdrr.io/r/grDevices/pdf.html" class="external-link">grDevices::pdf</a></code>
+</td>
+<td>n/a</td>
+</tr>
+<tr class="even">
+<td>Figure for further editing (Illustrator, Inkscape)</td>
+<td><code>"svg"</code></td>
+<td>
+<code><a href="https://svglite.r-lib.org/reference/svglite.html" class="external-link">svglite::svglite</a></code>, else <code><a href="https://rdrr.io/r/grDevices/cairo.html" class="external-link">grDevices::svg</a></code>
+</td>
+<td>n/a</td>
+</tr>
+<tr class="odd">
+<td>Slides, Quarto HTML, GitHub</td>
+<td><code>"png"</code></td>
+<td>
+<code><a href="https://ragg.r-lib.org/reference/agg_png.html" class="external-link">ragg::agg_png</a></code>, else <code><a href="https://rdrr.io/r/grDevices/png.html" class="external-link">grDevices::png</a></code>
+</td>
+<td>150–300</td>
+</tr>
+<tr class="even">
+<td>Journal requiring raster submission</td>
+<td><code>"tiff"</code></td>
+<td>
+<code><a href="https://ragg.r-lib.org/reference/agg_tiff.html" class="external-link">ragg::agg_tiff</a></code>, else <code><a href="https://rdrr.io/r/grDevices/png.html" class="external-link">grDevices::tiff</a></code>
+</td>
+<td>300–600</td>
+</tr>
+</tbody>
+</table>
+<p>Prefer a <strong>vector</strong> format for publication: text stays
+selectable and searchable, and lines stay sharp at any
+magnification.</p>
+<p>Prefer a <strong>raster</strong> format when a plot draws very many
+marks — a <code><a href="../reference/plot_runscatter.html">plot_runscatter()</a></code> page covering several thousand
+analyses, or a dense <code><a href="../reference/plot_pca.html">plot_pca()</a></code> score plot. Every point
+becomes a separate object in a PDF, so such figures produce very large
+files that are slow to open and to typeset. Saving them at 300–600 dpi
+instead keeps the file small with no visible loss.</p>
+<div class="callout callout-tip">
+<p>The optional packages <code>ragg</code> and <code>svglite</code> are
+used automatically when installed, giving better text rendering,
+system-font support and smaller SVG files. Without them the equivalent
+<code>grDevices</code> device is used and the output is still correct.
+Installing both is recommended:
+<code>install.packages(c("ragg", "svglite"))</code>.</p>
+<p>PDF output uses the cairo device wherever R was built with cairo
+support, because plain <code><a href="https://rdrr.io/r/grDevices/pdf.html" class="external-link">grDevices::pdf()</a></code> writes text in a
+single-byte encoding and silently transliterates anything outside it —
+an en dash becomes <code>-</code>, and <code>≥</code> becomes
+<code>&gt;=</code>. Unit labels such as <code>µmol/L</code> and
+statistical annotations depend on those glyphs surviving.</p>
+</div>
+</div>
+<div class="section level4">
+<h4 id="setting-the-unit-and-resolution-once">Setting the unit and resolution once<a class="anchor" aria-label="anchor" href="#setting-the-unit-and-resolution-once"></a>
+</h4>
+<p><code>units</code> and <code>dpi</code> can be set for a whole
+notebook through <code><a href="../reference/mrmhub_set_plot_defaults.html">mrmhub_set_plot_defaults()</a></code>, so only
+<code>width</code> and <code>height</code> need repeating. The size
+itself is always explicit at the call site.</p>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/mrmhub_set_plot_defaults.html">mrmhub_set_plot_defaults</a></span><span class="op">(</span>units <span class="op">=</span> <span class="st">"mm"</span>, dpi <span class="op">=</span> <span class="fl">600</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/save_plot.html">save_plot</a></span><span class="op">(</span><span class="va">p</span>, <span class="st">"figures/pca_batch.png"</span>, width <span class="op">=</span> <span class="fl">180</span>, height <span class="op">=</span> <span class="fl">120</span><span class="op">)</span>   <span class="co"># 600 dpi</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="multi-page-pdfs">Multi-page PDFs<a class="anchor" aria-label="anchor" href="#multi-page-pdfs"></a>
+</h4>
+<p>For paged outputs (<code><a href="../reference/plot_runscatter.html">plot_runscatter()</a></code>,
+<code><a href="../reference/plot_calibrationcurves.html">plot_calibrationcurves()</a></code>,
+<code><a href="../reference/plot_responsecurves.html">plot_responsecurves()</a></code>,
+<code><a href="../reference/plot_feature_correlations.html">plot_feature_correlations()</a></code>), the built-in
+<code>output_pdf = TRUE</code> and <code>path</code> arguments write a
+multi-page PDF directly, rather than iterating in user code.
+<code>page_width</code> and <code>page_height</code> set the page size;
+without them an A4 page is used, oriented by
+<code>page_orientation</code>.</p>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span><span class="va">mexp</span>,</span>
-<span>                variable   <span class="op">=</span> <span class="st">"norm_intensity"</span>,</span>
-<span>                qc_types   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BQC"</span>, <span class="st">"SPL"</span><span class="op">)</span>,</span>
-<span>                output_pdf <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>                path       <span class="op">=</span> <span class="st">"figures/runscatter_all.pdf"</span><span class="op">)</span></span></code></pre></div>
+<span>                variable    <span class="op">=</span> <span class="st">"norm_intensity"</span>,</span>
+<span>                qc_types    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BQC"</span>, <span class="st">"SPL"</span><span class="op">)</span>,</span>
+<span>                output_pdf  <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                path        <span class="op">=</span> <span class="st">"figures/runscatter_all.pdf"</span>,</span>
+<span>                page_width  <span class="op">=</span> <span class="fl">297</span>,</span>
+<span>                page_height <span class="op">=</span> <span class="fl">210</span><span class="op">)</span></span></code></pre></div>
+</div>
 </div>
 <div class="section level3">
 <h3 id="combining-plots">Combining plots<a class="anchor" aria-label="anchor" href="#combining-plots"></a>
 </h3>
 <p><code>patchwork</code> composes multiple panels into a single
 figure:</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://patchwork.data-imaginist.com" class="external-link">patchwork</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">p_seq</span>  <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_runsequence.html">plot_runsequence</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span></span>

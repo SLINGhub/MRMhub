@@ -317,7 +317,10 @@ plot_runscatter(mexp, variable = "norm_intensity", qc_types = c("BQC", "SPL")) +
 
 ### Saving plots
 
-For a single plot:
+[`save_plot()`](https://slinghub.github.io/MRMhub/quant/reference/save_plot.md)
+writes any plot to a file at a defined physical size and resolution.
+Sizes are given in `mm` by default, matching how journals specify figure
+widths, and `cm`, `in`, `pt` and `px` are also accepted.
 
 ``` r
 
@@ -325,22 +328,125 @@ p <- plot_pca(mexp,
               variable = "norm_intensity",
               qc_types = c("BQC", "SPL"),
               ellipse_variable = "batch_id")
-ggplot2::ggsave("figures/pca_batch.png", p, width = 8, height = 6, dpi = 300)
+
+save_plot(p, "figures/pca_batch.pdf", width = 180, height = 120)
 ```
+
+The same figure can be written in several formats in one call. Give a
+path without an extension and list the formats; each file gets the
+matching extension.
+
+``` r
+
+save_plot(p, "figures/pca_batch", format = c("pdf", "png"), width = 180, height = 120)
+```
+
+The plot is returned visibly, so piping into
+[`save_plot()`](https://slinghub.github.io/MRMhub/quant/reference/save_plot.md)
+still renders the figure in the notebook and saving needs no separate
+line:
+
+``` r
+
+plot_pca(mexp, variable = "norm_intensity", ellipse_variable = "batch_id") |>
+  save_plot("figures/pca_batch.pdf", width = 180, height = 120)
+```
+
+In a script or a loop, where re-drawing a dense figure is wasted work,
+`show_plot = FALSE` skips it and returns the written paths instead:
+
+``` r
+
+paths <- save_plot(p, "figures/pca_batch.pdf", width = 180, height = 120,
+                   show_plot = FALSE)
+```
+
+(With `show_plot = TRUE` the paths are still available, as the `"paths"`
+attribute of the returned plot.)
+
+[`save_plot()`](https://slinghub.github.io/MRMhub/quant/reference/save_plot.md)
+also accepts what the plot functions return around a plot: the result
+list of
+[`plot_rla_boxplot()`](https://slinghub.github.io/MRMhub/quant/reference/plot_rla_boxplot.md)
+(it picks up the `plot` element), a `patchwork` composition, and a list
+of plots, which becomes a multi-page PDF.
+
+``` r
+
+pages <- plot_runscatter(mexp, variable = "norm_intensity", return_plots = TRUE)
+save_plot(pages, "figures/runscatter_all.pdf", width = 280, height = 200,
+          show_plot = FALSE)
+```
+
+#### Choosing a format
+
+| Purpose | Format | Device used | Typical `dpi` |
+|----|----|----|----|
+| Journal figure, vector (default choice) | `"pdf"` | [`grDevices::cairo_pdf`](https://rdrr.io/r/grDevices/cairo.html), else [`grDevices::pdf`](https://rdrr.io/r/grDevices/pdf.html) | n/a |
+| Figure for further editing (Illustrator, Inkscape) | `"svg"` | [`svglite::svglite`](https://svglite.r-lib.org/reference/svglite.html), else [`grDevices::svg`](https://rdrr.io/r/grDevices/cairo.html) | n/a |
+| Slides, Quarto HTML, GitHub | `"png"` | [`ragg::agg_png`](https://ragg.r-lib.org/reference/agg_png.html), else [`grDevices::png`](https://rdrr.io/r/grDevices/png.html) | 150–300 |
+| Journal requiring raster submission | `"tiff"` | [`ragg::agg_tiff`](https://ragg.r-lib.org/reference/agg_tiff.html), else [`grDevices::tiff`](https://rdrr.io/r/grDevices/png.html) | 300–600 |
+
+Prefer a **vector** format for publication: text stays selectable and
+searchable, and lines stay sharp at any magnification.
+
+Prefer a **raster** format when a plot draws very many marks — a
+[`plot_runscatter()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.md)
+page covering several thousand analyses, or a dense
+[`plot_pca()`](https://slinghub.github.io/MRMhub/quant/reference/plot_pca.md)
+score plot. Every point becomes a separate object in a PDF, so such
+figures produce very large files that are slow to open and to typeset.
+Saving them at 300–600 dpi instead keeps the file small with no visible
+loss.
+
+The optional packages `ragg` and `svglite` are used automatically when
+installed, giving better text rendering, system-font support and smaller
+SVG files. Without them the equivalent `grDevices` device is used and
+the output is still correct. Installing both is recommended:
+`install.packages(c("ragg", "svglite"))`.
+
+PDF output uses the cairo device wherever R was built with cairo
+support, because plain
+[`grDevices::pdf()`](https://rdrr.io/r/grDevices/pdf.html) writes text
+in a single-byte encoding and silently transliterates anything outside
+it — an en dash becomes `-`, and `≥` becomes `>=`. Unit labels such as
+`µmol/L` and statistical annotations depend on those glyphs surviving.
+
+#### Setting the unit and resolution once
+
+`units` and `dpi` can be set for a whole notebook through
+[`mrmhub_set_plot_defaults()`](https://slinghub.github.io/MRMhub/quant/reference/mrmhub_set_plot_defaults.md),
+so only `width` and `height` need repeating. The size itself is always
+explicit at the call site.
+
+``` r
+
+mrmhub_set_plot_defaults(units = "mm", dpi = 600)
+
+save_plot(p, "figures/pca_batch.png", width = 180, height = 120)   # 600 dpi
+```
+
+#### Multi-page PDFs
 
 For paged outputs
 ([`plot_runscatter()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.md),
-[`plot_calibrationcurves()`](https://slinghub.github.io/MRMhub/quant/reference/plot_calibrationcurves.md)),
-use the function’s built-in `output_pdf = TRUE` and `path` arguments to
-write a multi-page PDF directly, rather than iterating in user code.
+[`plot_calibrationcurves()`](https://slinghub.github.io/MRMhub/quant/reference/plot_calibrationcurves.md),
+[`plot_responsecurves()`](https://slinghub.github.io/MRMhub/quant/reference/plot_responsecurves.md),
+[`plot_feature_correlations()`](https://slinghub.github.io/MRMhub/quant/reference/plot_feature_correlations.md)),
+the built-in `output_pdf = TRUE` and `path` arguments write a multi-page
+PDF directly, rather than iterating in user code. `page_width` and
+`page_height` set the page size; without them an A4 page is used,
+oriented by `page_orientation`.
 
 ``` r
 
 plot_runscatter(mexp,
-                variable   = "norm_intensity",
-                qc_types   = c("BQC", "SPL"),
-                output_pdf = TRUE,
-                path       = "figures/runscatter_all.pdf")
+                variable    = "norm_intensity",
+                qc_types    = c("BQC", "SPL"),
+                output_pdf  = TRUE,
+                path        = "figures/runscatter_all.pdf",
+                page_width  = 297,
+                page_height = 210)
 ```
 
 ### Combining plots

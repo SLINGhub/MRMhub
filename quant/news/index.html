@@ -18,6 +18,7 @@
       <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-get-started" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Get Started</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-get-started"><li><a class="dropdown-item" href="../articles/manual-00-installation.html">Installation</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-13-intro-to-r-quarto-mrmhub.html">Intro to R, Quarto &amp; MRMhub</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
     <li><a class="dropdown-item" href="../articles/manual-01-key-concepts.html">Key Concepts &amp; Glossary</a></li>
     <li><a class="dropdown-item" href="../articles/manual-10-troubleshooting.html">Troubleshooting &amp; FAQ</a></li>
@@ -25,6 +26,7 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-tutorials" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Tutorials</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-tutorials"><li><h6 class="dropdown-header" data-toc-skip>Start here</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-13-intro-to-r-quarto-mrmhub.html">Intro to R, Quarto &amp; MRMhub</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-12-workflow-builder.html">Build a workflow (no code)</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-01-prep-data.html">Preparing &amp; importing data</a></li>
@@ -67,7 +69,7 @@
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
     <li><a class="dropdown-item" href="../articles/manual-13-plot-customization.html">Customising Plots</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Writing Pipelines with AI Assistants</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Getting Help from an AI Assistant</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-02-data-object.html">The MRMhubExperiment Data Object</a></li>
@@ -94,6 +96,13 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.9.9" id="mrmhub-099-development">mrmhub 0.9.9 (development)<a class="anchor" aria-label="anchor" href="#mrmhub-099-development"></a></h2>
+<ul><li><p><strong>New <code><a href="../reference/save_plot.html">save_plot()</a></code></strong>: writes any plot from a <code>plot_*()</code> function to a file at a defined physical size and resolution, replacing hand-written <code><a href="https://ggplot2.tidyverse.org/reference/ggsave.html" class="external-link">ggplot2::ggsave()</a></code> calls. Sizes are given in <code>mm</code> (default), <code>cm</code>, <code>in</code>, <code>pt</code> or <code>px</code>; formats are <code>pdf</code>, <code>svg</code>, <code>png</code>, <code>tiff</code> and <code>jpeg</code>, taken from the file extension or from an explicit <code>format</code>, which may name several formats to write in one call. It accepts a <code>ggplot</code>, a <code>patchwork</code> composition, the result list of <code><a href="../reference/plot_rla_boxplot.html">plot_rla_boxplot()</a></code>, and a list of plots, which becomes a multi-page PDF. The plot is returned visibly, so <code>plot_*() |&gt; save_plot()</code> still renders the figure in a Quarto or R Markdown chunk; <code>show_plot = FALSE</code> skips the re-draw and returns the written paths instead. The optional <code>ragg</code> and <code>svglite</code> packages are used automatically when installed, and PDF output uses the cairo device where available so that non-ASCII text (<code>µmol/L</code>, en dashes, <code>≥</code>) survives; plain <code>grDevices</code> devices are the fallback throughout.</p></li>
+<li><p><strong>Page size on the paged plot functions</strong>: <code><a href="../reference/plot_runscatter.html">plot_runscatter()</a></code>, <code><a href="../reference/plot_calibrationcurves.html">plot_calibrationcurves()</a></code>, <code><a href="../reference/plot_responsecurves.html">plot_responsecurves()</a></code> and <code><a href="../reference/plot_feature_correlations.html">plot_feature_correlations()</a></code> gain <code>page_width</code>, <code>page_height</code> and <code>page_units</code>, replacing the previously hardcoded 28 x 20 cm A4 page. Left unset, the A4 default and <code>page_orientation</code> behave exactly as before.</p></li>
+<li><p><strong><code><a href="../reference/mrmhub_set_plot_defaults.html">mrmhub_set_plot_defaults()</a></code></strong> gains <code>units</code> and <code>dpi</code>, so the unit and resolution used by <code><a href="../reference/save_plot.html">save_plot()</a></code> can be set once for a whole notebook. Figure width and height remain explicit at each call.</p></li>
+<li><p><strong>New batch-correction methods (experimental)</strong>: <code><a href="../reference/correct_batch_combat.html">correct_batch_combat()</a></code> applies empirical-Bayes ComBat (Johnson et al. 2007, via the optional <code>sva</code> package) and <code><a href="../reference/correct_batch_serrf.html">correct_batch_serrf()</a></code> applies SERRF random-forest normalization (Fan et al. 2019, via the optional <code>ranger</code> package), complementing the existing <code><a href="../reference/correct_batch_centering.html">correct_batch_centering()</a></code>. All three now share the same correction scaffolding.</p></li>
+</ul></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.9.8" id="mrmhub-098">mrmhub 0.9.8<a class="anchor" aria-label="anchor" href="#mrmhub-098"></a></h2>
 <p>This release focuses on usability, robustness, and new analysis capabilities.</p>
 <div class="section level3">
@@ -103,6 +112,7 @@
 <li><p><strong>Consistent, configurable plotting</strong>: shared appearance arguments (font sizes, colours, legend placement and sizing) with a refined house theme, now settable globally via the new <code><a href="../reference/mrmhub_set_plot_defaults.html">mrmhub_set_plot_defaults()</a></code>.</p></li>
 <li><p><strong>MS1 and MS2 (MRM) isotope interference correction</strong>: a full correction engine for both precursor (MS1) and transition-level (MRM) isotopic interferences, with MRM patterns based on the LICAR method (Gao et al., <em>Anal. Chem.</em>, 2021).</p></li>
 <li><p><strong>Export to SummarizedExperiment and LipidomicsExperiment</strong>: results convert directly to Bioconductor <code>SummarizedExperiment</code> and <code>lipidr</code> <code>LipidomicsExperiment</code> objects for downstream analysis.</p></li>
+<li><p><strong>Save and reload complete experiments</strong>: <code><a href="../reference/save_dataset_rds.html">save_dataset_rds()</a></code> and <code><a href="../reference/read_dataset_rds.html">read_dataset_rds()</a></code> write and read a whole <code>MRMhubExperiment</code> as a self-contained <code>.rds</code> snapshot, with a content fingerprint embedded on save and verified on load.</p></li>
 <li><p><strong>Further new features</strong>: mzTab-M import and export, and a status dashboard (<code><a href="../reference/mrmhub_status.html">mrmhub_status()</a></code>) with compact object printing for a quick overview.</p></li>
 <li><p><strong>Improved robustness, speed, and stability</strong>: better handling of missing values and analytical-sequence gaps, faster QC-metric computation, and many bug fixes based on user feedback.</p></li>
 <li><p><strong>Fully revised documentation</strong>: a rewritten, task-oriented site with tutorials, manual, and recipes.</p></li>

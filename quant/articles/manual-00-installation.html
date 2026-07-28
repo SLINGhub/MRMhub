@@ -44,6 +44,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-get-started" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Get Started</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-get-started">
 <li><a class="dropdown-item" href="../articles/manual-00-installation.html">Installation</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-13-intro-to-r-quarto-mrmhub.html">Intro to R, Quarto &amp; MRMhub</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
     <li><a class="dropdown-item" href="../articles/manual-01-key-concepts.html">Key Concepts &amp; Glossary</a></li>
     <li><a class="dropdown-item" href="../articles/manual-10-troubleshooting.html">Troubleshooting &amp; FAQ</a></li>
@@ -53,6 +54,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-tutorials" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Tutorials</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-tutorials">
 <li><h6 class="dropdown-header" data-toc-skip>Start here</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-13-intro-to-r-quarto-mrmhub.html">Intro to R, Quarto &amp; MRMhub</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-12-workflow-builder.html">Build a workflow (no code)</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-01-prep-data.html">Preparing &amp; importing data</a></li>
@@ -97,7 +99,7 @@
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
     <li><a class="dropdown-item" href="../articles/manual-13-plot-customization.html">Customising Plots</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Writing Pipelines with AI Assistants</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Getting Help from an AI Assistant</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-02-data-object.html">The MRMhubExperiment Data Object</a></li>
@@ -138,61 +140,176 @@
     
     
 <p class="page-kind page-kind-manual">
-Manual
 </p>
+<p>Manual</p>
+
 <div class="section level2">
 <h2 id="requirements">Requirements<a class="anchor" aria-label="anchor" href="#requirements"></a>
 </h2>
+<p>The <code>mrmhub</code> R package requires:</p>
 <ul>
 <li>
-<strong>R ≥ 4.1</strong>: install from <a href="https://cran.r-project.org" class="external-link">CRAN</a>
-</li>
+<strong>Operating system:</strong> Windows, macOS, or Linux.</li>
 <li>
-<strong>An IDE</strong>: <a href="https://positron.posit.co" class="external-link">Positron</a>, <a href="https://posit.co/download/rstudio-desktop/" class="external-link">RStudio</a>, or <a href="https://code.visualstudio.com" class="external-link">VS Code</a>
-</li>
+<strong>R:</strong> version 4.1 or newer, from <a href="https://cran.r-project.org" class="external-link">CRAN</a>.</li>
+<li>
+<strong>IDE (recommended):</strong> <a href="https://posit.co/download/rstudio-desktop/" class="external-link">RStudio</a> or <a href="https://positron.posit.co" class="external-link">Positron</a>, which combine a code
+editor, console, and package management in a single window.</li>
+<li>
+<strong>Quarto:</strong> bundled with recent RStudio and Positron
+releases; otherwise install it from <a href="https://quarto.org/docs/get-started/" class="external-link">quarto.org</a>. Required
+only for rendering reports and workflow documents.</li>
 </ul>
-<p>MRMhub’s core functionality requires no R coding skills, but basic
-familiarity with R and an IDE is needed to run and adapt the
-workflows.</p>
-<details><summary><strong>New to R?</strong>
-</summary>
-Try online tutorials such as <a href="https://rladiessydney.org/courses/ryouwithme/01-basicbasics-1/" class="external-link">An
-opinionated tour of RStudio</a> and the <a href="https://docs.posit.co/ide/user/ide/get-started/" class="external-link">RStudio User
-Guide</a>. Having a colleague who is familiar with the IDE can also help
-you get started smoothly and stay motivated.
-</details>
+<p>All package dependencies are resolved and installed automatically, so
+no further configuration is needed beyond a working R installation.</p>
 </div>
 <div class="section level2">
 <h2 id="installing-mrmhub">Installing MRMhub<a class="anchor" aria-label="anchor" href="#installing-mrmhub"></a>
 </h2>
-<div class="callout callout-tip">
-<p><strong>Tip.</strong> Quit and reopen the IDE first; most install
-failures come from packages already loaded in memory.</p>
+<div class="callout callout-caution">
+<p><strong>Important.</strong> Quit and reopen all RStudio/Positron
+sessions first; many install failures come from R packages already
+loaded in another session</p>
 </div>
 <p>In a fresh R session:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://pak.r-lib.org/" class="external-link">"pak"</a></span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"pak"</span><span class="op">)</span></span>
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"SLINGhub/MRMhub"</span><span class="op">)</span></span></code></pre></div>
-<p>The same command works on Windows, macOS, and Linux. <code>pak</code>
-pulls prebuilt binaries where available, so compilation tools are
-usually not needed. If <code>pak</code> is unavailable, use
-<code>remotes::install_github("SLINGhub/MRMhub")</code>.</p>
+<p>We recommend <code>pak</code>, but if it fails behind a proxy or on
+an unusual platform, <code>remotes</code> works as well:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://remotes.r-lib.org" class="external-link">"remotes"</a></span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"SLINGhub/MRMhub"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="confirm-it-loaded">Confirm It Loaded<a class="anchor" aria-label="anchor" href="#confirm-it-loaded"></a>
+<h2 id="confirm-mrmhub-is-sucessfully-installed">Confirm <code>mrmhub</code> is sucessfully installed<a class="anchor" aria-label="anchor" href="#confirm-mrmhub-is-sucessfully-installed"></a>
 </h2>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/SLINGhub/MRMhub" class="external-link">mrmhub</a></span><span class="op">)</span></span></code></pre></div>
 <p>If this loads without error, you are ready to go. Head to <a href="tutorial-00-first-analysis.html">Your first analysis</a>.</p>
 </div>
 <div class="section level2">
-<h2 id="troubleshooting-common-errors">Troubleshooting Common Errors<a class="anchor" aria-label="anchor" href="#troubleshooting-common-errors"></a>
+<h2 id="optional-packages">Optional packages<a class="anchor" aria-label="anchor" href="#optional-packages"></a>
 </h2>
-<p>If the install seemed to succeed but something isn’t working, run
-<code><a href="../reference/check_setup.html">check_setup()</a></code> to report the R version and flag any missing
-dependencies:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<p>To keep the base installation light, <code>mrmhub</code> installs
+only the packages needed for the common workflow. A number of
+specialised functions rely on additional packages that are not pulled in
+upfront. When such a function is called and its package is missing,
+<code>mrmhub</code> reports what is needed and, in an interactive
+session, offers to install it on the spot — so most users never install
+these manually.</p>
+<p>Ordered from the most commonly used functions to the more specialised
+ones:</p>
+<table class="table">
+<colgroup>
+<col width="27%">
+<col width="48%">
+<col width="24%">
+</colgroup>
+<thead><tr class="header">
+<th>Function</th>
+<th>Optional package</th>
+<th>Enables</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>QC and EDA plots</td>
+<td>ggvenn, patchwork, ggforce, ggbeeswarm, ggsignif</td>
+<td>QC-summary and exploratory plots</td>
+</tr>
+<tr class="even">
+<td><code><a href="../reference/plot_pca.html">plot_pca()</a></code></td>
+<td>ggnewscale</td>
+<td>PCA score plots</td>
+</tr>
+<tr class="odd">
+<td><code><a href="../reference/plot_runscatter.html">plot_runscatter()</a></code></td>
+<td>qpdf; mirai, carrier</td>
+<td>multi-page PDF output; parallel rendering</td>
+</tr>
+<tr class="even">
+<td><code><a href="../reference/correct_batch_combat.html">correct_batch_combat()</a></code></td>
+<td>sva</td>
+<td>ComBat batch correction</td>
+</tr>
+<tr class="odd">
+<td><code><a href="../reference/correct_batch_serrf.html">correct_batch_serrf()</a></code></td>
+<td>ranger</td>
+<td>SERRF batch correction</td>
+</tr>
+<tr class="even">
+<td><code><a href="../reference/correct_drift_gam.html">correct_drift_gam()</a></code></td>
+<td>mgcv</td>
+<td>GAM-based drift correction</td>
+</tr>
+<tr class="odd">
+<td><code><a href="../reference/plot_responsecurves.html">plot_responsecurves()</a></code></td>
+<td>ggpmisc</td>
+<td>response-curve plots with fit annotations</td>
+</tr>
+<tr class="even">
+<td><code><a href="../reference/build_workflow.html">build_workflow()</a></code></td>
+<td>shiny, bslib</td>
+<td>interactive workflow-builder app</td>
+</tr>
+<tr class="odd">
+<td><code><a href="../reference/save_dataset_summarizedexperiment.html">save_dataset_summarizedexperiment()</a></code></td>
+<td>SummarizedExperiment, S4Vectors, lipidr <em>(Bioconductor)</em>
+</td>
+<td>export to a <code>SummarizedExperiment</code>
+</td>
+</tr>
+<tr class="even">
+<td>Lipid-name parsing (isotope correction, lipid plots)</td>
+<td>rgoslin <em>(Bioconductor)</em>
+</td>
+<td>parse and normalise lipid shorthand</td>
+</tr>
+<tr class="odd">
+<td>
+<code><a href="../reference/correct_isotopic_interferences.html">correct_isotopic_interferences()</a></code>,
+<code><a href="../reference/calc_average_molweight.html">calc_average_molweight()</a></code>
+</td>
+<td>enviPat</td>
+<td>isotope-pattern and molecular-weight calculation</td>
+</tr>
+<tr class="even">
+<td><code><a href="../reference/get_response_curve_stats.html">get_response_curve_stats()</a></code></td>
+<td>lancer <em>(GitHub)</em>
+</td>
+<td>response-curve quality metrics</td>
+</tr>
+</tbody>
+</table>
+<p>To install all of them upfront, run the following in a fresh R
+session (again, with all other RStudio/Positron sessions closed):</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>  <span class="st">"sva"</span>, <span class="st">"ranger"</span>, <span class="st">"mgcv"</span>, <span class="st">"enviPat"</span>,</span>
+<span>  <span class="st">"ggnewscale"</span>, <span class="st">"ggpmisc"</span>, <span class="st">"ggvenn"</span>, <span class="st">"patchwork"</span>,</span>
+<span>  <span class="st">"ggforce"</span>, <span class="st">"ggbeeswarm"</span>, <span class="st">"ggsignif"</span>,</span>
+<span>  <span class="st">"qpdf"</span>, <span class="st">"mirai"</span>, <span class="st">"carrier"</span>, <span class="st">"shiny"</span>, <span class="st">"bslib"</span>,</span>
+<span>  <span class="st">"rgoslin"</span>, <span class="st">"lipidr"</span>, <span class="st">"SummarizedExperiment"</span>, <span class="st">"S4Vectors"</span>,</span>
+<span>  <span class="st">"SLINGhub/lancer"</span></span>
+<span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><code>pak</code> resolves CRAN, Bioconductor, and GitHub sources in
+one call. If it fails behind a proxy or on an unusual platform, install
+the CRAN packages with <code><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages()</a></code> and the
+Bioconductor ones (<code>rgoslin</code>, <code>lipidr</code>,
+<code>SummarizedExperiment</code>, <code>S4Vectors</code>) with
+<code>BiocManager::install()</code>.</p>
+</div>
+<div class="section level2">
+<h2 id="troubleshooting">Troubleshooting<a class="anchor" aria-label="anchor" href="#troubleshooting"></a>
+</h2>
+<p>If the installation seemed succesfull but but the package doesnt load
+or with errors, run <code><a href="../reference/check_setup.html">check_setup()</a></code> to report the R version
+and flag any missing dependencies:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/check_setup.html">check_setup</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><strong>Most frequent installation errors</strong></p>
+<p>See <a href="manual-10-troubleshooting.html">Troubleshooting &amp;
+FAQ</a> for detailed error and resolution list.</p>
 <table class="table">
 <colgroup>
 <col width="36%">
@@ -211,6 +328,15 @@ dependencies:</p>
 <td>Restart R (<code>Ctrl+Shift+F10</code>) and retry the install</td>
 </tr>
 <tr class="even">
+<td>
+<code>pak</code> unavailable or failing</td>
+<td>
+<code>pak</code> not installed, or its cache is stale</td>
+<td>Install with
+<code>remotes::install_github("SLINGhub/MRMhub")</code>
+</td>
+</tr>
+<tr class="odd">
 <td><code>cannot open URL</code></td>
 <td>Firewall or proxy blocking GitHub</td>
 <td>
@@ -218,31 +344,31 @@ dependencies:</p>
 repo and use <code>remotes::install_local("path/to/MRMhub")</code>
 </td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>package 'X' was installed under R version …</code></td>
 <td>Package built for a different R</td>
 <td>
 <code>install.packages("X")</code> to rebuild it for your R</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>there is no package called 'mrmhub'</code></td>
 <td>Install did not finish</td>
 <td>Scroll up for the real error, then retry the install</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>
 <code>ERROR: Rtools is required</code> (Windows)</td>
 <td>A source-only dependency needs compilation</td>
 <td>Install <a href="https://cran.r-project.org/bin/windows/Rtools/" class="external-link">Rtools</a>
 matching your R version, restart R, retry</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>
 <code>clang: error: ...</code> (macOS)</td>
 <td>Compiler tools missing</td>
 <td>Run <code>xcode-select --install</code> in Terminal, retry</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>
 <code>cannot find -lcurl</code> (Linux)</td>
 <td>System libraries missing</td>
@@ -250,8 +376,6 @@ matching your R version, restart R, retry</td>
 </tr>
 </tbody>
 </table>
-<p>A longer list, covering proxies, mixed R installations on macOS, and
-INTEGRATOR security warnings, is given in <a href="manual-10-troubleshooting.html">Troubleshooting &amp; FAQ</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="next-steps">Next steps<a class="anchor" aria-label="anchor" href="#next-steps"></a>

@@ -7,10 +7,12 @@ Extracts calibration fit metrics from a `MRMhubExperiment` object.
 ``` r
 get_calibration_metrics(
   data = NULL,
+  include_qualifier = TRUE,
   with_lod = TRUE,
   with_loq = TRUE,
   with_coefficients = TRUE,
-  with_sigma = TRUE
+  with_sigma = TRUE,
+  summary_table = FALSE
 )
 ```
 
@@ -21,6 +23,11 @@ get_calibration_metrics(
   A
   [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
   object with QC metrics.
+
+- include_qualifier:
+
+  Whether to include qualifier features. When `FALSE`, only quantifier
+  features are returned. Default is `TRUE`.
 
 - with_lod:
 
@@ -37,6 +44,16 @@ get_calibration_metrics(
 - with_sigma:
 
   Whether to include sigma in output. Default is `TRUE`.
+
+- summary_table:
+
+  When `TRUE`, return a compact, display-formatted summary tibble
+  (`analyte`, `fit_model`, `fit_weighting`, `r2`, `lod`, `loq`) with
+  `r2` rounded to 5 decimals and `lod`/`loq` to 3 significant figures.
+  This is a presentation view for reporting; the values are **rounded**,
+  so do not use it for downstream computation. `lod`/`loq` follow
+  `with_lod`/`with_loq`. The `with_coefficients`/`with_sigma` flags are
+  ignored in this mode. Default is `FALSE` (full, unrounded metrics).
 
 ## Value
 
@@ -62,8 +79,8 @@ See its documentation for details.
 
 - `highest_cal`: Highest calibration concentration.
 
-- `r2`: R-squared value, indicating goodness of fit. For a **weighted**
-  fit this is the weighted coefficient of determination (computed from
+- `r2`: R² value, indicating goodness of fit. For a **weighted** fit
+  this is the weighted coefficient of determination (computed from
   weighted sums of squares), matching the value reported by vendor
   software such as Agilent MassHunter for the same weighted curve.
 

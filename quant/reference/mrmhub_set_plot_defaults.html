@@ -30,6 +30,7 @@ cols_page-based sizing on faceted plots)."><meta property="og:image" content="ht
       <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-get-started" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Get Started</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-get-started"><li><a class="dropdown-item" href="../articles/manual-00-installation.html">Installation</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-13-intro-to-r-quarto-mrmhub.html">Intro to R, Quarto &amp; MRMhub</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
     <li><a class="dropdown-item" href="../articles/manual-01-key-concepts.html">Key Concepts &amp; Glossary</a></li>
     <li><a class="dropdown-item" href="../articles/manual-10-troubleshooting.html">Troubleshooting &amp; FAQ</a></li>
@@ -37,6 +38,7 @@ cols_page-based sizing on faceted plots)."><meta property="og:image" content="ht
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-tutorials" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Tutorials</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-tutorials"><li><h6 class="dropdown-header" data-toc-skip>Start here</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-13-intro-to-r-quarto-mrmhub.html">Intro to R, Quarto &amp; MRMhub</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-12-workflow-builder.html">Build a workflow (no code)</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-01-prep-data.html">Preparing &amp; importing data</a></li>
@@ -79,7 +81,7 @@ cols_page-based sizing on faceted plots)."><meta property="og:image" content="ht
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
     <li><a class="dropdown-item" href="../articles/manual-13-plot-customization.html">Customising Plots</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Writing Pipelines with AI Assistants</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Getting Help from an AI Assistant</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-02-data-object.html">The MRMhubExperiment Data Object</a></li>
@@ -124,7 +126,9 @@ default set here, then the function's built-in default (including automatic
 <span>  legend_position <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  legend_size <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  show_legend_title <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  strip_bg_color <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  strip_bg_color <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  units <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  dpi <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -158,6 +162,16 @@ value <code>&lt;= 3</code> is a multiplier of <code>font_base_size</code>, large
 <dt id="arg-strip-bg-color">strip_bg_color<a class="anchor" aria-label="anchor" href="#arg-strip-bg-color"></a></dt>
 <dd><p>Facet strip background fill (strip text auto-contrasts).</p></dd>
 
+
+<dt id="arg-units">units<a class="anchor" aria-label="anchor" href="#arg-units"></a></dt>
+<dd><p>Default unit for the <code>width</code> and <code>height</code> of <code><a href="save_plot.html">save_plot()</a></code>:
+<code>"mm"</code> (the built-in default), <code>"cm"</code>, <code>"in"</code>, <code>"pt"</code> or <code>"px"</code>.</p></dd>
+
+
+<dt id="arg-dpi">dpi<a class="anchor" aria-label="anchor" href="#arg-dpi"></a></dt>
+<dd><p>Default resolution in dots per inch for the raster formats of
+<code><a href="save_plot.html">save_plot()</a></code>. The built-in default is <code>300</code>.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -174,8 +188,8 @@ to a block with <code><a href="https://withr.r-lib.org/reference/with_options.ht
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="mrmhub_reset_plot_defaults.html">mrmhub_reset_plot_defaults()</a></code>, <code><a href="mrmhub_get_plot_defaults.html">mrmhub_get_plot_defaults()</a></code> and the
-<code>vignette("manual-13-plot-customization")</code> article.</p></div>
+    <div class="dont-index"><p><code><a href="mrmhub_reset_plot_defaults.html">mrmhub_reset_plot_defaults()</a></code>, <code><a href="mrmhub_get_plot_defaults.html">mrmhub_get_plot_defaults()</a></code>,
+<code><a href="save_plot.html">save_plot()</a></code> and the <code>vignette("manual-13-plot-customization")</code> article.</p></div>
     </div>
 
     <div class="section level2">

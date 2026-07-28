@@ -18,6 +18,7 @@ plot_responsecurves(
   max_regression_value = NA,
   output_pdf = FALSE,
   path = NA,
+  create_dir = TRUE,
   return_plots = FALSE,
   color_curves = NULL,
   point_size = NULL,
@@ -39,6 +40,9 @@ plot_responsecurves(
   r2_vstep = 0.06,
   specific_page = NA,
   page_orientation = "LANDSCAPE",
+  page_width = NULL,
+  page_height = NULL,
+  page_units = "mm",
   show_progress = TRUE
 )
 ```
@@ -95,6 +99,11 @@ plot_responsecurves(
 
   The file path for saving the PDF. Must be defined if `output_pdf` is
   `TRUE`.
+
+- create_dir:
+
+  A logical value. If `TRUE` (the default) and `output_pdf` is `TRUE`,
+  the parent directory of `path` is created if it does not yet exist.
 
 - return_plots:
 
@@ -223,10 +232,10 @@ plot_responsecurves(
 
 - r2_vstep:
 
-  Numeric. Vertical step between stacked R-squared labels when multiple
-  curves are plotted in the same panel (`curve_layout = "overlay"`).
-  Default is `0.06`. Ignored when `curve_layout` is `"cols"` or
-  `"rows"`, where each panel has one curve.
+  Numeric. Vertical step between stacked R² labels when multiple curves
+  are plotted in the same panel (`curve_layout = "overlay"`). Default is
+  `0.06`. Ignored when `curve_layout` is `"cols"` or `"rows"`, where
+  each panel has one curve.
 
 - specific_page:
 
@@ -235,7 +244,20 @@ plot_responsecurves(
 
 - page_orientation:
 
-  Orientation of the PDF paper: `"LANDSCAPE"` or `"PORTRAIT"`.
+  Orientation of the PDF paper: `"LANDSCAPE"` or `"PORTRAIT"`. Ignored
+  when `page_width` and `page_height` are given.
+
+- page_width, page_height:
+
+  Size of a PDF page, in `page_units`. Both must be given together.
+  `NULL` (default) uses an A4 page of 280 x 200 mm, oriented by
+  `page_orientation`. When an explicit size is given, `page_orientation`
+  has no effect.
+
+- page_units:
+
+  Unit of `page_width` and `page_height`: `"mm"` (default), `"cm"`,
+  `"in"` or `"pt"`.
 
 - show_progress:
 
@@ -262,7 +284,57 @@ function supports both direct plotting within R and saving plots as PDF
 files. Additionally, plots can be returned as a list of ggplot2 objects
 for further manipulation or integration into other analyses.
 
+## Preferred formats and devices
+
+|  |  |  |  |
+|----|----|----|----|
+| Purpose | Format | Device used | Typical `dpi` |
+| Journal figure, vector (default choice) | `"pdf"` | [`grDevices::cairo_pdf`](https://rdrr.io/r/grDevices/cairo.html), else [`grDevices::pdf`](https://rdrr.io/r/grDevices/pdf.html) | n/a |
+| Figure for further editing (Illustrator, Inkscape) | `"svg"` | [`svglite::svglite`](https://svglite.r-lib.org/reference/svglite.html), else [`grDevices::svg`](https://rdrr.io/r/grDevices/cairo.html) | n/a |
+| Slides, Quarto HTML, GitHub | `"png"` | [`ragg::agg_png`](https://ragg.r-lib.org/reference/agg_png.html), else [`grDevices::png`](https://rdrr.io/r/grDevices/png.html) | 150-300 |
+| Journal requiring raster submission | `"tiff"` | [`ragg::agg_tiff`](https://ragg.r-lib.org/reference/agg_tiff.html), else [`grDevices::tiff`](https://rdrr.io/r/grDevices/png.html) | 300-600 |
+
+Prefer a **vector** format (`pdf`, `svg`) for publication: text stays
+selectable and searchable, and lines stay sharp at any magnification.
+
+Prefer a **raster** format (`png`, `tiff`) when a plot draws very many
+marks – a
+[`plot_runscatter()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.md)
+page covering several thousand analyses, or a dense
+[`plot_pca()`](https://slinghub.github.io/MRMhub/quant/reference/plot_pca.md)
+score plot. Every point becomes a separate object in a PDF, so such
+figures produce very large files that are slow to open and to typeset.
+Saving them at 300-600 dpi instead keeps the file small with no visible
+loss.
+
+The optional packages `ragg` and `svglite` are used automatically when
+installed, giving better text rendering, system-font support and smaller
+SVG files. When they are absent the equivalent `grDevices` device is
+used and the output is still correct. Installing both is recommended:
+`install.packages(c("ragg", "svglite"))`.
+
+PDF output uses the cairo device wherever R was built with cairo support
+(`capabilities("cairo")`), because plain
+[`grDevices::pdf()`](https://rdrr.io/r/grDevices/pdf.html) writes text
+in a single-byte encoding and silently transliterates anything outside
+it – an en dash becomes `-`, `>=` replaces the proper symbol. Unit
+labels such as `umol/L` and statistical annotations routinely depend on
+those glyphs.
+
+Multi-page output from the paged plot functions
+([`plot_runscatter()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.md),
+[`plot_calibrationcurves()`](https://slinghub.github.io/MRMhub/quant/reference/plot_calibrationcurves.md),
+`plot_responsecurves()`,
+[`plot_feature_correlations()`](https://slinghub.github.io/MRMhub/quant/reference/plot_feature_correlations.md))
+is PDF only, which is the only format that holds many pages in one file.
+Use
+[`save_plot()`](https://slinghub.github.io/MRMhub/quant/reference/save_plot.md)
+for single figures in any of the other formats.
+
 ## See also
+
+[`save_plot()`](https://slinghub.github.io/MRMhub/quant/reference/save_plot.md)
+to save a single figure in any format.
 
 Other calibration plots:
 [`plot_calibrationcurves()`](https://slinghub.github.io/MRMhub/quant/reference/plot_calibrationcurves.md)

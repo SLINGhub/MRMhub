@@ -35,6 +35,7 @@
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/tutorial-08-summarizedexperiment.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/tutorial-11-interference-correction.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/tutorial-12-workflow-builder.html</loc></url>
+<url><loc>https://slinghub.github.io/MRMhub/quant/articles/tutorial-13-intro-to-r-quarto-mrmhub.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/authors.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/index.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/news/index.html</loc></url>
@@ -51,6 +52,8 @@
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/cash-MRMhubExperiment-method.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/check_setup.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/correct_batch_centering.html</loc></url>
+<url><loc>https://slinghub.github.io/MRMhub/quant/reference/correct_batch_combat.html</loc></url>
+<url><loc>https://slinghub.github.io/MRMhub/quant/reference/correct_batch_serrf.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/correct_custom_interferences.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/correct_drift.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/correct_drift_cubicspline.html</loc></url>
@@ -146,12 +149,15 @@
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/quant_lcms_dataset.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/quantify_by_calibration.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/quantify_by_istd.html</loc></url>
+<url><loc>https://slinghub.github.io/MRMhub/quant/reference/read_dataset_rds.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/save_dataset_csv.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/save_dataset_mztab.html</loc></url>
+<url><loc>https://slinghub.github.io/MRMhub/quant/reference/save_dataset_rds.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/save_dataset_summarizedexperiment.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/save_feature_qc_metrics.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/save_metadata_msorganiser_template.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/save_metadata_templates.html</loc></url>
+<url><loc>https://slinghub.github.io/MRMhub/quant/reference/save_plot.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/save_report_xlsx.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/scale_pretty_x.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/set_analysis_order.html</loc></url>

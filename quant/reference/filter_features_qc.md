@@ -193,7 +193,7 @@ filter_features_qc(
 
 - min.rsquare.response:
 
-  Minimum R-squared value for the response curves. Default is `NA`.
+  Minimum R² value for the response curves. Default is `NA`.
 
 - min.slope.response:
 

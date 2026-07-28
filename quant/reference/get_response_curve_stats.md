@@ -1,13 +1,13 @@
 # Linear regression statistics of response curves
 
-This function calculates linear regression statistics (R-squared, slope,
-and intercept) for each response curve in the provided
-`MRMhubExperiment` object. Before fitting, the analyzed sample amount
-(`x`) and feature intensity (`y`) of each curve are each scaled to their
-maximum (set to 1), so the returned `slopenorm` and `y0norm` are on this
-normalized scale. Optionally, it can include additional statistics from
-the `lancer` package (if installed) when `with_saturation_stats` is set
-to `TRUE`.
+This function calculates linear regression statistics (R², slope, and
+intercept) for each response curve in the provided `MRMhubExperiment`
+object. Before fitting, the analyzed sample amount (`x`) and feature
+intensity (`y`) of each curve are each scaled to their maximum (set to
+1), so the returned `slopenorm` and `y0norm` are on this normalized
+scale. Optionally, it can include additional statistics from the
+`lancer` package (if installed) when `with_saturation_stats` is set to
+`TRUE`.
 
 ## Usage
 

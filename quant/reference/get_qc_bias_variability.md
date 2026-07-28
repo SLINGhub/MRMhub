@@ -22,7 +22,8 @@ get_qc_bias_variability(
   with_bias_abs = FALSE,
   with_conc_ratio = FALSE,
   with_cv_intra = TRUE,
-  with_conc_out_of_range = TRUE
+  with_conc_out_of_range = TRUE,
+  summary_table = FALSE
 )
 ```
 
@@ -97,6 +98,14 @@ get_qc_bias_variability(
   includes the fraction of replicate measurements whose concentration
   fell outside the calibrated range (`frac_conc_out_of_range`). Defaults
   to `TRUE`.
+
+- summary_table:
+
+  Logical. If `TRUE`, round the numeric metric columns to 3 significant
+  figures for display (the integer replicate count `n` is left intact).
+  This is a presentation view for reporting; the values are **rounded**,
+  so do not use it for downstream computation. Defaults to `FALSE`
+  (full, unrounded metrics).
 
 ## Value
 

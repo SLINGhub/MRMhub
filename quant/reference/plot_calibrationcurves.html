@@ -26,6 +26,7 @@ or feature metadata.'><meta property="og:image" content="https://slinghub.github
       <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-get-started" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Get Started</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-get-started"><li><a class="dropdown-item" href="../articles/manual-00-installation.html">Installation</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-13-intro-to-r-quarto-mrmhub.html">Intro to R, Quarto &amp; MRMhub</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
     <li><a class="dropdown-item" href="../articles/manual-01-key-concepts.html">Key Concepts &amp; Glossary</a></li>
     <li><a class="dropdown-item" href="../articles/manual-10-troubleshooting.html">Troubleshooting &amp; FAQ</a></li>
@@ -33,6 +34,7 @@ or feature metadata.'><meta property="og:image" content="https://slinghub.github
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-tutorials" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Tutorials</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-tutorials"><li><h6 class="dropdown-header" data-toc-skip>Start here</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-13-intro-to-r-quarto-mrmhub.html">Intro to R, Quarto &amp; MRMhub</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-12-workflow-builder.html">Build a workflow (no code)</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-01-prep-data.html">Preparing &amp; importing data</a></li>
@@ -75,7 +77,7 @@ or feature metadata.'><meta property="og:image" content="https://slinghub.github
     <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
     <li><a class="dropdown-item" href="../articles/manual-13-plot-customization.html">Customising Plots</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Writing Pipelines with AI Assistants</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Getting Help from an AI Assistant</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-02-data-object.html">The MRMhubExperiment Data Object</a></li>
@@ -130,6 +132,7 @@ or feature metadata.</p>
 <span>  exclude_feature_filter <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  output_pdf <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  path <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  create_dir <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  return_plots <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  point_size <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  point_color <span class="op">=</span> <span class="cn">NA</span>,</span>
@@ -143,6 +146,9 @@ or feature metadata.</p>
 <span>  cols_page <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  specific_page <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  page_orientation <span class="op">=</span> <span class="st">"LANDSCAPE"</span>,</span>
+<span>  page_width <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  page_height <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  page_units <span class="op">=</span> <span class="st">"mm"</span>,</span>
 <span>  show_progress <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -248,6 +254,11 @@ the same way as <code>include_feature_filter</code>. <code>NA</code> or <code>""
 <dd><p>File path for saving the PDF. Default is an empty string.</p></dd>
 
 
+<dt id="arg-create-dir">create_dir<a class="anchor" aria-label="anchor" href="#arg-create-dir"></a></dt>
+<dd><p>A logical value. If <code>TRUE</code> (the default) and <code>output_pdf</code>
+is <code>TRUE</code>, the parent directory of <code>path</code> is created if it does not yet exist.</p></dd>
+
+
 <dt id="arg-return-plots">return_plots<a class="anchor" aria-label="anchor" href="#arg-return-plots"></a></dt>
 <dd><p>Logical, if <code>TRUE</code>, returns plots as a list of <code>ggplot</code>
 objects. Default is <code>FALSE</code>.</p></dd>
@@ -313,7 +324,20 @@ plots, or the per-plot default shown in the Usage section above).</p></dd>
 
 <dt id="arg-page-orientation">page_orientation<a class="anchor" aria-label="anchor" href="#arg-page-orientation"></a></dt>
 <dd><p>Orientation of PDF, either <code>"LANDSCAPE"</code> or
-<code>"PORTRAIT"</code>. Default is <code>"LANDSCAPE"</code>.</p></dd>
+<code>"PORTRAIT"</code>. Default is <code>"LANDSCAPE"</code>. Ignored when <code>page_width</code> and
+<code>page_height</code> are given.</p></dd>
+
+
+<dt id="arg-page-width-page-height">page_width, page_height<a class="anchor" aria-label="anchor" href="#arg-page-width-page-height"></a></dt>
+<dd><p>Size of a PDF page, in <code>page_units</code>. Both must
+be given together. <code>NULL</code> (default) uses an A4 page of 280 x 200 mm,
+oriented by <code>page_orientation</code>. When an explicit size is given,
+<code>page_orientation</code> has no effect.</p></dd>
+
+
+<dt id="arg-page-units">page_units<a class="anchor" aria-label="anchor" href="#arg-page-units"></a></dt>
+<dd><p>Unit of <code>page_width</code> and <code>page_height</code>: <code>"mm"</code> (default),
+<code>"cm"</code>, <code>"in"</code> or <code>"pt"</code>.</p></dd>
 
 
 <dt id="arg-show-progress">show_progress<a class="anchor" aria-label="anchor" href="#arg-show-progress"></a></dt>
@@ -340,8 +364,35 @@ plots can be returned as a list of ggplot2 objects for further manipulation
 or integration into other analyses.</p>
     </div>
     <div class="section level2">
+    <h2 id="preferred-formats-and-devices">Preferred formats and devices<a class="anchor" aria-label="anchor" href="#preferred-formats-and-devices"></a></h2>
+
+<table class="table table"><tr><td>Purpose</td><td>Format</td><td>Device used</td><td>Typical <code>dpi</code></td></tr><tr><td>Journal figure, vector (default choice)</td><td><code>"pdf"</code></td><td><code><a href="https://rdrr.io/r/grDevices/cairo.html" class="external-link">grDevices::cairo_pdf</a></code>, else <code><a href="https://rdrr.io/r/grDevices/pdf.html" class="external-link">grDevices::pdf</a></code></td><td>n/a</td></tr><tr><td>Figure for further editing (Illustrator, Inkscape)</td><td><code>"svg"</code></td><td><code><a href="https://svglite.r-lib.org/reference/svglite.html" class="external-link">svglite::svglite</a></code>, else <code><a href="https://rdrr.io/r/grDevices/cairo.html" class="external-link">grDevices::svg</a></code></td><td>n/a</td></tr><tr><td>Slides, Quarto HTML, GitHub</td><td><code>"png"</code></td><td><code><a href="https://ragg.r-lib.org/reference/agg_png.html" class="external-link">ragg::agg_png</a></code>, else <code><a href="https://rdrr.io/r/grDevices/png.html" class="external-link">grDevices::png</a></code></td><td>150-300</td></tr><tr><td>Journal requiring raster submission</td><td><code>"tiff"</code></td><td><code><a href="https://ragg.r-lib.org/reference/agg_tiff.html" class="external-link">ragg::agg_tiff</a></code>, else <code><a href="https://rdrr.io/r/grDevices/png.html" class="external-link">grDevices::tiff</a></code></td><td>300-600</td></tr></table><p>Prefer a <strong>vector</strong> format (<code>pdf</code>, <code>svg</code>) for publication: text stays
+selectable and searchable, and lines stay sharp at any magnification.</p>
+<p>Prefer a <strong>raster</strong> format (<code>png</code>, <code>tiff</code>) when a plot draws very many marks
+– a <code><a href="plot_runscatter.html">plot_runscatter()</a></code> page covering several thousand analyses, or a dense
+<code><a href="plot_pca.html">plot_pca()</a></code> score plot. Every point becomes a separate object in a PDF, so
+such figures produce very large files that are slow to open and to typeset.
+Saving them at 300-600 dpi instead keeps the file small with no visible loss.</p>
+<p>The optional packages <code>ragg</code> and <code>svglite</code> are used automatically when
+installed, giving better text rendering, system-font support and smaller SVG
+files. When they are absent the equivalent <code>grDevices</code> device is used and the
+output is still correct. Installing both is recommended:
+<code>install.packages(c("ragg", "svglite"))</code>.</p>
+<p>PDF output uses the cairo device wherever R was built with cairo support
+(<code>capabilities("cairo")</code>), because plain <code><a href="https://rdrr.io/r/grDevices/pdf.html" class="external-link">grDevices::pdf()</a></code> writes text in a
+single-byte encoding and silently transliterates anything outside it – an en
+dash becomes <code>-</code>, <code>&gt;=</code> replaces the proper symbol. Unit labels such as
+<code>umol/L</code> and statistical annotations routinely depend on those glyphs.</p>
+<p>Multi-page output from the paged plot functions (<code><a href="plot_runscatter.html">plot_runscatter()</a></code>,
+<code>plot_calibrationcurves()</code>, <code><a href="plot_responsecurves.html">plot_responsecurves()</a></code>,
+<code><a href="plot_feature_correlations.html">plot_feature_correlations()</a></code>) is PDF only, which is the only format that
+holds many pages in one file. Use <code><a href="save_plot.html">save_plot()</a></code> for single figures in any of
+the other formats.</p>
+    </div>
+    <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p>Other calibration plots:
+    <div class="dont-index"><p><code><a href="save_plot.html">save_plot()</a></code> to save a single figure in any format.</p>
+<p>Other calibration plots:
 <code><a href="plot_responsecurves.html">plot_responsecurves()</a></code></p></div>
     </div>
 
