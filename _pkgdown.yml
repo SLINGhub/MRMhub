@@ -38,6 +38,8 @@ navbar:
       menu:
       - text: Installation
         href: articles/manual-00-installation.html
+      - text: Intro to R, Quarto & MRMhub
+        href: articles/tutorial-13-intro-to-r-quarto-mrmhub.html
       - text: Your First Analysis (5 min)
         href: articles/tutorial-00-first-analysis.html
       - text: Key Concepts & Glossary
@@ -48,6 +50,8 @@ navbar:
       text: Tutorials
       menu:
       - text: Start here
+      - text: Intro to R, Quarto & MRMhub
+        href: articles/tutorial-13-intro-to-r-quarto-mrmhub.html
       - text: Your First Analysis (5 min)
         href: articles/tutorial-00-first-analysis.html
       - text: Build a workflow (no code)

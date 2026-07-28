@@ -1,0 +1,240 @@
+---
+title: "Introduction to R, Quarto, and MRMhub"
+description: >
+  Install R and an IDE, create a Quarto project, and run a complete MRMhub
+  analysis in it — written for readers new to R and Quarto.
+output:
+  rmarkdown::html_vignette:
+    fig_width: 7
+    fig_height: 5
+vignette: >
+  %\VignetteIndexEntry{Introduction to R, Quarto, and MRMhub}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+editor_options:
+  markdown:
+    wrap: 100
+---
+
+```{r setup, include = FALSE}
+source("_common.R")
+```
+
+<p class="page-meta"><span class="page-kind page-kind-tutorial">Tutorial</span> <span class="page-level">Beginner</span></p>
+
+A MRMhub analysis is written as a document that mixes prose with the R code that produces the
+results, so the report and the analysis are one file. This tutorial assumes no prior experience with
+R or Quarto. It starts from an empty computer, installs the software, sets up a project, and then
+runs a complete analysis of the bundled demonstration data — importing, normalizing, plotting, and
+exporting — using MRMhub functions alone, without any custom R code. After working through it you
+can open a fresh Quarto document and reproduce the same workflow on your own data.
+
+## 1. Install R and an editor
+
+Two pieces of software are needed. **R** is the language the analysis runs in; an **integrated
+development environment** (IDE) is the editor you write and run it in.
+
+- Install R from [CRAN](https://cran.r-project.org/) (version 4.1 or newer). Pick the download for
+  your operating system and accept the defaults.
+- Install an IDE. [RStudio](https://posit.co/download/rstudio-desktop/) is the most common choice and
+  the one this tutorial follows. If you already work in VS Code, [Positron](https://positron.posit.co/)
+  is an RStudio-like alternative built on the same editor.
+
+With R and RStudio installed, open RStudio and install MRMhub from the console (the bottom-left
+pane). The first line installs `pak`, a package installer; the second uses it to fetch MRMhub and its
+dependencies:
+
+```{r install, eval = FALSE}
+if (!require("pak")) install.packages("pak")
+pak::pak("SLINGhub/MRMhub")
+```
+
+If the installation reports an error, the [Installation guide](manual-00-installation.html) lists the
+common causes (a missing compiler on Windows or macOS, a firewall blocking the download) and their
+fixes.
+
+## 2. Create a Quarto project
+
+A **project** keeps everything for one analysis — data, code, and results — in a single folder that
+the IDE treats as a unit. In RStudio, choose *File → New Project → New Directory → Quarto Project*,
+give it a name, and create it. Quarto's [project documentation](https://quarto.org/docs/tools/rstudio/)
+covers the dialog in detail.
+
+Inside the new project, add two folders to keep raw inputs separate from generated results — the
+convention MRMhub's own workflows follow:
+
+```
+my_study/
+├── data/            # raw INTEGRATOR output and metadata files
+├── output/          # exported CSVs, PDFs, and reports
+└── analysis.qmd     # this document
+```
+
+A Quarto document (`.qmd`) is the home for the workflow: it interleaves explanatory text with code,
+documenting each decision alongside the result it produces.
+
+## 3. Add text and code
+
+A `.qmd` file is plain text with two kinds of content. **Prose** is written in Markdown — plain
+paragraphs, with `#` for headings, `**bold**`, and `-` for lists. **Code** lives in *chunks*: R code
+fenced between ```` ```{r} ```` and ```` ``` ````. In RStudio, *Insert → Code Chunk* (or Ctrl/Cmd +
+Alt + I) adds an empty one.
+
+```` markdown
+Some explanatory text describing the next step.
+
+```{r}
+1 + 1
+```
+````
+
+RStudio offers two ways to edit a `.qmd`: the **Source** editor shows the raw Markdown, while the
+**Visual** editor (the *Visual* toggle, top-left of the document) shows a formatted, word-processor-like
+view. Both edit the same file. Quarto's [authoring guide](https://quarto.org/docs/get-started/hello/rstudio.html)
+introduces both.
+
+## 4. Preview and run code
+
+There are two distinct actions. **Running a chunk** executes its code immediately and shows the
+result inline: click the green ▶ arrow at the chunk's top-right, or press Ctrl/Cmd + Shift + Enter
+with the cursor inside it. **Rendering** turns the whole document into a finished HTML (or PDF)
+report: click **Render**, and RStudio runs every chunk in order and assembles the output. The
+**Preview** that opens updates each time you render, so the report stays in step with the code.
+
+While developing an analysis, run chunks one at a time to check each step; render at the end to
+produce the shareable report.
+
+## 5. The setup chunk
+
+The first chunk of an analysis loads the packages and sets defaults that apply throughout. Loading
+MRMhub makes its functions available; `mrmhub_enable_cli_color()` colours the console messages in the
+rendered report; and `mrmhub_set_plot_defaults()` sets a house font size and resolution for every
+figure, so individual plots need not repeat them.
+
+```{r first-chunk}
+library(mrmhub)
+mrmhub_enable_cli_color()
+mrmhub_set_plot_defaults(font_base_size = 8)
+```
+
+Figure dimensions are controlled by Quarto itself, through the document's `fig-width` and
+`fig-height` options; [Quarto workflows](manual-11-quarto-workflows.html) explains how those interact
+with MRMhub's plot sizing.
+
+## 6. Load the data
+
+Every analysis begins with a `MRMhubExperiment` — the container that holds the data and every result
+computed from it (see [The MRMhubExperiment object](manual-02-data-object.html)). We create an empty
+one and import the demonstration dataset bundled with the package. Using `system.file()` locates that
+file wherever the package is installed, so the code runs unchanged on any machine; in your own
+project you would instead give the path to a file in `data/`.
+
+```{r load-data}
+#| message: true
+demo_file <- system.file("extdata", "MRMhub_demo.tsv", package = "mrmhub")
+
+mexp <- MRMhubExperiment()
+mexp <- import_data_mrmhub(
+  mexp,
+  path = demo_file,
+  import_metadata = TRUE)
+```
+
+Setting `import_metadata = TRUE` reads the sample and internal-standard annotations embedded in the
+INTEGRATOR file at the same time. MRMhub reads several other formats; [Importing analytical
+data](manual-04-data-import.html) has a decision flowchart and the full importer reference.
+
+## 7. Process the data
+
+The core processing step normalizes each feature to its assigned internal standard, which corrects
+for extraction and injection variation. The result is stored in the `feature_norm_intensity`
+variable, leaving the raw intensities untouched.
+
+```{r process}
+#| message: true
+mexp <- normalize_by_istd(mexp)
+```
+
+This is the shortest useful pipeline. A real study usually adds drift and batch correction and QC
+filtering in a set order; [A basic MRMhub workflow](tutorial-02-basic-workflow.html) and [Drift and
+batch correction](tutorial-04-drift-correction.html) build on the object from here.
+
+## 8. Plot signals across the run
+
+A run-scatter plot shows each feature's signal against injection order — a quick check for trends or
+outliers. We plot the normalized intensities for two lipid classes, selected by a regular expression
+on their names.
+
+```{r runscatter}
+#| fig.cap: !expr fig_cap("Normalized intensities of Cer and PC features across injection order.")
+#| fig.alt: Run-scatter of normalized intensities for Cer and PC features by injection order
+plot_runscatter(
+  mexp,
+  variable = "norm_intensity",
+  include_feature_filter = "^(Cer|PC)",
+  rows_page = 2, cols_page = 3)
+```
+
+To save the plot to a file instead of showing it, `plot_runscatter()` can write a multi-page PDF —
+one page per grid of features — directly to `output/`:
+
+```{r runscatter-pdf, eval = FALSE}
+plot_runscatter(
+  mexp,
+  variable = "norm_intensity",
+  include_feature_filter = "^(Cer|PC)",
+  rows_page = 2, cols_page = 3,
+  output_pdf = TRUE,
+  path = "output/runscatter.pdf")
+```
+
+## 9. Run a PCA, inline and as a PDF
+
+A principal-component analysis (PCA) summarises all features at once, placing each sample in a plane
+so that similar samples fall close together — useful for spotting QC clustering or outliers.
+
+```{r pca}
+#| fig.cap: !expr fig_cap("PCA of the normalized intensities, coloured by QC type.")
+#| fig.alt: PCA score plot of samples coloured by QC type
+plot_pca(mexp, variable = "norm_intensity")
+```
+
+To keep a copy of the figure, pipe it into `save_plot()`. Because `save_plot()` returns the plot
+visibly, one line both writes the PDF and still renders the figure in the report; `width` and
+`height` are in millimetres:
+
+```{r pca-save, eval = FALSE}
+plot_pca(mexp, variable = "norm_intensity") |>
+  save_plot("output/pca.pdf", width = 180, height = 120)
+```
+
+Giving `save_plot()` a path with no extension and `format = c("pdf", "png")` writes both formats at
+once; [Visualisation functions](manual-08-visualization.html) lists the plots available at each stage.
+
+## 10. Export results
+
+Finally, export the results for downstream use. A single-variable CSV gives a plain table of
+normalized intensities, and `save_report_xlsx()` writes a multi-sheet Excel workbook holding every
+data table and QC metric in one file.
+
+```{r export, eval = FALSE}
+save_dataset_csv(
+  mexp,
+  path = "output/norm_intensities.csv",
+  variable = "norm_intensity")
+
+save_report_xlsx(
+  mexp,
+  path = "output/report.xlsx",
+  filtered_variable = "norm_intensity")
+```
+
+With these chunks written, click **Render** once more: RStudio runs the whole analysis top to bottom
+and produces a self-contained report, with the CSV, PDFs, and Excel workbook waiting in `output/`.
+
+## Next steps
+
+- [A basic MRMhub workflow](tutorial-02-basic-workflow.html): the full pipeline with quantification and QC filtering
+- [Drift and batch correction](tutorial-04-drift-correction.html): correcting run-order and batch effects
+- [Exploring QC: RunScatter and PCA](tutorial-05-run-scatter.html): QC visualisation in depth
+- [Quarto workflows](manual-11-quarto-workflows.html): rendering, figure sizing, and report options
