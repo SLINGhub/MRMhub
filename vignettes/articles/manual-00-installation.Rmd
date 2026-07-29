@@ -21,22 +21,17 @@ set.seed(1041)
 options(dplyr.print_max = 10)
 ```
 
-<p class="page-kind page-kind-manual">
-
-Manual
-
-</p>
+<p class="page-kind page-kind-manual">Manual</p>
 
 ## Requirements
 
 - **Operating system:** Windows, macOS, or Linux.
 - **R:** version 4.1 or newer, from [CRAN](https://cran.r-project.org).
-- **IDE (recommended):** [RStudio](https://posit.co/download/rstudio-desktop/)
-  or [Positron](https://positron.posit.co), which combine a code editor,
-  console, and package management in a single window.
+- **R Editor (recommended):** [RStudio](https://posit.co/download/rstudio-desktop/)
+  or [Positron](https://positron.posit.co).
 - **Quarto:** bundled with recent RStudio and Positron releases; otherwise
   install it from [quarto.org](https://quarto.org/docs/get-started/). Required
-  only for rendering reports and workflow documents.
+  only for rendering notebooks.
 
 ## Installing MRMhub
 
@@ -53,7 +48,7 @@ pak::pak("SLINGhub/MRMhub")
 ```
 
 If `pak` installation fails, e.g. due to institutional network firewall or
-proxy settings (see [Troubleshooting](#troubleshooting) below), try installing
+proxy settings, try installing
 with `remotes` instead:
 
 ```{r, eval=FALSE}
@@ -78,9 +73,7 @@ those too. If it loads with errors, see [Troubleshooting](#troubleshooting) belo
 To keep the base installation light, a number of specialised functions in
 `mrmhub` rely on additional packages that are not installed upfront. When such a
 function is called and its package is not yet installed, `mrmhub` offers to
-install it — so most users never install these manually.
-
-Ordered from the most commonly used functions to the more specialised ones:
+install it.
 
 | Function | Optional package | Enables |
 |----------|------------------|---------|
@@ -123,8 +116,8 @@ mrmhub::check_setup()
 
 **Frequent installation errors**
 
-See [Troubleshooting & FAQ](manual-10-troubleshooting.html) for detailed
-error and resolution list.
+See [Troubleshooting & FAQ](manual-10-troubleshooting.html) for a detailed
+list of errors and resolutions.
 
 | Error | Cause | Fix |
 |--------------------------|--------------------------|-------------------|
