@@ -463,8 +463,6 @@ validate_workflow_inputs <- function(
   steps = character(),
   csv_opts = list()
 ) {
-  spec <- list(steps = steps)
-
   mexp <- tryCatch(
     suppressMessages(build_experiment(data_file, importer, metadata_file, metadata_route, csv_opts)),
     error = function(e) e
@@ -474,6 +472,16 @@ validate_workflow_inputs <- function(
     return(wf_issue("import", "error", paste0("Import failed: ", conditionMessage(mexp))))
   }
 
+  workflow_step_issues(mexp, steps)
+}
+
+# Run each selected step's precheck against an already-built experiment and
+# collapse the results into an issues tibble. Split out from
+# validate_workflow_inputs() so the Shiny app can validate the experiment it has
+# already imported instead of importing the file a second time.
+#' @noRd
+workflow_step_issues <- function(mexp, steps = character()) {
+  spec <- list(steps = steps)
   defs <- workflow_steps()
   issues <- purrr::map(steps, function(id) {
     def <- defs[[id]]
@@ -636,8 +644,7 @@ generate_workflow_qmd <- function(spec) {
       c(
         "library(mrmhub)",
         "# Render mrmhub's coloured console feedback in HTML output:",
-        "mrmhub_enable_cli_color()",
-        "options(mrmhub.max_report_items = 10)"
+        "mrmhub_enable_cli_color()"
       ),
       label = "setup",
       opts = "#| include: false"
@@ -683,14 +690,14 @@ qmd_yaml <- function(title, formats = "html") {
 qmd_prose <- function(text) text
 
 # One ```{r} code chunk. `code` may be a length-1 string (possibly multi-line)
-# or a character vector of lines. `label` adds a `#| label:` line and `opts` any
-# further `#|` cell-option lines (verbatim), so the emitted chunks carry the
-# labels/options documented in manual-11-quarto-workflows.
+# or a character vector of lines. `label` goes inline in the chunk header
+# (```{r label}) and `opts` adds any `#|` cell-option lines (verbatim), so the
+# emitted chunks carry the labels/options documented in manual-11-quarto-workflows.
 #' @noRd
 qmd_chunk <- function(code, label = NULL, opts = NULL) {
   code_lines <- unlist(strsplit(paste(code, collapse = "\n"), "\n", fixed = TRUE))
-  hdr <- c(if (!is.null(label)) paste0("#| label: ", label), opts)
-  c("```{r}", hdr, code_lines, "```", "")
+  open <- if (!is.null(label)) paste0("```{r ", label, "}") else "```{r}"
+  c(open, opts, code_lines, "```", "")
 }
 
 #' @noRd

@@ -29,6 +29,14 @@ metadata_choices <- c(
   "Individual files (analyses / features / ISTDs)" = "individual",
   "None" = "none"
 )
+# Optional dataset_orig columns that signal embedded (in-file) metadata -- if any
+# are present the "Embedded in data file" route is worth offering. Mirrors the
+# columns import_metadata_from_data() harvests (see R/metadata-import.R).
+embedded_hint_cols <- c(
+  "sample_type", "qc_type", "analysis_order", "batch_id",
+  "feature_class", "chem_formula", "molecular_weight",
+  "precursor_mz", "product_mz", "istd_feature_id", "is_quantifier"
+)
 # Canonical value-column names offered when mapping a generic long CSV.
 long_value_types <- c(
   "Peak area" = "feature_area",
@@ -108,6 +116,60 @@ choose_dir_interactive <- function() {
   NULL
 }
 
+# File picker for a locally-run app -- the metadata counterpart to
+# choose_dir_interactive(). Returns a path, "" when the user cancels a dialog
+# that opened, or NULL when no picker backend is available.
+choose_file_interactive <- function(prompt = "Select file") {
+  usable <- function(p) !is.null(p) && length(p) == 1 && !is.na(p) && nzchar(p)
+  os <- Sys.info()[["sysname"]]
+
+  if (identical(os, "Darwin") && nzchar(Sys.which("osascript"))) {
+    p <- tryCatch(
+      suppressWarnings(system2(
+        "osascript",
+        args = c("-e", shQuote(sprintf('POSIX path of (choose file with prompt "%s")', prompt))),
+        stdout = TRUE, stderr = FALSE
+      )),
+      error = function(e) character()
+    )
+    p <- trimws(paste(p, collapse = ""))
+    return(if (usable(p)) p else "") # "" = user cancelled
+  }
+
+  if (identical(os, "Windows") && exists("choose.files", where = asNamespace("utils"))) {
+    p <- tryCatch(utils::choose.files(caption = prompt, multi = FALSE), error = function(e) NULL)
+    return(if (usable(p)) p else "")
+  }
+
+  if (requireNamespace("rstudioapi", quietly = TRUE) &&
+    rstudioapi::isAvailable() && rstudioapi::hasFun("selectFile")) {
+    p <- tryCatch(rstudioapi::selectFile(caption = prompt), error = function(e) NULL)
+    if (usable(p)) return(p)
+  }
+  if (isTRUE(capabilities("tcltk")) && requireNamespace("tcltk", quietly = TRUE)) {
+    p <- tryCatch(tcltk::tk_choose.files(caption = prompt, multi = FALSE), error = function(e) NULL)
+    if (usable(p)) return(p)
+  }
+  NULL
+}
+
+# A labelled "Browse…" row for a native metadata file picker, plus the name of
+# whatever file is currently selected.
+meta_browse_ui <- function(btn_id, label, current) {
+  div(
+    class = "mb-2",
+    if (!is.null(label) && nzchar(label)) tags$label(class = "form-label mb-1", label),
+    div(
+      class = "d-flex align-items-center gap-2",
+      actionButton(btn_id, "Browse…", class = "btn-outline-secondary btn-sm"),
+      span(
+        class = "text-muted small text-truncate",
+        if (!is.null(current)) basename(current) else "No file selected"
+      )
+    )
+  )
+}
+
 ui <- page_sidebar(
   title = "MRMhub Workflow Builder",
   theme = bs_theme(bootswatch = "sandstone"),
@@ -128,42 +190,50 @@ ui <- page_sidebar(
 
     tags$strong("1 · Data source"),
     selectInput("importer", "Where does your data come from?", choices = importer_choices),
-    helpText("Pick the tool or file format that produced your data — this selects the matching importer."),
+    helpText("Selects the matching importer."),
     fileInput("data_file", "Data file", accept = c(".csv", ".tsv", ".txt")),
     uiOutput("csv_config_ui"),
+    uiOutput("data_path_ui"),
 
-    hr(),
-    tags$strong("2 · Metadata"),
-    selectInput("metadata_route", "Metadata source", choices = metadata_choices),
-    uiOutput("metadata_inputs"),
-    actionButton("load_demo", "Load bundled demo data", class = "btn-outline-secondary btn-sm"),
+    # Sections 2–5 appear only once a data file has been imported.
+    conditionalPanel(
+      condition = "output.has_data",
 
-    hr(),
-    tags$strong("3 · Project folder"),
-    div(
-      id = "browse_row", class = "d-flex align-items-end gap-2",
-      div(class = "flex-grow-1",
-        textInput("project_dir", "Analysis project folder (optional)", placeholder = "/path/to/project")),
-      actionButton("browse_project", "Browse…", class = "btn-outline-secondary")
-    ),
-    helpText(
-      "If set, uploaded files are copied into ", tags$code("<folder>/data/"),
-      " and the report is written to ", tags$code("<folder>/output/"), "."
-    ),
-    uiOutput("path_controls"),
+      hr(),
+      tags$strong("2 · Metadata"),
+      selectInput("metadata_route", "Metadata source", choices = metadata_choices),
+      uiOutput("metadata_inputs"),
+      # Hidden for now -- unclear UX around what "bundled demo data" loads.
+      # actionButton("load_demo", "Load bundled demo data", class = "btn-outline-secondary btn-sm"),
 
-    hr(),
-    tags$strong("4 · Processing steps"),
-    uiOutput("steps_ui"),
-    uiOutput("drift_method_ui"),
-    uiOutput("ref_qc_ui"),
-    uiOutput("reference_sample_ui"),
+      hr(),
+      tags$strong("3 · Project folder"),
+      div(
+        id = "browse_row", class = "d-flex align-items-end gap-2",
+        div(class = "flex-grow-1",
+          textInput("project_dir", "Analysis project folder (optional)", placeholder = "/path/to/project")),
+        actionButton("browse_project", "Browse…", class = "btn-outline-secondary")
+      ),
+      helpText(
+        "If set, files are copied to ", tags$code("data/"),
+        " and the report written to ", tags$code("output/"), "."
+      ),
+      uiOutput("path_controls"),
 
-    hr(),
-    tags$strong("5 · Output formats"),
-    checkboxGroupInput("formats", NULL,
-      choices = c("HTML" = "html", "Word (.docx)" = "docx", "PDF (sans-serif)" = "pdf"),
-      selected = "html")
+      hr(),
+      tags$strong("4 · Processing steps"),
+      uiOutput("steps_ui"),
+      uiOutput("drift_method_ui"),
+      uiOutput("ref_qc_ui"),
+      uiOutput("reference_sample_ui"),
+
+      hr(),
+      tags$strong("5 · Output"),
+      checkboxGroupInput("formats", "Formats",
+        choices = c("HTML" = "html", "Word (.docx)" = "docx", "PDF (sans-serif)" = "pdf"),
+        selected = "html"),
+      uiOutput("output_path_ui")
+    )
   ),
 
   layout_columns(
@@ -202,6 +272,34 @@ server <- function(input, output, session) {
     configured = FALSE, column_mapping = NULL,
     variable_name = "area", analysis_id_col = NA, first_feature_column = NA
   )
+  # Metadata file paths chosen via the native Browse buttons. `single` backs the
+  # msorganiser / tables routes; the rest back the individual route.
+  meta_paths <- reactiveValues(single = NULL, analyses = NULL, features = NULL, istds = NULL)
+
+  # A fresh route means a fresh file expectation -- clear stale selections.
+  observeEvent(input$metadata_route, {
+    meta_paths$single <- NULL
+    meta_paths$analyses <- NULL
+    meta_paths$features <- NULL
+    meta_paths$istds <- NULL
+  })
+
+  browse_meta <- function(slot, prompt) {
+    p <- choose_file_interactive(prompt)
+    if (is.null(p)) {
+      showNotification(
+        "Could not open a file dialog in this environment -- run the app locally to browse for files.",
+        type = "warning", duration = 6
+      )
+    } else if (nzchar(p)) {
+      meta_paths[[slot]] <- p
+    }
+    # p == "" means the dialog opened and the user cancelled: keep any prior pick.
+  }
+  observeEvent(input$browse_meta_single, browse_meta("single", "Select metadata file"))
+  observeEvent(input$browse_meta_analyses, browse_meta("analyses", "Select analyses metadata file"))
+  observeEvent(input$browse_meta_features, browse_meta("features", "Select features metadata file"))
+  observeEvent(input$browse_meta_istds, browse_meta("istds", "Select ISTDs metadata file"))
 
   observeEvent(input$load_demo, {
     demo(system.file("extdata", "MRMhub_demo.tsv", package = "mrmhub"))
@@ -223,20 +321,23 @@ server <- function(input, output, session) {
   has_data <- reactive(!is.null(demo()) || !is.null(input$data_file))
   is_generic_csv <- reactive(input$importer %in% c("csv_long", "csv_wide"))
 
+  # Drives the conditionalPanel that reveals sections 2–5 only after data import.
+  output$has_data <- reactive(has_data())
+  outputOptions(output, "has_data", suspendWhenHidden = FALSE)
+
   # Metadata input UI depends on the chosen source.
   output$metadata_inputs <- renderUI({
     switch(
       input$metadata_route,
-      msorganiser = fileInput("metadata_file", "MSOrganiser file (.xlsx)", accept = ".xlsx"),
-      tables = fileInput("metadata_file", "Metadata tables file (.xlsx)", accept = ".xlsx"),
+      msorganiser = meta_browse_ui("browse_meta_single", NULL, meta_paths$single),
+      tables = meta_browse_ui("browse_meta_single", NULL, meta_paths$single),
       individual = tagList(
-        fileInput("metadata_analyses", "Analyses metadata (.csv)", accept = c(".csv", ".tsv")),
-        fileInput("metadata_features", "Features metadata (.csv)", accept = c(".csv", ".tsv")),
-        fileInput("metadata_istds", "ISTDs metadata (.csv)", accept = c(".csv", ".tsv"))
+        meta_browse_ui("browse_meta_analyses", "Analyses metadata", meta_paths$analyses),
+        meta_browse_ui("browse_meta_features", "Features metadata", meta_paths$features),
+        meta_browse_ui("browse_meta_istds", "ISTDs metadata", meta_paths$istds)
       ),
       embedded = helpText(
-        "Analysis and feature metadata are read from the data file. ",
-        "Additional metadata tables can still be added to the generated script."
+        "Read from the data file; more tables can still be added to the script."
       ),
       NULL # none: no metadata
     )
@@ -248,28 +349,26 @@ server <- function(input, output, session) {
     switch(
       input$metadata_route,
       individual = list(
-        analyses = input$metadata_analyses$datapath,
-        features = input$metadata_features$datapath,
-        istds = input$metadata_istds$datapath
+        analyses = meta_paths$analyses,
+        features = meta_paths$features,
+        istds = meta_paths$istds
       ),
       msorganiser = ,
-      tables = if (is.null(input$metadata_file)) NULL else input$metadata_file$datapath,
+      tables = meta_paths$single,
       NULL
     )
   })
 
   # Files to copy in project mode: (datapath, name) pairs for whatever metadata
-  # inputs are present.
+  # files are selected.
   meta_files_to_copy <- reactive({
-    if (identical(input$metadata_route, "individual")) {
-      fs <- Filter(Negate(is.null),
-        list(input$metadata_analyses, input$metadata_features, input$metadata_istds))
-      lapply(fs, function(f) list(datapath = f$datapath, name = f$name))
-    } else if (!is.null(input$metadata_file)) {
-      list(list(datapath = input$metadata_file$datapath, name = input$metadata_file$name))
+    paths <- if (identical(input$metadata_route, "individual")) {
+      list(meta_paths$analyses, meta_paths$features, meta_paths$istds)
     } else {
-      list()
+      list(meta_paths$single)
     }
+    lapply(Filter(Negate(is.null), paths),
+      function(p) list(datapath = p, name = basename(p)))
   })
 
   # ---- Generic-CSV column configuration -----------------------------------
@@ -377,27 +476,32 @@ server <- function(input, output, session) {
     if (!is.null(demo())) demo() else if (has_data()) data_name() else ""
   })
 
+  # Project folder (step 3): only the "create project" action -- the data and
+  # report path fields live with their own steps (below), and are auto-managed
+  # here in project mode.
   output$path_controls <- renderUI({
-    if (project_mode()) {
-      tagList(
-        tags$small(class = "text-muted d-block mb-2",
-          "Workflow will reference ", tags$code(file.path("data", data_name() %||% "your_data")),
-          " and write to ", tags$code("output/results.xlsx"), "."),
-        actionButton("write_project", "Create project & write .qmd", class = "btn-success btn-sm")
-      )
-    } else {
-      tagList(
-        textInput("data_path_override", "Data file path (as written in the code)",
-          value = "data/"),
-        helpText(
-          "Goes into the generated ", tags$code("import_data_*()"),
-          " call — set it to where the data file will sit relative to the .qmd, ",
-          "or an absolute path. (Set a project folder above to copy files and use ",
-          tags$code("data/"), " automatically.)"
-        ),
-        textInput("output_xlsx", "Report output path", value = "results.xlsx")
-      )
-    }
+    if (!project_mode()) return(NULL)
+    tagList(
+      tags$small(class = "text-muted d-block mb-2",
+        "Workflow will reference ", tags$code(file.path("data", data_name() %||% "your_data")),
+        " and write to ", tags$code("output/results.xlsx"), "."),
+      actionButton("write_project", "Create project & write .qmd", class = "btn-success btn-sm")
+    )
+  })
+
+  # Data file path (step 1) and report output path (step 5): shown only when not
+  # in project mode, where the paths are set for you.
+  output$data_path_ui <- renderUI({
+    if (!has_data() || project_mode()) return(NULL)
+    tagList(
+      textInput("data_path_override", "Data file path (as written in the code)",
+        value = "data/"),
+      helpText("Where the data file sits relative to the .qmd (or an absolute path).")
+    )
+  })
+  output$output_path_ui <- renderUI({
+    if (project_mode()) return(NULL)
+    textInput("output_xlsx", "Report output path", value = "results.xlsx")
   })
 
   data_qmd_path <- reactive({
@@ -410,16 +514,16 @@ server <- function(input, output, session) {
     if (project_mode()) file.path("data", nm) else nm
   }
   metadata_qmd_path <- reactive({
-    if (is.null(input$metadata_file)) return(NULL)
-    ref_name(input$metadata_file$name)
+    if (is.null(meta_paths$single)) return(NULL)
+    ref_name(basename(meta_paths$single))
   })
   metadata_individual_qmd <- reactive({
     if (!identical(input$metadata_route, "individual")) return(NULL)
-    nm <- function(f) if (is.null(f)) NULL else ref_name(f$name)
+    nm <- function(p) if (is.null(p)) NULL else ref_name(basename(p))
     list(
-      analyses = nm(input$metadata_analyses),
-      features = nm(input$metadata_features),
-      istds = nm(input$metadata_istds)
+      analyses = nm(meta_paths$analyses),
+      features = nm(meta_paths$features),
+      istds = nm(meta_paths$istds)
     )
   })
   output_qmd_path <- reactive({
@@ -432,13 +536,37 @@ server <- function(input, output, session) {
     # list and other controls still render with their defaults.
     if (!has_data()) return(NULL)
     if (is_generic_csv() && !isTRUE(csv_cfg$configured)) return(NULL)
-    tryCatch(
-      suppressMessages(mrmhub:::build_experiment(
-        data_path(), input$importer, metadata_arg(), input$metadata_route, csv_opts_r()
-      )),
-      error = function(e) e
-    )
+    withProgress(message = "Importing data & metadata…", value = 1, {
+      tryCatch(
+        suppressMessages(mrmhub:::build_experiment(
+          data_path(), input$importer, metadata_arg(), input$metadata_route, csv_opts_r()
+        )),
+        error = function(e) e
+      )
+    })
   })
+
+  # Probe the data file (metadata OFF, so it can't trip metadata assertions) to
+  # see whether dataset_orig carries embedded-metadata hints. Columns are the
+  # same with or without metadata, so route "none" is a safe, cheap probe.
+  has_embedded_metadata <- reactive({
+    if (!has_data()) return(FALSE)
+    if (is_generic_csv() && !isTRUE(csv_cfg$configured)) return(FALSE)
+    m <- tryCatch(
+      suppressMessages(mrmhub:::build_experiment(
+        data_path(), input$importer, NULL, "none", csv_opts_r()
+      )),
+      error = function(e) NULL
+    )
+    inherits(m, "MRMhubExperiment") && any(embedded_hint_cols %in% names(m@dataset_orig))
+  })
+
+  # Offer "Embedded in data file" only when the data actually carries it.
+  observeEvent(has_embedded_metadata(), {
+    ch <- if (has_embedded_metadata()) metadata_choices else metadata_choices[metadata_choices != "embedded"]
+    sel <- if (isTRUE(input$metadata_route %in% ch)) input$metadata_route else unname(ch[[1]])
+    updateSelectInput(session, "metadata_route", choices = ch, selected = sel)
+  }, ignoreNULL = FALSE)
 
   availability_r <- reactive({
     m <- mexp_r()
@@ -552,19 +680,24 @@ server <- function(input, output, session) {
 
   output$issues <- renderUI({
     if (!has_data()) {
-      return(div(class = "text-muted", "Upload a data file or load the demo to validate."))
+      return(div(class = "text-muted", "Upload a data file to validate."))
     }
     if (is_generic_csv() && !isTRUE(csv_cfg$configured)) {
       return(div(class = "alert alert-warning py-2 my-2",
         "Configure the generic-CSV columns to validate this data."))
     }
-    res <- tryCatch(
-      mrmhub:::validate_workflow_inputs(
-        data_path(), input$importer, metadata_arg(), input$metadata_route,
-        selected_steps(), csv_opts_r()
-      ),
-      error = function(e) mrmhub:::wf_issue("app", "error", conditionMessage(e))
-    )
+    # Reuse the already-imported experiment rather than importing the file again.
+    m <- mexp_r()
+    res <- if (inherits(m, "MRMhubExperiment")) {
+      tryCatch(
+        mrmhub:::workflow_step_issues(m, selected_steps()),
+        error = function(e) mrmhub:::wf_issue("app", "error", conditionMessage(e))
+      )
+    } else if (inherits(m, "condition")) {
+      mrmhub:::wf_issue("import", "error", paste0("Import failed: ", conditionMessage(m)))
+    } else {
+      mrmhub:::wf_issue("app", "error", "Could not import the data file.")
+    }
     palette <- c(error = "danger", warning = "warning", ok = "success")
     icons <- c(error = "✗", warning = "⚠", ok = "✓")
     tagList(lapply(seq_len(nrow(res)), function(i) {
