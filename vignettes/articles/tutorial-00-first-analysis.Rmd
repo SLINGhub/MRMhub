@@ -1,5 +1,5 @@
 ---
-title: "Your first analysis"
+title: "Quick tour"
 description: >
   A short walkthrough on the bundled demo data: import a result file, normalize
   by internal standard, inspect the run, and export: no external files needed.
@@ -8,7 +8,7 @@ output:
     fig_width: 6
     fig_height: 3
 vignette: >
-  %\VignetteIndexEntry{Your first analysis}
+  %\VignetteIndexEntry{Quick tour}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 editor_options:
@@ -29,9 +29,8 @@ workflow tutorials that follow unpack each step in full.
 
 ## 1. Run the complete workflow
 
-The block below is the whole analysis: import the demo result, normalize each
-feature by its internal standard, and print the resulting object. Run it and you
-have a processed dataset.
+The block below is the whole analysis: import the demo result and normalize each
+feature by its internal standard. Run it and you have a processed dataset.
 
 ```{r pipeline}
 #| message: true
@@ -42,57 +41,55 @@ demo_file <- system.file("extdata", "MRMhub_demo.tsv", package = "mrmhub")
 mexp <- MRMhubExperiment()
 mexp <- import_data_mrmhub(mexp, path = demo_file, import_metadata = TRUE)
 mexp <- normalize_by_istd(mexp)
-mexp
 ```
 
-We then look at the normalized signal across the analytical run, the first thing
-to inspect for run-order drift.
+We then look at the raw peak areas across the analytical run, the first thing to
+inspect for run-order drift. To keep the figure to a single page, we restrict it
+to the PC species.
 
 ```{r runscatter}
 #| fig.height: 4
-#| fig.cap: !expr fig_cap("Internal-standard–normalized signal of each feature plotted against injection order.")
-#| fig.alt: RunScatter of ISTD-normalized feature intensities against run order
-plot_runscatter(mexp, variable = "norm_intensity")
+#| fig.cap: !expr fig_cap("Raw peak areas of the PC features plotted against injection order.")
+#| fig.alt: RunScatter of raw peak areas against run order for the PC features
+plot_runscatter(mexp, variable = "area", include_feature_filter = "^PC ")
 ```
 
-Printing the object returns a compact status overview: `mrmhub_status(mexp)` prints the
-full report. If you prefer not to write code, `build_workflow()` opens an
+A principal-component plot of the internal-standard–normalized signal gives a
+first look at how the samples group and whether any injection separates from the
+rest.
+
+```{r pca}
+#| fig.height: 4
+#| fig.cap: !expr fig_cap("PCA of the internal-standard–normalized feature intensities.")
+#| fig.alt: PCA score plot of ISTD-normalized feature intensities
+plot_pca(mexp, variable = "norm_intensity")
+```
+
+If you prefer not to write code, `build_workflow()` opens an
 interactive application that validates your data and metadata, flags pipeline
 mismatches, and generates an equivalent Quarto workflow to download (see
 [Build a workflow without code](tutorial-12-workflow-builder.html)); the script
 above remains the reproducible path.
 
-## 2. What the script does
+## 2. Export the results
 
-The importer returns an `MRMhubExperiment`: a structured container holding the
-peak-area data, the sample annotations, and the feature metadata together.
-`normalize_by_istd()` divides each feature by its assigned internal standard,
-correcting for extraction and injection variability. The ratio is stored in
-`feature_norm_intensity`, the `is_istd_normalized` flag is set, and the raw
-import is left untouched in the `dataset_orig` slot. A few helpers report what
-was imported:
-
-```{r inspect}
-#| eval: false
-get_analysis_count(mexp)   # number of analyses
-get_feature_count(mexp)    # number of features
-get_featurelist(mexp)      # the measured features
-```
-
-## 3. Export the results
-
-Write the processed data to a multi-sheet Excel report, or to a single tidy CSV. Figures are saved
-the same way, at a size you specify (in mm by default):
+Write the processed data to a multi-sheet Excel report, or to a single tidy CSV:
 
 ```{r export}
 #| eval: false
 save_report_xlsx(mexp, path = "my_first_results.xlsx")
 save_dataset_csv(mexp, path = "my_first_results.csv")
+```
 
-save_plot(
-  plot_pca(mexp, variable = "norm_intensity"),
-  path = "my_first_pca.pdf", width = 180, height = 120
-)
+## 3. Check the processing status
+
+`mrmhub_status()` prints the full processing and metadata report: what was
+imported, which steps have run, and which stages still lie ahead. It is the
+quickest way to confirm the object is in the state you expect before moving on.
+
+```{r status}
+#| message: true
+mrmhub_status(mexp)
 ```
 
 ## Next steps
