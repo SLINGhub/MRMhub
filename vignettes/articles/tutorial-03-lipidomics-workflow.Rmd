@@ -23,7 +23,7 @@ set.seed(1041)
 options(dplyr.print_max = 10)
 ```
 
-<p class="page-meta"><span class="page-kind page-kind-tutorial">Tutorial</span> <span class="page-level">Advanced</span> <span class="page-prereq">Prerequisites: <a href="tutorial-02-basic-workflow.html">Basic workflow</a></span></p>
+<p class="page-meta"><span class="page-kind page-kind-tutorial">Tutorial</span> <span class="page-level">Advanced</span> <span class="page-prereq">Prerequisites: <a href="tutorial-01-prep-data.html">Preparing and importing data</a></span></p>
 
 This tutorial follows a complete postprocessing and quality control workflow for
 a targeted lipidomics analysis. Starting from integrated peak areas, we work
@@ -34,11 +34,32 @@ and between-batch effects, filter features on QC criteria, and export the result
 The dataset (a longitudinal plasma study (`sPerfect`) measured across six
 batches) is realistic enough to show the decisions a real analysis demands.
 
+## 1. Set up a project
+
+A new analysis is easiest to manage inside an RStudio or Positron project
+(see [Using RStudio Projects](https://support.posit.co/hc/en-us/articles/200526207-Using-RStudio-Projects)
+or the [Positron User Guide](https://positron.posit.co/)), with a
+predictable folder layout that keeps the raw data, the exported results,
+and the processing notebook apart:
+
+```
+my_study/
+├── data/           # raw data and metadata files
+├── output/         # exported results
+└── analysis.Rmd    # your processing notebook
+```
+
+An R Notebook (`.Rmd`) or
+[Quarto](https://docs.posit.co/ide/user/ide/guide/documents/quarto-project.html)
+(`.qmd`) document is a natural home for a workflow like this one: it
+interleaves code with prose, keeping a record of every decision beside the
+result it produced. With the project in place, load the package to begin:
+
 ```{r library}
 library(mrmhub)
 ```
 
-## 1. Importing analysis results
+## 2. Importing analysis results
 
 We begin by importing the MRMhub result file, which holds the areas of the
 integrated peaks (features) for every processed raw data file. The same file also
@@ -59,7 +80,7 @@ myexp <- import_data_mrmhub(
 )
 ```
 
-## 2. A glimpse on the imported data
+## 3. A glimpse on the imported data
 
 The data is stored in long format (one row per analysis–feature pair) so each
 measurement carries its own area, retention time, and metadata side by side.
@@ -72,7 +93,7 @@ already joined to its sample and feature annotations.
 print(myexp@dataset)
 ```
 
-## 3. Analytical design and timeline
+## 4. Analytical design and timeline
 
 Before touching the signals, it is worth understanding how the run was
 structured. The plot below lays out the batch boundaries, the positions of the
@@ -95,7 +116,7 @@ plot_runsequence(
 )
 ```
 
-## 4. Overview of chromatographic separation
+## 5. Overview of chromatographic separation
 
 A first look at the chromatography confirms that species elute where expected.
 The plot shows the retention time distribution of all detected lipid species
@@ -116,7 +137,7 @@ plot_abundanceprofile(
 )
 ```
 
-## 5. Peak picking QC
+## 6. Peak picking QC
 
 Within a lipid class, retention time increases smoothly with chain length and
 decreases with the number of double bonds, so plotting RT against total carbon
@@ -141,7 +162,7 @@ plot_rt_vs_chain(
 )
 ```
 
-## 6. Signal trends of internal standards
+## 7. Signal trends of internal standards
 
 The internal standards (ISTDs) are our clearest window on instrument stability.
 The same ISTD amount was spiked into every sample except the solvent blanks
@@ -170,7 +191,7 @@ plot_runscatter(
 )
 ```
 
-## 7. Adding detailed metadata
+## 8. Adding detailed metadata
 
 Everything from here on (sample roles, ISTD assignments, spike amounts,
 concentrations) comes from the analysis metadata. The MRMhub Excel template
@@ -194,7 +215,7 @@ myexp <- set_analysis_order(myexp, order_by = "timestamp")
 myexp <- set_intensity_var(myexp, variable_name = "area")
 ```
 
-## 8. Overall trends and possible outliers
+## 9. Overall trends and possible outliers
 
 To judge technical trends that affect most analytes at once, the RLA (Relative
 Log Abundance) plot is the tool of choice (De Livera et al., Analytical
@@ -222,7 +243,7 @@ plot_rla_boxplot(
 )
 ```
 
-## 9. PCA of all QC types
+## 10. PCA of all QC types
 
 Principal component analysis condenses all features into a few axes and gives a
 complementary overview of how the study and QC samples relate, useful for
@@ -246,7 +267,7 @@ plot_pca(
 )
 ```
 
-## 10. Excluding technical outliers
+## 11. Excluding technical outliers
 
 With the outlier corroborated by both plots, we remove it from all downstream
 processing using `exclude_analyses()`. The function does not delete any data: it
@@ -277,7 +298,7 @@ plot_pca(
 )
 ```
 
-## 11. Response curves
+## 12. Response curves
 
 A linear response is a prerequisite for comparing concentrations between samples.
 Plasma lipid abundances span a wide dynamic range, and because each
@@ -308,7 +329,7 @@ plot_responsecurves(
 )
 ```
 
-## 12. Isotope interference correction
+## 13. Isotope interference correction
 
 Some peaks of interest are co-integrated with the isotopic peaks of other lipid
 species, for example the M+2 isotope of a species two mass units lighter falling
@@ -329,7 +350,7 @@ plot_interference_correction(
 )
 ```
 
-## 13. Normalization and quantification based on ISTDs
+## 14. Normalization and quantification based on ISTDs
 
 Quantification proceeds in two steps. `normalize_by_istd()` divides each lipid's
 peak area by the area of its assigned class-specific internal standard *within
@@ -348,7 +369,7 @@ myexp <- normalize_by_istd(myexp)
 myexp <- quantify_by_istd(myexp)
 ```
 
-## 14. Effects of class-wide ISTD normalization
+## 15. Effects of class-wide ISTD normalization
 
 Class-specific ISTDs are common practice in lipidomics, but they are rarely
 authentic standards for every species they normalise. A non-authentic ISTD may
@@ -381,7 +402,7 @@ plot_normalization_qc(
 )
 ```
 
-## 15. Drift correction
+## 16. Drift correction
 
 Even after ISTD normalisation, concentrations can drift gradually within a batch
 as the instrument response changes. We correct this with a Gaussian-kernel
@@ -447,7 +468,7 @@ my_trend_plot("conc_before", "PC 40:8")
 my_trend_plot("conc", "PC 40:8")
 ```
 
-## 16. Batch-effect correction
+## 17. Batch-effect correction
 
 Drift correction flattens the trend inside each batch but leaves the batches at
 different levels, since each is fitted independently. `correct_batch_centering()`
@@ -473,7 +494,7 @@ myexp <- correct_batch_centering(
 my_trend_plot("conc", "PC 40:8")
 ```
 
-## 17. Saving runscatter plots of all features as PDF
+## 18. Saving runscatter plots of all features as PDF
 
 For a full record it helps to save runscatter plots for every species, or a
 chosen subset, to a multi-page PDF in the `output` subfolder. Blanks are usually
@@ -522,7 +543,7 @@ See [Saving plots](manual-08-visualization.html#saving-plots) for the available 
 prefer a vector or a raster one.
 :::
 
-## 18. QC-based feature filtering
+## 19. QC-based feature filtering
 
 The final curation step removes features that fail defined QC criteria.
 `filter_features_qc()` combines several: the quality of the response curves
@@ -556,7 +577,7 @@ myexp <- filter_features_qc(
 )
 ```
 
-## 19. Summary of the QC filtering
+## 20. Summary of the QC filtering
 
 The plot below summarises the filtering per lipid class. Green segments count the
 species that passed every criterion; the remaining segments count those that
@@ -581,7 +602,7 @@ excluded, and where those exclusions overlap.
 plot_qc_summary_overall(myexp)
 ```
 
-## 20. Lipidome profile
+## 21. Lipidome profile
 
 As a final sanity check, we plot the concentration profile of the filtered
 dataset. Comparing these values (the most abundant species, the summed
@@ -604,7 +625,7 @@ plot_abundanceprofile(
 )
 ```
 
-## 21. Saving a report with data, metadata and processing details
+## 22. Saving a report with data, metadata and processing details
 
 The full post-processing can be written to a formatted Excel workbook, with
 separate sheets for the raw and processed datasets, the associated metadata, the
@@ -631,7 +652,7 @@ save_dataset_csv(
 )
 ```
 
-## 22. Sharing the MRMhubExperiment dataset
+## 23. Sharing the MRMhubExperiment dataset
 
 Finally, the whole `myexp` object can be serialized to an `RDS` file and shared.
 `RDS` files open in any R session (even without the mrmhub package installed)
@@ -650,4 +671,4 @@ print(my_saved_exp)
 - [Drift and batch correction](tutorial-04-drift-correction.html): correction methods and diagnostics in depth
 - [RunScatter and PCA QC exploration](tutorial-05-run-scatter.html): QC visualisation in depth
 - [Interference correction](tutorial-11-interference-correction.html): correcting isotopic and isobaric overlap
-- [External calibration & QC](recipe-01-ext-calibration-qc.html): quantify with external calibration curves
+- [External calibration & QC](tutorial-06-external-calibration.html): quantify with external calibration curves
