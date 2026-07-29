@@ -84,13 +84,11 @@ Ordered from the most commonly used functions to the more specialised ones:
 
 | Function | Optional package | Enables |
 |----------|------------------|---------|
-| QC and EDA plots | ggvenn, patchwork, ggforce, ggbeeswarm, ggsignif | QC-summary and exploratory plots |
 | `plot_runscatter()` | qpdf; mirai, carrier | only for multi-threaded PDF output |
 | `correct_isotopic_interferences()`, `calc_average_molweight()` | enviPat | isotope-pattern and molecular-weight calculation |
 | `correct_batch_combat()` | sva | ComBat batch correction |
 | `correct_batch_serrf()` | ranger | SERRF batch correction |
 | `correct_drift_gam()` | mgcv | GAM-based drift correction |
-| `plot_responsecurves()` | ggpmisc | response-curve plots with fit annotations |
 | `build_workflow()` | shiny, bslib | interactive workflow-builder app |
 | `save_dataset_summarizedexperiment()` | SummarizedExperiment, S4Vectors, lipidr *(Bioconductor)* | export to a `SummarizedExperiment` |
 | Lipid-name parsing (isotope correction, lipid plots) | rgoslin *(Bioconductor)* | parse and normalise lipid shorthand |
@@ -102,16 +100,13 @@ To install all of them upfront, run the following in a fresh R session
 ```{r, eval=FALSE}
 pak::pak(c(
   "sva", "ranger", "mgcv", "enviPat",
-  "ggpmisc", "ggvenn", "patchwork",
-  "ggforce", "ggbeeswarm", "ggsignif",
   "qpdf", "mirai", "carrier", "shiny", "bslib",
   "rgoslin", "lipidr", "SummarizedExperiment", "S4Vectors",
   "SLINGhub/lancer"
 ))
 ```
 
-`pak` resolves CRAN, Bioconductor, and GitHub sources in one call. If it
-fails behind a proxy or on an unusual platform, install the CRAN packages
+Alternatively, install the CRAN packages
 with `install.packages()` and the Bioconductor ones
 (`rgoslin`, `lipidr`, `SummarizedExperiment`, `S4Vectors`) with
 `BiocManager::install()`.
