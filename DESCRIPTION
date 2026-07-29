@@ -36,7 +36,8 @@ Imports:
     openxlsx2,
     ggh4x,
     ggplot2 (>= 3.5.0),
-    ggrepel
+    ggrepel,
+    ggnewscale
 Suggests:
     enviPat,
     qpdf,
@@ -47,7 +48,6 @@ Suggests:
     ggsignif,
     ggforce,
     ggpmisc,
-    ggnewscale,
     covr,
     ragg,
     svglite,

@@ -148,9 +148,6 @@ plot_pca <- function(
   if (show_labels) {
     check_installed("ggrepel")
   }
-  if (ellipse_variable != "none") {
-    check_installed("ggnewscale")
-  }
 
   if (all(is.na(qc_types))) {
     qc_types <- intersect(
