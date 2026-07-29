@@ -1,0 +1,314 @@
+---
+title: "Exporting to standard and community formats"
+output:
+  rmarkdown::html_vignette:
+    fig_width: 7
+    fig_height: 5
+description: |
+  Move a processed MRMhubExperiment into interchange formats: mzTab-M for
+  repositories, or a Bioconductor SummarizedExperiment for downstream analysis.
+vignette: >
+  %\VignetteIndexEntry{Exporting to standard and community formats}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+source("_common.R")
+knitr::opts_chunk$set(eval = FALSE)
+```
+
+<p class="page-meta"><span class="page-kind page-kind-tutorial">Tutorial</span> <span class="page-level">Intermediate</span> <span class="page-prereq">Prerequisites: <a href="tutorial-03-lipidomics-workflow.html">Full workflow</a></span></p>
+
+A processed `MRMhubExperiment` holds the authoritative record of an experiment,
+but sharing results or running downstream statistics usually means handing the
+data to another tool. This tutorial covers two export routes: **mzTab-M**, the
+HUPO-PSI community standard that repositories expect, and a Bioconductor
+**SummarizedExperiment**, which takes the data downstream to `limma` for
+differential abundance or `lipidr` for lipid-specific analysis.
+
+Both examples start from a processed object. Here we build one from the bundled
+`lipidomics_dataset`; in practice this would be your own.
+
+```{r}
+library(mrmhub)
+
+mexp <- lipidomics_dataset |>
+  normalize_by_istd() |>
+  quantify_by_istd()
+```
+
+## 1. mzTab-M
+
+[mzTab-M](https://github.com/HUPO-PSI/mzTab-M) is the HUPO-PSI community standard
+for reporting metabolomics and lipidomics quantification. It is a plain,
+tab-delimited text format that opens in Excel yet is fully machine-readable, and
+is what repositories such as [MetaboLights](https://www.ebi.ac.uk/metabolights/)
+expect on submission.
+
+`save_dataset_mztab()` writes a processed experiment to an mzTab-M 2.0.0-M file:
+
+```{r}
+out_dir <- tempdir()
+
+save_dataset_mztab(mexp, file.path(out_dir, "experiment.mzTab"))
+```
+
+By default the final concentrations (`feature_conc`) are written as the
+per-sample abundances, with the concentration unit declared in the header. If the
+experiment has not been quantified, the exporter falls back to the raw
+`feature_intensity` and declares an "Arbitrary quantification unit". Choose a
+different abundance variable with `variable`:
+
+```{r}
+save_dataset_mztab(
+  mexp, file.path(out_dir, "raw_areas.mzTab"),
+  variable = "area")
+```
+
+The full dataset is exported &mdash; every analysis (including QC, blank and
+calibration samples) and every feature:
+
+| mzTab-M section | mrmhub source |
+|---|---|
+| `MTD` metadata | title, units, one `ms_run`/`assay` per analysis, one `study_variable` per `qc_type` |
+| `SMF` (feature) | one row per `feature_id` (quantifiers, qualifiers **and** ISTDs); `abundance_assay[n]` = chosen variable; ISTDs flagged via `opt_global_is_internal_standard` |
+| `SML` (summary) | one row per analyte, grouping its features; the quantifier drives the summary abundance and per-group mean / %CV |
+| `SME` (evidence) | a minimal identification stub per feature |
+
+Enrich the metadata header with optional arguments:
+
+```{r}
+save_dataset_mztab(
+  mexp, file.path(out_dir, "experiment.mzTab"),
+  instrument = "Agilent 6495C QqQ",
+  contact = "Jane Doe",
+  publication = "doi:10.1234/example")
+```
+
+mzTab-M is a quantification report, not a full processing record.
+Internal-standard relationships, QC and calibration metrics, drift/batch state,
+and the QC-type / batch structure are not part of the mzTab-M model and so are
+*not* reproduced on round-trip; the file captures identities, the chosen
+abundance matrix, and the study-variable grouping. Keep the `MRMhubExperiment`
+(or the Excel report from `save_report_xlsx()`) as the authoritative record.
+
+### Validating the file
+
+The output targets mzTab-M **2.0.0-M**. To confirm conformance, upload the file
+to the HUPO-PSI / LIFS web validator at
+<https://apps.lifs-tools.org/mztabvalidator/>, or parse it back with the
+reference R package [`rmzTabM`](https://lifs-tools.github.io/rmzTabM/):
+
+```{r}
+m <- rmzTabM::readMzTab(file.path(out_dir, "experiment.mzTab"))
+rmzTabM::extractSmallMoleculeFeatures(m)
+```
+
+MRMhub has **no runtime dependency** on `rmzTabM` &mdash; the writer is
+self-contained.
+
+### Importing mzTab-M
+
+`import_data_mztab()` ingests mzTab-M produced by other tools &mdash; for example
+[Lipid Data Analyzer](http://genome.tugraz.at/lda2/), MS-DIAL or MZmine &mdash;
+into an `MRMhubExperiment`:
+
+```{r}
+mexp_in <- MRMhubExperiment(title = "Imported lipidomics")
+mexp_in <- import_data_mztab(mexp_in, "LDA_export.mzTab")
+```
+
+Each Small Molecule Feature (`SMF`) becomes a feature and each assay an analysis.
+The per-assay abundances are imported as `feature_intensity`, and feature
+identities (name, formula, neutral mass, m/z, retention time) come from the
+`SMF`/`SML` sections. Where one analyte is reported as several features (e.g.
+different adducts), the adduct is appended to keep `feature_id` unique
+(`Cer d18:1/16:0 | [M-H]-`).
+
+Import is partial by nature: mzTab-M carries a single abundance per feature, so
+internal-standard relationships, QC-type assignments, and calibration metadata
+are absent and must be supplied with `add_metadata()`. `study_variable` groups
+are imported best-effort as `batch_id`.
+
+## 2. SummarizedExperiment
+
+[SummarizedExperiment](https://bioconductor.org/packages/SummarizedExperiment/)
+is the Bioconductor container many statistical and lipidomics tools consume.
+`save_dataset_summarizedexperiment()` produces one, with features as **rows** and
+analyses as **columns**:
+
+```{r}
+library(SummarizedExperiment)
+
+se <- save_dataset_summarizedexperiment(mexp)
+se
+#> class: SummarizedExperiment
+#> dim: 29 499
+#> metadata(11): title analysis_type ... var_batch_corrected mrmhub_version
+#> assays(9): rt area ... pmol_total conc
+#> rownames(29): CE 18:1 CE 18:1 d7 (ISTD) ... TG 48:2 [-18:1] TG 48:2 [SIM]
+#> rowData names(17): feature_id feature_class ... remarks feature_label
+#> colnames(499): Longit_BLANK-01 (Eluent A) ... Longit_BLANK-07 (Eluent A)
+#> colData names(13): analysis_order analysis_id ... annot_order_num remarks
+```
+
+Install the package once with `BiocManager::install("SummarizedExperiment")`.
+Pass a `path` to also write the object to disk as an `.rds`; without one it is
+only returned:
+
+```{r}
+save_dataset_summarizedexperiment(mexp, "experiment.rds")
+```
+
+The mapping from experiment slots is:
+
+| Component | mrmhub source |
+|---|---|
+| `assays()` | one matrix per feature variable, named without the `feature_` prefix |
+| `rowData()` | `annot_features`: one row per `feature_id` |
+| `colData()` | `annot_analyses`: one row per `analysis_id` |
+| `metadata()` | title, analysis type, processing status, `is_*` flags, concentration unit, MRMhub version |
+
+The parallel feature variables become **parallel assays**, so raw, normalized and
+quantified values live side-by-side in one object:
+
+```{r}
+assayNames(se)
+#> [1] "rt"     "area"   "height" "fwhm"   "width"  "intensity"
+#> [7] "norm_intensity" "pmol_total" "conc"
+
+assay(se, "conc")[1:3, 1:2]
+```
+
+Export a subset of variables with `variable`, or QC-filtered data by filtering
+first and passing `filter_data = TRUE`:
+
+```{r}
+se_conc <- save_dataset_summarizedexperiment(mexp, variable = "conc")
+
+mexp_filt <- mexp |>
+  calc_qc_metrics() |>
+  filter_features_qc(
+    include_qualifier = FALSE,
+    include_istd = FALSE,
+    max.cv.conc.bqc = 25)
+
+se_filt <- save_dataset_summarizedexperiment(mexp_filt, filter_data = TRUE)
+```
+
+### Subsetting to study samples
+
+Everything is exported: internal standards, QC samples, blanks and calibrants are
+all present and flagged rather than dropped, because downstream tools need them
+(`lipidr`, for one, requires the internal-standard annotation). But nothing
+downstream reads `qc_type`, so a PCA, normalization or differential test will
+fold blanks, calibrants and QC replicates in with the study samples. Subset to
+study samples before any such analysis:
+
+```{r}
+se_spl <- se[!rowData(se)$is_istd, se$qc_type == "SPL"]
+dim(se_spl)
+#> [1]  20 374
+```
+
+QC metrics are deliberately *not* written to `rowData()`: nothing downstream reads
+them, and QC filtering belongs in MRMhub where it is tested. Use
+`filter_data = TRUE` as above, or `save_feature_qc_metrics()` for the metrics.
+
+### Differential abundance with limma
+
+[limma](https://bioconductor.org/packages/limma/) works directly on continuous
+data such as concentrations. `voom()` is **not** used: it models count data and
+is invalid here.
+
+::: {.callout .callout-note}
+The bundled `lipidomics_dataset` carries no phenotype: every study sample is
+plasma from the same longitudinal series. The grouping below is **simulated to
+demonstrate the interface only**; the p-values are meaningless by construction.
+With your own data the group would come from your sample metadata and already be
+in `colData()`.
+:::
+
+```{r}
+library(limma)
+
+set.seed(1)
+se_spl$group <- factor(
+  sample(c("ctrl", "trt"), ncol(se_spl), replace = TRUE))
+
+# concentrations are right-skewed; limma assumes normality
+y <- log2(assay(se_spl, "conc"))
+
+design <- model.matrix(~ 0 + group, data = colData(se_spl))
+colnames(design) <- levels(se_spl$group)
+
+fit <- lmFit(y, design)
+fit <- contrasts.fit(fit, makeContrasts(trt - ctrl, levels = design))
+fit <- eBayes(fit)
+
+topTable(fit, number = 5)
+```
+
+Because `colData()` carries the full analysis annotation, covariates are
+available without extra joins, for example blocking on batch with
+`~ 0 + group + batch_id`.
+
+### Lipid-specific analysis with lipidr
+
+[lipidr](https://www.lipidr.org) works on a `LipidomicsExperiment`, a subclass of
+`SummarizedExperiment`. Produce one directly:
+
+```{r}
+le <- save_dataset_summarizedexperiment(
+  mexp,
+  variable = "intensity",
+  as = "LipidomicsExperiment")
+```
+
+MRMhub fills in what lipidr requires: `Molecule` from `feature_id`, `Class` from
+`feature_class`, `istd` from `is_istd`, plus the `summarized` / `logged` /
+`normalized` flags lipidr reads but does **not** validate &mdash; an object
+missing them constructs cleanly and then misbehaves.
+
+::: {.callout .callout-caution}
+**Use a peak-area scale variable with lipidr, not concentrations.** lipidr
+log-transforms with `log = TRUE` by default and **clamps values below 1 to 1**
+first, which assumes Skyline peak-area magnitudes. Concentrations in µmol/L are
+mostly below 1, so they are silently flattened to `log2(1) = 0`; `eBayes()` then
+reports zero residual variances and every fold change collapses. MRMhub warns
+when you export a mostly-sub-1 assay this way.
+
+The trigger is absolute scale, not concentration as such: the clamp is a fixed
+threshold at 1. If you need concentrations, pass `log = FALSE` to lipidr, or
+log-transform them yourself beforehand.
+:::
+
+```{r}
+library(lipidr)
+
+le_spl <- le[!rowData(le)$istd, le$qc_type == "SPL"]
+set.seed(1)
+le_spl$group <- factor(
+  sample(c("ctrl", "trt"), ncol(le_spl), replace = TRUE))
+
+le_norm <- normalize_pqn(le_spl, measure = "intensity", log = TRUE)
+
+de_results <- de_analysis(
+  le_norm,
+  trt - ctrl,
+  measure = "intensity",
+  group_col = "group")
+plot_results_volcano(de_results, show.labels = FALSE)
+```
+
+## Next steps
+
+- [Custom QC report](recipe-02-custom-qc-report.html): a richer human-readable
+  report straight from MRMhub.
+- [The MRMhubExperiment data object](manual-02-data-object.html#feature-variables):
+  what `conc`, `intensity` and `area` mean, and the slots behind these exports.
+- [Design decisions](manual-03-design-decisions.html): why `MRMhubExperiment` is
+  not itself a Bioconductor class.
+- [Lipidomics workflow](tutorial-03-lipidomics-workflow.html): QC-filter features
+  before exporting.
