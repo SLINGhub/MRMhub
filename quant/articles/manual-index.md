@@ -12,10 +12,10 @@ reference](https://slinghub.github.io/MRMhub/quant/reference/index.md).
 
 - **[Installation](https://slinghub.github.io/MRMhub/quant/articles/manual-00-installation.md)**:
   install `mrmhub` and load it.
-- **[Key concepts &
-  glossary](https://slinghub.github.io/MRMhub/quant/articles/manual-01-key-concepts.md)**:
-  the data model, core terminology, and where QUANT fits in the MRMhub
-  workflow.
+- **[MRMhub
+  overview](https://slinghub.github.io/MRMhub/quant/articles/manual-01-key-concepts.md)**:
+  the data object, how it moves through a workflow, and the core
+  function groups.
 
 ## Preparing and running
 
@@ -49,6 +49,8 @@ reference](https://slinghub.github.io/MRMhub/quant/reference/index.md).
 - **[The MRMhubExperiment data
   object](https://slinghub.github.io/MRMhub/quant/articles/manual-02-data-object.md)**:
   the tables, identifiers, and feature variables of the central object.
+- **[Glossary](https://slinghub.github.io/MRMhub/quant/articles/manual-14-glossary.md)**:
+  definitions of the analytical terms used throughout the documentation.
 - **[Design
   decisions](https://slinghub.github.io/MRMhub/quant/articles/manual-03-design-decisions.md)**:
   why the package is built the way it is.

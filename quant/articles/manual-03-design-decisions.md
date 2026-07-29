@@ -238,8 +238,8 @@ established patterns.
 - [The MRMhubExperiment data
   object](https://slinghub.github.io/MRMhub/quant/articles/manual-02-data-object.md):
   the object and its slots in detail
-- [Key concepts &
-  glossary](https://slinghub.github.io/MRMhub/quant/articles/manual-01-key-concepts.md):
+- [MRMhub
+  overview](https://slinghub.github.io/MRMhub/quant/articles/manual-01-key-concepts.md):
   the vocabulary used throughout
 - [Drift and batch
   correction](https://slinghub.github.io/MRMhub/quant/articles/manual-07-corrections.md):

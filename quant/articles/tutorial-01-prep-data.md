@@ -89,6 +89,22 @@ depends on the intended processing; see [Data and metadata in
 MRMhub](https://slinghub.github.io/MRMhub/quant/articles/manual-02-data-object.md)
 for an overview of the metadata categories.
 
+When the data file already carries embedded analysis metadata (an
+INTEGRATOR result, for instance, can hold `qc_type`, `batch_id` and
+`analysis_order` columns),
+[`import_metadata_from_data()`](https://slinghub.github.io/MRMhub/quant/reference/import_metadata_from_data.md)
+lifts those columns into the annotation tables in a single call:
+
+``` r
+
+mexp <- import_metadata_from_data(mexp)
+```
+
+This is the fast path for data that already contains its analysis
+metadata. Internal standards, calibration concentrations and other
+annotations still come from separate sources, prepared and imported as
+shown below.
+
 Integrity of the data and metadata is key to accurate, reproducible
 processing. MRMhub therefore inspects imported metadata for completeness
 and for consistency of the IDs used across the different tables, and
@@ -205,11 +221,41 @@ E = Error, W = Warning, W* = Suppressed Warning, N = Note
 ## 5. Metadata from the MSOrganiser template
 
 Rather than importing each table on its own, all metadata can be
-collected in a single MSOrganiser template (an Excel file) and imported
-in one step. See [Importing
+collected in a single MSOrganiser template (an Excel file providing a
+sheet for every metadata type, with built-in validity and integrity
+checks) and imported in one step. Obtain the template from
+<https://github.com/SLINGhub/mrmhub>, or save a blank copy to the
+working directory:
+
+``` r
+
+save_metadata_msorganiser_template()
+```
+
+Only the tables required by the intended workflow need to be completed;
+the import reads every table that has been filled in:
+
+``` r
+mexp <- import_metadata_msorganiser(
+  mexp,
+  path = "datasets/sPerfect_Metadata.xlsx",
+  ignore_warnings = TRUE)
+Found no errors, 4 warnings, and no notes in the metadata.
+----------------------------------------------------------------------------
+  Type  Table    Column                Issue                           Count
+1 W*    Analyses analysis_id           Analyses not in analysis data      15
+2 W*    Features feature_id            Feature(s) without metadata         1
+3 W*    Features feature_id            Feature(s) not in analysis data     4
+4 W*    ISTDs    quant_istd_feature_id Internal standard(s) not used       1
+
+----------------------------------------------------------------------------
+E = Error, W = Warning, W* = Suppressed Warning, N = Note
+----------------------------------------------------------------------------
+```
+
+See [Importing
 metadata](https://slinghub.github.io/MRMhub/quant/articles/manual-05-metadata.md)
-for that route and for the full set of metadata tables, templates and
-validation checks.
+for the full set of metadata tables, templates and validation checks.
 
 ## Next steps
 

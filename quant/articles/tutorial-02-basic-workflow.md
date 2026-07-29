@@ -232,5 +232,5 @@ exact data state without re-running the pipeline.
   PCA](https://slinghub.github.io/MRMhub/quant/articles/tutorial-05-run-scatter.md):
   QC visualisation and outlier screening
 - [External calibration and
-  QC](https://slinghub.github.io/MRMhub/quant/articles/recipe-01-ext-calibration-qc.md):
+  QC](https://slinghub.github.io/MRMhub/quant/articles/tutorial-06-external-calibration.md):
   quantitation with calibration curves

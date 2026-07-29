@@ -227,7 +227,7 @@ quarto::quarto_render(
   workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md):
   full processing before reporting
 - [External calibration &
-  QC](https://slinghub.github.io/MRMhub/quant/articles/recipe-01-ext-calibration-qc.md):
+  QC](https://slinghub.github.io/MRMhub/quant/articles/tutorial-06-external-calibration.md):
   calibration workflow
 - [Troubleshooting &
   FAQ](https://slinghub.github.io/MRMhub/quant/articles/manual-10-troubleshooting.md):

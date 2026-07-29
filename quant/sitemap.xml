@@ -18,9 +18,9 @@
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/manual-11-quarto-workflows.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/manual-12-interference-correction.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/manual-13-plot-customization.html</loc></url>
+<url><loc>https://slinghub.github.io/MRMhub/quant/articles/manual-14-glossary.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/manual-index.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/mrmhub.html</loc></url>
-<url><loc>https://slinghub.github.io/MRMhub/quant/articles/recipe-01-ext-calibration-qc.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/recipe-02-custom-qc-report.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/recipe-03-mztab-export.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/recipe-04-validate-metadata.html</loc></url>
@@ -31,7 +31,9 @@
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/tutorial-03-lipidomics-workflow.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/tutorial-05-run-scatter.html</loc></url>
+<url><loc>https://slinghub.github.io/MRMhub/quant/articles/tutorial-06-external-calibration.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/tutorial-07-calibration-reference.html</loc></url>
+<url><loc>https://slinghub.github.io/MRMhub/quant/articles/tutorial-08-export-formats.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/tutorial-08-summarizedexperiment.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/tutorial-11-interference-correction.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/articles/tutorial-12-workflow-builder.html</loc></url>

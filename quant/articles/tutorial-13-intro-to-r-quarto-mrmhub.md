@@ -18,13 +18,12 @@ Two pieces of software are needed. **R** is the language the analysis
 runs in; an **integrated development environment** (IDE) is the editor
 you write and run it in.
 
-- Install R from [CRAN](https://cran.r-project.org/) (version 4.1 or
-  newer). Pick the download for your operating system and accept the
-  defaults.
+- Install R from [CRAN](https://cran.r-project.org/) (newest version).
+  Pick the download for your OS and accept the defaults.
 - Install an IDE. [RStudio](https://posit.co/download/rstudio-desktop/)
-  is the most common choice and the one this tutorial follows. If you
-  already work in VS Code, [Positron](https://positron.posit.co/) is an
-  RStudio-like alternative built on the same editor.
+  is the most common choice and the one this tutorial follows.
+  [Positron](https://positron.posit.co/) is a great alternative built on
+  VS Code.
 
 With R and RStudio installed, open RStudio and install MRMhub from the
 console (the bottom-left pane). The first line installs `pak`, a package
@@ -65,10 +64,11 @@ result it produces.
 ## 3. Add text and code
 
 A `.qmd` file is plain text with two kinds of content. **Prose** is
-written in Markdown — plain paragraphs, with `#` for headings,
-`**bold**`, and `-` for lists. **Code** lives in *chunks*: R code fenced
-between ```` ```{r} ```` and ```` ``` ````. In RStudio, *Insert → Code
-Chunk* (or Ctrl/Cmd + Alt + I) adds an empty one.
+written in Markdown — the same ordinary syntax used across the web,
+where `#` starts a heading, `**bold**` sets bold text, and `-` begins a
+list item. **Code** lives in *chunks*: R code fenced between
+```` ```{r} ```` and ```` ``` ````. In RStudio, *Insert → Code Chunk*
+(or Ctrl/Cmd + Alt + I) adds an empty one.
 
 ```` markdown
 Some explanatory text describing the next step.
@@ -78,24 +78,58 @@ Some explanatory text describing the next step.
 1 + 1
 [1] 2
 ```
+
+More text explaining what comes next, then a second chunk that builds on the first.
+
+
+``` r
+2 + 2
+[1] 4
+```
 ````
 
+The word after `r` — `first-step`, `second-step` above — is an optional
+label naming the chunk.
+
 RStudio offers two ways to edit a `.qmd`: the **Source** editor shows
-the raw Markdown, while the **Visual** editor (the *Visual* toggle,
-top-left of the document) shows a formatted, word-processor-like view.
-Both edit the same file. Quarto’s [authoring
+the raw Markdown, and the **Visual** editor a formatted,
+word-processor-like view. Both edit the same file; Quarto’s [authoring
 guide](https://quarto.org/docs/get-started/hello/rstudio.html)
 introduces both.
+
+A chunk’s behaviour is set by **cell options** — lines at the top of the
+chunk, each prefixed with `#|`, written as `#| option: value`. A handful
+cover almost every need in an analysis document:
+
+- `#| echo: false` — run the chunk but hide its source code, showing
+  only the result.
+- `#| eval: false` — show the code without running it (useful for an
+  export step you don’t want re-run on every render).
+- `#| message: true` — keep the chunk’s messages, including MRMhub’s
+  coloured step-by-step console feedback; `#| warning: false` hides
+  warnings.
+- `#| fig-width:` and `#| fig-height:` — the width and height of a
+  figure, in inches. Set them per chunk here, or once for the whole
+  document in the YAML header; [Quarto
+  workflows](https://slinghub.github.io/MRMhub/quant/articles/manual-11-quarto-workflows.md)
+  explains how these interact with MRMhub’s plot sizing.
+
+The [Quarto
+documentation](https://quarto.org/docs/computations/execution-options.html)
+is the complete reference.
 
 ## 4. Preview and run code
 
 There are two distinct actions. **Running a chunk** executes its code
-immediately and shows the result inline: click the green ▶ arrow at the
-chunk’s top-right, or press Ctrl/Cmd + Shift + Enter with the cursor
-inside it. **Rendering** turns the whole document into a finished HTML
-(or PDF) report: click **Render**, and RStudio runs every chunk in order
-and assembles the output. The **Preview** that opens updates each time
-you render, so the report stays in step with the code.
+immediately and shows the result inline, right beneath the chunk. Each
+chunk carries a small toolbar at its top-right: the green ▶ arrow runs
+that chunk, the ⬇ beside it first runs every earlier chunk, and the ⚙
+opens the chunk’s options. Pressing Ctrl/Cmd + Shift + Enter with the
+cursor inside the chunk does the same as ▶. **Rendering** turns the
+whole document into a finished HTML (or PDF) report: click the 📄
+**Render** button in the editor toolbar to run every chunk in order and
+assemble the output. The **Preview** that opens updates on each render,
+so the report stays in step with the code.
 
 While developing an analysis, run chunks one at a time to check each
 step; render at the end to produce the shareable report.
@@ -116,11 +150,6 @@ library(mrmhub)
 mrmhub_enable_cli_color()
 mrmhub_set_plot_defaults(font_base_size = 8)
 ```
-
-Figure dimensions are controlled by Quarto itself, through the
-document’s `fig-width` and `fig-height` options; [Quarto
-workflows](https://slinghub.github.io/MRMhub/quant/articles/manual-11-quarto-workflows.md)
-explains how those interact with MRMhub’s plot sizing.
 
 ## 6. Load the data
 
@@ -179,36 +208,94 @@ and batch correction and QC filtering in a set order; [A basic MRMhub
 workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md)
 and [Drift and batch
 correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.md)
-build on the object from here.
+build on the object from here. If you would rather not write this code
+by hand,
+[`build_workflow()`](https://slinghub.github.io/MRMhub/quant/reference/build_workflow.md)
+opens an interactive application that validates your data and metadata
+and generates an equivalent Quarto document to download (see [Build a
+workflow without
+code](https://slinghub.github.io/MRMhub/quant/articles/tutorial-12-workflow-builder.md)).
 
-## 8. Plot signals across the run
+## 8. Check the processing status
+
+[`mrmhub_status()`](https://slinghub.github.io/MRMhub/quant/reference/mrmhub_status.md)
+prints a full report of the object: what was imported, which steps have
+run, and which stages still lie ahead. It is the quickest way to confirm
+the experiment is in the state you expect before moving on to plots and
+export.
+
+``` r
+
+mrmhub_status(mexp)
+```
+
+    ── MRMhubExperiment ────────────────────────────────────────────────────────────
+
+    Title:
+
+    Last step: ISTD-normalized data | signal: feature_area
+
+    ── Samples (499 analyses, 6 batches) ──
+
+    • Study samples & QCs (488): TQC 48, BQC 59, LTR 3, SPL 378
+
+    • Blanks & other (11): SBLK 7, UBLK 2, PBLK 2
+
+    ── Features (28) ──
+
+    • Analytes: 19 Internal standards: 9
+
+    • Quantifiers: 28 Qualifiers: 0
+
+    ── Metadata ──
+
+    • Analyses/samples: ✔ (499) Features/analytes: ✔ (28) Internal standards: ✖
+
+    • Response curves: ✖ Calibrants/QC concentrations: ✖ Study samples: ✖
+    Interferences: ✖
+
+    ── Processing Status ──
+
+    • Isotope / interference corrected: ✖
+
+    • ISTD normalized: ✔ Quantitated: ✖
+
+    • Drift corrected variables: ✖
+
+    • Batch corrected variables: ✖
+
+    • QC metrics calculated: ✖ Feature filtering applied: ✖
+
+    ── Exclusion of Analyses and Features ──
+
+    • Analyses manually excluded (`analysis_id`): ✖
+
+    • Features manually excluded (`feature_id`): ✖
+
+## 9. Plot signals across the run
 
 A run-scatter plot shows each feature’s signal against injection order —
-a quick check for trends or outliers. We plot the normalized intensities
-for two lipid classes, selected by a regular expression on their names.
+a quick check for trends or outliers. We plot the raw peak areas for two
+lipid classes, selected by a regular expression on their names.
 
 ``` r
 
 plot_runscatter(
   mexp,
-  variable = "norm_intensity",
+  variable = "intensity",
   include_feature_filter = "^(Cer|PC)",
   rows_page = 2, cols_page = 3)
 ```
 
-![Run-scatter of normalized intensities for Cer and PC features by
-injection
+![Run-scatter of raw peak areas for Cer and PC features by injection
 order](tutorial-13-intro-to-r-quarto-mrmhub_files/figure-html/runscatter-1.png)
 
-Figure 1. Normalized intensities of Cer and PC features across injection
-order.
+Figure 1. Raw peak areas of Cer and PC features across injection order.
 
-![Run-scatter of normalized intensities for Cer and PC features by
-injection
+![Run-scatter of raw peak areas for Cer and PC features by injection
 order](tutorial-13-intro-to-r-quarto-mrmhub_files/figure-html/runscatter-2.png)
 
-Figure 1. Normalized intensities of Cer and PC features across injection
-order.
+Figure 1. Raw peak areas of Cer and PC features across injection order.
 
 To save the plot to a file instead of showing it,
 [`plot_runscatter()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.md)
@@ -219,14 +306,14 @@ can write a multi-page PDF — one page per grid of features — directly to
 
 plot_runscatter(
   mexp,
-  variable = "norm_intensity",
+  variable = "intensity",
   include_feature_filter = "^(Cer|PC)",
   rows_page = 2, cols_page = 3,
   output_pdf = TRUE,
   path = "output/runscatter.pdf")
 ```
 
-## 9. Run a PCA, inline and as a PDF
+## 10. Run a PCA
 
 A principal-component analysis (PCA) summarises all features at once,
 placing each sample in a plane so that similar samples fall close
@@ -262,7 +349,7 @@ formats at once; [Visualisation
 functions](https://slinghub.github.io/MRMhub/quant/articles/manual-08-visualization.md)
 lists the plots available at each stage.
 
-## 10. Export results
+## 11. Export results
 
 Finally, export the results for downstream use. A single-variable CSV
 gives a plain table of normalized intensities, and

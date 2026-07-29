@@ -43,10 +43,12 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-get-started" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Get Started</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-get-started">
-<li><a class="dropdown-item" href="../articles/manual-00-installation.html">Installation</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-13-intro-to-r-quarto-mrmhub.html">Intro to R, Quarto &amp; MRMhub</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-01-key-concepts.html">Key Concepts &amp; Glossary</a></li>
+<li><a class="dropdown-item" href="../articles/tutorial-13-intro-to-r-quarto-mrmhub.html">Intro to R, Quarto &amp; MRMhub</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-01-key-concepts.html">Key concepts of MRMhub</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="../articles/manual-00-installation.html">Installation</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Quick tour</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/manual-10-troubleshooting.html">Troubleshooting &amp; FAQ</a></li>
   </ul>
 </li>
@@ -55,7 +57,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-tutorials">
 <li><h6 class="dropdown-header" data-toc-skip>Start here</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-13-intro-to-r-quarto-mrmhub.html">Intro to R, Quarto &amp; MRMhub</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Quick tour</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-12-workflow-builder.html">Build a workflow (no code)</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-01-prep-data.html">Preparing &amp; importing data</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-02-basic-workflow.html">Basic MRMhub workflow</a></li>
@@ -63,8 +65,9 @@
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Techniques</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-04-drift-correction.html">Drift and batch correction</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-06-external-calibration.html">Quantification with external calibration</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-07-calibration-reference.html">Calibration by reference sample</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-11-interference-correction.html">Interference correction</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-11-interference-correction.html">Isotopic interference correction</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-05-run-scatter.html">RunScatter and PCA</a></li>
@@ -73,7 +76,6 @@
     <li><a class="dropdown-item" href="../articles/tutorial-08-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Recipes</h6></li>
-    <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-04-validate-metadata.html">Validate &amp; fix metadata</a></li>
@@ -87,7 +89,7 @@
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Getting started</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-00-installation.html">Installation</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-01-key-concepts.html">Key Concepts &amp; Glossary</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-01-key-concepts.html">Overview</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Preparing and running</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-04-data-import.html">Importing Analytical Data</a></li>
@@ -103,6 +105,7 @@
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-02-data-object.html">The MRMhubExperiment Data Object</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-14-glossary.html">Glossary</a></li>
     <li><a class="dropdown-item" href="../articles/manual-03-design-decisions.html">Design Decisions</a></li>
     <li><a class="dropdown-item" href="../articles/manual-06-sample-types.html">Sample Types &amp; QC Roles</a></li>
     <li><a class="dropdown-item" href="../articles/manual-10-troubleshooting.html">Troubleshooting &amp; FAQ</a></li>
@@ -133,7 +136,7 @@
       <img src="../logo.svg" class="logo" alt=""><h1>Introduction to R, Quarto, and MRMhub</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/main/vignettes/articles/tutorial-13-intro-to-r-quarto-mrmhub.Rmd" class="external-link"><code>vignettes/articles/tutorial-13-intro-to-r-quarto-mrmhub.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/development/vignettes/articles/tutorial-13-intro-to-r-quarto-mrmhub.Rmd" class="external-link"><code>vignettes/articles/tutorial-13-intro-to-r-quarto-mrmhub.Rmd</code></a></small>
       <div class="d-none name"><code>tutorial-13-intro-to-r-quarto-mrmhub.Rmd</code></div>
     </div>
 
@@ -159,12 +162,11 @@ the analysis runs in; an <strong>integrated development
 environment</strong> (IDE) is the editor you write and run it in.</p>
 <ul>
 <li>Install R from <a href="https://cran.r-project.org/" class="external-link">CRAN</a>
-(version 4.1 or newer). Pick the download for your operating system and
-accept the defaults.</li>
+(newest version). Pick the download for your OS and accept the
+defaults.</li>
 <li>Install an IDE. <a href="https://posit.co/download/rstudio-desktop/" class="external-link">RStudio</a> is the
-most common choice and the one this tutorial follows. If you already
-work in VS Code, <a href="https://positron.posit.co/" class="external-link">Positron</a> is an
-RStudio-like alternative built on the same editor.</li>
+most common choice and the one this tutorial follows. <a href="https://positron.posit.co/" class="external-link">Positron</a> is a great alternative
+built on VS Code.</li>
 </ul>
 <p>With R and RStudio installed, open RStudio and install MRMhub from
 the console (the bottom-left pane). The first line installs
@@ -200,9 +202,10 @@ alongside the result it produces.</p>
 <h2 id="add-text-and-code">3. Add text and code<a class="anchor" aria-label="anchor" href="#add-text-and-code"></a>
 </h2>
 <p>A <code>.qmd</code> file is plain text with two kinds of content.
-<strong>Prose</strong> is written in Markdown — plain paragraphs, with
-<code>#</code> for headings, <code>**bold**</code>, and <code>-</code>
-for lists. <strong>Code</strong> lives in <em>chunks</em>: R code fenced
+<strong>Prose</strong> is written in Markdown — the same ordinary syntax
+used across the web, where <code>#</code> starts a heading,
+<code>**bold**</code> sets bold text, and <code>-</code> begins a list
+item. <strong>Code</strong> lives in <em>chunks</em>: R code fenced
 between <code>```{r}</code> and <code>```</code>. In RStudio, <em>Insert
 → Code Chunk</em> (or Ctrl/Cmd + Alt + I) adds an empty one.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>Some explanatory text describing the next step.</span>
@@ -211,25 +214,61 @@ between <code>```{r}</code> and <code>```</code>. In RStudio, <em>Insert
 <span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="in">``` r</span></span>
 <span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="dv">1</span> <span class="sc">+</span> <span class="dv">1</span></span>
 <span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>[<span class="dv">1</span>] <span class="dv">2</span></span>
-<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>More text explaining what comes next, then a second chunk that builds on the first.</span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="in">``` r</span></span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a><span class="dv">2</span> <span class="sc">+</span> <span class="dv">2</span></span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>[<span class="dv">1</span>] <span class="dv">4</span></span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
+<p>The word after <code>r</code> — <code>first-step</code>,
+<code>second-step</code> above — is an optional label naming the
+chunk.</p>
 <p>RStudio offers two ways to edit a <code>.qmd</code>: the
-<strong>Source</strong> editor shows the raw Markdown, while the
-<strong>Visual</strong> editor (the <em>Visual</em> toggle, top-left of
-the document) shows a formatted, word-processor-like view. Both edit the
-same file. Quarto’s <a href="https://quarto.org/docs/get-started/hello/rstudio.html" class="external-link">authoring
+<strong>Source</strong> editor shows the raw Markdown, and the
+<strong>Visual</strong> editor a formatted, word-processor-like view.
+Both edit the same file; Quarto’s <a href="https://quarto.org/docs/get-started/hello/rstudio.html" class="external-link">authoring
 guide</a> introduces both.</p>
+<p>A chunk’s behaviour is set by <strong>cell options</strong> — lines
+at the top of the chunk, each prefixed with <code>#|</code>, written as
+<code>#| option: value</code>. A handful cover almost every need in an
+analysis document:</p>
+<ul>
+<li>
+<code>#| echo: false</code> — run the chunk but hide its source
+code, showing only the result.</li>
+<li>
+<code>#| eval: false</code> — show the code without running it
+(useful for an export step you don’t want re-run on every render).</li>
+<li>
+<code>#| message: true</code> — keep the chunk’s messages, including
+MRMhub’s coloured step-by-step console feedback;
+<code>#| warning: false</code> hides warnings.</li>
+<li>
+<code>#| fig-width:</code> and <code>#| fig-height:</code> — the
+width and height of a figure, in inches. Set them per chunk here, or
+once for the whole document in the YAML header; <a href="manual-11-quarto-workflows.html">Quarto workflows</a> explains how
+these interact with MRMhub’s plot sizing.</li>
+</ul>
+<p>The <a href="https://quarto.org/docs/computations/execution-options.html" class="external-link">Quarto
+documentation</a> is the complete reference.</p>
 </div>
 <div class="section level2">
 <h2 id="preview-and-run-code">4. Preview and run code<a class="anchor" aria-label="anchor" href="#preview-and-run-code"></a>
 </h2>
 <p>There are two distinct actions. <strong>Running a chunk</strong>
-executes its code immediately and shows the result inline: click the
-green ▶ arrow at the chunk’s top-right, or press Ctrl/Cmd + Shift +
-Enter with the cursor inside it. <strong>Rendering</strong> turns the
-whole document into a finished HTML (or PDF) report: click
-<strong>Render</strong>, and RStudio runs every chunk in order and
-assembles the output. The <strong>Preview</strong> that opens updates
-each time you render, so the report stays in step with the code.</p>
+executes its code immediately and shows the result inline, right beneath
+the chunk. Each chunk carries a small toolbar at its top-right: the
+green ▶ arrow runs that chunk, the ⬇ beside it first runs every earlier
+chunk, and the ⚙ opens the chunk’s options. Pressing Ctrl/Cmd + Shift +
+Enter with the cursor inside the chunk does the same as ▶.
+<strong>Rendering</strong> turns the whole document into a finished HTML
+(or PDF) report: click the 📄 <strong>Render</strong> button in the
+editor toolbar to run every chunk in order and assemble the output. The
+<strong>Preview</strong> that opens updates on each render, so the
+report stays in step with the code.</p>
 <p>While developing an analysis, run chunks one at a time to check each
 step; render at the end to produce the shareable report.</p>
 </div>
@@ -246,10 +285,6 @@ need not repeat them.</p>
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/SLINGhub/MRMhub" class="external-link">mrmhub</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/mrmhub_enable_cli_color.html">mrmhub_enable_cli_color</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/mrmhub_set_plot_defaults.html">mrmhub_set_plot_defaults</a></span><span class="op">(</span>font_base_size <span class="op">=</span> <span class="fl">8</span><span class="op">)</span></span></code></pre></div>
-<p>Figure dimensions are controlled by Quarto itself, through the
-document’s <code>fig-width</code> and <code>fig-height</code> options;
-<a href="manual-11-quarto-workflows.html">Quarto workflows</a> explains
-how those interact with MRMhub’s plot sizing.</p>
 </div>
 <div class="section level2">
 <h2 id="load-the-data">6. Load the data<a class="anchor" aria-label="anchor" href="#load-the-data"></a>
@@ -302,52 +337,161 @@ intensities untouched.</p>
 <p>This is the shortest useful pipeline. A real study usually adds drift
 and batch correction and QC filtering in a set order; <a href="tutorial-02-basic-workflow.html">A basic MRMhub workflow</a> and
 <a href="tutorial-04-drift-correction.html">Drift and batch
-correction</a> build on the object from here.</p>
+correction</a> build on the object from here. If you would rather not
+write this code by hand, <code><a href="../reference/build_workflow.html">build_workflow()</a></code> opens an
+interactive application that validates your data and metadata and
+generates an equivalent Quarto document to download (see <a href="tutorial-12-workflow-builder.html">Build a workflow without
+code</a>).</p>
 </div>
 <div class="section level2">
-<h2 id="plot-signals-across-the-run">8. Plot signals across the run<a class="anchor" aria-label="anchor" href="#plot-signals-across-the-run"></a>
+<h2 id="check-the-processing-status">8. Check the processing status<a class="anchor" aria-label="anchor" href="#check-the-processing-status"></a>
+</h2>
+<p><code><a href="../reference/mrmhub_status.html">mrmhub_status()</a></code> prints a full report of the object: what
+was imported, which steps have run, and which stages still lie ahead. It
+is the quickest way to confirm the experiment is in the state you expect
+before moving on to plots and export.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/mrmhub_status.html">mrmhub_status</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span></span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">MRMhubExperiment</span> <span style="color: #00BBBB;">────────────────────────────────────────────────────────────</span></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code><span style="color: #0000BB;">Title:</span></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Last step: <span style="font-weight: bold;">ISTD-normalized data</span> | signal: <span style="color: #00BB00;">feature_area</span></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── <span style="font-weight: bold;">Samples (499 analyses, 6 batches)</span> ──</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>• Study samples &amp; QCs (488): TQC 48, BQC 59, LTR 3, SPL 378</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>• Blanks &amp; other (11): SBLK 7, UBLK 2, PBLK 2</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── <span style="font-weight: bold;">Features (28)</span> ──</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>• Analytes: 19 Internal standards: 9</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>• Quantifiers: 28 Qualifiers: 0</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── <span style="font-weight: bold;">Metadata</span> ──</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>• Analyses/samples: <span style="color: #00BB00;">✔</span> (499) Features/analytes: <span style="color: #00BB00;">✔</span> (28) Internal standards: <span style="color: #BB0000;">✖</span></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>• Response curves: <span style="color: #BB0000;">✖</span> Calibrants/QC concentrations: <span style="color: #BB0000;">✖</span> Study samples: <span style="color: #BB0000;">✖</span>
+Interferences: <span style="color: #BB0000;">✖</span></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── <span style="font-weight: bold;">Processing Status</span> ──</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>• Isotope / interference corrected: <span style="color: #BB0000;">✖</span></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>• ISTD normalized: <span style="color: #00BB00;">✔</span> Quantitated: <span style="color: #BB0000;">✖</span></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>• Drift corrected variables: <span style="color: #BB0000;">✖</span></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>• Batch corrected variables: <span style="color: #BB0000;">✖</span></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>• QC metrics calculated: <span style="color: #BB0000;">✖</span> Feature filtering applied: <span style="color: #BB0000;">✖</span></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── <span style="font-weight: bold;">Exclusion of Analyses and Features</span> ──</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>• Analyses manually excluded (`analysis_id`): <span style="color: #BB0000;">✖</span></code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>• Features manually excluded (`feature_id`): <span style="color: #BB0000;">✖</span></code></pre>
+</div>
+</div>
+<div class="section level2">
+<h2 id="plot-signals-across-the-run">9. Plot signals across the run<a class="anchor" aria-label="anchor" href="#plot-signals-across-the-run"></a>
 </h2>
 <p>A run-scatter plot shows each feature’s signal against injection
-order — a quick check for trends or outliers. We plot the normalized
-intensities for two lipid classes, selected by a regular expression on
-their names.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+order — a quick check for trends or outliers. We plot the raw peak areas
+for two lipid classes, selected by a regular expression on their
+names.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span></span>
 <span>  <span class="va">mexp</span>,</span>
-<span>  variable <span class="op">=</span> <span class="st">"norm_intensity"</span>,</span>
+<span>  variable <span class="op">=</span> <span class="st">"intensity"</span>,</span>
 <span>  include_feature_filter <span class="op">=</span> <span class="st">"^(Cer|PC)"</span>,</span>
 <span>  rows_page <span class="op">=</span> <span class="fl">2</span>, cols_page <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="tutorial-13-intro-to-r-quarto-mrmhub_files/figure-html/runscatter-1.png" class="r-plt" alt="Run-scatter of normalized intensities for Cer and PC features by injection order" width="700"><p class="caption">
-Figure 1. Normalized intensities of Cer and PC features across injection
-order.
+<img src="tutorial-13-intro-to-r-quarto-mrmhub_files/figure-html/runscatter-1.png" class="r-plt" alt="Run-scatter of raw peak areas for Cer and PC features by injection order" width="700"><p class="caption">
+Figure 1. Raw peak areas of Cer and PC features across injection order.
 </p>
 </div>
 <div class="figure">
-<img src="tutorial-13-intro-to-r-quarto-mrmhub_files/figure-html/runscatter-2.png" class="r-plt" alt="Run-scatter of normalized intensities for Cer and PC features by injection order" width="700"><p class="caption">
-Figure 1. Normalized intensities of Cer and PC features across injection
-order.
+<img src="tutorial-13-intro-to-r-quarto-mrmhub_files/figure-html/runscatter-2.png" class="r-plt" alt="Run-scatter of raw peak areas for Cer and PC features by injection order" width="700"><p class="caption">
+Figure 1. Raw peak areas of Cer and PC features across injection order.
 </p>
 </div>
 <p>To save the plot to a file instead of showing it,
 <code><a href="../reference/plot_runscatter.html">plot_runscatter()</a></code> can write a multi-page PDF — one page per
 grid of features — directly to <code>output/</code>:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span></span>
 <span>  <span class="va">mexp</span>,</span>
-<span>  variable <span class="op">=</span> <span class="st">"norm_intensity"</span>,</span>
+<span>  variable <span class="op">=</span> <span class="st">"intensity"</span>,</span>
 <span>  include_feature_filter <span class="op">=</span> <span class="st">"^(Cer|PC)"</span>,</span>
 <span>  rows_page <span class="op">=</span> <span class="fl">2</span>, cols_page <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  output_pdf <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  path <span class="op">=</span> <span class="st">"output/runscatter.pdf"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="run-a-pca-inline-and-as-a-pdf">9. Run a PCA, inline and as a PDF<a class="anchor" aria-label="anchor" href="#run-a-pca-inline-and-as-a-pdf"></a>
+<h2 id="run-a-pca">10. Run a PCA<a class="anchor" aria-label="anchor" href="#run-a-pca"></a>
 </h2>
 <p>A principal-component analysis (PCA) summarises all features at once,
 placing each sample in a plane so that similar samples fall close
 together — useful for spotting QC clustering or outliers.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_pca.html">plot_pca</a></span><span class="op">(</span><span class="va">mexp</span>, variable <span class="op">=</span> <span class="st">"norm_intensity"</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="tutorial-13-intro-to-r-quarto-mrmhub_files/figure-html/pca-1.png" class="r-plt" alt="PCA score plot of samples coloured by QC type" width="700"><p class="caption">
@@ -358,7 +502,7 @@ Figure 2. PCA of the normalized intensities, coloured by QC type.
 Because <code><a href="../reference/save_plot.html">save_plot()</a></code> returns the plot visibly, one line both
 writes the PDF and still renders the figure in the report;
 <code>width</code> and <code>height</code> are in millimetres:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_pca.html">plot_pca</a></span><span class="op">(</span><span class="va">mexp</span>, variable <span class="op">=</span> <span class="st">"norm_intensity"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/save_plot.html">save_plot</a></span><span class="op">(</span><span class="st">"output/pca.pdf"</span>, width <span class="op">=</span> <span class="fl">180</span>, height <span class="op">=</span> <span class="fl">120</span><span class="op">)</span></span></code></pre></div>
 <p>Giving <code><a href="../reference/save_plot.html">save_plot()</a></code> a path with no extension and
@@ -366,13 +510,13 @@ writes the PDF and still renders the figure in the report;
 the plots available at each stage.</p>
 </div>
 <div class="section level2">
-<h2 id="export-results">10. Export results<a class="anchor" aria-label="anchor" href="#export-results"></a>
+<h2 id="export-results">11. Export results<a class="anchor" aria-label="anchor" href="#export-results"></a>
 </h2>
 <p>Finally, export the results for downstream use. A single-variable CSV
 gives a plain table of normalized intensities, and
 <code><a href="../reference/save_report_xlsx.html">save_report_xlsx()</a></code> writes a multi-sheet Excel workbook
 holding every data table and QC metric in one file.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/save_dataset_csv.html">save_dataset_csv</a></span><span class="op">(</span></span>
 <span>  <span class="va">mexp</span>,</span>
 <span>  path <span class="op">=</span> <span class="st">"output/norm_intensities.csv"</span>,</span>

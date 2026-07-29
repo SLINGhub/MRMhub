@@ -43,10 +43,12 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-get-started" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Get Started</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-get-started">
-<li><a class="dropdown-item" href="../articles/manual-00-installation.html">Installation</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-13-intro-to-r-quarto-mrmhub.html">Intro to R, Quarto &amp; MRMhub</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-01-key-concepts.html">Key Concepts &amp; Glossary</a></li>
+<li><a class="dropdown-item" href="../articles/tutorial-13-intro-to-r-quarto-mrmhub.html">Intro to R, Quarto &amp; MRMhub</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-01-key-concepts.html">Key concepts of MRMhub</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="../articles/manual-00-installation.html">Installation</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Quick tour</a></li>
+    <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/manual-10-troubleshooting.html">Troubleshooting &amp; FAQ</a></li>
   </ul>
 </li>
@@ -55,7 +57,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-tutorials">
 <li><h6 class="dropdown-header" data-toc-skip>Start here</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-13-intro-to-r-quarto-mrmhub.html">Intro to R, Quarto &amp; MRMhub</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Your First Analysis (5 min)</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Quick tour</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-12-workflow-builder.html">Build a workflow (no code)</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-01-prep-data.html">Preparing &amp; importing data</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-02-basic-workflow.html">Basic MRMhub workflow</a></li>
@@ -63,8 +65,9 @@
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Techniques</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-04-drift-correction.html">Drift and batch correction</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-06-external-calibration.html">Quantification with external calibration</a></li>
     <li><a class="dropdown-item" href="../articles/tutorial-07-calibration-reference.html">Calibration by reference sample</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-11-interference-correction.html">Interference correction</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-11-interference-correction.html">Isotopic interference correction</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-05-run-scatter.html">RunScatter and PCA</a></li>
@@ -73,7 +76,6 @@
     <li><a class="dropdown-item" href="../articles/tutorial-08-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Recipes</h6></li>
-    <li><a class="dropdown-item" href="../articles/recipe-01-ext-calibration-qc.html">External calibration &amp; QC</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
     <li><a class="dropdown-item" href="../articles/recipe-04-validate-metadata.html">Validate &amp; fix metadata</a></li>
@@ -87,7 +89,7 @@
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Getting started</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-00-installation.html">Installation</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-01-key-concepts.html">Key Concepts &amp; Glossary</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-01-key-concepts.html">Overview</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Preparing and running</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-04-data-import.html">Importing Analytical Data</a></li>
@@ -103,6 +105,7 @@
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-02-data-object.html">The MRMhubExperiment Data Object</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-14-glossary.html">Glossary</a></li>
     <li><a class="dropdown-item" href="../articles/manual-03-design-decisions.html">Design Decisions</a></li>
     <li><a class="dropdown-item" href="../articles/manual-06-sample-types.html">Sample Types &amp; QC Roles</a></li>
     <li><a class="dropdown-item" href="../articles/manual-10-troubleshooting.html">Troubleshooting &amp; FAQ</a></li>
@@ -133,7 +136,7 @@
       <img src="../logo.svg" class="logo" alt=""><h1>Lipidomics data processing</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/main/vignettes/articles/tutorial-03-lipidomics-workflow.Rmd" class="external-link"><code>vignettes/articles/tutorial-03-lipidomics-workflow.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/development/vignettes/articles/tutorial-03-lipidomics-workflow.Rmd" class="external-link"><code>vignettes/articles/tutorial-03-lipidomics-workflow.Rmd</code></a></small>
       <div class="d-none name"><code>tutorial-03-lipidomics-workflow.Rmd</code></div>
     </div>
 
@@ -141,7 +144,8 @@
     
 <p class="page-meta">
 <span class="page-kind page-kind-tutorial">Tutorial</span> <span class="page-level">Advanced</span> <span class="page-prereq">Prerequisites:
-<a href="tutorial-02-basic-workflow.html">Basic workflow</a></span>
+<a href="tutorial-01-prep-data.html">Preparing and importing
+data</a></span>
 </p>
 <p>This tutorial follows a complete postprocessing and quality control
 workflow for a targeted lipidomics analysis. Starting from integrated
@@ -153,10 +157,28 @@ between-batch effects, filter features on QC criteria, and export the
 result. The dataset (a longitudinal plasma study (<code>sPerfect</code>)
 measured across six batches) is realistic enough to show the decisions a
 real analysis demands.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/SLINGhub/MRMhub" class="external-link">mrmhub</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
-<h2 id="importing-analysis-results">1. Importing analysis results<a class="anchor" aria-label="anchor" href="#importing-analysis-results"></a>
+<h2 id="set-up-a-project">1. Set up a project<a class="anchor" aria-label="anchor" href="#set-up-a-project"></a>
+</h2>
+<p>A new analysis is easiest to manage inside an RStudio or Positron
+project (see <a href="https://support.posit.co/hc/en-us/articles/200526207-Using-RStudio-Projects" class="external-link">Using
+RStudio Projects</a> or the <a href="https://positron.posit.co/" class="external-link">Positron User Guide</a>), with a
+predictable folder layout that keeps the raw data, the exported results,
+and the processing notebook apart:</p>
+<pre><code>my_study/
+├── data/           # raw data and metadata files
+├── output/         # exported results
+└── analysis.Rmd    # your processing notebook</code></pre>
+<p>An R Notebook (<code>.Rmd</code>) or <a href="https://docs.posit.co/ide/user/ide/guide/documents/quarto-project.html" class="external-link">Quarto</a>
+(<code>.qmd</code>) document is a natural home for a workflow like this
+one: it interleaves code with prose, keeping a record of every decision
+beside the result it produced. With the project in place, load the
+package to begin:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/SLINGhub/MRMhub" class="external-link">mrmhub</a></span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="importing-analysis-results">2. Importing analysis results<a class="anchor" aria-label="anchor" href="#importing-analysis-results"></a>
 </h2>
 <p>We begin by importing the MRMhub result file, which holds the areas
 of the integrated peaks (features) for every processed raw data file.
@@ -168,7 +190,7 @@ imported data lands in the <code>dataset_orig</code> slot and is copied
 to the working <code>dataset</code>. Printing the object at any stage
 with <code>print(myexp)</code> reports its processing status, and in
 RStudio you can expand <code>myexp</code> in the Environment pane.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MRMhubExperiment.html">MRMhubExperiment</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"sPerfect"</span><span class="op">)</span></span>
 <span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_data_mrmhub.html">import_data_mrmhub</a></span><span class="op">(</span></span>
 <span>  <span class="va">myexp</span>,</span>
@@ -189,7 +211,7 @@ RStudio you can expand <code>myexp</code> in the Environment pane.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="a-glimpse-on-the-imported-data">2. A glimpse on the imported data<a class="anchor" aria-label="anchor" href="#a-glimpse-on-the-imported-data"></a>
+<h2 id="a-glimpse-on-the-imported-data">3. A glimpse on the imported data<a class="anchor" aria-label="anchor" href="#a-glimpse-on-the-imported-data"></a>
 </h2>
 <p>The data is stored in long format (one row per analysis–feature pair)
 so each measurement carries its own area, retention time, and metadata
@@ -198,29 +220,29 @@ side by side. Print the working table below, or enter
 filter it in the RStudio viewer. For routine access it is cleaner to use
 <code>get_analyticaldata(myexp, annotated = TRUE)</code>, which returns
 the same data already joined to its sample and feature annotations.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">print</span>(myexp<span class="sc">@</span>dataset)</span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a> [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">246</span>m<span class="co"># A tibble: 250,997 × 21 [39m</span></span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>   analysis_order analysis_id  acquisition_time_stamp qc_type batch_id sample_id</span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>             [<span class="dv">3</span>m [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">246</span>m<span class="sc">&lt;</span>int<span class="sc">&gt;</span> [<span class="dv">39</span>m [<span class="dv">23</span>m  [<span class="dv">3</span>m [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">246</span>m<span class="sc">&lt;</span>chr<span class="sc">&gt;</span> [<span class="dv">39</span>m [<span class="dv">23</span>m         [<span class="dv">3</span>m [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">246</span>m<span class="sc">&lt;</span>dttm<span class="sc">&gt;</span> [<span class="dv">39</span>m [<span class="dv">23</span>m                  [<span class="dv">3</span>m [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">246</span>m<span class="sc">&lt;</span>chr<span class="sc">&gt;</span> [<span class="dv">39</span>m [<span class="dv">23</span>m    [<span class="dv">3</span>m [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">246</span>m<span class="sc">&lt;</span>chr<span class="sc">&gt;</span> [<span class="dv">39</span>m [<span class="dv">23</span>m     [<span class="dv">3</span>m [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">246</span>m<span class="sc">&lt;</span>chr<span class="sc">&gt;</span> [<span class="dv">39</span>m [<span class="dv">23</span>m    </span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a> [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">250</span>m <span class="dv">1</span> [<span class="dv">39</span>m              <span class="dv">1</span> Longit_BLAN… <span class="dv">2017-10-20</span>  [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">246</span>m14<span class="sc">:</span><span class="dv">15</span><span class="sc">:</span><span class="dv">36</span> [<span class="dv">39</span>m    SBLK    <span class="dv">1</span>         [<span class="dv">31</span>mNA [<span class="dv">39</span>m       </span>
-<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a> [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">250</span>m <span class="dv">2</span> [<span class="dv">39</span>m              <span class="dv">1</span> Longit_BLAN… <span class="dv">2017-10-20</span>  [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">246</span>m14<span class="sc">:</span><span class="dv">15</span><span class="sc">:</span><span class="dv">36</span> [<span class="dv">39</span>m    SBLK    <span class="dv">1</span>         [<span class="dv">31</span>mNA [<span class="dv">39</span>m       </span>
-<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a> [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">250</span>m <span class="dv">3</span> [<span class="dv">39</span>m              <span class="dv">1</span> Longit_BLAN… <span class="dv">2017-10-20</span>  [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">246</span>m14<span class="sc">:</span><span class="dv">15</span><span class="sc">:</span><span class="dv">36</span> [<span class="dv">39</span>m    SBLK    <span class="dv">1</span>         [<span class="dv">31</span>mNA [<span class="dv">39</span>m       </span>
-<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a> [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">250</span>m <span class="dv">4</span> [<span class="dv">39</span>m              <span class="dv">1</span> Longit_BLAN… <span class="dv">2017-10-20</span>  [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">246</span>m14<span class="sc">:</span><span class="dv">15</span><span class="sc">:</span><span class="dv">36</span> [<span class="dv">39</span>m    SBLK    <span class="dv">1</span>         [<span class="dv">31</span>mNA [<span class="dv">39</span>m       </span>
-<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a> [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">250</span>m <span class="dv">5</span> [<span class="dv">39</span>m              <span class="dv">1</span> Longit_BLAN… <span class="dv">2017-10-20</span>  [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">246</span>m14<span class="sc">:</span><span class="dv">15</span><span class="sc">:</span><span class="dv">36</span> [<span class="dv">39</span>m    SBLK    <span class="dv">1</span>         [<span class="dv">31</span>mNA [<span class="dv">39</span>m       </span>
-<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a> [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">250</span>m <span class="dv">6</span> [<span class="dv">39</span>m              <span class="dv">1</span> Longit_BLAN… <span class="dv">2017-10-20</span>  [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">246</span>m14<span class="sc">:</span><span class="dv">15</span><span class="sc">:</span><span class="dv">36</span> [<span class="dv">39</span>m    SBLK    <span class="dv">1</span>         [<span class="dv">31</span>mNA [<span class="dv">39</span>m       </span>
-<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a> [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">250</span>m <span class="dv">7</span> [<span class="dv">39</span>m              <span class="dv">1</span> Longit_BLAN… <span class="dv">2017-10-20</span>  [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">246</span>m14<span class="sc">:</span><span class="dv">15</span><span class="sc">:</span><span class="dv">36</span> [<span class="dv">39</span>m    SBLK    <span class="dv">1</span>         [<span class="dv">31</span>mNA [<span class="dv">39</span>m       </span>
-<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a> [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">250</span>m <span class="dv">8</span> [<span class="dv">39</span>m              <span class="dv">1</span> Longit_BLAN… <span class="dv">2017-10-20</span>  [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">246</span>m14<span class="sc">:</span><span class="dv">15</span><span class="sc">:</span><span class="dv">36</span> [<span class="dv">39</span>m    SBLK    <span class="dv">1</span>         [<span class="dv">31</span>mNA [<span class="dv">39</span>m       </span>
-<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a> [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">250</span>m <span class="dv">9</span> [<span class="dv">39</span>m              <span class="dv">1</span> Longit_BLAN… <span class="dv">2017-10-20</span>  [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">246</span>m14<span class="sc">:</span><span class="dv">15</span><span class="sc">:</span><span class="dv">36</span> [<span class="dv">39</span>m    SBLK    <span class="dv">1</span>         [<span class="dv">31</span>mNA [<span class="dv">39</span>m       </span>
-<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a> [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">250</span>m10 [<span class="dv">39</span>m              <span class="dv">1</span> Longit_BLAN… <span class="dv">2017-10-20</span>  [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">246</span>m14<span class="sc">:</span><span class="dv">15</span><span class="sc">:</span><span class="dv">36</span> [<span class="dv">39</span>m    SBLK    <span class="dv">1</span>         [<span class="dv">31</span>mNA [<span class="dv">39</span>m       </span>
-<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a> [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">246</span>m<span class="co"># ℹ 250,987 more rows [39m</span></span>
-<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a> [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">246</span>m<span class="co"># ℹ 15 more variables: replicate_no &lt;int&gt;, specimen &lt;chr&gt;, feature_id &lt;chr&gt;, [39m</span></span>
-<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a> [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">246</span>m<span class="co">#   feature_class &lt;chr&gt;, feature_label &lt;chr&gt;, is_istd &lt;lgl&gt;, [39m</span></span>
-<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a> [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">246</span>m<span class="co">#   is_quantifier &lt;lgl&gt;, analyte_id &lt;chr&gt;, istd_feature_id &lt;chr&gt;, [39m</span></span>
-<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a> [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">246</span>m<span class="co">#   feature_rt &lt;dbl&gt;, feature_area &lt;dbl&gt;, feature_height &lt;dbl&gt;, [39m</span></span>
-<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a> [<span class="dv">38</span>;<span class="dv">5</span>;<span class="dv">246</span>m<span class="co">#   feature_fwhm &lt;dbl&gt;, feature_width &lt;dbl&gt;, feature_intensity &lt;dbl&gt; [39m</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">print</span>(myexp<span class="sc">@</span>dataset)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="co"># A tibble: 250,997 × 21</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>   analysis_order analysis_id  acquisition_time_stamp qc_type batch_id sample_id</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>            <span class="sc">&lt;</span>int<span class="sc">&gt;</span> <span class="er">&lt;</span>chr<span class="sc">&gt;</span>        <span class="er">&lt;</span>dttm<span class="sc">&gt;</span>                 <span class="er">&lt;</span>chr<span class="sc">&gt;</span>   <span class="er">&lt;</span>chr<span class="sc">&gt;</span>    <span class="er">&lt;</span>chr<span class="sc">&gt;</span>    </span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a> <span class="dv">1</span>              <span class="dv">1</span> Longit_BLAN… <span class="dv">2017-10-20</span> <span class="dv">14</span><span class="sc">:</span><span class="dv">15</span><span class="sc">:</span><span class="dv">36</span>    SBLK    <span class="dv">1</span>        <span class="cn">NA</span>       </span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a> <span class="dv">2</span>              <span class="dv">1</span> Longit_BLAN… <span class="dv">2017-10-20</span> <span class="dv">14</span><span class="sc">:</span><span class="dv">15</span><span class="sc">:</span><span class="dv">36</span>    SBLK    <span class="dv">1</span>        <span class="cn">NA</span>       </span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a> <span class="dv">3</span>              <span class="dv">1</span> Longit_BLAN… <span class="dv">2017-10-20</span> <span class="dv">14</span><span class="sc">:</span><span class="dv">15</span><span class="sc">:</span><span class="dv">36</span>    SBLK    <span class="dv">1</span>        <span class="cn">NA</span>       </span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a> <span class="dv">4</span>              <span class="dv">1</span> Longit_BLAN… <span class="dv">2017-10-20</span> <span class="dv">14</span><span class="sc">:</span><span class="dv">15</span><span class="sc">:</span><span class="dv">36</span>    SBLK    <span class="dv">1</span>        <span class="cn">NA</span>       </span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a> <span class="dv">5</span>              <span class="dv">1</span> Longit_BLAN… <span class="dv">2017-10-20</span> <span class="dv">14</span><span class="sc">:</span><span class="dv">15</span><span class="sc">:</span><span class="dv">36</span>    SBLK    <span class="dv">1</span>        <span class="cn">NA</span>       </span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a> <span class="dv">6</span>              <span class="dv">1</span> Longit_BLAN… <span class="dv">2017-10-20</span> <span class="dv">14</span><span class="sc">:</span><span class="dv">15</span><span class="sc">:</span><span class="dv">36</span>    SBLK    <span class="dv">1</span>        <span class="cn">NA</span>       </span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a> <span class="dv">7</span>              <span class="dv">1</span> Longit_BLAN… <span class="dv">2017-10-20</span> <span class="dv">14</span><span class="sc">:</span><span class="dv">15</span><span class="sc">:</span><span class="dv">36</span>    SBLK    <span class="dv">1</span>        <span class="cn">NA</span>       </span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a> <span class="dv">8</span>              <span class="dv">1</span> Longit_BLAN… <span class="dv">2017-10-20</span> <span class="dv">14</span><span class="sc">:</span><span class="dv">15</span><span class="sc">:</span><span class="dv">36</span>    SBLK    <span class="dv">1</span>        <span class="cn">NA</span>       </span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a> <span class="dv">9</span>              <span class="dv">1</span> Longit_BLAN… <span class="dv">2017-10-20</span> <span class="dv">14</span><span class="sc">:</span><span class="dv">15</span><span class="sc">:</span><span class="dv">36</span>    SBLK    <span class="dv">1</span>        <span class="cn">NA</span>       </span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="dv">10</span>              <span class="dv">1</span> Longit_BLAN… <span class="dv">2017-10-20</span> <span class="dv">14</span><span class="sc">:</span><span class="dv">15</span><span class="sc">:</span><span class="dv">36</span>    SBLK    <span class="dv">1</span>        <span class="cn">NA</span>       </span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="co"># ℹ 250,987 more rows</span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a><span class="co"># ℹ 15 more variables: replicate_no &lt;int&gt;, specimen &lt;chr&gt;, feature_id &lt;chr&gt;,</span></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a><span class="co">#   feature_class &lt;chr&gt;, feature_label &lt;chr&gt;, is_istd &lt;lgl&gt;,</span></span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a><span class="co">#   is_quantifier &lt;lgl&gt;, analyte_id &lt;chr&gt;, istd_feature_id &lt;chr&gt;,</span></span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a><span class="co">#   feature_rt &lt;dbl&gt;, feature_area &lt;dbl&gt;, feature_height &lt;dbl&gt;,</span></span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a><span class="co">#   feature_fwhm &lt;dbl&gt;, feature_width &lt;dbl&gt;, feature_intensity &lt;dbl&gt;</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="analytical-design-and-timeline">3. Analytical design and timeline<a class="anchor" aria-label="anchor" href="#analytical-design-and-timeline"></a>
+<h2 id="analytical-design-and-timeline">4. Analytical design and timeline<a class="anchor" aria-label="anchor" href="#analytical-design-and-timeline"></a>
 </h2>
 <p>Before touching the signals, it is worth understanding how the run
 was structured. The plot below lays out the batch boundaries, the
@@ -229,7 +251,7 @@ and run time of the analysis: context that informs every later choice
 about drift, batches, and which QC type to trust. Setting
 <code>show_timestamp = TRUE</code> overlays acquisition times and
 reveals any long interruptions within or between batches.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runsequence.html">plot_runsequence</a></span><span class="op">(</span></span>
 <span>  <span class="va">myexp</span>,</span>
 <span>  qc_types <span class="op">=</span> <span class="cn">NA</span>,</span>
@@ -247,12 +269,12 @@ positions, and acquisition timeline).
 </div>
 </div>
 <div class="section level2">
-<h2 id="overview-of-chromatographic-separation">4. Overview of chromatographic separation<a class="anchor" aria-label="anchor" href="#overview-of-chromatographic-separation"></a>
+<h2 id="overview-of-chromatographic-separation">5. Overview of chromatographic separation<a class="anchor" aria-label="anchor" href="#overview-of-chromatographic-separation"></a>
 </h2>
 <p>A first look at the chromatography confirms that species elute where
 expected. The plot shows the retention time distribution of all detected
 lipid species across the study samples, arranged by class.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_abundanceprofile.html">plot_abundanceprofile</a></span><span class="op">(</span></span>
 <span>  <span class="va">myexp</span>,</span>
 <span>  variable <span class="op">=</span> <span class="st">"rt"</span>,</span>
@@ -271,7 +293,7 @@ across the study samples.
 </div>
 </div>
 <div class="section level2">
-<h2 id="peak-picking-qc">5. Peak picking QC<a class="anchor" aria-label="anchor" href="#peak-picking-qc"></a>
+<h2 id="peak-picking-qc">6. Peak picking QC<a class="anchor" aria-label="anchor" href="#peak-picking-qc"></a>
 </h2>
 <p>Within a lipid class, retention time increases smoothly with chain
 length and decreases with the number of double bonds, so plotting RT
@@ -282,7 +304,7 @@ flagging likely misannotations or mis-integrated peaks. The check is
 only as strong as the coverage behind it: here just a few species per
 class were measured, so the trend is poorly constrained for some classes
 and double-bond counts.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_rt_vs_chain.html">plot_rt_vs_chain</a></span><span class="op">(</span></span>
 <span>  <span class="va">myexp</span>,</span>
 <span>  qc_types <span class="op">=</span> <span class="st">"SPL"</span>,</span>
@@ -299,7 +321,7 @@ labelled points flag possible misannotations.
 </div>
 </div>
 <div class="section level2">
-<h2 id="signal-trends-of-internal-standards">6. Signal trends of internal standards<a class="anchor" aria-label="anchor" href="#signal-trends-of-internal-standards"></a>
+<h2 id="signal-trends-of-internal-standards">7. Signal trends of internal standards<a class="anchor" aria-label="anchor" href="#signal-trends-of-internal-standards"></a>
 </h2>
 <p>The internal standards (ISTDs) are our clearest window on instrument
 stability. The same ISTD amount was spiked into every sample except the
@@ -309,7 +331,7 @@ and sample types. Plotting them in injection order across the six
 batches makes any drift, batch offset, or blockage immediately visible.
 Setting <code>output_pdf = TRUE</code> saves the plots to the
 <code>output</code> subfolder for closer inspection.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span></span>
 <span>  <span class="va">myexp</span>,</span>
 <span>  variable <span class="op">=</span> <span class="st">"intensity"</span>,</span>
@@ -343,7 +365,7 @@ spiked amount is constant, so a flat trend is expected.
 </div>
 </div>
 <div class="section level2">
-<h2 id="adding-detailed-metadata">7. Adding detailed metadata<a class="anchor" aria-label="anchor" href="#adding-detailed-metadata"></a>
+<h2 id="adding-detailed-metadata">8. Adding detailed metadata<a class="anchor" aria-label="anchor" href="#adding-detailed-metadata"></a>
 </h2>
 <p>Everything from here on (sample roles, ISTD assignments, spike
 amounts, concentrations) comes from the analysis metadata. The MRMhub
@@ -358,22 +380,22 @@ the processing order to the injection sequence with
 signal variables to treat as the working feature intensity
 (<code>set_intensity_var("area")</code>), the value all subsequent
 calculations start from.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>myexp <span class="ot">&lt;-</span> <span class="fu">import_metadata_msorganiser</span>(</span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>  myexp,</span>
-<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="at">path =</span> <span class="st">"datasets/sPerfect_Metadata.xlsx"</span>,</span>
-<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>  <span class="at">ignore_warnings =</span> <span class="cn">TRUE</span></span>
-<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>)</span>
-<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>Found no errors, <span class="dv">4</span> warnings, and no notes <span class="cf">in</span> the metadata.</span>
-<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="sc">----------------------------------------------------------------------------</span></span>
-<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>  Type  Table    Column                Issue                           Count</span>
-<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a><span class="dv">1</span> W<span class="sc">*</span>    Analyses analysis_id           Analyses not <span class="cf">in</span> analysis data      <span class="dv">15</span></span>
-<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="dv">2</span> W<span class="sc">*</span>    Features feature_id            <span class="fu">Feature</span>(s) without metadata         <span class="dv">1</span></span>
-<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="dv">3</span> W<span class="sc">*</span>    Features feature_id            <span class="fu">Feature</span>(s) not <span class="cf">in</span> analysis data     <span class="dv">4</span></span>
-<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="dv">4</span> W<span class="sc">*</span>    ISTDs    quant_istd_feature_id Internal <span class="fu">standard</span>(s) not used       <span class="dv">1</span></span>
-<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a></span>
-<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="sc">----------------------------------------------------------------------------</span></span>
-<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a>E <span class="ot">=</span> Error, W <span class="ot">=</span> Warning, W<span class="sc">*</span> <span class="er">=</span> Suppressed Warning, N <span class="ot">=</span> Note</span>
-<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a><span class="sc">----------------------------------------------------------------------------</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>myexp <span class="ot">&lt;-</span> <span class="fu">import_metadata_msorganiser</span>(</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>  myexp,</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>  <span class="at">path =</span> <span class="st">"datasets/sPerfect_Metadata.xlsx"</span>,</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>  <span class="at">ignore_warnings =</span> <span class="cn">TRUE</span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>)</span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>Found no errors, <span class="dv">4</span> warnings, and no notes <span class="cf">in</span> the metadata.</span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="sc">----------------------------------------------------------------------------</span></span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a>  Type  Table    Column                Issue                           Count</span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a><span class="dv">1</span> W<span class="sc">*</span>    Analyses analysis_id           Analyses not <span class="cf">in</span> analysis data      <span class="dv">15</span></span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a><span class="dv">2</span> W<span class="sc">*</span>    Features feature_id            <span class="fu">Feature</span>(s) without metadata         <span class="dv">1</span></span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a><span class="dv">3</span> W<span class="sc">*</span>    Features feature_id            <span class="fu">Feature</span>(s) not <span class="cf">in</span> analysis data     <span class="dv">4</span></span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a><span class="dv">4</span> W<span class="sc">*</span>    ISTDs    quant_istd_feature_id Internal <span class="fu">standard</span>(s) not used       <span class="dv">1</span></span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a></span>
+<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a><span class="sc">----------------------------------------------------------------------------</span></span>
+<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a>E <span class="ot">=</span> Error, W <span class="ot">=</span> Warning, W<span class="sc">*</span> <span class="er">=</span> Suppressed Warning, N <span class="ot">=</span> Note</span>
+<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a><span class="sc">----------------------------------------------------------------------------</span></span></code></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Analysis metadata associated with 499 analyses.</span></code></pre>
 </div>
@@ -386,19 +408,19 @@ calculations start from.</p>
 <div class="cell-output cell-output-stderr">
 <pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Response curve metadata associated with 12 annotated analyses.</span></code></pre>
 </div>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/set_analysis_order.html">set_analysis_order</a></span><span class="op">(</span><span class="va">myexp</span>, order_by <span class="op">=</span> <span class="st">"timestamp"</span><span class="op">)</span></span></code></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Analysis order set to "timestamp"</span></code></pre>
 </div>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/set_intensity_var.html">set_intensity_var</a></span><span class="op">(</span><span class="va">myexp</span>, variable_name <span class="op">=</span> <span class="st">"area"</span><span class="op">)</span></span></code></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Default feature intensity variable set to "feature_area"</span></code></pre>
 </div>
 </div>
 <div class="section level2">
-<h2 id="overall-trends-and-possible-outliers">8. Overall trends and possible outliers<a class="anchor" aria-label="anchor" href="#overall-trends-and-possible-outliers"></a>
+<h2 id="overall-trends-and-possible-outliers">9. Overall trends and possible outliers<a class="anchor" aria-label="anchor" href="#overall-trends-and-possible-outliers"></a>
 </h2>
 <p>To judge technical trends that affect most analytes at once, the RLA
 (Relative Log Abundance) plot is the tool of choice (De Livera et al.,
@@ -408,7 +430,7 @@ a well-behaved sample sits tight around zero, so boxes that shift or
 spread flag pipetting errors, sample spillage, injection-volume changes,
 or drops in instrument sensitivity. In this run one sample stands out
 from its batch as a candidate technical outlier.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_rla_boxplot.html">plot_rla_boxplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">myexp</span>,</span>
 <span>  variable <span class="op">=</span> <span class="st">"intensity"</span>,</span>
@@ -429,14 +451,14 @@ boxes flag pipetting, injection, or sensitivity issues.
 </div>
 </div>
 <div class="section level2">
-<h2 id="pca-of-all-qc-types">9. PCA of all QC types<a class="anchor" aria-label="anchor" href="#pca-of-all-qc-types"></a>
+<h2 id="pca-of-all-qc-types">10. PCA of all QC types<a class="anchor" aria-label="anchor" href="#pca-of-all-qc-types"></a>
 </h2>
 <p>Principal component analysis condenses all features into a few axes
 and gives a complementary overview of how the study and QC samples
 relate, useful for spotting batch effects, technical outliers, and
 systematic differences between sample types. Here it offers a second,
 independent view of the candidate outlier flagged by the RLA plot.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_pca.html">plot_pca</a></span><span class="op">(</span></span>
 <span>  <span class="va">myexp</span>,</span>
 <span>  variable <span class="op">=</span> <span class="st">"feature_intensity"</span>,</span>
@@ -455,7 +477,7 @@ Figure 6. PCA of study and QC samples before outlier removal.
 </div>
 </div>
 <div class="section level2">
-<h2 id="excluding-technical-outliers">10. Excluding technical outliers<a class="anchor" aria-label="anchor" href="#excluding-technical-outliers"></a>
+<h2 id="excluding-technical-outliers">11. Excluding technical outliers<a class="anchor" aria-label="anchor" href="#excluding-technical-outliers"></a>
 </h2>
 <p>With the outlier corroborated by both plots, we remove it from all
 downstream processing using <code><a href="../reference/exclude_analyses.html">exclude_analyses()</a></code>. The
@@ -464,7 +486,7 @@ function does not delete any data: it sets the sample’s
 skipped in later steps and can be reinstated at any time. Replotting the
 PCA lets us confirm the effect of the exclusion on the sample
 structure.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/exclude_analyses.html">exclude_analyses</a></span><span class="op">(</span></span>
 <span>  <span class="va">myexp</span>,</span>
 <span>  analyses <span class="op">=</span> <span class="st">"Longit_batch6_51"</span>,</span>
@@ -490,7 +512,7 @@ Figure 7. PCA after excluding the flagged technical outlier.
 </div>
 </div>
 <div class="section level2">
-<h2 id="response-curves">11. Response curves<a class="anchor" aria-label="anchor" href="#response-curves"></a>
+<h2 id="response-curves">12. Response curves<a class="anchor" aria-label="anchor" href="#response-curves"></a>
 </h2>
 <p>A linear response is a prerequisite for comparing concentrations
 between samples. Plasma lipid abundances span a wide dynamic range, and
@@ -502,7 +524,7 @@ the start and end of the run as a dedicated QC. We first drop the very
 lowest-abundance features, then plot the curves for a subset of PC
 species; <code>include_feature_filter</code> accepts regular
 expressions, so any class or chain-length pattern can be selected.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/filter_features_qc.html">filter_features_qc</a></span><span class="op">(</span></span>
 <span>  <span class="va">myexp</span>,</span>
 <span>  include_qualifier <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -525,7 +547,7 @@ injection-volume series.
 </div>
 </div>
 <div class="section level2">
-<h2 id="isotope-interference-correction">12. Isotope interference correction<a class="anchor" aria-label="anchor" href="#isotope-interference-correction"></a>
+<h2 id="isotope-interference-correction">13. Isotope interference correction<a class="anchor" aria-label="anchor" href="#isotope-interference-correction"></a>
 </h2>
 <p>Some peaks of interest are co-integrated with the isotopic peaks of
 other lipid species, for example the M+2 isotope of a species two mass
@@ -537,7 +559,7 @@ values are preserved in <code>feature_intensity_before</code>. The
 interference factors here were derived with LICAR (<a href="https://github.com/SLINGhub/LICAR" class="external-link uri">https://github.com/SLINGhub/LICAR</a>). Inspect the
 “Features (Analytes)” sheet of the metadata file to see which species
 are affected.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/correct_custom_interferences.html">correct_custom_interferences</a></span><span class="op">(</span><span class="va">myexp</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plot_interference_correction.html">plot_interference_correction</a></span><span class="op">(</span></span>
 <span>  <span class="va">myexp</span>,</span>
@@ -551,7 +573,7 @@ correction.
 </div>
 </div>
 <div class="section level2">
-<h2 id="normalization-and-quantification-based-on-istds">13. Normalization and quantification based on ISTDs<a class="anchor" aria-label="anchor" href="#normalization-and-quantification-based-on-istds"></a>
+<h2 id="normalization-and-quantification-based-on-istds">14. Normalization and quantification based on ISTDs<a class="anchor" aria-label="anchor" href="#normalization-and-quantification-based-on-istds"></a>
 </h2>
 <p>Quantification proceeds in two steps.
 <code><a href="../reference/normalize_by_istd.html">normalize_by_istd()</a></code> divides each lipid’s peak area by the
@@ -567,12 +589,12 @@ Because both new variables sit beside the raw areas, the RLA and PCA
 plots above can be rerun on the normalised data with
 <code>variable = "norm_intensity"</code> or
 <code>variable = "conc"</code>.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_by_istd.html">normalize_by_istd</a></span><span class="op">(</span><span class="va">myexp</span><span class="op">)</span></span></code></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">460 features normalized with 17 ISTDs in 498 analyses.</span></code></pre>
 </div>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/quantify_by_istd.html">quantify_by_istd</a></span><span class="op">(</span><span class="va">myexp</span><span class="op">)</span></span></code></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">460 feature concentrations calculated based on 42 ISTDs and sample amounts of 498 analyses.</span></code></pre>
@@ -582,7 +604,7 @@ plots above can be rerun on the normalised data with
 </div>
 </div>
 <div class="section level2">
-<h2 id="effects-of-class-wide-istd-normalization">14. Effects of class-wide ISTD normalization<a class="anchor" aria-label="anchor" href="#effects-of-class-wide-istd-normalization"></a>
+<h2 id="effects-of-class-wide-istd-normalization">15. Effects of class-wide ISTD normalization<a class="anchor" aria-label="anchor" href="#effects-of-class-wide-istd-normalization"></a>
 </h2>
 <p>Class-specific ISTDs are common practice in lipidomics, but they are
 rarely authentic standards for every species they normalise. A
@@ -595,7 +617,7 @@ and study samples before and after normalisation is a direct way to
 catch a misbehaving standard: a class whose CV rises after normalisation
 is a warning sign worth investigating before trusting its
 concentrations.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/filter_features_qc.html">filter_features_qc</a></span><span class="op">(</span></span>
 <span>  <span class="va">myexp</span>,</span>
 <span>  include_qualifier <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -620,7 +642,7 @@ lipid class.
 </div>
 </div>
 <div class="section level2">
-<h2 id="drift-correction">15. Drift correction<a class="anchor" aria-label="anchor" href="#drift-correction"></a>
+<h2 id="drift-correction">16. Drift correction<a class="anchor" aria-label="anchor" href="#drift-correction"></a>
 </h2>
 <p>Even after ISTD normalisation, concentrations can drift gradually
 within a batch as the instrument response changes. We correct this with
@@ -635,7 +657,7 @@ formal diagnostic of the fit but a quick check (reported as a change in
 median CV) that the correction improved precision without introducing
 artefacts. A scale correction along the fit is available via
 <code>scale_smooth = TRUE</code>.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/correct_drift_gaussiankernel.html">correct_drift_gaussiankernel</a></span><span class="op">(</span></span>
 <span>  <span class="va">myexp</span>,</span>
 <span>  variable <span class="op">=</span> <span class="st">"conc"</span>,</span>
@@ -678,7 +700,7 @@ in a small function with the recurring parameters preset;
 <code>variable</code> selects which stage to show
 (<code>conc_before</code> or <code>conc</code>) and <code>feature</code>
 which species.</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">my_trend_plot</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">variable</span>, <span class="va">feature</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span></span>
 <span>    <span class="va">myexp</span>,</span>
@@ -693,7 +715,7 @@ which species.</p>
 <span>    cols_page <span class="op">=</span> <span class="fl">1</span>, rows_page <span class="op">=</span> <span class="fl">1</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">my_trend_plot</span><span class="op">(</span><span class="st">"conc_before"</span>, <span class="st">"PC 40:8"</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="tutorial-03-lipidomics-workflow_files/figure-html/plot-trend-before-1.png" class="r-plt" alt="RunScatter of PC 40:8 concentrations before drift correction" width="700"><p class="caption">
@@ -701,7 +723,7 @@ Figure 11. PC 40:8 raw concentrations before drift correction, with the
 fitted within-batch trend.
 </p>
 </div>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">my_trend_plot</span><span class="op">(</span><span class="st">"conc"</span>, <span class="st">"PC 40:8"</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="tutorial-03-lipidomics-workflow_files/figure-html/plot-trend-after-1.png" class="r-plt" alt="RunScatter of PC 40:8 concentrations after drift correction" width="700"><p class="caption">
@@ -710,7 +732,7 @@ Figure 12. PC 40:8 concentrations after within-batch drift correction.
 </div>
 </div>
 <div class="section level2">
-<h2 id="batch-effect-correction">16. Batch-effect correction<a class="anchor" aria-label="anchor" href="#batch-effect-correction"></a>
+<h2 id="batch-effect-correction">17. Batch-effect correction<a class="anchor" aria-label="anchor" href="#batch-effect-correction"></a>
 </h2>
 <p>Drift correction flattens the trend inside each batch but leaves the
 batches at different levels, since each is fitted independently.
@@ -721,7 +743,7 @@ additionally equalises the between-batch spread. As with drift
 correction, the aligned values replace <code>conc</code> and the
 previous ones are retained in <code>conc_before</code>. We replot the
 example species to confirm the batches now line up.</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/correct_batch_centering.html">correct_batch_centering</a></span><span class="op">(</span></span>
 <span>  <span class="va">myexp</span>,</span>
 <span>  variable <span class="op">=</span> <span class="st">"conc"</span>,</span>
@@ -741,7 +763,7 @@ batch trends are aligned.
 </div>
 </div>
 <div class="section level2">
-<h2 id="saving-runscatter-plots-of-all-features-as-pdf">17. Saving runscatter plots of all features as PDF<a class="anchor" aria-label="anchor" href="#saving-runscatter-plots-of-all-features-as-pdf"></a>
+<h2 id="saving-runscatter-plots-of-all-features-as-pdf">18. Saving runscatter plots of all features as PDF<a class="anchor" aria-label="anchor" href="#saving-runscatter-plots-of-all-features-as-pdf"></a>
 </h2>
 <p>For a full record it helps to save runscatter plots for every
 species, or a chosen subset, to a multi-page PDF in the
@@ -752,7 +774,7 @@ close together or below the limit of detection. The
 <code>exclude_feature_filter</code> arguments select analytes and both
 accept regular expressions, which a language model can help you
 construct for more intricate patterns.</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span></span>
 <span>  <span class="va">myexp</span>,</span>
 <span>  variable <span class="op">=</span> <span class="st">"conc"</span>,</span>
@@ -775,7 +797,7 @@ size; without them an A4 page is used, oriented by
 <p>The single figures made earlier in this workflow are saved with
 <code><a href="../reference/save_plot.html">save_plot()</a></code>, which writes any plot at a defined size and
 resolution and can produce several formats in one call:</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_pca.html">plot_pca</a></span><span class="op">(</span><span class="va">myexp</span>, variable <span class="op">=</span> <span class="st">"conc"</span>, qc_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BQC"</span>, <span class="st">"SPL"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/save_plot.html">save_plot</a></span><span class="op">(</span>path <span class="op">=</span> <span class="st">"./output/pca"</span>, format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pdf"</span>, <span class="st">"png"</span><span class="op">)</span>,</span>
 <span>            width <span class="op">=</span> <span class="fl">180</span>, height <span class="op">=</span> <span class="fl">120</span><span class="op">)</span></span></code></pre></div>
@@ -787,7 +809,7 @@ raster one.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="qc-based-feature-filtering">18. QC-based feature filtering<a class="anchor" aria-label="anchor" href="#qc-based-feature-filtering"></a>
+<h2 id="qc-based-feature-filtering">19. QC-based feature filtering<a class="anchor" aria-label="anchor" href="#qc-based-feature-filtering"></a>
 </h2>
 <p>The final curation step removes features that fail defined QC
 criteria. <code><a href="../reference/filter_features_qc.html">filter_features_qc()</a></code> combines several: the
@@ -800,7 +822,7 @@ once it has passed the S/B and signal filters) and
 <code>features.to.keep</code> retains named species regardless. The
 filter can be run repeatedly, overwriting or, with
 <code>clear_existing = FALSE</code>, amending the previous set.</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">myexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/filter_features_qc.html">filter_features_qc</a></span><span class="op">(</span></span>
 <span>  <span class="va">myexp</span>,</span>
 <span>  clear_existing <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -842,7 +864,7 @@ filter can be run repeatedly, overwriting or, with
 </div>
 </div>
 <div class="section level2">
-<h2 id="summary-of-the-qc-filtering">19. Summary of the QC filtering<a class="anchor" aria-label="anchor" href="#summary-of-the-qc-filtering"></a>
+<h2 id="summary-of-the-qc-filtering">20. Summary of the QC filtering<a class="anchor" aria-label="anchor" href="#summary-of-the-qc-filtering"></a>
 </h2>
 <p>The plot below summarises the filtering per lipid class. Green
 segments count the species that passed every criterion; the remaining
@@ -851,7 +873,7 @@ hierarchical, a species is attributed to the <em>first</em> filter it
 fails (for example <code>CV</code>), having already cleared the lower
 ones (<code>S/B</code>, <code>LOD</code>), so the counts partition the
 features rather than double-counting them.</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_qc_summary_byclass.html">plot_qc_summary_byclass</a></span><span class="op">(</span><span class="va">myexp</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="tutorial-03-lipidomics-workflow_files/figure-html/qc-summary-byclass-1.png" class="r-plt" alt="Feature QC filter summary by lipid class" width="700"><p class="caption">
@@ -862,7 +884,7 @@ species passing all criteria.
 <p>The next plot gives the same picture across all features, with the
 total retained, and adds a Venn diagram showing how many features each
 individual criterion excluded, and where those exclusions overlap.</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_qc_summary_overall.html">plot_qc_summary_overall</a></span><span class="op">(</span><span class="va">myexp</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="tutorial-03-lipidomics-workflow_files/figure-html/qc-summary-overall-1.png" class="r-plt" alt="Overall feature filter summary with Venn diagram" width="700"><p class="caption">
@@ -872,7 +894,7 @@ exclusion criteria.
 </div>
 </div>
 <div class="section level2">
-<h2 id="lipidome-profile">20. Lipidome profile<a class="anchor" aria-label="anchor" href="#lipidome-profile"></a>
+<h2 id="lipidome-profile">21. Lipidome profile<a class="anchor" aria-label="anchor" href="#lipidome-profile"></a>
 </h2>
 <p>As a final sanity check, we plot the concentration profile of the
 filtered dataset. Comparing these values (the most abundant species, the
@@ -880,7 +902,7 @@ summed concentration per class, or the ratios between classes) against
 in-house reference ranges or the literature is the quickest way to
 confirm that quantification landed in a plausible range and that no
 gross errors slipped through.</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_abundanceprofile.html">plot_abundanceprofile</a></span><span class="op">(</span></span>
 <span>  <span class="va">myexp</span>,</span>
 <span>  variable <span class="op">=</span> <span class="st">"conc"</span>,</span>
@@ -897,22 +919,22 @@ Figure 16. Concentration profile of the filtered study-sample lipidome.
 </div>
 </div>
 <div class="section level2">
-<h2 id="saving-a-report-with-data-metadata-and-processing-details">21. Saving a report with data, metadata and processing details<a class="anchor" aria-label="anchor" href="#saving-a-report-with-data-metadata-and-processing-details"></a>
+<h2 id="saving-a-report-with-data-metadata-and-processing-details">22. Saving a report with data, metadata and processing details<a class="anchor" aria-label="anchor" href="#saving-a-report-with-data-metadata-and-processing-details"></a>
 </h2>
 <p>The full post-processing can be written to a formatted Excel
 workbook, with separate sheets for the raw and processed datasets, the
 associated metadata, the per-feature QC metrics, and a record of the
 processing steps applied: a self-contained account of how the numbers
 were produced.</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/save_report_xlsx.html">save_report_xlsx</a></span><span class="op">(</span><span class="va">myexp</span>, path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".xlsx"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The data processing report of experiment 'sPerfect' has been saved to /tmp/RtmpUmBID2/file40ee3bb24270.xlsx.</span></code></pre>
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The data processing report of experiment 'sPerfect' has been saved to /tmp/RtmpJ9DZo5/file317e6e964fe0.xlsx.</span></code></pre>
 </div>
 <p>For downstream statistics it is often easier to export a single flat,
 wide CSV of a chosen data subset. This is the format used to share the
 data for the statistical analysis in the next part of the workshop.</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/save_dataset_csv.html">save_dataset_csv</a></span><span class="op">(</span></span>
 <span>  <span class="va">myexp</span>,</span>
 <span>  path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span>,</span>
@@ -923,14 +945,14 @@ data for the statistical analysis in the next part of the workshop.</p>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="sharing-the-mrmhubexperiment-dataset">22. Sharing the MRMhubExperiment dataset<a class="anchor" aria-label="anchor" href="#sharing-the-mrmhubexperiment-dataset"></a>
+<h2 id="sharing-the-mrmhubexperiment-dataset">23. Sharing the MRMhubExperiment dataset<a class="anchor" aria-label="anchor" href="#sharing-the-mrmhubexperiment-dataset"></a>
 </h2>
 <p>Finally, the whole <code>myexp</code> object can be serialized to an
 <code>RDS</code> file and shared. <code>RDS</code> files open in any R
 session (even without the mrmhub package installed) and the saved
 <code>MRMhubExperiment</code> can be reloaded for further processing,
 replotting, or inspection with mrmhub.</p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".rds"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">saveRDS</a></span><span class="op">(</span><span class="va">myexp</span>, file <span class="op">=</span> <span class="va">path</span>, compress <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">my_saved_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span>file <span class="op">=</span> <span class="va">path</span><span class="op">)</span></span>
@@ -950,7 +972,7 @@ exploration</a>: QC visualisation in depth</li>
 <a href="tutorial-11-interference-correction.html">Interference
 correction</a>: correcting isotopic and isobaric overlap</li>
 <li>
-<a href="recipe-01-ext-calibration-qc.html">External calibration
+<a href="tutorial-06-external-calibration.html">External calibration
 &amp; QC</a>: quantify with external calibration curves</li>
 </ul>
 </div>

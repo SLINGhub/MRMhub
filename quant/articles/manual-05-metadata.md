@@ -137,6 +137,127 @@ the import does not recognize, a typo, or a different naming scheme) are
 not normalized, and the affected analyses are dropped from the join with
 a warning.
 
+## Common defects and fixes
+
+Most processing errors trace back to defects in the annotation tables
+rather than to the analytical data. The frequent offenders are a
+mismatched `analysis_id` between data and annotation, a missing
+`qc_type` label (the one column besides `analysis_id` the importer
+requires), and `qc_type` values that fall outside the canonical
+vocabulary. Each defect below pairs its diagnostic with the edit that
+resolves it. After an annotation table is edited in R it is re-imported,
+or passed to
+[`add_metadata()`](https://slinghub.github.io/MRMhub/quant/reference/add_metadata.md)
+as a named list, so the same validation runs again before the table is
+linked.
+
+**Column `qc_type` missing from `annot_analyses`**
+
+`qc_type` is the only column besides `analysis_id` that the importer
+strictly requires. When it is absent it can be derived from a naming
+convention embedded in `analysis_id`:
+
+``` r
+
+annot_analyses <- annot_analyses |>
+  dplyr::mutate(qc_type = dplyr::case_when(
+    stringr::str_detect(analysis_id, "BQC") ~ "BQC",
+    stringr::str_detect(analysis_id, "BLK") ~ "SBLK",
+    TRUE ~ "SPL"
+  ))
+```
+
+**`analysis_id` in data not found in annotation**
+
+Some injections in the imported dataset have no matching row in the
+annotation table. Listing the difference exposes the cause; leading or
+trailing whitespace and case mismatches are the most frequent.
+
+``` r
+
+data_ids <- unique(myexp@dataset_orig$analysis_id)
+annot_ids <- annot_analyses$analysis_id
+
+# IDs present in data but missing from annotation
+setdiff(data_ids, annot_ids)
+
+# Fix trailing whitespace introduced by Excel
+annot_analyses <- annot_analyses |>
+  dplyr::mutate(analysis_id = trimws(analysis_id))
+```
+
+`excl_unmatched_analyses = TRUE` in the importer drops unmatched
+analyses silently, useful only when the omission is intentional, such as
+excluded conditioning injections.
+
+**Non-canonical `qc_type` values**
+
+MRMhub recognises only its canonical `qc_type` labels, and they are
+case-sensitive; see [Sample types & QC
+roles](https://slinghub.github.io/MRMhub/quant/articles/manual-06-sample-types.md)
+for the full set. Non-standard values are mapped to the canonical set
+before validating:
+
+``` r
+
+unique(annot_analyses$qc_type)
+
+annot_analyses <- annot_analyses |>
+  dplyr::mutate(qc_type = dplyr::case_when(
+    qc_type == "Standard" ~ "CAL",
+    qc_type == "Blank" ~ "SBLK",
+    qc_type == "Pool" ~ "BQC",
+    qc_type == "Sample" ~ "SPL",
+    TRUE ~ qc_type
+  ))
+```
+
+**Duplicate identifiers**
+
+Repeated identifiers most often stem from copy-paste errors in Excel, or
+from header rows interpreted as data.
+
+``` r
+
+annot_analyses |>
+  dplyr::count(analysis_id) |>
+  dplyr::filter(n > 1)
+```
+
+**Feature IDs in annotation do not match data**
+
+Comparing the feature identifiers in both directions separates features
+present in the data but unannotated from method-development residue left
+only in the annotation. A common cause is differing encoding of special
+characters (parentheses, slashes, unicode escapes) between the
+integration-software output and a hand-edited Excel file.
+
+``` r
+
+data_features <- unique(myexp@dataset_orig$feature_id)
+annot_feat_ids <- annot_features$feature_id
+
+# In data but missing from annotation
+setdiff(data_features, annot_feat_ids)
+
+# In annotation but absent from data (often method-development residue)
+setdiff(annot_feat_ids, data_features)
+```
+
+## Practical recommendations
+
+- Annotations are re-imported after every edit. A saved Excel file held
+  open in a separate process can be silently locked and read only in
+  part.
+- CSVs are saved as UTF-8 without BOM. Excel’s default “CSV UTF-8”
+  export adds a byte-order mark that shifts the first column header.
+- Special characters in `analysis_id` and `feature_id` (parentheses,
+  slashes, spaces) survive R but complicate downstream column
+  references; restricting IDs to letters, digits, underscores, and
+  hyphens avoids this.
+- The annotation file is kept under version control alongside the data
+  file.
+
 ## Next steps
 
 - [Import metadata from files or a

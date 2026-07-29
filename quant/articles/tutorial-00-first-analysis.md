@@ -1,4 +1,4 @@
-# Your first analysis
+# Quick tour
 
 Tutorial Beginner Prerequisites: [MRMhub
 installed](https://slinghub.github.io/MRMhub/quant/articles/manual-00-installation.md)
@@ -11,9 +11,9 @@ step in full.
 
 ## 1. Run the complete workflow
 
-The block below is the whole analysis: import the demo result, normalize
-each feature by its internal standard, and print the resulting object.
-Run it and you have a processed dataset.
+The block below is the whole analysis: import the demo result and
+normalize each feature by its internal standard. Run it and you have a
+processed dataset.
 
 ``` r
 
@@ -40,56 +40,36 @@ mexp <- normalize_by_istd(mexp)
 
     ✔ 19 features normalized with 9 ISTDs in 499 analyses.
 
-``` r
-
-mexp
-```
-
-    ── MRMhubExperiment:  ──────────────────────────────────────────────────────────
-
-    NA | 499 analyses and 28 features | signal: feature_area
-
-    Last step: ISTD-normalized data
-
-    Normalized ✔ Quantitated ✖ Drift/batch ✖ Filtered ✖
-
-    ℹ Use `mrmhub_status()` for the full processing and metadata report
-
-We then look at the normalized signal across the analytical run, the
-first thing to inspect for run-order drift.
+We then look at the raw peak areas across the analytical run, the first
+thing to inspect for run-order drift. To keep the figure to a single
+page, we restrict it to the PC species.
 
 ``` r
 
-plot_runscatter(mexp, variable = "norm_intensity")
+plot_runscatter(mexp, variable = "area", include_feature_filter = "^PC ")
 ```
 
-![RunScatter of ISTD-normalized feature intensities against run
-order](tutorial-00-first-analysis_files/figure-html/runscatter-1.png)
+![RunScatter of raw peak areas against run order for the PC
+features](tutorial-00-first-analysis_files/figure-html/runscatter-1.png)
 
-Figure 1. Internal-standard–normalized signal of each feature plotted
-against injection order.
+Figure 1. Raw peak areas of the PC features plotted against injection
+order.
 
-![RunScatter of ISTD-normalized feature intensities against run
-order](tutorial-00-first-analysis_files/figure-html/runscatter-2.png)
+A principal-component plot of the internal-standard–normalized signal
+gives a first look at how the samples group and whether any injection
+separates from the rest.
 
-Figure 1. Internal-standard–normalized signal of each feature plotted
-against injection order.
+``` r
 
-![RunScatter of ISTD-normalized feature intensities against run
-order](tutorial-00-first-analysis_files/figure-html/runscatter-3.png)
+plot_pca(mexp, variable = "norm_intensity")
+```
 
-Figure 1. Internal-standard–normalized signal of each feature plotted
-against injection order.
+![PCA score plot of ISTD-normalized feature
+intensities](tutorial-00-first-analysis_files/figure-html/pca-1.png)
 
-![RunScatter of ISTD-normalized feature intensities against run
-order](tutorial-00-first-analysis_files/figure-html/runscatter-4.png)
+Figure 2. PCA of the internal-standard–normalized feature intensities.
 
-Figure 1. Internal-standard–normalized signal of each feature plotted
-against injection order.
-
-Printing the object returns a compact status overview:
-`mrmhub_status(mexp)` prints the full report. If you prefer not to write
-code,
+If you prefer not to write code,
 [`build_workflow()`](https://slinghub.github.io/MRMhub/quant/reference/build_workflow.md)
 opens an interactive application that validates your data and metadata,
 flags pipeline mismatches, and generates an equivalent Quarto workflow
@@ -97,41 +77,71 @@ to download (see [Build a workflow without
 code](https://slinghub.github.io/MRMhub/quant/articles/tutorial-12-workflow-builder.md));
 the script above remains the reproducible path.
 
-## 2. What the script does
-
-The importer returns an `MRMhubExperiment`: a structured container
-holding the peak-area data, the sample annotations, and the feature
-metadata together.
-[`normalize_by_istd()`](https://slinghub.github.io/MRMhub/quant/reference/normalize_by_istd.md)
-divides each feature by its assigned internal standard, correcting for
-extraction and injection variability. The ratio is stored in
-`feature_norm_intensity`, the `is_istd_normalized` flag is set, and the
-raw import is left untouched in the `dataset_orig` slot. A few helpers
-report what was imported:
-
-``` r
-
-get_analysis_count(mexp)   # number of analyses
-get_feature_count(mexp)    # number of features
-get_featurelist(mexp)      # the measured features
-```
-
-## 3. Export the results
+## 2. Export the results
 
 Write the processed data to a multi-sheet Excel report, or to a single
-tidy CSV. Figures are saved the same way, at a size you specify (in mm
-by default):
+tidy CSV:
 
 ``` r
 
 save_report_xlsx(mexp, path = "my_first_results.xlsx")
 save_dataset_csv(mexp, path = "my_first_results.csv")
-
-save_plot(
-  plot_pca(mexp, variable = "norm_intensity"),
-  path = "my_first_pca.pdf", width = 180, height = 120
-)
 ```
+
+## 3. Check the processing status
+
+[`mrmhub_status()`](https://slinghub.github.io/MRMhub/quant/reference/mrmhub_status.md)
+prints the full processing and metadata report: what was imported, which
+steps have run, and which stages still lie ahead. It is the quickest way
+to confirm the object is in the state you expect before moving on.
+
+``` r
+
+mrmhub_status(mexp)
+```
+
+    ── MRMhubExperiment ────────────────────────────────────────────────────────────
+
+    Title:
+
+    Last step: ISTD-normalized data | signal: feature_area
+
+    ── Samples (499 analyses, 6 batches) ──
+
+    • Study samples & QCs (488): TQC 48, BQC 59, LTR 3, SPL 378
+
+    • Blanks & other (11): SBLK 7, UBLK 2, PBLK 2
+
+    ── Features (28) ──
+
+    • Analytes: 19 Internal standards: 9
+
+    • Quantifiers: 28 Qualifiers: 0
+
+    ── Metadata ──
+
+    • Analyses/samples: ✔ (499) Features/analytes: ✔ (28) Internal standards: ✖
+
+    • Response curves: ✖ Calibrants/QC concentrations: ✖ Study samples: ✖
+    Interferences: ✖
+
+    ── Processing Status ──
+
+    • Isotope / interference corrected: ✖
+
+    • ISTD normalized: ✔ Quantitated: ✖
+
+    • Drift corrected variables: ✖
+
+    • Batch corrected variables: ✖
+
+    • QC metrics calculated: ✖ Feature filtering applied: ✖
+
+    ── Exclusion of Analyses and Features ──
+
+    • Analyses manually excluded (`analysis_id`): ✖
+
+    • Features manually excluded (`feature_id`): ✖
 
 ## Next steps
 

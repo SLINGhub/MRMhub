@@ -1,7 +1,7 @@
 # Lipidomics data processing
 
-Tutorial Advanced Prerequisites: [Basic
-workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md)
+Tutorial Advanced Prerequisites: [Preparing and importing
+data](https://slinghub.github.io/MRMhub/quant/articles/tutorial-01-prep-data.md)
 
 This tutorial follows a complete postprocessing and quality control
 workflow for a targeted lipidomics analysis. Starting from integrated
@@ -14,12 +14,33 @@ result. The dataset (a longitudinal plasma study (`sPerfect`) measured
 across six batches) is realistic enough to show the decisions a real
 analysis demands.
 
+## 1. Set up a project
+
+A new analysis is easiest to manage inside an RStudio or Positron
+project (see [Using RStudio
+Projects](https://support.posit.co/hc/en-us/articles/200526207-Using-RStudio-Projects)
+or the [Positron User Guide](https://positron.posit.co/)), with a
+predictable folder layout that keeps the raw data, the exported results,
+and the processing notebook apart:
+
+    my_study/
+    ├── data/           # raw data and metadata files
+    ├── output/         # exported results
+    └── analysis.Rmd    # your processing notebook
+
+An R Notebook (`.Rmd`) or
+[Quarto](https://docs.posit.co/ide/user/ide/guide/documents/quarto-project.html)
+(`.qmd`) document is a natural home for a workflow like this one: it
+interleaves code with prose, keeping a record of every decision beside
+the result it produced. With the project in place, load the package to
+begin:
+
 ``` r
 
 library(mrmhub)
 ```
 
-## 1. Importing analysis results
+## 2. Importing analysis results
 
 We begin by importing the MRMhub result file, which holds the areas of
 the integrated peaks (features) for every processed raw data file. The
@@ -49,7 +70,7 @@ myexp <- import_data_mrmhub(
 
     ✔ Feature metadata associated with 503 features.
 
-## 2. A glimpse on the imported data
+## 3. A glimpse on the imported data
 
 The data is stored in long format (one row per analysis–feature pair) so
 each measurement carries its own area, retention time, and metadata side
@@ -61,28 +82,28 @@ data already joined to its sample and feature annotations.
 
 ``` r
 print(myexp@dataset)
- [38;5;246m# A tibble: 250,997 × 21 [39m
+# A tibble: 250,997 × 21
    analysis_order analysis_id  acquisition_time_stamp qc_type batch_id sample_id
-             [3m [38;5;246m<int> [39m [23m  [3m [38;5;246m<chr> [39m [23m         [3m [38;5;246m<dttm> [39m [23m                  [3m [38;5;246m<chr> [39m [23m    [3m [38;5;246m<chr> [39m [23m     [3m [38;5;246m<chr> [39m [23m    
- [38;5;250m 1 [39m              1 Longit_BLAN… 2017-10-20  [38;5;246m14:15:36 [39m    SBLK    1         [31mNA [39m       
- [38;5;250m 2 [39m              1 Longit_BLAN… 2017-10-20  [38;5;246m14:15:36 [39m    SBLK    1         [31mNA [39m       
- [38;5;250m 3 [39m              1 Longit_BLAN… 2017-10-20  [38;5;246m14:15:36 [39m    SBLK    1         [31mNA [39m       
- [38;5;250m 4 [39m              1 Longit_BLAN… 2017-10-20  [38;5;246m14:15:36 [39m    SBLK    1         [31mNA [39m       
- [38;5;250m 5 [39m              1 Longit_BLAN… 2017-10-20  [38;5;246m14:15:36 [39m    SBLK    1         [31mNA [39m       
- [38;5;250m 6 [39m              1 Longit_BLAN… 2017-10-20  [38;5;246m14:15:36 [39m    SBLK    1         [31mNA [39m       
- [38;5;250m 7 [39m              1 Longit_BLAN… 2017-10-20  [38;5;246m14:15:36 [39m    SBLK    1         [31mNA [39m       
- [38;5;250m 8 [39m              1 Longit_BLAN… 2017-10-20  [38;5;246m14:15:36 [39m    SBLK    1         [31mNA [39m       
- [38;5;250m 9 [39m              1 Longit_BLAN… 2017-10-20  [38;5;246m14:15:36 [39m    SBLK    1         [31mNA [39m       
- [38;5;250m10 [39m              1 Longit_BLAN… 2017-10-20  [38;5;246m14:15:36 [39m    SBLK    1         [31mNA [39m       
- [38;5;246m# ℹ 250,987 more rows [39m
- [38;5;246m# ℹ 15 more variables: replicate_no <int>, specimen <chr>, feature_id <chr>, [39m
- [38;5;246m#   feature_class <chr>, feature_label <chr>, is_istd <lgl>, [39m
- [38;5;246m#   is_quantifier <lgl>, analyte_id <chr>, istd_feature_id <chr>, [39m
- [38;5;246m#   feature_rt <dbl>, feature_area <dbl>, feature_height <dbl>, [39m
- [38;5;246m#   feature_fwhm <dbl>, feature_width <dbl>, feature_intensity <dbl> [39m
+            <int> <chr>        <dttm>                 <chr>   <chr>    <chr>    
+ 1              1 Longit_BLAN… 2017-10-20 14:15:36    SBLK    1        NA       
+ 2              1 Longit_BLAN… 2017-10-20 14:15:36    SBLK    1        NA       
+ 3              1 Longit_BLAN… 2017-10-20 14:15:36    SBLK    1        NA       
+ 4              1 Longit_BLAN… 2017-10-20 14:15:36    SBLK    1        NA       
+ 5              1 Longit_BLAN… 2017-10-20 14:15:36    SBLK    1        NA       
+ 6              1 Longit_BLAN… 2017-10-20 14:15:36    SBLK    1        NA       
+ 7              1 Longit_BLAN… 2017-10-20 14:15:36    SBLK    1        NA       
+ 8              1 Longit_BLAN… 2017-10-20 14:15:36    SBLK    1        NA       
+ 9              1 Longit_BLAN… 2017-10-20 14:15:36    SBLK    1        NA       
+10              1 Longit_BLAN… 2017-10-20 14:15:36    SBLK    1        NA       
+# ℹ 250,987 more rows
+# ℹ 15 more variables: replicate_no <int>, specimen <chr>, feature_id <chr>,
+#   feature_class <chr>, feature_label <chr>, is_istd <lgl>,
+#   is_quantifier <lgl>, analyte_id <chr>, istd_feature_id <chr>,
+#   feature_rt <dbl>, feature_area <dbl>, feature_height <dbl>,
+#   feature_fwhm <dbl>, feature_width <dbl>, feature_intensity <dbl>
 ```
 
-## 3. Analytical design and timeline
+## 4. Analytical design and timeline
 
 Before touching the signals, it is worth understanding how the run was
 structured. The plot below lays out the batch boundaries, the positions
@@ -111,7 +132,7 @@ positions](tutorial-03-lipidomics-workflow_files/figure-html/runsequence-1.png)
 Figure 1. Run sequence of the analysis (batch structure, QC-sample
 positions, and acquisition timeline).
 
-## 4. Overview of chromatographic separation
+## 5. Overview of chromatographic separation
 
 A first look at the chromatography confirms that species elute where
 expected. The plot shows the retention time distribution of all detected
@@ -137,7 +158,7 @@ species](tutorial-03-lipidomics-workflow_files/figure-html/rt-overview-1.png)
 Figure 2. Retention-time distribution of all detected lipid species
 across the study samples.
 
-## 5. Peak picking QC
+## 6. Peak picking QC
 
 Within a lipid class, retention time increases smoothly with chain
 length and decreases with the number of double bonds, so plotting RT
@@ -167,7 +188,7 @@ labelled](tutorial-03-lipidomics-workflow_files/figure-html/peak-picking-qc-1.pn
 Figure 3. Retention time versus total carbon number per lipid class;
 labelled points flag possible misannotations.
 
-## 6. Signal trends of internal standards
+## 7. Signal trends of internal standards
 
 The internal standards (ISTDs) are our clearest window on instrument
 stability. The same ISTD amount was spiked into every sample except the
@@ -213,7 +234,7 @@ batches](tutorial-03-lipidomics-workflow_files/figure-html/runscatter-istd-3.png
 Figure 4. Internal-standard intensities across all six batches; the
 spiked amount is constant, so a flat trend is expected.
 
-## 7. Adding detailed metadata
+## 8. Adding detailed metadata
 
 Everything from here on (sample roles, ISTD assignments, spike amounts,
 concentrations) comes from the analysis metadata. The MRMhub Excel
@@ -270,7 +291,7 @@ myexp <- set_intensity_var(myexp, variable_name = "area")
 
     ✔ Default feature intensity variable set to "feature_area"
 
-## 8. Overall trends and possible outliers
+## 9. Overall trends and possible outliers
 
 To judge technical trends that affect most analytes at once, the RLA
 (Relative Log Abundance) plot is the tool of choice (De Livera et al.,
@@ -303,7 +324,7 @@ batches](tutorial-03-lipidomics-workflow_files/figure-html/rla-plot-1.png)
 Figure 5. Within-batch relative log abundance per sample; deviating
 boxes flag pipetting, injection, or sensitivity issues.
 
-## 9. PCA of all QC types
+## 10. PCA of all QC types
 
 Principal component analysis condenses all features into a few axes and
 gives a complementary overview of how the study and QC samples relate,
@@ -331,7 +352,7 @@ removal](tutorial-03-lipidomics-workflow_files/figure-html/pca-before-1.png)
 
 Figure 6. PCA of study and QC samples before outlier removal.
 
-## 10. Excluding technical outliers
+## 11. Excluding technical outliers
 
 With the outlier corroborated by both plots, we remove it from all
 downstream processing using
@@ -368,7 +389,7 @@ outlier](tutorial-03-lipidomics-workflow_files/figure-html/outlier-removal-1.png
 
 Figure 7. PCA after excluding the flagged technical outlier.
 
-## 11. Response curves
+## 12. Response curves
 
 A linear response is a prerequisite for comparing concentrations between
 samples. Plasma lipid abundances span a wide dynamic range, and because
@@ -405,7 +426,7 @@ species](tutorial-03-lipidomics-workflow_files/figure-html/responsecurves-1.png)
 Figure 8. Response curves for selected PC species over the
 injection-volume series.
 
-## 12. Isotope interference correction
+## 13. Isotope interference correction
 
 Some peaks of interest are co-integrated with the isotopic peaks of
 other lipid species, for example the M+2 isotope of a species two mass
@@ -434,7 +455,7 @@ correction](tutorial-03-lipidomics-workflow_files/figure-html/isotope-correction
 Figure 9. Selected species before and after isotope-interference
 correction.
 
-## 13. Normalization and quantification based on ISTDs
+## 14. Normalization and quantification based on ISTDs
 
 Quantification proceeds in two steps.
 [`normalize_by_istd()`](https://slinghub.github.io/MRMhub/quant/reference/normalize_by_istd.md)
@@ -467,7 +488,7 @@ myexp <- quantify_by_istd(myexp)
 
     ✔ Concentrations are given in μmol/L.
 
-## 14. Effects of class-wide ISTD normalization
+## 15. Effects of class-wide ISTD normalization
 
 Class-specific ISTDs are common practice in lipidomics, but they are
 rarely authentic standards for every species they normalise. A
@@ -506,7 +527,7 @@ class](tutorial-03-lipidomics-workflow_files/figure-html/norm-effects-1.png)
 Figure 10. Change in CV per feature after ISTD normalisation, faceted by
 lipid class.
 
-## 15. Drift correction
+## 16. Drift correction
 
 Even after ISTD normalisation, concentrations can drift gradually within
 a batch as the instrument response changes. We correct this with a
@@ -599,7 +620,7 @@ correction](tutorial-03-lipidomics-workflow_files/figure-html/plot-trend-after-1
 
 Figure 12. PC 40:8 concentrations after within-batch drift correction.
 
-## 16. Batch-effect correction
+## 17. Batch-effect correction
 
 Drift correction flattens the trend inside each batch but leaves the
 batches at different levels, since each is fitted independently.
@@ -632,7 +653,7 @@ centering](tutorial-03-lipidomics-workflow_files/figure-html/batch-effect-corr-1
 Figure 13. PC 40:8 after drift correction followed by batch centering;
 batch trends are aligned.
 
-## 17. Saving runscatter plots of all features as PDF
+## 18. Saving runscatter plots of all features as PDF
 
 For a full record it helps to save runscatter plots for every species,
 or a chosen subset, to a multi-page PDF in the `output` subfolder.
@@ -684,7 +705,7 @@ See [Saving
 plots](https://slinghub.github.io/MRMhub/quant/articles/manual-08-visualization.html#saving-plots)
 for the available formats and when to prefer a vector or a raster one.
 
-## 18. QC-based feature filtering
+## 19. QC-based feature filtering
 
 The final curation step removes features that fail defined QC criteria.
 [`filter_features_qc()`](https://slinghub.github.io/MRMhub/quant/reference/filter_features_qc.md)
@@ -733,7 +754,7 @@ myexp <- filter_features_qc(
 
     ✔ New feature QC filters were defined: 324 of 423 quantifier features meet QC criteria (not including the 25 quantifier ISTD features).
 
-## 19. Summary of the QC filtering
+## 20. Summary of the QC filtering
 
 The plot below summarises the filtering per lipid class. Green segments
 count the species that passed every criterion; the remaining segments
@@ -768,7 +789,7 @@ diagram](tutorial-03-lipidomics-workflow_files/figure-html/qc-summary-overall-1.
 Figure 15. Overall feature filtering summary with a Venn diagram of
 exclusion criteria.
 
-## 20. Lipidome profile
+## 21. Lipidome profile
 
 As a final sanity check, we plot the concentration profile of the
 filtered dataset. Comparing these values (the most abundant species, the
@@ -795,7 +816,7 @@ lipidome](tutorial-03-lipidomics-workflow_files/figure-html/lipidprofile-1.png)
 
 Figure 16. Concentration profile of the filtered study-sample lipidome.
 
-## 21. Saving a report with data, metadata and processing details
+## 22. Saving a report with data, metadata and processing details
 
 The full post-processing can be written to a formatted Excel workbook,
 with separate sheets for the raw and processed datasets, the associated
@@ -808,7 +829,7 @@ produced.
 save_report_xlsx(myexp, path = tempfile(fileext = ".xlsx"))
 ```
 
-    ✔ The data processing report of experiment 'sPerfect' has been saved to /tmp/RtmpUmBID2/file40ee3bb24270.xlsx.
+    ✔ The data processing report of experiment 'sPerfect' has been saved to /tmp/RtmpJ9DZo5/file317e6e964fe0.xlsx.
 
 For downstream statistics it is often easier to export a single flat,
 wide CSV of a chosen data subset. This is the format used to share the
@@ -826,7 +847,7 @@ save_dataset_csv(
 )
 ```
 
-## 22. Sharing the MRMhubExperiment dataset
+## 23. Sharing the MRMhubExperiment dataset
 
 Finally, the whole `myexp` object can be serialized to an `RDS` file and
 shared. `RDS` files open in any R session (even without the mrmhub
@@ -853,5 +874,5 @@ print(my_saved_exp)
   correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-11-interference-correction.md):
   correcting isotopic and isobaric overlap
 - [External calibration &
-  QC](https://slinghub.github.io/MRMhub/quant/articles/recipe-01-ext-calibration-qc.md):
+  QC](https://slinghub.github.io/MRMhub/quant/articles/tutorial-06-external-calibration.md):
   quantify with external calibration curves

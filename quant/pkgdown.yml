@@ -16,9 +16,9 @@ articles:
   articles/manual-11-quarto-workflows: manual-11-quarto-workflows.html
   articles/manual-12-interference-correction: manual-12-interference-correction.html
   articles/manual-13-plot-customization: manual-13-plot-customization.html
+  articles/manual-14-glossary: manual-14-glossary.html
   articles/manual-index: manual-index.html
   mrmhub: mrmhub.html
-  articles/recipe-01-ext-calibration-qc: recipe-01-ext-calibration-qc.html
   articles/recipe-02-custom-qc-report: recipe-02-custom-qc-report.html
   articles/recipe-03-mztab-export: recipe-03-mztab-export.html
   articles/recipe-04-validate-metadata: recipe-04-validate-metadata.html
@@ -29,12 +29,14 @@ articles:
   articles/tutorial-03-lipidomics-workflow: tutorial-03-lipidomics-workflow.html
   articles/tutorial-04-drift-correction: tutorial-04-drift-correction.html
   articles/tutorial-05-run-scatter: tutorial-05-run-scatter.html
+  articles/tutorial-06-external-calibration: tutorial-06-external-calibration.html
   articles/tutorial-07-calibration-reference: tutorial-07-calibration-reference.html
+  articles/tutorial-08-export-formats: tutorial-08-export-formats.html
   articles/tutorial-08-summarizedexperiment: tutorial-08-summarizedexperiment.html
   articles/tutorial-11-interference-correction: tutorial-11-interference-correction.html
   articles/tutorial-12-workflow-builder: tutorial-12-workflow-builder.html
   articles/tutorial-13-intro-to-r-quarto-mrmhub: tutorial-13-intro-to-r-quarto-mrmhub.html
-last_built: 2026-07-28T09:51Z
+last_built: 2026-07-29T03:43Z
 urls:
   reference: https://slinghub.github.io/MRMhub/quant/reference
   article: https://slinghub.github.io/MRMhub/quant/articles

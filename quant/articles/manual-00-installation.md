@@ -132,8 +132,8 @@ for detailed error and resolution list.
 
 ## Next steps
 
-- [Key concepts &
-  glossary](https://slinghub.github.io/MRMhub/quant/articles/manual-01-key-concepts.md):
+- [MRMhub
+  overview](https://slinghub.github.io/MRMhub/quant/articles/manual-01-key-concepts.md):
   core vocabulary and the MRMhubExperiment object
 - [Your first
   analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md):

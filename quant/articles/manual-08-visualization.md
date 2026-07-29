@@ -477,8 +477,8 @@ p_seq / (p_pca | p_rla)
   (tutorial)](https://slinghub.github.io/MRMhub/quant/articles/tutorial-04-drift-correction.md):
   [`plot_runscatter()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.md)
   in context
-- [External calibration & QC
-  (recipe)](https://slinghub.github.io/MRMhub/quant/articles/recipe-01-ext-calibration-qc.md):
+- [External calibration &
+  QC](https://slinghub.github.io/MRMhub/quant/articles/tutorial-06-external-calibration.md):
   calibration plots in workflow
 - [Custom QC report
   (recipe)](https://slinghub.github.io/MRMhub/quant/articles/recipe-02-custom-qc-report.md):

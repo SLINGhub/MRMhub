@@ -112,8 +112,8 @@ colours defined in the package (`qc_type_col`).
 
 ## Next steps
 
-- [Key concepts &
-  glossary](https://slinghub.github.io/MRMhub/quant/articles/manual-01-key-concepts.md):
+- [MRMhub
+  overview](https://slinghub.github.io/MRMhub/quant/articles/manual-01-key-concepts.md):
   broader terminology
 - [Importing
   metadata](https://slinghub.github.io/MRMhub/quant/articles/manual-05-metadata.md):

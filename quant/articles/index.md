@@ -6,11 +6,10 @@
 
   Install mrmhub, verify your setup, and fix common install errors.
 
-- [Key concepts &
-  glossary](https://slinghub.github.io/MRMhub/quant/articles/manual-01-key-concepts.md):
+- [MRMhub
+  overview](https://slinghub.github.io/MRMhub/quant/articles/manual-01-key-concepts.md):
 
-  Core vocabulary of MRMhub: the data model, terminology, and the
-  function-naming convention.
+  A technical overview of MRMhub.
 
 - [The MRMhubExperiment data
   object](https://slinghub.github.io/MRMhub/quant/articles/manual-02-data-object.md):
@@ -73,8 +72,8 @@
 - [Quarto
   workflows](https://slinghub.github.io/MRMhub/quant/articles/manual-11-quarto-workflows.md):
 
-  MRMhub: postprocessing and quality control of small molecule mass
-  spectrometry data
+  Preserving MRMhub’s coloured console feedback and controlling figure
+  size when a workflow notebook is rendered.
 
 - [Isotopic interference
   correction](https://slinghub.github.io/MRMhub/quant/articles/manual-12-interference-correction.md):
@@ -91,17 +90,16 @@
   control text size, legend placement, and automatic sizing, so a
   balanced figure needs little or no manual ggplot2 theming.
 
+- [Glossary](https://slinghub.github.io/MRMhub/quant/articles/manual-14-glossary.md):
+
+  Definitions of the analytical terms used throughout the MRMhub
+  documentation.
+
 - [Manual](https://slinghub.github.io/MRMhub/quant/articles/manual-index.md):
 
   Complete contents of the MRMhub-QUANT manual.
 
 - [MRMhub](https://slinghub.github.io/MRMhub/quant/articles/mrmhub.md):
-
-- [Quantitative assay with external calibration and
-  QC](https://slinghub.github.io/MRMhub/quant/articles/recipe-01-ext-calibration-qc.md):
-
-  Quantify a targeted assay from external calibration curves and check
-  the result against calibrator and QC samples.
 
 - [Custom QC
   report](https://slinghub.github.io/MRMhub/quant/articles/recipe-02-custom-qc-report.md):
@@ -130,8 +128,8 @@
   file by file, from Excel sheets, from a data.frame, or in one step
   from an MSOrganiser template.
 
-- [Your first
-  analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md):
+- [Quick
+  tour](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md):
 
   A short walkthrough on the bundled demo data: import a result file,
   normalize by internal standard, inspect the run, and export: no
@@ -168,12 +166,26 @@
   Read run-order signal quality with RunScatter and multivariate
   structure with PCA, using the built-in lipidomics dataset.
 
+- [Quantification with external
+  calibration](https://slinghub.github.io/MRMhub/quant/articles/tutorial-06-external-calibration.md):
+
+  Fit external calibration curves for a targeted assay, quantify the
+  samples, and check the result against QC samples with known
+  concentrations.
+
 - [Calibration by a reference
   sample](https://slinghub.github.io/MRMhub/quant/articles/tutorial-07-calibration-reference.md):
 
   Re-calibrate or normalise concentrations against a reference sample
   (e.g. NIST SRM1950), apply it batch-wise, and check the reference
   bias.
+
+- [Exporting to standard and community
+  formats](https://slinghub.github.io/MRMhub/quant/articles/tutorial-08-export-formats.md):
+
+  Move a processed MRMhubExperiment into interchange formats: mzTab-M
+  for repositories, or a Bioconductor SummarizedExperiment for
+  downstream analysis.
 
 - [Export to Bioconductor
   (SummarizedExperiment)](https://slinghub.github.io/MRMhub/quant/articles/tutorial-08-summarizedexperiment.md):
@@ -182,18 +194,18 @@
   SummarizedExperiment, and take it downstream: differential abundance
   with limma, or lipid-specific analysis with lipidr.
 
-- [Interference
+- [Isotopic interference
   correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-11-interference-correction.md):
 
-  Derive and subtract isotopic (M+2) interferences in class-based
-  targeted assays: annotate mrm_pattern, auto-derive the overlaps,
-  inspect, and correct.
+  Correct fragment-level isotopic (M+2) overlap in class-based targeted
+  MRM assays: annotate mrm_pattern, auto-derive the overlaps, inspect,
+  and subtract.
 
 - [Build a workflow without
   code](https://slinghub.github.io/MRMhub/quant/articles/tutorial-12-workflow-builder.md):
 
-  Use the point-and-click builder to validate your data and metadata and
-  generate a runnable Quarto workflow.
+  Use the point-and-click builder to turn a data file into a runnable
+  Quarto workflow.
 
 - [Introduction to R, Quarto, and
   MRMhub](https://slinghub.github.io/MRMhub/quant/articles/tutorial-13-intro-to-r-quarto-mrmhub.md):
