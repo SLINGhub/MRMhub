@@ -242,5 +242,5 @@ gt::gt(tbl) |> gt::fmt_number(decimals = 3)
 
 ## Next steps
 
-- [External calibration and QC](recipe-01-ext-calibration-qc.html): full calibration-curve workflow with QC
+- [External calibration and QC](tutorial-06-external-calibration.html): full calibration-curve workflow with QC
 - [Basic MRMhub workflow](tutorial-02-basic-workflow.html): revisit the full pipeline

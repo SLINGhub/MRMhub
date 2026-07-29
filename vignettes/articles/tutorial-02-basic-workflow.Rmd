@@ -185,4 +185,4 @@ own plots and QC checks, reproducing the exact data state without re-running the
 - [Lipidomics data processing](tutorial-03-lipidomics-workflow.html): a more detailed lipidomics example
 - [Drift and batch correction](tutorial-04-drift-correction.html): correction methods and diagnostics
 - [Exploring QC: RunScatter and PCA](tutorial-05-run-scatter.html): QC visualisation and outlier screening
-- [External calibration and QC](recipe-01-ext-calibration-qc.html): quantitation with calibration curves
+- [External calibration and QC](tutorial-06-external-calibration.html): quantitation with calibration curves

@@ -235,5 +235,5 @@ quarto::quarto_render(
 ## Next steps
 
 - [Basic MRMhub workflow](tutorial-02-basic-workflow.html): full processing before reporting
-- [External calibration & QC](recipe-01-ext-calibration-qc.html): calibration workflow
+- [External calibration & QC](tutorial-06-external-calibration.html): calibration workflow
 - [Troubleshooting & FAQ](manual-10-troubleshooting.html): common issues

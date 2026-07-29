@@ -421,5 +421,5 @@ p_seq / (p_pca | p_rla)
 
 - [Exploring QC: RunScatter and PCA](tutorial-05-run-scatter.html): `plot_runscatter()`, `plot_pca()` and outlier screening
 - [Drift and batch correction (tutorial)](tutorial-04-drift-correction.html): `plot_runscatter()` in context
-- [External calibration & QC (recipe)](recipe-01-ext-calibration-qc.html): calibration plots in workflow
+- [External calibration & QC](tutorial-06-external-calibration.html): calibration plots in workflow
 - [Custom QC report (recipe)](recipe-02-custom-qc-report.html): combine plots in a report
