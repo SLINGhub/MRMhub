@@ -63,3 +63,11 @@ compare_integrator_workers.sh
 
 # Build artifact: written by save_metadata_msorganiser_template() when knitting recipe-05
 vignettes/articles/metadata_msorganiser_template.xlsx
+
+# Build artifact: written by the external-calibration tutorial when knitting
+vignettes/articles/steroid_conc.csv
+
+# Generated pkgdown site — CI (pkgdown.yaml) rebuilds it and deploys to the
+# gh-pages branch under /quant/, so the committed copy is redundant build
+# output. Root-anchored so integrator/docs/ (Quarto source) stays tracked.
+/docs/
