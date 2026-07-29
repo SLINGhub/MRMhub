@@ -1,0 +1,80 @@
+---
+title: "Glossary"
+output:
+  rmarkdown::html_vignette:
+    fig_width: 6
+    fig_height: 3
+description: |
+  Definitions of the analytical terms used throughout the MRMhub documentation.
+vignette: >
+  %\VignetteIndexEntry{Glossary}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+editor_options:
+  markdown:
+    wrap: 72
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE, comment = "#>", out.width = "100%",
+  message = FALSE, warning = FALSE
+)
+```
+
+<p class="page-kind page-kind-manual">Manual</p>
+
+Definitions of the analytical terms used throughout the documentation. Identifiers
+and variable names within the data object are described in
+[The MRMhubExperiment data object](manual-02-data-object.html).
+
+```{r, echo=FALSE, results='asis'}
+glossary <- data.frame(
+  Term = c(
+    "Analysis", "Feature", "Analyte", "Quantifier", "Qualifier",
+    "Internal standard (ISTD)", "Study sample", "QC sample",
+    "MRM / SRM", "Transition", "Precursor / MS1", "Product / MS2",
+    "Peak area", "Normalization", "Isotopic interference", "Drift",
+    "Batch effect", "Calibration curve", "Response curve", "%CV",
+    "Long / wide format"
+  ),
+  Definition = c(
+    "A single injection or sample in a run; the unit that carries a QC role.",
+    "A distinct signal extracted from the MS data for one compound (e.g. a chromatographic peak for one transition); what MRMhub measures.",
+    "The compound a feature quantifies. Not one-to-one with features: one analyte can give several (isotopes, adducts, transitions), and isobaric/isomeric compounds can share a feature.",
+    "The MRM transition used to measure a compound's concentration.",
+    "A secondary MRM transition used to confirm a compound's identity.",
+    "A compound (usually stable-isotope-labelled) spiked at a known amount into every sample, used as a reference for normalization and quantitation.",
+    "An unknown — the sample whose concentrations are reported.",
+    "A quality-control injection (pooled QC, dilution series, reference material, or blank) used to anchor corrections and metrics rather than reported.",
+    "Multiple- (Selected-) Reaction Monitoring: a targeted MS acquisition that follows a defined precursor→product ion pair for each compound.",
+    "One precursor→product ion pair monitored for a compound; a compound may have a quantifier and one or more qualifier transitions.",
+    "The intact analyte ion selected in the first quadrupole (MS1) before fragmentation.",
+    "A fragment ion of the precursor, measured in the second stage (MS2) to give the transition its specificity.",
+    "The integrated area under a chromatographic peak, the raw measure of a feature's abundance.",
+    "Dividing a feature's signal by a reference (typically its ISTD) to remove technical variation between injections.",
+    "Signal a labelled or isobaric compound contributes to another's transition through overlapping isotope masses; corrected before quantitation.",
+    "A gradual change in signal across a run (e.g. from instrument fouling), modelled from QC samples and removed.",
+    "A systematic difference in signal between analytical batches, aligned using QC samples.",
+    "The relationship between known concentration and measured response, fitted from calibration standards to convert signal to concentration.",
+    "A serial-dilution series of a QC pool used to assess linearity and dynamic range (not to assign concentrations).",
+    "Coefficient of variation (SD / mean, as a percentage): the precision metric used to judge QC and feature quality.",
+    "Long format has one row per analysis × feature (tidy); wide format has one row per analysis with features as columns."
+  ),
+  stringsAsFactors = FALSE
+)
+
+DT::datatable(
+  glossary,
+  options = list(pageLength = 25, dom = "ft", ordering = TRUE),
+  rownames = FALSE,
+  filter = "top",
+  class = "compact stripe"
+)
+```
+
+## Next steps
+
+- [MRMhub overview](manual-01-key-concepts.html): the data object and function groups
+- [The MRMhubExperiment data object](manual-02-data-object.html): the tables, identifiers, and variables in detail
+- [Sample types & QC roles](manual-06-sample-types.html): the QC labels used throughout

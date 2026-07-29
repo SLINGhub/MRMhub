@@ -148,7 +148,7 @@ error and resolution list.
 
 ## Next steps
 
-- [Key concepts & glossary](manual-01-key-concepts.html): core
+- [MRMhub overview](manual-01-key-concepts.html): core
   vocabulary and the MRMhubExperiment object
 - [Your first analysis](tutorial-00-first-analysis.html): a short
   end-to-end walkthrough

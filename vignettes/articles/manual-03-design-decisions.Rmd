@@ -249,5 +249,5 @@ functions) or a result object, update the relevant status flags, and never modif
 ## Next steps
 
 - [The MRMhubExperiment data object](manual-02-data-object.html): the object and its slots in detail
-- [Key concepts & glossary](manual-01-key-concepts.html): the vocabulary used throughout
+- [MRMhub overview](manual-01-key-concepts.html): the vocabulary used throughout
 - [Drift and batch correction](manual-07-corrections.html): the QC-based correction in practice

@@ -25,7 +25,7 @@ full argument reference for every function is in the
 ## Getting started
 
 - **[Installation](manual-00-installation.html)**: install `mrmhub` and load it.
-- **[Key concepts & glossary](manual-01-key-concepts.html)**: the data model, core terminology, and where QUANT fits in the MRMhub workflow.
+- **[MRMhub overview](manual-01-key-concepts.html)**: the data object, how it moves through a workflow, and the core function groups.
 
 ## Preparing and running
 
@@ -42,6 +42,7 @@ full argument reference for every function is in the
 ## Reference
 
 - **[The MRMhubExperiment data object](manual-02-data-object.html)**: the tables, identifiers, and feature variables of the central object.
+- **[Glossary](manual-14-glossary.html)**: definitions of the analytical terms used throughout the documentation.
 - **[Design decisions](manual-03-design-decisions.html)**: why the package is built the way it is.
 - **[Sample types & QC roles](manual-06-sample-types.html)**: every sample-type (`qc_type`) label and its role in QC.
 - **[Troubleshooting & FAQ](manual-10-troubleshooting.html)**: frequent problems and how to resolve them.
