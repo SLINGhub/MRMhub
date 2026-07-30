@@ -29,9 +29,13 @@
 }
 
 
-/* Wider gutter between the content column and the info-panel sidebar. */
-.landing-grid {
-  column-gap: 3rem;
+/* Wider gutter between the content column and the info-panel sidebar. Scoped to
+   >=lg, where the columns sit side by side; below that they stack and the 51px
+   gap only overflows the viewport (11 gaps across 12 zero-width tracks). */
+@media (min-width: 992px) {
+  .landing-grid {
+    column-gap: 3rem;
+  }
 }
 
 /* Distinct page title + a rule that separates the title block from the body,
