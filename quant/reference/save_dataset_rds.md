@@ -107,6 +107,6 @@ mexp <- data_load_example()
 #> ✔ Loaded example dataset 1: 499 analyses and 29 features.
 path <- file.path(tempdir(), "example_mexp.rds")
 save_dataset_rds(mexp, path)
-#> ✔ MRMhubExperiment saved to /tmp/RtmpJxTTT1/example_mexp.rds.
-#> Content fingerprint: "9ae74b50441d6dee639148d92a688e24"
+#> ✔ MRMhubExperiment saved to /tmp/RtmpFzUVSD/example_mexp.rds.
+#> Content fingerprint: "0b9170bb9f2734a3e57cd8c67fde007a"
 ```
