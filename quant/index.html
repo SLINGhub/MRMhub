@@ -121,7 +121,7 @@
 </div>
 <!-- badges: start -->
 
-<p><strong>MRMhub-QUANT</strong> turns targeted MRM feature intensities into curated, QC-filtered, quantified results. It is the post-processing module of <a href="https://slinghub.github.io/MRMhub/" class="external-link">MRMhub</a>, distributed as the R package <code>mrmhub</code> (<code><a href="https://github.com/SLINGhub/MRMhub" class="external-link">library(mrmhub)</a></code>), and works with any intensity data from <a href="https://slinghub.github.io/MRMhub/integrator/" class="external-link">MRMhub-INTEGRATOR</a>, Skyline, or generic CSV files. MRMhub-QUANT features:</p>
+<p><strong>MRMhub-QUANT</strong> is a programmatic library for tailored, reproducible post-processing and quality-control of targeted metabolomics and lipidomics analyses. It works with <a href="https://slinghub.github.io/MRMhub/integrator/" class="external-link">MRMhub-INTEGRATOR</a> peak integration results, or feature intensity data from other sources (CSV, mzTab-M, Skyline). It is the post-processing module of <a href="https://slinghub.github.io/MRMhub/" class="external-link">MRMhub</a> and distributed as the R package <code>mrmhub</code>. It features:</p>
 <ul>
 <li>
 <strong>Reproducible pipelines.</strong> Script, explore and document, with QC visualisations at every step.</li>
@@ -148,7 +148,7 @@
 <li>
 <strong><a href="articles/manual-00-installation.html">Installation</a></strong> - install and verify your setup</li>
 <li>
-<strong><a href="articles/tutorial-13-getting-started-r-quarto.html">Getting started with R and Quarto</a></strong> - <em>new to R?</em> set up R, an IDE, and a Quarto project</li>
+<strong><a href="articles/tutorial-13-getting-started-r-quarto.html">Getting started with R and Quarto</a></strong> - Setting up R, an editor, and a Quarto project</li>
 <li>
 <strong><a href="articles/tutorial-02-getting-started-mrmhub.html">Getting started with MRMhub</a></strong> - a first end-to-end analysis on the bundled data</li>
 <li>
@@ -170,18 +170,13 @@
 </ul>
 </div>
 <div class="section level2">
-<h2 id="installation-and-updating">Installation and Updating<a class="anchor" aria-label="anchor" href="#installation-and-updating"></a>
+<h2 id="installing-and-updating">Installing and Updating<a class="anchor" aria-label="anchor" href="#installing-and-updating"></a>
 </h2>
 <p>Make sure to use a fresh R session without loaded packages (restart RStudio/Positron first). Please read <a href="articles/manual-00-installation.html">the Installation guide</a> first for full instructions and troubleshooting.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://pak.r-lib.org/" class="external-link">"pak"</a></span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"pak"</span><span class="op">)</span></span>
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"SLINGhub/MRMhub"</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/SLINGhub/MRMhub" class="external-link">mrmhub</a></span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
-</h2>
-<p>If you use MRMhub in your research, please cite the accompanying preprint (bioRxiv, <a href="https://doi.org/10.64898/2025.12.20.695370" class="external-link uri">https://doi.org/10.64898/2025.12.20.695370</a>). From within R, <code>citation("mrmhub")</code> prints the current citation.</p>
 </div>
 <div class="section level2">
 <h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>

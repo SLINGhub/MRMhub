@@ -828,7 +828,7 @@ produced.
 save_report_xlsx(mexp, path = tempfile(fileext = ".xlsx"))
 ```
 
-    ✔ The data processing report of experiment 'sPerfect' has been saved to /tmp/RtmpAWVUl3/file33c36600c0df.xlsx.
+    ✔ The data processing report of experiment 'sPerfect' has been saved to /tmp/RtmpA6m05h/file33e142b1e11a.xlsx.
 
 For downstream statistics it is often easier to export a single flat,
 wide CSV of a chosen data subset. This is the format used to share the

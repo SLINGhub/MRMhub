@@ -1,13 +1,13 @@
 # MRMhub-QUANT
 
-**MRMhub-QUANT** turns targeted MRM feature intensities into curated,
-QC-filtered, quantified results. It is the post-processing module of
-[MRMhub](https://slinghub.github.io/MRMhub/), distributed as the R
-package `mrmhub`
-([`library(mrmhub)`](https://github.com/SLINGhub/MRMhub)), and works
-with any intensity data from
-[MRMhub-INTEGRATOR](https://slinghub.github.io/MRMhub/integrator/),
-Skyline, or generic CSV files. MRMhub-QUANT features:
+**MRMhub-QUANT** is a programmatic library for tailored, reproducible
+post-processing and quality-control of targeted metabolomics and
+lipidomics analyses. It works with
+[MRMhub-INTEGRATOR](https://slinghub.github.io/MRMhub/integrator/) peak
+integration results, or feature intensity data from other sources (CSV,
+mzTab-M, Skyline). It is the post-processing module of
+[MRMhub](https://slinghub.github.io/MRMhub/) and distributed as the R
+package `mrmhub`. It features:
 
 - **Reproducible pipelines.** Script, explore and document, with QC
   visualisations at every step.
@@ -24,7 +24,7 @@ Skyline, or generic CSV files. MRMhub-QUANT features:
   install and verify your setup
 - **[Getting started with R and
   Quarto](https://slinghub.github.io/MRMhub/quant/articles/tutorial-13-getting-started-r-quarto.md)** -
-  *new to R?* set up R, an IDE, and a Quarto project
+  Setting up R, an editor, and a Quarto project
 - **[Getting started with
   MRMhub](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-getting-started-mrmhub.md)** -
   a first end-to-end analysis on the bundled data
@@ -47,7 +47,7 @@ Skyline, or generic CSV files. MRMhub-QUANT features:
   ↗](https://slinghub.github.io/MRMhub-workflows/)** - annotated,
   end-to-end reports from large-scale studies
 
-## Installation and Updating
+## Installing and Updating
 
 Make sure to use a fresh R session without loaded packages (restart
 RStudio/Positron first). Please read [the Installation
@@ -60,12 +60,6 @@ if (!require("pak")) install.packages("pak")
 pak::pak("SLINGhub/MRMhub")
 library(mrmhub)
 ```
-
-## Citation
-
-If you use MRMhub in your research, please cite the accompanying
-preprint (bioRxiv, <https://doi.org/10.64898/2025.12.20.695370>). From
-within R, `citation("mrmhub")` prints the current citation.
 
 ## Contributing
 
