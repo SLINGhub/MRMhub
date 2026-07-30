@@ -7,10 +7,19 @@
   }
 }
 
+/* pkgdown bumps the body to a fixed 18px at >=1400px viewports. Hold the
+   Bootstrap default so QUANT reads at the normal 16px web size at 100% zoom,
+   matching the landing and INTEGRATOR Quarto sites at every width. */
+@media (min-width: 1400px) {
+  body {
+    font-size: 1rem;
+  }
+}
+
 /* Slightly smaller table text (~1pt) — denser reference/comparison tables.
    Scoped to main content so it hits both plain Markdown tables and the
    DT::datatable() widgets but leaves navbar/footer untouched.
-   em is relative to the already font_scale=0.9 body; nudge to 0.85 for ~2pt. */
+   em is relative to the 1rem body; nudge to 0.85 for ~2pt. */
 main table {
   font-size: 0.9em;
 }

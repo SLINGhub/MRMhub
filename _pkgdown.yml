@@ -4,7 +4,6 @@ template:
   bootstrap: 5
   bootswatch: cosmo
   bslib:
-    font_scale: 0.9
     # Shared MRMhub brand (pkgdown 2.2.0 cannot read _brand.yml, so the palette
     # is mirrored here from docs-site/_brand.yml + integrator/docs/_brand.yml).
     primary: "#5B8FA8"   # steel-blue accent: links, buttons
