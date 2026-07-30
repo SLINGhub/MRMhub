@@ -8,7 +8,10 @@ Call this once in a setup chunk to (1) advertise colour support to cli
 via `cli.num_colors` / `crayon.enabled` and (2), when rendering to HTML,
 register a knitr message hook that converts the emitted ANSI sequences
 to coloured HTML using the fansi package. For PDF and Word the same hook
-strips the ANSI so messages stay clean plain text.
+strips the ANSI so messages stay clean plain text. Advertising colour
+also tints ordinary output (e.g. tibble prints) on the output stream,
+which knitr leaves untouched, so an output hook strips that ANSI to keep
+printed data plain text; only the message-stream alerts colour.
 
 ## Usage
 

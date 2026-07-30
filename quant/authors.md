@@ -12,16 +12,21 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/SLINGhub/MRMhub/blob/development/DESCRIPTION)
+[`inst/CITATION`](https://github.com/SLINGhub/MRMhub/blob/main/inst/CITATION)
 
-Burla B, Teo G, Choi H (2026). *mrmhub: Small Molecule Mass Spectrometry
-Data Processing, Quality Control, and Reporting*. R package version
-0.9.9, <https://github.com/SLINGhub/MRMhub>.
+Burla B, Teo G, Benke P, Lu Z, Tan S, Ji S, Oh J, Lim P, Vaitheeswari,
+Cazenave Gassiot A, Venkataraman K, Tai E, Torta F, Wenk M, Chan M, Choi
+H (2025). “MRMhub: one-stop solution for automated processing of
+large-scale targeted metabolomics data.” *bioRxiv*.
+[doi:10.64898/2025.12.20.695370](https://doi.org/10.64898/2025.12.20.695370).
+Preprint, <https://github.com/SLINGhub/MRMhub>.
 
-    @Manual{,
-      title = {mrmhub: Small Molecule Mass Spectrometry Data Processing, Quality Control, and Reporting},
-      author = {Bo Burla and Guo Shou Teo and Hyungwon Choi},
-      year = {2026},
-      note = {R package version 0.9.9},
+    @Article{,
+      title = {MRMhub: one-stop solution for automated processing of large-scale targeted metabolomics data},
+      author = {Bo Burla and Guoshou Teo and Peter I. Benke and Zinan Lu and Sock Hwee Tan and Shanshan Ji and Jeongah Oh and Pei Yen Lim and {Vaitheeswari} and Amaury {Cazenave Gassiot} and Kavita Venkataraman and E Shyong Tai and Federico Torta and Markus R. Wenk and Mark Y.Y. Chan and Hyungwon Choi},
+      journal = {bioRxiv},
+      year = {2025},
+      doi = {10.64898/2025.12.20.695370},
       url = {https://github.com/SLINGhub/MRMhub},
+      note = {Preprint},
     }

@@ -15,28 +15,22 @@ articles:
   articles/manual-10-troubleshooting: manual-10-troubleshooting.html
   articles/manual-11-quarto-workflows: manual-11-quarto-workflows.html
   articles/manual-12-interference-correction: manual-12-interference-correction.html
-  articles/manual-13-plot-customization: manual-13-plot-customization.html
+  articles/manual-13-function-map: manual-13-function-map.html
   articles/manual-14-glossary: manual-14-glossary.html
   articles/manual-index: manual-index.html
   mrmhub: mrmhub.html
-  articles/recipe-02-custom-qc-report: recipe-02-custom-qc-report.html
-  articles/recipe-03-mztab-export: recipe-03-mztab-export.html
-  articles/recipe-04-validate-metadata: recipe-04-validate-metadata.html
-  articles/recipe-05-import-metadata: recipe-05-import-metadata.html
-  articles/tutorial-00-first-analysis: tutorial-00-first-analysis.html
   articles/tutorial-01-prep-data: tutorial-01-prep-data.html
-  articles/tutorial-02-basic-workflow: tutorial-02-basic-workflow.html
+  articles/tutorial-02-getting-started-mrmhub: tutorial-02-getting-started-mrmhub.html
   articles/tutorial-03-lipidomics-workflow: tutorial-03-lipidomics-workflow.html
   articles/tutorial-04-drift-correction: tutorial-04-drift-correction.html
   articles/tutorial-05-run-scatter: tutorial-05-run-scatter.html
   articles/tutorial-06-external-calibration: tutorial-06-external-calibration.html
   articles/tutorial-07-calibration-reference: tutorial-07-calibration-reference.html
   articles/tutorial-08-export-formats: tutorial-08-export-formats.html
-  articles/tutorial-08-summarizedexperiment: tutorial-08-summarizedexperiment.html
   articles/tutorial-11-interference-correction: tutorial-11-interference-correction.html
   articles/tutorial-12-workflow-builder: tutorial-12-workflow-builder.html
-  articles/tutorial-13-intro-to-r-quarto-mrmhub: tutorial-13-intro-to-r-quarto-mrmhub.html
-last_built: 2026-07-29T03:43Z
+  articles/tutorial-13-getting-started-r-quarto: tutorial-13-getting-started-r-quarto.html
+last_built: 2026-07-30T11:01Z
 urls:
   reference: https://slinghub.github.io/MRMhub/quant/reference
   article: https://slinghub.github.io/MRMhub/quant/articles

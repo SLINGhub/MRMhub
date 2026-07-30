@@ -1,6 +1,6 @@
 # Lipidomics data processing
 
-Tutorial Advanced Prerequisites: [Preparing and importing
+Tutorial Prerequisites: [Preparing and importing
 data](https://slinghub.github.io/MRMhub/quant/articles/tutorial-01-prep-data.md)
 
 This tutorial follows a complete postprocessing and quality control
@@ -49,14 +49,14 @@ read from the mzML files, such as acquisition time stamps and
 precursor/product m/z values; setting `import_metadata = TRUE` brings
 those across as well. The imported data lands in the `dataset_orig` slot
 and is copied to the working `dataset`. Printing the object at any stage
-with `print(myexp)` reports its processing status, and in RStudio you
-can expand `myexp` in the Environment pane.
+with `print(mexp)` reports its processing status, and in RStudio you can
+expand `mexp` in the Environment pane.
 
 ``` r
 
-myexp <- MRMhubExperiment(title = "sPerfect")
-myexp <- import_data_mrmhub(
-  myexp,
+mexp <- MRMhubExperiment(title = "sPerfect")
+mexp <- import_data_mrmhub(
+  mexp,
   path = "./datasets/sPerfect_MRMhub.tsv",
   import_metadata = TRUE
 )
@@ -75,13 +75,13 @@ myexp <- import_data_mrmhub(
 The data is stored in long format (one row per analysis–feature pair) so
 each measurement carries its own area, retention time, and metadata side
 by side. Print the working table below, or enter
-`View(myexp@dataset_orig)` in the console to browse and filter it in the
+`View(mexp@dataset_orig)` in the console to browse and filter it in the
 RStudio viewer. For routine access it is cleaner to use
-`get_analyticaldata(myexp, annotated = TRUE)`, which returns the same
+`get_analyticaldata(mexp, annotated = TRUE)`, which returns the same
 data already joined to its sample and feature annotations.
 
 ``` r
-print(myexp@dataset)
+print(mexp@dataset)
 # A tibble: 250,997 × 21
    analysis_order analysis_id  acquisition_time_stamp qc_type batch_id sample_id
             <int> <chr>        <dttm>                 <chr>   <chr>    <chr>    
@@ -105,18 +105,18 @@ print(myexp@dataset)
 
 ## 4. Analytical design and timeline
 
-Before touching the signals, it is worth understanding how the run was
-structured. The plot below lays out the batch boundaries, the positions
-of the quality control (QC) samples, and the date, duration, and run
-time of the analysis: context that informs every later choice about
-drift, batches, and which QC type to trust. Setting
-`show_timestamp = TRUE` overlays acquisition times and reveals any long
-interruptions within or between batches.
+Before touching the signals, understand how the run was structured. The
+plot below lays out the batch boundaries, the positions of the quality
+control (QC) samples, and the date, duration, and run time of the
+analysis: context that informs every later choice about drift, batches,
+and which QC type to trust. Setting `show_timestamp = TRUE` overlays
+acquisition times and reveals any long interruptions within or between
+batches.
 
 ``` r
 
 plot_runsequence(
-  myexp,
+  mexp,
   qc_types = NA,
   show_batches = TRUE,
   batch_zebra_stripe = TRUE,
@@ -141,7 +141,7 @@ lipid species across the study samples, arranged by class.
 ``` r
 
 plot_abundanceprofile(
-  myexp,
+  mexp,
   variable = "rt",
   qc_types = "SPL",
   log_scale = FALSE,
@@ -173,7 +173,7 @@ double-bond counts.
 ``` r
 
 plot_rt_vs_chain(
-  myexp,
+  mexp,
   qc_types = "SPL",
   x_var = "total_c",
   outlier_residual_min = 0.3,
@@ -202,7 +202,7 @@ inspection.
 ``` r
 
 plot_runscatter(
-  myexp,
+  mexp,
   variable = "intensity",
   qc_types = c("BQC", "TQC", "SPL", "PBLK", "SBLK"),
   include_feature_filter = "ISTD",
@@ -251,8 +251,8 @@ working feature intensity (`set_intensity_var("area")`), the value all
 subsequent calculations start from.
 
 ``` r
-myexp <- import_metadata_msorganiser(
-  myexp,
+mexp <- import_metadata_msorganiser(
+  mexp,
   path = "datasets/sPerfect_Metadata.xlsx",
   ignore_warnings = TRUE
 )
@@ -279,14 +279,14 @@ E = Error, W = Warning, W* = Suppressed Warning, N = Note
 
 ``` r
 
-myexp <- set_analysis_order(myexp, order_by = "timestamp")
+mexp <- set_analysis_order(mexp, order_by = "timestamp")
 ```
 
     ✔ Analysis order set to "timestamp"
 
 ``` r
 
-myexp <- set_intensity_var(myexp, variable_name = "area")
+mexp <- set_intensity_var(mexp, variable_name = "area")
 ```
 
     ✔ Default feature intensity variable set to "feature_area"
@@ -305,7 +305,7 @@ from its batch as a candidate technical outlier.
 ``` r
 
 plot_rla_boxplot(
-  myexp,
+  mexp,
   variable = "intensity",
   rla_type_batch = "within",
   qc_types = c("BQC", "SPL", "RQC", "TQC", "PBLK"),
@@ -335,7 +335,7 @@ view of the candidate outlier flagged by the RLA plot.
 ``` r
 
 plot_pca(
-  myexp,
+  mexp,
   variable = "feature_intensity",
   qc_types = c("SPL", "BQC", "TQC"),
   filter_data = FALSE,
@@ -364,14 +364,14 @@ the effect of the exclusion on the sample structure.
 
 ``` r
 
-myexp <- exclude_analyses(
-  myexp,
+mexp <- exclude_analyses(
+  mexp,
   analyses = "Longit_batch6_51",
   clear_existing = TRUE
 )
 
 plot_pca(
-  myexp,
+  mexp,
   variable = "intensity",
   qc_types = c("SPL", "BQC", "TQC"),
   filter_data = FALSE,
@@ -395,23 +395,22 @@ A linear response is a prerequisite for comparing concentrations between
 samples. Plasma lipid abundances span a wide dynamic range, and because
 each class-specific ISTD is spiked at a single concentration, the
 response may be linear near the ISTD level yet flatten for far more or
-less abundant species. Verifying this is a worthwhile part of the
-analytical quality assessment, so we measured injection-volume series at
-the start and end of the run as a dedicated QC. We first drop the very
-lowest-abundance features, then plot the curves for a subset of PC
-species; `include_feature_filter` accepts regular expressions, so any
+less abundant species. To verify this, we measured injection-volume
+series at the start and end of the run as a dedicated QC. We first drop
+the very lowest-abundance features, then plot the curves for a subset of
+PC species; `include_feature_filter` accepts regular expressions, so any
 class or chain-length pattern can be selected.
 
 ``` r
 
-myexp <- filter_features_qc(
-  myexp,
+mexp <- filter_features_qc(
+  mexp,
   include_qualifier = FALSE,
   include_istd = TRUE,
   min.intensity.median.spl = 200
 )
 plot_responsecurves(
-  myexp,
+  mexp,
   variable = "intensity",
   filter_data = TRUE,
   include_feature_filter = "^PC 3[0-5]",
@@ -442,9 +441,9 @@ affected.
 
 ``` r
 
-myexp <- correct_custom_interferences(myexp)
+mexp <- correct_custom_interferences(mexp)
 plot_interference_correction(
-  myexp,
+  mexp,
   qc_types = c("BQC", "SPL", "TQC", "LTR")
 )
 ```
@@ -474,14 +473,14 @@ with `variable = "norm_intensity"` or `variable = "conc"`.
 
 ``` r
 
-myexp <- normalize_by_istd(myexp)
+mexp <- normalize_by_istd(mexp)
 ```
 
     ✔ 460 features normalized with 17 ISTDs in 498 analyses.
 
 ``` r
 
-myexp <- quantify_by_istd(myexp)
+mexp <- quantify_by_istd(mexp)
 ```
 
     ✔ 460 feature concentrations calculated based on 42 ISTDs and sample amounts of 498 analyses.
@@ -503,14 +502,14 @@ warning sign worth investigating before trusting its concentrations.
 
 ``` r
 
-myexp <- filter_features_qc(
-  myexp,
+mexp <- filter_features_qc(
+  mexp,
   include_qualifier = FALSE,
   include_istd = TRUE,
   min.intensity.median.spl = 1000
 )
 plot_normalization_qc(
-  myexp,
+  mexp,
   before_norm_var = "intensity",
   after_norm_var = "norm_intensity",
   plot_type = "diff",
@@ -544,8 +543,8 @@ artefacts. A scale correction along the fit is available via
 
 ``` r
 
-myexp <- correct_drift_gaussiankernel(
-  myexp,
+mexp <- correct_drift_gaussiankernel(
+  mexp,
   variable = "conc",
   ref_qc_types = "SPL",
   ignore_istd = TRUE,
@@ -585,7 +584,7 @@ which species.
 
 my_trend_plot <- function(variable, feature) {
   plot_runscatter(
-    myexp,
+    mexp,
     variable = variable,
     qc_types = c("BQC", "TQC", "SPL"),
     include_feature_filter = feature,
@@ -634,8 +633,8 @@ batches now line up.
 
 ``` r
 
-myexp <- correct_batch_centering(
-  myexp,
+mexp <- correct_batch_centering(
+  mexp,
   variable = "conc",
   ref_qc_types = "SPL",
   replace_previous = TRUE,
@@ -667,7 +666,7 @@ more intricate patterns.
 ``` r
 
 plot_runscatter(
-  myexp,
+  mexp,
   variable = "conc",
   qc_types = c("BQC", "TQC", "SPL"),
   include_feature_filter = NA,
@@ -693,7 +692,7 @@ several formats in one call:
 
 ``` r
 
-plot_pca(myexp, variable = "conc", qc_types = c("BQC", "SPL")) |>
+plot_pca(mexp, variable = "conc", qc_types = c("BQC", "SPL")) |>
   save_plot(path = "./output/pca", format = c("pdf", "png"),
             width = 180, height = 120)
 ```
@@ -720,8 +719,8 @@ or, with `clear_existing = FALSE`, amending the previous set.
 
 ``` r
 
-myexp <- filter_features_qc(
-  myexp,
+mexp <- filter_features_qc(
+  mexp,
   clear_existing = TRUE,
   use_batch_medians = TRUE,
   include_qualifier = FALSE,
@@ -765,7 +764,7 @@ counts partition the features rather than double-counting them.
 
 ``` r
 
-plot_qc_summary_byclass(myexp)
+plot_qc_summary_byclass(mexp)
 ```
 
 ![Feature QC filter summary by lipid
@@ -780,7 +779,7 @@ individual criterion excluded, and where those exclusions overlap.
 
 ``` r
 
-plot_qc_summary_overall(myexp)
+plot_qc_summary_overall(mexp)
 ```
 
 ![Overall feature filter summary with Venn
@@ -791,17 +790,17 @@ exclusion criteria.
 
 ## 21. Lipidome profile
 
-As a final sanity check, we plot the concentration profile of the
-filtered dataset. Comparing these values (the most abundant species, the
-summed concentration per class, or the ratios between classes) against
-in-house reference ranges or the literature is the quickest way to
-confirm that quantification landed in a plausible range and that no
-gross errors slipped through.
+As a final check, we plot the concentration profile of the filtered
+dataset. Comparing these values (the most abundant species, the summed
+concentration per class, or the ratios between classes) against in-house
+reference ranges or the literature is the quickest way to confirm that
+quantification landed in a plausible range and that no gross errors
+slipped through.
 
 ``` r
 
 plot_abundanceprofile(
-  myexp,
+  mexp,
   variable = "conc",
   qc_types = "SPL",
   filter_data = TRUE,
@@ -826,10 +825,10 @@ produced.
 
 ``` r
 
-save_report_xlsx(myexp, path = tempfile(fileext = ".xlsx"))
+save_report_xlsx(mexp, path = tempfile(fileext = ".xlsx"))
 ```
 
-    ✔ The data processing report of experiment 'sPerfect' has been saved to /tmp/RtmpJ9DZo5/file317e6e964fe0.xlsx.
+    ✔ The data processing report of experiment 'sPerfect' has been saved to /tmp/RtmpSlDrrD/file33da4fd2f5e4.xlsx.
 
 For downstream statistics it is often easier to export a single flat,
 wide CSV of a chosen data subset. This is the format used to share the
@@ -838,7 +837,7 @@ data for the statistical analysis in the next part of the workshop.
 ``` r
 
 save_dataset_csv(
-  myexp,
+  mexp,
   path = tempfile(fileext = ".csv"),
   variable = "conc",
   qc_types = "SPL",
@@ -849,7 +848,7 @@ save_dataset_csv(
 
 ## 23. Sharing the MRMhubExperiment dataset
 
-Finally, the whole `myexp` object can be serialized to an `RDS` file and
+Finally, the whole `mexp` object can be serialized to an `RDS` file and
 shared. `RDS` files open in any R session (even without the mrmhub
 package installed) and the saved `MRMhubExperiment` can be reloaded for
 further processing, replotting, or inspection with mrmhub.
@@ -857,7 +856,7 @@ further processing, replotting, or inspection with mrmhub.
 ``` r
 
 path <- tempfile(fileext = ".rds")
-saveRDS(myexp, file = path, compress = TRUE)
+saveRDS(mexp, file = path, compress = TRUE)
 my_saved_exp <- readRDS(file = path)
 print(my_saved_exp)
 ```

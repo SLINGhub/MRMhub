@@ -1,15 +1,13 @@
 # Exporting to standard and community formats
 
-Tutorial Intermediate Prerequisites: [Full
+Tutorial Prerequisites: [Full
 workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-03-lipidomics-workflow.md)
 
-A processed `MRMhubExperiment` holds the authoritative record of an
-experiment, but sharing results or running downstream statistics usually
-means handing the data to another tool. This tutorial covers two export
-routes: **mzTab-M**, the HUPO-PSI community standard that repositories
-expect, and a Bioconductor **SummarizedExperiment**, which takes the
-data downstream to `limma` for differential abundance or `lipidr` for
-lipid-specific analysis.
+Sharing results or running downstream statistics usually means handing
+the data to another tool. MRMhub offers two export routes: **mzTab-M**,
+the HUPO-PSI community standard that repositories expect, and a
+Bioconductor **SummarizedExperiment** for downstream analysis with
+`limma` (differential abundance) or `lipidr` (lipid-specific analysis).
 
 Both examples start from a processed object. Here we build one from the
 bundled `lipidomics_dataset`; in practice this would be your own.
@@ -56,7 +54,7 @@ save_dataset_mztab(
   variable = "area")
 ```
 
-The full dataset is exported — every analysis (including QC, blank and
+The full dataset is exported, every analysis (including QC, blank and
 calibration samples) and every feature:
 
 | mzTab-M section | mrmhub source |
@@ -77,14 +75,12 @@ save_dataset_mztab(
   publication = "doi:10.1234/example")
 ```
 
-mzTab-M is a quantification report, not a full processing record.
-Internal-standard relationships, QC and calibration metrics, drift/batch
-state, and the QC-type / batch structure are not part of the mzTab-M
-model and so are *not* reproduced on round-trip; the file captures
-identities, the chosen abundance matrix, and the study-variable
-grouping. Keep the `MRMhubExperiment` (or the Excel report from
+mzTab-M is a quantification report, not a full processing record:
+internal-standard relationships, QC and calibration metrics, and
+drift/batch state are not part of the model and are not reproduced on
+round-trip. Keep the `MRMhubExperiment` (or the Excel report from
 [`save_report_xlsx()`](https://slinghub.github.io/MRMhub/quant/reference/save_report_xlsx.md))
-as the authoritative record.
+as the definitive record.
 
 ### Validating the file
 
@@ -99,14 +95,14 @@ m <- rmzTabM::readMzTab(file.path(out_dir, "experiment.mzTab"))
 rmzTabM::extractSmallMoleculeFeatures(m)
 ```
 
-MRMhub has **no runtime dependency** on `rmzTabM` — the writer is
+MRMhub has **no runtime dependency** on `rmzTabM`; the writer is
 self-contained.
 
 ### Importing mzTab-M
 
 [`import_data_mztab()`](https://slinghub.github.io/MRMhub/quant/reference/import_data_mztab.md)
-ingests mzTab-M produced by other tools — for example [Lipid Data
-Analyzer](http://genome.tugraz.at/lda2/), MS-DIAL or MZmine — into an
+ingests mzTab-M produced by other tools (for example [Lipid Data
+Analyzer](http://genome.tugraz.at/lda2/), MS-DIAL or MZmine) into an
 `MRMhubExperiment`:
 
 ``` r
@@ -147,7 +143,7 @@ se
 #> metadata(11): title analysis_type ... var_batch_corrected mrmhub_version
 #> assays(9): rt area ... pmol_total conc
 #> rownames(29): CE 18:1 CE 18:1 d7 (ISTD) ... TG 48:2 [-18:1] TG 48:2 [SIM]
-#> rowData names(17): feature_id feature_class ... remarks feature_label
+#> rowData names(18): feature_id feature_class ... remarks feature_label
 #> colnames(499): Longit_BLANK-01 (Eluent A) ... Longit_BLANK-07 (Eluent A)
 #> colData names(13): analysis_order analysis_id ... annot_order_num remarks
 ```
@@ -201,13 +197,11 @@ se_filt <- save_dataset_summarizedexperiment(mexp_filt, filter_data = TRUE)
 
 ### Subsetting to study samples
 
-Everything is exported: internal standards, QC samples, blanks and
-calibrants are all present and flagged rather than dropped, because
-downstream tools need them (`lipidr`, for one, requires the
-internal-standard annotation). But nothing downstream reads `qc_type`,
-so a PCA, normalization or differential test will fold blanks,
-calibrants and QC replicates in with the study samples. Subset to study
-samples before any such analysis:
+Everything is exported and flagged rather than dropped, since downstream
+tools need it (`lipidr`, for example, requires the internal-standard
+annotation). But nothing downstream reads `qc_type`, so subset to study
+samples before a PCA, normalization, or differential test; otherwise
+blanks and QCs are folded in with the samples:
 
 ``` r
 
@@ -280,7 +274,7 @@ le <- save_dataset_summarizedexperiment(
 MRMhub fills in what lipidr requires: `Molecule` from `feature_id`,
 `Class` from `feature_class`, `istd` from `is_istd`, plus the
 `summarized` / `logged` / `normalized` flags lipidr reads but does
-**not** validate — an object missing them constructs cleanly and then
+**not** validate; an object missing them constructs cleanly and then
 misbehaves.
 
 **Use a peak-area scale variable with lipidr, not concentrations.**
@@ -317,9 +311,6 @@ plot_results_volcano(de_results, show.labels = FALSE)
 
 ## Next steps
 
-- [Custom QC
-  report](https://slinghub.github.io/MRMhub/quant/articles/recipe-02-custom-qc-report.md):
-  a richer human-readable report straight from MRMhub.
 - [The MRMhubExperiment data
   object](https://slinghub.github.io/MRMhub/quant/articles/manual-02-data-object.html#feature-variables):
   what `conc`, `intensity` and `area` mean, and the slots behind these

@@ -9,7 +9,9 @@ raw data processing is broken down into batches that produce separate
 result files. The following formats are currently supported; each
 importer reads a CSV or TSV file and returns an `MRMhubExperiment`, and
 the exact file layout and all arguments are documented on the linked
-reference pages.
+reference pages. For a worked example of importing, see [Preparing and
+importing
+data](https://slinghub.github.io/MRMhub/quant/articles/tutorial-01-prep-data.md).
 
 | Source | Function |
 |----|----|
@@ -285,8 +287,8 @@ twice in one analysis).
 - [The MRMhubExperiment data
   object](https://slinghub.github.io/MRMhub/quant/articles/manual-02-data-object.md):
   the object the data is loaded into
-- [Basic MRMhub
-  workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md):
+- [Lipidomics
+  workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-03-lipidomics-workflow.md):
   start processing the imported data
 - [Function
   reference](https://slinghub.github.io/MRMhub/quant/reference/index.md):

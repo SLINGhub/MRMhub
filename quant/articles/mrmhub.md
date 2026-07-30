@@ -106,6 +106,6 @@ contact Jonathan Tan ( <jonathan_tan@nus.edu.sg> ).
 - [MRMhub
   overview](https://slinghub.github.io/MRMhub/quant/articles/manual-01-key-concepts.html)
   — core terminology and the MRMhubExperiment object
-- [Your First
-  Analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.html)
+- [Getting started with
+  MRMhub](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-getting-started-mrmhub.html)
   — a short end-to-end walkthrough

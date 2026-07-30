@@ -1,7 +1,7 @@
 # Drift and batch correction
 
-Tutorial Intermediate Prerequisites: [Basic
-workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md)
+Tutorial Prerequisites: [Full
+workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-03-lipidomics-workflow.md)
 
 Signal intensities in a mass-spectrometry run drift with injection order
 and shift between analytical batches. MRMhub corrects run-order drift by
@@ -23,9 +23,9 @@ for the expected format.
 
 library(mrmhub)
 
-myexp <- MRMhubExperiment()
-myexp <- import_data_csv_wide(
-  myexp,
+mexp <- MRMhubExperiment()
+mexp <- import_data_csv_wide(
+  mexp,
   path = "smooth-testdata.csv",
   variable_name = "conc",
   import_metadata = TRUE
@@ -41,7 +41,7 @@ whether the correction improved analytical precision.
 ``` r
 
 mexp_drift <- correct_drift_cubicspline(
-  myexp,
+  mexp,
   variable = "conc",
   batch_wise = FALSE,
   ref_qc_types = "BQC",
@@ -102,7 +102,7 @@ result above is modest.
 ``` r
 
 mexp_drift <- correct_drift_gaussiankernel(
-  myexp,
+  mexp,
   variable = "conc",
   batch_wise = FALSE,
   ref_qc_types = "SPL",
@@ -135,7 +135,7 @@ drift, fit the trend within each batch by setting `batch_wise = TRUE`.
 ``` r
 
 mexp_drift <- correct_drift_gaussiankernel(
-  myexp,
+  mexp,
   variable = "conc",
   batch_wise = TRUE,
   ref_qc_types = "SPL",
@@ -200,9 +200,9 @@ Each batch is centered on a reference QC type, here the study samples
 
 ``` r
 
-myexp_batch <- MRMhubExperiment()
-myexp_batch <- import_data_csv_wide(
-  myexp_batch,
+mexp_batch <- MRMhubExperiment()
+mexp_batch <- import_data_csv_wide(
+  mexp_batch,
   path = "simdata-u1000-sd100_7batches.csv",
   variable_name = "conc",
   import_metadata = TRUE
@@ -211,8 +211,8 @@ myexp_batch <- import_data_csv_wide(
 
 ``` r
 
-myexp_batch <- correct_batch_centering(
-  myexp_batch,
+mexp_batch <- correct_batch_centering(
+  mexp_batch,
   variable = "conc",
   ref_qc_types = "SPL",
   correct_scale = FALSE
@@ -228,7 +228,7 @@ myexp_batch <- correct_batch_centering(
 ``` r
 
 plot_runscatter(
-  myexp_batch,
+  mexp_batch,
   variable = "conc_before",
   rows_page = 1, cols_page = 1
 )
@@ -243,7 +243,7 @@ offset from one another.
 ``` r
 
 plot_runscatter(
-  myexp_batch,
+  mexp_batch,
   variable = "conc",
   rows_page = 1, cols_page = 1
 )
@@ -261,15 +261,15 @@ batches.
 
 ``` r
 
-myexp_batch <- correct_batch_centering(
-  myexp_batch,
+mexp_batch <- correct_batch_centering(
+  mexp_batch,
   variable = "conc",
   ref_qc_types = "SPL",
   correct_scale = TRUE
 )
 
 plot_runscatter(
-  myexp_batch,
+  mexp_batch,
   variable = "conc",
   rows_page = 1, cols_page = 1
 )
@@ -294,8 +294,8 @@ and SERRF, it estimates batch effects from all samples; pass
 
 ``` r
 
-myexp_batch <- correct_batch_combat(
-  myexp_batch,
+mexp_batch <- correct_batch_combat(
+  mexp_batch,
   variable = "conc",
   ref_qc_types = "SPL"
 )
@@ -310,8 +310,8 @@ implementation adapts the `malbacR` reference
 
 ``` r
 
-myexp_batch <- correct_batch_serrf(
-  myexp_batch,
+mexp_batch <- correct_batch_serrf(
+  mexp_batch,
   variable = "conc",
   ref_qc_types = "SPL"
 )
@@ -340,7 +340,7 @@ smoothness.
 ``` r
 
 mexp_drift_loess <- correct_drift_loess(
-  myexp,
+  mexp,
   variable = "conc",
   batch_wise = TRUE,
   ref_qc_types = "BQC",
