@@ -50,6 +50,7 @@ plot_interference_correction <- function(
   angle_x = 45
 ) {
   check_data(data)
+  check_installed("ggbeeswarm")
   font_base_size <- resolve_plot_opt(font_base_size, "font_base_size", 11)
   point_size <- resolve_plot_opt(point_size, "point_size", 0.5)
   sort_by_effect <- match.arg(sort_by_effect)

@@ -94,7 +94,7 @@ LICAR_CHOICES <- rbind(
       c("DG (Pos) FANL", "DG"),
       c("TG (Pos) FANL", "TG"),
       c("MG (Pos) Pre-Pro=109", "MG"),
-      c("MG (Pos) SIM)", "MGSIM")
+      c("MG (Pos) SIM", "MGSIM")
     )
   ),
   data.frame(

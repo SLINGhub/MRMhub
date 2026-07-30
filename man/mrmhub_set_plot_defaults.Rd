@@ -64,5 +64,5 @@ options(old) # restore
 }
 \seealso{
 \code{\link[=mrmhub_reset_plot_defaults]{mrmhub_reset_plot_defaults()}}, \code{\link[=mrmhub_get_plot_defaults]{mrmhub_get_plot_defaults()}},
-\code{\link[=save_plot]{save_plot()}} and the \code{vignette("manual-13-plot-customization")} article.
+\code{\link[=save_plot]{save_plot()}} and the \code{vignette("manual-08-visualization")} article.
 }

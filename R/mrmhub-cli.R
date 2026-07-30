@@ -95,6 +95,9 @@ mh_vec <- function(x, max_items = getOption("mrmhub.max_report_items", 10L)) {
 #' and (2), when rendering to HTML, register a knitr message hook that converts
 #' the emitted ANSI sequences to coloured HTML using the \pkg{fansi} package. For
 #' PDF and Word the same hook strips the ANSI so messages stay clean plain text.
+#' Advertising colour also tints ordinary output (e.g. tibble prints) on the
+#' output stream, which knitr leaves untouched, so an output hook strips that
+#' ANSI to keep printed data plain text; only the message-stream alerts colour.
 #'
 #' @param num_colors Number of colours to advertise to cli. Defaults to `256`.
 #' @return Invisibly, the previous values of the options it changed (as returned
@@ -145,6 +148,17 @@ mrmhub_enable_cli_color <- function(num_colors = 256L) {
         } else {
           default_message(cli::ansi_strip(x), options)
         }
+      }
+    )
+
+    # Data output (tibbles, print methods) travels on the *output* stream, which
+    # also picks up ANSI once colour is advertised above but which knitr does not
+    # colour-convert. Strip the SGR here so printed data stays plain text; only
+    # cli's message-stream alerts render coloured.
+    default_output <- knitr::knit_hooks$get("output")
+    knitr::knit_hooks$set(
+      output = function(x, options) {
+        default_output(cli::ansi_strip(x), options)
       }
     )
   }

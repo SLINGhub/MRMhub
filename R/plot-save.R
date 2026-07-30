@@ -127,7 +127,7 @@ cairo_pdf_usable <- local({
 #' Prefers `ragg` (raster formats), `svglite` (SVG) and the cairo PDF device
 #' when available, falling back to the equivalent plain `grDevices` device.
 #'
-#' @param format One of [mrmhub_plot_formats].
+#' @param format One of `mrmhub_plot_formats`.
 #' @return A function suitable for the `device` argument of [ggplot2::ggsave()].
 #' @noRd
 resolve_plot_device <- function(format) {

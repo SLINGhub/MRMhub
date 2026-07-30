@@ -82,6 +82,8 @@ check_setup <- function(verbose = TRUE) {
     "rmarkdown",
     "testthat",
     "patchwork",
+    "ggvenn",
+    "ggbeeswarm",
     "ggrepel",
     "rgoslin",
     "lancer",

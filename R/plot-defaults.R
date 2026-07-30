@@ -31,7 +31,7 @@
 #' @return Invisibly, a named list of the option values as they were before this
 #'   call (as returned by [options()]).
 #' @seealso [mrmhub_reset_plot_defaults()], [mrmhub_get_plot_defaults()],
-#'   [save_plot()] and the `vignette("manual-13-plot-customization")` article.
+#'   [save_plot()] and the `vignette("manual-08-visualization")` article.
 #' @examples
 #' old <- mrmhub_set_plot_defaults(font_base_size = 8, point_size = 0.8)
 #' # ... make plots with the smaller defaults ...

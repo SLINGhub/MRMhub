@@ -1340,8 +1340,8 @@ add_metadata <- function(
 
 #' Read and parse metadata from a msorganiser Excel template
 #' @description Reads and parses a MiDAR / MSOrganiser Excel metadata template.
-#'   The template *schema* version (cell `About!C3`, e.g. `0.2.1`) must lie in
-#'   the supported range `[0.2, 0.3)`. This schema version is distinct from the
+#'   The template *schema* version (cell `About!C3`, e.g. `1.0.0`) must lie in
+#'   the supported range `[0.2, 1.1)`. This schema version is distinct from the
 #'   MSOrganiser *tool* version (e.g. 1.9.x) that generated the file.
 #' NOTES
 #' - if no sample_type is defined then SPL will be assigned
@@ -1406,13 +1406,13 @@ read_metadata_msorganiser <- function(path, trim_ws = TRUE) {
   )
   if (is.null(version) || is.na(raw_version)) {
     cli::cli_abort(
-      "Invalid version number found in the template. Please use an MSOrganiser template v0.2 or higher."
+      "Invalid version number found in the template. Please use an MSOrganiser template with a schema version in the range [0.2, 1.1)."
     )
   }
 
-  if (version < "0.2" || version >= "0.3") {
+  if (version < "0.2" || version >= "1.1") {
     cli::cli_abort(
-      "Unsupported MSOrganiser template version. Please use an MSOrganiser template v0.2 or higher."
+      "Unsupported MSOrganiser template version. Please use an MSOrganiser template with a schema version in the range [0.2, 1.1)."
     )
   }
 

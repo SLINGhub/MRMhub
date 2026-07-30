@@ -1,14 +1,17 @@
-# Augments the committed metadata-template workbook with the two `mrm_pattern`
+# Builds the committed metadata-template workbook, adding the two `mrm_pattern`
 # input columns for isotopic interference correction. Run from the repo root:
 #
 #   Rscript data-raw/make_metadata_template.R
 #
-# It reads inst/extdata/mrmhub_metadata_templates.xlsx, adds two columns to the
-# `Features` sheet -- an optional `polarity` filter and the stored `mrm_pattern`
-# -- with a dependent dropdown (polarity narrows the pattern list), a hidden
+# It reads the pristine base workbook (data-raw/mrmhub_metadata_template_base.xlsx
+# -- the plain metadata template with none of the LICAR additions) and writes the
+# deliverable inst/extdata/mrmhub_metadata_templates.xlsx, adding two columns to
+# the `Features` sheet -- an optional `polarity` filter and the `mrm_pattern`
+# input -- with a dependent dropdown (polarity narrows the pattern list), a hidden
 # `lists` sheet holding the dropdown sources, and colour warnings; every other
-# sheet is left untouched. It re-saves the file in place (the committed
-# deliverable) and writes a throwaway copy at the repo root for eyeballing.
+# sheet is left untouched. Reading a separate base (rather than editing the
+# deliverable in place) keeps the script re-runnable: the base never carries the
+# `lists` sheet or named regions the run would otherwise try to add twice.
 #
 # Everything is derived from `licar_template_choices()` (the shared source of the
 # labels), so the dropdowns can never drift from what the package accepts;
@@ -23,6 +26,7 @@ suppressPackageStartupMessages({
   pkgload::load_all(".", quiet = TRUE)
 })
 
+BASE <- "data-raw/mrmhub_metadata_template_base.xlsx"
 TEMPLATE <- "inst/extdata/mrmhub_metadata_templates.xlsx"
 N_VALIDATED_ROWS <- 500 # rows the dropdowns + colour warnings cover
 last <- N_VALIDATED_ROWS + 1
@@ -63,12 +67,15 @@ tc$name_prefix <- ifelse(
 
 # ---- Load the workbook + locate the Features columns ------------------------
 
-wb <- wb_load(TEMPLATE)
+wb <- wb_load(BASE)
 
 # The Features sheet is header-only, so the header names come back as the column
 # names (0 data rows). Reading with an explicit over-wide range instead would
 # materialise empty cells as the string "NA" and write phantom header columns.
-hdr <- names(wb_to_df(wb, sheet = "Features", col_names = TRUE))
+orig_hdr <- names(wb_to_df(wb, sheet = "Features", col_names = TRUE))
+# Idempotent: drop any polarity/mrm_pattern a prior run -- or a manual Excel
+# repair of the workbook -- left behind, so re-running never duplicates them.
+hdr <- setdiff(orig_hdr, c("polarity", "mrm_pattern"))
 insert_at <- match("interference_feature_id", hdr)
 if (is.na(insert_at)) {
   stop(
@@ -110,21 +117,13 @@ wb$set_col_widths(
   widths = c(9, 26)
 )
 
-# Hover notes on the two new headers.
-notes <- c(
-  "polarity (optional): Pos or Neg. If set, it narrows the mrm_pattern choices. Leave blank to see all patterns.",
-  "mrm_pattern: the class + MRM pattern for this feature, used by calc_isotopic_interferences(). Pick from the dropdown; choices narrow with polarity if set. A name/pattern class mismatch is highlighted and warned about on import."
-)
-wb$add_comment(
-  "Features",
-  dims = paste0(col_pol, "1"),
-  comment = wb_comment(text = notes[[1]], author = "mrmhub", visible = FALSE)
-)
-wb$add_comment(
-  "Features",
-  dims = paste0(col_pat, "1"),
-  comment = wb_comment(text = notes[[2]], author = "mrmhub", visible = FALSE)
-)
+# Hover notes on the two new headers. openxlsx2 must NOT write these itself:
+# writing any comment makes it renumber the comment parts across ALL sheets and
+# emit mismatched VML shapes, which Excel then rejects ("removed records"). So we
+# add every Features note afterwards, by direct XML surgery, in
+# fix_features_comments() below.
+pol_note <- "polarity (optional): Pos or Neg. If set, it narrows the mrm_pattern choices. Leave blank to see all patterns."
+pat_note <- "mrm_pattern: the class + MRM pattern for this feature, used by calc_isotopic_interferences(). Pick from the dropdown; choices narrow with polarity if set. A name/pattern class mismatch is highlighted and warned about on import."
 
 # ---- Hidden `lists` sheet: dropdown sources + label -> prefix map ------------
 
@@ -275,9 +274,135 @@ for (dims in c(
   )
 }
 
+# ---- Fix the Features comment layer (direct XML surgery) --------------------
+# openxlsx2 kept the input workbook's existing notes on every sheet but left them
+# anchored to their old cells (so the ones at/after the insert now sit on the
+# wrong column) and preserved a stray Excel "threaded comment" on the Features
+# input. We deliberately did NOT let openxlsx2 write the two new notes: writing
+# any comment makes it renumber the comment parts across ALL sheets and emit
+# mismatched VML shapes, which Excel rejects. Instead rebuild ONLY the Features
+# comment layer here, keyed by header name so it is idempotent -- keep each
+# original note on whatever column its header now occupies, drop the threaded
+# mirror, add the two generator notes, rebuild the VML so there is exactly one
+# shape per note, and strip the orphan threaded/persons parts. Features is the
+# 3rd sheet, so its notes live in comments2.xml + vmlDrawing2.vml.
+fix_features_comments <- function(path, orig_hdr, new_hdr, pol_note, pat_note) {
+  ex <- file.path(tempdir(), paste0("mmt_fix_", Sys.getpid()))
+  unlink(ex, recursive = TRUE)
+  dir.create(ex, recursive = TRUE)
+  utils::unzip(path, exdir = ex)
+  rd <- function(rel) paste(readLines(file.path(ex, rel), warn = FALSE), collapse = "\n")
+  wr <- function(rel, x) writeLines(x, file.path(ex, rel))
+  cfile <- "xl/comments2.xml"
+  vfile <- "xl/drawings/vmlDrawing2.vml"
+  if (!file.exists(file.path(ex, cfile))) {
+    stop("Features comments part not found; template layout changed.")
+  }
+
+  # -- rebuild comments2.xml (notes placed by header name) -----------------
+  ctxt <- rd(cfile)
+  blocks <- regmatches(
+    ctxt,
+    gregexpr("(?s)<comment ref=\"[^\"]+\"[^>]*>.*?</comment>", ctxt, perl = TRUE)
+  )[[1]]
+  managed <- c("polarity", "mrm_pattern") # generator owns these two notes
+  cell_of <- function(b) sub("(?s)^<comment ref=\"([A-Z]+)[0-9]+\".*", "\\1", b, perl = TRUE)
+  set_block <- function(b, new_cell, aid) {
+    b <- sub("(<comment ref=\")[^\"]+(\")", paste0("\\1", new_cell, "\\2"), b)
+    sub("(authorId=\")[0-9]+(\")", paste0("\\1", aid, "\\2"), b)
+  }
+  rpr <- paste0(
+    "<rPr><sz val=\"10\"/><color rgb=\"FF000000\"/>",
+    "<rFont val=\"Tahoma\"/><family val=\"2\"/></rPr>"
+  )
+  make_note <- function(cell, txt) {
+    paste0(
+      "<comment ref=\"", cell, "\" authorId=\"1\"><text><r>", rpr,
+      "<t xml:space=\"preserve\">", txt, "</t></r></text></comment>"
+    )
+  }
+  items <- list()
+  for (b in blocks) {
+    header <- orig_hdr[col2int(cell_of(b))]
+    if (is.na(header) || header %in% managed) next # drop threaded / managed
+    ncol <- match(header, new_hdr)
+    if (is.na(ncol)) next
+    items[[header]] <- list(col = ncol, block = set_block(b, paste0(int2col(ncol), "1"), 0L))
+  }
+  for (h in managed) {
+    ncol <- match(h, new_hdr)
+    txt <- if (h == "polarity") pol_note else pat_note
+    items[[h]] <- list(col = ncol, block = make_note(paste0(int2col(ncol), "1"), txt))
+  }
+  items <- items[order(vapply(items, function(x) x$col, integer(1)))]
+  final_cols <- vapply(items, function(x) x$col, integer(1)) # 1-based
+  clist <- paste0(vapply(items, function(x) x$block, character(1)), collapse = "")
+  authors <- "<authors><author>Bo Burla</author><author>mrmhub</author></authors>"
+  preamble_c <- sub("(?s)<authors>.*", "", ctxt, perl = TRUE)
+  wr(cfile, paste0(preamble_c, authors, "<commentList>", clist, "</commentList></comments>"))
+
+  # -- rebuild vmlDrawing2.vml: exactly one shape per note -----------------
+  vtxt <- rd(vfile)
+  shapes <- regmatches(vtxt, gregexpr("(?s)<v:shape\\b.*?</v:shape>", vtxt, perl = TRUE))[[1]]
+  first <- regexpr("<v:shape", vtxt, fixed = TRUE)
+  ends <- gregexpr("</v:shape>", vtxt, fixed = TRUE)[[1]]
+  last_end <- ends[length(ends)] + nchar("</v:shape>") - 1L
+  preamble_v <- substr(vtxt, 1, first - 1L)
+  tail_v <- substr(vtxt, last_end + 1L, nchar(vtxt))
+  shape_col <- function(s) as.integer(sub("(?s).*<x:Column>(\\d+)</x:Column>.*", "\\1", s, perl = TRUE))
+  by_col <- stats::setNames(shapes, vapply(shapes, shape_col, integer(1)))
+  next_id <- max(as.integer(sub("(?s).*id=\"_x0000_s(\\d+)\".*", "\\1", shapes, perl = TRUE))) + 1L
+  new_shapes <- character(0)
+  for (c1 in final_cols) {
+    c0 <- c1 - 1L # VML columns are 0-based
+    if (as.character(c0) %in% names(by_col)) {
+      new_shapes <- c(new_shapes, by_col[[as.character(c0)]])
+    } else {
+      have <- as.integer(names(by_col))
+      donor_col <- have[which.min(abs(have - c0))]
+      s <- by_col[[as.character(donor_col)]]
+      anchor <- sub("(?s).*<x:Anchor>([^<]+)</x:Anchor>.*", "\\1", s, perl = TRUE)
+      parts <- trimws(strsplit(anchor, ",")[[1]])
+      parts[c(1, 5)] <- as.character(as.integer(parts[c(1, 5)]) + (c0 - donor_col))
+      s <- sub("<x:Column>\\d+</x:Column>", paste0("<x:Column>", c0, "</x:Column>"), s)
+      s <- sub("<x:Anchor>[^<]+</x:Anchor>", paste0("<x:Anchor>", paste(parts, collapse = ", "), "</x:Anchor>"), s)
+      s <- sub("id=\"_x0000_s\\d+\"", paste0("id=\"_x0000_s", next_id, "\""), s)
+      next_id <- next_id + 1L
+      new_shapes <- c(new_shapes, s)
+    }
+  }
+  wr(vfile, paste0(preamble_v, paste0(new_shapes, collapse = ""), tail_v))
+
+  # -- strip the orphan threaded-comment / persons layer -------------------
+  unlink(file.path(ex, "xl/threadedComments"), recursive = TRUE)
+  unlink(file.path(ex, "xl/persons"), recursive = TRUE)
+  strip <- function(rel, patterns) {
+    if (!file.exists(file.path(ex, rel))) return(invisible())
+    x <- rd(rel)
+    for (p in patterns) x <- gsub(p, "", x, perl = TRUE)
+    wr(rel, x)
+  }
+  strip("[Content_Types].xml", c(
+    "<Override PartName=\"/xl/threadedComments/[^\"]*\"[^>]*/>",
+    "<Override PartName=\"/xl/persons/[^\"]*\"[^>]*/>"
+  ))
+  strip("xl/worksheets/_rels/sheet3.xml.rels", "<Relationship[^>]*Target=\"[^\"]*threadedComment[^\"]*\"[^>]*/>")
+  strip("xl/_rels/workbook.xml.rels", "<Relationship[^>]*Target=\"persons/person\\.xml\"[^>]*/>")
+
+  # -- repackage ([Content_Types].xml first) -------------------------------
+  files <- list.files(ex, recursive = TRUE, all.files = TRUE, no.. = TRUE)
+  files <- c("[Content_Types].xml", setdiff(files, "[Content_Types].xml"))
+  tmpzip <- tempfile(fileext = ".xlsx")
+  zip::zip(zipfile = tmpzip, files = files, root = ex)
+  file.copy(tmpzip, path, overwrite = TRUE)
+  unlink(tmpzip)
+  invisible(path)
+}
+
 # ---- Save -------------------------------------------------------------------
 
 wb$save(TEMPLATE)
+fix_features_comments(TEMPLATE, orig_hdr, new_hdr, pol_note, pat_note)
 preview <- "data-raw/mrmhub_metadata_template_preview.xlsx" # eyeball copy (data-raw is .Rbuildignore'd)
 file.copy(TEMPLATE, preview, overwrite = TRUE)
 cat("Wrote", TEMPLATE, "and preview", preview, "\n")

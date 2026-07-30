@@ -101,7 +101,7 @@ test_that("import_metadata_msorganiser handles missing / invalid files", {
       ),
       excl_unmatched_analyses = FALSE
     ),
-    "Unsupported MSOrganiser template version. Please use an MSOrganiser template v0.2 or higher.",
+    "Unsupported MSOrganiser template version. Please use an MSOrganiser template with a schema version in the range [0.2, 1.1).",
     fixed = TRUE
   )
   expect_error(
@@ -112,7 +112,7 @@ test_that("import_metadata_msorganiser handles missing / invalid files", {
       ),
       excl_unmatched_analyses = FALSE
     ),
-    "Unsupported MSOrganiser template version. Please use an MSOrganiser template v0.2 or higher.",
+    "Unsupported MSOrganiser template version. Please use an MSOrganiser template with a schema version in the range [0.2, 1.1).",
     fixed = TRUE
   )
 
