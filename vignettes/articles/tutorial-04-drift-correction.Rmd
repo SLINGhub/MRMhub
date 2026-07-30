@@ -14,6 +14,7 @@ vignette: >
 editor_options:
   markdown:
     wrap: 100
+bibliography: references.bib
 ---
 
 ```{r setup, include = FALSE}
@@ -316,3 +317,5 @@ save_dataset_csv(
 - [RunScatter and PCA QC exploration](tutorial-05-run-scatter.html): visualise run-order and batch effects
 - [Drift and batch correction (reference)](manual-07-corrections.html): full method documentation
 - [Calibration by a reference sample](tutorial-07-calibration-reference.html): normalise to a reference material
+
+## References
