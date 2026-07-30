@@ -64,33 +64,33 @@ When RStudio opens it shows four panes, each used at some point in an analysis:
   <circle cx="66" cy="29" r="5" fill="#dee2e6"/>
   <text x="320" y="34" text-anchor="middle" font-weight="700" font-size="15" fill="#2C3E50">my_study — RStudio</text>
   <line x1="8" y1="46" x2="632" y2="46" stroke="#dee2e6"/>
-  <rect x="20" y="58" width="290" height="190" rx="6" fill="#d6e4eb" stroke="#5B8FA8"/>
+  <rect x="20" y="58" width="290" height="190" rx="6" fill="#e2e3f2" stroke="#7377b8"/>
   <rect x="20" y="58" width="290" height="24" rx="6" fill="#ffffff" fill-opacity="0.55"/>
   <text x="32" y="75" font-size="10" fill="#2C3E50">analysis.qmd</text>
-  <rect x="240" y="62" width="62" height="16" rx="3" fill="#6B9E5E"/>
+  <rect x="240" y="62" width="62" height="16" rx="3" fill="#5f63a6"/>
   <text x="271" y="74" text-anchor="middle" font-size="10" font-weight="600" fill="#ffffff">Render</text>
   <text x="32" y="104" font-weight="600" font-size="14" fill="#2C3E50">Source</text>
   <text x="292" y="105" text-anchor="middle" font-size="13" fill="#6B9E5E">▶</text>
   <text x="32" y="124" font-size="11" fill="#333">edit prose and code chunks here</text>
-  <rect x="32" y="136" width="252" height="66" rx="4" fill="#ffffff" fill-opacity="0.8" stroke="#a9c6d4"/>
+  <rect x="32" y="136" width="252" height="66" rx="4" fill="#ffffff" fill-opacity="0.8" stroke="#c2c3e0"/>
   <text x="42" y="154" font-size="10.5" font-family="ui-monospace, Menlo, Consolas, monospace" fill="#7a8b94">&#96;&#96;&#96;{r}</text>
-  <text x="42" y="174" font-size="10.5" font-family="ui-monospace, Menlo, Consolas, monospace" fill="#31586b">mexp &lt;- normalize_by_istd(mexp)</text>
+  <text x="42" y="174" font-size="10.5" font-family="ui-monospace, Menlo, Consolas, monospace" fill="#454a85">mexp &lt;- normalize_by_istd(mexp)</text>
   <text x="42" y="194" font-size="10.5" font-family="ui-monospace, Menlo, Consolas, monospace" fill="#7a8b94">&#96;&#96;&#96;</text>
   <text x="32" y="228" font-size="11" fill="#333">▶ runs a chunk · Render builds the report</text>
-  <rect x="326" y="58" width="294" height="190" rx="6" fill="#d8e6d4" stroke="#6B9E5E"/>
+  <rect x="326" y="58" width="294" height="190" rx="6" fill="#d7e8e5" stroke="#5c9a94"/>
   <text x="338" y="86" font-weight="600" font-size="14" fill="#2C3E50">Environment</text>
-  <text x="338" y="114" font-size="10.5" font-family="ui-monospace, Menlo, Consolas, monospace" fill="#3a5f30">mexp    MRMhubExperiment</text>
+  <text x="338" y="114" font-size="10.5" font-family="ui-monospace, Menlo, Consolas, monospace" fill="#2e625d">mexp    MRMhubExperiment</text>
   <text x="338" y="148" font-size="11" fill="#333">the objects that exist right now —</text>
   <text x="338" y="168" font-size="11" fill="#333">empty again in a fresh session</text>
   <text x="338" y="196" font-size="11" fill="#333">click a name to inspect it</text>
-  <rect x="20" y="258" width="290" height="170" rx="6" fill="#f5e0c8" stroke="#D4914E"/>
+  <rect x="20" y="258" width="290" height="170" rx="6" fill="#ece5cc" stroke="#a9954f"/>
   <text x="32" y="286" font-weight="600" font-size="14" fill="#2C3E50">Console</text>
-  <text x="32" y="312" font-size="10.5" font-family="ui-monospace, Menlo, Consolas, monospace" fill="#8a5a25">&gt; pak::pak(&quot;SLINGhub/MRMhub&quot;)</text>
-  <text x="32" y="332" font-size="10.5" font-family="ui-monospace, Menlo, Consolas, monospace" fill="#8a5a25">&gt; mrmhub::build_workflow()</text>
+  <text x="32" y="312" font-size="10.5" font-family="ui-monospace, Menlo, Consolas, monospace" fill="#7b6a2a">&gt; pak::pak(&quot;SLINGhub/MRMhub&quot;)</text>
+  <text x="32" y="332" font-size="10.5" font-family="ui-monospace, Menlo, Consolas, monospace" fill="#7b6a2a">&gt; mrmhub::build_workflow()</text>
   <text x="32" y="352" font-size="10.5" font-family="ui-monospace, Menlo, Consolas, monospace" fill="#3a5f30">✔ Normalized 84 features by ISTD</text>
   <text x="32" y="384" font-size="11" fill="#333">runs a single line of R immediately;</text>
   <text x="32" y="404" font-size="11" fill="#333">MRMhub's step messages arrive here</text>
-  <rect x="326" y="258" width="294" height="170" rx="6" fill="#f2dcdc" stroke="#C27171"/>
+  <rect x="326" y="258" width="294" height="170" rx="6" fill="#e8dcec" stroke="#9a7ba8"/>
   <text x="338" y="286" font-weight="600" font-size="14" fill="#2C3E50">Files · Plots · Help</text>
   <text x="338" y="316" font-size="11" fill="#333">browse data/ and output/</text>
   <text x="338" y="342" font-size="11" fill="#333">view figures in Plots</text>
