@@ -12,8 +12,9 @@
 #' code it emits into the `.qmd`, and a precondition check that inspects an
 #' imported `MRMhubExperiment` and returns issues.
 #'
-#' `import_*` and `save_report_xlsx()` are always emitted (first / last chunks)
-#' and are therefore not part of this registry.
+#' `import_*` calls are always emitted (first chunks) and are not part of this
+#' registry; the export steps (`save_report` / `save_csv_wide`) are, with a
+#' fallback Excel report emitted when neither is selected.
 #'
 #' @return A named list of step definitions, each a list with `id`, `label`,
 #'   `order`, `default_selected`, `heading`, `prose`, `emit(spec)`, and
@@ -91,28 +92,38 @@ workflow_steps <- function() {
       precheck = function(mexp, spec) {
         issues <- wf_issues()
         if (nrow(mexp@annot_istds) == 0) {
-          issues <- dplyr::bind_rows(issues, wf_issue(
-            "quantify_istd",
-            "error",
-            "No internal-standard concentrations imported (annot_istds is empty) -- quantify_by_istd() will abort."
-          ))
+          issues <- dplyr::bind_rows(
+            issues,
+            wf_issue(
+              "quantify_istd",
+              "error",
+              "No internal-standard concentrations imported (annot_istds is empty) -- quantify_by_istd() will abort."
+            )
+          )
         }
         if (!"normalize_istd" %in% spec$steps) {
-          issues <- dplyr::bind_rows(issues, wf_issue(
-            "quantify_istd",
-            "warning",
-            "quantify_by_istd() needs ISTD-normalized data -- also select 'Normalize by internal standard'."
-          ))
+          issues <- dplyr::bind_rows(
+            issues,
+            wf_issue(
+              "quantify_istd",
+              "warning",
+              "quantify_by_istd() needs ISTD-normalized data -- also select 'Normalize by internal standard'."
+            )
+          )
         }
         aa <- mexp@annot_analyses
         missing_amt <- !all(c("sample_amount", "istd_volume") %in% names(aa)) ||
-          all(is.na(aa$sample_amount)) || all(is.na(aa$istd_volume))
+          all(is.na(aa$sample_amount)) ||
+          all(is.na(aa$istd_volume))
         if (nrow(aa) > 0 && missing_amt) {
-          issues <- dplyr::bind_rows(issues, wf_issue(
-            "quantify_istd",
-            "warning",
-            "'sample_amount' and/or 'istd_volume' are missing from analysis metadata -- needed for concentration units."
-          ))
+          issues <- dplyr::bind_rows(
+            issues,
+            wf_issue(
+              "quantify_istd",
+              "warning",
+              "'sample_amount' and/or 'istd_volume' are missing from analysis metadata -- needed for concentration units."
+            )
+          )
         }
         issues
       }
@@ -124,7 +135,8 @@ workflow_steps <- function() {
       default_selected = FALSE,
       heading = "Quantify against external calibration curves",
       prose = "Fit calibration curves from the QC-concentration metadata and quantify samples.",
-      emit = function(spec) "mexp <- quantify_by_calibration(mexp, fit_overwrite = TRUE)",
+      emit = function(spec)
+        "mexp <- quantify_by_calibration(mexp, fit_overwrite = TRUE)",
       gate = function(mexp) {
         if (nrow(mexp@annot_qcconcentrations) == 0) {
           return(list(
@@ -197,7 +209,9 @@ workflow_steps <- function() {
           wf_issue(
             "calibrate_ref",
             "error",
-            glue::glue("Reference sample '{ref}' is not a 'sample_id' in the analysis metadata.")
+            glue::glue(
+              "Reference sample '{ref}' is not a 'sample_id' in the analysis metadata."
+            )
           )
         }
       }
@@ -211,16 +225,32 @@ workflow_steps <- function() {
       prose = "Model and remove smooth intra-batch drift using QC samples (Broadhurst 2018).",
       emit = function(spec) {
         var <- workflow_variable(spec)
-        ref <- format_char_vec(drift_ref(spec))
         fn <- switch(
           spec$drift_method %||% "gaussian",
           spline = "correct_drift_cubicspline",
           loess = "correct_drift_loess",
           "correct_drift_gaussiankernel"
         )
-        glue::glue('mexp <- {fn}(mexp, variable = "{var}", ref_qc_types = {ref})')
+        ref <- spec$ref_qc_types
+        if (length(ref) == 0) {
+          # No QC type is available to anchor the fit -- emit the call commented
+          # out with a hint, rather than a line that would error at render time.
+          c(
+            "# Drift correction needs QC samples as a reference. Import analysis",
+            "# metadata carrying a QC type (e.g. BQC or TQC), then set ref_qc_types,",
+            "# uncomment, and run:",
+            glue::glue("# mexp <- {fn}("),
+            glue::glue('#   mexp, variable = "{var}", ref_qc_types = "BQC"'),
+            "# )"
+          )
+        } else {
+          glue::glue(
+            'mexp <- {fn}(mexp, variable = "{var}", ref_qc_types = {format_char_vec(ref)})'
+          )
+        }
       },
-      precheck = function(mexp, spec) precheck_qc_ref(mexp, spec, "correct_drift")
+      precheck = function(mexp, spec)
+        precheck_qc_ref(mexp, spec, "correct_drift")
     ),
     correct_batch = list(
       id = "correct_batch",
@@ -231,8 +261,23 @@ workflow_steps <- function() {
       prose = "Centre each batch to remove systematic offsets between batches.",
       emit = function(spec) {
         var <- workflow_variable(spec)
-        ref <- format_char_vec(drift_ref(spec)) # batch matches the drift method's reference
-        glue::glue('mexp <- correct_batch_centering(mexp, variable = "{var}", ref_qc_types = {ref})')
+        ref <- spec$ref_qc_types
+        if (length(ref) == 0) {
+          # No QC type to anchor the centring -- emit commented out with a hint,
+          # mirroring drift correction (both need QC samples as a reference).
+          c(
+            "# Batch correction needs QC samples as a reference. Import analysis",
+            "# metadata carrying a QC type (e.g. BQC or TQC), then set ref_qc_types,",
+            "# uncomment, and run:",
+            "# mexp <- correct_batch_centering(",
+            glue::glue('#   mexp, variable = "{var}", ref_qc_types = "BQC"'),
+            "# )"
+          )
+        } else {
+          glue::glue(
+            'mexp <- correct_batch_centering(mexp, variable = "{var}", ref_qc_types = {format_char_vec(ref)})'
+          )
+        }
       },
       gate = function(mexp) {
         n_batches <- length(unique(stats::na.omit(mexp@dataset$batch_id)))
@@ -249,11 +294,14 @@ workflow_steps <- function() {
         issues <- precheck_qc_ref(mexp, spec, "correct_batch")
         n_batches <- length(unique(stats::na.omit(mexp@dataset$batch_id)))
         if (n_batches <= 1) {
-          issues <- dplyr::bind_rows(issues, wf_issue(
-            "correct_batch",
-            "warning",
-            "Only one batch detected -- between-batch correction has no effect."
-          ))
+          issues <- dplyr::bind_rows(
+            issues,
+            wf_issue(
+              "correct_batch",
+              "warning",
+              "Only one batch detected -- between-batch correction has no effect."
+            )
+          )
         }
         issues
       }
@@ -290,6 +338,48 @@ workflow_steps <- function() {
       emit = function(spec) {
         var <- workflow_variable(spec)
         glue::glue('plot_runscatter(mexp, variable = "{var}")')
+      },
+      precheck = function(mexp, spec) NULL
+    ),
+    plot_pca = list(
+      id = "plot_pca",
+      label = "Plot PCA (QC visual)",
+      order = 95,
+      default_selected = FALSE,
+      heading = "Explore the samples with PCA",
+      prose = "Project the processed features onto principal components to spot sample grouping, drift, or outliers across the run.",
+      emit = function(spec) {
+        var <- workflow_variable(spec)
+        glue::glue('plot_pca(mexp, variable = "{var}")')
+      },
+      precheck = function(mexp, spec) NULL
+    ),
+    save_report = list(
+      id = "save_report",
+      label = "Save MRMhub Excel report",
+      order = 100,
+      default_selected = TRUE,
+      heading = "Export the MRMhub Excel report",
+      prose = "Write the processed results, QC metrics and metadata to a multi-sheet Excel report.",
+      emit = function(spec) {
+        glue::glue(
+          'save_report_xlsx(mexp, path = "{spec$output_xlsx %||% "results.xlsx"}")'
+        )
+      },
+      precheck = function(mexp, spec) NULL
+    ),
+    save_csv_wide = list(
+      id = "save_csv_wide",
+      label = "Save wide CSV",
+      order = 102,
+      default_selected = FALSE,
+      heading = "Export a wide CSV",
+      prose = "Write a wide table (one row per analysis, one column per feature) for downstream tools.",
+      emit = function(spec) {
+        var <- workflow_variable(spec)
+        glue::glue(
+          'save_dataset_csv(mexp, path = "results.csv", variable = "{var}")'
+        )
       },
       precheck = function(mexp, spec) NULL
     )
@@ -335,34 +425,37 @@ workflow_step_availability <- function(mexp) {
   })
 }
 
-# Shared precheck: the chosen ref_qc_types must exist in the data, and the
-# target variable column must be present (i.e. an upstream step produced it).
+# Shared precheck. Only relevant when a QC reference was explicitly chosen: if
+# so, check it exists in the data and, if not, say so plainly. When no reference
+# is chosen the generator emits the drift/batch step commented out with a hint,
+# so there is nothing to flag (and no cryptic "found c(\"\")" message). Kept
+# deliberately light -- the builder is a getting-started tool.
 #' @noRd
 precheck_qc_ref <- function(mexp, spec, step) {
   issues <- wf_issues()
+  ref <- spec$ref_qc_types
+  if (length(ref) == 0) {
+    return(issues)
+  }
   present <- unique(as.character(stats::na.omit(mexp@dataset$qc_type)))
-  ref <- spec$ref_qc_types %||% "SPL"
+  present <- present[nzchar(present)]
   missing_ref <- setdiff(ref, present)
   if (length(missing_ref) > 0) {
-    issues <- dplyr::bind_rows(issues, wf_issue(
-      step,
-      "error",
-      glue::glue(
-        "Reference QC type(s) {format_char_vec(missing_ref)} are not present in the data ",
-        "(found: {format_char_vec(present)})."
+    found <- if (length(present) == 0) {
+      "no QC types are present in the data"
+    } else {
+      glue::glue("present QC types are {format_char_vec(present)}")
+    }
+    issues <- dplyr::bind_rows(
+      issues,
+      wf_issue(
+        step,
+        "warning",
+        glue::glue(
+          "Reference QC type {format_char_vec(missing_ref)} was not found -- {found}."
+        )
       )
-    ))
-  }
-  var <- workflow_variable(spec)
-  col <- paste0("feature_", var)
-  produced_by <- c(conc = "quantify_istd/quantify_cal", norm_intensity = "normalize_istd")
-  if (!col %in% names(mexp@dataset)) {
-    hint <- produced_by[[var]] %||% "an upstream step"
-    issues <- dplyr::bind_rows(issues, wf_issue(
-      step,
-      "warning",
-      glue::glue("Target variable '{col}' is not yet in the data -- select {hint} first.")
-    ))
+    )
   }
   issues
 }
@@ -385,18 +478,6 @@ workflow_variable <- function(spec) {
   } else {
     "intensity"
   }
-}
-
-# Reference QC type(s) for drift/batch. An explicit spec$ref_qc_types wins;
-# otherwise the drift method decides: Gaussian kernel uses study samples (SPL),
-# spline/loess use pooled QCs (BQC by default; the app narrows this to the first
-# of BQC / TQC / QC actually present in the data).
-#' @noRd
-drift_ref <- function(spec) {
-  if (!is.null(spec$ref_qc_types) && length(spec$ref_qc_types) > 0) {
-    return(spec$ref_qc_types)
-  }
-  if (identical(spec$drift_method %||% "gaussian", "gaussian")) "SPL" else "BQC"
 }
 
 # Format a character vector as R source: "SPL" or c("SPL", "BQC").
@@ -428,7 +509,11 @@ wf_issues <- function() {
 
 #' @noRd
 wf_issue <- function(step, severity, message) {
-  dplyr::tibble(step = step, severity = severity, message = as.character(message))
+  dplyr::tibble(
+    step = step,
+    severity = severity,
+    message = as.character(message)
+  )
 }
 
 # ---- Validator -------------------------------------------------------------
@@ -463,17 +548,35 @@ validate_workflow_inputs <- function(
   steps = character(),
   csv_opts = list()
 ) {
-  spec <- list(steps = steps)
-
   mexp <- tryCatch(
-    suppressMessages(build_experiment(data_file, importer, metadata_file, metadata_route, csv_opts)),
+    suppressMessages(build_experiment(
+      data_file,
+      importer,
+      metadata_file,
+      metadata_route,
+      csv_opts
+    )),
     error = function(e) e
   )
 
   if (inherits(mexp, "condition")) {
-    return(wf_issue("import", "error", paste0("Import failed: ", conditionMessage(mexp))))
+    return(wf_issue(
+      "import",
+      "error",
+      paste0("Import failed: ", conditionMessage(mexp))
+    ))
   }
 
+  workflow_step_issues(mexp, steps)
+}
+
+# Run each selected step's precheck against an already-built experiment and
+# collapse the results into an issues tibble. Split out from
+# validate_workflow_inputs() so the Shiny app can validate the experiment it has
+# already imported instead of importing the file a second time.
+#' @noRd
+workflow_step_issues <- function(mexp, steps = character()) {
+  spec <- list(steps = steps)
   defs <- workflow_steps()
   issues <- purrr::map(steps, function(id) {
     def <- defs[[id]]
@@ -485,7 +588,11 @@ validate_workflow_inputs <- function(
   issues <- dplyr::bind_rows(issues)
 
   if (nrow(issues) == 0) {
-    wf_issue("import", "ok", "Data and metadata imported; selected steps have no issues.")
+    wf_issue(
+      "import",
+      "ok",
+      "Data and metadata imported; selected steps have no issues."
+    )
   } else {
     issues
   }
@@ -494,15 +601,34 @@ validate_workflow_inputs <- function(
 # Build the experiment from files using the real importers. Kept separate so
 # validate_workflow_inputs() can wrap it in tryCatch.
 #' @noRd
-build_experiment <- function(data_file, importer, metadata_file, metadata_route, csv_opts = list()) {
+build_experiment <- function(
+  data_file,
+  importer,
+  metadata_file,
+  metadata_route,
+  csv_opts = list()
+) {
   embedded <- identical(metadata_route, "embedded")
   mexp <- MRMhubExperiment()
 
   mexp <- switch(
     importer,
-    mrmhub = import_data_mrmhub(mexp, path = data_file, import_metadata = embedded, silent = TRUE),
-    masshunter = import_data_masshunter(mexp, path = data_file, import_metadata = embedded),
-    skyline = import_data_skyline(mexp, path = data_file, import_metadata = embedded),
+    mrmhub = import_data_mrmhub(
+      mexp,
+      path = data_file,
+      import_metadata = embedded,
+      silent = TRUE
+    ),
+    masshunter = import_data_masshunter(
+      mexp,
+      path = data_file,
+      import_metadata = embedded
+    ),
+    skyline = import_data_skyline(
+      mexp,
+      path = data_file,
+      import_metadata = embedded
+    ),
     csv_long = import_data_csv_long(
       mexp,
       path = data_file,
@@ -519,31 +645,21 @@ build_experiment <- function(data_file, importer, metadata_file, metadata_route,
     cli::cli_abort("Unknown importer {.val {importer}}.")
   )
 
-  if (identical(metadata_route, "individual")) {
-    mexp <- import_metadata_individual(mexp, if (is.list(metadata_file)) metadata_file else list())
-  } else if (!is.null(metadata_file) && length(metadata_file) == 1 && nzchar(metadata_file)) {
+  if (
+    !is.null(metadata_file) &&
+      length(metadata_file) == 1 &&
+      nzchar(metadata_file)
+  ) {
     mexp <- switch(
       metadata_route,
-      msorganiser = import_metadata_msorganiser(mexp, path = metadata_file, ignore_warnings = TRUE),
+      msorganiser = import_metadata_msorganiser(
+        mexp,
+        path = metadata_file,
+        ignore_warnings = TRUE
+      ),
       tables = import_metadata_tables(mexp, metadata_file),
       mexp
     )
-  }
-  mexp
-}
-
-# Import separate per-table metadata CSVs. `files` is a named list with any of
-# `analyses`, `features`, `istds`; missing / NULL entries are skipped.
-#' @noRd
-import_metadata_individual <- function(mexp, files) {
-  if (!is.null(files$analyses)) {
-    mexp <- import_metadata_analyses(mexp, path = files$analyses)
-  }
-  if (!is.null(files$features)) {
-    mexp <- import_metadata_features(mexp, path = files$features)
-  }
-  if (!is.null(files$istds)) {
-    mexp <- import_metadata_istds(mexp, path = files$istds)
   }
   mexp
 }
@@ -553,17 +669,39 @@ import_metadata_individual <- function(mexp, files) {
 #' @noRd
 import_metadata_tables <- function(mexp, path) {
   sheets <- openxlsx2::wb_get_sheet_names(openxlsx2::wb_load(path))
+  # ignore_warnings = TRUE: the builder accepts metadata leniently and surfaces
+  # only hard errors (see qmd_metadata_call()).
   if ("Analyses" %in% sheets) {
-    mexp <- import_metadata_analyses(mexp, path = path, sheet = "Analyses")
+    mexp <- import_metadata_analyses(
+      mexp,
+      path = path,
+      sheet = "Analyses",
+      ignore_warnings = TRUE
+    )
   }
   if ("Features" %in% sheets) {
-    mexp <- import_metadata_features(mexp, path = path, sheet = "Features")
+    mexp <- import_metadata_features(
+      mexp,
+      path = path,
+      sheet = "Features",
+      ignore_warnings = TRUE
+    )
   }
   if ("ISTDs" %in% sheets) {
-    mexp <- import_metadata_istds(mexp, path = path, sheet = "ISTDs")
+    mexp <- import_metadata_istds(
+      mexp,
+      path = path,
+      sheet = "ISTDs",
+      ignore_warnings = TRUE
+    )
   }
   if ("QCconcentrations" %in% sheets) {
-    mexp <- import_metadata_qcconcentrations(mexp, path = path, sheet = "QCconcentrations")
+    mexp <- import_metadata_qcconcentrations(
+      mexp,
+      path = path,
+      sheet = "QCconcentrations",
+      ignore_warnings = TRUE
+    )
   }
   mexp
 }
@@ -630,14 +768,23 @@ generate_workflow_qmd <- function(spec) {
   lines <- c(
     qmd_yaml(spec$title, spec$formats),
     "",
-    qmd_prose("This workflow was generated by `mrmhub::build_workflow()`. Adjust file paths and parameters as needed, then run each chunk."),
+    qmd_prose(paste(
+      c(
+        "This workflow was generated by `mrmhub::build_workflow()`, a tool for",
+        "getting started with and learning MRMhub -- not a replacement for a",
+        "scripted, version-controlled pipeline in production. Adjust the file",
+        "paths and parameters below, then run each chunk.",
+        "",
+        "New to MRMhub? See the [MRMhub documentation](https://slinghub.github.io/MRMhub/quant/)."
+      ),
+      collapse = "\n"
+    )),
     "",
     qmd_chunk(
       c(
         "library(mrmhub)",
         "# Render mrmhub's coloured console feedback in HTML output:",
-        "mrmhub_enable_cli_color()",
-        "options(mrmhub.max_report_items = 10)"
+        "mrmhub_enable_cli_color()"
       ),
       label = "setup",
       opts = "#| include: false"
@@ -683,14 +830,18 @@ qmd_yaml <- function(title, formats = "html") {
 qmd_prose <- function(text) text
 
 # One ```{r} code chunk. `code` may be a length-1 string (possibly multi-line)
-# or a character vector of lines. `label` adds a `#| label:` line and `opts` any
-# further `#|` cell-option lines (verbatim), so the emitted chunks carry the
-# labels/options documented in manual-11-quarto-workflows.
+# or a character vector of lines. `label` becomes a `#| label:` cell option and
+# `opts` adds any further `#|` cell-option lines (verbatim) -- the cell-option
+# style documented in manual-11-quarto-workflows.
 #' @noRd
 qmd_chunk <- function(code, label = NULL, opts = NULL) {
-  code_lines <- unlist(strsplit(paste(code, collapse = "\n"), "\n", fixed = TRUE))
-  hdr <- c(if (!is.null(label)) paste0("#| label: ", label), opts)
-  c("```{r}", hdr, code_lines, "```", "")
+  code_lines <- unlist(strsplit(
+    paste(code, collapse = "\n"),
+    "\n",
+    fixed = TRUE
+  ))
+  label_opt <- if (!is.null(label)) paste0("#| label: ", label) else NULL
+  c("```{r}", label_opt, opts, code_lines, "```", "")
 }
 
 #' @noRd
@@ -698,17 +849,30 @@ qmd_import_section <- function(spec) {
   embedded <- identical(spec$metadata_route, "embedded")
   import_call <- switch(
     spec$importer,
-    mrmhub = glue::glue('mexp <- import_data_mrmhub(mexp, path = "{spec$data_path}", import_metadata = {toupper(as.character(embedded))})'),
-    masshunter = glue::glue('mexp <- import_data_masshunter(mexp, path = "{spec$data_path}", import_metadata = {toupper(as.character(embedded))})'),
-    skyline = glue::glue('mexp <- import_data_skyline(mexp, path = "{spec$data_path}", import_metadata = {toupper(as.character(embedded))})'),
+    mrmhub = glue::glue(
+      'mexp <- import_data_mrmhub(mexp, path = "{spec$data_path}", import_metadata = {toupper(as.character(embedded))})'
+    ),
+    masshunter = glue::glue(
+      'mexp <- import_data_masshunter(mexp, path = "{spec$data_path}", import_metadata = {toupper(as.character(embedded))})'
+    ),
+    skyline = glue::glue(
+      'mexp <- import_data_skyline(mexp, path = "{spec$data_path}", import_metadata = {toupper(as.character(embedded))})'
+    ),
     csv_long = qmd_import_csv_long(spec),
     csv_wide = qmd_import_csv_wide(spec),
     glue::glue('mexp <- import_data_mrmhub(mexp, path = "{spec$data_path}")')
   )
 
-  code <- c("mexp <- MRMhubExperiment()", import_call)
+  # The app references files as data/<name>; nudge the user to put them there.
+  data_note <- if (grepl("^data/", spec$data_path %||% "")) {
+    "# Copy your data file into a 'data/' folder next to this .qmd before rendering."
+  }
+  code <- c(data_note, "mexp <- MRMhubExperiment()", import_call)
 
   meta <- qmd_metadata_call(spec)
+  if (length(meta) > 0 && grepl("^data/", spec$metadata_path %||% "")) {
+    meta <- c("# Copy your metadata file into the same 'data/' folder.", meta)
+  }
 
   c(
     "## Import data",
@@ -716,7 +880,14 @@ qmd_import_section <- function(spec) {
     qmd_prose("Create the experiment container and import the raw results."),
     "",
     qmd_chunk(code, label = "import-data"),
-    if (length(meta) > 0) c("## Import metadata", "", qmd_prose("Attach sample, feature, and internal-standard annotations."), "", qmd_chunk(meta, label = "import-metadata"))
+    if (length(meta) > 0)
+      c(
+        "## Import metadata",
+        "",
+        qmd_prose("Attach sample, feature, and internal-standard annotations."),
+        "",
+        qmd_chunk(meta, label = "import-metadata")
+      )
   )
 }
 
@@ -726,13 +897,19 @@ qmd_import_section <- function(spec) {
 qmd_import_csv_long <- function(spec) {
   cm <- spec$column_mapping
   if (is.null(cm) || length(cm) == 0) {
-    return(glue::glue('mexp <- import_data_csv_long(mexp, path = "{spec$data_path}")'))
+    return(glue::glue(
+      'mexp <- import_data_csv_long(mexp, path = "{spec$data_path}")'
+    ))
   }
   paste0(
     "mexp <- import_data_csv_long(\n",
     "  mexp,\n",
-    '  path = "', spec$data_path, '",\n',
-    "  column_mapping = ", format_named_vec(cm), "\n",
+    '  path = "',
+    spec$data_path,
+    '",\n',
+    "  column_mapping = ",
+    format_named_vec(cm),
+    "\n",
     ")"
   )
 }
@@ -742,34 +919,53 @@ qmd_import_csv_long <- function(spec) {
 #' @noRd
 qmd_import_csv_wide <- function(spec) {
   args <- glue::glue('variable_name = "{spec$variable_name %||% "area"}"')
-  if (!is.null(spec$analysis_id_col) && nzchar(as.character(spec$analysis_id_col))) {
+  if (
+    !is.null(spec$analysis_id_col) && nzchar(as.character(spec$analysis_id_col))
+  ) {
     args <- c(args, glue::glue('analysis_id_col = "{spec$analysis_id_col}"'))
   }
-  if (!is.null(spec$first_feature_column) && !is.na(spec$first_feature_column)) {
-    args <- c(args, glue::glue("first_feature_column = {spec$first_feature_column}"))
+  if (
+    !is.null(spec$first_feature_column) && !is.na(spec$first_feature_column)
+  ) {
+    args <- c(
+      args,
+      glue::glue("first_feature_column = {spec$first_feature_column}")
+    )
   }
-  glue::glue('mexp <- import_data_csv_wide(mexp, path = "{spec$data_path}", {paste(args, collapse = ", ")})')
+  glue::glue(
+    'mexp <- import_data_csv_wide(mexp, path = "{spec$data_path}", {paste(args, collapse = ", ")})'
+  )
 }
 
 #' @noRd
 qmd_metadata_call <- function(spec) {
   path <- spec$metadata_path %||% "your_metadata.xlsx"
+  # ignore_warnings = TRUE by default: metadata validation is complex and the
+  # builder is a getting-started tool, so it accepts warnings and reports only
+  # hard errors (the user can tighten this later).
   switch(
     spec$metadata_route,
-    msorganiser = glue::glue('mexp <- import_metadata_msorganiser(mexp, path = "{path}")'),
-    tables = c(
-      glue::glue('mexp <- import_metadata_analyses(mexp, path = "{path}", sheet = "Analyses")'),
-      glue::glue('mexp <- import_metadata_features(mexp, path = "{path}", sheet = "Features")'),
-      glue::glue('mexp <- import_metadata_istds(mexp, path = "{path}", sheet = "ISTDs")')
+    msorganiser = glue::glue(
+      'mexp <- import_metadata_msorganiser(mexp, path = "{path}", ignore_warnings = TRUE)'
     ),
-    individual = {
-      mi <- spec$metadata_individual %||% list()
-      c(
-        if (!is.null(mi$analyses)) glue::glue('mexp <- import_metadata_analyses(mexp, path = "{mi$analyses}")'),
-        if (!is.null(mi$features)) glue::glue('mexp <- import_metadata_features(mexp, path = "{mi$features}")'),
-        if (!is.null(mi$istds)) glue::glue('mexp <- import_metadata_istds(mexp, path = "{mi$istds}")')
-      )
-    },
+    tables = c(
+      glue::glue(
+        'mexp <- import_metadata_analyses(mexp, path = "{path}", sheet = "Analyses", ignore_warnings = TRUE)'
+      ),
+      glue::glue(
+        'mexp <- import_metadata_features(mexp, path = "{path}", sheet = "Features", ignore_warnings = TRUE)'
+      ),
+      glue::glue(
+        'mexp <- import_metadata_istds(mexp, path = "{path}", sheet = "ISTDs", ignore_warnings = TRUE)'
+      ),
+      # Only when calibrating: emitting it unconditionally would error on
+      # workbooks that carry no QCconcentrations sheet.
+      if ("quantify_cal" %in% spec$steps) {
+        glue::glue(
+          'mexp <- import_metadata_qcconcentrations(mexp, path = "{path}", sheet = "QCconcentrations", ignore_warnings = TRUE)'
+        )
+      }
+    ),
     character()
   )
 }
@@ -800,10 +996,28 @@ qmd_steps_section <- function(spec) {
 
 #' @noRd
 qmd_export_section <- function(spec) {
-  code <- glue::glue('save_report_xlsx(mexp, path = "{spec$output_xlsx}")')
-  if (isTRUE(spec$save_rds)) {
-    code <- c(code, 'saveRDS(mexp, file = "mrmhub_experiment.rds")')
+  steps <- spec$steps %||% character()
+  save_rds_line <- if (isTRUE(spec$save_rds)) {
+    'saveRDS(mexp, file = "mrmhub_experiment.rds")'
   }
+  # An export step (save_report / save_csv_wide) already writes an output in the
+  # steps section above; only fall back to the Excel report when none is chosen,
+  # so a workflow with no export step still produces a result.
+  if (any(c("save_report", "save_csv_wide") %in% steps)) {
+    if (is.null(save_rds_line)) {
+      return(character())
+    }
+    return(c(
+      "## Save the object",
+      "",
+      qmd_chunk(save_rds_line, label = "export-rds")
+    ))
+  }
+  code <- c(
+    "# Written next to this .qmd -- change the path or file name if you like.",
+    glue::glue('save_report_xlsx(mexp, path = "{spec$output_xlsx}")'),
+    save_rds_line
+  )
   c(
     "## Export results",
     "",
@@ -842,7 +1056,9 @@ build_workflow <- function() {
 
   app_dir <- system.file("shiny", "workflow-builder", package = "mrmhub")
   if (app_dir == "") {
-    cli::cli_abort("Could not find the workflow builder app. Try reinstalling mrmhub.")
+    cli::cli_abort(
+      "Could not find the workflow builder app. Try reinstalling mrmhub."
+    )
   }
   shiny::runApp(app_dir, display.mode = "normal")
 }

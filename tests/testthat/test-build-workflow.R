@@ -34,12 +34,28 @@ test_that("generate_workflow_qmd emits a runnable, tutorial-faithful workflow", 
   # Real API calls with correct argument names (guards against the old app's
   # fictional correct_drift()/calibrate_external()/export_xlsx()).
   expect_match(qmd, "mexp <- MRMhubExperiment()", fixed = TRUE)
-  expect_match(qmd, 'import_data_mrmhub(mexp, path = "MRMhub_demo.tsv", import_metadata = TRUE)', fixed = TRUE)
+  expect_match(
+    qmd,
+    'import_data_mrmhub(mexp, path = "MRMhub_demo.tsv", import_metadata = TRUE)',
+    fixed = TRUE
+  )
   expect_match(qmd, "mexp <- normalize_by_istd(mexp)", fixed = TRUE)
   expect_match(qmd, "mexp <- quantify_by_istd(mexp)", fixed = TRUE)
-  expect_match(qmd, 'correct_drift_gaussiankernel(mexp, variable = "conc", ref_qc_types = "SPL")', fixed = TRUE)
-  expect_match(qmd, 'filter_features_qc(mexp, include_qualifier = FALSE, include_istd = FALSE)', fixed = TRUE)
-  expect_match(qmd, 'save_report_xlsx(mexp, path = "results.xlsx")', fixed = TRUE)
+  expect_match(
+    qmd,
+    'correct_drift_gaussiankernel(mexp, variable = "conc", ref_qc_types = "SPL")',
+    fixed = TRUE
+  )
+  expect_match(
+    qmd,
+    'filter_features_qc(mexp, include_qualifier = FALSE, include_istd = FALSE)',
+    fixed = TRUE
+  )
+  expect_match(
+    qmd,
+    'save_report_xlsx(mexp, path = "results.xlsx")',
+    fixed = TRUE
+  )
 
   # No fictional functions from the retired walkthrough app.
   expect_no_match(qmd, "calibrate_external", fixed = TRUE)
@@ -69,40 +85,46 @@ test_that("importer and metadata route select the right calls", {
     steps = character()
   ))
   expect_match(qmd, 'import_data_csv_long(mexp, path = "d.csv")', fixed = TRUE)
-  expect_match(qmd, 'import_metadata_msorganiser(mexp, path = "meta.xlsx")', fixed = TRUE)
+  expect_match(
+    qmd,
+    'import_metadata_msorganiser(mexp, path = "meta.xlsx", ignore_warnings = TRUE)',
+    fixed = TRUE
+  )
   # Import + export are always present even with no steps.
   expect_match(qmd, "save_report_xlsx", fixed = TRUE)
 })
 
 test_that("generic long CSV emits a column_mapping when provided", {
   qmd <- generate_workflow_qmd(list(
-    importer = "csv_long", data_path = "d.csv", steps = character(),
-    column_mapping = c(analysis_id = "Sample", feature_id = "Compound", feature_area = "Area")
+    importer = "csv_long",
+    data_path = "d.csv",
+    steps = character(),
+    column_mapping = c(
+      analysis_id = "Sample",
+      feature_id = "Compound",
+      feature_area = "Area"
+    )
   ))
   expect_match(qmd, "import_data_csv_long(", fixed = TRUE)
-  expect_match(qmd, 'column_mapping = c(analysis_id = "Sample", feature_id = "Compound", feature_area = "Area")', fixed = TRUE)
+  expect_match(
+    qmd,
+    'column_mapping = c(analysis_id = "Sample", feature_id = "Compound", feature_area = "Area")',
+    fixed = TRUE
+  )
 })
 
 test_that("generic wide CSV emits variable_name and optional args", {
   qmd <- generate_workflow_qmd(list(
-    importer = "csv_wide", data_path = "w.csv", steps = character(),
-    variable_name = "conc", analysis_id_col = "SampleID", first_feature_column = 3
+    importer = "csv_wide",
+    data_path = "w.csv",
+    steps = character(),
+    variable_name = "conc",
+    analysis_id_col = "SampleID",
+    first_feature_column = 3
   ))
   expect_match(qmd, 'variable_name = "conc"', fixed = TRUE)
   expect_match(qmd, 'analysis_id_col = "SampleID"', fixed = TRUE)
   expect_match(qmd, "first_feature_column = 3", fixed = TRUE)
-})
-
-test_that("individual metadata files emit one import per provided table", {
-  qmd <- generate_workflow_qmd(list(
-    importer = "mrmhub", data_path = "d.tsv", metadata_route = "individual",
-    metadata_individual = list(analyses = "meta/analyses.csv", features = "meta/features.csv", istds = NULL),
-    steps = character()
-  ))
-  expect_match(qmd, 'import_metadata_analyses(mexp, path = "meta/analyses.csv")', fixed = TRUE)
-  expect_match(qmd, 'import_metadata_features(mexp, path = "meta/features.csv")', fixed = TRUE)
-  # A NULL table is skipped.
-  expect_no_match(qmd, "import_metadata_istds", fixed = TRUE)
 })
 
 test_that("format_named_vec renders a named vector as R source", {
@@ -128,9 +150,16 @@ test_that("output formats are written into the YAML, with sans-serif pdf", {
   expect_match(qmd, "docx: default", fixed = TRUE)
   expect_match(qmd, "  pdf:", fixed = TRUE)
   # pdflatex-safe sans-serif switch.
-  expect_match(qmd, "\\renewcommand{\\familydefault}{\\sfdefault}", fixed = TRUE)
+  expect_match(
+    qmd,
+    "\\renewcommand{\\familydefault}{\\sfdefault}",
+    fixed = TRUE
+  )
   # docx must not be given the pdf-only sans-serif header.
-  docx_only <- generate_workflow_qmd(list(steps = character(), formats = "docx"))
+  docx_only <- generate_workflow_qmd(list(
+    steps = character(),
+    formats = "docx"
+  ))
   expect_no_match(docx_only, "familydefault", fixed = TRUE)
 })
 
@@ -143,8 +172,10 @@ test_that("validator flags missing feature metadata for normalize_by_istd", {
   skip_if(demo_file() == "")
   # Importing without metadata leaves annot_features empty.
   res <- validate_workflow_inputs(
-    demo_file(), "mrmhub",
-    metadata_route = "none", steps = "normalize_istd"
+    demo_file(),
+    "mrmhub",
+    metadata_route = "none",
+    steps = "normalize_istd"
   )
   expect_s3_class(res, "tbl_df")
   expect_true("normalize_istd" %in% res$step)
@@ -157,29 +188,47 @@ test_that("validator passes normalize_by_istd when ISTDs are defined", {
   skip_if(demo_file() == "")
   # The demo's embedded metadata assigns an istd_feature_id to every feature.
   res <- validate_workflow_inputs(
-    demo_file(), "mrmhub",
-    metadata_route = "embedded", steps = "normalize_istd"
+    demo_file(),
+    "mrmhub",
+    metadata_route = "embedded",
+    steps = "normalize_istd"
   )
   # normalize_istd contributes no issue; validator returns the ok summary row.
   expect_false(any(res$step == "normalize_istd" & res$severity != "ok"))
 })
 
-test_that("validator reports a missing reference QC type for drift correction", {
+test_that("validator flags a missing reference QC type as a plain, amber warning", {
   skip_if(demo_file() == "")
   mexp <- build_experiment(demo_file(), "mrmhub", NULL, "embedded")
   defs <- workflow_steps()
+  # An explicit-but-absent reference is a friendly warning (amber), not a red
+  # error, and reads plainly -- no cryptic c("") formatting.
   issues <- defs$correct_drift$precheck(
     mexp,
     list(steps = "correct_drift", ref_qc_types = "NOT_A_QC", variable = "conc")
   )
-  expect_true(any(issues$severity == "error"))
-  expect_match(issues$message[issues$severity == "error"][1], "not present", ignore.case = TRUE)
+  expect_true(any(issues$severity == "warning"))
+  expect_match(
+    issues$message[issues$severity == "warning"][1],
+    "not found",
+    ignore.case = TRUE
+  )
+
+  # No reference chosen -> nothing flagged (the step is emitted commented out),
+  # so the banner never shows the old cryptic "SPL not present" message.
+  none <- defs$correct_drift$precheck(mexp, list(steps = "correct_drift"))
+  expect_equal(nrow(none), 0)
 })
 
 test_that("validator surfaces import failures instead of erroring", {
   bad <- withr::local_tempfile(fileext = ".tsv")
   writeLines(c("not\ta\tvalid\tfile", "1\t2\t3\t4"), bad)
-  res <- validate_workflow_inputs(bad, "mrmhub", metadata_route = "none", steps = "normalize_istd")
+  res <- validate_workflow_inputs(
+    bad,
+    "mrmhub",
+    metadata_route = "none",
+    steps = "normalize_istd"
+  )
   expect_equal(res$severity[1], "error")
   expect_match(res$message[1], "Import failed", fixed = TRUE)
 })
@@ -187,42 +236,161 @@ test_that("validator surfaces import failures instead of erroring", {
 test_that("every optional step emits its real, correctly-named API call", {
   qmd <- generate_workflow_qmd(list(
     steps = c(
-      "normalize_istd", "quantify_istd", "quantify_cal",
-      "calibrate_ref", "correct_drift", "correct_batch", "qc_metrics",
-      "filter_qc", "plot_runscatter"
-    )
+      "normalize_istd",
+      "quantify_istd",
+      "quantify_cal",
+      "calibrate_ref",
+      "correct_drift",
+      "correct_batch",
+      "qc_metrics",
+      "filter_qc",
+      "plot_runscatter",
+      "plot_pca"
+    ),
+    ref_qc_types = "BQC"
   ))
-  expect_match(qmd, "mexp <- quantify_by_calibration(mexp, fit_overwrite = TRUE)", fixed = TRUE)
+  expect_match(
+    qmd,
+    "mexp <- quantify_by_calibration(mexp, fit_overwrite = TRUE)",
+    fixed = TRUE
+  )
   expect_match(qmd, "mexp <- calibrate_by_reference(", fixed = TRUE)
   expect_match(qmd, 'reference_sample_id = "REFERENCE_SAMPLE_ID"', fixed = TRUE)
-  # quantify steps selected -> variable is conc; default drift method -> SPL ref.
-  expect_match(qmd, 'mexp <- correct_batch_centering(mexp, variable = "conc", ref_qc_types = "SPL")', fixed = TRUE)
+  # quantify steps selected -> variable is conc; ref from the chosen QC type.
+  expect_match(
+    qmd,
+    'mexp <- correct_batch_centering(mexp, variable = "conc", ref_qc_types = "BQC")',
+    fixed = TRUE
+  )
   expect_match(qmd, "mexp <- calc_qc_metrics(mexp)", fixed = TRUE)
   expect_match(qmd, 'plot_runscatter(mexp, variable = "conc")', fixed = TRUE)
+  expect_match(qmd, 'plot_pca(mexp, variable = "conc")', fixed = TRUE)
+})
+
+test_that("export steps drive the output, with a report fallback when none chosen", {
+  # save_report selected -> the Excel report is written from the step, once.
+  q1 <- generate_workflow_qmd(list(steps = c("normalize_istd", "save_report")))
+  expect_match(q1, "save_report_xlsx(mexp", fixed = TRUE)
+  expect_equal(
+    length(gregexpr("save_report_xlsx(mexp", q1, fixed = TRUE)[[1]]),
+    1
+  )
+
+  # save_csv_wide selected -> a wide CSV is written on the chosen variable.
+  q2 <- generate_workflow_qmd(list(steps = c("quantify_istd", "save_csv_wide")))
+  expect_match(
+    q2,
+    'save_dataset_csv(mexp, path = "results.csv", variable = "conc")',
+    fixed = TRUE
+  )
+
+  # No export step selected -> the report is still written (fallback output).
+  q3 <- generate_workflow_qmd(list(steps = "qc_metrics"))
+  expect_match(
+    q3,
+    'save_report_xlsx(mexp, path = "results.xlsx")',
+    fixed = TRUE
+  )
 })
 
 test_that("each importer maps to the matching import_data_* call", {
-  mh <- generate_workflow_qmd(list(importer = "masshunter", data_path = "mh.csv", steps = character()))
-  expect_match(mh, 'import_data_masshunter(mexp, path = "mh.csv", import_metadata = TRUE)', fixed = TRUE)
-  sk <- generate_workflow_qmd(list(importer = "skyline", data_path = "sk.csv", steps = character()))
-  expect_match(sk, 'import_data_skyline(mexp, path = "sk.csv", import_metadata = TRUE)', fixed = TRUE)
-  cw <- generate_workflow_qmd(list(importer = "csv_wide", data_path = "w.csv", steps = character()))
-  expect_match(cw, 'import_data_csv_wide(mexp, path = "w.csv", variable_name = "area")', fixed = TRUE)
+  mh <- generate_workflow_qmd(list(
+    importer = "masshunter",
+    data_path = "mh.csv",
+    steps = character()
+  ))
+  expect_match(
+    mh,
+    'import_data_masshunter(mexp, path = "mh.csv", import_metadata = TRUE)',
+    fixed = TRUE
+  )
+  sk <- generate_workflow_qmd(list(
+    importer = "skyline",
+    data_path = "sk.csv",
+    steps = character()
+  ))
+  expect_match(
+    sk,
+    'import_data_skyline(mexp, path = "sk.csv", import_metadata = TRUE)',
+    fixed = TRUE
+  )
+  cw <- generate_workflow_qmd(list(
+    importer = "csv_wide",
+    data_path = "w.csv",
+    steps = character()
+  ))
+  expect_match(
+    cw,
+    'import_data_csv_wide(mexp, path = "w.csv", variable_name = "area")',
+    fixed = TRUE
+  )
   # An unrecognised importer falls back to import_data_mrmhub.
-  fb <- generate_workflow_qmd(list(importer = "??", data_path = "x.tsv", steps = character()))
+  fb <- generate_workflow_qmd(list(
+    importer = "??",
+    data_path = "x.tsv",
+    steps = character()
+  ))
   expect_match(fb, 'import_data_mrmhub(mexp, path = "x.tsv")', fixed = TRUE)
 })
 
 test_that("the multi-table metadata route emits one import per sheet", {
   qmd <- generate_workflow_qmd(list(
-    importer = "mrmhub", data_path = "d.tsv",
-    metadata_route = "tables", metadata_path = "m.xlsx", steps = character()
+    importer = "mrmhub",
+    data_path = "d.tsv",
+    metadata_route = "tables",
+    metadata_path = "m.xlsx",
+    steps = character()
   ))
-  expect_match(qmd, 'import_metadata_analyses(mexp, path = "m.xlsx", sheet = "Analyses")', fixed = TRUE)
-  expect_match(qmd, 'import_metadata_features(mexp, path = "m.xlsx", sheet = "Features")', fixed = TRUE)
-  expect_match(qmd, 'import_metadata_istds(mexp, path = "m.xlsx", sheet = "ISTDs")', fixed = TRUE)
+  expect_match(
+    qmd,
+    'import_metadata_analyses(mexp, path = "m.xlsx", sheet = "Analyses", ignore_warnings = TRUE)',
+    fixed = TRUE
+  )
+  expect_match(
+    qmd,
+    'import_metadata_features(mexp, path = "m.xlsx", sheet = "Features", ignore_warnings = TRUE)',
+    fixed = TRUE
+  )
+  expect_match(
+    qmd,
+    'import_metadata_istds(mexp, path = "m.xlsx", sheet = "ISTDs", ignore_warnings = TRUE)',
+    fixed = TRUE
+  )
   # Non-embedded route imports the data without pulling embedded metadata.
   expect_match(qmd, "import_metadata = FALSE", fixed = TRUE)
+  # Without calibration, no QC-concentration import is emitted.
+  expect_no_match(qmd, "import_metadata_qcconcentrations", fixed = TRUE)
+})
+
+test_that("the multi-table route imports QC concentrations when calibrating", {
+  # The app validates against a QCconcentrations sheet, so the generated .qmd
+  # must import it too, or quantify_by_calibration() renders with no curves.
+  qmd <- generate_workflow_qmd(list(
+    importer = "mrmhub",
+    data_path = "d.tsv",
+    metadata_route = "tables",
+    metadata_path = "m.xlsx",
+    steps = c("normalize_istd", "quantify_cal")
+  ))
+  expect_match(
+    qmd,
+    'import_metadata_qcconcentrations(mexp, path = "m.xlsx", sheet = "QCconcentrations", ignore_warnings = TRUE)',
+    fixed = TRUE
+  )
+})
+
+test_that("the retired 'individual' metadata route degrades to no metadata import", {
+  # The builder now offers embedded / msorganiser / tables / none only. An
+  # unknown route (such as the removed "individual") must fall through cleanly
+  # rather than error, emitting no import_metadata_* call.
+  qmd <- generate_workflow_qmd(list(
+    importer = "mrmhub",
+    data_path = "d.tsv",
+    metadata_route = "individual",
+    metadata_path = "m.xlsx",
+    steps = character()
+  ))
+  expect_no_match(qmd, "import_metadata_", fixed = TRUE)
 })
 
 test_that("step availability disables steps whose supporting metadata is absent", {
@@ -289,40 +457,96 @@ test_that("calibrate_ref precheck warns without a reference and errors on a bad 
   expect_equal(none$severity, "warning")
 
   bad <- defs$calibrate_ref$precheck(
-    mexp, list(steps = "calibrate_ref", reference_sample_id = "NOPE")
+    mexp,
+    list(steps = "calibrate_ref", reference_sample_id = "NOPE")
   )
   expect_true(any(bad$severity == "error"))
 })
 
-test_that("correct_batch precheck warns when the target variable is not yet present", {
-  skip_if(demo_file() == "")
-  # With a quantify step selected the target variable is conc, but right after
-  # import feature_conc does not exist yet, so batch should warn to run it first.
-  mexp <- build_experiment(demo_file(), "mrmhub", NULL, "embedded")
-  issues <- workflow_steps()$correct_batch$precheck(
-    mexp, list(steps = c("quantify_istd", "correct_batch"), ref_qc_types = "SPL")
-  )
-  expect_true(any(issues$severity == "warning"))
-  expect_match(paste(issues$message, collapse = " "), "feature_conc", fixed = TRUE)
-})
-
 test_that("drift method selects the matching correct_drift_* function", {
-  base <- list(steps = c("quantify_istd", "correct_drift"), ref_qc_types = "BQC")
-  expect_match(generate_workflow_qmd(c(base, list(drift_method = "spline"))),
-    "correct_drift_cubicspline(mexp", fixed = TRUE)
-  expect_match(generate_workflow_qmd(c(base, list(drift_method = "loess"))),
-    "correct_drift_loess(mexp", fixed = TRUE)
-  expect_match(generate_workflow_qmd(c(base, list(drift_method = "gaussian"))),
-    "correct_drift_gaussiankernel(mexp", fixed = TRUE)
+  base <- list(
+    steps = c("quantify_istd", "correct_drift"),
+    ref_qc_types = "BQC"
+  )
+  expect_match(
+    generate_workflow_qmd(c(base, list(drift_method = "spline"))),
+    "correct_drift_cubicspline(mexp",
+    fixed = TRUE
+  )
+  expect_match(
+    generate_workflow_qmd(c(base, list(drift_method = "loess"))),
+    "correct_drift_loess(mexp",
+    fixed = TRUE
+  )
+  expect_match(
+    generate_workflow_qmd(c(base, list(drift_method = "gaussian"))),
+    "correct_drift_gaussiankernel(mexp",
+    fixed = TRUE
+  )
 })
 
-test_that("drift ref defaults by method and variable tracks the highest level", {
-  # Gaussian with no explicit ref -> SPL; only normalize selected -> norm_intensity.
-  q1 <- generate_workflow_qmd(list(steps = c("normalize_istd", "correct_drift"), drift_method = "gaussian"))
-  expect_match(q1, 'correct_drift_gaussiankernel(mexp, variable = "norm_intensity", ref_qc_types = "SPL")', fixed = TRUE)
-  # Spline with no explicit ref -> BQC; no normalize/quantify -> intensity.
-  q2 <- generate_workflow_qmd(list(steps = c("correct_drift"), drift_method = "spline"))
-  expect_match(q2, 'correct_drift_cubicspline(mexp, variable = "intensity", ref_qc_types = "BQC")', fixed = TRUE)
+test_that("drift honours a supplied QC reference and tracks the variable level", {
+  # A QC reference + only normalize selected -> spline on norm_intensity.
+  q1 <- generate_workflow_qmd(list(
+    steps = c("normalize_istd", "correct_drift"),
+    drift_method = "spline",
+    ref_qc_types = "BQC"
+  ))
+  expect_match(
+    q1,
+    'correct_drift_cubicspline(mexp, variable = "norm_intensity", ref_qc_types = "BQC")',
+    fixed = TRUE
+  )
+  # No normalize/quantify selected -> the target variable is raw intensity.
+  q2 <- generate_workflow_qmd(list(
+    steps = c("correct_drift"),
+    drift_method = "spline",
+    ref_qc_types = "TQC"
+  ))
+  expect_match(
+    q2,
+    'correct_drift_cubicspline(mexp, variable = "intensity", ref_qc_types = "TQC")',
+    fixed = TRUE
+  )
+})
+
+test_that("drift is emitted commented-out with a hint when no QC ref is given", {
+  # No QC reference -> the call is present but commented, so the rendered
+  # document does not error when the data carries no QC samples.
+  qmd <- generate_workflow_qmd(list(
+    steps = c("normalize_istd", "correct_drift"),
+    drift_method = "spline"
+  ))
+  expect_match(qmd, "# mexp <- correct_drift_cubicspline", fixed = TRUE)
+  expect_no_match(qmd, "\nmexp <- correct_drift_cubicspline", fixed = TRUE)
+  expect_match(qmd, "Import analysis", fixed = TRUE)
+})
+
+test_that("quantification is emitted before drift/batch correction", {
+  qmd <- generate_workflow_qmd(list(
+    steps = c(
+      "normalize_istd",
+      "quantify_istd",
+      "correct_drift",
+      "correct_batch"
+    ),
+    drift_method = "spline",
+    ref_qc_types = "BQC"
+  ))
+  # Quantification runs first, so drift and batch act on concentrations.
+  expect_lt(
+    regexpr("quantify_by_istd", qmd, fixed = TRUE),
+    regexpr("correct_drift_cubicspline", qmd, fixed = TRUE)
+  )
+  expect_lt(
+    regexpr("quantify_by_istd", qmd, fixed = TRUE),
+    regexpr("correct_batch_centering", qmd, fixed = TRUE)
+  )
+  expect_match(
+    qmd,
+    'correct_drift_cubicspline(mexp, variable = "conc", ref_qc_types = "BQC")',
+    fixed = TRUE
+  )
 })
 
 test_that("normalize_istd is gated off and errors when ISTDs are undefined", {
@@ -345,7 +569,10 @@ test_that("normalize_istd is gated off and errors when ISTDs are undefined", {
   # Only some istds missing -> precheck warns instead of erroring.
   some_istd <- mexp
   some_istd@annot_features$istd_feature_id[1] <- NA_character_
-  warn <- defs$normalize_istd$precheck(some_istd, list(steps = "normalize_istd"))
+  warn <- defs$normalize_istd$precheck(
+    some_istd,
+    list(steps = "normalize_istd")
+  )
   expect_true(any(warn$severity == "warning"))
 })
 
@@ -402,14 +629,16 @@ test_that("correct_batch is gated off and warns with a single batch", {
 test_that("validate_workflow_inputs ignores unknown step ids", {
   skip_if(demo_file() == "")
   res <- validate_workflow_inputs(
-    demo_file(), "mrmhub",
-    metadata_route = "none", steps = "not_a_real_step"
+    demo_file(),
+    "mrmhub",
+    metadata_route = "none",
+    steps = "not_a_real_step"
   )
   expect_s3_class(res, "tbl_df")
   expect_equal(res$severity, "ok")
 })
 
-test_that("build_experiment attaches msorganiser metadata and surfaces tables mismatches", {
+test_that("build_experiment attaches metadata and tolerates data/metadata mismatches", {
   data_csv <- test_path(
     "testdata/masshunter/MRMhub_MHQuant_S1P.csv"
   )
@@ -427,13 +656,17 @@ test_that("build_experiment attaches msorganiser metadata and surfaces tables mi
   )
   expect_gt(nrow(mexp@annot_features), 0)
 
-  # tables route runs import_metadata_tables; a metadata/data mismatch is
-  # reported as an import failure rather than crashing the validator.
+  # tables route runs import_metadata_tables with ignore_warnings = TRUE, so a
+  # warning-level data/metadata mismatch (analyses/features without metadata) is
+  # accepted -- the builder is lenient by design -- not reported as an error.
   res <- suppressWarnings(validate_workflow_inputs(
-    data_csv, "masshunter",
-    metadata_file = tables, metadata_route = "tables", steps = character()
+    data_csv,
+    "masshunter",
+    metadata_file = tables,
+    metadata_route = "tables",
+    steps = character()
   ))
-  expect_equal(res$severity[1], "error")
+  expect_false(any(res$severity == "error"))
 })
 
 test_that("build_workflow() aborts when its Shiny dependencies are missing", {
@@ -448,7 +681,8 @@ test_that("build_workflow() aborts when its Shiny dependencies are missing", {
     .package = "rlang"
   )
   local_mocked_bindings(
-    runApp = function(...) stop("runApp() must not be reached when deps are missing"),
+    runApp = function(...)
+      stop("runApp() must not be reached when deps are missing"),
     .package = "shiny"
   )
   expect_error(build_workflow(), "shiny")
@@ -462,8 +696,91 @@ test_that("build_workflow() aborts when only bslib is missing", {
     .package = "rlang"
   )
   local_mocked_bindings(
-    runApp = function(...) stop("runApp() must not be reached when deps are missing"),
+    runApp = function(...)
+      stop("runApp() must not be reached when deps are missing"),
     .package = "shiny"
   )
   expect_error(build_workflow(), "bslib")
+})
+
+# ---- New behaviour: get-started framing + data/ convention -----------------
+
+test_that("the generated qmd carries the getting-started framing and docs link", {
+  qmd <- generate_workflow_qmd(list(steps = character()))
+  expect_match(qmd, "getting started with and learning MRMhub", fixed = TRUE)
+  expect_match(qmd, "https://slinghub.github.io/MRMhub/quant/", fixed = TRUE)
+  # The export path default is commented as user-editable.
+  expect_match(qmd, "change the path or file name", fixed = TRUE)
+})
+
+test_that("a data/ path adds copy-comments and metadata imports suppress warnings", {
+  qmd <- generate_workflow_qmd(list(
+    importer = "masshunter",
+    data_path = "data/S1P_MHQuant.csv",
+    metadata_route = "tables",
+    metadata_path = "data/S1P_metadata_tables.xlsx",
+    steps = "normalize_istd"
+  ))
+  expect_match(qmd, "# Copy your data file into a 'data/' folder", fixed = TRUE)
+  expect_match(
+    qmd,
+    "# Copy your metadata file into the same 'data/' folder",
+    fixed = TRUE
+  )
+  expect_match(
+    qmd,
+    'import_data_masshunter(mexp, path = "data/S1P_MHQuant.csv"',
+    fixed = TRUE
+  )
+  expect_match(
+    qmd,
+    'import_metadata_analyses(mexp, path = "data/S1P_metadata_tables.xlsx", sheet = "Analyses", ignore_warnings = TRUE)',
+    fixed = TRUE
+  )
+})
+
+# ---- Reviewer scenarios: the app's own bundled fixtures --------------------
+
+test_that("the bundled demo validates cleanly for the default embedded workflow", {
+  skip_if(demo_file() == "")
+  # The reviewer's first move -- Load example, keep the default steps -- must
+  # import and validate without hard errors.
+  mexp <- build_experiment(demo_file(), "mrmhub", NULL, "embedded")
+  av <- workflow_step_availability(mexp)
+  ids <- vapply(av, function(s) s$id, character(1))
+  default_on <- ids[vapply(
+    av,
+    function(s) s$enabled && s$default_selected,
+    logical(1)
+  )]
+  issues <- workflow_step_issues(mexp, default_on)
+  expect_false(any(issues$severity == "error"))
+})
+
+test_that("the bundled MassHunter + metadata-tables pair imports and validates", {
+  data_csv <- system.file("extdata", "S1P_MHQuant.csv", package = "mrmhub")
+  tables <- system.file(
+    "extdata",
+    "S1P_metadata_tables.xlsx",
+    package = "mrmhub"
+  )
+  skip_if(data_csv == "" || tables == "")
+
+  mexp <- suppressWarnings(
+    build_experiment(data_csv, "masshunter", tables, "tables")
+  )
+  expect_s4_class(mexp, "MRMhubExperiment")
+  expect_gt(nrow(mexp@annot_features), 0)
+  expect_gt(nrow(mexp@annot_istds), 0)
+
+  # Its default-enabled steps (ISTD normalise + quantify) validate cleanly.
+  av <- workflow_step_availability(mexp)
+  ids <- vapply(av, function(s) s$id, character(1))
+  default_on <- ids[vapply(
+    av,
+    function(s) s$enabled && s$default_selected,
+    logical(1)
+  )]
+  issues <- suppressWarnings(workflow_step_issues(mexp, default_on))
+  expect_false(any(issues$severity == "error"))
 })

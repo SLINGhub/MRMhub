@@ -1,14 +1,14 @@
 ---
-title: "Build a workflow without code"
+title: "Using the interactive workflow builder"
 output:
   rmarkdown::html_vignette:
     fig_width: 6
     fig_height: 3
 description: >
-  Use the point-and-click builder to validate your data and metadata and
-  generate a runnable Quarto workflow.
+  Use the point-and-click builder to turn a data file into a runnable
+  Quarto workflow.
 vignette: >
-  %\VignetteIndexEntry{Build a workflow without code}
+  %\VignetteIndexEntry{Using the interactive workflow builder}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 editor_options:
@@ -21,176 +21,82 @@ source("_common.R")
 knitr::opts_chunk$set(eval = FALSE)
 ```
 
-<p class="page-meta"><span class="page-kind page-kind-tutorial">Tutorial</span> <span class="page-level">Beginner</span> <span class="page-prereq">Prerequisites: <a href="manual-00-installation.html">MRMhub installed</a></span></p>
+<p class="page-meta"><span class="page-kind page-kind-tutorial">Tutorial</span> <span class="page-prereq">Prerequisites: <a href="manual-00-installation.html">MRMhub installed</a></span></p>
 
-`build_workflow()` opens an interactive application that turns a data file and
-its metadata into a runnable Quarto (`.qmd`) workflow. It validates the inputs
-against the real importers, disables processing steps the metadata cannot
-support, and previews the generated document for download, while the code-first
-workflow it produces remains the reproducible artefact.
+`build_workflow()` opens a point-and-click app that turns a data file and its
+metadata into a runnable Quarto (`.qmd`) workflow. You fill in the sidebar, the
+app checks your inputs, and it writes the same script you would otherwise type
+by hand. It is meant for getting started with and learning MRMhub; for a
+production pipeline, script the steps yourself, using the generated `.qmd` as a
+starting point.
 
-## 1. Launching the builder
-
-```{r}
-library(mrmhub)
-
-build_workflow()
-```
-
-The application runs locally in the default browser. It depends on the `shiny`
-and `bslib` packages; if either is missing, the first call prompts to install
-them (they are not pulled in when `mrmhub` itself is installed). To try the
-builder without any files of your own, use the **Load bundled demo data** button,
-which loads the INTEGRATOR demo dataset shipped with the package.
-
-## 2. The sidebar, step by step
-
-The sidebar is worked top to bottom in four numbered sections.
-
-**1 · Data source.** Choose the tool or format that produced the data (this
-selects the matching importer: `import_data_mrmhub()`,
-`import_data_masshunter()`, `import_data_skyline()`, or the generic
-`import_data_csv_long()` / `import_data_csv_wide()`), then upload the file. For
-a generic CSV the column names are not fixed, so a dialog opens to map them:
-
-- **Long CSV**: pick the columns holding the *analysis id*, the *feature id*,
-  and the *value*, plus what the value represents (area, height, intensity,
-  concentration, or normalised intensity). These become a `column_mapping`.
-- **Wide CSV**: state what the matrix values represent and, optionally, the
-  analysis-id column and the index of the first feature column.
-
-::: {.callout .callout-caution}
-Until a generic CSV's columns are mapped the data cannot be validated: this is
-the same requirement `import_data_csv_long()` enforces when it reports a missing
-`feature_id` column. The other importers read fixed column names and need no
-mapping.
+::: {.callout .callout-getstarted}
+New to R? The builder runs from R, so you need R and an editor (RStudio or
+Positron) installed. If you have never used R, start with
+[Getting started with R and Quarto](tutorial-13-getting-started-r-quarto.html) --
+it covers installing R, using the console, and installing MRMhub.
 :::
 
-**2 · Metadata.** Select where sample, feature, and internal-standard
-annotations come from: embedded in the data file, an MSOrganiser workbook, a
-multi-sheet metadata workbook, or **individual files**: separate CSVs for
-analyses, features, and ISTDs imported with `import_metadata_analyses()`,
-`import_metadata_features()`, and `import_metadata_istds()`.
+![The MRMhub Workflow Builder: fill in the sidebar on the left; the live-generated workflow and a status banner appear on the right.](images/workflow-builder.png){width="65%"}
 
-**3 · Project folder.** Optionally point the builder at a project directory
-(the **Browse…** button opens a native folder picker). When set, the uploaded
-files are copied into `<folder>/data/`, the report is written to
-`<folder>/output/`, and **Create project & write .qmd** lays down the directory
-structure with the workflow document beside it. Left empty, the generated code
-references the data file by the path shown in the *Data file path* field, which
-can be edited to an absolute path.
+## Steps
 
-**4 · Processing steps.** Tick the steps to include. Steps whose metadata is
-absent are disabled and annotated with a short reason and an information icon
-carrying the full explanation: for example, *Quantify by internal standard* is
-disabled with "No ISTD concentrations" until an ISTD concentration table is
-imported. See [Reading the validation panel](#reading-the-validation-panel)
-below.
+1. Install MRMhub, if you have not already, by following the
+   [installation guide](manual-00-installation.html). You only need to do this
+   once.
 
-Drift and batch correction share a **method** selector (Gaussian kernel, cubic
-spline, or LOESS) that also sets the reference QC type: the Gaussian kernel uses
-study samples (`SPL`); spline and LOESS use pooled QCs (the first of `BQC`,
-`TQC`, or `QC` present in the data). Batch centring reuses the same reference.
-The corrected feature variable is chosen automatically as the highest processing
-level the selected steps reach: `conc` once a quantification step is included,
-otherwise `norm_intensity`, otherwise raw `intensity`.
+2. Launch the builder from the Console in RStudio or Positron. Type one line and
+   press Enter:
 
-## 3. Reading the validation panel
+    ```r
+    mrmhub::build_workflow()
+    ```
 
-The **Validation** panel runs the selected steps' preconditions against the
-imported experiment and reports one line per finding:
+    The app opens in your browser on a welcome screen. To try it with no files of
+    your own, click Load example, or Download example data to save the demo file
+    first.
 
-- **✗ error**: the import failed, or a selected step would abort (for example,
-  `normalize_by_istd()` selected while no feature carries an `istd_feature_id`).
-- **⚠ warning**: a step needs an upstream step or an optional field (for
-  example, a drift reference QC type absent from the data).
-- **✓ ok**: the data imported and the selected steps have no outstanding
-  issues.
+    ![The welcome screen: pick where your data comes from, or click Load example to load the bundled demo dataset (metadata included).](images/workflow-builder-welcome.png){width="65%"}
 
-Because the panel calls the same importer and precondition checks as a scripted
-run, a workflow that validates cleanly here runs the same way from the console.
+3. In the Data source panel, pick the tool or format that produced your data
+   (MRMhub-INTEGRATOR, MassHunter, Skyline, or a generic CSV) and upload the
+   file. For a generic CSV, use Configure columns to map them.
 
-## 4. What it generates
+4. In Metadata, choose where sample, feature, and ISTD annotations come from:
+   embedded in the data file, an MSOrganiser workbook, or a Metadata tables
+   workbook. For the latter two, upload the `.xlsx`; the builder accepts it
+   leniently, suppressing import warnings by default.
 
-The **Generated workflow** pane updates live as the sidebar changes. The YAML
-front matter records the title and the requested output formats:
+5. Under Processing steps, tick the steps to include. A greyed-out step explains,
+   via its tooltip, what metadata it still needs — quantification by internal
+   standard, for instance, stays off until ISTD concentrations are imported.
+   Drift correction uses a QC type found in your data; if none is present, the
+   step is written commented-out with a hint.
 
-```yaml
----
-title: "MRMhub Workflow"
-toc: true
-execute:
-  warning: true
-format:
-  html: default
----
-```
+6. Under Report format, choose HTML, Word, or PDF for the rendered report.
 
-The document then opens with a hidden setup chunk (`#| include: false`) that
-loads the package and calls `mrmhub_enable_cli_color()`, so mrmhub's coloured
-console feedback renders in the HTML output. See
-[Quarto workflows](manual-11-quarto-workflows.html) for the reporting options and
-output-format details.
+7. Watch the status banner. A green banner, with the render command, means the
+   workflow will run; amber flags something still missing; red appears only when
+   the data file itself cannot be read. The Home button beside it starts over.
+   The generated `.qmd` is always shown, whatever the banner's colour.
 
-Each selected step then becomes its own `##` section with an `{r}` chunk. For
-the demo dataset with normalisation, ISTD quantification, drift and batch
-correction, and QC filtering selected, and a project folder set, the emitted
-code is, in order:
+8. Click Download .qmd, make a `data/` folder next to it, copy your data (and any
+   metadata) file into that folder, then render:
 
-```{r}
-mexp <- MRMhubExperiment()
-mexp <- import_data_mrmhub(
-  mexp, path = "data/MRMhub_demo.tsv", import_metadata = TRUE)
-
-mexp <- normalize_by_istd(mexp)
-mexp <- quantify_by_istd(mexp)
-
-mexp <- correct_drift_gaussiankernel(
-  mexp, variable = "conc", ref_qc_types = "SPL")
-mexp <- correct_batch_centering(
-  mexp, variable = "conc", ref_qc_types = "SPL")
-
-mexp <- calc_qc_metrics(mexp)
-mexp <- filter_features_qc(
-  mexp, include_qualifier = FALSE, include_istd = FALSE)
-
-save_report_xlsx(mexp, path = "output/results.xlsx")
-```
-
-The emitted calls and their argument defaults mirror the
-[Basic MRMhub workflow](tutorial-02-basic-workflow.html); the builder is a way to
-assemble that script, not a separate engine. **Copy code** copies the document to
-the clipboard, and **Download .qmd** (or the project button) writes it to disk.
-
-## 5. Rendering the workflow
-
-The **Output format(s)** control writes the requested Quarto formats into the
-document's YAML: HTML, Word (`.docx`), and PDF may be combined. The PDF format
-is configured for a sans-serif typeface using the default LaTeX engine. Rendering
-is performed with Quarto once the document is saved:
-
-```bash
-quarto render mrmhub_workflow.qmd
-```
+    ```bash
+    quarto render mrmhub_workflow.qmd
+    ```
 
 ::: {.callout .callout-tip}
-The generated file is an ordinary Quarto document. Open it in RStudio, Positron,
-or VS Code, adjust paths or parameters, and run the chunks interactively; the
-builder is a starting point, not a black box.
+The result is an ordinary Quarto document. Open it in RStudio, Positron, or
+VS Code, tweak paths or steps, and run the chunks yourself.
 :::
-
-For scripted use, the same document can be produced without the application by
-passing a specification list to `generate_workflow_qmd()`.
 
 ## Next steps
 
-- [Your first analysis](tutorial-00-first-analysis.html): the equivalent
-  five-minute workflow written by hand
-- [Basic MRMhub workflow](tutorial-02-basic-workflow.html): the full pipeline
-  the builder mirrors
-- [Importing analytical data](manual-04-data-import.html): file formats and the
-  importer decision tree
-- [Importing metadata](manual-05-metadata.html): metadata tables and their
-  required columns
-- [Quarto workflows](manual-11-quarto-workflows.html): the setup chunk, coloured
-  console output, and rendering to HTML, PDF, and Word
+- [Getting started with MRMhub](tutorial-02-getting-started-mrmhub.html): the same workflow
+  written by hand
+- [Lipidomics workflow](tutorial-03-lipidomics-workflow.html): the full pipeline the
+  builder mirrors
+- [Quarto workflows](manual-11-quarto-workflows.html): rendering to HTML, PDF,
+  and Word
