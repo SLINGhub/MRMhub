@@ -63,6 +63,22 @@ session, then retry.
 install.packages("rlang")
 ```
 
+**Q: After updating MRMhub, a function fails with *“lazy-load database
+‘…/mrmhub.rdb’ is corrupt”*.**
+
+**A:** The package was reinstalled while it was loaded in the running
+session, so R still holds the index of the previous installation and
+looks up functions at offsets that no longer match the new file on disk.
+Nothing is actually damaged. Restart R and attach the package again.
+
+``` r
+
+library(mrmhub)
+```
+
+Restarting R after every install or update of MRMhub avoids this. In
+RStudio and Positron, *Session ▸ Restart R* (Ctrl/Cmd+Shift+F10).
+
 **Q: *“Rtools is required to build R packages”* (Windows).**
 
 **A:** Install [Rtools](https://cran.r-project.org/bin/windows/Rtools/)

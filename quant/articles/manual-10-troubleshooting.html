@@ -173,6 +173,18 @@ current namespace. Restart R, update the named package first in the
 fresh session, then retry.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"rlang"</span><span class="op">)</span></span></code></pre></div>
+<p><strong>Q: After updating MRMhub, a function fails with
+<em>“lazy-load database ‘…/mrmhub.rdb’ is corrupt”</em>.</strong></p>
+<p><strong>A:</strong> The package was reinstalled while it was loaded
+in the running session, so R still holds the index of the previous
+installation and looks up functions at offsets that no longer match the
+new file on disk. Nothing is actually damaged. Restart R and attach the
+package again.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/SLINGhub/MRMhub" class="external-link">mrmhub</a></span><span class="op">)</span></span></code></pre></div>
+<p>Restarting R after every install or update of MRMhub avoids this. In
+RStudio and Positron, <em>Session ▸ Restart R</em>
+(<kbd>Ctrl/Cmd</kbd>+<kbd>Shift</kbd>+<kbd>F10</kbd>).</p>
 <p><strong>Q: <em>“Rtools is required to build R packages”</em>
 (Windows).</strong></p>
 <p><strong>A:</strong> Install <a href="https://cran.r-project.org/bin/windows/Rtools/" class="external-link">Rtools</a>
@@ -184,7 +196,7 @@ transitive dependency.</strong></p>
 <p><strong>A:</strong> <a href="https://pak.r-lib.org/" class="external-link"><code>pak</code></a> resolves the
 dependency graph in one pass, handles locked packages more cleanly on
 Windows, and gives clearer messages on transitive failures.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"pak"</span><span class="op">)</span></span>
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"SLINGhub/mrmhub"</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Q: <em>“installation of package ‘X’ had non-zero exit
@@ -193,7 +205,7 @@ status”</em>.</strong></p>
 is installed too, so one broken optional package aborts the whole
 install. Install only the strictly required dependencies and add
 optional ones later.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span></span>
 <span>  <span class="st">"SLINGhub/mrmhub"</span>,</span>
 <span>  dependencies <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Depends"</span>, <span class="st">"Imports"</span>, <span class="st">"LinkingTo"</span><span class="op">)</span></span>
@@ -220,7 +232,7 @@ columns.</p>
 <p><strong>A:</strong> The column holding the analysis or feature
 identifier was not recognised. Map it explicitly with
 <code>column_mapping</code> (names are matched case-insensitively).</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/import_data_csv_long.html">import_data_csv_long</a></span><span class="op">(</span></span>
 <span>  <span class="va">mexp</span>,</span>
 <span>  path <span class="op">=</span> <span class="st">"your_file.csv"</span>,</span>
@@ -246,7 +258,7 @@ values must be numeric.”</em></strong></p>
 block. Point <code>first_feature_column</code> at the first real feature
 column, and pass <code>na_strings</code> for any text missing-value
 tokens.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/import_data_csv_wide.html">import_data_csv_wide</a></span><span class="op">(</span></span>
 <span>  <span class="va">mexp</span>,</span>
 <span>  path <span class="op">=</span> <span class="st">"your_file.csv"</span>,</span>
@@ -257,7 +269,7 @@ tokens.</p>
 is not unique identifier for each transition.”</em></strong></p>
 <p><strong>A:</strong> Several transitions share a molecule name. Build
 unique IDs from the precursor/product names or masses.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/import_data_skyline.html">import_data_skyline</a></span><span class="op">(</span></span>
 <span>  <span class="va">mexp</span>,</span>
 <span>  path <span class="op">=</span> <span class="st">"your_file.csv"</span>,</span>
@@ -268,7 +280,7 @@ annotation.</strong></p>
 <p><strong>A:</strong> Trailing whitespace or case differences
 (<code>"Compound A "</code> vs <code>"Compound A"</code>) break the
 join. Compare both directions:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">data_ids</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">@</span><span class="va">dataset</span><span class="op">$</span><span class="va">feature_id</span><span class="op">)</span></span>
 <span><span class="va">annot_ids</span> <span class="op">&lt;-</span> <span class="va">mexp</span><span class="op">@</span><span class="va">annot_features</span><span class="op">$</span><span class="va">feature_id</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="va">data_ids</span>, <span class="va">annot_ids</span><span class="op">)</span>  <span class="co"># in data, not annotated</span></span>
@@ -313,7 +325,7 @@ metadata.”</em>). Find the unassigned features, then assign an
 <code>istd_feature_id</code> to each — or pass
 <code>ignore_missing_annotation = TRUE</code> to set them to
 <code>NA</code> and continue.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mexp</span><span class="op">@</span><span class="va">annot_features</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">feature_id</span>, <span class="va">istd_feature_id</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">istd_feature_id</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
@@ -329,7 +341,7 @@ results.”</em></strong></p>
 <code><a href="../reference/set_analysis_order.html">set_analysis_order()</a></code> cannot order by
 <code>"timestamp"</code>. Order by the result-file name or by a column
 in the metadata instead.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/set_analysis_order.html">set_analysis_order</a></span><span class="op">(</span><span class="va">mexp</span>, order_by <span class="op">=</span> <span class="st">"resultfile"</span><span class="op">)</span></span></code></pre></div>
 <p><strong>Q: Drift or batch correction aborts with <em>“One or more
 specified <code>qc_types</code> are not present in the
@@ -356,7 +368,7 @@ skip it and run the rest of the pipeline normally.</p>
 samples per batch; with too few, or when the QC trend is flat (noise,
 not drift), the fit can add variance. Inspect the QC trend before
 correcting, and skip drift correction for batches where it is flat.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_runscatter.html">plot_runscatter</a></span><span class="op">(</span></span>
 <span>  <span class="va">mexp</span>,</span>
 <span>  variable <span class="op">=</span> <span class="st">"norm_intensity"</span>,</span>
@@ -396,7 +408,7 @@ calibration points, switching <code>fit_model</code>
 <code>"1/x^2"</code>) — globally or per feature via the
 <code>curve_fit_model</code> / <code>curve_fit_weighting</code> metadata
 columns — and check for saturation at high concentrations.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/get_calibration_metrics.html">get_calibration_metrics</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">r2</span> <span class="op">&lt;</span> <span class="fl">0.9</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -435,7 +447,7 @@ explicitly. If every feature then fails the thresholds it raises no
 error — <code>dataset_filtered</code> simply comes back empty, and the
 next step aborts with <em>“Data has not been QC-filtered.”</em> Inspect
 the metrics and loosen the thresholds.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/filter_features_qc.html">filter_features_qc</a></span><span class="op">(</span></span>
 <span>  <span class="va">mexp</span>,</span>
 <span>  include_qualifier <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -461,13 +473,13 @@ throughout, assign each step back to it, and confirm with
 frame?</strong></p>
 <p><strong>A:</strong> <code><a href="../reference/get_analyticaldata.html">get_analyticaldata()</a></code> returns the
 metadata-joined working table; the filtered table is a slot.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">final</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_analyticaldata.html">get_analyticaldata</a></span><span class="op">(</span><span class="va">mexp</span>, annotated <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">final_filtered</span> <span class="op">&lt;-</span> <span class="va">mexp</span><span class="op">@</span><span class="va">dataset_filtered</span></span></code></pre></div>
 <p><strong>Q: How do I check what processing has been
 applied?</strong></p>
 <p><strong>A:</strong> The status flags record it.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mexp</span><span class="op">@</span><span class="va">is_istd_normalized</span></span>
 <span><span class="va">mexp</span><span class="op">@</span><span class="va">is_quantitated</span></span>
 <span><span class="va">mexp</span><span class="op">@</span><span class="va">var_drift_corrected</span></span>
@@ -476,7 +488,7 @@ applied?</strong></p>
 <p><strong>A:</strong> The raw import is always preserved in
 <code>dataset_orig</code>. Restoring it resets the working table (which
 drops the processing columns added since import).</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mexp</span><span class="op">@</span><span class="va">dataset</span> <span class="op">&lt;-</span> <span class="va">mexp</span><span class="op">@</span><span class="va">dataset_orig</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -531,7 +543,7 @@ and <code>.txt</code>; Excel files are only for the metadata routes.</p>
 and generates a Quarto workflow (<code>mrmhub_workflow.qmd</code>); it
 never runs the pipeline. Download or copy the <code>.qmd</code>, then
 render it yourself.</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="ex">quarto</span> render mrmhub_workflow.qmd</span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="ex">quarto</span> render mrmhub_workflow.qmd</span></code></pre></div>
 <p><strong>Q: How do I try it without my own data?</strong></p>
 <p><strong>A:</strong> <em>Try the example</em> loads the bundled demo
 dataset (with embedded metadata) so you can reach a green <em>Ready to
@@ -546,7 +558,7 @@ in plots?</strong></p>
 session-wide defaults for the shared appearance arguments of the
 <code>plot_*()</code> functions, so you can set them once at the top of
 a notebook instead of on every call.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/mrmhub_set_plot_defaults.html">mrmhub_set_plot_defaults</a></span><span class="op">(</span>font_base_size <span class="op">=</span> <span class="fl">8</span>, point_size <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span></span></code></pre></div>
 <p>It also accepts <code>legend_position</code>,
 <code>legend_size</code>, <code>show_legend_title</code>, and

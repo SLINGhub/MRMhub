@@ -144,7 +144,8 @@ MRMhub</a> runs a complete analysis in the project you create here.</p>
 </h2>
 <p>Two pieces of software are needed. <strong>R</strong> is the language
 the analysis runs in; an <strong>integrated development
-environment</strong> (IDE) is the editor you write and run it in.</p>
+environment</strong> (IDE) is the editor you write and run it in.
+Install R first — the IDE looks for it on startup.</p>
 <ul>
 <li>Install R from <a href="https://cran.r-project.org/" class="external-link">CRAN</a>
 (version 4.1 or newer). Pick the download for your operating system and
@@ -154,16 +155,8 @@ most common choice and the one this tutorial follows. If you already
 work in VS Code, <a href="https://positron.posit.co/" class="external-link">Positron</a> is an
 RStudio-like alternative built on the same editor.</li>
 </ul>
-<p>With R and RStudio installed, open RStudio and install MRMhub from
-the console (the bottom-left pane). The first line installs
-<code>pak</code>, a package installer; the second uses it to fetch
-MRMhub and its dependencies:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://pak.r-lib.org/" class="external-link">"pak"</a></span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"pak"</span><span class="op">)</span></span>
-<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"SLINGhub/MRMhub"</span><span class="op">)</span></span></code></pre></div>
-<p>If the installation reports an error, the <a href="manual-00-installation.html">Installation guide</a> lists the
-common causes (a missing compiler on Windows or macOS, a firewall
-blocking the download) and their fixes.</p>
+<p>Both are installed once per machine and shared by every project you
+create afterwards.</p>
 </div>
 <div class="section level2">
 <h2 id="rstudio-at-a-glance">2. RStudio at a glance<a class="anchor" aria-label="anchor" href="#rstudio-at-a-glance"></a>
@@ -173,32 +166,85 @@ analysis:</p>
 <ul>
 <li>
 <strong>Source</strong> (top-left) — where you edit the notebook and
-run its code.</li>
+run its code. Its toolbar carries the <strong>Render</strong> button,
+and each code chunk gets a green ▶ arrow that runs it.</li>
 <li>
 <strong>Console</strong> (bottom-left) — runs a single line of R
-immediately; this is where you installed the package above.</li>
+immediately, without saving it in the notebook. This is where software
+is installed and where MRMhub’s step messages appear.</li>
 <li>
-<strong>Environment</strong> (top-right) — lists the objects you
-have created, such as the <code>mexp</code> data object once it
-exists.</li>
+<strong>Environment</strong> (top-right) — lists the objects that
+currently exist in the session, such as the <code>mexp</code> data
+object once the notebook has created it.</li>
 <li>
 <strong>Files / Plots / Help</strong> (bottom-right) — browses the
-project folder, shows figures, and displays function help.</li>
+project folder, shows figures, and displays function help pages.</li>
 </ul>
-<p>The defaults are fine to start; nothing here needs configuring.</p>
+<div style="text-align: center; margin: 2em 0;">
+<svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 640 470" style="max-width: 700px; width: 100%; height: auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;" role="img" aria-label="Schematic of the RStudio window: the Source pane top-left holds the notebook with an R code chunk, a Render button and a green run arrow; the Console bottom-left runs single commands; the Environment pane top-right lists objects; Files, Plots and Help are bottom-right."><rect x="8" y="8" width="624" height="428" rx="10" fill="#f8f9fa" stroke="#2C3E50" stroke-width="2"></rect><circle cx="30" cy="29" r="5" fill="#dee2e6"></circle><circle cx="48" cy="29" r="5" fill="#dee2e6"></circle><circle cx="66" cy="29" r="5" fill="#dee2e6"></circle><text x="320" y="34" text-anchor="middle" font-weight="700" font-size="15" fill="#2C3E50">my_study
+— RStudio</text><line x1="8" y1="46" x2="632" y2="46" stroke="#dee2e6"></line><rect x="20" y="58" width="290" height="190" rx="6" fill="#d6e4eb" stroke="#5B8FA8"></rect><rect x="20" y="58" width="290" height="24" rx="6" fill="#ffffff" fill-opacity="0.55"></rect><text x="32" y="75" font-size="10" fill="#2C3E50">analysis.qmd</text><rect x="240" y="62" width="62" height="16" rx="3" fill="#6B9E5E"></rect><text x="271" y="74" text-anchor="middle" font-size="10" font-weight="600" fill="#ffffff">Render</text><text x="32" y="104" font-weight="600" font-size="14" fill="#2C3E50">Source</text><text x="292" y="105" text-anchor="middle" font-size="13" fill="#6B9E5E">▶</text><text x="32" y="124" font-size="11" fill="#333">edit prose and code
+chunks here</text><rect x="32" y="136" width="252" height="66" rx="4" fill="#ffffff" fill-opacity="0.8" stroke="#a9c6d4"></rect><text x="42" y="154" font-size="10.5" font-family="ui-monospace, Menlo, Consolas, monospace" fill="#7a8b94">```{r}</text><text x="42" y="174" font-size="10.5" font-family="ui-monospace, Menlo, Consolas, monospace" fill="#31586b">mexp
+&lt;- normalize_by_istd(mexp)</text><text x="42" y="194" font-size="10.5" font-family="ui-monospace, Menlo, Consolas, monospace" fill="#7a8b94">```</text><text x="32" y="228" font-size="11" fill="#333">▶ runs a chunk · Render
+builds the report</text><rect x="326" y="58" width="294" height="190" rx="6" fill="#d8e6d4" stroke="#6B9E5E"></rect><text x="338" y="86" font-weight="600" font-size="14" fill="#2C3E50">Environment</text><text x="338" y="114" font-size="10.5" font-family="ui-monospace, Menlo, Consolas, monospace" fill="#3a5f30">mexp
+MRMhubExperiment</text><text x="338" y="148" font-size="11" fill="#333">the objects that exist
+right now —</text><text x="338" y="168" font-size="11" fill="#333">empty again in a fresh
+session</text><text x="338" y="196" font-size="11" fill="#333">click a
+name to inspect it</text><rect x="20" y="258" width="290" height="170" rx="6" fill="#f5e0c8" stroke="#D4914E"></rect><text x="32" y="286" font-weight="600" font-size="14" fill="#2C3E50">Console</text><text x="32" y="312" font-size="10.5" font-family="ui-monospace, Menlo, Consolas, monospace" fill="#8a5a25">&gt;
+pak::pak("SLINGhub/MRMhub")</text><text x="32" y="332" font-size="10.5" font-family="ui-monospace, Menlo, Consolas, monospace" fill="#8a5a25">&gt;
+mrmhub::build_workflow()</text><text x="32" y="352" font-size="10.5" font-family="ui-monospace, Menlo, Consolas, monospace" fill="#3a5f30">✔
+Normalized 84 features by ISTD</text><text x="32" y="384" font-size="11" fill="#333">runs a single line of R
+immediately;</text><text x="32" y="404" font-size="11" fill="#333">MRMhub’s step messages
+arrive here</text><rect x="326" y="258" width="294" height="170" rx="6" fill="#f2dcdc" stroke="#C27171"></rect><text x="338" y="286" font-weight="600" font-size="14" fill="#2C3E50">Files
+· Plots · Help</text><text x="338" y="316" font-size="11" fill="#333">browse data/ and
+output/</text><text x="338" y="342" font-size="11" fill="#333">view
+figures in Plots</text><text x="338" y="368" font-size="11" fill="#333">read ?function pages in
+Help</text><text x="320" y="458" text-anchor="middle" font-size="11" fill="#666">RStudio’s
+default four-pane layout, with the project folder open as
+my_study</text></svg>
+</div>
+<p>The panes can be resized or rearranged, but the defaults are fine to
+start; nothing here needs configuring.</p>
 </div>
 <div class="section level2">
-<h2 id="create-a-quarto-project">3. Create a Quarto project<a class="anchor" aria-label="anchor" href="#create-a-quarto-project"></a>
+<h2 id="install-mrmhub">3. Install MRMhub<a class="anchor" aria-label="anchor" href="#install-mrmhub"></a>
+</h2>
+<p>With R and RStudio installed, open RStudio and install MRMhub from
+the Console (the bottom-left pane). The first line installs
+<code>pak</code>, a package installer; the second uses it to fetch
+MRMhub and its dependencies:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://pak.r-lib.org/" class="external-link">"pak"</a></span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"pak"</span><span class="op">)</span></span>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"SLINGhub/MRMhub"</span><span class="op">)</span></span></code></pre></div>
+<p>Installing is a once-per-machine step, and running the same two lines
+again later updates MRMhub to the current version. Making its functions
+available is a separate, per-session step — <code><a href="https://github.com/SLINGhub/MRMhub" class="external-link">library(mrmhub)</a></code>
+— which belongs in the notebook rather than the Console, so that every
+render loads the package itself.</p>
+<p>If the installation reports an error, the <a href="manual-00-installation.html">Installation guide</a> lists the
+common causes (a missing compiler on Windows or macOS, a firewall
+blocking the download) and their fixes.</p>
+</div>
+<div class="section level2">
+<h2 id="create-a-quarto-project">4. Create a Quarto project<a class="anchor" aria-label="anchor" href="#create-a-quarto-project"></a>
 </h2>
 <p>A <strong>project</strong> keeps everything for one analysis — data,
 code, and results — in a single folder that the IDE treats as a unit. In
 RStudio, choose <em>File → New Project → New Directory → Quarto
-Project</em>, give it a name, and create it. Quarto’s <a href="https://quarto.org/docs/tools/rstudio/" class="external-link">project documentation</a>
+Project</em>, give it a name, and create it. Quarto itself ships with
+RStudio, so nothing further needs installing; if the <em>Quarto
+Project</em> entry is missing, update RStudio or install Quarto from <a href="https://quarto.org/docs/download/" class="external-link">quarto.org</a>. Quarto’s <a href="https://quarto.org/docs/tools/rstudio/" class="external-link">project documentation</a>
 covers the dialog in detail.</p>
+<p>The dialog creates the folder, a first <code>.qmd</code> document,
+and an <code>.Rproj</code> file. That <code>.Rproj</code> file is how
+the project is reopened later — by double-clicking it, or through the
+project menu at the top-right of the RStudio window. Opening the
+project, rather than the <code>.qmd</code> on its own, is what points R
+at the right folder.</p>
 <p>Inside the new project, add two folders to keep raw inputs separate
 from generated results — the convention MRMhub’s own workflows
 follow:</p>
 <pre><code>my_study/
+├── my_study.Rproj   # opens the project
 ├── data/            # raw INTEGRATOR output and metadata files
 ├── output/          # exported CSVs, PDFs, and reports
 └── analysis.qmd     # this document</code></pre>
@@ -207,56 +253,156 @@ RStudio treats it as the working directory, so
 <code>data/my_file.csv</code> points to the same place on any machine,
 without a full path. This is why the <code>data/</code> and
 <code>output/</code> folders above are all the analysis needs to find
-its files.</p>
+its files, and why the whole folder can be zipped and shared as a
+self-contained unit.</p>
 </div>
 <div class="section level2">
-<h2 id="add-text-and-code">4. Add text and code<a class="anchor" aria-label="anchor" href="#add-text-and-code"></a>
+<h2 id="write-text-and-code-in-a--qmd">5. Write text and code in a <code>.qmd</code><a class="anchor" aria-label="anchor" href="#write-text-and-code-in-a--qmd"></a>
 </h2>
-<p>A <code>.qmd</code> file has three kinds of content. At the top, a
-short <strong>header</strong> fenced by <code>---</code> sets the title
-and the output format — <code>html</code>, <code>pdf</code>, or
-<code>docx</code>; a new project starts with a sensible HTML header, and
-<a href="manual-11-quarto-workflows.html">Quarto workflows</a> covers
-the options. Below it, <strong>prose</strong> is written in Markdown —
+<p>A <code>.qmd</code> file is plain text with three kinds of content: a
+header, prose, and code chunks.</p>
+<p>At the top, a short <strong>header</strong> fenced by
+<code>---</code> sets the title and the output format —
+<code>html</code>, <code>pdf</code>, or <code>docx</code>. A new project
+starts with a sensible HTML header, and <a href="manual-11-quarto-workflows.html">Quarto workflows</a> covers the
+options that matter for a MRMhub report.</p>
+<p>Below the header, <strong>prose</strong> is written in Markdown —
 plain paragraphs, with <code>#</code> for headings,
-<code>**bold**</code>, and <code>-</code> for lists.
-<strong>Code</strong> lives in <em>chunks</em>: R code fenced between
+<code>**bold**</code>, and <code>-</code> for lists. Quarto’s <a href="https://quarto.org/docs/authoring/markdown-basics.html" class="external-link">Markdown
+basics</a> is the full reference for tables, figures, cross-references,
+and citations.</p>
+<p><strong>Code</strong> lives in <em>chunks</em>: R code fenced between
 <code>```{r}</code> and <code>```</code>. In RStudio, <em>Insert → Code
 Chunk</em> (or Ctrl/Cmd + Alt + I) adds an empty one. A chunk that loads
-the MRMhub package looks like this:</p>
+the MRMhub package, with a sentence of prose introducing it, looks like
+this:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>Load the package before calling any of its functions.</span>
 <span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="in">``` r</span></span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="fu">library</span>(mrmhub)</span>
-<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="in">library(mrmhub)</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="chunk-options">Chunk options<a class="anchor" aria-label="anchor" href="#chunk-options"></a>
+</h3>
+<p>Each chunk can carry <strong>options</strong> that control whether
+its code runs, whether the code itself is shown, and which parts of its
+output reach the report. They are written as <code>#|</code> comment
+lines directly below the chunk’s opening fence, one per line, as
+<code>option: value</code>:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="in">#| label: normalize</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="in">#| message: true</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="in">mexp &lt;- normalize_by_istd(mexp)</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="in">```</span></span></code></pre></div>
+<p>The options a processing notebook needs are few:</p>
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr class="header">
+<th>Option</th>
+<th>What it controls</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>#| label:</code></td>
+<td>A unique name for the chunk; also names any figure it produces.</td>
+</tr>
+<tr class="even">
+<td><code>#| eval:</code></td>
+<td>Whether the code runs. <code>false</code> shows the code without
+executing it.</td>
+</tr>
+<tr class="odd">
+<td><code>#| echo:</code></td>
+<td>Whether the code itself appears in the report.</td>
+</tr>
+<tr class="even">
+<td><code>#| output:</code></td>
+<td>Whether the results appear — printed values, tables, figures.</td>
+</tr>
+<tr class="odd">
+<td><code>#| message:</code></td>
+<td>Whether messages appear. MRMhub’s step feedback travels here.</td>
+</tr>
+<tr class="even">
+<td><code>#| warning:</code></td>
+<td>Whether warnings appear.</td>
+</tr>
+<tr class="odd">
+<td><code>#| include:</code></td>
+<td>
+<code>false</code> runs the chunk but hides both code and output —
+used for setup chunks.</td>
+</tr>
+<tr class="even">
+<td><code>#| cache:</code></td>
+<td>Stores the result, so an unchanged chunk is not re-run on the next
+render.</td>
+</tr>
+<tr class="odd">
+<td>
+<code>#| fig-width:</code>, <code>#| fig-height:</code>
+</td>
+<td>Size, in inches, of the figures the chunk produces.</td>
+</tr>
+</tbody>
+</table>
+<p>MRMhub reports what each processing step did as a console message — a
+count, and a truncated list of the features or analyses affected — so
+keeping <code>#| message: true</code> on the chunks that run a step
+turns the rendered report into a record of the processing. Defaults for
+the whole document are set in the header instead of chunk by chunk:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">execute</span><span class="kw">:</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="at">  </span><span class="fu">warning</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="at">  </span><span class="fu">message</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span></code></pre></div>
+<p>Quarto’s <a href="https://quarto.org/docs/computations/execution-options.html" class="external-link">execution
+options</a> page is the complete reference for both forms.</p>
 <p>RStudio offers two ways to edit a <code>.qmd</code>: the
 <strong>Source</strong> editor shows the raw Markdown, while the
 <strong>Visual</strong> editor (the <em>Visual</em> toggle, top-left of
 the document) shows a formatted, word-processor-like view. Both edit the
-same file. Quarto’s <a href="https://quarto.org/docs/get-started/hello/rstudio.html" class="external-link">authoring
-guide</a> introduces both.</p>
+same file, and Quarto’s <a href="https://quarto.org/docs/get-started/hello/rstudio.html" class="external-link">authoring
+guide</a> introduces both. You may also meet the older R Markdown format
+(<code>.Rmd</code>), which Quarto renders unchanged; it writes the same
+options inside the fence, as <code>{r, message=TRUE}</code>.</p>
+</div>
 </div>
 <div class="section level2">
-<h2 id="preview-and-run-code">5. Preview and run code<a class="anchor" aria-label="anchor" href="#preview-and-run-code"></a>
+<h2 id="run-code-and-render-the-report">6. Run code and render the report<a class="anchor" aria-label="anchor" href="#run-code-and-render-the-report"></a>
 </h2>
 <p>There are two distinct actions. <strong>Running a chunk</strong>
 executes its code immediately and shows the result inline: click the
 green ▶ arrow at the chunk’s top-right, or press Ctrl/Cmd + Shift +
-Enter with the cursor inside it. <strong>Rendering</strong> turns the
-whole document into a finished HTML (or PDF) report: click
-<strong>Render</strong>, and RStudio runs every chunk in order and
-assembles the output. The <strong>Preview</strong> that opens updates
-each time you render, so the report stays in step with the code.</p>
-<p>While developing an analysis, run chunks one at a time to check each
-step; render at the end to produce the shareable report.</p>
-<p>Try it now: add the chunk above and run it. Loading MRMhub without
+Enter with the cursor inside it. Because each chunk builds on the
+objects the earlier ones created, <em>Run → Run All Chunks Above</em>
+(Ctrl/Cmd + Alt + P) is the way back to a working state after reopening
+the project, when the session starts with an empty Environment.</p>
+<p><strong>Rendering</strong> turns the whole document into a finished
+report: click <strong>Render</strong> (Ctrl/Cmd + Shift + K), and Quarto
+runs every chunk in order and assembles the output —
+<code>analysis.html</code> alongside the document — which opens in the
+Preview pane and refreshes on each render.</p>
+<p>Rendering runs in a <strong>fresh R session</strong>, top to bottom,
+so the report is built from what the document itself contains and
+nothing else. A chunk that works interactively because a needed object
+is still in the Environment pane will fail on render if no chunk creates
+it. This is the point of rendering: it proves the analysis reproduces
+from the raw data. While developing, run chunks one at a time to check
+each step; render at the end to produce the shareable report.</p>
+<p>Try it now: insert a chunk into your document, put
+<code><a href="https://github.com/SLINGhub/MRMhub" class="external-link">library(mrmhub)</a></code> in it, and run it. Loading MRMhub without
 error confirms the installation worked.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/SLINGhub/MRMhub" class="external-link">mrmhub</a></span><span class="op">)</span></span></code></pre></div>
+<p>If a chunk stops with an error, the Console prints the message under
+the offending call; the last line is usually the informative one. <a href="manual-10-troubleshooting.html">Troubleshooting &amp; FAQ</a>
+collects the errors that come up most often, and what each one
+means.</p>
 </div>
 <div class="section level2">
-<h2 id="reading-the-code-youll-run">6. Reading the code you’ll run<a class="anchor" aria-label="anchor" href="#reading-the-code-youll-run"></a>
+<h2 id="reading-the-code-youll-run">7. Reading the code you’ll run<a class="anchor" aria-label="anchor" href="#reading-the-code-youll-run"></a>
 </h2>
 <p>The next tutorial uses MRMhub functions and no custom R, but three
 pieces of R syntax recur throughout. Recognising them is enough to
@@ -281,20 +427,26 @@ saves in one line, with no temporary name.</li>
 </ul>
 <p>Each processing step follows the same shape — take the data object,
 return an updated one, and store it back under the same name:
-<code>mexp &lt;- normalize_by_istd(mexp)</code>.</p>
+<code>mexp &lt;- normalize_by_istd(mexp)</code>. The functions do not
+modify the object in place, so the assignment is what carries the result
+forward; running <code>normalize_by_istd(mexp)</code> on its own leaves
+<code>mexp</code> as it was. All the documentation names the object
+<code>mexp</code>, and keeping that one name throughout a notebook
+avoids running a later step on an earlier version of the data.</p>
 </div>
 <div class="section level2">
-<h2 id="getting-help">7. Getting help<a class="anchor" aria-label="anchor" href="#getting-help"></a>
+<h2 id="getting-help">8. Getting help<a class="anchor" aria-label="anchor" href="#getting-help"></a>
 </h2>
 <p>To see what a function does and which arguments it takes, type
 <code>?</code> followed by its name in the Console:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="op">?</span><span class="va">plot_pca</span></span></code></pre></div>
 <p>Its help page opens in the <strong>Help</strong> pane, listing every
-argument with an explanation and, usually, examples. The same pages for
-every function are in the <a href="../reference/index.html">function
-reference</a>, and the <a href="manual-01-key-concepts.html">MRMhub
-overview</a> introduces the concepts they build on.</p>
+argument with an explanation and, usually, examples that can be copied
+and run. The same pages for every function are in the <a href="../reference/index.html">function reference</a>, the <a href="manual-01-key-concepts.html">MRMhub overview</a> introduces the
+concepts they build on, and problems that look like a bug belong in the
+<a href="https://github.com/SLINGhub/MRMhub/issues" class="external-link">issue
+tracker</a>.</p>
 <p>With the software installed, the project set up, and the syntax
 demystified, you are ready to run a real analysis. Continue with <a href="tutorial-02-getting-started-mrmhub.html">Getting started with
 MRMhub</a>, which imports the demo data and takes it through to an
