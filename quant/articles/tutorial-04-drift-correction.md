@@ -286,11 +286,11 @@ both location and spread are consistent across batches.
 Besides median centering, two model-based methods are available. Both
 are experimental and require an optional package.
 
-**ComBat** \[@johnson2007AdjustingBatchEffects\] applies an
-empirical-Bayes location and scale adjustment, shrinking the batch
-estimates across features (requires the `sva` package). Unlike centering
-and SERRF, it estimates batch effects from all samples; pass
-`covariates` to protect biology on unbalanced designs.
+**ComBat** (Johnson et al. 2007) applies an empirical-Bayes location and
+scale adjustment, shrinking the batch estimates across features
+(requires the `sva` package). Unlike centering and SERRF, it estimates
+batch effects from all samples; pass `covariates` to protect biology on
+unbalanced designs.
 
 ``` r
 
@@ -301,12 +301,11 @@ mexp_batch <- correct_batch_combat(
 )
 ```
 
-**SERRF** \[@fan2019SystematicErrorRemoval\] trains a per-feature random
-forest on the reference QCs and removes the predicted systematic error,
-capturing non-linear batch and drift effects jointly (requires the
-`ranger` package). It suits larger panels with dense QC coverage; the
-implementation adapts the `malbacR` reference
-\[@leach2023MalbacRPackage\].
+**SERRF** (Fan et al. 2019) trains a per-feature random forest on the
+reference QCs and removes the predicted systematic error, capturing
+non-linear batch and drift effects jointly (requires the `ranger`
+package). It suits larger panels with dense QC coverage; the
+implementation adapts the `malbacR` reference (Leach et al. 2023).
 
 ``` r
 
@@ -376,3 +375,20 @@ save_dataset_csv(
 - [Calibration by a reference
   sample](https://slinghub.github.io/MRMhub/quant/articles/tutorial-07-calibration-reference.md):
   normalise to a reference material
+
+## References
+
+Fan, Sili, Tobias Kind, Tomas Cajka, et al. 2019. “Systematic Error
+Removal Using Random Forest for Normalizing Large-Scale Untargeted
+Lipidomics Data.” *Analytical Chemistry* 91 (5): 3590–96.
+<https://doi.org/10.1021/acs.analchem.8b05592>.
+
+Johnson, W. Evan, Cheng Li, and Ariel Rabinovic. 2007. “Adjusting Batch
+Effects in Microarray Expression Data Using Empirical Bayes Methods.”
+*Biostatistics* 8 (1): 118–27.
+<https://doi.org/10.1093/biostatistics/kxj037>.
+
+Leach, Damon L., Kelly A. Trujillo, Rachel A. Richardson, et al. 2023.
+“malbacR: A Package for Standardized Implementation of Batch Correction
+Methods for Omics Data.” *Metabolites* 13 (11): 1130.
+<https://doi.org/10.3390/metabo13111130>.

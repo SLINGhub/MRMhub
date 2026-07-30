@@ -144,19 +144,17 @@ or confirm the numbers; that stays with you.</p>
 <ol style="list-style-type: decimal">
 <li>
 <strong>Give it the package reference first.</strong> An assistant
-has read very little about a young, niche package, so left to memory it
-invents function names that sound right but do not exist. MRMhub
-publishes a compact map of its whole interface as one file, <a href="https://slinghub.github.io/MRMhub/quant/llms.txt" class="uri">https://slinghub.github.io/MRMhub/quant/llms.txt</a>. Paste
-its contents into the chat (or give the link if your assistant can
-browse the web) and tell it to use only functions that appear there. If
-you use an assistant regularly, add that file once to a Claude Project
-or a ChatGPT custom GPT instead of pasting it each time. Ask it to
-follow the package’s conventions too: keep the
-<code>mexp &lt;- f(mexp, ...)</code> step pattern in the recommended
-pipeline order for code, and, in any prose or comments it writes, use
-current terminology (interference source/target, precursor and product
-ions rather than parent/daughter) and the plain product name
-MRMhub.</li>
+has read little about a recently published, specialised package, so from
+memory it invents function names that sound right but do not exist.
+MRMhub publishes its whole interface as one file: <a href="https://slinghub.github.io/MRMhub/quant/llms.txt" class="uri">https://slinghub.github.io/MRMhub/quant/llms.txt</a>. Give
+the assistant that <strong>link</strong> and tell it to <strong>use only
+functions that appear there</strong>, or paste the file’s contents if it
+cannot browse the web. For regular use, add the file once to a Claude
+Project or a ChatGPT custom GPT. Ask it to keep the
+<strong><code>mexp &lt;- f(mexp, ...)</code> step pattern</strong> in
+the recommended pipeline order, and to use <strong>current
+terminology</strong> in prose (interference source/target, precursor and
+product ions, not parent/daughter) and the plain name MRMhub.</li>
 <li>
 <strong>Ask for what you need</strong>, adapting one of the prompts
 below.</li>

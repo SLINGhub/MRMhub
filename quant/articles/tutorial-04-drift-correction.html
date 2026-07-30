@@ -380,24 +380,25 @@ both location and spread are consistent across batches.
 </h3>
 <p>Besides median centering, two model-based methods are available. Both
 are experimental and require an optional package.</p>
-<p><strong>ComBat</strong> <span class="citation">[@johnson2007AdjustingBatchEffects]</span> applies an
-empirical-Bayes location and scale adjustment, shrinking the batch
-estimates across features (requires the <code>sva</code> package).
-Unlike centering and SERRF, it estimates batch effects from all samples;
-pass <code>covariates</code> to protect biology on unbalanced
-designs.</p>
+<p><strong>ComBat</strong> <span class="citation">(Johnson et al.
+2007)</span> applies an empirical-Bayes location and scale adjustment,
+shrinking the batch estimates across features (requires the
+<code>sva</code> package). Unlike centering and SERRF, it estimates
+batch effects from all samples; pass <code>covariates</code> to protect
+biology on unbalanced designs.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mexp_batch</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/correct_batch_combat.html">correct_batch_combat</a></span><span class="op">(</span></span>
 <span>  <span class="va">mexp_batch</span>,</span>
 <span>  variable <span class="op">=</span> <span class="st">"conc"</span>,</span>
 <span>  ref_qc_types <span class="op">=</span> <span class="st">"SPL"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><strong>SERRF</strong> <span class="citation">[@fan2019SystematicErrorRemoval]</span> trains a
-per-feature random forest on the reference QCs and removes the predicted
-systematic error, capturing non-linear batch and drift effects jointly
-(requires the <code>ranger</code> package). It suits larger panels with
-dense QC coverage; the implementation adapts the <code>malbacR</code>
-reference <span class="citation">[@leach2023MalbacRPackage]</span>.</p>
+<p><strong>SERRF</strong> <span class="citation">(Fan et al.
+2019)</span> trains a per-feature random forest on the reference QCs and
+removes the predicted systematic error, capturing non-linear batch and
+drift effects jointly (requires the <code>ranger</code> package). It
+suits larger panels with dense QC coverage; the implementation adapts
+the <code>malbacR</code> reference <span class="citation">(Leach et al.
+2023)</span>.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mexp_batch</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/correct_batch_serrf.html">correct_batch_serrf</a></span><span class="op">(</span></span>
 <span>  <span class="va">mexp_batch</span>,</span>
@@ -491,6 +492,29 @@ exploration</a>: visualise run-order and batch effects</li>
 <a href="tutorial-07-calibration-reference.html">Calibration by a
 reference sample</a>: normalise to a reference material</li>
 </ul>
+</div>
+<div class="section level2 unnumbered">
+<h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-fan2019SystematicErrorRemoval" class="csl-entry">
+Fan, Sili, Tobias Kind, Tomas Cajka, et al. 2019. <span>“Systematic
+Error Removal Using Random Forest for Normalizing Large-Scale Untargeted
+Lipidomics Data.”</span> <em>Analytical Chemistry</em> 91 (5): 3590–96.
+<a href="https://doi.org/10.1021/acs.analchem.8b05592" class="external-link">https://doi.org/10.1021/acs.analchem.8b05592</a>.
+</div>
+<div id="ref-johnson2007AdjustingBatchEffects" class="csl-entry">
+Johnson, W. Evan, Cheng Li, and Ariel Rabinovic. 2007. <span>“Adjusting
+Batch Effects in Microarray Expression Data Using Empirical Bayes
+Methods.”</span> <em>Biostatistics</em> 8 (1): 118–27. <a href="https://doi.org/10.1093/biostatistics/kxj037" class="external-link">https://doi.org/10.1093/biostatistics/kxj037</a>.
+</div>
+<div id="ref-leach2023MalbacRPackage" class="csl-entry">
+Leach, Damon L., Kelly A. Trujillo, Rachel A. Richardson, et al. 2023.
+<span>“malbacR: A Package for Standardized Implementation of Batch
+Correction Methods for Omics Data.”</span> <em>Metabolites</em> 13 (11):
+1130. <a href="https://doi.org/10.3390/metabo13111130" class="external-link">https://doi.org/10.3390/metabo13111130</a>.
+</div>
+</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
