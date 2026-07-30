@@ -177,7 +177,7 @@ package (`qc_type_col`).
 
 ## Next steps
 
-- [Key concepts & glossary](manual-01-key-concepts.html): broader terminology
+- [MRMhub overview](manual-01-key-concepts.html): broader terminology
 - [Importing metadata](manual-05-metadata.html): preparing the annotation files
 - [Drift and batch correction](manual-07-corrections.html): where the QC types are used
 

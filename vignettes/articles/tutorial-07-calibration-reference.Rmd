@@ -20,7 +20,7 @@ editor_options:
 source("_common.R")
 ```
 
-<p class="page-meta"><span class="page-kind page-kind-tutorial">Tutorial</span> <span class="page-level">Intermediate</span> <span class="page-prereq">Prerequisites: <a href="tutorial-02-basic-workflow.html">Basic workflow</a></span></p>
+<p class="page-meta"><span class="page-kind page-kind-tutorial">Tutorial</span> <span class="page-prereq">Prerequisites: <a href="tutorial-03-lipidomics-workflow.html">Full workflow</a>, <a href="tutorial-06-external-calibration.html">External calibration</a></span></p>
 
 Feature abundances in samples can also be calibrated to corresponding abundances in a specified
 reference sample. MRMhub supports absolute (re-)calibration and normalization (relative calibration).
@@ -55,7 +55,7 @@ mexp <- import_metadata_istds(mexp, path = meta_file, sheet = "ISTDs")
 ## 2. Load known concentrations of the reference sample
 
 A table of known analyte concentrations for the NIST SRM1950 reference sample is added to the
-`MRMhubExperiment` object. Note that the S1P concentrations in this table are for illustration
+`MRMhubExperiment` object. The S1P concentrations in this table are for illustration
 only; the actual absolute S1P concentrations in NIST SRM1950 may differ significantly.
 
 ```{r load-qcconc}
@@ -126,7 +126,7 @@ save_report_xlsx(mexp_res, tempfile(fileext = ".xlsx"), filtered_variable = "con
 ## 5. Normalization (relative calibration)
 
 Normalization against a reference sample is performed with the same function, setting
-`absolute_calibration = FALSE`. As above, where multiple analyses of the reference sample are
+`absolute_calibration = FALSE`. Where multiple analyses of the reference sample are
 present, either their mean or median is used (defined via `summarize_fun`).
 
 ```{r normalize}
@@ -242,5 +242,5 @@ gt::gt(tbl) |> gt::fmt_number(decimals = 3)
 
 ## Next steps
 
-- [External calibration and QC](recipe-01-ext-calibration-qc.html): full calibration-curve workflow with QC
-- [Basic MRMhub workflow](tutorial-02-basic-workflow.html): revisit the full pipeline
+- [External calibration and QC](tutorial-06-external-calibration.html): full calibration-curve workflow with QC
+- [Lipidomics workflow](tutorial-03-lipidomics-workflow.html): revisit the full pipeline

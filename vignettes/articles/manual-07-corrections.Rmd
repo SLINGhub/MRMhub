@@ -25,7 +25,7 @@ options(dplyr.print_max = 10)
 
 <p class="page-kind page-kind-manual">Manual</p>
 
-`MRMhub` provides functions for run-order drift and batch correction. The
+MRMhub provides functions for run-order drift and batch correction. The
 correction is based on user-selected reference sample types (`ref_qc_types`),
 relative to which all other samples are adjusted. The corrections can be
 applied to `intensity`, `norm_intensity`, or `conc` data.
@@ -36,7 +36,7 @@ Which samples a correction is fitted on depends on the modelling method. The QC-
 
 ## Drift correction (smoothing)
 
-The following drift correction methods are available in `MRMhub`, two of
+The following drift correction methods are available in MRMhub, two of
 which are typically used for QC samples and one (gaussian kernel-based) for
 study samples.
 
@@ -58,7 +58,7 @@ so that the trends after correction are also available for plotting. For
 further details, refer to the description of `plot_runscatter()`. This,
 however, doubles the processing time.
 
-**Note**: The function outputs a message indicating the median CV change
+The function outputs a message indicating the median CV change
 and the mean absolute CV before and after correction for all samples.
 However, these metrics are experimental and should not be used as
 definitive criteria for correction (see function documentation).
@@ -80,7 +80,7 @@ on how to use these functions and plot the results.
 
 ## Batch-effect correction
 
-`MRMhub` provides three batch-correction methods. Batch correction is applied
+MRMhub provides three batch-correction methods. Batch correction is applied
 after normalization and, where used, drift correction.
 
 - **Median centering** (`correct_batch_centering()`) aligns the per-batch medians

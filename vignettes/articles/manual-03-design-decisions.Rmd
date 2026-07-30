@@ -19,11 +19,11 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>", eval = FALSE)
 
 <p class="page-kind page-kind-manual">Manual</p>
 
-This article documents the main architectural choices behind MRMhub QUANT and
-the reasoning for each. It is written for contributors and for users who want to
-understand how the package is structured before extending it. For a task-oriented
+The main architectural choices behind MRMhub QUANT, and the reasoning for each,
+are set out below for contributors and for users who want to understand how the
+package is structured before extending it. For a task-oriented
 introduction to running an analysis, see
-[Your first analysis](tutorial-00-first-analysis.html).
+[Getting started with MRMhub](tutorial-02-getting-started-mrmhub.html).
 
 ## One S4 object holds data, metadata, and state
 
@@ -49,17 +49,13 @@ corresponding annotations being accounted for. And the status flags
 (`is_istd_normalized`, `var_drift_corrected`, and the rest) record what has been
 applied, which lets later functions detect and refuse accidental double-processing.
 
-QUANT does not use `SummarizedExperiment` as its internal representation, though it
-exports to one. SE models a feature × sample matrix and offers no typed home for
-`dataset_orig`, for the processing state, or for the annotation tables that are not
-one row per feature (`annot_responsecurves`, `annot_qcconcentrations`,
-`metrics_calibration`); those can only ride along in an untyped `metadata()` list.
-While `colData` can carry `qc_type` and `batch_id`, no Bioconductor class models
-them, nor calibration curves or internal-standard relationships. The distinction
-concerns only the internal representation: once an experiment is processed,
-[`save_dataset_summarizedexperiment()`](tutorial-08-summarizedexperiment.html)
-hands it to the Bioconductor ecosystem (`limma`, `lipidr`, `POMA`), where the
-several parallel intensity variables map onto parallel assays.
+QUANT does not use `SummarizedExperiment` internally, though it exports to one. SE models a
+feature × sample matrix, with no typed home for `dataset_orig`, the processing state, or the
+non-rectangular annotation tables (`annot_responsecurves`, `annot_qcconcentrations`,
+`metrics_calibration`), which can only ride along in an untyped `metadata()` list. Once an
+experiment is processed, [`save_dataset_summarizedexperiment()`](tutorial-08-export-formats.html)
+hands it to the Bioconductor ecosystem (`limma`, `lipidr`), where the parallel intensity variables
+map onto parallel assays.
 
 ```{r}
 # The object structure:
@@ -249,5 +245,5 @@ functions) or a result object, update the relevant status flags, and never modif
 ## Next steps
 
 - [The MRMhubExperiment data object](manual-02-data-object.html): the object and its slots in detail
-- [Key concepts & glossary](manual-01-key-concepts.html): the vocabulary used throughout
+- [MRMhub overview](manual-01-key-concepts.html): the vocabulary used throughout
 - [Drift and batch correction](manual-07-corrections.html): the QC-based correction in practice

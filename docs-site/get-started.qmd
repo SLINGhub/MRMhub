@@ -46,7 +46,7 @@ correction, quantifies, computes QC metrics, filters features, and writes a QC r
 complete post-acquisition workflow in a single document.
 
 The same analysis is walked through, step by step, in
-[Your first analysis ↗](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.html).
+[Getting started with MRMhub ↗](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-getting-started-mrmhub.html).
 
 ## Next steps
 

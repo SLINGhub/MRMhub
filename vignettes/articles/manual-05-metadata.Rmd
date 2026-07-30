@@ -42,10 +42,9 @@ show_template <- function(sheet) {
 Metadata in this context refers to analysis metadata, i.e., data that annotate the
 analytical data. MRMhub stores it in five tables (analyses, features, internal
 standards, response curves, and calibration/QC concentrations) that are attached to an
-`MRMhubExperiment` and linked to the measurements by identifier. This page documents the
-structure of each table and how identifiers are matched. For the steps to obtain the
+`MRMhubExperiment` and linked to the measurements by identifier. For the steps to obtain the
 templates and import metadata, see
-[Import metadata from files or a template](recipe-05-import-metadata.html).
+[Preparing & importing data](tutorial-01-prep-data.html).
 
 Integrity of metadata and data is essential for correct post-processing: MRMhub inspects
 imported data and metadata for completeness and for consistency of the IDs used across the
@@ -128,9 +127,133 @@ recognize, a typo, or a different naming scheme) are not normalized, and the aff
 analyses are dropped from the join with a warning.
 :::
 
+## Common defects and fixes
+
+Most processing errors trace back to defects in the annotation tables rather
+than to the analytical data. The frequent offenders are a mismatched
+`analysis_id` between data and annotation, a missing `qc_type` label (the one
+column besides `analysis_id` the importer requires), and `qc_type` values that
+fall outside the canonical vocabulary. Each defect below pairs its diagnostic
+with the edit that resolves it. After an annotation table is edited in R it is
+re-imported, or passed to [`add_metadata()`](../reference/add_metadata.html) as
+a named list, so the same validation runs again before the table is linked.
+
+<details>
+<summary><strong>Column <code>qc_type</code> missing from <code>annot_analyses</code></strong></summary>
+
+`qc_type` is the only column besides `analysis_id` that the importer strictly
+requires. When it is absent it can be derived from a naming convention embedded
+in `analysis_id`:
+
+```{r, eval = FALSE}
+annot_analyses <- annot_analyses |>
+  dplyr::mutate(qc_type = dplyr::case_when(
+    stringr::str_detect(analysis_id, "BQC") ~ "BQC",
+    stringr::str_detect(analysis_id, "BLK") ~ "SBLK",
+    TRUE ~ "SPL"
+  ))
+```
+
+</details>
+
+<details>
+<summary><strong><code>analysis_id</code> in data not found in annotation</strong></summary>
+
+Some injections in the imported dataset have no matching row in the annotation
+table. Listing the difference exposes the cause; leading or trailing whitespace
+and case mismatches are the most frequent.
+
+```{r, eval = FALSE}
+data_ids <- unique(mexp@dataset_orig$analysis_id)
+annot_ids <- annot_analyses$analysis_id
+
+# IDs present in data but missing from annotation
+setdiff(data_ids, annot_ids)
+
+# Fix trailing whitespace introduced by Excel
+annot_analyses <- annot_analyses |>
+  dplyr::mutate(analysis_id = trimws(analysis_id))
+```
+
+`excl_unmatched_analyses = TRUE` in the importer drops unmatched analyses
+silently, useful only when the omission is intentional, such as excluded
+conditioning injections.
+
+</details>
+
+<details>
+<summary><strong>Non-canonical <code>qc_type</code> values</strong></summary>
+
+MRMhub recognises only its canonical `qc_type` labels, and they are
+case-sensitive; see [Sample types & QC roles](manual-06-sample-types.html) for
+the full set. Non-standard values are mapped to the canonical set before
+validating:
+
+```{r, eval = FALSE}
+unique(annot_analyses$qc_type)
+
+annot_analyses <- annot_analyses |>
+  dplyr::mutate(qc_type = dplyr::case_when(
+    qc_type == "Standard" ~ "CAL",
+    qc_type == "Blank" ~ "SBLK",
+    qc_type == "Pool" ~ "BQC",
+    qc_type == "Sample" ~ "SPL",
+    TRUE ~ qc_type
+  ))
+```
+
+</details>
+
+<details>
+<summary><strong>Duplicate identifiers</strong></summary>
+
+Repeated identifiers most often stem from copy-paste errors in Excel, or from
+header rows interpreted as data.
+
+```{r, eval = FALSE}
+annot_analyses |>
+  dplyr::count(analysis_id) |>
+  dplyr::filter(n > 1)
+```
+
+</details>
+
+<details>
+<summary><strong>Feature IDs in annotation do not match data</strong></summary>
+
+Comparing the feature identifiers in both directions separates features present
+in the data but unannotated from method-development residue left only in the
+annotation. A common cause is differing encoding of special characters
+(parentheses, slashes, unicode escapes) between the integration-software output
+and a hand-edited Excel file.
+
+```{r, eval = FALSE}
+data_features <- unique(mexp@dataset_orig$feature_id)
+annot_feat_ids <- annot_features$feature_id
+
+# In data but missing from annotation
+setdiff(data_features, annot_feat_ids)
+
+# In annotation but absent from data (often method-development residue)
+setdiff(annot_feat_ids, data_features)
+```
+
+</details>
+
+## Practical recommendations
+
+- Annotations are re-imported after every edit. A saved Excel file held open in
+  a separate process can be silently locked and read only in part.
+- CSVs are saved as UTF-8 without BOM. Excel's default "CSV UTF-8" export adds a
+  byte-order mark that shifts the first column header.
+- Special characters in `analysis_id` and `feature_id` (parentheses, slashes,
+  spaces) survive R but complicate downstream column references; restricting IDs
+  to letters, digits, underscores, and hyphens avoids this.
+- The annotation file is kept under version control alongside the data file.
+
 ## Next steps
 
-- [Import metadata from files or a template](recipe-05-import-metadata.html): the import steps
+- [Preparing & importing data](tutorial-01-prep-data.html): the import steps
 - [Importing analytical data](manual-04-data-import.html): importing the measurement data
 - [Sample types & QC roles](manual-06-sample-types.html): the `qc_type` values that drive QC logic
 - [The MRMhubExperiment data object](manual-02-data-object.html): where the metadata is stored

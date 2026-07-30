@@ -43,3 +43,4 @@ Rplots\.pdf$
 
 # Local, non-package share doc (INTEGRATOR fork review)
 ^integrator-fork-review\.html$
+^_archived$

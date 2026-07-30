@@ -1,0 +1,169 @@
+---
+title: "Getting started with R and Quarto notebooks"
+description: >
+  Install R and an IDE, create a Quarto project, learn to read and run notebook
+  code, and render a report — for readers new to R and Quarto.
+output:
+  rmarkdown::html_vignette:
+    fig_width: 7
+    fig_height: 5
+vignette: >
+  %\VignetteIndexEntry{Getting started with R and Quarto notebooks}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+editor_options:
+  markdown:
+    wrap: 100
+---
+
+```{r setup, include = FALSE}
+source("_common.R")
+```
+
+<p class="page-meta"><span class="page-kind page-kind-tutorial">Tutorial</span></p>
+
+A MRMhub analysis is written as a document that mixes prose with the R code that produces the
+results, so the report and the analysis are one file. This tutorial assumes no prior experience with
+R or Quarto: it starts from an empty computer, installs the software, sets up the project and notebook
+to work in, and shows how to read and run the code. Once your machine is set up, [Getting started with
+MRMhub](tutorial-02-getting-started-mrmhub.html) runs a complete analysis in the project you create
+here.
+
+## 1. Install R and an editor
+
+Two pieces of software are needed. **R** is the language the analysis runs in; an **integrated
+development environment** (IDE) is the editor you write and run it in.
+
+- Install R from [CRAN](https://cran.r-project.org/) (version 4.1 or newer). Pick the download for
+  your operating system and accept the defaults.
+- Install an IDE. [RStudio](https://posit.co/download/rstudio-desktop/) is the most common choice and
+  the one this tutorial follows. If you already work in VS Code, [Positron](https://positron.posit.co/)
+  is an RStudio-like alternative built on the same editor.
+
+With R and RStudio installed, open RStudio and install MRMhub from the console (the bottom-left
+pane). The first line installs `pak`, a package installer; the second uses it to fetch MRMhub and its
+dependencies:
+
+```{r install, eval = FALSE}
+if (!require("pak")) install.packages("pak")
+pak::pak("SLINGhub/MRMhub")
+```
+
+If the installation reports an error, the [Installation guide](manual-00-installation.html) lists the
+common causes (a missing compiler on Windows or macOS, a firewall blocking the download) and their
+fixes.
+
+## 2. RStudio at a glance
+
+When RStudio opens it shows four panes, each used at some point in an analysis:
+
+- **Source** (top-left) — where you edit the notebook and run its code.
+- **Console** (bottom-left) — runs a single line of R immediately; this is where you installed the
+  package above.
+- **Environment** (top-right) — lists the objects you have created, such as the `mexp` data object
+  once it exists.
+- **Files / Plots / Help** (bottom-right) — browses the project folder, shows figures, and displays
+  function help.
+
+The defaults are fine to start; nothing here needs configuring.
+
+## 3. Create a Quarto project
+
+A **project** keeps everything for one analysis — data, code, and results — in a single folder that
+the IDE treats as a unit. In RStudio, choose *File → New Project → New Directory → Quarto Project*,
+give it a name, and create it. Quarto's [project documentation](https://quarto.org/docs/tools/rstudio/)
+covers the dialog in detail.
+
+Inside the new project, add two folders to keep raw inputs separate from generated results — the
+convention MRMhub's own workflows follow:
+
+```
+my_study/
+├── data/            # raw INTEGRATOR output and metadata files
+├── output/          # exported CSVs, PDFs, and reports
+└── analysis.qmd     # this document
+```
+
+Paths in your code are written relative to this project folder: RStudio treats it as the working
+directory, so `data/my_file.csv` points to the same place on any machine, without a full path. This
+is why the `data/` and `output/` folders above are all the analysis needs to find its files.
+
+## 4. Add text and code
+
+A `.qmd` file has three kinds of content. At the top, a short **header** fenced by `---` sets the
+title and the output format — `html`, `pdf`, or `docx`; a new project starts with a sensible HTML
+header, and [Quarto workflows](manual-11-quarto-workflows.html) covers the options. Below it,
+**prose** is written in Markdown — plain paragraphs, with `#` for headings, `**bold**`, and `-` for
+lists. **Code** lives in *chunks*: R code fenced between ```` ```{r} ```` and ```` ``` ````. In
+RStudio, *Insert → Code Chunk* (or Ctrl/Cmd + Alt + I) adds an empty one. A chunk that loads the
+MRMhub package looks like this:
+
+```` markdown
+Load the package before calling any of its functions.
+
+```{r}
+library(mrmhub)
+```
+````
+
+RStudio offers two ways to edit a `.qmd`: the **Source** editor shows the raw Markdown, while the
+**Visual** editor (the *Visual* toggle, top-left of the document) shows a formatted, word-processor-like
+view. Both edit the same file. Quarto's [authoring guide](https://quarto.org/docs/get-started/hello/rstudio.html)
+introduces both.
+
+## 5. Preview and run code
+
+There are two distinct actions. **Running a chunk** executes its code immediately and shows the
+result inline: click the green ▶ arrow at the chunk's top-right, or press Ctrl/Cmd + Shift + Enter
+with the cursor inside it. **Rendering** turns the whole document into a finished HTML (or PDF)
+report: click **Render**, and RStudio runs every chunk in order and assembles the output. The
+**Preview** that opens updates each time you render, so the report stays in step with the code.
+
+While developing an analysis, run chunks one at a time to check each step; render at the end to
+produce the shareable report.
+
+Try it now: add the chunk above and run it. Loading MRMhub without error confirms the installation
+worked.
+
+```{r load-mrmhub}
+library(mrmhub)
+```
+
+## 6. Reading the code you'll run
+
+The next tutorial uses MRMhub functions and no custom R, but three pieces of R syntax recur
+throughout. Recognising them is enough to follow along:
+
+- **Assignment** (`<-`) stores a result under a name. `mexp <- MRMhubExperiment()` creates a data
+  object and names it `mexp`; writing `mexp` again later refers back to it.
+- **Function calls with named arguments.** In `import_data_mrmhub(mexp, path = demo_file)`, the
+  function acts on `mexp`, and `path =` names which input the file is. Most MRMhub functions take the
+  data object first and options as named arguments.
+- **The pipe** (`|>`) passes a result straight into the next function, so
+  `plot_pca(mexp) |> save_plot("pca.pdf")` plots and then saves in one line, with no temporary name.
+
+Each processing step follows the same shape — take the data object, return an updated one, and store
+it back under the same name: `mexp <- normalize_by_istd(mexp)`.
+
+## 7. Getting help
+
+To see what a function does and which arguments it takes, type `?` followed by its name in the
+Console:
+
+```{r help, eval = FALSE}
+?plot_pca
+```
+
+Its help page opens in the **Help** pane, listing every argument with an explanation and, usually,
+examples. The same pages for every function are in the [function reference](../reference/index.html),
+and the [MRMhub overview](manual-01-key-concepts.html) introduces the concepts they build on.
+
+With the software installed, the project set up, and the syntax demystified, you are ready to run a
+real analysis. Continue with [Getting started with MRMhub](tutorial-02-getting-started-mrmhub.html),
+which imports the demo data and takes it through to an exported report.
+
+## Next steps
+
+- [Getting started with MRMhub](tutorial-02-getting-started-mrmhub.html): run a complete analysis in the project you just created
+- [Quarto workflows](manual-11-quarto-workflows.html): rendering, figure sizing, and report options
+- [Installation guide](manual-00-installation.html): detailed setup and troubleshooting

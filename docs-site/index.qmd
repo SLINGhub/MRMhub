@@ -92,11 +92,10 @@ bioinformatics scientists.
 Both are customizable and can be used together or independently:
 
 ::: {.module-list}
-- **[INTEGRATOR ↗](https://slinghub.github.io/MRMhub/integrator/)** — a fast, memory-efficient,
-  multithreaded standalone application for consensus-based peak integration across large analysis
-  sequences, with per-feature integration settings. It reads mzML (vendor raw files converted via
-  [msconvert](https://proteowizard.sourceforge.io/)) and exports integrated peak areas that feed
-  directly into QUANT or other post-processing tools.
+- **[INTEGRATOR ↗](https://slinghub.github.io/MRMhub/integrator/)** — a fast, memory-efficient
+  standalone application for consensus-based peak integration of large-scale analyses, with
+  per-feature integration settings. It reads mzML (vendor raw files converted via msconvert) and
+  exports integrated peak areas that feed directly into QUANT or other post-processing tools.
 - **[QUANT ↗](https://slinghub.github.io/MRMhub/quant/)** — a programmatic R library
   (`mrmhub`) for building tailored, reproducible post-processing and quality-control pipelines.
   It reads INTEGRATOR results directly, or feature-intensity data from other sources
@@ -106,9 +105,9 @@ Both are customizable and can be used together or independently:
 ## Getting started
 
 ::: {.arrow-list}
-- **Run the demo** — download the [latest MRMhub release](https://github.com/SLINGhub/MRMhub/releases) and follow the `readme.txt`, or the [demo walkthrough](get-started.html), to process the bundled demo project end-to-end with both modules - no data of your own required.
-- **Browse real analyses** — [mrmhub-workflows ↗](https://slinghub.github.io/MRMhub-workflows/) showcases annotated, end-to-end data-processing reports from large-scale lipidomics studies.
-- **Read the module docs** — tutorials and detailed instructions for each module: [INTEGRATOR ↗](https://slinghub.github.io/MRMhub/integrator/) and [QUANT ↗](https://slinghub.github.io/MRMhub/quant/).
+- **[Browse real analyses ↗](https://slinghub.github.io/MRMhub-workflows/)** — annotated, end-to-end reports from large-scale studies.
+- [INTEGRATOR Quick Start ↗](https://slinghub.github.io/MRMhub/integrator/quickstart.html) (peak integration) and [Getting started with QUANT ↗](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-getting-started-mrmhub.html) (post-processing).
+- **[Run the demo](get-started.html)** — the bundled demo project with data showcasing both modules.
 :::
 
 ---

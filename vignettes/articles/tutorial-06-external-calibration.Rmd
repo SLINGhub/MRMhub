@@ -1,0 +1,162 @@
+---
+title: "Quantification with external calibration"
+description: >
+  Fit external calibration curves for a targeted assay, quantify the samples,
+  and check the result against QC samples with known concentrations.
+output:
+  rmarkdown::html_vignette:
+    fig_width: 6
+    fig_height: 2
+vignette: >
+  %\VignetteIndexEntry{Quantification with external calibration}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+editor_options:
+  markdown:
+    wrap: 100
+---
+
+```{r setup, include = FALSE}
+source("_common.R")
+```
+
+<p class="page-meta"><span class="page-kind page-kind-tutorial">Tutorial</span> <span class="page-prereq">Prerequisites: <a href="tutorial-03-lipidomics-workflow.html">Full workflow</a></span></p>
+
+External calibration quantifies each analyte from a calibration curve measured alongside the
+samples, as used in clinical chemistry, toxicology and environmental analysis. This tutorial fits
+one curve per analyte from a dilution series of calibrators, quantifies the samples, and checks the
+result against QC samples with assigned target concentrations. The example is a 15-analyte serum
+steroid panel measured by LC-MRM-MS, with calibrants (Cal A–F), low and high QCs (LQC, HQC), and
+external quality-assessment samples in place of study samples.
+
+The target concentrations for the calibrators and QCs live in the `QCconcentrations` metadata,
+which requires `sample_id` in the analysis metadata and `analyte_id` in the feature metadata.
+
+::: {.callout .callout-note}
+The full, reproducible report for this dataset (including drift-range flags, exports and the
+underlying data) is published as
+[Dataset 4](https://slinghub.github.io/MRMhub-workflows/Dataset4.html) in the MRMhub-workflows
+supplement.
+:::
+
+## 1. Import data and metadata
+
+We load the INTEGRATOR peak areas into a fresh `MRMhubExperiment`, then attach the metadata
+workbook that defines the analytes, their internal standards, the sample annotations, and the
+calibration and target concentrations.
+
+```{r import}
+#| message: true
+library(mrmhub)
+
+mexp <- MRMhubExperiment(title = "Steroid Assay")
+mexp <- import_data_mrmhub(
+  mexp,
+  path = "datasets/Dataset4_MRMhub-INTEGRATOR_ASSAY.csv",
+  import_metadata = TRUE)
+mexp <- import_metadata_msorganiser(
+  mexp,
+  path = "datasets/Dataset4_Metadata.xlsx",
+  excl_unmatched_analyses = TRUE,
+  ignore_warnings = TRUE)
+```
+
+## 2. Fit the calibration curves
+
+`normalize_by_istd()` divides each analyte's peak area by that of its internal standard, writing the
+ratio to `feature_norm_intensity`. `calc_calibration_results()` then fits one curve per analyte from
+the calibrator levels (here a quadratic model with `1/x` weighting for all analytes). The model and
+weighting can also be set per analyte in the feature metadata.
+
+```{r calibrate}
+#| message: true
+mexp <- normalize_by_istd(mexp)
+mexp <- calc_calibration_results(
+  mexp,
+  fit_overwrite = TRUE,
+  fit_model = "quadratic",
+  fit_weighting = "1/x")
+```
+
+Inspect the fitted curves before quantifying: each analyte's response should rise steadily across
+the calibrator range and fit the points well, and the samples should fall inside that range rather
+than on the dotted, extrapolated section.
+
+```{r calibration-curves}
+#| fig.cap: !expr fig_cap("Quadratic, 1/x-weighted calibration curves for the 15 steroid analytes. Curves are solid within the calibrator range and dotted where extrapolated.")
+#| fig.alt: Calibration curves for the 15 steroid analytes, plotted on a log scale
+#| fig.width: 9
+#| fig.height: 7
+#| out.width: "100%"
+plot_calibrationcurves(
+  mexp,
+  fit_overwrite = TRUE,
+  fit_model = "quadratic",
+  fit_weighting = "1/x",
+  include_istd = FALSE,
+  include_qualifier = FALSE,
+  rows_page = 4, cols_page = 4,
+  show_progress = FALSE)
+```
+
+`get_calibration_metrics()` summarises each fit: the R² for linearity and the limits of detection
+and quantification (`lod`, `loq`), in the calibrated concentration unit.
+
+```{r cal-metrics}
+get_calibration_metrics(
+  mexp,
+  include_qualifier = FALSE, summary_table = TRUE)
+```
+
+## 3. Quantify the samples
+
+Once the curves are satisfactory, `quantify_by_calibration()` inverts each fitted curve to convert
+the normalized intensities into absolute concentrations, written to `feature_conc`. Using
+`ignore_failed_calibration = TRUE` skips any analyte whose curve failed to fit rather than aborting
+the whole run.
+
+```{r quantify}
+#| message: true
+mexp <- quantify_by_calibration(
+  mexp,
+  fit_overwrite = FALSE,
+  include_qualifier = FALSE,
+  ignore_failed_calibration = TRUE,
+  fit_model = "quadratic",
+  fit_weighting = "1/x")
+```
+
+## 4. Check QC bias and variability
+
+The final check compares the measured QC concentrations against their known targets.
+`get_qc_bias_variability()` reports, per analyte and QC level, the mean measured concentration, the
+**bias** (percent deviation from target, i.e. accuracy) and the intra-batch **%CV** (precision).
+
+```{r qc-check}
+get_qc_bias_variability(
+  mexp,
+  qc_types = c("LQC", "HQC"), summary_table = TRUE)
+```
+
+For a quantitative assay, bias and CV within roughly ±15% (±20% near the quantification limit) is a
+common acceptance guide, though the exact limits depend on the application and any regulatory
+requirements.
+
+## 5. Export the concentrations
+
+`save_dataset_csv()` writes a flat table of concentrations, one row per sample. `add_qctype = TRUE`
+keeps the QC-type column so calibrators, QCs and samples stay distinguishable. For a multi-sheet
+workbook that also bundles the calibration and QC metrics, use `save_report_xlsx()`.
+
+```{r export}
+save_dataset_csv(
+  mexp,
+  path = "steroid_conc.csv",
+  variable = "conc",
+  add_qctype = TRUE)
+```
+
+## Next steps
+
+- [Calibration by a reference sample](tutorial-07-calibration-reference.html): an alternative when no calibration series is available
+- [Visualisation functions](manual-08-visualization.html): the plotting reference, including calibration and QC plots

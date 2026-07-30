@@ -20,10 +20,10 @@ editor_options:
 source("_common.R")
 ```
 
-<p class="page-meta"><span class="page-kind page-kind-tutorial">Tutorial</span> <span class="page-level">Intermediate</span> <span class="page-prereq">Prerequisites: <a href="tutorial-02-basic-workflow.html">Basic workflow</a></span></p>
+<p class="page-meta"><span class="page-kind page-kind-tutorial">Tutorial</span> <span class="page-prereq">Prerequisites: <a href="tutorial-03-lipidomics-workflow.html">Full workflow</a></span></p>
 
-This tutorial covers two complementary QC-exploration views on the built-in
-lipidomics dataset. `plot_runscatter()` shows a feature's signal across the
+The built-in lipidomics dataset supports two complementary QC-exploration
+views. `plot_runscatter()` shows a feature's signal across the
 analysis sequence, which helps to identify trends, detect outliers, and assess
 analytical performance. Principal component analysis (`plot_pca()`,
 `plot_pca_loading()`, `detect_outlier_pca()`) adds a multivariate view for
@@ -414,5 +414,5 @@ see [Saving plots](manual-08-visualization.html#saving-plots).
 
 - [Drift and batch correction](tutorial-04-drift-correction.html): apply and inspect corrections
 - [Visualisation functions](manual-08-visualization.html): the full list of plotting functions
-- [Customising plots](manual-13-plot-customization.html): sizing text, legends and points without `+ theme()`
-- [Basic MRMhub workflow](tutorial-02-basic-workflow.html): where these checks fit in the pipeline
+- [Customising plots](manual-08-visualization.html#customising-plots): sizing text, legends and points without `+ theme()`
+- [Lipidomics workflow](tutorial-03-lipidomics-workflow.html): where these checks fit in the pipeline

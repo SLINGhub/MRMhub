@@ -1,0 +1,33 @@
+# Citation for the mrmhub (MRMhub-QUANT) package.
+# Cites the bioRxiv preprint (metadata from the DOI). Update the year/journal
+# if/when the paper is published in a peer-reviewed venue.
+
+citHeader("To cite MRMhub in publications, please cite the preprint:")
+
+bibentry(
+  bibtype  = "Article",
+  title    = "MRMhub: one-stop solution for automated processing of large-scale targeted metabolomics data",
+  author   = c(
+    person("Bo", "Burla"),
+    person("Guoshou", "Teo"),
+    person("Peter I.", "Benke"),
+    person("Zinan", "Lu"),
+    person("Sock Hwee", "Tan"),
+    person("Shanshan", "Ji"),
+    person("Jeongah", "Oh"),
+    person("Pei Yen", "Lim"),
+    person(given = "Vaitheeswari"),
+    person("Amaury", "Cazenave Gassiot"),
+    person("Kavita", "Venkataraman"),
+    person("E Shyong", "Tai"),
+    person("Federico", "Torta"),
+    person("Markus R.", "Wenk"),
+    person("Mark Y.Y.", "Chan"),
+    person("Hyungwon", "Choi")
+  ),
+  journal  = "bioRxiv",
+  year     = "2025",
+  doi      = "10.64898/2025.12.20.695370",
+  url      = "https://github.com/SLINGhub/MRMhub",
+  note     = "Preprint"
+)

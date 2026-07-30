@@ -20,7 +20,7 @@ editor_options:
 source("_common.R")
 ```
 
-<p class="page-meta"><span class="page-kind page-kind-tutorial">Tutorial</span> <span class="page-level">Intermediate</span> <span class="page-prereq">Prerequisites: <a href="tutorial-02-basic-workflow.html">Basic workflow</a></span></p>
+<p class="page-meta"><span class="page-kind page-kind-tutorial">Tutorial</span> <span class="page-prereq">Prerequisites: <a href="tutorial-03-lipidomics-workflow.html">Full workflow</a></span></p>
 
 Signal intensities in a mass-spectrometry run drift with injection order and shift between
 analytical batches. MRMhub corrects run-order drift by smoothing a trend through reference
@@ -37,9 +37,9 @@ We import pre-calculated raw concentration values from a CSV file. Batch-wise co
 ```{r import}
 library(mrmhub)
 
-myexp <- MRMhubExperiment()
-myexp <- import_data_csv_wide(
-  myexp,
+mexp <- MRMhubExperiment()
+mexp <- import_data_csv_wide(
+  mexp,
   path = "smooth-testdata.csv",
   variable_name = "conc",
   import_metadata = TRUE
@@ -55,7 +55,7 @@ The reported change in median CV summarises whether the correction improved anal
 #| message: true
 #| code-overflow: wrap
 mexp_drift <- correct_drift_cubicspline(
-  myexp,
+  mexp,
   variable = "conc",
   batch_wise = FALSE,
   ref_qc_types = "BQC",
@@ -99,7 +99,7 @@ though for this dataset the difference from the QC-based result above is modest.
 ```{r drift-gaussian}
 #| code-overflow: wrap
 mexp_drift <- correct_drift_gaussiankernel(
-  myexp,
+  mexp,
   variable = "conc",
   batch_wise = FALSE,
   ref_qc_types = "SPL",
@@ -127,7 +127,7 @@ each batch by setting `batch_wise = TRUE`.
 ```{r drift-batchwise}
 #| code-overflow: wrap
 mexp_drift <- correct_drift_gaussiankernel(
-  myexp,
+  mexp,
   variable = "conc",
   batch_wise = TRUE,
   ref_qc_types = "SPL",
@@ -177,9 +177,9 @@ Batch effects (systematic differences between analytical batches) are corrected 
 Each batch is centered on a reference QC type, here the study samples (`ref_qc_types = "SPL"`).
 
 ```{r batch-import}
-myexp_batch <- MRMhubExperiment()
-myexp_batch <- import_data_csv_wide(
-  myexp_batch,
+mexp_batch <- MRMhubExperiment()
+mexp_batch <- import_data_csv_wide(
+  mexp_batch,
   path = "simdata-u1000-sd100_7batches.csv",
   variable_name = "conc",
   import_metadata = TRUE
@@ -189,8 +189,8 @@ myexp_batch <- import_data_csv_wide(
 ```{r batch-center}
 #| message: true
 #| code-overflow: wrap
-myexp_batch <- correct_batch_centering(
-  myexp_batch,
+mexp_batch <- correct_batch_centering(
+  mexp_batch,
   variable = "conc",
   ref_qc_types = "SPL",
   correct_scale = FALSE
@@ -201,7 +201,7 @@ myexp_batch <- correct_batch_centering(
 #| fig.cap: !expr fig_cap("Concentrations before batch correction; batch medians are offset from one another.")
 #| fig.alt: RunScatter before batch correction, batches offset
 plot_runscatter(
-  myexp_batch,
+  mexp_batch,
   variable = "conc_before",
   rows_page = 1, cols_page = 1
 )
@@ -211,7 +211,7 @@ plot_runscatter(
 #| fig.cap: !expr fig_cap("Concentrations after median-centering batch correction; batch medians are aligned.")
 #| fig.alt: RunScatter after median-centering batch correction, batches aligned
 plot_runscatter(
-  myexp_batch,
+  mexp_batch,
   variable = "conc",
   rows_page = 1, cols_page = 1
 )
@@ -223,15 +223,15 @@ also equalises the variance between batches.
 ```{r batch-scale}
 #| fig.cap: !expr fig_cap("Concentrations after batch correction with variance scaling; both location and spread are consistent across batches.")
 #| fig.alt: RunScatter after batch correction with variance scaling
-myexp_batch <- correct_batch_centering(
-  myexp_batch,
+mexp_batch <- correct_batch_centering(
+  mexp_batch,
   variable = "conc",
   ref_qc_types = "SPL",
   correct_scale = TRUE
 )
 
 plot_runscatter(
-  myexp_batch,
+  mexp_batch,
   variable = "conc",
   rows_page = 1, cols_page = 1
 )
@@ -248,8 +248,8 @@ and scale adjustment, shrinking the batch estimates across features (requires th
 samples; pass `covariates` to protect biology on unbalanced designs.
 
 ```{r batch-combat, eval = FALSE}
-myexp_batch <- correct_batch_combat(
-  myexp_batch,
+mexp_batch <- correct_batch_combat(
+  mexp_batch,
   variable = "conc",
   ref_qc_types = "SPL"
 )
@@ -262,8 +262,8 @@ panels with dense QC coverage; the implementation adapts the `malbacR` reference
 [@leach2023MalbacRPackage].
 
 ```{r batch-serrf, eval = FALSE}
-myexp_batch <- correct_batch_serrf(
-  myexp_batch,
+mexp_batch <- correct_batch_serrf(
+  mexp_batch,
   variable = "conc",
   ref_qc_types = "SPL"
 )
@@ -288,7 +288,7 @@ spline; its `span` controls smoothness.
 ```{r drift-loess}
 #| code-overflow: wrap
 mexp_drift_loess <- correct_drift_loess(
-  myexp,
+  mexp,
   variable = "conc",
   batch_wise = TRUE,
   ref_qc_types = "BQC",

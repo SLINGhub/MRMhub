@@ -1,13 +1,13 @@
 ---
-title: "Key concepts & glossary"
+title: "MRMhub overview"
 output:
   rmarkdown::html_vignette:
     fig_width: 6
     fig_height: 3
 description: |
-  Core vocabulary of MRMhub: the data model, terminology, and the function-naming convention.
+  A technical overview of MRMhub.
 vignette: >
-  %\VignetteIndexEntry{Key concepts & glossary}
+  %\VignetteIndexEntry{MRMhub overview}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 editor_options:
@@ -24,82 +24,94 @@ knitr::opts_chunk$set(
 
 <p class="page-kind page-kind-manual">Manual</p>
 
-MRMhub organizes targeted mass spectrometry data around two axes: **analyses**,
-the individual injections or samples in a run, and **features**, the distinct
-signals extracted from the MS data. Every measurement is a value (typically a
-peak area) at the intersection of one analysis and one feature, and all of these
-values are held together with their metadata in a single object, the
-`MRMhubExperiment`. Functions take an `MRMhubExperiment` and return an updated
-one, and these calls are chained together to build a workflow. See
-[The MRMhubExperiment data object](manual-02-data-object.html) for how the object
-is structured and [Sample types & QC roles](manual-06-sample-types.html) for the
-sample roles that drive its QC logic.
+MRMhub performs postprocessing, quality control, and reporting of targeted mass
+spectrometry data. Its core data structure is used by MRMhub's data-exchange,
+processing, and plotting functions.
 
-## Glossary
+::: {.callout .callout-note}
+**MRMhub's data** is structured around two levels: **analyses**, the individual
+measurements (often corresponding to MS injections), and **features**, the
+distinct signals extracted from the MS data. Each analysis–feature pair is a
+**measurement**, which can carry one or more **feature variables** such as peak
+area and retention time. A **sample** in this context is a
+physical sample that was measured (several analyses can come from one sample) and an **analyte** can be represented by several features (i.e., different transitions, isotopes and
+adducts). See also the [Glossary](manual-14-glossary.html).
+:::
 
-```{r, echo=FALSE, results='asis'}
-glossary <- data.frame(
- Term = c("analysis_id", "feature_id", "analyte_id", "ISTD", "RQC", "qualifier",
-           "quantifier", "drift correction", "batch correction",
-           "long format", "wide format", "MRMhubExperiment",
-           "INTEGRATOR", "MRMhub-QUANT"),
- Definition = c(
-   "Unique identifier for each injection/sample in the run",
-   "Unique identifier for a feature (a distinct signal extracted from the MS data)",
-   "Identifier of the compound/analyte a feature measures; several features can share one analyte",
-   "Internal Standard: a spiked compound used for normalization",
-   "Response Quality Control: a serial-dilution (response) curve of the QC pool, used to assess linearity and response",
-   "A secondary MRM transition used to confirm compound identity",
-   "The primary MRM transition used for quantification",
-   "Statistical correction for signal drift across a run",
-   "Correction for systematic differences between analytical batches",
-   "One row per analysis × feature (tidy format)",
-   "One row per analysis, features as columns",
-   "The S4 object holding all data + metadata for a project",
-   "Standalone tool for peak integration from mzML files",
-   "The post-processing module (this R package, mrmhub): QC, normalization, quantitation, reporting"
- ),
- stringsAsFactors = FALSE
-)
+## The MRMhubExperiment data object
 
-DT::datatable(
- glossary,
- options = list(
-   pageLength = 15,
-   dom = "ft",
-   ordering = TRUE
- ),
- rownames = FALSE,
- filter = "top",
- class = "compact stripe"
-)
+All data (measurements) and detailed metadata describing the analyses and
+features, together with the intermediate and final processed data for one
+experiment, are stored in a single object of the `MRMhubExperiment` class. The
+object also records data processing status. See [The MRMhubExperiment data object](manual-02-data-object.html) for details.
+
+<div style="text-align: center; margin: 2em 0;">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 280" style="max-width: 600px; width: 100%; height: auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+  <rect x="5" y="5" width="590" height="270" rx="10" fill="#f8f9fa" stroke="#5B8FA8" stroke-width="2"/>
+  <text x="300" y="30" text-anchor="middle" font-weight="700" font-size="14" fill="#2C3E50">MRMhubExperiment</text>
+  <line x1="20" y1="40" x2="580" y2="40" stroke="#dee2e6"/>
+  <rect x="20" y="55" width="270" height="100" rx="6" fill="#d6e4eb" stroke="#5B8FA8"/>
+  <text x="155" y="75" text-anchor="middle" font-weight="600" font-size="12" fill="#2C3E50">DATA</text>
+  <text x="35" y="95" font-size="10" fill="#333">dataset_orig: original imported data</text>
+  <text x="35" y="112" font-size="10" fill="#333">dataset: annotated and processed data</text>
+  <text x="35" y="129" font-size="10" fill="#333">dataset_filtered: QC-filtered output</text>
+  <text x="35" y="146" font-size="10" fill="#333">metrics_qc: QC metrics per feature</text>
+  <rect x="310" y="55" width="270" height="100" rx="6" fill="#f5e0c8" stroke="#D4914E"/>
+  <text x="445" y="75" text-anchor="middle" font-weight="600" font-size="12" fill="#2C3E50">METADATA</text>
+  <text x="325" y="95" font-size="10" fill="#333">annot_analyses: sample/run annotations</text>
+  <text x="325" y="112" font-size="10" fill="#333">annot_features: feature annotations</text>
+  <text x="325" y="129" font-size="10" fill="#333">annot_istds: ISTD concentrations</text>
+  <text x="325" y="146" font-size="10" fill="#333">annot_batches / annot_qcconcentrations / ...</text>
+  <rect x="20" y="170" width="560" height="50" rx="6" fill="#d8e6d4" stroke="#6B9E5E"/>
+  <text x="300" y="192" text-anchor="middle" font-weight="600" font-size="12" fill="#2C3E50">STATUS AND FLAGS</text>
+  <text x="300" y="210" text-anchor="middle" font-size="10" fill="#333">is_istd_normalized, is_quantitated, var_drift_corrected, var_batch_corrected, ...</text>
+  <text x="300" y="258" text-anchor="middle" font-size="10" fill="#666">Functions take MRMhubExperiment in and return updated MRMhubExperiment</text>
+</svg>
+</div>
+
+
+
+### How a MRMhubExperiment object is used in a workflow
+
+An MRMhubExperiment object is created at the start of a workflow. Data and metadata
+are imported into it, and it is then used in all subsequent processing, plotting,
+and reporting steps. Each `mrmhub` function takes an MRMhubExperiment object as its
+first argument, and processing functions return an updated MRMhubExperiment
+object. This returned object is typically assigned back to the same name, which is
+then passed to the next function. Plotting functions instead return a plot (typically
+`ggplot2` object). MRMhubExperiment objects can also be used with the native R pipe (`|>`), which
+forwards the object from one function to the next.
+
+```{r, eval = FALSE}
+mexp <- MRMhubExperiment()
+mexp <- import_data_mrmhub(mexp, path = "data/results.tsv")
+mexp <- normalize_by_istd(mexp)
+
+# equivalently, chained with the R pipe:
+mexp <- MRMhubExperiment() |>
+  import_data_mrmhub(path = "data/results.tsv") |>
+  normalize_by_istd()
 ```
 
-A feature and an analyte are not one-to-one: one analyte can give several features
-(isotopes, adducts, transitions), and one feature can carry several analytes when
-they are isobaric or isomeric (e.g. SM/PC). The `feature_id` names the signal,
-while the `analyte_id` names the compound.
+## Core function groups
 
-## Reading the function names
+MRMhub's public functions fall into four groups, and their names follow a
+consistent convention:
 
-A naming convention runs through the public API, so once it is internalised the
-function names are largely predictable:
+- **Data exchange** — read measured data and metadata into the object, and write results (tables, plots, reports) back out to disk.
+- **Data processing** — the transforms that normalize, correct (drift, batch, isotopic interference), and quantify the measurements, and compute per-feature QC metrics.
+- **QC charts** — return plots for visual inspection of the run order, normalization, corrections, calibration, and sample relationships.
+- **QC filtering** — apply pass/fail thresholds to features and exclude features or analyses that fail QC.
 
-- `import_data_*()`: read raw integrated peak data from a given source
-- `import_metadata_*()`: read an annotation table from a given source
-- `add_metadata()` / `set_*()`: attach annotation or assign a slot on the experiment
-- `normalize_by_*()`: divide one variable by another (e.g. by ISTD)
-- `correct_drift_*()` / `correct_batch_*()`: apply a named correction model
-- `quantify_by_*()`: compute concentration values via a given strategy
-- `calc_*()`: compute per-feature or per-analysis metrics
-- `filter_*()`: apply pass/fail thresholds
-- `plot_*()`: return a ggplot2 object
-- `save_*()`: write to disk
-- `get_*()`: read a derived value from the experiment
+For these functions arranged by pipeline stage, see the
+[Function map](manual-13-function-map.html). The
+[Function reference](../reference/index.html) lists every function with full
+parameter detail.
 
 ## Next steps
 
-- [The MRMhubExperiment data object](manual-02-data-object.html): the tables and identifiers in detail
-- [Sample types & QC roles](manual-06-sample-types.html): the `qc_type` labels used throughout
-- [Basic MRMhub workflow](tutorial-02-basic-workflow.html): these functions in a real script
+- [Glossary](manual-14-glossary.html): definitions of the analytical terms used throughout the documentation
+- [The MRMhubExperiment data object](manual-02-data-object.html): the tables, identifiers, and variables in detail
+- [Sample types & QC roles](manual-06-sample-types.html): the QC labels used throughout
+- [Lipidomics workflow](tutorial-03-lipidomics-workflow.html): these functions in a real script
 - [Function reference](../reference/index.html): every function with full parameter detail

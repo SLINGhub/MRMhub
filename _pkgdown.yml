@@ -18,8 +18,9 @@ navbar:
     - tutorials
     - manual
     - reference
-    - news
     right:
+    - help
+    - news
     - mrmhub
     - integrator
     - search
@@ -36,60 +37,44 @@ navbar:
     get_started:
       text: Get Started
       menu:
+      - text: MRMhub overview
+        href: articles/manual-01-key-concepts.html
+      - text: '-------'
       - text: Installation
         href: articles/manual-00-installation.html
-      - text: Intro to R, Quarto & MRMhub
-        href: articles/tutorial-13-intro-to-r-quarto-mrmhub.html
-      - text: Your First Analysis (5 min)
-        href: articles/tutorial-00-first-analysis.html
-      - text: Key Concepts & Glossary
-        href: articles/manual-01-key-concepts.html
-      - text: Troubleshooting & FAQ
-        href: articles/manual-10-troubleshooting.html
+      - text: Getting started with R and Quarto notebooks
+        href: articles/tutorial-13-getting-started-r-quarto.html
+      - text: Getting started with MRMhub
+        href: articles/tutorial-02-getting-started-mrmhub.html
+      - text: Using the workflow builder
+        href: articles/tutorial-12-workflow-builder.html
+    help:
+      text: Help
+      href: articles/manual-10-troubleshooting.html
     tutorials:
       text: Tutorials
       menu:
-      - text: Start here
-      - text: Intro to R, Quarto & MRMhub
-        href: articles/tutorial-13-intro-to-r-quarto-mrmhub.html
-      - text: Your First Analysis (5 min)
-        href: articles/tutorial-00-first-analysis.html
-      - text: Build a workflow (no code)
-        href: articles/tutorial-12-workflow-builder.html
-      - text: Preparing & importing data
-        href: articles/tutorial-01-prep-data.html
-      - text: Basic MRMhub workflow
-        href: articles/tutorial-02-basic-workflow.html
-      - text: Lipidomics (full workflow)
+      - text: Example workflows
+      - text: Lipidomics
         href: articles/tutorial-03-lipidomics-workflow.html
+      - text: Quantitative assay with external calibration
+        href: articles/tutorial-06-external-calibration.html
       - text: '-------'
-      - text: Techniques
+      - text: Preparing and importing data
+        href: articles/tutorial-01-prep-data.html
+      - text: '-------'
+      - text: Data processing
+      - text: Correcting isotopic interference
+        href: articles/tutorial-11-interference-correction.html
       - text: Drift and batch correction
         href: articles/tutorial-04-drift-correction.html
-      - text: Calibration by reference sample
+      - text: Calibration by a reference sample
         href: articles/tutorial-07-calibration-reference.html
-      - text: Interference correction
-        href: articles/tutorial-11-interference-correction.html
       - text: '-------'
-      - text: QC & exploration
-      - text: RunScatter and PCA
+      - text: 'Exploring QC: RunScatter and PCA'
         href: articles/tutorial-05-run-scatter.html
-      - text: '-------'
-      - text: Downstream / export
-      - text: Export to Bioconductor (SummarizedExperiment)
-        href: articles/tutorial-08-summarizedexperiment.html
-      - text: '-------'
-      - text: Recipes
-      - text: External calibration & QC
-        href: articles/recipe-01-ext-calibration-qc.html
-      - text: Custom QC report
-        href: articles/recipe-02-custom-qc-report.html
-      - text: Import & export mzTab-M
-        href: articles/recipe-03-mztab-export.html
-      - text: Validate & fix metadata
-        href: articles/recipe-04-validate-metadata.html
-      - text: Import metadata from files or a template
-        href: articles/recipe-05-import-metadata.html
+      - text: Exporting results
+        href: articles/tutorial-08-export-formats.html
     manual:
       text: Manual
       menu:
@@ -99,36 +84,37 @@ navbar:
       - text: Getting started
       - text: Installation
         href: articles/manual-00-installation.html
-      - text: Key Concepts & Glossary
+      - text: MRMhub overview
         href: articles/manual-01-key-concepts.html
       - text: '-------'
       - text: Preparing and running
-      - text: Importing Analytical Data
+      - text: Importing analytical data
         href: articles/manual-04-data-import.html
-      - text: Metadata Tables & Matching
+      - text: Metadata tables & matching
         href: articles/manual-05-metadata.html
-      - text: Drift and Batch Correction
-        href: articles/manual-07-corrections.html
-      - text: Isotopic Interference Correction
+      - text: Isotopic interference correction
         href: articles/manual-12-interference-correction.html
-      - text: Quarto Workflows
+      - text: Drift and batch correction
+        href: articles/manual-07-corrections.html
+      - text: Quarto workflows
         href: articles/manual-11-quarto-workflows.html
       - text: '-------'
-      - text: Results and downstream use
-      - text: Visualisation Functions
+      - text: Visualisation functions
         href: articles/manual-08-visualization.html
-      - text: Customising Plots
-        href: articles/manual-13-plot-customization.html
-      - text: Getting Help from an AI Assistant
-        href: articles/manual-09-ai-assistants.html
       - text: '-------'
       - text: Reference
-      - text: The MRMhubExperiment Data Object
+      - text: The MRMhubExperiment data object
         href: articles/manual-02-data-object.html
-      - text: Design Decisions
+      - text: Function map
+        href: articles/manual-13-function-map.html
+      - text: Glossary
+        href: articles/manual-14-glossary.html
+      - text: Design decisions
         href: articles/manual-03-design-decisions.html
-      - text: Sample Types & QC Roles
+      - text: Sample types & QC roles
         href: articles/manual-06-sample-types.html
+      - text: Getting help from an AI assistant
+        href: articles/manual-09-ai-assistants.html
       - text: Troubleshooting & FAQ
         href: articles/manual-10-troubleshooting.html
     news:
@@ -160,11 +146,18 @@ redirects:
   - ["articles/manual-00-design-overview.html", "articles/manual-03-design-decisions.html"]
   - ["articles/manual-00-integrator-vs-quant.html", "articles/manual-03-design-decisions.html"]
   - ["articles/manual-11-cheatsheet.html", "articles/manual-01-key-concepts.html"]
+  # plot-customization folded into visualisation
+  - ["articles/manual-13-plot-customization.html", "articles/manual-08-visualization.html"]
   # drift + batch tutorials merged into tutorial-04-drift-correction
   - ["articles/tutorial-06-batch-correction.html", "articles/tutorial-04-drift-correction.html"]
   - ["articles/tutorial-08-multi-batch.html", "articles/tutorial-04-drift-correction.html"]
   # run-scatter + PCA merged into tutorial-05-run-scatter
   - ["articles/tutorial-09-pca-exploration.html", "articles/tutorial-05-run-scatter.html"]
+  # tutorial-13 split into R/Quarto onboarding + MRMhub getting-started; old MRMhub
+  # walkthroughs (basic-workflow, first-analysis) now map to getting-started-mrmhub
+  - ["articles/tutorial-13-intro-to-r-quarto-mrmhub.html", "articles/tutorial-02-getting-started-mrmhub.html"]
+  - ["articles/tutorial-02-basic-workflow.html", "articles/tutorial-02-getting-started-mrmhub.html"]
+  - ["articles/tutorial-00-first-analysis.html", "articles/tutorial-02-getting-started-mrmhub.html"]
 reference:
 - text: QUANT Reference
 - title: Getting started

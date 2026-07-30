@@ -18,20 +18,21 @@ editor_options:
 <p class="page-kind page-kind-manual">Manual</p>
 
 Every manual page, grouped by stage of a post-processing project. Step-by-step
-worked examples are in the [Tutorials](tutorial-00-first-analysis.html), and the
+worked examples are in the [Tutorials](tutorial-02-getting-started-mrmhub.html), and the
 full argument reference for every function is in the
 [function reference](../reference/index.html).
 
 ## Getting started
 
 - **[Installation](manual-00-installation.html)**: install `mrmhub` and load it.
-- **[Key concepts & glossary](manual-01-key-concepts.html)**: the data model, core terminology, and where QUANT fits in the MRMhub workflow.
+- **[MRMhub overview](manual-01-key-concepts.html)**: the data object, how it moves through a workflow, and the core function groups.
 
 ## Preparing and running
 
 - **[Importing analytical data](manual-04-data-import.html)**: choosing an importer and the file layout each one expects.
 - **[Importing metadata](manual-05-metadata.html)**: attaching sample, feature, and internal-standard annotations.
 - **[Drift and batch correction](manual-07-corrections.html)**: correcting signal drift within runs and offsets between batches.
+- **[Isotopic interference correction](manual-12-interference-correction.html)**: the M+2 overlap concepts, the MRM and MS1 derivation levels, and the co-elution requirement.
 - **[Quarto workflows](manual-11-quarto-workflows.html)**: recording a pipeline as a `.qmd` notebook, coloured console output, and rendering to HTML, PDF, and Word.
 
 ## Results and downstream use
@@ -42,12 +43,14 @@ full argument reference for every function is in the
 ## Reference
 
 - **[The MRMhubExperiment data object](manual-02-data-object.html)**: the tables, identifiers, and feature variables of the central object.
+- **[Function map](manual-13-function-map.html)**: every function grouped by pipeline stage, linked to its reference.
+- **[Glossary](manual-14-glossary.html)**: definitions of the analytical terms used throughout the documentation.
 - **[Design decisions](manual-03-design-decisions.html)**: why the package is built the way it is.
 - **[Sample types & QC roles](manual-06-sample-types.html)**: every sample-type (`qc_type`) label and its role in QC.
 - **[Troubleshooting & FAQ](manual-10-troubleshooting.html)**: frequent problems and how to resolve them.
 
 ## See also
 
-- [Tutorials](tutorial-00-first-analysis.html): worked, end-to-end examples
+- [Tutorials](tutorial-02-getting-started-mrmhub.html): worked, end-to-end examples
 - [Function reference](../reference/index.html): full arguments for every function
 - [INTEGRATOR documentation](https://slinghub.github.io/MRMhub/integrator/): upstream peak integration

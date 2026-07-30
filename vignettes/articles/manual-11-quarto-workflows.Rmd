@@ -5,7 +5,7 @@ output:
     fig_width: 6
     fig_height: 2
 description: |
-  MRMhub: postprocessing and quality control of small molecule mass spectrometry data
+  Preserving MRMhub's coloured console feedback and controlling figure size when a workflow notebook is rendered.
 vignette: >
   %\VignetteIndexEntry{Quarto workflows}
   %\VignetteEngine{knitr::rmarkdown}
@@ -23,39 +23,28 @@ options(dplyr.print_max = 10)
 
 <p class="page-kind page-kind-manual">Manual</p>
 
-A reproducible MRMhub analysis is best recorded as a
-[Quarto](https://quarto.org) notebook (`.qmd`): a single document that interleaves
-the processing code, its console feedback, and the resulting figures and tables.
-Rendering the document re-runs the whole pipeline from the raw import to the
-final report, so the record and the result never drift apart. The
-[Workflow builder](tutorial-12-workflow-builder.html) emits exactly such a
-document; this page documents the conventions it follows and how to render them
-to HTML, PDF, and Word.
+A reproducible MRMhub analysis is recorded as a [Quarto](https://quarto.org)
+notebook (`.qmd`): one document that interleaves the processing code, its console
+feedback, and the resulting figures and tables. Rendering it re-runs the whole
+pipeline from raw import to final report, so the record and the result never drift
+apart. [Getting started with MRMhub](tutorial-02-getting-started-mrmhub.html)
+covers writing such a document from scratch, and the
+[Workflow builder](tutorial-12-workflow-builder.html) emits one automatically.
 
-Because MRMhub reports each processing step on the console (line-by-line, in
-colour, with a truncated list of the features or analyses affected), a rendered
-notebook doubles as an audit trail of what each step did. Preserving that
-feedback in the rendered output is the main subject of this page.
+Two aspects of rendering are specific to MRMhub:
+preserving its coloured, step-by-step console feedback in the output, and
+controlling figure size independently of that feedback. Because MRMhub reports
+each processing step on the console — a count and a truncated list of the features
+or analyses affected — a rendered notebook doubles as an **audit trail** of what
+each step did, and keeping that feedback intact is the main concern here.
 
-## Project layout
+## Session setup
 
-A workflow document reads its inputs and writes its report by *relative* path, so
-the notebook, its data, and its output live together in one project folder. The
-[Basic MRMhub workflow](tutorial-02-basic-workflow.html) sketches the recommended
-three-folder layout (`data/`, the notebook, `output/`); rendering from the
-project root then resolves every path without absolute references, and the folder
-can be archived or shared as a self-contained unit.
+Two session options in the notebook's setup chunk govern MRMhub's rendered
+feedback. Both belong in a hidden chunk (`#| include: false`) so they run without
+appearing in the output:
 
-## The global setup chunk
-
-Every workflow opens with a hidden setup chunk that loads the package and fixes a
-few session options. Marking it `#| include: false` keeps it out of the rendered
-output while still executing it:
-
-````{verbatim}
-```{r}
-#| label: setup
-#| include: false
+```r
 library(mrmhub)
 
 # Render mrmhub's coloured console feedback in HTML output (see below):
@@ -63,82 +52,28 @@ mrmhub_enable_cli_color()
 
 # Widen or narrow the truncated feature/analysis lists in console messages:
 options(mrmhub.max_report_items = 10)
-
-# Reproducibility and tidy console printing:
-set.seed(1041)
-options(dplyr.print_max = 10)
 ```
-````
 
 `mrmhub_enable_cli_color()` is the only line specific to notebook rendering; the
-others are ordinary session preferences. Its effect is explained in
-[CLI output in colour](#cli-output-in-colour-nicely-formatted) below.
+`mrmhub.max_report_items` option is an ordinary session preference that also
+applies interactively.
 
-## Cell options
-
-Quarto cell options are written as specially-formatted comments at the top of a
-chunk, each prefixed with `#|`. The options below cover the needs of a processing
-notebook; the [Quarto documentation](https://quarto.org/docs/computations/execution-options.html)
-is the complete reference.
-
-```{r, results = TRUE, message = TRUE, echo = FALSE}
-DT::datatable(
-  data.frame(
-    Option = c(
-      "#| label:", "#| eval:", "#| echo:", "#| output:", "#| warning:",
-      "#| message:", "#| include:", "#| cache:", "#| fig-width:, fig-height:"
-    ),
-    Purpose = c(
-      "A unique chunk name; also names any figure the chunk produces.",
-      "Whether to run the chunk (FALSE to show code without executing it).",
-      "Whether to show the source code in the output.",
-      "Whether to show the chunk's results (code output, figures).",
-      "Whether to show warnings raised while the chunk runs.",
-      "Whether to show messages, including MRMhub's console feedback.",
-      "FALSE runs the chunk but hides both code and output (e.g. setup).",
-      "Cache the chunk's results so an unchanged chunk is not re-run.",
-      "Size, in inches, of figures the chunk produces."
-    ),
-    stringsAsFactors = FALSE
-  ),
-  class = "compact stripe",
-  rownames = FALSE,
-  options = list(dom = "t", paging = FALSE)
-)
-```
-
-MRMhub's step feedback travels on the *message* stream, so a chunk that runs a
-processing step should keep `#| message: true` (the default) to preserve it. A
-document-wide default can be set in the YAML front matter:
-
-```yaml
-execute:
-  warning: true
-  message: true
-```
-
-**Long-running steps.** For a step that is slow to compute but whose console
-summary is the point (a large drift correction, for example), suppress the
-verbose progress but keep the summary. Several plotting and correction functions
-accept `show_progress = FALSE` for exactly this; combining it with `#| cache:
-true` avoids re-running the step on every render while the surrounding prose is
-edited.
-
-## CLI output in colour, nicely formatted {#cli-output-in-colour-nicely-formatted}
+## Console feedback in the render
 
 In an interactive R session MRMhub's messages are already coloured: green for a
 successful step, yellow for a caution, red for an error. In a non-interactive
-render, cli suppresses colour by default, so the same messages would arrive as
-plain text. `mrmhub_enable_cli_color()` re-enables it: it advertises colour
-support to cli, and knitr then converts the emitted ANSI sequences to coloured
-HTML using the **fansi** package (installed automatically as a suggested
-dependency).
+render, cli suppresses colour by default, so the same messages arrive as plain
+text. `mrmhub_enable_cli_color()` re-enables it: it advertises colour support to
+cli, and knitr then converts the emitted ANSI sequences to coloured HTML using the
+**fansi** package (installed automatically as a suggested dependency). MRMhub's
+step feedback travels on the *message* stream, so a chunk that runs a processing
+step must keep `#| message: true` (the default) to preserve it.
 
 ::: {.callout .callout-note}
 Colour applies to **HTML** output only. PDF and Word have no ANSI concept, so
-their console blocks render as plain (but still fully legible) monospaced text.
-The severity is never carried by colour alone: success, caution, and error lines
-remain distinguishable by their leading symbol and wording.
+their console blocks render as plain (but still legible) monospaced text. Severity
+is never carried by colour alone: success, caution, and error lines remain
+distinguishable by their leading symbol and wording.
 :::
 
 **What a message conveys.** A processing message states a **count** and, where a
@@ -149,8 +84,8 @@ still prints a single tidy line rather than a wall of identifiers.
 
 **Recovering the full list.** Because the list is truncated for display, the
 message names the column in the returned object that carries the *complete*
-membership. The truncated names are a preview; the column is the record. To
-export the full set, filter the object on that column and write it out:
+membership. The truncated names are a preview; the column is the record. To export
+the full set, filter the object on that column and write it out:
 
 ```{r, eval = FALSE}
 # A message reporting features flagged out of calibration range names the
@@ -161,19 +96,13 @@ mexp@metrics_qc |>
   readr::write_lines("output/features_out_of_range.txt")
 ```
 
-::: {.callout .callout-tip}
-Raise `options(mrmhub.max_report_items = 50)` (or pass `max_report_items` to a
-function that reports lists) to widen the preview in every message at once.
-:::
+An **error** aborts the pipeline before it returns an object, so (unlike a warning
+or success) there is no result to filter afterwards. An error message is therefore
+self-contained: it names the offending values inline and, for the metadata
+validation report, prints the full error/warning/note table before stopping. The
+traceback is kept collapsed but remains reachable with `rlang::last_trace()`.
 
-An **error** aborts the pipeline before it returns an object, so (unlike a
-warning or success) there is no result to filter afterwards. An error message is
-therefore self-contained: it names the offending values inline and, for the
-metadata validation report, prints the full error/warning/note table before
-stopping. The traceback is kept collapsed but remains reachable with
-`rlang::last_trace()`.
-
-## Output formats: HTML, PDF, and Word
+## Output formats
 
 The output format is declared in the YAML front matter; several may be combined,
 and each is produced by rendering the document once:
@@ -190,101 +119,34 @@ format:
 
 - **HTML** is the recommended working format: it preserves the coloured console
   feedback, keeps interactive tables scrollable, and needs no external tooling.
-- **PDF** requires a LaTeX installation. The lightweight
-  [TinyTeX](https://yihui.org/tinytex/) distribution is sufficient. Install it
-  once with `tinytex::install_tinytex()`. The `include-in-header` snippet above
-  switches the LaTeX body font to sans-serif using the default `pdflatex` engine,
-  matching the look the Workflow Builder emits without requiring a font install.
-- **Word** (`.docx`) is convenient for collaborators who annotate in Word, but it
-  has no styled-console concept: message blocks render as plain monospaced text,
-  and there is no live table interactivity.
+- **PDF** requires a LaTeX installation; the lightweight
+  [TinyTeX](https://yihui.org/tinytex/) distribution is sufficient
+  (`tinytex::install_tinytex()`). Console blocks render as plain monospaced text.
+- **Word** (`.docx`) is convenient for collaborators who annotate in Word, but has
+  no styled-console concept: message blocks render as plain text and tables are
+  not interactive.
 
-Rendering is performed with Quarto once the document is saved:
+## Figure size: `save_plot()` vs Quarto
 
-```bash
-quarto render mrmhub_workflow.qmd
-```
-
-::: {.callout .callout-note}
-Quarto's `fig-width`, `fig-height` and `fig-dpi` control the figure *embedded in the rendered
-document*. `save_plot()` controls a *standalone file* at an exact physical size. The two are
-independent: a manuscript figure needs the latter, because its width must match the journal's
-column specification regardless of how the notebook happens to display it.
+Quarto's `fig-width`, `fig-height`, and `fig-dpi` control the figure *embedded in
+the rendered document*. `save_plot()` controls a *standalone file* at an exact
+physical size. The two are independent: a manuscript figure needs the latter,
+because its width must match the journal's column specification regardless of how
+the notebook happens to display it.
 
 ```{r}
 #| eval: false
-save_plot(p, "figures/fig3", format = c("pdf", "png"), width = 180, height = 200)
-```
-:::
-
-## Parameters
-
-A workflow document hard-codes its input paths, so processing a second batch
-means editing the file. Declaring those values as Quarto *parameters* instead
-lets the same notebook render unchanged against different inputs: one report per
-batch or per project. Parameters are listed in the YAML front matter with their
-defaults:
-
-```yaml
-params:
-  data_path: "data/batch01/"
+save_plot(
+  p, "figures/fig3",
+  format = c("pdf", "png"), width = 180, height = 200)
 ```
 
-The setup chunk then reads from `params` rather than a string literal:
+To render the same notebook against different inputs — one report per batch or per
+project — declare its input paths as Quarto *parameters* rather than string
+literals.
 
-```r
-mexp <- import_data_mrmhub(params$data_path)
-```
+## Next steps
 
-Rendering with no override reproduces the default report; a different batch is
-produced by overriding the parameter on the command line,
-
-```bash
-quarto render mrmhub_workflow.qmd -P data_path:data/batch02/
-```
-
-or from R, where the output file can also be named per run:
-
-```r
-quarto::quarto_render(
-  "mrmhub_workflow.qmd",
-  execute_params = list(data_path = "data/batch02/"),
-  output_file = "batch02.html"
-)
-```
-
-For a fuller worked example (a standalone report template rendered from a saved
-results object), see [Custom QC report](recipe-02-custom-qc-report.html).
-
-## Slides
-
-The same processing document can be presented as slides by adding the `revealjs`
-format, without duplicating the analysis code:
-
-```yaml
-format:
-  revealjs:
-    echo: true
-```
-
-Each `##` heading becomes a slide. Setting `echo: true` shows the code alongside
-its result, which suits a methods walk-through; `echo: false` shows only the
-figures and tables, which suits a results presentation. The processing chunks are
-unchanged from the HTML document. Only the format block differs.
-
-::: {.callout .callout-note}
-Coloured console feedback renders reliably in an **HTML document**; on `revealjs`
-slides the console output is best kept brief or shown as the emitted tables and
-values, as slide rendering does not always preserve the coloured message blocks.
-:::
-
-## Next Steps
-
-- [Using the workflow builder](tutorial-12-workflow-builder.html): generate a
-  ready-to-render `.qmd` from your data and metadata files
-- [Basic MRMhub workflow](tutorial-02-basic-workflow.html): the pipeline a
-  workflow document records, written by hand
-- [Custom QC report](recipe-02-custom-qc-report.html): render one
-  notebook once per batch or project
-- [Troubleshooting & FAQ](manual-10-troubleshooting.html): resolving common
-  rendering and processing problems
+- [Getting started with MRMhub](tutorial-02-getting-started-mrmhub.html): writing a workflow notebook from scratch
+- [Using the workflow builder](tutorial-12-workflow-builder.html): generate a ready-to-render `.qmd` from your data
+- [Troubleshooting & FAQ](manual-10-troubleshooting.html): resolving common rendering problems

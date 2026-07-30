@@ -52,7 +52,8 @@ imported and merged, which is useful when the raw data processing is broken down
 into batches that produce separate result files. The following formats are
 currently supported; each importer reads a CSV or TSV file and returns an
 `MRMhubExperiment`, and the exact file layout and all arguments are documented on
-the linked reference pages.
+the linked reference pages. For a worked example of importing, see
+[Preparing and importing data](tutorial-01-prep-data.html).
 
 | Source | Function |
 |---|---|
@@ -292,5 +293,5 @@ feature appearing to be measured twice in one analysis).
 
 - [Importing metadata](manual-05-metadata.html): attach and validate sample and feature annotations
 - [The MRMhubExperiment data object](manual-02-data-object.html): the object the data is loaded into
-- [Basic MRMhub workflow](tutorial-02-basic-workflow.html): start processing the imported data
+- [Lipidomics workflow](tutorial-03-lipidomics-workflow.html): start processing the imported data
 - [Function reference](../reference/index.html): full arguments for every importer

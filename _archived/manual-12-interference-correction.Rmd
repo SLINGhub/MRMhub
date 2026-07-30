@@ -26,9 +26,9 @@ library(mrmhub)
 
 In class-based targeted assays, the natural M+2 isotopologue of a lighter species can fall in the
 transition window of a species two mass units heavier and inflate its measured area. MRMhub corrects
-this with the LICAR method [@gao2021LICARApplicationIsotopic]: for each affected (target) feature it
-subtracts a fixed fraction *K* of the interference source's area, where *K* is the source's
-theoretical M+2 abundance. This is a Type II correction (overlap between different species); Type I natural-abundance
+this with the LICAR method [@gao2021LICARApplicationIsotopic]: for each affected feature it subtracts
+a fixed fraction *K* of the interferer's area, where *K* is the interferer's theoretical M+2
+abundance. This is a Type II correction (overlap between different species); Type I natural-abundance
 (MID) correction of a compound's own isotopes is not performed.
 
 For MRM data the factor is computed at the fragment, not the whole molecule. Whether the heavy
@@ -86,8 +86,8 @@ below the list). The complete list is at the [end of this page](#mrm-pattern-lab
 | Applies to | Lipids (needs the class fragment chemistry) | Any compound with a formula |
 
 At the MRM level a head-group transition carries a single overlap. A fatty-acyl or sphingoid-base
-transition can carry two at once: one source whose extra mass sits on the retained product ion, and
-one on the neutral loss. The correction subtracts both. Each overlap is one row of
+transition can carry two at once: one interferer whose extra mass sits on the retained product ion,
+and one on the neutral loss. The correction subtracts both. Each overlap is one row of
 `annot_interferences`, with `overlap_type` `m2_head`, `m2_front`, `m2_back`, or `ms1_m2`, and
 `source` `auto` (derived) or `manual` (declared in the metadata). `calc_isotopic_interferences()`
 warns when MS1 derivation is run on data whose product *m/z* differs from the precursor, i.e. real
@@ -95,10 +95,12 @@ MRM transitions.
 
 ## Co-elution
 
-The correction subtracts the source's full area, so it applies only where the interference source
-and target peaks co-elute and/or are co-integrated. The experimental
-`check_coelution = TRUE` enforces this, dropping *m/z*-matched pairs that are chromatographically
-resolved. It is off by default while the gate is validated.
+An M+2 isotopologue elutes at its own species' apex, so an *m/z* match is a real interference only
+when the interferer and the victim co-elute. The correction subtracts the interferer's full area and
+would otherwise remove genuine signal. The experimental `check_coelution = TRUE` keeps an edge only
+when the interferer's apex falls inside the victim's integration window
+(`feature_int_start`..`feature_int_end`, or `feature_rt ± FWHM` where borders are absent), and
+reports how many resolved pairs it drops. It is off by default while the gate is validated.
 
 ## Provenance
 
