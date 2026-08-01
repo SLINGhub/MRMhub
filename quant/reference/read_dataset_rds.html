@@ -114,7 +114,7 @@ self-contained archive of a complete analysis."><meta property="og:image" conten
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Read a complete <code>MRMhubExperiment</code> from an RDS file</h1>
-      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/main/R/data-export.R" class="external-link"><code>R/data-export.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/gui-beta-v1.0.1/R/data-export.R" class="external-link"><code>R/data-export.R</code></a></small>
       <div class="d-none name"><code>read_dataset_rds.Rd</code></div>
     </div>
 
@@ -178,11 +178,11 @@ prints only the compact one-line overview.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Loaded example dataset 1: 499 analyses and 29 features.</span></span>
 <span class="r-in"><span><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"example_mexp.rds"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="save_dataset_rds.html">save_dataset_rds</a></span><span class="op">(</span><span class="va">mexp</span>, <span class="va">path</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">MRMhubExperiment saved to /tmp/RtmpwJgCgE/example_mexp.rds.</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">Content fingerprint: </span><span style="color: #0000BB;">"0f4944aab2ac28d29e904f93c2e9d92f"</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">MRMhubExperiment saved to /tmp/Rtmp7Sqs4e/example_mexp.rds.</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">Content fingerprint: </span><span style="color: #0000BB;">"0e81ef3de5a90827c3ed651abfa25c2d"</span></span>
 <span class="r-in"><span><span class="va">mexp2</span> <span class="op">&lt;-</span> <span class="fu">read_dataset_rds</span><span class="op">(</span><span class="va">path</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Content fingerprint verified: "0f4944aab2ac28d29e904f93c2e9d92f".</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Loaded MRMhubExperiment from /tmp/RtmpwJgCgE/example_mexp.rds.</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Content fingerprint verified: "0e81ef3de5a90827c3ed651abfa25c2d".</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Loaded MRMhubExperiment from /tmp/Rtmp7Sqs4e/example_mexp.rds.</span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
