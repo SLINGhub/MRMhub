@@ -4,6 +4,7 @@
   --navy-deep: #21313f;
   --steel: #5b8fa8;
   --steel-soft: #e9f1f5;
+  --teal: #3f8f8b;
   --orange: #d4914e;
   --orange-soft: #faf0e5;
   --green: #6b9e5e;
@@ -32,6 +33,7 @@ html[data-theme="dark"] {
   --navy-deep: #f1f6f8;
   --steel: #75abc4;
   --steel-soft: #20343e;
+  --teal: #67b6b1;
   --orange: #dfa15f;
   --orange-soft: #3d3022;
   --green: #83b476;
@@ -1197,6 +1199,14 @@ html[data-theme="dark"] .sling-link img {
   background: var(--rose);
 }
 
+#visualizer-view {
+  --visualizer-font-scale: 1;
+}
+
+#visualizer-view .eyebrow {
+  font-size: calc(10px * var(--visualizer-font-scale, 1));
+}
+
 .visualizer-toolbar {
   position: sticky;
   z-index: 10;
@@ -1266,7 +1276,7 @@ html[data-theme="dark"] .sling-link img {
 .visualizer-heading h1 {
   margin: 0;
   color: var(--navy);
-  font-size: 22px;
+  font-size: calc(22px * var(--visualizer-font-scale, 1));
   letter-spacing: -0.025em;
 }
 
@@ -1276,7 +1286,7 @@ html[data-theme="dark"] .sling-link img {
   overflow: hidden;
   color: var(--muted);
   font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
-  font-size: 10px;
+  font-size: calc(10px * var(--visualizer-font-scale, 1));
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1284,6 +1294,7 @@ html[data-theme="dark"] .sling-link img {
 .visualizer-controls {
   align-items: end;
   margin-top: 18px;
+  flex-wrap: wrap;
 }
 
 .visualizer-field {
@@ -1294,7 +1305,7 @@ html[data-theme="dark"] .sling-link img {
 
 .visualizer-field > span {
   color: var(--muted);
-  font-size: 9px;
+  font-size: calc(9px * var(--visualizer-font-scale, 1));
   font-weight: 750;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -1310,9 +1321,9 @@ html[data-theme="dark"] .sling-link img {
 
 .visualizer-field input {
   width: 116px;
-  height: 38px;
+  height: calc(38px * var(--visualizer-font-scale, 1));
   padding: 0 10px;
-  font-size: 11px;
+  font-size: calc(11px * var(--visualizer-font-scale, 1));
 }
 
 .visualizer-field input:disabled {
@@ -1326,19 +1337,50 @@ html[data-theme="dark"] .sling-link img {
   gap: 7px;
   align-items: center;
   align-self: end;
-  height: 38px;
+  min-height: calc(38px * var(--visualizer-font-scale, 1));
   color: var(--muted);
-  font-size: 10px;
+  font-size: calc(10px * var(--visualizer-font-scale, 1));
   font-weight: 750;
   letter-spacing: 0.03em;
   text-transform: uppercase;
 }
 
 .visualizer-shortcut-toggle input {
-  width: 14px;
-  height: 14px;
+  display: grid;
+  width: clamp(14px, calc(14px * var(--visualizer-font-scale, 1)), 22px);
+  height: clamp(14px, calc(14px * var(--visualizer-font-scale, 1)), 22px);
   margin: 0;
-  accent-color: var(--steel);
+  flex: 0 0 auto;
+  appearance: none;
+  place-content: center;
+  border: 2px solid var(--steel);
+  border-radius: 4px;
+  background: var(--steel-soft);
+  cursor: pointer;
+}
+
+.visualizer-shortcut-toggle input::before {
+  width: 48%;
+  height: 26%;
+  content: "";
+  border-bottom: 2px solid var(--surface);
+  border-left: 2px solid var(--surface);
+  opacity: 0;
+  transform: translateY(-8%) rotate(-45deg);
+}
+
+.visualizer-shortcut-toggle input:checked {
+  border-color: var(--steel);
+  background: var(--steel);
+}
+
+.visualizer-shortcut-toggle input:checked::before {
+  opacity: 1;
+}
+
+.visualizer-shortcut-toggle input:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 2px;
 }
 
 .transition-field {
@@ -1347,9 +1389,16 @@ html[data-theme="dark"] .sling-link img {
 
 .transition-field select {
   width: 100%;
-  min-height: 104px;
+  min-height: calc(104px * var(--visualizer-font-scale, 1));
   padding: 7px;
-  font-size: 11px;
+  font-size: calc(11px * var(--visualizer-font-scale, 1));
+}
+
+.font-scale-field select {
+  width: 94px;
+  height: calc(38px * var(--visualizer-font-scale, 1));
+  padding: 0 9px;
+  font-size: calc(11px * var(--visualizer-font-scale, 1));
 }
 
 .backups-field {
@@ -1359,9 +1408,9 @@ html[data-theme="dark"] .sling-link img {
 
 .backups-field select {
   width: 210px;
-  height: 38px;
+  height: calc(38px * var(--visualizer-font-scale, 1));
   padding: 0 10px;
-  font-size: 11px;
+  font-size: calc(11px * var(--visualizer-font-scale, 1));
 }
 
 .backups-field select:disabled {
@@ -1372,6 +1421,7 @@ html[data-theme="dark"] .sling-link img {
 .visualizer-sizing {
   align-items: end;
   flex: 0 0 auto;
+  flex-wrap: wrap;
 }
 
 .visualizer-refresh,
@@ -1428,12 +1478,13 @@ html[data-theme="dark"] .sling-link img {
   margin-top: 14px;
   padding-top: 14px;
   border-top: 1px solid var(--line);
+  flex-wrap: wrap;
 }
 
 .visualizer-selection strong {
   overflow: hidden;
   color: var(--navy);
-  font-size: 13px;
+  font-size: calc(13px * var(--visualizer-font-scale, 1));
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1441,7 +1492,7 @@ html[data-theme="dark"] .sling-link img {
 #visualizer-status {
   flex: 0 0 auto;
   color: var(--muted);
-  font-size: 10px;
+  font-size: calc(10px * var(--visualizer-font-scale, 1));
 }
 
 #visualizer-status.is-cancellable {
@@ -1468,7 +1519,7 @@ html[data-theme="dark"] .sling-link img {
   border-radius: 999px;
   background: var(--rose);
   cursor: pointer;
-  font-size: 16px;
+  font-size: calc(16px * var(--visualizer-font-scale, 1));
   font-weight: 900;
   line-height: 1;
 }
@@ -1479,6 +1530,50 @@ html[data-theme="dark"] .sling-link img {
 
 .visualizer-cancel-render.hidden {
   display: none;
+}
+
+.visualizer-apply-shared,
+#visualizer-back {
+  min-height: calc(38px * var(--visualizer-font-scale, 1));
+  font-size: calc(10px * var(--visualizer-font-scale, 1));
+}
+
+.visualizer-toolbar.has-reference-edits .visualizer-apply-shared:not(:disabled) {
+  color: var(--surface);
+  border-color: var(--teal);
+  background: var(--teal);
+}
+
+.sample-type-legend {
+  display: flex;
+  gap: 8px 14px;
+  align-items: center;
+  margin-top: 12px;
+  padding: 10px 14px;
+  flex-wrap: wrap;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  font-size: calc(10px * var(--visualizer-font-scale, 1));
+  font-weight: 750;
+}
+
+.sample-type-legend.hidden {
+  display: none;
+}
+
+.sample-type-legend-item {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.sample-type-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--sample-type-color);
 }
 
 .visualizer-plot-grid {
@@ -1514,7 +1609,7 @@ html[data-theme="dark"] .sling-link img {
   place-items: center;
   padding: 14px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: calc(11px * var(--visualizer-font-scale, 1));
   font-weight: 800;
   text-align: center;
 }
@@ -1528,8 +1623,77 @@ html[data-theme="dark"] .sling-link img {
   contain-intrinsic-size: 420px 190px;
 }
 
+.visualizer-chart-shell.is-reference .visualizer-chart {
+  border-color: var(--teal);
+  box-shadow:
+    0 0 0 2px var(--teal),
+    var(--shadow-soft);
+}
+
+.visualizer-chart-shell.sample-type-colored .visualizer-chart {
+  border-color: var(--line-strong);
+  box-shadow: var(--shadow-soft);
+}
+
+.visualizer-chart-shell.is-reference.sample-type-colored .visualizer-chart {
+  border-color: var(--teal);
+  box-shadow:
+    0 0 0 2px var(--teal),
+    var(--shadow-soft);
+}
+
 .visualizer-canvas-frame {
   position: relative;
+}
+
+.visualizer-reference-toggle {
+  position: absolute;
+  z-index: 5;
+  top: 2px;
+  left: 2px;
+  display: grid;
+  width: clamp(18px, calc(18px * var(--graph-font-scale, 1)), 24px);
+  height: clamp(18px, calc(18px * var(--graph-font-scale, 1)), 24px);
+  padding: clamp(2px, calc(2px * var(--graph-font-scale, 1)), 3px);
+  box-sizing: border-box;
+  place-items: center;
+  color: var(--surface);
+  border: 2px solid var(--steel);
+  border-radius: 5px;
+  background: var(--surface);
+  cursor: pointer;
+  opacity: 1;
+}
+
+.visualizer-reference-toggle:hover {
+  border-color: var(--orange);
+  background: var(--steel-soft);
+}
+
+.visualizer-reference-toggle.is-selected,
+.visualizer-reference-toggle.is-selected:hover {
+  color: #ffffff;
+  border-color: var(--steel);
+  background: var(--steel);
+}
+
+.visualizer-reference-toggle svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: visible;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.4;
+  opacity: 0;
+}
+
+.visualizer-reference-toggle.is-selected svg {
+  opacity: 1;
 }
 
 .visualizer-canvas-frame .visualizer-trace-canvas,

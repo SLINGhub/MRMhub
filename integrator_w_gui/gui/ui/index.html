@@ -423,6 +423,16 @@
                   value="160"
                 />
               </label>
+              <label class="visualizer-field font-scale-field">
+                <span>Font scale</span>
+                <select id="visualizer-font-scale" aria-label="visualizer font scale">
+                  <option value="100">100%</option>
+                  <option value="125">125%</option>
+                  <option value="150">150%</option>
+                  <option value="175">175%</option>
+                  <option value="200">200%</option>
+                </select>
+              </label>
               <button
                 class="icon-button visualizer-save"
                 id="visualizer-save"
@@ -536,11 +546,30 @@
               <input id="visualizer-shortcuts-global" type="checkbox" checked />
               <span>Arrow shortcuts when minimized</span>
             </label>
+            <label class="visualizer-shortcut-toggle sample-type-color-toggle">
+              <input id="visualizer-color-sample-types" type="checkbox" />
+              <span>Color sample types</span>
+            </label>
+            <button
+              class="secondary-button visualizer-apply-shared"
+              id="visualizer-apply-shared"
+              type="button"
+              disabled
+              title="select a reference plot and adjust its integration bounds first"
+            >
+              Reintegrate shared RT
+            </button>
             <button class="secondary-button" id="visualizer-back" type="button">
               Back to Integrator
             </button>
           </div>
         </section>
+
+        <section
+          class="sample-type-legend hidden"
+          id="visualizer-sample-type-legend"
+          aria-label="sample type colors"
+        ></section>
 
         <section
           class="visualizer-plot-grid qc-grid"
@@ -558,7 +587,7 @@
         <section class="scratchpad-card" aria-labelledby="scratchpad-heading">
           <div class="scratchpad-toolbar">
             <label class="scratchpad-toggle">
-              <input id="scratchpad-auto-wipe" type="checkbox" checked />
+              <input id="scratchpad-auto-wipe" type="checkbox" />
               <span>auto-wipe</span>
             </label>
           </div>

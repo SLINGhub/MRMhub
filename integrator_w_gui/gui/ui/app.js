@@ -1,6 +1,7 @@
 const tauri = window.__TAURI__;
 const isDesktop = Boolean(tauri?.core?.invoke);
 const invoke = isDesktop ? tauri.core.invoke : null;
+const scratchpadAutoWipePreference = "mrmhub-scratchpad-auto-wipe";
 
 const elements = {
   projectTitle: document.querySelector("#project-title"),
@@ -519,6 +520,9 @@ async function deleteScratchpadNote() {
 // toggles between temporary auto-wipe mode and saved-note mode
 async function updateScratchpadMode() {
   const autoWipe = elements.scratchpadAutoWipe.checked;
+  try {
+    localStorage.setItem(scratchpadAutoWipePreference, String(autoWipe));
+  } catch {}
   elements.scratchpadAutoPanel.classList.toggle("hidden", !autoWipe);
   elements.scratchpadSavedPanel.classList.toggle("hidden", autoWipe);
   if (!autoWipe && !scratchpadLoaded) {
@@ -1243,6 +1247,12 @@ async function registerDesktopEvents() {
 }
 
 async function bootstrap() {
+  try {
+    elements.scratchpadAutoWipe.checked =
+      localStorage.getItem(scratchpadAutoWipePreference) === "true";
+  } catch {
+    elements.scratchpadAutoWipe.checked = false;
+  }
   for (const button of elements.chooseButtons) {
     button.addEventListener("click", chooseProject);
   }

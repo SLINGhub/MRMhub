@@ -5,12 +5,30 @@ const decoder = new TextDecoder();
 const originalRtMatrix = "RT_matrix_original.csv";
 const formatRt = d3.format(".2f");
 const formatIntensity = d3.format(",.0f");
+const fontScalePreference = "mrmhub-visualizer-font-scale";
+const sampleTypeColorPreference = "mrmhub-visualizer-color-sample-types";
+const sampleTypePalette = [
+  "#1f77b4",
+  "#e67e22",
+  "#2ca02c",
+  "#d62770",
+  "#7b61a8",
+  "#8c564b",
+  "#008c95",
+  "#bc8f00",
+  "#4f6bed",
+  "#c23b22",
+];
 
 const elements = {
   transition: document.querySelector("#visualizer-transition"),
   transitionSearch: document.querySelector("#visualizer-transition-search"),
   width: document.querySelector("#visualizer-width"),
   height: document.querySelector("#visualizer-height"),
+  fontScale: document.querySelector("#visualizer-font-scale"),
+  colorSampleTypes: document.querySelector("#visualizer-color-sample-types"),
+  sampleTypeLegend: document.querySelector("#visualizer-sample-type-legend"),
+  applyShared: document.querySelector("#visualizer-apply-shared"),
   refresh: document.querySelector("#visualizer-refresh"),
   save: document.querySelector("#visualizer-save"),
   deleteBackup: document.querySelector("#visualizer-delete-backup"),
@@ -48,6 +66,10 @@ const state = {
   transitionSearch: "",
   chartId: 0,
   selectedIsomerIndex: null,
+  fontScale: 1,
+  colorSampleTypes: false,
+  sampleTypeColors: new Map(),
+  referenceChoices: new Map(),
 };
 
 const margins = {
@@ -63,6 +85,90 @@ const maxHoverDots = 420;
 const maxAreaPathPoints = 420;
 const maxDragAreaPathPoints = 140;
 const viewportRenderMargin = 260;
+
+// reads small visualizer preferences without letting disabled storage prevent
+// the visualizer from opening.
+function storedPreference(key) {
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function rememberPreference(key, value) {
+  try {
+    localStorage.setItem(key, String(value));
+  } catch {}
+}
+
+// keeps plot padding proportional to the selected text size.
+function updatePlotMargins() {
+  margins.top = Math.round(18 * state.fontScale);
+  margins.right = Math.round(10 * state.fontScale);
+  margins.bottom = Math.round(18 * state.fontScale);
+  margins.left = Math.round(38 * state.fontScale);
+}
+
+function applyVisualizerScale(scalePercent, persist = true) {
+  const percent = [100, 125, 150, 175, 200].includes(Number(scalePercent))
+    ? Number(scalePercent)
+    : 100;
+  state.fontScale = percent / 100;
+  elements.fontScale.value = String(percent);
+  elements.view?.style.setProperty("--visualizer-font-scale", String(state.fontScale));
+  updatePlotMargins();
+  if (persist) rememberPreference(fontScalePreference, percent);
+}
+
+function sampleTypeOf(sample) {
+  return sample?.[1]?.trim() || "Unspecified";
+}
+
+function rebuildSampleTypeColors() {
+  state.sampleTypeColors.clear();
+  for (const sample of state.samples) {
+    const type = sampleTypeOf(sample);
+    if (!state.sampleTypeColors.has(type)) {
+      state.sampleTypeColors.set(
+        type,
+        sampleTypePalette[state.sampleTypeColors.size % sampleTypePalette.length],
+      );
+    }
+  }
+}
+
+function renderSampleTypeLegend() {
+  elements.sampleTypeLegend.replaceChildren();
+  elements.sampleTypeLegend.classList.toggle("hidden", !state.colorSampleTypes);
+  if (!state.colorSampleTypes) return;
+  const fragment = document.createDocumentFragment();
+  for (const [type, color] of state.sampleTypeColors) {
+    const item = document.createElement("span");
+    item.className = "sample-type-legend-item";
+    const swatch = document.createElement("span");
+    swatch.className = "sample-type-swatch";
+    swatch.style.setProperty("--sample-type-color", color);
+    const label = document.createElement("span");
+    label.textContent = type;
+    item.append(swatch, label);
+    fragment.append(item);
+  }
+  elements.sampleTypeLegend.append(fragment);
+}
+
+function applySampleTypeColorPreference(enabled, persist = true) {
+  state.colorSampleTypes = Boolean(enabled);
+  elements.colorSampleTypes.checked = state.colorSampleTypes;
+  if (persist) rememberPreference(sampleTypeColorPreference, state.colorSampleTypes);
+  renderSampleTypeLegend();
+}
+
+applyVisualizerScale(storedPreference(fontScalePreference), false);
+applySampleTypeColorPreference(
+  storedPreference(sampleTypeColorPreference) === "true",
+  false,
+);
 
 // updates the visible visualizer status text
 function setStatus(message, options = {}) {
@@ -198,6 +304,9 @@ export function resetVisualizer() {
   state.transitions.length = 0;
   state.samples.length = 0;
   state.backupLabels = {};
+  state.sampleTypeColors.clear();
+  state.referenceChoices.clear();
+  renderSampleTypeLegend();
   const transitions = document.createDocumentFragment();
   appendOption(transitions, "Select a transition", "");
   elements.transition.replaceChildren(transitions);
@@ -224,6 +333,7 @@ export async function initializeVisualizer(projectPath) {
   state.references.length = 0;
   state.transitions.length = 0;
   state.samples.length = 0;
+  state.referenceChoices.clear();
   setStatus("Loading dataset index...");
 
   const [references, transitionBytes, sampleBytes] = await Promise.all([
@@ -248,6 +358,8 @@ export async function initializeVisualizer(projectPath) {
       row[0] = row[0]?.endsWith(".mzML") ? row[0].slice(0, -5) : row[0];
       return row;
     });
+  rebuildSampleTypeColors();
+  renderSampleTypeLegend();
 
   populateTransitions();
   await refreshBackups();
@@ -259,16 +371,31 @@ export async function initializeVisualizer(projectPath) {
 
 // returns the graph dimensions without retaining input elements
 function graphDimensions() {
+  const scale = state.fontScale;
   return {
-    width: Math.max(240, Math.min(1600, elements.width.valueAsNumber || 400)),
-    height: Math.max(100, Math.min(1000, elements.height.valueAsNumber || 160)),
+    width: Math.round(
+      Math.max(240, Math.min(1600, elements.width.valueAsNumber || 400)) * scale,
+    ),
+    height: Math.round(
+      Math.max(100, Math.min(1000, elements.height.valueAsNumber || 160)) * scale,
+    ),
   };
 }
 
 // keeps the current graph text size as the maximum, only shrinking labels when
 // the graph is squeezed below the default dimensions
 function graphFontScale(width, height, baseWidth = 400, baseHeight = 160) {
-  return Math.max(0.68, Math.min(1, width / baseWidth, height / baseHeight));
+  return (
+    state.fontScale *
+    Math.max(
+      0.68,
+      Math.min(
+        1,
+        width / (baseWidth * state.fontScale),
+        height / (baseHeight * state.fontScale),
+      ),
+    )
+  );
 }
 
 // reads and normalizes the optional manual graph range
@@ -460,7 +587,7 @@ function showQcSample(sampleIndex) {
 function renderQcGraph(title, values, width) {
   if (!values.length) return;
   const typedValues = Float32Array.from(values);
-  const height = 200;
+  const height = Math.round(200 * state.fontScale);
   const x = d3
     .scaleLinear()
     .domain([0, Math.max(typedValues.length - 1, 1)])
@@ -515,13 +642,16 @@ function renderQcGraph(title, values, width) {
     .append("circle")
     .attr("class", "qc-marker")
     .attr("display", "none")
-    .attr("r", 6);
+    .attr("r", 6 * state.fontScale);
   const tooltip = svg.append("g").attr("class", "qc-tooltip").attr("display", "none");
-  tooltip.append("rect").attr("width", width).attr("height", 20);
+  tooltip
+    .append("rect")
+    .attr("width", width)
+    .attr("height", 20 * state.fontScale);
   tooltip
     .append("text")
     .attr("x", "50%")
-    .attr("y", 3)
+    .attr("y", 3 * state.fontScale)
     .attr("text-anchor", "middle")
     .attr("dominant-baseline", "text-before-edge");
 
@@ -598,6 +728,57 @@ function maxIntensity(points, start, end) {
     maximum = Math.max(maximum, points[index * 2 + 1]);
   }
   return maximum;
+}
+
+function referenceChoiceKey(graph) {
+  return `${graph.editContext?.cqq ?? ""}:${graph.editContext?.sampleIndex ?? -1}`;
+}
+
+function graphReferenceDefault(graph) {
+  return false;
+}
+
+function syncGraphReferenceState(graph) {
+  const key = referenceChoiceKey(graph);
+  graph.isReferenceChoice = state.referenceChoices.has(key)
+    ? state.referenceChoices.get(key)
+    : graphReferenceDefault(graph);
+  graph.shell?.classList.toggle("is-reference", graph.isReferenceChoice);
+  graph.referenceToggle?.classList.toggle("is-selected", graph.isReferenceChoice);
+  graph.referenceToggle?.setAttribute(
+    "aria-pressed",
+    String(graph.isReferenceChoice),
+  );
+  if (graph.referenceToggle) {
+    graph.referenceToggle.title = graph.isReferenceChoice
+      ? "selected RT reference plot"
+      : "select this plot as an RT reference";
+  }
+}
+
+function toggleGraphReference(graph) {
+  const key = referenceChoiceKey(graph);
+  state.referenceChoices.set(key, !graph.isReferenceChoice);
+  syncGraphReferenceState(graph);
+  updateSaveButton();
+  const count = state.traceGraphs.filter((item) => item.isReferenceChoice).length;
+  setStatus(`${count.toLocaleString()} RT reference plot(s) selected`);
+}
+
+function createReferenceToggle(graph) {
+  const button = document.createElement("button");
+  button.className = "visualizer-reference-toggle";
+  button.type = "button";
+  button.setAttribute("aria-label", `select ${graph.sampleName} as an RT reference`);
+  button.innerHTML = `
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M5 12.5 10 17l9-10" />
+    </svg>
+  `;
+  button.addEventListener("click", () => toggleGraphReference(graph));
+  graph.referenceToggle = button;
+  syncGraphReferenceState(graph);
+  return button;
 }
 
 // renders one chromatogram while retaining only a compact typed point array
@@ -815,9 +996,12 @@ function renderTrace(
     .attr("display", "none");
 
   const dotIndices = hoverDotIndices(points, startIndex, safeEndIndex, y.domain()[1]);
-  const traceColor = getComputedStyle(document.documentElement)
-    .getPropertyValue("--ink")
-    .trim() || "#10202b";
+  const sampleType = sampleTypeOf(sample);
+  const sampleTypeColor = state.sampleTypeColors.get(sampleType) ?? sampleTypePalette[0];
+  const traceColor = state.colorSampleTypes
+    ? sampleTypeColor
+    : getComputedStyle(document.documentElement).getPropertyValue("--ink").trim() ||
+      "#10202b";
 
   const drawTraceCanvas = (scale) => {
     canvasContext.clearRect(0, 0, width, height);
@@ -831,7 +1015,7 @@ function renderTrace(
     );
     canvasContext.clip();
     canvasContext.strokeStyle = traceColor;
-    canvasContext.lineWidth = 1.25;
+    canvasContext.lineWidth = 1.25 * Math.min(state.fontScale, 1.6);
     canvasContext.lineJoin = "round";
     canvasContext.lineCap = "round";
     canvasContext.beginPath();
@@ -865,7 +1049,7 @@ function renderTrace(
         if (px < plotBounds.left || px > plotBounds.right) continue;
         const py = y(points[dot * 2 + 1]);
         canvasContext.beginPath();
-        canvasContext.arc(px, py, 1.5, 0, Math.PI * 2);
+        canvasContext.arc(px, py, 1.5 * state.fontScale, 0, Math.PI * 2);
         canvasContext.fill();
       }
     }
@@ -880,6 +1064,7 @@ function renderTrace(
     .attr("y", 3)
     .attr("text-anchor", "middle")
     .attr("dominant-baseline", "text-before-edge")
+    .style("fill", state.colorSampleTypes ? sampleTypeColor : null)
     .text(sampleName);
   if (sample?.[4]) {
     svg
@@ -911,19 +1096,22 @@ function renderTrace(
   const guideNode = guide.node();
   const tooltip = svg.append("g").attr("class", "trace-tooltip").attr("display", "none");
   const tooltipNode = tooltip.node();
-  const tooltipCircleNode = tooltip.append("circle").attr("r", 3).node();
+  const tooltipCircleNode = tooltip
+    .append("circle")
+    .attr("r", 3 * state.fontScale)
+    .node();
   const tooltipRectNode = tooltip
     .append("rect")
-    .attr("x", -36)
+    .attr("x", -36 * state.fontScale)
     .attr("y", 0)
-    .attr("width", 72)
-    .attr("height", 20)
-    .attr("rx", 4)
+    .attr("width", 72 * state.fontScale)
+    .attr("height", 20 * state.fontScale)
+    .attr("rx", 4 * state.fontScale)
     .node();
   const tooltipTextNode = tooltip
     .append("text")
     .attr("x", 0)
-    .attr("y", 10)
+    .attr("y", 10 * state.fontScale)
     .attr("text-anchor", "middle")
     .attr("dominant-baseline", "middle")
     .node();
@@ -937,7 +1125,10 @@ function renderTrace(
     x,
     sampleIndex: index,
     sampleName,
+    sampleType,
+    sampleTypeColor,
     isReference,
+    isReferenceChoice: false,
     editContext,
     integrations,
     dotIndices,
@@ -1214,7 +1405,13 @@ function renderTrace(
     `${formatRt(points[pointIndex * 2])}, ${formatIntensity(points[pointIndex * 2 + 1])}`;
 
   const setTooltipText = (text) => {
-    const tooltipWidth = Math.min(220, Math.max(72, text.length * 6.2 + 16));
+    const tooltipWidth = Math.min(
+      220 * state.fontScale,
+      Math.max(
+        72 * state.fontScale,
+        text.length * 6.2 * state.fontScale + 16 * state.fontScale,
+      ),
+    );
     tooltipRectNode.setAttribute("x", String(-tooltipWidth / 2));
     tooltipRectNode.setAttribute("width", String(tooltipWidth));
     tooltipTextNode.textContent = text;
@@ -1379,12 +1576,16 @@ function renderTrace(
   const shell = options.shell ?? document.createElement("div");
   shell.className = "visualizer-chart-shell";
   shell.style.width = `${width}px`;
+  shell.style.setProperty("--graph-font-scale", String(graphFontScale(width, height)));
+  shell.style.setProperty("--sample-type-color", sampleTypeColor);
+  shell.classList.toggle("sample-type-colored", state.colorSampleTypes);
   const frame = document.createElement("div");
   frame.className = "visualizer-chart visualizer-canvas-frame chromatogram-chart";
   frame.style.width = `${width}px`;
   frame.style.height = `${height}px`;
   graph.shell = shell;
-  frame.append(canvas, svg.node(), ySlider);
+  const referenceToggle = createReferenceToggle(graph);
+  frame.append(canvas, svg.node(), ySlider, referenceToggle);
   shell.replaceChildren(frame, panSlider);
   if (!options.shell) {
     container.append(shell);
@@ -1547,6 +1748,7 @@ async function renderReference(reference, token) {
       (sample) => stripMzml(sample[0]) === stripMzml(referenceFile),
     ),
   );
+  const referenceMetadata = state.samples[referenceSampleIndex] ?? [];
   const channel = new Channel();
   let index = 0;
   const queue = createTraceRenderQueue(
@@ -1557,7 +1759,13 @@ async function renderReference(reference, token) {
   channel.onmessage = (plot) => {
     if (token !== state.renderToken) return;
     const transition = state.transitions[index];
-    const sample = [transition?.name ?? `Transition ${index + 1}`, "", "", "", ""];
+    const sample = [
+      transition?.name ?? `Transition ${index + 1}`,
+      referenceMetadata[1] ?? "",
+      referenceMetadata[2] ?? "",
+      referenceMetadata[3] ?? "",
+      referenceMetadata[4] ?? "",
+    ];
     queue.push({
       plot,
       sample,
@@ -1590,8 +1798,22 @@ function updateSaveButton() {
   const hasEdits = state.traceGraphs.some(
     (graph) => graph.editRts?.size > 0 && graph.editContext?.cqq,
   );
+  const changedReferences = state.traceGraphs.filter(
+    (graph) =>
+      graph.isReferenceChoice &&
+      graph.editRts?.size > 0 &&
+      graph.editContext?.cqq,
+  );
   elements.save.disabled = !hasEdits || state.loading;
+  elements.applyShared.disabled = changedReferences.length === 0 || state.loading;
+  elements.applyShared.title = changedReferences.length
+    ? `average ${changedReferences.length.toLocaleString()} changed reference plot(s), apply the RT limits to every sample, and reintegrate`
+    : "select a reference plot and adjust its integration bounds first";
   elements.toolbar.classList.toggle("has-unsaved", hasEdits);
+  elements.toolbar.classList.toggle(
+    "has-reference-edits",
+    changedReferences.length > 0,
+  );
 }
 
 // enables deletion only for user-created snapshots, keeping the protected
@@ -1861,13 +2083,8 @@ async function importBackupCsv() {
   }
 }
 
-// writes every dragged colored band into RT_matrix.csv, then re-integrates so
-// the change actually lands; each edit carries its own transition, sample, and
-// isomer index, so both transition and reference views share this path
-async function saveBounds() {
-  if (state.loading) return;
-  const scrollY = window.scrollY;
-  const edits = state.traceGraphs
+function individualBoundEdits() {
+  return state.traceGraphs
     .filter((graph) => graph.editRts?.size > 0 && graph.editContext?.cqq)
     .flatMap((graph) =>
       [...graph.editRts.entries()].map(([isomerIndex, edit]) => ({
@@ -1879,12 +2096,71 @@ async function saveBounds() {
         rtEnd: edit.end,
       })),
     );
-  if (!edits.length) return;
+}
+
+// averages changed reference windows by transition/isomer, then expands each
+// average across every sample row so the resulting RT limits are identical.
+function sharedReferenceBoundEdits() {
+  const windows = new Map();
+  for (const graph of state.traceGraphs) {
+    if (
+      !graph.isReferenceChoice ||
+      !graph.editContext?.cqq ||
+      !graph.editRts?.size
+    ) {
+      continue;
+    }
+    for (const [isomerIndex, edit] of graph.editRts) {
+      const key = `${graph.editContext.cqq}:${isomerIndex}`;
+      const window = windows.get(key) ?? {
+        cqq: graph.editContext.cqq,
+        isomerIndex,
+        startTotal: 0,
+        endTotal: 0,
+        count: 0,
+      };
+      window.startTotal += edit.start;
+      window.endTotal += edit.end;
+      window.count += 1;
+      windows.set(key, window);
+    }
+  }
+
+  const edits = [];
+  for (const window of windows.values()) {
+    const rtStart = window.startTotal / window.count;
+    const rtEnd = window.endTotal / window.count;
+    if (!Number.isFinite(rtStart) || !Number.isFinite(rtEnd) || rtEnd <= rtStart) {
+      continue;
+    }
+    state.samples.forEach((sample, sampleIndex) => {
+      edits.push({
+        cqq: window.cqq,
+        sampleIndex,
+        fileName: sample[0] ?? "",
+        isomerIndex: window.isomerIndex,
+        rtStart,
+        rtEnd,
+      });
+    });
+  }
+  return { edits, windowCount: windows.size };
+}
+
+async function writeAndReintegrate(edits, options = {}) {
+  if (state.loading || !edits.length) return;
+  const scrollY = window.scrollY;
+  const shared = Boolean(options.shared);
 
   const bridge = shell();
   elements.save.disabled = true;
+  elements.applyShared.disabled = true;
   elements.deleteBackup.disabled = true;
-  setStatus(`Saving ${edits.length} integration bound(s)...`);
+  setStatus(
+    shared
+      ? `Applying shared RT limits to ${state.samples.length.toLocaleString()} samples...`
+      : `Saving ${edits.length} integration bound(s)...`,
+  );
   try {
     const written = await invoke("visualizer_save_bounds", {
       projectPath: state.projectPath,
@@ -1898,11 +2174,13 @@ async function saveBounds() {
 
     if (!bridge?.runStep) {
       setStatus(
-        `Saved ${written} bound(s) to RT_matrix.csv. Run Step 3 to recompute.`,
+        `${shared ? "Applied" : "Saved"} ${written} bound(s) to RT_matrix.csv. Run Step 3 to recompute.`,
       );
       return;
     }
-    setStatus(`Saved ${written} bound(s). Re-integrating (Step 3)...`);
+    setStatus(
+      `${shared ? "Applied shared RT limits to" : "Saved"} ${written} bound(s). Re-integrating (Step 3)...`,
+    );
     const result = await bridge.runStep(3, { backup: true });
     if (result.success) {
       if (result.backup) {
@@ -1913,7 +2191,11 @@ async function saveBounds() {
       }
       await refreshBackups(result.backup);
       await renderSelected({ preserveScroll: true, scrollY });
-      setStatus(`Saved and re-integrated ${written} bound(s).`);
+      setStatus(
+        shared
+          ? `Applied shared RT limits and re-integrated ${written} bound(s).`
+          : `Saved and re-integrated ${written} bound(s).`,
+      );
     } else {
       await refreshBackups();
       setStatus(`Saved to RT_matrix.csv, but Step 3 did not finish.`);
@@ -1924,6 +2206,22 @@ async function saveBounds() {
     updateSaveButton();
     updateDeleteButton();
   }
+}
+
+// writes every dragged colored band into RT_matrix.csv, then re-integrates so
+// the change actually lands; each edit carries its own transition, sample, and
+// isomer index, so both transition and reference views share this path
+async function saveBounds() {
+  await writeAndReintegrate(individualBoundEdits());
+}
+
+async function applySharedRtLimits() {
+  const { edits, windowCount } = sharedReferenceBoundEdits();
+  if (!edits.length || windowCount === 0) {
+    setStatus("Select an RT reference plot and drag its integration bounds first.");
+    return;
+  }
+  await writeAndReintegrate(edits, { shared: true });
 }
 
 // renders the current chooser value without allowing overlapping streams
@@ -1937,6 +2235,7 @@ async function renderSelected(options = {}) {
   elements.transition.disabled = true;
   elements.refresh.disabled = true;
   elements.save.disabled = true;
+  elements.applyShared.disabled = true;
   elements.deleteBackup.disabled = true;
   elements.renameBackup.disabled = true;
   elements.importBackup.disabled = true;
@@ -1993,6 +2292,18 @@ for (const eventName of ["input", "change", "search", "keyup", "compositionend"]
 elements.refresh.addEventListener("click", () =>
   renderSelected({ preserveScroll: true }),
 );
+elements.fontScale.addEventListener("change", () => {
+  applyVisualizerScale(elements.fontScale.value);
+  if (elements.transition.value && !state.loading) {
+    renderSelected({ preserveScroll: true });
+  }
+});
+elements.colorSampleTypes.addEventListener("change", () => {
+  applySampleTypeColorPreference(elements.colorSampleTypes.checked);
+  if (elements.transition.value && !state.loading) {
+    renderSelected({ preserveScroll: true });
+  }
+});
 elements.rtStart.addEventListener("change", () => {
   if (state.loading) return;
   state.rangeManuallySet = true;
@@ -2008,6 +2319,7 @@ elements.intensity.addEventListener("input", () => {
   applyGlobalIntensity();
 });
 elements.save.addEventListener("click", saveBounds);
+elements.applyShared.addEventListener("click", applySharedRtLimits);
 elements.deleteBackup.addEventListener("click", deleteSelectedBackup);
 elements.renameBackup.addEventListener("click", renameSelectedBackup);
 elements.importBackup.addEventListener("click", importBackupCsv);
