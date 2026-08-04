@@ -2,101 +2,263 @@
 
 set -Eeuo pipefail
 
-# resolves the repository paths from this script's location
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "$script_dir/../.." && pwd)"
 integrator_dir="$repo_root/integrator_w_gui"
 tauri_dir="$script_dir/src-tauri"
 
-# stops early when the script is not running on macos
+architecture="${MACOS_ARCHITECTURE:-universal}"
+signing_identity="${APPLE_SIGNING_IDENTITY:-}"
+notary_profile="${NOTARYTOOL_PROFILE:-mrmhub-notary}"
+output_dir="${MACOS_OUTPUT_DIR:-$script_dir/dist}"
+skip_notarization=false
+ad_hoc=false
+
+usage() {
+  cat <<'EOF'
+Build a signed, notarized macOS DMG for MRMhub Integrator GUI.
+
+Usage: ./build-macos.sh [options]
+
+Options:
+  --architecture <universal|native|arm64|x86_64>
+                              Target architecture (default: universal)
+  --identity <name>           Developer ID Application identity. By default,
+                              the first valid matching identity is selected.
+  --notary-profile <name>     notarytool Keychain profile
+                              (default: mrmhub-notary)
+  --output-dir <path>         Copy the finished DMG here (default: ./dist)
+  --skip-notarization         Build a Developer ID-signed DMG without submitting
+                              it to Apple. It is not ready for public distribution.
+  --ad-hoc                    Build an ad-hoc signed development DMG. This also
+                              skips notarization and is not publicly distributable.
+  -h, --help                  Show this help
+
+Environment variable equivalents:
+  MACOS_ARCHITECTURE, APPLE_SIGNING_IDENTITY, NOTARYTOOL_PROFILE,
+  MACOS_OUTPUT_DIR
+EOF
+}
+
+while (($# > 0)); do
+  case "$1" in
+    --architecture)
+      [[ $# -ge 2 ]] || { echo "Error: --architecture requires a value." >&2; exit 2; }
+      architecture="$2"
+      shift 2
+      ;;
+    --identity)
+      [[ $# -ge 2 ]] || { echo "Error: --identity requires a value." >&2; exit 2; }
+      signing_identity="$2"
+      shift 2
+      ;;
+    --notary-profile)
+      [[ $# -ge 2 ]] || { echo "Error: --notary-profile requires a value." >&2; exit 2; }
+      notary_profile="$2"
+      shift 2
+      ;;
+    --output-dir)
+      [[ $# -ge 2 ]] || { echo "Error: --output-dir requires a value." >&2; exit 2; }
+      output_dir="$2"
+      shift 2
+      ;;
+    --skip-notarization)
+      skip_notarization=true
+      shift
+      ;;
+    --ad-hoc)
+      ad_hoc=true
+      skip_notarization=true
+      shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "Error: unknown option '$1'." >&2
+      usage >&2
+      exit 2
+      ;;
+  esac
+done
+
 if [[ "$(uname -s)" != "Darwin" ]]; then
-  echo "Error: this script must be run on macOS."
+  echo "Error: this script must be run on macOS." >&2
   exit 1
 fi
 
-# checks the required apple and rust build tools
-if ! xcode-select -p >/dev/null 2>&1; then
-  echo "Error: Xcode Command Line Tools are required."
-  echo "Run: xcode-select --install"
-  exit 1
+if [[ -z "${DEVELOPER_DIR:-}" && -d /Applications/Xcode.app/Contents/Developer ]]; then
+  active_developer_dir="$(xcode-select -p 2>/dev/null || true)"
+  if [[ "$active_developer_dir" == */CommandLineTools ]]; then
+    export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
+  fi
 fi
 
-for command_name in cargo rustc sips iconutil; do
+required_commands=(cargo rustc rustup xcrun xcodebuild codesign security ditto hdiutil)
+for command_name in "${required_commands[@]}"; do
   if ! command -v "$command_name" >/dev/null 2>&1; then
-    echo "Error: required command '$command_name' was not found."
+    echo "Error: required command '$command_name' was not found." >&2
     exit 1
   fi
 done
 
-# detects the native mac architecture used for the bundled worker
-target_triple="$(rustc --print host-tuple 2>/dev/null || true)"
-if [[ -z "$target_triple" ]]; then
-  target_triple="$(rustc -Vv | awk '/^host:/ { print $2 }')"
+if ! xcodebuild -version >/dev/null 2>&1; then
+  echo "Error: a working full Xcode installation is required." >&2
+  exit 1
 fi
 
-case "$target_triple" in
-  aarch64-apple-darwin|x86_64-apple-darwin) ;;
+host_target="$(rustc -Vv | awk '/^host:/ { print $2 }')"
+case "$architecture" in
+  universal)
+    tauri_target="universal-apple-darwin"
+    worker_targets=(aarch64-apple-darwin x86_64-apple-darwin)
+    ;;
+  native)
+    case "$host_target" in
+      aarch64-apple-darwin|x86_64-apple-darwin) ;;
+      *) echo "Error: unsupported macOS Rust host '$host_target'." >&2; exit 1 ;;
+    esac
+    tauri_target="$host_target"
+    worker_targets=("$host_target")
+    ;;
+  arm64|aarch64|aarch64-apple-darwin)
+    tauri_target="aarch64-apple-darwin"
+    worker_targets=(aarch64-apple-darwin)
+    ;;
+  x86_64|x64|x86_64-apple-darwin)
+    tauri_target="x86_64-apple-darwin"
+    worker_targets=(x86_64-apple-darwin)
+    ;;
   *)
-    echo "Error: unsupported macOS Rust target '$target_triple'."
-    exit 1
+    echo "Error: unsupported architecture '$architecture'." >&2
+    echo "Choose universal, native, arm64, or x86_64." >&2
+    exit 2
     ;;
 esac
 
-echo "Building MRMhub Integrator worker for $target_triple..."
-cargo build --release --manifest-path "$integrator_dir/Cargo.toml"
+installed_targets="$(rustup target list --installed)"
+for worker_target in "${worker_targets[@]}"; do
+  if ! grep -Fxq "$worker_target" <<<"$installed_targets"; then
+    echo "Error: Rust target '$worker_target' is not installed." >&2
+    echo "Install it with: rustup target add $worker_target" >&2
+    exit 1
+  fi
+done
 
-# gives tauri the target-suffixed sidecar filename it expects
-sidecar_dir="$tauri_dir/binaries"
-sidecar_path="$sidecar_dir/MRMhub-integrator-worker-$target_triple"
-mkdir -p "$sidecar_dir"
-cp "$integrator_dir/target/release/MRMhub-integrator" "$sidecar_path"
-chmod +x "$sidecar_path"
+if [[ "$ad_hoc" == true ]]; then
+  signing_identity="-"
+else
+  if [[ -z "$signing_identity" ]]; then
+    signing_identity="$({ security find-identity -v -p codesigning 2>/dev/null || true; } \
+      | awk -F'"' '/Developer ID Application:/ { print $2; exit }')"
+  fi
 
-# installs the tauri command only when it is not already available
+  if [[ -z "$signing_identity" ]]; then
+    echo "Error: no usable 'Developer ID Application' identity was found." >&2
+    echo "Install the certificate and its private key in your login Keychain, then check:" >&2
+    echo "  security find-identity -v -p codesigning" >&2
+    echo "For a local-only test build, pass --ad-hoc." >&2
+    exit 1
+  fi
+
+  if [[ "$signing_identity" != "Developer ID Application:"* ]]; then
+    echo "Error: '$signing_identity' is not a Developer ID Application identity." >&2
+    echo "Apple notarization does not accept development or Mac App Distribution identities." >&2
+    exit 1
+  fi
+
+  if ! security find-identity -v -p codesigning 2>/dev/null | grep -Fq "\"$signing_identity\""; then
+    echo "Error: signing identity '$signing_identity' is not currently usable." >&2
+    exit 1
+  fi
+fi
+
+if [[ "$skip_notarization" == false ]]; then
+  echo "Checking Apple notarization credentials in Keychain profile '$notary_profile'..."
+  if ! xcrun notarytool history --keychain-profile "$notary_profile" --output-format json >/dev/null; then
+    echo "Error: notarization profile '$notary_profile' could not be used." >&2
+    echo "Create it once with:" >&2
+    echo "  xcrun notarytool store-credentials \"$notary_profile\"" >&2
+    exit 1
+  fi
+fi
+
 if ! cargo tauri --version >/dev/null 2>&1; then
   echo "Installing Tauri CLI 2..."
   cargo install tauri-cli --version "^2" --locked
 fi
 
-# runs the gui build script once so its neutral png build asset exists
-cargo check --manifest-path "$tauri_dir/Cargo.toml"
+sidecar_dir="$tauri_dir/binaries"
+mkdir -p "$sidecar_dir"
 
-# generates the neutral icns file required by the macos app bundler
-icon_source="$tauri_dir/icons/icon.png"
-icon_output="$tauri_dir/icons/icon.icns"
-temporary_dir="$(mktemp -d)"
-iconset="$temporary_dir/MRMhub.iconset"
-trap 'rm -rf "$temporary_dir"' EXIT
-mkdir -p "$iconset"
+for worker_target in "${worker_targets[@]}"; do
+  echo "Building MRMhub Integrator worker for $worker_target..."
+  cargo build \
+    --release \
+    --locked \
+    --target "$worker_target" \
+    --manifest-path "$integrator_dir/Cargo.toml"
+  worker_sidecar="$sidecar_dir/MRMhub-integrator-worker-$worker_target"
+  cp "$integrator_dir/target/$worker_target/release/MRMhub-integrator" "$worker_sidecar"
+  chmod +x "$worker_sidecar"
+done
 
-make_icon() {
-  local size="$1"
-  local filename="$2"
-  sips -z "$size" "$size" "$icon_source" --out "$iconset/$filename" >/dev/null
-}
+bundle_config='{"bundle":{"externalBin":["binaries/MRMhub-integrator-worker"]}}'
 
-make_icon 16 icon_16x16.png
-make_icon 32 icon_16x16@2x.png
-make_icon 32 icon_32x32.png
-make_icon 64 icon_32x32@2x.png
-make_icon 128 icon_128x128.png
-make_icon 256 icon_128x128@2x.png
-make_icon 256 icon_256x256.png
-make_icon 512 icon_256x256@2x.png
-make_icon 512 icon_512x512.png
-make_icon 1024 icon_512x512@2x.png
-iconutil -c icns "$iconset" -o "$icon_output"
-
-# bundles the worker beside the gui executable and applies ad-hoc signing
-bundle_config='{"bundle":{"externalBin":["binaries/MRMhub-integrator-worker"],"macOS":{"signingIdentity":"-"}}}'
-
-echo "Building MRMhub Integrator GUI app and DMG..."
+echo "Building and signing the $tauri_target app and DMG..."
 (
   cd "$tauri_dir"
-  cargo tauri build --bundles app,dmg --config "$bundle_config"
+  LANG=en_US.UTF-8 \
+    LC_ALL=en_US.UTF-8 \
+    APPLE_SIGNING_IDENTITY="$signing_identity" \
+    cargo tauri build \
+      --target "$tauri_target" \
+      --bundles app,dmg \
+      --config "$bundle_config"
 )
+
+bundle_root="$tauri_dir/target/$tauri_target/release/bundle"
+app_path="$bundle_root/macos/MRMhub Integrator GUI.app"
+dmg_candidates=("$bundle_root/dmg/"*.dmg)
+
+if [[ ! -d "$app_path" ]]; then
+  echo "Error: expected app bundle was not created at '$app_path'." >&2
+  exit 1
+fi
+if [[ ${#dmg_candidates[@]} -ne 1 || ! -f "${dmg_candidates[0]}" ]]; then
+  echo "Error: expected exactly one DMG in '$bundle_root/dmg'." >&2
+  exit 1
+fi
+dmg_path="${dmg_candidates[0]}"
+
+codesign --verify --deep --strict --verbose=2 "$app_path"
+if [[ "$ad_hoc" == false ]]; then
+  codesign --verify --strict --verbose=2 "$dmg_path"
+fi
+
+if [[ "$skip_notarization" == false ]]; then
+  echo "Submitting the DMG to Apple's notary service..."
+  xcrun notarytool submit "$dmg_path" \
+    --keychain-profile "$notary_profile" \
+    --wait \
+    --timeout 45m
+
+  echo "Stapling and validating the notarization ticket..."
+  xcrun stapler staple "$dmg_path"
+  xcrun stapler validate "$dmg_path"
+  spctl --assess --type open --context context:primary-signature --verbose=2 "$dmg_path"
+else
+  echo "Warning: notarization was skipped; this DMG is not ready for public distribution." >&2
+fi
+
+hdiutil verify "$dmg_path"
+
+mkdir -p "$output_dir"
+final_dmg="$output_dir/$(basename "$dmg_path")"
+ditto "$dmg_path" "$final_dmg"
 
 echo
 echo "Build complete."
-echo "App: $tauri_dir/target/release/bundle/macos/MRMhub Integrator GUI.app"
-echo "DMG directory: $tauri_dir/target/release/bundle/dmg"
+echo "DMG: $final_dmg"
+echo "App: $app_path"

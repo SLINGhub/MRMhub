@@ -34,18 +34,48 @@ setup and a full walkthrough are in the
 > **Note:** INTEGRATOR is being rewritten in Rust. The Rust crate lives in this directory
 > (`integrator/Cargo.toml`).
 
-Once the Rust crate is in place:
-To compile on Mac:
-- Download the source and cd bash directory to the MRMhub folder
-- run `bash integrator_w_gui/gui/build-macos.sh`
-- output in integrator_w_gui/gui/src-tauri/target/release, put both executables in the same directory to run (may need to verify security perms on newer versions of OSX!)
-- an error may print in bash after build is done, you can ignore it as it doesn't affect the actual build (related to windows style crlf line endings being used)
-- IF you are unable to run the script at all and it exits with errors, cd to the repo folder and run:
+### Signed macOS DMG
+
+The macOS builder creates a universal app (Apple Silicon + Intel), embeds the worker binary, signs
+the app and DMG with a `Developer ID Application` certificate, submits the DMG to Apple's notary
+service, staples the ticket, and verifies the result with Gatekeeper.
+
+One-time setup:
+
+1. Install a `Developer ID Application` certificate **and its private key** in the login Keychain.
+   Confirm that macOS can use it:
+
+   ```bash
+   security find-identity -v -p codesigning
+   ```
+
+2. Save notarization credentials in the Keychain. `notarytool` prompts securely for an Apple ID,
+   Team ID, and app-specific password (or App Store Connect API-key details):
+
+   ```bash
+   xcrun notarytool store-credentials "mrmhub-notary" \
+     --apple-id "YOUR_APPLE_ACCOUNT_EMAIL" \
+     --team-id "L6FU3FBMXX"
+   ```
+
+Create a distributable DMG from the repository root:
+
 ```bash
-perl -pi -e 's/\r$//' integrator_w_gui/gui/build-macos.sh
-chmod +x integrator_w_gui/gui/build-macos.sh
 ./integrator_w_gui/gui/build-macos.sh
 ```
+
+The finished DMG is copied to `integrator_w_gui/gui/dist/`. Run
+`./integrator_w_gui/gui/build-macos.sh --help` for architecture, identity, profile, and output
+options. If the active command-line developer directory points at Command Line Tools, the builder
+automatically uses `/Applications/Xcode.app` without requiring an administrator-level
+`xcode-select` change. For a local test build that deliberately skips Developer ID signing and
+notarization, use:
+
+```bash
+./integrator_w_gui/gui/build-macos.sh --ad-hoc
+```
+
+### Windows
 
 To compile on Windows:
 - Download the source and cd bash directory to the MRMhub folder
