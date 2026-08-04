@@ -47,7 +47,6 @@ integrator/gui/dist/
 integrator_w_gui/target/
 integrator_w_gui/gui/src-tauri/target/
 integrator_w_gui/gui/src-tauri/gen/
-integrator_w_gui/gui/src-tauri/icons/
 integrator_w_gui/gui/src-tauri/binaries/
 integrator_w_gui/gui/dist/
 

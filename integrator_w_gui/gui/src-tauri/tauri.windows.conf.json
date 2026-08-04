@@ -1,0 +1,18 @@
+{
+  "bundle": {
+    "externalBin": ["binaries/MRMhub-integrator-worker"],
+    "resources": {
+      "icons/icon.ico": "mrmhub.ico"
+    },
+    "windows": {
+      "webviewInstallMode": {
+        "type": "offlineInstaller",
+        "silent": true
+      },
+      "nsis": {
+        "installerIcon": "icons/icon.ico",
+        "installerHooks": "installer-hooks.nsh"
+      }
+    }
+  }
+}
