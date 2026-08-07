@@ -162,6 +162,7 @@ for a detailed list of errors and resolutions.
 | `package 'X' was installed under R version …` | Package built for a different R | `install.packages("X")` to rebuild it for your R |
 | `there is no package called 'mrmhub'` | Install did not finish | Scroll up for the real error, then retry the install |
 | `ERROR: Rtools is required`, or packages start compiling (Windows) | A dependency has no binary for your R version | Update R, or set `options(install.packages.compile.from.source = "never")`. If a source build is unavoidable, install [Rtools](https://cran.r-project.org/bin/windows/Rtools/) matching your R version |
+| `Bioconductor version '3.23' requires R version '4.6'` | `BiocManager` selected a Bioconductor release newer than the installed R | Install the Bioconductor packages with `pak` instead: it selects the release paired with your R. Upgrading R is not required |
 | `clang: error: ...` (macOS) | Compiler tools missing | Run `xcode-select --install` in Terminal, retry |
 | `cannot find -lcurl` (Linux) | System libraries missing | `sudo apt install libcurl4-openssl-dev libxml2-dev libssl-dev libfontconfig1-dev` |
 

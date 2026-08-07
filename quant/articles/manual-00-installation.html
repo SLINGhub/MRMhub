@@ -123,7 +123,7 @@
       <img src="../logo.svg" class="logo" alt=""><h1>Installation</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/MRMhub-gui-v1.1.2/vignettes/articles/manual-00-installation.Rmd" class="external-link"><code>vignettes/articles/manual-00-installation.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/main/vignettes/articles/manual-00-installation.Rmd" class="external-link"><code>vignettes/articles/manual-00-installation.Rmd</code></a></small>
       <div class="d-none name"><code>manual-00-installation.Rmd</code></div>
     </div>
 
@@ -398,12 +398,20 @@ a source build is unavoidable, install <a href="https://cran.r-project.org/bin/w
 matching your R version</td>
 </tr>
 <tr class="odd">
+<td><code>Bioconductor version '3.23' requires R version '4.6'</code></td>
+<td>
+<code>BiocManager</code> selected a Bioconductor release newer than
+the installed R</td>
+<td>Install the Bioconductor packages with <code>pak</code> instead: it
+selects the release paired with your R. Upgrading R is not required</td>
+</tr>
+<tr class="even">
 <td>
 <code>clang: error: ...</code> (macOS)</td>
 <td>Compiler tools missing</td>
 <td>Run <code>xcode-select --install</code> in Terminal, retry</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>
 <code>cannot find -lcurl</code> (Linux)</td>
 <td>System libraries missing</td>

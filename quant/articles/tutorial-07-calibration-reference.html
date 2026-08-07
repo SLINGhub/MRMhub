@@ -123,7 +123,7 @@
       <img src="../logo.svg" class="logo" alt=""><h1>Calibration by a reference sample</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/MRMhub-gui-v1.1.2/vignettes/articles/tutorial-07-calibration-reference.Rmd" class="external-link"><code>vignettes/articles/tutorial-07-calibration-reference.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/main/vignettes/articles/tutorial-07-calibration-reference.Rmd" class="external-link"><code>vignettes/articles/tutorial-07-calibration-reference.Rmd</code></a></small>
       <div class="d-none name"><code>tutorial-07-calibration-reference.Rmd</code></div>
     </div>
 
@@ -254,21 +254,21 @@ appear as concentrations in the MRMhub XLSX report.</p>
 <code class="sourceCode R"><span><span class="co"># Export absolute-calibrated concentrations</span></span>
 <span><span class="fu"><a href="../reference/save_dataset_csv.html">save_dataset_csv</a></span><span class="op">(</span><span class="va">mexp_res</span>, <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span>, variable <span class="op">=</span> <span class="st">"conc"</span><span class="op">)</span></span></code></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Concentration values for 65 analyses and 7 features have been exported to '/tmp/RtmpYfvfbT/file3ad11f0f7d62.csv'.</span></code></pre>
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Concentration values for 65 analyses and 7 features have been exported to '/tmp/RtmpbcalDO/file3b111c524ed0.csv'.</span></code></pre>
 </div>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># Export non-calibrated concentrations</span></span>
 <span><span class="fu"><a href="../reference/save_dataset_csv.html">save_dataset_csv</a></span><span class="op">(</span><span class="va">mexp_res</span>, <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span>, variable <span class="op">=</span> <span class="st">"conc_beforecal"</span><span class="op">)</span></span></code></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Conc_beforecal values for 65 analyses and 16 features have been exported to '/tmp/RtmpYfvfbT/file3ad161d16db0.csv'.</span></code></pre>
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Conc_beforecal values for 65 analyses and 16 features have been exported to '/tmp/RtmpbcalDO/file3b11249f8105.csv'.</span></code></pre>
 </div>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># Create XLSX report with calibrated concentrations as filtered dataset</span></span>
 <span><span class="fu"><a href="../reference/save_report_xlsx.html">save_report_xlsx</a></span><span class="op">(</span><span class="va">mexp_res</span>, <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".xlsx"</span><span class="op">)</span>, filtered_variable <span class="op">=</span> <span class="st">"conc"</span><span class="op">)</span></span></code></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The data processing report has been saved to /tmp/RtmpYfvfbT/file3ad13568bb06.xlsx.</span></code></pre>
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The data processing report has been saved to /tmp/RtmpbcalDO/file3b1162e06283.xlsx.</span></code></pre>
 </div>
 </div>
 <div class="section level2">
@@ -316,7 +316,7 @@ default; to include them as the filtered dataset, set
 <span>  path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".xlsx"</span><span class="op">)</span>,</span>
 <span>  filtered_variable <span class="op">=</span> <span class="st">"conc_normalized"</span><span class="op">)</span></span></code></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The data processing report has been saved to /tmp/RtmpYfvfbT/file3ad1376d6948.xlsx.</span></code></pre>
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The data processing report has been saved to /tmp/RtmpbcalDO/file3b112237ec1d.xlsx.</span></code></pre>
 </div>
 </div>
 <div class="section level2">
@@ -349,7 +349,7 @@ using a reference material shared across them.</p>
 <code class="sourceCode R"><span></span>
 <span><span class="fu"><a href="../reference/save_dataset_csv.html">save_dataset_csv</a></span><span class="op">(</span><span class="va">mexp_res</span>, <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span>, variable <span class="op">=</span> <span class="st">"conc_beforecal"</span><span class="op">)</span></span></code></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Conc_beforecal values for 65 analyses and 16 features have been exported to '/tmp/RtmpYfvfbT/file3ad12016e6fb.csv'.</span></code></pre>
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Conc_beforecal values for 65 analyses and 16 features have been exported to '/tmp/RtmpbcalDO/file3b11442812b1.csv'.</span></code></pre>
 </div>
 </div>
 <div class="section level2">

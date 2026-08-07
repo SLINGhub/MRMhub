@@ -173,7 +173,7 @@ for two lipid classes, selected by a regular expression on their names.
 
 plot_runscatter(
   mexp,
-  variable = "norm_intensity",
+  variable = "intensity",
   include_feature_filter = "^(Cer|PC)",
   rows_page = 2, cols_page = 3)
 ```
@@ -201,7 +201,7 @@ can write a multi-page PDF — one page per grid of features — directly to
 
 plot_runscatter(
   mexp,
-  variable = "norm_intensity",
+  variable = "intensity",
   include_feature_filter = "^(Cer|PC)",
   rows_page = 2, cols_page = 3,
   output_pdf = TRUE,
