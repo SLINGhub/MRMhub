@@ -26,7 +26,11 @@ options(dplyr.print_max = 10)
 ## Requirements
 
 - **Operating system:** Windows, macOS, or Linux.
-- **R:** version 4.1 or newer, from [CRAN](https://cran.r-project.org).
+- **R:** version 4.1 or newer, from [CRAN](https://cran.r-project.org). Use the
+  current release or the one before it: CRAN builds binary packages only for
+  those two, so on an older R some dependencies are compiled from source, which
+  needs [Rtools](https://cran.r-project.org/bin/windows/Rtools/) (Windows) or
+  the Xcode command line tools (macOS).
 - **R Editor (recommended):** [RStudio](https://posit.co/download/rstudio-desktop/)
   or [Positron](https://positron.posit.co).
 - **Quarto:** bundled with recent RStudio and Positron releases; otherwise
@@ -48,6 +52,17 @@ pak::pak("SLINGhub/MRMhub")
 ```
 
 To update MRMhub later, re-run the same command in a fresh session.
+
+::: {.callout .callout-note}
+**No compiler needed.** `mrmhub` contains no compiled code, and CRAN provides
+binaries for all its dependencies. If the installer starts compiling anyway, or
+asks *"install from sources the package which needs compilation?"*, decline —
+or set, before installing:
+
+```{r, eval=FALSE}
+options(install.packages.compile.from.source = "never")
+```
+:::
 
 If `pak` fails, e.g. due to institutional network firewall or
 proxy settings, try `remotes` instead:
@@ -121,10 +136,12 @@ pak::pak(c(
 ))
 ```
 
-Alternatively, install the CRAN packages
-with `install.packages()` and the Bioconductor ones
-(`rgoslin`, `lipidr`, `SummarizedExperiment`, `S4Vectors`) with
-`BiocManager::install()`.
+Alternatively, the CRAN packages can be installed with `install.packages()`. For
+the Bioconductor ones (`sva`, `rgoslin`, `lipidr`, `SummarizedExperiment`,
+`S4Vectors`), use `pak` as shown above: it selects the Bioconductor release
+paired with the installed R version. `BiocManager` may instead resolve to an
+older release and report that the current one requires a newer R — that message
+is advisory, and upgrading R is not necessary.
 
 ## Troubleshooting
 
@@ -150,7 +167,7 @@ list of errors and resolutions.
 | `SSL certificate problem: self signed certificate in certificate chain` | Corporate proxy inspecting TLS traffic | Use `remotes` (it uses the system certificate store), or install your organisation's root certificate |
 | `package 'X' was installed under R version …` | Package built for a different R | `install.packages("X")` to rebuild it for your R |
 | `there is no package called 'mrmhub'` | Install did not finish | Scroll up for the real error, then retry the install |
-| `ERROR: Rtools is required` (Windows) | A source-only dependency needs compilation | Install [Rtools](https://cran.r-project.org/bin/windows/Rtools/) matching your R version, restart R, retry |
+| `ERROR: Rtools is required`, or packages start compiling (Windows) | A dependency has no binary for your R version | Update R, or set `options(install.packages.compile.from.source = "never")`. If a source build is unavoidable, install [Rtools](https://cran.r-project.org/bin/windows/Rtools/) matching your R version |
 | `clang: error: ...` (macOS) | Compiler tools missing | Run `xcode-select --install` in Terminal, retry |
 | `cannot find -lcurl` (Linux) | System libraries missing | `sudo apt install libcurl4-openssl-dev libxml2-dev libssl-dev libfontconfig1-dev` |
 
