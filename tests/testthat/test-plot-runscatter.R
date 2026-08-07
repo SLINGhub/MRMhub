@@ -1128,6 +1128,7 @@ test_that("plot_runscatter remove_gaps gap markers present", {
 })
 
 test_that("long feature_id labels are wrapped when label_wrap = TRUE", {
+  skip_if_not_installed("dplyr", "1.2.0") # recode_values()
   long_ids <- c(
     "Ceramide d18:1/16:0 long name feature label",
     "Phosphatidylcholine PC 34:1 with extra long annotation",
