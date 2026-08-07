@@ -62,6 +62,57 @@ fn safe_component(value: &str) -> Result<&str, String> {
     Ok(value)
 }
 
+// Creates the export folder before graph rendering starts, so the user gets
+// immediate filesystem feedback even when a large reference takes time.
+fn png_export_folder(project_path: &str, folder_name: &str) -> Result<PathBuf, String> {
+    let folder_name = safe_component(folder_name)?;
+    let project = PathBuf::from(project_path);
+    if !project.is_dir() {
+        return Err("the selected dataset folder does not exist".to_string());
+    }
+    let folder = project.join("visualizer_png").join(folder_name);
+    std::fs::create_dir_all(&folder).map_err(|error| error.to_string())?;
+    Ok(folder)
+}
+
+#[tauri::command]
+pub fn visualizer_prepare_png_export(
+    project_path: &str,
+    folder_name: &str,
+) -> Result<String, String> {
+    Ok(png_export_folder(project_path, folder_name)?
+        .to_string_lossy()
+        .into_owned())
+}
+
+// saves one browser-rendered PNG sheet beneath the selected dataset. Both
+// names are single validated path components, so exports cannot escape the
+// project-owned visualizer_png directory.
+#[tauri::command]
+pub fn visualizer_save_png(
+    project_path: &str,
+    folder_name: &str,
+    file_name: &str,
+    bytes: Vec<u8>,
+) -> Result<String, String> {
+    let file_name = safe_component(file_name)?;
+    if !file_name.to_ascii_lowercase().ends_with(".png") {
+        return Err("the visualizer export must use a .png file name".to_string());
+    }
+    const PNG_SIGNATURE: &[u8; 8] = b"\x89PNG\r\n\x1a\n";
+    if bytes.len() < PNG_SIGNATURE.len() || &bytes[..PNG_SIGNATURE.len()] != PNG_SIGNATURE {
+        return Err("the visualizer export did not contain valid PNG data".to_string());
+    }
+    if bytes.len() > 64 * 1024 * 1024 {
+        return Err("the visualizer PNG sheet exceeded the 64 MB limit".to_string());
+    }
+
+    let folder = png_export_folder(project_path, folder_name)?;
+    let path = folder.join(file_name);
+    std::fs::write(&path, bytes).map_err(|error| error.to_string())?;
+    Ok(path.to_string_lossy().into_owned())
+}
+
 // counts samples without retaining the sample table
 fn sample_count(misc: &Path) -> Result<usize, String> {
     let file = File::open(misc.join("mzML_list.txt")).map_err(|error| error.to_string())?;
@@ -711,6 +762,50 @@ mod tests {
         assert_eq!(rows[3][6], "3.900");
         // the other sample row is untouched
         assert_eq!(rows[4][2], "1.100");
+        std::fs::remove_dir_all(&dir).unwrap();
+    }
+
+    #[test]
+    fn saves_png_exports_inside_the_selected_project() {
+        let dir = temp_project("png");
+        let bytes = b"\x89PNG\r\n\x1a\nfixture".to_vec();
+        let saved = visualizer_save_png(
+            dir.to_str().unwrap(),
+            "2026-08-07_transition",
+            "transition_qc_01.png",
+            bytes.clone(),
+        )
+        .unwrap();
+        let path = PathBuf::from(saved);
+        assert_eq!(std::fs::read(&path).unwrap(), bytes);
+        assert!(path.starts_with(dir.join("visualizer_png")));
+        std::fs::remove_dir_all(&dir).unwrap();
+    }
+
+    #[test]
+    fn prepares_png_export_folder_before_rendering() {
+        let dir = temp_project("png_prepare");
+        let prepared =
+            visualizer_prepare_png_export(dir.to_str().unwrap(), "2026-08-07_reference").unwrap();
+        let path = PathBuf::from(prepared);
+        assert!(path.is_dir());
+        assert_eq!(
+            path,
+            dir.join("visualizer_png").join("2026-08-07_reference")
+        );
+        std::fs::remove_dir_all(&dir).unwrap();
+    }
+
+    #[test]
+    fn rejects_png_export_path_traversal() {
+        let dir = temp_project("png_traversal");
+        let result = visualizer_save_png(
+            dir.to_str().unwrap(),
+            "..",
+            "outside.png",
+            b"\x89PNG\r\n\x1a\nfixture".to_vec(),
+        );
+        assert!(result.is_err());
         std::fs::remove_dir_all(&dir).unwrap();
     }
 }

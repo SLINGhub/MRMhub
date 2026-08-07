@@ -838,6 +838,34 @@ html[data-theme="dark"] .primary-nav {
   background: #142127;
 }
 
+.gui-scale-control {
+  display: grid;
+  gap: 2px;
+  min-width: 74px;
+  color: var(--muted);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.gui-scale-control select {
+  width: 74px;
+  height: 28px;
+  padding: 0 7px;
+  color: var(--ink);
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--surface);
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.gui-scale-control select:focus-visible {
+  outline: 2px solid var(--steel);
+  outline-offset: 2px;
+}
+
 html[data-theme="dark"] .fact {
   background: rgba(24, 37, 43, 0.8);
 }
@@ -1394,13 +1422,6 @@ html[data-theme="dark"] .sling-link img {
   font-size: calc(11px * var(--visualizer-font-scale, 1));
 }
 
-.font-scale-field select {
-  width: 94px;
-  height: calc(38px * var(--visualizer-font-scale, 1));
-  padding: 0 9px;
-  font-size: calc(11px * var(--visualizer-font-scale, 1));
-}
-
 .backups-field {
   flex: 0 0 auto;
   align-self: end;
@@ -1532,10 +1553,28 @@ html[data-theme="dark"] .sling-link img {
   display: none;
 }
 
+.visualizer-export-wrap {
+  display: inline-flex;
+  align-self: end;
+}
+
+.visualizer-export-pngs,
 .visualizer-apply-shared,
 #visualizer-back {
   min-height: calc(38px * var(--visualizer-font-scale, 1));
   font-size: calc(10px * var(--visualizer-font-scale, 1));
+}
+
+.visualizer-export-pngs:not(:disabled) {
+  color: var(--surface);
+  border-color: var(--steel);
+  background: var(--steel);
+}
+
+.visualizer-export-pngs:disabled {
+  pointer-events: none;
+  cursor: not-allowed;
+  opacity: 0.45;
 }
 
 .visualizer-toolbar.has-reference-edits .visualizer-apply-shared:not(:disabled) {

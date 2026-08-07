@@ -5,7 +5,6 @@ const decoder = new TextDecoder();
 const originalRtMatrix = "RT_matrix_original.csv";
 const formatRt = d3.format(".2f");
 const formatIntensity = d3.format(",.0f");
-const fontScalePreference = "mrmhub-visualizer-font-scale";
 const sampleTypeColorPreference = "mrmhub-visualizer-color-sample-types";
 const sampleTypePalette = [
   "#1f77b4",
@@ -25,8 +24,9 @@ const elements = {
   transitionSearch: document.querySelector("#visualizer-transition-search"),
   width: document.querySelector("#visualizer-width"),
   height: document.querySelector("#visualizer-height"),
-  fontScale: document.querySelector("#visualizer-font-scale"),
   colorSampleTypes: document.querySelector("#visualizer-color-sample-types"),
+  exportPngs: document.querySelector("#visualizer-export-pngs"),
+  exportPngsWrap: document.querySelector("#visualizer-export-wrap"),
   sampleTypeLegend: document.querySelector("#visualizer-sample-type-legend"),
   applyShared: document.querySelector("#visualizer-apply-shared"),
   refresh: document.querySelector("#visualizer-refresh"),
@@ -70,6 +70,8 @@ const state = {
   colorSampleTypes: false,
   sampleTypeColors: new Map(),
   referenceChoices: new Map(),
+  exportingPngs: false,
+  renderComplete: false,
 };
 
 const margins = {
@@ -110,15 +112,12 @@ function updatePlotMargins() {
   margins.left = Math.round(38 * state.fontScale);
 }
 
-function applyVisualizerScale(scalePercent, persist = true) {
-  const percent = [100, 125, 150, 175, 200].includes(Number(scalePercent))
-    ? Number(scalePercent)
-    : 100;
-  state.fontScale = percent / 100;
-  elements.fontScale.value = String(percent);
-  elements.view?.style.setProperty("--visualizer-font-scale", String(state.fontScale));
+function applyVisualizerScale() {
+  // The application shell now scales the entire native webview. Keep graph
+  // geometry at its base size so the visualizer is not enlarged twice.
+  state.fontScale = 1;
+  elements.view?.style.setProperty("--visualizer-font-scale", "1");
   updatePlotMargins();
-  if (persist) rememberPreference(fontScalePreference, percent);
 }
 
 function sampleTypeOf(sample) {
@@ -164,7 +163,7 @@ function applySampleTypeColorPreference(enabled, persist = true) {
   renderSampleTypeLegend();
 }
 
-applyVisualizerScale(storedPreference(fontScalePreference), false);
+applyVisualizerScale();
 applySampleTypeColorPreference(
   storedPreference(sampleTypeColorPreference) === "true",
   false,
@@ -238,6 +237,7 @@ function applyTransitionSearch() {
 // releases all per-graph arrays and dom nodes
 export function clearPlots() {
   state.renderToken += 1;
+  state.renderComplete = false;
   state.hoveredGraph = null;
   state.qcGraphs.length = 0;
   state.traceGraphs.length = 0;
@@ -656,6 +656,9 @@ function renderQcGraph(title, values, width) {
     .attr("dominant-baseline", "text-before-edge");
 
   const graph = {
+    title,
+    width,
+    height,
     currentX: x,
     marker,
     tooltip,
@@ -1116,6 +1119,9 @@ function renderTrace(
     .attr("dominant-baseline", "middle")
     .node();
   graph = {
+    width,
+    height,
+    canvas,
     currentX: x,
     baseDomain: x.domain(),
     guide,
@@ -1798,6 +1804,7 @@ function updateSaveButton() {
   const hasEdits = state.traceGraphs.some(
     (graph) => graph.editRts?.size > 0 && graph.editContext?.cqq,
   );
+  const selection = elements.transition.value;
   const changedReferences = state.traceGraphs.filter(
     (graph) =>
       graph.isReferenceChoice &&
@@ -1814,6 +1821,19 @@ function updateSaveButton() {
     "has-reference-edits",
     changedReferences.length > 0,
   );
+  const canExport =
+    Boolean(selection) &&
+    !hasEdits &&
+    !state.loading &&
+    !state.exportingPngs &&
+    state.renderComplete &&
+    (state.qcGraphs.length > 0 || state.traceGraphs.length > 0);
+  const exportTitle = canExport
+    ? "export all PNGs for the saved current reference"
+    : "save current reference to export .pngs";
+  elements.exportPngs.disabled = !canExport;
+  elements.exportPngs.title = exportTitle;
+  elements.exportPngsWrap.title = exportTitle;
 }
 
 // enables deletion only for user-created snapshots, keeping the protected
@@ -1864,6 +1884,241 @@ function fileTimestamp(date = new Date()) {
     `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}_` +
     `${pad(date.getHours())}-${pad(date.getMinutes())}-${pad(date.getSeconds())}`
   );
+}
+
+const pngStyleProperties = [
+  "fill",
+  "fill-opacity",
+  "stroke",
+  "stroke-opacity",
+  "stroke-width",
+  "stroke-linecap",
+  "stroke-linejoin",
+  "stroke-dasharray",
+  "opacity",
+  "display",
+  "visibility",
+  "font-family",
+  "font-size",
+  "font-style",
+  "font-weight",
+  "letter-spacing",
+];
+
+function exportSlug(value, fallback = "visualizer") {
+  const slug = String(value ?? "")
+    .normalize("NFKD")
+    .replace(/[^a-zA-Z0-9._-]+/g, "_")
+    .replace(/^_+|_+$/g, "")
+    .slice(0, 80);
+  return slug || fallback;
+}
+
+function themeColor(name, fallback) {
+  return (
+    getComputedStyle(document.documentElement).getPropertyValue(name).trim() ||
+    fallback
+  );
+}
+
+// Converts the current SVG overlay into an image with its computed theme and
+// graph styles embedded, so exported PNGs match what the user sees.
+async function svgExportImage(svgNode) {
+  const clone = svgNode.cloneNode(true);
+  clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+  const sources = [svgNode, ...svgNode.querySelectorAll("*")];
+  const targets = [clone, ...clone.querySelectorAll("*")];
+  for (let index = 0; index < sources.length; index += 1) {
+    const computed = getComputedStyle(sources[index]);
+    for (const property of pngStyleProperties) {
+      targets[index].style.setProperty(property, computed.getPropertyValue(property));
+    }
+  }
+  const source = new XMLSerializer().serializeToString(clone);
+  const url = URL.createObjectURL(
+    new Blob([source], { type: "image/svg+xml;charset=utf-8" }),
+  );
+  try {
+    const image = new Image();
+    image.src = url;
+    await image.decode();
+    return image;
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
+
+// Draws a clean chromatogram trace for exported images. This deliberately
+// ignores the interactive canvas so hover dots and sample-type colors cannot
+// leak into the PNG; the line remains visible above the integration shading.
+function drawExportTrace(context, graph, width, height) {
+  const points = graph.points;
+  if (!points || points.length < 4 || !graph.currentX || !graph.y) return;
+  const count = points.length / 2;
+  const step = Math.max(1, Math.ceil(count / Math.max(600, width * 2)));
+  context.save();
+  context.beginPath();
+  context.rect(
+    margins.left,
+    margins.top,
+    width - margins.left - margins.right,
+    height - margins.top - margins.bottom,
+  );
+  context.clip();
+  context.strokeStyle = themeColor("--ink", "#10202b");
+  context.lineWidth = 1.5;
+  context.lineJoin = "round";
+  context.lineCap = "round";
+  context.beginPath();
+  for (let point = 0; point < count; point += step) {
+    const x = graph.currentX(points[point * 2]);
+    const y = graph.y(points[point * 2 + 1]);
+    if (point === 0) context.moveTo(x, y);
+    else context.lineTo(x, y);
+  }
+  if ((count - 1) % step !== 0) {
+    context.lineTo(
+      graph.currentX(points[(count - 1) * 2]),
+      graph.y(points[(count - 1) * 2 + 1]),
+    );
+  }
+  context.stroke();
+  context.restore();
+}
+
+async function graphExportCanvas(graph, kind) {
+  const scale = 2;
+  const width = graph.width;
+  const height = graph.height;
+  const canvas = document.createElement("canvas");
+  canvas.width = width * scale;
+  canvas.height = height * scale;
+  const context = canvas.getContext("2d", { alpha: false });
+  context.scale(scale, scale);
+  context.fillStyle = themeColor("--surface", "#ffffff");
+  context.fillRect(0, 0, width, height);
+  const overlay = await svgExportImage(graph.svg.node());
+  context.drawImage(overlay, 0, 0, width, height);
+  if (kind === "plots") {
+    drawExportTrace(context, graph, width, height);
+  }
+  context.strokeStyle = themeColor("--line-strong", "#ced7dc");
+  context.lineWidth = 1;
+  context.strokeRect(0.5, 0.5, width - 1, height - 1);
+  return canvas;
+}
+
+function pngBlob(canvas) {
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => (blob ? resolve(blob) : reject(new Error("PNG encoding failed"))),
+      "image/png",
+    );
+  });
+}
+
+async function saveGraphSheets(graphs, kind, prefix, folderName) {
+  if (!graphs.length) return 0;
+  const exportScale = 2;
+  const cardPixels = graphs[0].width * exportScale * graphs[0].height * exportScale;
+  const perPage = Math.max(1, Math.min(12, Math.floor(24_000_000 / cardPixels)));
+  let written = 0;
+  for (let offset = 0; offset < graphs.length; offset += perPage) {
+    const page = graphs.slice(offset, offset + perPage);
+    const cards = [];
+    for (const graph of page) {
+      cards.push(await graphExportCanvas(graph, kind));
+    }
+    const columns = Math.min(3, cards.length);
+    const rows = Math.ceil(cards.length / columns);
+    const gap = 24;
+    const cardWidth = cards[0].width;
+    const cardHeight = cards[0].height;
+    const sheet = document.createElement("canvas");
+    sheet.width = columns * cardWidth + (columns + 1) * gap;
+    sheet.height = rows * cardHeight + (rows + 1) * gap;
+    const context = sheet.getContext("2d", { alpha: false });
+    context.fillStyle = themeColor("--canvas", "#f5f7f8");
+    context.fillRect(0, 0, sheet.width, sheet.height);
+    cards.forEach((card, index) => {
+      const column = index % columns;
+      const row = Math.floor(index / columns);
+      context.drawImage(
+        card,
+        gap + column * (cardWidth + gap),
+        gap + row * (cardHeight + gap),
+      );
+    });
+    const blob = await pngBlob(sheet);
+    const bytes = Array.from(new Uint8Array(await blob.arrayBuffer()));
+    const pageNumber = String(Math.floor(offset / perPage) + 1).padStart(2, "0");
+    await invoke("visualizer_save_png", {
+      projectPath: state.projectPath,
+      folderName,
+      fileName: `${prefix}_${kind}_${pageNumber}.png`,
+      bytes,
+    });
+    written += 1;
+    const renderedGraphs = Math.min(offset + page.length, graphs.length);
+    setStatus(
+      `Exporting PNGs: ${renderedGraphs.toLocaleString()} of ${graphs.length.toLocaleString()} ${kind === "qc" ? "QC" : "chromatogram"} graph(s) written...`,
+    );
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+  }
+  return written;
+}
+
+async function exportRenderedPngs() {
+  if (
+    elements.exportPngs.disabled ||
+    state.exportingPngs ||
+    !state.projectPath ||
+    (!state.qcGraphs.length && !state.traceGraphs.length)
+  ) {
+    return;
+  }
+  state.exportingPngs = true;
+  updateSaveButton();
+  const [kind, rawIndex] = elements.transition.value.split(":");
+  const index = Number(rawIndex);
+  const selectionName =
+    kind === "r"
+      ? state.references[index]?.slice(3)
+      : `${state.transitions[index]?.name ?? "transition"}_${state.transitions[index]?.cqq ?? index}`;
+  const prefix = exportSlug(selectionName, kind === "r" ? "reference" : "transition");
+  const folderName = `${fileTimestamp()}_${prefix}`;
+  setStatus("Exporting rendered QC and chromatogram PNG sheets...");
+  shell()?.showToast?.("PNG export started. Creating the dataset export folder...");
+  try {
+    const exportPath = await invoke("visualizer_prepare_png_export", {
+      projectPath: state.projectPath,
+      folderName,
+    });
+    setStatus(`Export folder ready: ${exportPath}`);
+    const qcSheets = await saveGraphSheets(
+      state.qcGraphs,
+      "qc",
+      prefix,
+      folderName,
+    );
+    const plotSheets = await saveGraphSheets(
+      state.traceGraphs,
+      "plots",
+      prefix,
+      folderName,
+    );
+    const count = qcSheets + plotSheets;
+    setStatus(
+      `Saved ${count.toLocaleString()} PNG sheet(s) to visualizer_png/${folderName}`,
+    );
+    shell()?.showToast?.(`Exported ${count.toLocaleString()} visualizer PNG sheet(s).`);
+  } catch (error) {
+    setStatus(`PNG export failed: ${String(error)}`);
+    shell()?.showToast?.(`PNG export failed: ${String(error)}`, "error");
+  } finally {
+    state.exportingPngs = false;
+    updateSaveButton();
+  }
 }
 
 // builds the timestamped file name for an imported RT_matrix backup
@@ -2235,6 +2490,7 @@ async function renderSelected(options = {}) {
   elements.transition.disabled = true;
   elements.refresh.disabled = true;
   elements.save.disabled = true;
+  elements.exportPngs.disabled = true;
   elements.applyShared.disabled = true;
   elements.deleteBackup.disabled = true;
   elements.renameBackup.disabled = true;
@@ -2252,6 +2508,7 @@ async function renderSelected(options = {}) {
     } else {
       await renderReference(state.references[index], token);
     }
+    state.renderComplete = true;
   } catch (error) {
     if (token === state.renderToken) {
       setStatus(`Visualizer error: ${String(error)}`);
@@ -2292,16 +2549,22 @@ for (const eventName of ["input", "change", "search", "keyup", "compositionend"]
 elements.refresh.addEventListener("click", () =>
   renderSelected({ preserveScroll: true }),
 );
-elements.fontScale.addEventListener("change", () => {
-  applyVisualizerScale(elements.fontScale.value);
-  if (elements.transition.value && !state.loading) {
-    renderSelected({ preserveScroll: true });
-  }
+document.addEventListener("mrmhub-gui-scale-change", () => {
+  applyVisualizerScale();
 });
 elements.colorSampleTypes.addEventListener("change", () => {
   applySampleTypeColorPreference(elements.colorSampleTypes.checked);
   if (elements.transition.value && !state.loading) {
     renderSelected({ preserveScroll: true });
+  }
+});
+elements.exportPngs.addEventListener("click", async () => {
+  await exportRenderedPngs();
+  elements.exportPngs.blur();
+});
+elements.exportPngsWrap.addEventListener("pointerdown", () => {
+  if (elements.exportPngs.disabled) {
+    shell()?.showToast?.("Save current reference to export .pngs");
   }
 });
 elements.rtStart.addEventListener("change", () => {

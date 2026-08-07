@@ -2,6 +2,9 @@ const tauri = window.__TAURI__;
 const isDesktop = Boolean(tauri?.core?.invoke);
 const invoke = isDesktop ? tauri.core.invoke : null;
 const scratchpadAutoWipePreference = "mrmhub-scratchpad-auto-wipe";
+const guiScalePreference = "mrmhub-gui-scale";
+const legacyVisualizerScalePreference = "mrmhub-visualizer-font-scale";
+const guiScaleOptions = [100, 125, 150, 175, 200];
 
 const elements = {
   projectTitle: document.querySelector("#project-title"),
@@ -46,6 +49,7 @@ const elements = {
   promptModalOk: document.querySelector("#prompt-modal-ok"),
   promptModalCancel: document.querySelector("#prompt-modal-cancel"),
   themeToggle: document.querySelector("#theme-toggle"),
+  guiScale: document.querySelector("#gui-scale"),
   clearActivity: document.querySelector("#clear-activity"),
   visualizerButton: document.querySelector("#open-visualizer"),
   scratchpadButton: document.querySelector("#open-scratchpad"),
@@ -78,6 +82,7 @@ const elements = {
 let project = null;
 let activeStep = null;
 let visualizerModule = null;
+let guiScalePercent = 100;
 let pendingSetup = null;
 let scratchpadLoaded = false;
 const scratchpad = {
@@ -1105,6 +1110,49 @@ function updateThemeToggle() {
     : "enable night mode";
 }
 
+function rememberedGuiScale() {
+  try {
+    return (
+      localStorage.getItem(guiScalePreference) ??
+      localStorage.getItem(legacyVisualizerScalePreference) ??
+      "100"
+    );
+  } catch {
+    return "100";
+  }
+}
+
+// Scales the native webview so every tab, modal, graph, and control grows as
+// one UI. Browser preview uses CSS zoom as a close fallback.
+async function setGuiScale(value, options = {}) {
+  const percent = guiScaleOptions.includes(Number(value)) ? Number(value) : 100;
+  const scale = percent / 100;
+  guiScalePercent = percent;
+  elements.guiScale.value = String(percent);
+  if (options.persist !== false) {
+    try {
+      localStorage.setItem(guiScalePreference, String(percent));
+    } catch {}
+  }
+
+  let nativeZoomApplied = false;
+  if (isDesktop && tauri.webview?.getCurrentWebview) {
+    try {
+      await tauri.webview.getCurrentWebview().setZoom(scale);
+      nativeZoomApplied = true;
+    } catch (error) {
+      console.warn("Native GUI scaling was unavailable:", error);
+    }
+  }
+  document.body.style.zoom = nativeZoomApplied ? "" : String(scale);
+  if (options.notify !== false) {
+    document.dispatchEvent(
+      new CustomEvent("mrmhub-gui-scale-change", { detail: { percent } }),
+    );
+  }
+  return percent;
+}
+
 async function toggleTheme() {
   const theme =
     document.documentElement.dataset.theme === "dark" ? "light" : "dark";
@@ -1279,6 +1327,9 @@ async function bootstrap() {
   elements.dataEditorAddRow.addEventListener("click", addDataEditorRow);
   elements.dataEditorAddColumn.addEventListener("click", addDataEditorColumn);
   elements.themeToggle.addEventListener("click", toggleTheme);
+  elements.guiScale.addEventListener("change", () => {
+    setGuiScale(elements.guiScale.value);
+  });
   elements.clearActivity.addEventListener("click", () => {
     elements.activityLog.innerHTML =
       '<p class="empty-log">Activity cleared.</p>';
@@ -1347,6 +1398,7 @@ async function bootstrap() {
     });
   }
 
+  await setGuiScale(rememberedGuiScale(), { persist: false });
   await registerDesktopEvents();
   updateThemeToggle();
   updateScratchpadActions();
@@ -1387,6 +1439,8 @@ window.__mrmhubShell = {
   refreshProject,
   getProject: () => project,
   prompt: appPrompt,
+  getGuiScale: () => guiScalePercent,
+  setGuiScale,
 };
 
 bootstrap();

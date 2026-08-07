@@ -7,7 +7,7 @@
       name="description"
       content="graphical interface for mrmhub integrator peak detection and integration"
     />
-    <title>MRMhub Integrator GUI [v1.1.0]</title>
+    <title>MRMhub Integrator GUI [v1.1.2]</title>
     <script>
       try {
         document.documentElement.dataset.theme =
@@ -33,6 +33,16 @@
               <small>Integrator <span class="brand-gui">GUI</span></small>
             </span>
           </a>
+          <label class="gui-scale-control" title="scale the entire application">
+            <span>GUI scale</span>
+            <select id="gui-scale" aria-label="application scale">
+              <option value="100">100%</option>
+              <option value="125">125%</option>
+              <option value="150">150%</option>
+              <option value="175">175%</option>
+              <option value="200">200%</option>
+            </select>
+          </label>
         </div>
 
         <nav class="primary-nav" aria-label="application sections">
@@ -423,16 +433,6 @@
                   value="160"
                 />
               </label>
-              <label class="visualizer-field font-scale-field">
-                <span>Font scale</span>
-                <select id="visualizer-font-scale" aria-label="visualizer font scale">
-                  <option value="100">100%</option>
-                  <option value="125">125%</option>
-                  <option value="150">150%</option>
-                  <option value="175">175%</option>
-                  <option value="200">200%</option>
-                </select>
-              </label>
               <button
                 class="icon-button visualizer-save"
                 id="visualizer-save"
@@ -550,6 +550,21 @@
               <input id="visualizer-color-sample-types" type="checkbox" />
               <span>Color sample types</span>
             </label>
+            <span
+              class="visualizer-export-wrap"
+              id="visualizer-export-wrap"
+              title="save current reference to export .pngs"
+            >
+              <button
+                class="secondary-button visualizer-export-pngs"
+                id="visualizer-export-pngs"
+                type="button"
+                disabled
+                title="save current reference to export .pngs"
+              >
+                Export PNGs
+              </button>
+            </span>
             <button
               class="secondary-button visualizer-apply-shared"
               id="visualizer-apply-shared"
@@ -650,7 +665,7 @@
       </main>
 
       <footer>
-        <span>MRMhub Integrator GUI [v1.1.0]</span>
+        <span>MRMhub Integrator GUI [v1.1.2]</span>
         <a
           class="external-sling-link"
           href="https://sling.sg/"
