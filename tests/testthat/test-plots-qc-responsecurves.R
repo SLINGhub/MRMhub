@@ -636,6 +636,7 @@ test_that("split_by_curve option works correctly", {
     expect_true(length(p_filtered) > 0)
   })
   test_that("long feature_id labels are wrapped in all curve_layout modes", {
+    skip_if_not_installed("dplyr", "1.2.0") # recode_values()
     # Replace first 3 feature_ids with very long names
     long_ids <- c(
       "Ceramide d18:1/16:0 long name feature label",
