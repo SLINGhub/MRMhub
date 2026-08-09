@@ -204,6 +204,16 @@ for worker_target in "${worker_targets[@]}"; do
   chmod +x "$worker_sidecar"
 done
 
+if [[ "$tauri_target" == "universal-apple-darwin" ]]; then
+  universal_worker="$sidecar_dir/MRMhub-integrator-worker-universal-apple-darwin"
+  echo "Combining fresh worker builds into a universal sidecar..."
+  lipo -create \
+    "$sidecar_dir/MRMhub-integrator-worker-aarch64-apple-darwin" \
+    "$sidecar_dir/MRMhub-integrator-worker-x86_64-apple-darwin" \
+    -output "$universal_worker"
+  chmod +x "$universal_worker"
+fi
+
 bundle_config='{"bundle":{"externalBin":["binaries/MRMhub-integrator-worker"]}}'
 
 echo "Building and signing the $tauri_target app and DMG..."
