@@ -222,6 +222,8 @@ batches](tutorial-03-lipidomics-workflow_files/figure-html/runscatter-istd-1.png
 Figure 4. Internal-standard intensities across all six batches; the
 spiked amount is constant, so a flat trend is expected.
 
+     ■■■■■■■■■■■                       33% |  ETA:  2s
+
 ![RunScatter of internal-standard intensities across
 batches](tutorial-03-lipidomics-workflow_files/figure-html/runscatter-istd-2.png)
 
@@ -828,7 +830,7 @@ produced.
 save_report_xlsx(mexp, path = tempfile(fileext = ".xlsx"))
 ```
 
-    ✔ The data processing report of experiment 'sPerfect' has been saved to /tmp/Rtmp0BDaKA/file351c6d1f1195.xlsx.
+    ✔ The data processing report of experiment 'sPerfect' has been saved to /tmp/Rtmp517pzh/file37573d15b961.xlsx.
 
 For downstream statistics it is often easier to export a single flat,
 wide CSV of a chosen data subset. This is the format used to share the
