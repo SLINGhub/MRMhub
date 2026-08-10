@@ -1746,8 +1746,9 @@ dependencies = [
 
 [[package]]
 name = "mrmhub-integrator-gui"
-version = "1.1.2"
+version = "1.2.0"
 dependencies = [
+ "base64 0.22.1",
  "chrono",
  "csv",
  "glob",

@@ -60,6 +60,14 @@ const state = {
   renderToken: 0,
   qcGraphs: [],
   traceGraphs: [],
+  traceRecords: [],
+  visibleTraceRecords: new Set(),
+  traceObserver: null,
+  traceMountQueue: [],
+  traceMountFrame: 0,
+  traceEvictionTimer: 0,
+  traceRedrawFrame: 0,
+  virtualizedTraces: false,
   hoveredGraph: null,
   rangeManuallySet: false,
   backupLabels: {},
@@ -83,6 +91,9 @@ const margins = {
 
 const traceBatchSize = 4;
 const traceBatchBudgetMs = 10;
+const traceVirtualizationThreshold = 1000;
+const maxMountedTraceCanvases = 48;
+const traceObserverMargin = 640;
 const maxHoverDots = 420;
 const maxAreaPathPoints = 420;
 const maxDragAreaPathPoints = 140;
@@ -239,10 +250,211 @@ export function clearPlots() {
   state.renderToken += 1;
   state.renderComplete = false;
   state.hoveredGraph = null;
+  if (state.traceMountFrame) cancelAnimationFrame(state.traceMountFrame);
+  if (state.traceRedrawFrame) cancelAnimationFrame(state.traceRedrawFrame);
+  if (state.traceEvictionTimer) clearTimeout(state.traceEvictionTimer);
+  state.traceMountFrame = 0;
+  state.traceRedrawFrame = 0;
+  state.traceEvictionTimer = 0;
+  state.traceMountQueue.length = 0;
+  state.traceObserver?.disconnect();
+  state.traceObserver = null;
+  for (const record of state.traceRecords) {
+    disposeTraceRecord(record, false);
+    if (record.shell) record.shell.__mrmhubTraceRecord = null;
+  }
+  state.traceRecords.length = 0;
+  state.visibleTraceRecords.clear();
+  state.virtualizedTraces = false;
   state.qcGraphs.length = 0;
   state.traceGraphs.length = 0;
   elements.qc.replaceChildren();
   elements.plots.replaceChildren();
+}
+
+// Enables full plot virtualization only when the selection is large enough to
+// make thousands of Retina canvas backing stores a material memory cost.
+function configureTraceVirtualization(expectedPlots) {
+  state.virtualizedTraces =
+    expectedPlots >= traceVirtualizationThreshold &&
+    typeof IntersectionObserver === "function";
+  if (!state.virtualizedTraces) return;
+  state.traceObserver = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        const record = entry.target.__mrmhubTraceRecord;
+        if (!record) continue;
+        record.visible = entry.isIntersecting;
+        if (entry.isIntersecting) {
+          record.lastVisible = performance.now();
+          state.visibleTraceRecords.add(record);
+          if (record.graph) record.graph.applySampleTypeColor?.();
+          else scheduleTraceRecordMount(record);
+        } else {
+          state.visibleTraceRecords.delete(record);
+        }
+      }
+      scheduleTraceEviction();
+    },
+    { rootMargin: `${traceObserverMargin}px 0px` },
+  );
+}
+
+function tracePlaceholder(record, label = "Plot ready when scrolled into view") {
+  const placeholder = document.createElement("div");
+  placeholder.className = "visualizer-chart virtualized-trace-placeholder";
+  placeholder.style.width = `${record.width}px`;
+  placeholder.style.height = `${record.height}px`;
+  placeholder.textContent = label;
+  return placeholder;
+}
+
+// Packs streamed object points immediately so the render queue never retains a
+// second, much larger object representation while waiting for a WebView frame.
+function createTraceRecord(job) {
+  const dimensions = graphDimensions();
+  const points = packPoints(job.plot.te ?? []);
+  job.plot.te = null;
+  const shell = document.createElement("div");
+  shell.className = "visualizer-chart-shell is-virtual-placeholder";
+  shell.style.width = `${dimensions.width}px`;
+  shell.style.minHeight = `${dimensions.height + 20}px`;
+  const record = {
+    ...job,
+    width: dimensions.width,
+    height: dimensions.height,
+    points,
+    shell,
+    graph: null,
+    editRts: new Map(),
+    zoomTransform: null,
+    ySliderValue: null,
+    visible: !state.virtualizedTraces,
+    mountQueued: false,
+    unrenderable: points.length < 4,
+    lastVisible: performance.now(),
+  };
+  shell.__mrmhubTraceRecord = record;
+  shell.replaceChildren(
+    tracePlaceholder(
+      record,
+      record.unrenderable ? "No trace data" : "Plot ready when scrolled into view",
+    ),
+  );
+  job.container.append(shell);
+  state.traceRecords.push(record);
+  if (state.virtualizedTraces) {
+    state.traceObserver.observe(shell);
+  }
+  return record;
+}
+
+function mountTraceRecord(record, options = {}) {
+  if (record.graph || record.unrenderable) return record.graph;
+  const transient = Boolean(options.transient);
+  const shell = transient ? document.createElement("div") : record.shell;
+  const graph = renderTrace(
+    record.plot,
+    record.sample,
+    record.index,
+    record.container,
+    record.isReference,
+    record.editContext,
+    {
+      shell,
+      points: record.points,
+      record,
+      transient,
+    },
+  );
+  if (!transient && graph) {
+    record.graph = graph;
+    record.lastVisible = performance.now();
+    shell.classList.remove("is-virtual-placeholder");
+  }
+  return graph;
+}
+
+function pumpTraceMountQueue() {
+  state.traceMountFrame = 0;
+  const started = performance.now();
+  let mounted = 0;
+  while (
+    state.traceMountQueue.length &&
+    mounted < traceBatchSize &&
+    performance.now() - started < traceBatchBudgetMs
+  ) {
+    const record = state.traceMountQueue.shift();
+    record.mountQueued = false;
+    if (record.visible && !record.graph) {
+      mountTraceRecord(record);
+      mounted += 1;
+    }
+  }
+  if (state.traceMountQueue.length) {
+    state.traceMountFrame = requestAnimationFrame(pumpTraceMountQueue);
+  }
+  scheduleTraceEviction();
+}
+
+function scheduleTraceRecordMount(record) {
+  if (!state.virtualizedTraces || record.graph || record.mountQueued || record.unrenderable) {
+    return;
+  }
+  record.mountQueued = true;
+  state.traceMountQueue.push(record);
+  if (!state.traceMountFrame) {
+    state.traceMountFrame = requestAnimationFrame(pumpTraceMountQueue);
+  }
+}
+
+function disposeTraceRecord(record, restorePlaceholder = true) {
+  const graph = record.graph;
+  if (!graph) return;
+  record.zoomTransform = graph.zoomTransform
+    ? {
+        k: graph.zoomTransform.k,
+        x: graph.zoomTransform.x,
+        y: graph.zoomTransform.y,
+      }
+    : null;
+  record.ySliderValue = graph.ySlider?.value ?? record.ySliderValue;
+  if (state.hoveredGraph === graph) state.hoveredGraph = null;
+  if (graph.svg) {
+    graph.svg
+      .on(".zoom", null)
+      .on("pointerdown pointermove pointerup pointercancel pointerleave", null);
+  }
+  if (graph.canvas) {
+    // Explicitly dropping the backing dimensions is important on WKWebView,
+    // where detached Retina canvases can otherwise retain their GPU memory.
+    graph.canvas.width = 0;
+    graph.canvas.height = 0;
+  }
+  const graphIndex = state.traceGraphs.indexOf(graph);
+  if (graphIndex >= 0) state.traceGraphs.splice(graphIndex, 1);
+  record.graph = null;
+  if (restorePlaceholder && record.shell?.isConnected) {
+    record.shell.classList.add("is-virtual-placeholder");
+    record.shell.replaceChildren(tracePlaceholder(record));
+  }
+}
+
+function evictOffscreenTraceRecords() {
+  state.traceEvictionTimer = 0;
+  if (!state.virtualizedTraces || state.exportingPngs) return;
+  const mounted = state.traceRecords.filter((record) => record.graph);
+  if (mounted.length <= maxMountedTraceCanvases) return;
+  mounted
+    .filter((record) => !record.visible)
+    .sort((left, right) => left.lastVisible - right.lastVisible)
+    .slice(0, mounted.length - maxMountedTraceCanvases)
+    .forEach((record) => disposeTraceRecord(record));
+}
+
+function scheduleTraceEviction() {
+  if (!state.virtualizedTraces || state.traceEvictionTimer) return;
+  state.traceEvictionTimer = window.setTimeout(evictOffscreenTraceRecords, 350);
 }
 
 // adds a unique clip region so zoomed data stays inside the plotting area
@@ -423,6 +635,9 @@ function setRangeControlsDisabled(disabled) {
 // applies the global maximum-intensity field to every rendered chromatogram
 function applyGlobalIntensity() {
   const maximum = elements.intensity.valueAsNumber || 0;
+  for (const record of state.traceRecords) {
+    record.ySliderValue = null;
+  }
   for (const graph of state.traceGraphs) {
     graph.applyGlobalYMaximum?.(maximum);
   }
@@ -530,6 +745,9 @@ function hideHoverDots(graph) {
 
 // limits synchronized hover work to graphs close enough to be visible
 function graphNearViewport(graph) {
+  if (state.virtualizedTraces && graph.record) {
+    return state.visibleTraceRecords.has(graph.record);
+  }
   const node = graph.shell ?? graph.svg?.node();
   if (!node) return false;
   const rect = node.getBoundingClientRect();
@@ -764,7 +982,9 @@ function toggleGraphReference(graph) {
   state.referenceChoices.set(key, !graph.isReferenceChoice);
   syncGraphReferenceState(graph);
   updateSaveButton();
-  const count = state.traceGraphs.filter((item) => item.isReferenceChoice).length;
+  const count = state.traceRecords.filter(
+    (record) => state.referenceChoices.get(referenceChoiceKey(record)) === true,
+  ).length;
   setStatus(`${count.toLocaleString()} RT reference plot(s) selected`);
 }
 
@@ -794,10 +1014,10 @@ function renderTrace(
   editContext,
   options = {},
 ) {
-  const { width, height } = graphDimensions();
+  const { width, height } = options.record ?? graphDimensions();
   const range = graphRange();
-  const points = packPoints(plot.te);
-  plot.te = null;
+  const points = options.points ?? packPoints(plot.te ?? []);
+  if (plot.te) plot.te = null;
   if (points.length < 4) {
     if (options.shell) {
       const { width, height } = graphDimensions();
@@ -1001,7 +1221,7 @@ function renderTrace(
   const dotIndices = hoverDotIndices(points, startIndex, safeEndIndex, y.domain()[1]);
   const sampleType = sampleTypeOf(sample);
   const sampleTypeColor = state.sampleTypeColors.get(sampleType) ?? sampleTypePalette[0];
-  const traceColor = state.colorSampleTypes
+  let traceColor = state.colorSampleTypes
     ? sampleTypeColor
     : getComputedStyle(document.documentElement).getPropertyValue("--ink").trim() ||
       "#10202b";
@@ -1060,7 +1280,7 @@ function renderTrace(
   };
 
   const sampleName = sample?.[0] ?? `Graph ${index + 1}`;
-  svg
+  const title = svg
     .append("text")
     .attr("class", "chart-title")
     .attr("x", "50%")
@@ -1134,6 +1354,7 @@ function renderTrace(
     sampleType,
     sampleTypeColor,
     isReference,
+    record: options.record ?? null,
     isReferenceChoice: false,
     editContext,
     integrations,
@@ -1143,11 +1364,11 @@ function renderTrace(
     y,
     hasEdit: false,
     editRt: null,
-    editRts: new Map(),
+    editRts: options.record?.editRts ?? new Map(),
     panSlider: null,
     zoomTransform: d3.zoomIdentity,
   };
-  state.traceGraphs.push(graph);
+  if (!options.transient) state.traceGraphs.push(graph);
 
   const panSlider = document.createElement("input");
   panSlider.className = "chart-pan-slider";
@@ -1252,7 +1473,15 @@ function renderTrace(
 
   graph.applyGlobalYMaximum(range.intensity);
 
-  ySlider.addEventListener("input", updateYScale);
+  if (options.record?.ySliderValue != null) {
+    ySlider.value = options.record.ySliderValue;
+    updateYScale();
+  }
+
+  ySlider.addEventListener("input", () => {
+    if (options.record) options.record.ySliderValue = ySlider.value;
+    updateYScale();
+  });
   ySlider.addEventListener(
     "wheel",
     (event) => {
@@ -1261,18 +1490,33 @@ function renderTrace(
       ySlider.value = String(
         Math.max(0, Math.min(1000, Number(ySlider.value) + delta)),
       );
+      if (options.record) options.record.ySliderValue = ySlider.value;
       updateYScale();
     },
     { passive: false },
   );
   const zoom = wheelZoom(width, height, (event) => {
     graph.zoomTransform = event.transform;
+    if (options.record) {
+      options.record.zoomTransform = {
+        k: event.transform.k,
+        x: event.transform.x,
+        y: event.transform.y,
+      };
+    }
     redrawTrace(event.transform.rescaleX(x));
     updatePanSlider(event.transform);
   });
   graph.zoom = zoom;
   graph.svg = svg;
   svg.call(zoom).call(zoom.transform, d3.zoomIdentity);
+  if (options.record?.zoomTransform) {
+    const stored = options.record.zoomTransform;
+    svg.call(
+      zoom.transform,
+      d3.zoomIdentity.translate(stored.x, stored.y).scale(stored.k),
+    );
+  }
 
   // keeps a dragged retention time inside the retained data range
   const clampRt = (rt) =>
@@ -1562,7 +1806,10 @@ function renderTrace(
           const removeIndex = integrations.indexOf(dragRegion);
           if (removeIndex >= 0) integrations.splice(removeIndex, 1);
         }
-        graph.editRts = preDrag ? preDrag.editRts : new Map();
+        graph.editRts.clear();
+        for (const [isomerIndex, edit] of preDrag?.editRts ?? []) {
+          graph.editRts.set(isomerIndex, edit);
+        }
         graph.hasEdit = graph.editRts.size > 0;
       } else if (dragRegion) {
         drawRegion(dragRegion, graph.currentX);
@@ -1579,6 +1826,18 @@ function renderTrace(
       tooltipNode.setAttribute("display", "none");
       hideVisibleTraceGuides();
     });
+
+  if (options.record?.editRts?.size) {
+    for (const [isomerIndex, edit] of [...options.record.editRts]) {
+      const region =
+        integrations.find((candidate) => candidate.isomerIndex === isomerIndex) ??
+        (isomerIndex === 0 ? ensurePrimaryRegion() : null);
+      if (region) setRegionBand(region, edit.start, edit.end);
+    }
+    graph.hasEdit = graph.editRts.size > 0;
+    graph.editRt = graph.editRts.values().next().value ?? null;
+  }
+
   const shell = options.shell ?? document.createElement("div");
   shell.className = "visualizer-chart-shell";
   shell.style.width = `${width}px`;
@@ -1590,12 +1849,24 @@ function renderTrace(
   frame.style.width = `${width}px`;
   frame.style.height = `${height}px`;
   graph.shell = shell;
-  const referenceToggle = createReferenceToggle(graph);
-  frame.append(canvas, svg.node(), ySlider, referenceToggle);
+  graph.applySampleTypeColor = () => {
+    traceColor = state.colorSampleTypes
+      ? sampleTypeColor
+      : getComputedStyle(document.documentElement)
+          .getPropertyValue("--ink")
+          .trim() || "#10202b";
+    shell.classList.toggle("sample-type-colored", state.colorSampleTypes);
+    title.style("fill", state.colorSampleTypes ? sampleTypeColor : null);
+    drawTraceCanvas(graph.currentX);
+  };
+  const referenceToggle = options.transient ? null : createReferenceToggle(graph);
+  frame.append(canvas, svg.node(), ySlider);
+  if (referenceToggle) frame.append(referenceToggle);
   shell.replaceChildren(frame, panSlider);
   if (!options.shell) {
     container.append(shell);
   }
+  return graph;
 }
 
 // batches expensive graph construction so large selections do not freeze WebView
@@ -1611,7 +1882,10 @@ function createTraceRenderQueue(token, statusMessage) {
   });
 
   const finishIfIdle = () => {
-    if (streamDone && !scheduled && cursor >= queue.length) {
+    if (
+      streamDone &&
+      (state.virtualizedTraces || (!scheduled && cursor >= queue.length))
+    ) {
       resolveDrain(rendered);
     }
   };
@@ -1633,19 +1907,11 @@ function createTraceRenderQueue(token, statusMessage) {
       count < traceBatchSize &&
       performance.now() - started < traceBatchBudgetMs
     ) {
-      const job = queue[cursor];
+      const record = queue[cursor];
       cursor += 1;
-      if (job.rendered) continue;
-      job.rendered = true;
-      renderTrace(
-        job.plot,
-        job.sample,
-        job.index,
-        job.container,
-        job.isReference,
-        job.editContext,
-      );
-      job.plot = null;
+      if (record.rendered) continue;
+      record.rendered = true;
+      mountTraceRecord(record);
       rendered += 1;
       count += 1;
       if (rendered % 25 === 0) {
@@ -1668,7 +1934,15 @@ function createTraceRenderQueue(token, statusMessage) {
 
   return {
     push(job) {
-      queue.push(job);
+      const record = createTraceRecord(job);
+      if (state.virtualizedTraces) {
+        rendered += 1;
+        if (rendered % 100 === 0) {
+          setStatus(statusMessage(rendered), { cancellable: true });
+        }
+        return;
+      }
+      queue.push(record);
       if (!scheduled) {
         scheduled = true;
         requestAnimationFrame(pump);
@@ -1739,7 +2013,11 @@ async function renderTransition(transition, token) {
   const rendered = await queue.drain;
   if (token === state.renderToken) {
     applyDetectedRtRange(minimumRt, maximumRt);
-    setStatus(`${rendered.toLocaleString()} chromatograms rendered`);
+    setStatus(
+      state.virtualizedTraces
+        ? `${rendered.toLocaleString()} chromatograms ready; plots render as you scroll`
+        : `${rendered.toLocaleString()} chromatograms rendered`,
+    );
   }
 }
 
@@ -1794,22 +2072,26 @@ async function renderReference(reference, token) {
   queue.finish();
   const rendered = await queue.drain;
   if (token === state.renderToken) {
-    setStatus(`${rendered.toLocaleString()} reference chromatograms rendered`);
+    setStatus(
+      state.virtualizedTraces
+        ? `${rendered.toLocaleString()} reference chromatograms ready; plots render as you scroll`
+        : `${rendered.toLocaleString()} reference chromatograms rendered`,
+    );
   }
 }
 
 // enables Save whenever any graph (transition or reference view) holds an
 // unsaved dragged band that maps to a known transition
 function updateSaveButton() {
-  const hasEdits = state.traceGraphs.some(
-    (graph) => graph.editRts?.size > 0 && graph.editContext?.cqq,
+  const hasEdits = state.traceRecords.some(
+    (record) => record.editRts?.size > 0 && record.editContext?.cqq,
   );
   const selection = elements.transition.value;
-  const changedReferences = state.traceGraphs.filter(
-    (graph) =>
-      graph.isReferenceChoice &&
-      graph.editRts?.size > 0 &&
-      graph.editContext?.cqq,
+  const changedReferences = state.traceRecords.filter(
+    (record) =>
+      state.referenceChoices.get(referenceChoiceKey(record)) === true &&
+      record.editRts?.size > 0 &&
+      record.editContext?.cqq,
   );
   elements.save.disabled = !hasEdits || state.loading;
   elements.applyShared.disabled = changedReferences.length === 0 || state.loading;
@@ -1827,7 +2109,7 @@ function updateSaveButton() {
     !state.loading &&
     !state.exportingPngs &&
     state.renderComplete &&
-    (state.qcGraphs.length > 0 || state.traceGraphs.length > 0);
+    (state.qcGraphs.length > 0 || state.traceRecords.length > 0);
   const exportTitle = canExport
     ? "export all PNGs for the saved current reference"
     : "save current reference to export .pngs";
@@ -1860,7 +2142,7 @@ function cancelRendering() {
   setRangeControlsDisabled(kind !== "t");
   updateSaveButton();
   updateDeleteButton();
-  const rendered = state.traceGraphs.length;
+  const rendered = state.traceRecords.length;
   const marker = document.createElement("div");
   marker.className = "visualizer-chart render-cancelled-marker";
   marker.textContent = "Remaining plots not rendered.";
@@ -1886,25 +2168,6 @@ function fileTimestamp(date = new Date()) {
   );
 }
 
-const pngStyleProperties = [
-  "fill",
-  "fill-opacity",
-  "stroke",
-  "stroke-opacity",
-  "stroke-width",
-  "stroke-linecap",
-  "stroke-linejoin",
-  "stroke-dasharray",
-  "opacity",
-  "display",
-  "visibility",
-  "font-family",
-  "font-size",
-  "font-style",
-  "font-weight",
-  "letter-spacing",
-];
-
 function exportSlug(value, fallback = "visualizer") {
   const slug = String(value ?? "")
     .normalize("NFKD")
@@ -1921,19 +2184,37 @@ function themeColor(name, fallback) {
   );
 }
 
-// Converts the current SVG overlay into an image with its computed theme and
-// graph styles embedded, so exported PNGs match what the user sees.
+// Embeds the small graph stylesheet once instead of calling getComputedStyle
+// for every node in every exported plot.
+function pngSvgStyles() {
+  const ink = themeColor("--ink", "#10202b");
+  const muted = themeColor("--muted", "#72808a");
+  const surface = themeColor("--surface", "#ffffff");
+  const rose = themeColor("--rose", "#d45d79");
+  const navy = themeColor("--navy-deep", "#172b4d");
+  return `
+    text { fill: ${ink}; stroke: none; font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: calc(10px * var(--graph-font-scale, 1)); }
+    .domain, .tick line { stroke: ${muted}; }
+    .chart-title { font-size: calc(10px * var(--graph-font-scale, 1)); font-weight: 700; }
+    .chart-detail { fill: ${muted}; font-size: calc(9px * var(--graph-font-scale, 1)); }
+    .qc-trace, .chromatogram-trace { fill: none; stroke: ${ink}; stroke-width: 1.25; }
+    .qc-marker { fill: ${surface}; stroke: ${rose}; stroke-width: 3; }
+    .qc-tooltip rect, .trace-tooltip rect { fill: ${navy}; stroke: none; }
+    .qc-tooltip text, .trace-tooltip text { fill: ${surface}; }
+    .trace-tooltip circle { fill: ${ink}; stroke: none; }
+    .trace-guide { stroke: ${muted}; stroke-width: 1.5; }
+    .integration-area { stroke: none; opacity: 0.52; }
+    .integration-window { stroke: none; opacity: 0.16; }
+    .blank-label { fill: ${muted}; font-size: calc(54px * var(--graph-font-scale, 1)); opacity: 0.15; stroke: none; }
+  `;
+}
+
 async function svgExportImage(svgNode) {
   const clone = svgNode.cloneNode(true);
   clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-  const sources = [svgNode, ...svgNode.querySelectorAll("*")];
-  const targets = [clone, ...clone.querySelectorAll("*")];
-  for (let index = 0; index < sources.length; index += 1) {
-    const computed = getComputedStyle(sources[index]);
-    for (const property of pngStyleProperties) {
-      targets[index].style.setProperty(property, computed.getPropertyValue(property));
-    }
-  }
+  const style = document.createElementNS("http://www.w3.org/2000/svg", "style");
+  style.textContent = pngSvgStyles();
+  clone.prepend(style);
   const source = new XMLSerializer().serializeToString(clone);
   const url = URL.createObjectURL(
     new Blob([source], { type: "image/svg+xml;charset=utf-8" }),
@@ -2017,6 +2298,46 @@ function pngBlob(canvas) {
   });
 }
 
+function blobBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.addEventListener("load", () => {
+      const result = String(reader.result ?? "");
+      const separator = result.indexOf(",");
+      if (separator < 0) reject(new Error("PNG encoding failed"));
+      else resolve(result.slice(separator + 1));
+    });
+    reader.addEventListener("error", () =>
+      reject(reader.error ?? new Error("PNG encoding failed")),
+    );
+    reader.readAsDataURL(blob);
+  });
+}
+
+function disposeTransientGraph(graph) {
+  if (graph?.svg) {
+    graph.svg
+      .on(".zoom", null)
+      .on("pointerdown pointermove pointerup pointercancel pointerleave", null);
+  }
+  if (graph?.canvas) {
+    graph.canvas.width = 0;
+    graph.canvas.height = 0;
+  }
+  graph?.shell?.replaceChildren();
+}
+
+function exportGraph(item, kind) {
+  if (kind !== "plots" || !item?.points) {
+    return { graph: item, transient: false };
+  }
+  if (item.graph) {
+    item.graph.applySampleTypeColor?.();
+    return { graph: item.graph, transient: false };
+  }
+  return { graph: mountTraceRecord(item, { transient: true }), transient: true };
+}
+
 async function saveGraphSheets(graphs, kind, prefix, folderName) {
   if (!graphs.length) return 0;
   const exportScale = 2;
@@ -2026,9 +2347,16 @@ async function saveGraphSheets(graphs, kind, prefix, folderName) {
   for (let offset = 0; offset < graphs.length; offset += perPage) {
     const page = graphs.slice(offset, offset + perPage);
     const cards = [];
-    for (const graph of page) {
-      cards.push(await graphExportCanvas(graph, kind));
+    for (const item of page) {
+      const materialized = exportGraph(item, kind);
+      if (!materialized.graph) continue;
+      try {
+        cards.push(await graphExportCanvas(materialized.graph, kind));
+      } finally {
+        if (materialized.transient) disposeTransientGraph(materialized.graph);
+      }
     }
+    if (!cards.length) continue;
     const columns = Math.min(3, cards.length);
     const rows = Math.ceil(cards.length / columns);
     const gap = 24;
@@ -2048,15 +2376,19 @@ async function saveGraphSheets(graphs, kind, prefix, folderName) {
         gap + column * (cardWidth + gap),
         gap + row * (cardHeight + gap),
       );
+      card.width = 0;
+      card.height = 0;
     });
     const blob = await pngBlob(sheet);
-    const bytes = Array.from(new Uint8Array(await blob.arrayBuffer()));
+    sheet.width = 0;
+    sheet.height = 0;
+    const dataBase64 = await blobBase64(blob);
     const pageNumber = String(Math.floor(offset / perPage) + 1).padStart(2, "0");
     await invoke("visualizer_save_png", {
       projectPath: state.projectPath,
       folderName,
       fileName: `${prefix}_${kind}_${pageNumber}.png`,
-      bytes,
+      dataBase64,
     });
     written += 1;
     const renderedGraphs = Math.min(offset + page.length, graphs.length);
@@ -2073,9 +2405,9 @@ async function exportRenderedPngs() {
     elements.exportPngs.disabled ||
     state.exportingPngs ||
     !state.projectPath ||
-    (!state.qcGraphs.length && !state.traceGraphs.length)
+    (!state.qcGraphs.length && !state.traceRecords.length)
   ) {
-    return;
+    return null;
   }
   state.exportingPngs = true;
   updateSaveButton();
@@ -2102,7 +2434,7 @@ async function exportRenderedPngs() {
       folderName,
     );
     const plotSheets = await saveGraphSheets(
-      state.traceGraphs,
+      state.traceRecords,
       "plots",
       prefix,
       folderName,
@@ -2339,13 +2671,13 @@ async function importBackupCsv() {
 }
 
 function individualBoundEdits() {
-  return state.traceGraphs
-    .filter((graph) => graph.editRts?.size > 0 && graph.editContext?.cqq)
-    .flatMap((graph) =>
-      [...graph.editRts.entries()].map(([isomerIndex, edit]) => ({
-        cqq: graph.editContext.cqq,
-        sampleIndex: graph.editContext.sampleIndex,
-        fileName: graph.editContext.fileName,
+  return state.traceRecords
+    .filter((record) => record.editRts?.size > 0 && record.editContext?.cqq)
+    .flatMap((record) =>
+      [...record.editRts.entries()].map(([isomerIndex, edit]) => ({
+        cqq: record.editContext.cqq,
+        sampleIndex: record.editContext.sampleIndex,
+        fileName: record.editContext.fileName,
         isomerIndex,
         rtStart: edit.start,
         rtEnd: edit.end,
@@ -2357,9 +2689,9 @@ function individualBoundEdits() {
 // average across every sample row so the resulting RT limits are identical.
 function sharedReferenceBoundEdits() {
   const windows = new Map();
-  for (const graph of state.traceGraphs) {
+  for (const graph of state.traceRecords) {
     if (
-      !graph.isReferenceChoice ||
+      state.referenceChoices.get(referenceChoiceKey(graph)) !== true ||
       !graph.editContext?.cqq ||
       !graph.editRts?.size
     ) {
@@ -2421,10 +2753,12 @@ async function writeAndReintegrate(edits, options = {}) {
       projectPath: state.projectPath,
       edits,
     });
-    for (const graph of state.traceGraphs) {
-      graph.hasEdit = false;
-      graph.editRt = null;
-      graph.editRts?.clear();
+    for (const record of state.traceRecords) {
+      record.editRts?.clear();
+      if (record.graph) {
+        record.graph.hasEdit = false;
+        record.graph.editRt = null;
+      }
     }
 
     if (!bridge?.runStep) {
@@ -2499,6 +2833,9 @@ async function renderSelected(options = {}) {
   const token = state.renderToken;
   const [kind, rawIndex] = value.split(":");
   const index = Number(rawIndex);
+  configureTraceVirtualization(
+    kind === "t" ? state.samples.length : state.transitions.length,
+  );
   elements.range.classList.toggle("hidden", kind !== "t");
   setStatus("Preparing graphs...");
 
@@ -2554,8 +2891,10 @@ document.addEventListener("mrmhub-gui-scale-change", () => {
 });
 elements.colorSampleTypes.addEventListener("change", () => {
   applySampleTypeColorPreference(elements.colorSampleTypes.checked);
-  if (elements.transition.value && !state.loading) {
-    renderSelected({ preserveScroll: true });
+  for (const graph of state.traceGraphs) {
+    if (!state.virtualizedTraces || graphNearViewport(graph)) {
+      graph.applySampleTypeColor?.();
+    }
   }
 });
 elements.exportPngs.addEventListener("click", async () => {
@@ -2579,7 +2918,11 @@ elements.rtEnd.addEventListener("change", () => {
 });
 elements.intensity.addEventListener("input", () => {
   if (state.loading) return;
-  applyGlobalIntensity();
+  if (state.traceRedrawFrame) return;
+  state.traceRedrawFrame = requestAnimationFrame(() => {
+    state.traceRedrawFrame = 0;
+    applyGlobalIntensity();
+  });
 });
 elements.save.addEventListener("click", saveBounds);
 elements.applyShared.addEventListener("click", applySharedRtLimits);

@@ -1,6 +1,6 @@
 [package]
 name = "mrmhub-integrator-gui"
-version = "1.1.2"
+version = "1.2.0"
 description = "cross-platform graphical interface for mrmhub integrator"
 edition = "2024"
 
@@ -8,6 +8,7 @@ edition = "2024"
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
+base64 = "0.22"
 chrono = "0.4.45"
 csv = "1"
 glob = "0.3"

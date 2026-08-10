@@ -77,10 +77,21 @@ notarization, use:
 
 ### Windows
 
-To compile on Windows:
-- Download the source and cd bash directory to the MRMhub folder
-- run `cargo build --release --manifest-path integrator_w_gui/Cargo.toml`
-- outputs in /integrator_w_gui/gui/src-tauri-target/release; MRMhub-integrator-worker.exe must be in the same directory to run the gui !
+From PowerShell, build the worker and a lightweight Windows installer with:
+
+```powershell
+.\integrator_w_gui\gui\build-windows.ps1
+```
+
+The finished installer is copied to `integrator_w_gui/gui/dist/`. The script installs Tauri CLI 2
+when needed and bundles the correctly named worker automatically. For a larger installer that also
+includes the offline WebView2 runtime, run:
+
+```powershell
+.\integrator_w_gui\gui\build-windows.ps1 -InstallerMode Offline
+```
+
+Use `-OutputDirectory <path>` to copy the finished installer somewhere else.
 
 Releases are built and published automatically by
 [`.github/workflows/integrator-release.yml`](../.github/workflows/integrator-release.yml) when a

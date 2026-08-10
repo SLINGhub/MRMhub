@@ -1,3 +1,4 @@
+use base64::{Engine as _, engine::general_purpose::STANDARD as BASE64_STANDARD};
 use std::error::Error;
 use std::fs::File;
 use std::io::{self, BufRead, BufReader, Read};
@@ -88,12 +89,11 @@ pub fn visualizer_prepare_png_export(
 // saves one browser-rendered PNG sheet beneath the selected dataset. Both
 // names are single validated path components, so exports cannot escape the
 // project-owned visualizer_png directory.
-#[tauri::command]
-pub fn visualizer_save_png(
+fn save_png_bytes(
     project_path: &str,
     folder_name: &str,
     file_name: &str,
-    bytes: Vec<u8>,
+    bytes: &[u8],
 ) -> Result<String, String> {
     let file_name = safe_component(file_name)?;
     if !file_name.to_ascii_lowercase().ends_with(".png") {
@@ -111,6 +111,24 @@ pub fn visualizer_save_png(
     let path = folder.join(file_name);
     std::fs::write(&path, bytes).map_err(|error| error.to_string())?;
     Ok(path.to_string_lossy().into_owned())
+}
+
+// Accepts PNG data as one compact base64 string. This avoids expanding every
+// byte into a JavaScript number and a much larger JSON array across WebView IPC.
+#[tauri::command]
+pub fn visualizer_save_png(
+    project_path: &str,
+    folder_name: &str,
+    file_name: &str,
+    data_base64: &str,
+) -> Result<String, String> {
+    if data_base64.len() > 90 * 1024 * 1024 {
+        return Err("the encoded visualizer PNG exceeded the 90 MB limit".to_string());
+    }
+    let bytes = BASE64_STANDARD
+        .decode(data_base64)
+        .map_err(|error| format!("the visualizer PNG encoding was invalid: {error}"))?;
+    save_png_bytes(project_path, folder_name, file_name, &bytes)
 }
 
 // counts samples without retaining the sample table
@@ -769,11 +787,12 @@ mod tests {
     fn saves_png_exports_inside_the_selected_project() {
         let dir = temp_project("png");
         let bytes = b"\x89PNG\r\n\x1a\nfixture".to_vec();
+        let encoded = BASE64_STANDARD.encode(&bytes);
         let saved = visualizer_save_png(
             dir.to_str().unwrap(),
             "2026-08-07_transition",
             "transition_qc_01.png",
-            bytes.clone(),
+            &encoded,
         )
         .unwrap();
         let path = PathBuf::from(saved);
@@ -799,11 +818,11 @@ mod tests {
     #[test]
     fn rejects_png_export_path_traversal() {
         let dir = temp_project("png_traversal");
-        let result = visualizer_save_png(
+        let result = save_png_bytes(
             dir.to_str().unwrap(),
             "..",
             "outside.png",
-            b"\x89PNG\r\n\x1a\nfixture".to_vec(),
+            b"\x89PNG\r\n\x1a\nfixture",
         );
         assert!(result.is_err());
         std::fs::remove_dir_all(&dir).unwrap();
