@@ -97,10 +97,10 @@ struct QQ {
 }
 // returns a normalized header token for flexible csv column matching
 fn normalized_header(header: &str) -> String {
+    let header = header.trim();
     header
-        .trim()
-        .split_once(' ')
-        .map_or(header.trim(), |(prefix, _)| prefix)
+        .split_once(" (")
+        .map_or(header, |(name, _)| name)
         .trim_matches(|character: char| character == '(' || character == ')')
         .chars()
         .map(|character| match character {
@@ -125,6 +125,59 @@ fn find_col(header: &csv::StringRecord, names: &[&str]) -> Option<usize> {
 // finds a required csv column, with a clear upstream-compatible error
 fn require_col(header: &csv::StringRecord, names: &[&str]) -> Result<usize, Box<dyn Error>> {
     find_col(header, names).ok_or_else(|| format!("{} column not found!", names[0]).into())
+}
+
+#[cfg(test)]
+mod header_tests {
+    use super::find_col;
+
+    #[test]
+    fn matches_current_upstream_assay_headers() {
+        let headers = csv::StringRecord::from(vec![
+            "Feature_ID",
+            "Transition_Name",
+            "ISTD_Feature_ID",
+            "Precursor_Ion",
+            "Product_Ion",
+            "RT (w.r.t. reference sample)",
+            "uniform_width (y/n)",
+            "start_RT (w.r.t. reference sample)",
+            "end_RT (w.r.t. reference sample)",
+        ]);
+
+        assert_eq!(
+            find_col(&headers, &["Precursor_mz", "Precursor Ion"]),
+            Some(3)
+        );
+        assert_eq!(find_col(&headers, &["Product_mz", "Product Ion"]), Some(4));
+        assert_eq!(find_col(&headers, &["RT"]), Some(5));
+        assert_eq!(
+            find_col(&headers, &["uniform_width", "uniform_width (y/n)"]),
+            Some(6)
+        );
+        assert_eq!(find_col(&headers, &["begin_RT", "start_RT"]), Some(7));
+        assert_eq!(find_col(&headers, &["end_RT"]), Some(8));
+    }
+
+    #[test]
+    fn keeps_legacy_and_readable_aliases_compatible() {
+        let headers = csv::StringRecord::from(vec![
+            "Compound Name",
+            "Transition Name",
+            "ISTD",
+            "Precursor Ion",
+            "Product Ion",
+            "RT",
+            "uniform width",
+            "left integration bound (integration will not start earlier than the set RT)",
+            "right integration bound (integration must end before the set RT)",
+        ]);
+
+        assert_eq!(find_col(&headers, &["Precursor Ion"]), Some(3));
+        assert_eq!(find_col(&headers, &["Product Ion"]), Some(4));
+        assert_eq!(find_col(&headers, &["left integration bound"]), Some(7));
+        assert_eq!(find_col(&headers, &["right integration bound"]), Some(8));
+    }
 }
 
 // reads and validates the transition assay
@@ -153,6 +206,7 @@ fn read_assay(assay_f: &Path) -> Result<Vec<QQ>, Box<dyn Error>> {
         &headers,
         &[
             "begin_RT",
+            "start_RT",
             "left integration bound",
             "left integration bound (integration will not start earlier than the set RT)",
         ],

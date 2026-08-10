@@ -20,14 +20,14 @@ Imports:
     assertr,
     methods,
     cli,
-    dplyr (>= 1.2.0),
+    dplyr (>= 1.1.0),
     tibble,
     forcats,
     fs,
     glue,
     lifecycle,
     lubridate,
-    purrr,
+    purrr (>= 1.1.0),
     readr,
     rlang,
     scales,
@@ -88,6 +88,7 @@ Encoding: UTF-8
 Config/roxygen2/markdown: TRUE
 LazyData: true
 LazyDataCompression: xz
+NeedsCompilation: no
 Collate: 
     'build-workflow.R'
     'calc-calibrations.R'

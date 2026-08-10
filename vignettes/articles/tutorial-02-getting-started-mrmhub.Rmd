@@ -115,7 +115,7 @@ on their names.
 #| fig.alt: Run-scatter of normalized intensities for Cer and PC features by injection order
 plot_runscatter(
   mexp,
-  variable = "norm_intensity",
+  variable = "intensity",
   include_feature_filter = "^(Cer|PC)",
   rows_page = 2, cols_page = 3)
 ```
@@ -126,7 +126,7 @@ one page per grid of features — directly to `output/`:
 ```{r runscatter-pdf, eval = FALSE}
 plot_runscatter(
   mexp,
-  variable = "norm_intensity",
+  variable = "intensity",
   include_feature_filter = "^(Cer|PC)",
   rows_page = 2, cols_page = 3,
   output_pdf = TRUE,
