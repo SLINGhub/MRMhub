@@ -12,7 +12,7 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/SLINGhub/MRMhub/blob/mrmhub-gui-v1.2/inst/CITATION)
+[`inst/CITATION`](https://github.com/SLINGhub/MRMhub/blob/mrmhub-gui-v1.2.1/inst/CITATION)
 
 Burla B, Teo G, Benke P, Lu Z, Tan S, Ji S, Oh J, Lim P, Vaitheeswari,
 Cazenave Gassiot A, Venkataraman K, Tai E, Torta F, Wenk M, Chan M, Choi
