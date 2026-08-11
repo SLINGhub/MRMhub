@@ -72,7 +72,6 @@ const elements = {
   scratchpadSaveNote: document.querySelector("#scratchpad-save-note"),
   scratchpadNewNote: document.querySelector("#scratchpad-new-note"),
   scratchpadNoteList: document.querySelector("#scratchpad-note-list"),
-  visualizerBack: document.querySelector("#visualizer-back"),
   visualizerDataset: document.querySelector("#visualizer-dataset"),
   visualizerStatus: document.querySelector("#visualizer-status"),
   externalSlingLinks: [...document.querySelectorAll(".external-sling-link")],
@@ -99,6 +98,12 @@ const dataEditor = {
   dirty: false,
 };
 const completedThisSession = new Set();
+const stepProgressMessages = {
+  1: "Preparing validation…",
+  2: "Preparing peak detection…",
+  3: "Updating integration bounds and areas…",
+  4: "Generating chromatogram reports…",
+};
 
 const mockProject = {
   name: "MRMhub-Dataset1",
@@ -165,6 +170,67 @@ function setStepStatus(step, status) {
     status === "already-complete" ? "already complete" : status;
 }
 
+function stepCard(step) {
+  return elements.stepCards.find(
+    (candidate) => Number(candidate.dataset.step) === step,
+  );
+}
+
+// Replaces the normal output label with an in-card progress display while a
+// workflow step is active. Steps without numeric worker progress remain
+// animated instead of displaying a made-up percentage.
+function beginStepProgress(step) {
+  const card = stepCard(step);
+  const progress = card?.querySelector("[data-step-progress]");
+  if (!progress) return;
+  card.classList.add("progress-active");
+  progress.classList.remove("hidden");
+  progress.classList.add("indeterminate");
+  progress.removeAttribute("aria-valuenow");
+  progress.querySelector("div span").style.width = "";
+  progress.querySelector("small").textContent =
+    stepProgressMessages[step] ?? "Working…";
+}
+
+function resetStepProgress(step) {
+  const card = stepCard(step);
+  const progress = card?.querySelector("[data-step-progress]");
+  if (!progress) return;
+  card.classList.remove("progress-active");
+  progress.classList.add("hidden", "indeterminate");
+  progress.removeAttribute("aria-valuenow");
+  progress.querySelector("div span").style.width = "";
+  progress.querySelector("small").textContent =
+    stepProgressMessages[step] ?? "Preparing…";
+}
+
+function resetAllStepProgress() {
+  for (const card of elements.stepCards) {
+    resetStepProgress(Number(card.dataset.step));
+  }
+}
+
+// Worker output is shown as live status text while every progress bar remains
+// continuously animated. Step 1's current/total batch report is useful text,
+// but does not switch the bar into a determinate mode mid-run.
+function updateStepProgress(step, rawLine) {
+  const progress = stepCard(step)?.querySelector("[data-step-progress]");
+  if (!progress || progress.classList.contains("hidden")) return;
+  const line = String(rawLine)
+    .replace(/\x1b\[[0-?]*[ -/]*[@-~]/g, "")
+    .trim();
+  if (!line) return;
+  const numeric = line.match(/^(\d+)\s*\/\s*(\d+)$/);
+  if (numeric && Number(numeric[2]) > 0) {
+    const current = Number(numeric[1]);
+    const total = Number(numeric[2]);
+    progress.querySelector("small").textContent =
+      `${current.toLocaleString()}/${total.toLocaleString()} · Validating data`;
+    return;
+  }
+  progress.querySelector("small").textContent = line;
+}
+
 function updateWorkflow() {
   for (const card of elements.stepCards) {
     const step = Number(card.dataset.step);
@@ -199,6 +265,7 @@ function updateWorkflow() {
 function renderProject(summary) {
   if (project && project.path !== summary.path) {
     completedThisSession.clear();
+    resetAllStepProgress();
     // invalidate cached per-project UI so a new dataset never shows the old
     // dataset's graphs or backup versions
     visualizerModule?.resetVisualizer?.();
@@ -1245,6 +1312,7 @@ async function runStep(step, options = {}) {
     return { success: false, backup: null };
   }
   activeStep = step;
+  beginStepProgress(step);
   updateWorkflow();
   addActivity(`Starting step ${step}…`);
   let backupName = null;
@@ -1276,6 +1344,7 @@ async function runStep(step, options = {}) {
     showToast(String(error), "error");
     return { success: false, backup: backupName };
   } finally {
+    resetStepProgress(step);
     activeStep = null;
     updateWorkflow();
   }
@@ -1284,6 +1353,7 @@ async function runStep(step, options = {}) {
 async function registerDesktopEvents() {
   if (!isDesktop) return;
   await tauri.event.listen("worker-output", ({ payload }) => {
+    updateStepProgress(payload.step, payload.line);
     addActivity(payload.line, payload.stream === "error" ? "error" : "");
   });
   await tauri.event.listen("step-state", ({ payload }) => {
@@ -1341,7 +1411,6 @@ async function bootstrap() {
   elements.integratorTab.addEventListener("click", showIntegrator);
   elements.visualizerTab.addEventListener("click", showVisualizer);
   elements.scratchpadTab.addEventListener("click", showScratchpad);
-  elements.visualizerBack.addEventListener("click", showIntegrator);
   elements.scratchpadAutoWipe.addEventListener("change", updateScratchpadMode);
   elements.scratchpadNewNote.addEventListener("click", showNewScratchpadNote);
   elements.scratchpadSaveNote.addEventListener("click", saveScratchpadNote);
@@ -1439,6 +1508,7 @@ window.__mrmhubShell = {
   refreshProject,
   getProject: () => project,
   prompt: appPrompt,
+  confirm: appConfirm,
   getGuiScale: () => guiScalePercent,
   setGuiScale,
 };

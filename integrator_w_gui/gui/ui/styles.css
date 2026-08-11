@@ -736,20 +736,15 @@ main {
   gap: 4px;
   align-items: center;
   margin-left: auto;
-  padding: 6px 9px;
-  color: var(--navy);
-  border: 1px solid var(--line-strong);
-  border-radius: 8px;
-  background: #fbfcfc;
+  color: var(--steel);
   font-size: 9px;
+  font-weight: 800;
   letter-spacing: 0.04em;
   opacity: 0;
-  transform: translateX(5px);
+  transform: translateX(-5px);
   transition:
     opacity 140ms ease,
-    transform 140ms ease,
-    color 140ms ease,
-    background 140ms ease;
+    transform 140ms ease;
 }
 
 .card-run-indicator svg {
@@ -759,19 +754,62 @@ main {
 
 .step-card.actionable:hover .card-run-indicator,
 .step-card.actionable:focus-visible .card-run-indicator {
-  color: #fff;
-  border-color: var(--navy);
-  background: var(--navy);
   opacity: 1;
   transform: translateX(0);
 }
 
 .step-card.running .card-run-indicator {
-  color: var(--steel);
-  border-color: #c4d7df;
-  background: var(--steel-soft);
   opacity: 1;
   transform: translateX(0);
+}
+
+.step-progress {
+  margin: auto 0 0;
+}
+
+.step-progress > div {
+  height: 5px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: var(--steel-soft);
+}
+
+.step-progress > div span {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--steel);
+  transition: width 180ms ease;
+}
+
+.step-progress small {
+  display: block;
+  overflow: hidden;
+  margin-top: 7px;
+  color: var(--muted);
+  font-size: 9px;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.step-progress.indeterminate > div span {
+  width: 38%;
+  animation: step-progress-indeterminate 1.15s ease-in-out infinite;
+}
+
+.step-card.progress-active .step-output {
+  display: none;
+}
+
+@keyframes step-progress-indeterminate {
+  from {
+    transform: translateX(-110%);
+  }
+  to {
+    transform: translateX(290%);
+  }
 }
 
 .step-output code {
@@ -936,8 +974,7 @@ html[data-theme="dark"] .icon-button:hover {
 }
 
 html[data-theme="dark"] .activity-header,
-html[data-theme="dark"] .activity-log,
-html[data-theme="dark"] .card-run-indicator {
+html[data-theme="dark"] .activity-log {
   background: var(--surface-soft, #1b2735);
 }
 
@@ -1503,10 +1540,25 @@ html[data-theme="dark"] .sling-link img {
 
 .visualizer-refresh,
 .visualizer-save,
+.visualizer-override,
 .visualizer-delete,
+.visualizer-delete-all,
 .visualizer-rename,
 .visualizer-import {
   margin-bottom: 1px;
+}
+
+.visualizer-labelled-action {
+  display: inline-flex;
+  width: auto;
+  gap: 6px;
+  padding: 0 10px;
+  white-space: nowrap;
+}
+
+.visualizer-labelled-action span {
+  font-size: 10px;
+  font-weight: 750;
 }
 
 .icon-button:disabled {
@@ -1530,6 +1582,18 @@ html[data-theme="dark"] .sling-link img {
   color: var(--surface);
   background: var(--rose);
   border-color: var(--rose);
+}
+
+.visualizer-delete-all:not(:disabled):hover {
+  color: var(--surface);
+  background: var(--rose);
+  border-color: var(--rose);
+}
+
+.visualizer-override:not(:disabled):hover {
+  color: var(--surface);
+  background: var(--teal);
+  border-color: var(--teal);
 }
 
 .visualizer-rename:not(:disabled):hover {
@@ -1615,8 +1679,7 @@ html[data-theme="dark"] .sling-link img {
 }
 
 .visualizer-export-pngs,
-.visualizer-apply-shared,
-#visualizer-back {
+.visualizer-apply-shared {
   min-height: calc(38px * var(--visualizer-font-scale, 1));
   font-size: calc(10px * var(--visualizer-font-scale, 1));
 }
