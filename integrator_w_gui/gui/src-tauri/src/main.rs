@@ -1972,6 +1972,7 @@ fn main() {
             visualizer::visualizer_get_sh,
             visualizer::visualizer_get_r,
             visualizer::visualizer_save_bounds,
+            visualizer::visualizer_save_shared_bounds,
             visualizer::visualizer_prepare_png_export,
             visualizer::visualizer_save_png,
             run_step

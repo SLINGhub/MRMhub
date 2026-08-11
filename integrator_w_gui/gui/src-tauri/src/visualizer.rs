@@ -214,6 +214,18 @@ pub struct BoundEdit {
     rt_end: f32,
 }
 
+// A shared edit intentionally has no sample identity. The backend applies it
+// to every data row in RT_matrix.csv, avoiding any dependency on the order or
+// spelling of names in the separate mzML sample index.
+#[derive(serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SharedBoundEdit {
+    cqq: String,
+    isomer_index: usize,
+    rt_start: f32,
+    rt_end: f32,
+}
+
 // drops a trailing .mzML extension so sample names compare regardless of it
 fn strip_mzml(name: &str) -> &str {
     name.strip_suffix(".mzML")
@@ -306,6 +318,96 @@ pub fn visualizer_save_bounds(project_path: &str, edits: Vec<BoundEdit>) -> Resu
         row[start_col] = format!("{low:.3}");
         row[end_col] = format!("{high:.3}");
         written += 1;
+    }
+
+    let mut writer = csv::WriterBuilder::new()
+        .flexible(true)
+        .from_path(&rtm_path)
+        .map_err(|error| error.to_string())?;
+    for record in &records {
+        writer
+            .write_record(record)
+            .map_err(|error| error.to_string())?;
+    }
+    writer.flush().map_err(|error| error.to_string())?;
+    Ok(written)
+}
+
+// Applies each averaged reference window directly to every sample row. Shared
+// reintegration used to expand one edit per sample in JavaScript, then look up
+// every row again by index/name. That made the operation fail when the sample
+// index and RT_matrix.csv differed even slightly.
+#[tauri::command]
+pub fn visualizer_save_shared_bounds(
+    project_path: &str,
+    edits: Vec<SharedBoundEdit>,
+) -> Result<usize, String> {
+    if edits.is_empty() {
+        return Ok(0);
+    }
+    let project = PathBuf::from(project_path);
+    if !project.is_dir() {
+        return Err("the selected dataset folder does not exist".to_string());
+    }
+    let rtm_path = project.join("RT_matrix.csv");
+    if !rtm_path.is_file() {
+        return Err("RT_matrix.csv was not found; run step 2 before editing bounds".to_string());
+    }
+
+    let mut records: Vec<Vec<String>> = csv::ReaderBuilder::new()
+        .has_headers(false)
+        .flexible(true)
+        .from_path(&rtm_path)
+        .map_err(|error| error.to_string())?
+        .records()
+        .map(|record| {
+            record
+                .map(|record| record.iter().map(str::to_string).collect())
+                .map_err(|error| error.to_string())
+        })
+        .collect::<Result<_, _>>()?;
+    if records.len() < 4 {
+        return Err("RT_matrix.csv does not contain any samples".to_string());
+    }
+
+    let mut written = 0;
+    for edit in &edits {
+        let columns: Vec<usize> = records[0]
+            .iter()
+            .enumerate()
+            .filter(|(_, cell)| {
+                cell.trim()
+                    .rsplit_once(" / ")
+                    .is_some_and(|(_, id)| id == edit.cqq)
+            })
+            .map(|(index, _)| index)
+            .collect();
+        let start_col = *columns
+            .get(edit.isomer_index * 2)
+            .ok_or_else(|| format!("transition {} was not found in RT_matrix.csv", edit.cqq))?;
+        let end_col = *columns.get(edit.isomer_index * 2 + 1).ok_or_else(|| {
+            format!(
+                "transition {} is missing an integration column in RT_matrix.csv",
+                edit.cqq
+            )
+        })?;
+        if records[3..]
+            .iter()
+            .any(|row| start_col >= row.len() || end_col >= row.len())
+        {
+            return Err("RT_matrix.csv is malformed for this transition".to_string());
+        }
+
+        let (low, high) = if edit.rt_start <= edit.rt_end {
+            (edit.rt_start, edit.rt_end)
+        } else {
+            (edit.rt_end, edit.rt_start)
+        };
+        for row in &mut records[3..] {
+            row[start_col] = format!("{low:.3}");
+            row[end_col] = format!("{high:.3}");
+            written += 1;
+        }
     }
 
     let mut writer = csv::WriterBuilder::new()
@@ -780,6 +882,33 @@ mod tests {
         assert_eq!(rows[3][6], "3.900");
         // the other sample row is untouched
         assert_eq!(rows[4][2], "1.100");
+        std::fs::remove_dir_all(&dir).unwrap();
+    }
+
+    #[test]
+    fn shared_bounds_write_the_same_window_to_every_sample_row() {
+        let dir = temp_project("shared");
+        write_fixture(&dir);
+        let written = visualizer_save_shared_bounds(
+            dir.to_str().unwrap(),
+            vec![SharedBoundEdit {
+                cqq: "0000".to_string(),
+                isomer_index: 0,
+                rt_start: 8.25,
+                rt_end: 8.75,
+            }],
+        )
+        .unwrap();
+        assert_eq!(written, 2);
+
+        let rows = read_rows(&dir);
+        assert_eq!(rows[3][2], "8.250");
+        assert_eq!(rows[3][3], "8.750");
+        assert_eq!(rows[4][2], "8.250");
+        assert_eq!(rows[4][3], "8.750");
+        // Other transitions remain untouched.
+        assert_eq!(rows[3][5], "3.000");
+        assert_eq!(rows[4][8], "6.100");
         std::fs::remove_dir_all(&dir).unwrap();
     }
 

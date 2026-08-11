@@ -1,3 +1,5 @@
+import { referenceBounds } from "./reference-bounds.js";
+
 const { invoke, Channel } = window.__TAURI__.core;
 const dialog = window.__TAURI__.dialog;
 const d3 = window.d3;
@@ -2080,28 +2082,28 @@ async function renderReference(reference, token) {
   }
 }
 
-// enables Save whenever any graph (transition or reference view) holds an
-// unsaved dragged band that maps to a known transition
+// Enables Save for dragged edits and the shared action for any selected plot
+// that already contains a valid existing or edited integration window.
 function updateSaveButton() {
   const hasEdits = state.traceRecords.some(
     (record) => record.editRts?.size > 0 && record.editContext?.cqq,
   );
   const selection = elements.transition.value;
-  const changedReferences = state.traceRecords.filter(
+  const selectedReferences = state.traceRecords.filter(
     (record) =>
       state.referenceChoices.get(referenceChoiceKey(record)) === true &&
-      record.editRts?.size > 0 &&
-      record.editContext?.cqq,
+      record.editContext?.cqq &&
+      referenceBounds(record).size > 0,
   );
   elements.save.disabled = !hasEdits || state.loading;
-  elements.applyShared.disabled = changedReferences.length === 0 || state.loading;
-  elements.applyShared.title = changedReferences.length
-    ? `average ${changedReferences.length.toLocaleString()} changed reference plot(s), apply the RT limits to every sample, and reintegrate`
-    : "select a reference plot and adjust its integration bounds first";
+  elements.applyShared.disabled = selectedReferences.length === 0 || state.loading;
+  elements.applyShared.title = selectedReferences.length
+    ? `average the current bounds from ${selectedReferences.length.toLocaleString()} selected reference plot(s), apply them to every sample, and reintegrate`
+    : "select at least one reference plot with usable integration bounds";
   elements.toolbar.classList.toggle("has-unsaved", hasEdits);
   elements.toolbar.classList.toggle(
-    "has-reference-edits",
-    changedReferences.length > 0,
+    "has-reference-selection",
+    selectedReferences.length > 0,
   );
   const canExport =
     Boolean(selection) &&
@@ -2685,22 +2687,23 @@ function individualBoundEdits() {
     );
 }
 
-// averages changed reference windows by transition/isomer, then expands each
-// average across every sample row so the resulting RT limits are identical.
+// Averages selected reference windows by transition/isomer. Existing bounds
+// are used when a reference was selected without being dragged; an edited
+// isomer uses its dragged bounds instead. The backend applies each compact edit
+// directly to every RT_matrix sample row.
 function sharedReferenceBoundEdits() {
   const windows = new Map();
-  for (const graph of state.traceRecords) {
+  for (const record of state.traceRecords) {
     if (
-      state.referenceChoices.get(referenceChoiceKey(graph)) !== true ||
-      !graph.editContext?.cqq ||
-      !graph.editRts?.size
+      state.referenceChoices.get(referenceChoiceKey(record)) !== true ||
+      !record.editContext?.cqq
     ) {
       continue;
     }
-    for (const [isomerIndex, edit] of graph.editRts) {
-      const key = `${graph.editContext.cqq}:${isomerIndex}`;
+    for (const [isomerIndex, edit] of referenceBounds(record)) {
+      const key = `${record.editContext.cqq}:${isomerIndex}`;
       const window = windows.get(key) ?? {
-        cqq: graph.editContext.cqq,
+        cqq: record.editContext.cqq,
         isomerIndex,
         startTotal: 0,
         endTotal: 0,
@@ -2720,15 +2723,11 @@ function sharedReferenceBoundEdits() {
     if (!Number.isFinite(rtStart) || !Number.isFinite(rtEnd) || rtEnd <= rtStart) {
       continue;
     }
-    state.samples.forEach((sample, sampleIndex) => {
-      edits.push({
-        cqq: window.cqq,
-        sampleIndex,
-        fileName: sample[0] ?? "",
-        isomerIndex: window.isomerIndex,
-        rtStart,
-        rtEnd,
-      });
+    edits.push({
+      cqq: window.cqq,
+      isomerIndex: window.isomerIndex,
+      rtStart,
+      rtEnd,
     });
   }
   return { edits, windowCount: windows.size };
@@ -2738,6 +2737,8 @@ async function writeAndReintegrate(edits, options = {}) {
   if (state.loading || !edits.length) return;
   const scrollY = window.scrollY;
   const shared = Boolean(options.shared);
+  const sharedWindowCount = Number(options.windowCount) || edits.length;
+  const sharedScope = `${sharedWindowCount.toLocaleString()} RT window(s) across ${state.samples.length.toLocaleString()} samples`;
 
   const bridge = shell();
   elements.save.disabled = true;
@@ -2745,14 +2746,17 @@ async function writeAndReintegrate(edits, options = {}) {
   elements.deleteBackup.disabled = true;
   setStatus(
     shared
-      ? `Applying shared RT limits to ${state.samples.length.toLocaleString()} samples...`
+      ? `Applying ${sharedScope}...`
       : `Saving ${edits.length} integration bound(s)...`,
   );
   try {
-    const written = await invoke("visualizer_save_bounds", {
-      projectPath: state.projectPath,
-      edits,
-    });
+    const written = await invoke(
+      shared ? "visualizer_save_shared_bounds" : "visualizer_save_bounds",
+      {
+        projectPath: state.projectPath,
+        edits,
+      },
+    );
     for (const record of state.traceRecords) {
       record.editRts?.clear();
       if (record.graph) {
@@ -2768,7 +2772,9 @@ async function writeAndReintegrate(edits, options = {}) {
       return;
     }
     setStatus(
-      `${shared ? "Applied shared RT limits to" : "Saved"} ${written} bound(s). Re-integrating (Step 3)...`,
+      shared
+        ? `Applied ${sharedScope} (${written.toLocaleString()} bounds). Re-integrating (Step 3)...`
+        : `Saved ${written} bound(s). Re-integrating (Step 3)...`,
     );
     const result = await bridge.runStep(3, { backup: true });
     if (result.success) {
@@ -2779,10 +2785,15 @@ async function writeAndReintegrate(edits, options = {}) {
         });
       }
       await refreshBackups(result.backup);
+      // A successful shared apply consumes the reference selection. Clear it
+      // before re-rendering so the refreshed plots and toolbar return to their
+      // unselected/disabled state; failed Step 3 runs retain the selection for
+      // an easy retry.
+      if (shared) state.referenceChoices.clear();
       await renderSelected({ preserveScroll: true, scrollY });
       setStatus(
         shared
-          ? `Applied shared RT limits and re-integrated ${written} bound(s).`
+          ? `Applied ${sharedScope} and re-integrated.`
           : `Saved and re-integrated ${written} bound(s).`,
       );
     } else {
@@ -2807,10 +2818,10 @@ async function saveBounds() {
 async function applySharedRtLimits() {
   const { edits, windowCount } = sharedReferenceBoundEdits();
   if (!edits.length || windowCount === 0) {
-    setStatus("Select an RT reference plot and drag its integration bounds first.");
+    setStatus("Select at least one RT reference plot with usable integration bounds.");
     return;
   }
-  await writeAndReintegrate(edits, { shared: true });
+  await writeAndReintegrate(edits, { shared: true, windowCount });
 }
 
 // renders the current chooser value without allowing overlapping streams
