@@ -67,6 +67,7 @@ pub fn read(param_t: &crate::Param) -> Result<(), Box<dyn Error>> {
         }
     }
     let mut batch_start = 0;
+    let progress = crate::progress::Reporter::new(mzml_fs.len());
     while batch_start < mzml_fs.len() {
         let batch_end = mzml_batch_end(&mzml_fs, batch_start)?;
         let mzml_fs_ = &mzml_fs[batch_start..batch_end];
@@ -77,7 +78,7 @@ pub fn read(param_t: &crate::Param) -> Result<(), Box<dyn Error>> {
             write_block(&q1q3eics, mzml_fs_, trans, trans_f_i, param_t).unwrap();
         });
         batch_start = batch_end;
-        println!("{batch_start}/{}", mzml_fs.len());
+        progress.set(batch_start, "extracting chromatograms");
     }
     write_mzml_list(&mzml_fs, &time_stamp)?;
     write_miss_cpd(&t_list, &mzml_fs, &trans_f)

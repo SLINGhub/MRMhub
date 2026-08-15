@@ -1,10 +1,12 @@
 const tauri = window.__TAURI__;
 const isDesktop = Boolean(tauri?.core?.invoke);
 const invoke = isDesktop ? tauri.core.invoke : null;
+const isWindows = /^Win/i.test(navigator.platform) || /Windows/i.test(navigator.userAgent);
 const scratchpadAutoWipePreference = "mrmhub-scratchpad-auto-wipe";
 const guiScalePreference = "mrmhub-gui-scale";
 const legacyVisualizerScalePreference = "mrmhub-visualizer-font-scale";
 const guiScaleOptions = [100, 125, 150, 175, 200];
+document.documentElement.classList.toggle("platform-windows", isWindows);
 
 const elements = {
   projectTitle: document.querySelector("#project-title"),
@@ -98,6 +100,8 @@ const dataEditor = {
   dirty: false,
 };
 const completedThisSession = new Set();
+const pendingStepProgress = new Map();
+let stepProgressFrame = null;
 const stepProgressMessages = {
   1: "Preparing validation…",
   2: "Preparing peak detection…",
@@ -202,6 +206,7 @@ function resetStepProgress(step) {
   progress.querySelector("div span").style.width = "";
   progress.querySelector("small").textContent =
     stepProgressMessages[step] ?? "Preparing…";
+  if (isWindows) pendingStepProgress.delete(step);
 }
 
 function resetAllStepProgress() {
@@ -210,9 +215,9 @@ function resetAllStepProgress() {
   }
 }
 
-// Worker output is shown as live status text while every progress bar remains
-// continuously animated. Step 1's current/total batch report is useful text,
-// but does not switch the bar into a determinate mode mid-run.
+// Worker output remains live status text on every platform. On Windows, exact
+// current/total reports use a determinate width because WebView2 can restart a
+// transform animation whenever frequent native events arrive.
 function updateStepProgress(step, rawLine) {
   const progress = stepCard(step)?.querySelector("[data-step-progress]");
   if (!progress || progress.classList.contains("hidden")) return;
@@ -220,15 +225,40 @@ function updateStepProgress(step, rawLine) {
     .replace(/\x1b\[[0-?]*[ -/]*[@-~]/g, "")
     .trim();
   if (!line) return;
-  const numeric = line.match(/^(\d+)\s*\/\s*(\d+)$/);
+  const reported = line.match(/^Progress:\s*(\d+)\s*\/\s*(\d+)\s*-\s*(.+)$/);
+  const legacy = reported ? null : line.match(/^(\d+)\s*\/\s*(\d+)$/);
+  const numeric = reported ?? legacy;
   if (numeric && Number(numeric[2]) > 0) {
     const current = Number(numeric[1]);
     const total = Number(numeric[2]);
+    if (isWindows) {
+      const percentage = Math.min(100, Math.max(6, current / total * 100));
+      progress.classList.remove("indeterminate");
+      progress.setAttribute("aria-valuemin", "0");
+      progress.setAttribute("aria-valuemax", String(total));
+      progress.setAttribute("aria-valuenow", String(current));
+      progress.querySelector("div span").style.width = `${percentage}%`;
+    }
+    const detail = reported?.[3] ?? "Validating data";
     progress.querySelector("small").textContent =
-      `${current.toLocaleString()}/${total.toLocaleString()} · Validating data`;
+      `${current.toLocaleString()}/${total.toLocaleString()} · ${detail}`;
     return;
   }
   progress.querySelector("small").textContent = line;
+}
+
+// Coalesce bursts from the native worker into at most one Windows WebView2
+// update per browser frame. macOS keeps its existing immediate update path.
+function queueStepProgress(step, rawLine) {
+  pendingStepProgress.set(step, rawLine);
+  if (stepProgressFrame !== null) return;
+  stepProgressFrame = requestAnimationFrame(() => {
+    for (const [pendingStep, pendingLine] of pendingStepProgress) {
+      updateStepProgress(pendingStep, pendingLine);
+    }
+    pendingStepProgress.clear();
+    stepProgressFrame = null;
+  });
 }
 
 function updateWorkflow() {
@@ -1353,7 +1383,12 @@ async function runStep(step, options = {}) {
 async function registerDesktopEvents() {
   if (!isDesktop) return;
   await tauri.event.listen("worker-output", ({ payload }) => {
-    updateStepProgress(payload.step, payload.line);
+    if (isWindows) {
+      queueStepProgress(payload.step, payload.line);
+    } else {
+      updateStepProgress(payload.step, payload.line);
+    }
+    if (/^Progress:\s*\d+\s*\/\s*\d+\s*-/.test(payload.line)) return;
     addActivity(payload.line, payload.stream === "error" ? "error" : "");
   });
   await tauri.event.listen("step-state", ({ payload }) => {

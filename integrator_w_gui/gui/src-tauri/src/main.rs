@@ -1913,53 +1913,64 @@ fn clean_worker_output(bytes: &[u8]) -> String {
     String::from_utf8_lossy(&clean).trim().to_string()
 }
 
-// emits complete cleaned lines from a worker output stream
+// Drains worker output in chunks and treats both carriage returns and newlines
+// as progress boundaries. Chunking avoids flooding Windows WebView2 with tiny
+// native reads, while the size cap prevents malformed output from accumulating.
+fn read_output_records<R, F>(mut reader: R, mut on_record: F) -> Result<(), String>
+where
+    R: Read,
+    F: FnMut(String),
+{
+    const MAX_RECORD_BYTES: usize = 64 * 1024;
+    let mut chunk = [0_u8; 8192];
+    let mut pending = Vec::with_capacity(256);
+    let emit = |pending: &mut Vec<u8>, on_record: &mut F| {
+        if pending.is_empty() {
+            return;
+        }
+        let text = clean_worker_output(pending);
+        pending.clear();
+        if !text.is_empty() {
+            on_record(text);
+        }
+    };
+    loop {
+        let count = reader.read(&mut chunk).map_err(|error| error.to_string())?;
+        if count == 0 {
+            break;
+        }
+        for &byte in &chunk[..count] {
+            if byte == b'\n' || byte == b'\r' {
+                emit(&mut pending, &mut on_record);
+            } else {
+                pending.push(byte);
+                if pending.len() >= MAX_RECORD_BYTES {
+                    emit(&mut pending, &mut on_record);
+                }
+            }
+        }
+    }
+    emit(&mut pending, &mut on_record);
+    Ok(())
+}
+
+// emits complete cleaned records from a worker output stream
 fn forward_output<R: Read>(
     reader: R,
     app: &AppHandle,
     step: u8,
     stream: &str,
 ) -> Result<(), String> {
-    let mut reader = BufReader::new(reader);
-    let mut line = Vec::new();
-    let mut byte = [0_u8; 1];
-    loop {
-        match reader.read(&mut byte) {
-            Ok(0) => break,
-            Ok(_) if byte[0] == b'\n' || byte[0] == b'\r' => {
-                if !line.is_empty() {
-                    let text = clean_worker_output(&line);
-                    if !text.is_empty() {
-                        let _ = app.emit(
-                            "worker-output",
-                            WorkerOutput {
-                                step,
-                                stream: stream.to_string(),
-                                line: text,
-                            },
-                        );
-                    }
-                    line.clear();
-                }
-            }
-            Ok(_) => line.push(byte[0]),
-            Err(error) => return Err(error.to_string()),
-        }
-    }
-    if !line.is_empty() {
-        let text = clean_worker_output(&line);
-        if !text.is_empty() {
-            let _ = app.emit(
-                "worker-output",
-                WorkerOutput {
-                    step,
-                    stream: stream.to_string(),
-                    line: text,
-                },
-            );
-        }
-    }
-    Ok(())
+    read_output_records(reader, |line| {
+        let _ = app.emit(
+            "worker-output",
+            WorkerOutput {
+                step,
+                stream: stream.to_string(),
+                line,
+            },
+        );
+    })
 }
 
 // runs one processing step inside the selected project
@@ -2246,6 +2257,17 @@ mod tests {
     fn worker_output_removes_terminal_formatting_before_display() {
         let output = clean_worker_output(b"Check \x1b[1;4mmissing_compounds.txt\x1b[0m.");
         assert_eq!(output, "Check missing_compounds.txt.");
+    }
+
+    #[test]
+    fn worker_progress_splits_carriage_returns_without_large_buffering() {
+        let mut records = Vec::new();
+        read_output_records(
+            std::io::Cursor::new(b"first\rsecond\r\nthird\nlast"),
+            |record| records.push(record),
+        )
+        .unwrap();
+        assert_eq!(records, ["first", "second", "third", "last"]);
     }
 
     #[test]

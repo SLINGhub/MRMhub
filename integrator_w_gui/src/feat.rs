@@ -16,15 +16,15 @@ pub fn detect(param_t: &crate::Param) -> Result<(), Box<dyn Error>> {
     let t_to_istd = crate::common::get_trans_istd()?;
     let wave_scs = [0.05, 0.1];
     let wave_sqrt = wave_scs.map(f32::sqrt);
+    let progress = crate::progress::Reporter::new(t_to_istd.len());
     let start_end_d: Vec<Fff32> = t_to_istd
         .par_iter()
         .map(|t_i| {
-            print!("\r{: <50.40}", t_i.cpd);
-            io::stdout().flush()?;
-            write_trans(t_i, param_t, &mzml_fs, &wave_scs, &wave_sqrt)
+            let result = write_trans(t_i, param_t, &mzml_fs, &wave_scs, &wave_sqrt);
+            progress.advance("detecting peaks");
+            result
         })
         .collect::<Result<_, _>>()?;
-    println!("\r{: <50.40}", "");
     crate::common::write_by_sample(&t_to_istd, &mzml_fs)?;
     write_rtmat(&t_to_istd, &start_end_d, &mzml_fs)?;
     Ok(())

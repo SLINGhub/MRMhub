@@ -799,6 +799,15 @@ main {
   animation: step-progress-indeterminate 1.15s ease-in-out infinite;
 }
 
+/* Frequent native progress events can restart transform animations in
+   WebView2. Windows uses a stable pulse until exact progress switches the bar
+   to a determinate width; macOS retains the existing moving animation. */
+.platform-windows .step-progress.indeterminate > div span {
+  width: 6%;
+  transform: none;
+  animation: step-progress-windows-pulse 1.8s ease-in-out infinite;
+}
+
 .step-card.progress-active .step-output {
   display: none;
 }
@@ -809,6 +818,16 @@ main {
   }
   to {
     transform: translateX(290%);
+  }
+}
+
+@keyframes step-progress-windows-pulse {
+  0%,
+  100% {
+    opacity: 0.32;
+  }
+  50% {
+    opacity: 0.92;
   }
 }
 
@@ -2558,5 +2577,11 @@ footer a:hover {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
+  }
+
+  .platform-windows .step-progress.indeterminate > div span {
+    opacity: 0.62;
+    transform: none;
+    animation: none !important;
   }
 }

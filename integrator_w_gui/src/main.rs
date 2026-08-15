@@ -6,6 +6,8 @@ mod feat;
 mod get_auc;
 // declares the mzml reader module
 mod read_mzml;
+// emits bounded, monotonic workflow progress for the desktop GUI
+mod progress;
 
 // names the directory used for intermediate files
 const MISCDIR: &str = "misc";
