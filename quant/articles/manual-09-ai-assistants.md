@@ -2,95 +2,46 @@
 
 Manual
 
-## Who this is for
+An AI assistant (Claude, ChatGPT, or a locally hosted model) can help
+you plan an analysis, draft R code, fix errors, and explain a step in
+MRMhub QUANT, whether or not you write much R. It cannot run your data
+or confirm the numbers; that stays with you.
 
-You run targeted MS assays and have a chat assistant open – Claude
-Desktop, ChatGPT, or a model running on your own machine – and you would
-like it to help with the analysis in MRMhub QUANT. You may write a
-little R, or none at all.
+## Use it in three steps
 
-An assistant can genuinely help here, but only if you set it up
-correctly. Out of the box it has read very little about a specialised,
-young package like MRMhub, so it tends to guess. This page shows the
-everyday tasks it is good at, the one step that makes its answers
-reliable, and the two rules that keep your results and your data safe.
-If you have never run the package by hand, start with [Your first
-analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md)
-so you have a baseline to compare against.
+1.  **Give it the package reference first.** An assistant has read
+    little about a recently published, specialised package, so from
+    memory it invents function names that sound right but do not exist.
+    MRMhub publishes its whole interface as one file:
+    <https://slinghub.github.io/MRMhub/quant/llms.txt>. Give the
+    assistant that **link** and tell it to **use only functions that
+    appear there**, or paste the file’s contents if it cannot browse the
+    web. For regular use, add the file once to a Claude Project or a
+    ChatGPT custom GPT. Ask it to keep the **`mexp <- f(mexp, ...)` step
+    pattern** in the recommended pipeline order, and to use **current
+    terminology** in prose (interference source/target, precursor and
+    product ions, not parent/daughter) and the plain name MRMhub.
+2.  **Ask for what you need**, adapting one of the prompts below.
+3.  **Run it and check the numbers yourself.** Run generated code on
+    data you understand first, the bundled demo
+    (`system.file("extdata", "MRMhub_demo.tsv", package = "mrmhub")`) is
+    ideal; confirm every function it used appears in the [function
+    reference](https://slinghub.github.io/MRMhub/quant/reference/index.md);
+    and cross-check the results against QC plots and metrics, not just
+    that the script ran.
 
-## What it can – and cannot – do for you
+## Prompts to copy
 
-An assistant is a fast, patient explainer and a first-draft writer. It
-is not a substitute for running the analysis or for your own judgement.
+Ground the assistant (step 1), then adapt one of these.
 
-**Good at**
-
-- Explaining a step or a concept in plain language (“why is drift
-  correction fitted on QC samples only?”).
-- Drafting R code for your workflow, which you then run.
-- Reading an R error message and suggesting a fix.
-- Helping you plan an analysis from a description of your samples and
-  standards.
-
-**Not able to**
-
-- Run your data or check that the numbers are right – only you can do
-  that.
-- Guarantee the code is correct; it can produce plausible code that
-  fails.
-- Know MRMhub’s functions reliably unless you show it the package’s own
-  documentation first.
-
-That last point is the one worth acting on, and it is easy.
-
-## Make its answers accurate: show it the package’s own docs
-
-Left to memory, an assistant invents function names that sound right but
-do not exist – `normalize()` instead of
-[`normalize_by_istd()`](https://slinghub.github.io/MRMhub/quant/reference/normalize_by_istd.md),
-or a single `run_pipeline()` that was never written. The fix is to give
-it the package’s real reference and tell it to use only what it finds
-there.
-
-MRMhub publishes a compact map of its entire interface as a single file,
-built automatically with the documentation site:
-
-<https://slinghub.github.io/MRMhub/quant/llms.txt>
-
-Open that link, copy the contents into your chat, and start with an
-instruction like this:
-
-``` text
-I am analysing targeted MS data in R with the package mrmhub. Below is the
-package's function reference. Use ONLY functions that appear in it. If you are
-unsure a function exists, say so rather than inventing one.
-
-<paste the contents of https://slinghub.github.io/MRMhub/quant/llms.txt here>
-```
-
-If your assistant can browse the web – Claude with web access, ChatGPT
-with browsing – you can skip the copy-and-paste and simply give it the
-link, asking it to read that page and follow the links to individual
-function pages as needed.
-
-## Common tasks
-
-Each task below is a short prompt you can adapt. Paste the reference
-first (or set it up once, further down) so the assistant is working from
-the real interface.
-
-### Understand a step
+**Explain a step**
 
 ``` text
 In one short paragraph, explain what correct_drift_loess() does and why drift
 and batch corrections in mrmhub are fitted on QC samples, not study samples.
 ```
 
-### Draft a script for your workflow
-
-Ask for a complete script, and insist it keep MRMhub’s core pattern:
-every processing step takes an `MRMhubExperiment` and returns an updated
-one.
+**Draft a workflow script**
 
 ``` text
 Write an R script using mrmhub that imports my data, normalises by internal
@@ -99,50 +50,15 @@ computes QC metrics, filters failing features, and writes an Excel report.
 Keep the mexp <- f(mexp, ...) pattern for every step, in recommended order.
 ```
 
-A grounded assistant should return real function names in the right
-order. The runnable core looks like the block below; it imports the
-bundled demo so it works as is, and you would swap in your own file:
-
-``` r
-
-library(mrmhub)
-
-# Bundled demo file, so this runs as written; use your own file instead
-demo <- system.file("extdata", "MRMhub_demo.tsv", package = "mrmhub")
-
-mexp <- MRMhubExperiment()
-mexp <- import_data_mrmhub(mexp, path = demo, import_metadata = TRUE)
-
-# Normalise each feature by its internal standard -> feature_norm_intensity
-mexp <- normalize_by_istd(mexp)
-
-# Write the multi-sheet Excel report
-save_report_xlsx(mexp, path = "results.xlsx")
-```
-
-From that base, ask the assistant to add drift correction, calibration,
-QC metrics, and filtering for your own data; the full pipeline and its
-order are laid out in [Basic MRMhub
-workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md).
-
-### Explain and fix an error
-
-Paste the error together with the line that produced it – the assistant
-reads both far better than a description.
+**Explain and fix an error** (paste the line and the exact message)
 
 ``` text
-Running this line: mexp <- normalize_by_istd(mexp)
-I get this error: <paste the exact error message>
+Running: mexp <- normalize_by_istd(mexp)
+I get: <paste the exact error message>
 What does it mean, and how do I fix it?
 ```
 
-### Choose or understand a parameter
-
-Point it at that function’s reference page, published alongside the map
-above (for example `.../quant/reference/filter_features_qc.md`), and ask
-what an argument controls and how to set it for your assay.
-
-### Plan the analysis
+**Plan the analysis**
 
 ``` text
 My samples are plasma extracts with stable-isotope-labelled internal standards
@@ -150,78 +66,40 @@ and a 7-point external calibration curve. Which mrmhub steps apply, in what
 order, and where do QC samples come in?
 ```
 
-## Set it up once
-
-If you use the assistant regularly, load the reference once instead of
-pasting it into every chat. In **Claude**, create a Project and add the
-`llms.txt` file (and a manual page or two) to its knowledge. In
-**ChatGPT**, do the same with a Project or a custom GPT, attaching the
-same files as knowledge. Every conversation in that Project is then
-grounded in the real interface from the start.
-
-## The no-code shortcut: `build_workflow()`
-
-If you would rather not write R at all, the package gives the assistant
-a head start.
+Prefer not to write R at all?
 [`build_workflow()`](https://slinghub.github.io/MRMhub/quant/reference/build_workflow.md)
-opens an interactive application: you point it at your data and
-metadata, tick the processing steps you want, and it validates your
-inputs and generates a correct, runnable Quarto (`.qmd`) workflow to
-download (see [Build a workflow without
+generates a correct, runnable Quarto workflow from your data and
+metadata; handing that to an assistant to explain or adjust is safer
+than asking it to write a pipeline from scratch (see [Build a workflow
+without
 code](https://slinghub.github.io/MRMhub/quant/articles/tutorial-12-workflow-builder.md)).
 
-Handing that generated script to an assistant – to explain a step, or to
-adjust one part – is far safer than asking it to write a pipeline from
-nothing, because it starts from something already valid.
+## Limits and risks
 
-## Two rules you cannot skip
+An assistant produces plausible code that can be wrong. It cannot run
+your data, cannot guarantee the code is correct, and does not know
+MRMhub’s functions reliably unless you show it the reference (step 1).
+Treat its output as a first draft to verify, never as a result.
 
-**Verify every AI-generated pipeline before trusting its results.**
-
-- **Run it on data you understand** first – the bundled demo
-  (`system.file("extdata", "MRMhub_demo.tsv", package = "mrmhub")`) is
-  ideal. A made-up function fails immediately as “could not find
-  function”.
-- **Cross-check every function name** against the [function
-  reference](https://slinghub.github.io/MRMhub/quant/reference/index.md).
-  If a call is not listed there, it does not exist, however convincing
-  it looks.
-- **Confirm the step order** and that drift and batch corrections are
-  fitted on QC samples, not study samples. See [Design
-  decisions](https://slinghub.github.io/MRMhub/quant/articles/manual-03-design-decisions.md)
-  for why this matters.
-- **Inspect the numbers**, not just that the script ran. A pipeline can
-  complete and still be wrong. Sanity-check against QC plots and
-  metrics.
-
-**Do not paste study data into a cloud assistant.** Sample intensities,
-subject metadata, and unpublished results sent to a hosted service leave
-your control and may be retained. Share *code and the function map* –
-`llms.txt`, reference pages, and the function calls themselves – never
-the measurements. When the data must stay on the machine, use a locally
-hosted model, which keeps everything on-device.
-
-## Going further
-
-More capable tooling exists for those who want it. Agentic coding
-assistants such as Claude Code and Cursor operate directly on a project
-folder and can read the package source as they write. Claude Desktop can
-connect to your files through an MCP connector, though their contents
-then reach the provider like any other message. Locally hosted models
-(through Ollama or LM Studio) keep everything on-device, but a smaller
-local model has memorised even less of a niche package, so it depends
-*more* on being shown the reference, not less. Whichever you use, the
-two rules above still apply.
+Do not paste study data into a cloud assistant. Sample intensities,
+subject metadata, and unpublished results sent to a hosted service
+(Claude, ChatGPT) leave your control and may be retained. Share only
+code and the [function
+map](https://slinghub.github.io/MRMhub/quant/articles/manual-13-function-map.md),
+`llms.txt`, and reference pages, never the measurements. If the data
+must stay on the machine, use a locally hosted model (through Ollama or
+LM Studio), which keeps everything on-device but depends even more on
+being shown the reference.
 
 ## Next steps
 
 - [Design
   decisions](https://slinghub.github.io/MRMhub/quant/articles/manual-03-design-decisions.md):
-  the conventions an assistant must respect – the `mexp -> mexp` pattern
+  the conventions an assistant must respect, the `mexp -> mexp` pattern
   and the pipeline order
 - [Key concepts and
   glossary](https://slinghub.github.io/MRMhub/quant/articles/manual-01-key-concepts.md):
   the data model and terms to share with the assistant
-- [Your first
-  analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md):
+- [Getting started with
+  MRMhub](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-getting-started-mrmhub.md):
   a hand-run baseline to compare generated code against

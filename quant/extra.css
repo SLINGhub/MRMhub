@@ -7,10 +7,19 @@
   }
 }
 
+/* pkgdown bumps the body to a fixed 18px at >=1400px viewports. Hold the
+   Bootstrap default so QUANT reads at the normal 16px web size at 100% zoom,
+   matching the landing and INTEGRATOR Quarto sites at every width. */
+@media (min-width: 1400px) {
+  body {
+    font-size: 1rem;
+  }
+}
+
 /* Slightly smaller table text (~1pt) — denser reference/comparison tables.
    Scoped to main content so it hits both plain Markdown tables and the
    DT::datatable() widgets but leaves navbar/footer untouched.
-   em is relative to the already font_scale=0.9 body; nudge to 0.85 for ~2pt. */
+   em is relative to the 1rem body; nudge to 0.85 for ~2pt. */
 main table {
   font-size: 0.9em;
 }
@@ -95,6 +104,40 @@ main table {
 .callout-getstarted > :first-child { margin-top: 0; }
 .callout-getstarted > :last-child  { margin-bottom: 0; }
 
+/* Collapsible setup fold — folds one-time environment setup out of the main
+   flow while keeping a clearly clickable toggle bar (bare browser <summary>
+   triangles are too easy to miss). Steel-blue tint + rotating chevron.
+   Markup: <details class="setup-fold"><summary><strong>…</strong></summary> … </details> */
+details.setup-fold {
+  border: 1px solid #cdd9e0;
+  border-radius: 6px;
+  margin: 1.25rem 0;
+  padding: 0 0.9rem;
+}
+details.setup-fold > summary {
+  cursor: pointer;
+  margin: 0 -0.9rem;
+  padding: 0.6rem 0.9rem;
+  color: #2C3E50;
+  background: #f4f8fa;
+  border-radius: 6px;
+  list-style: none;
+}
+details.setup-fold > summary::-webkit-details-marker { display: none; }
+details.setup-fold > summary::before {
+  content: "\25B8"; /* ▸ */
+  display: inline-block;
+  margin-right: 0.5rem;
+  color: #5B8FA8;
+  transition: transform 0.15s ease;
+}
+details.setup-fold[open] > summary {
+  margin-bottom: 0.9rem;
+  border-bottom: 1px solid #cdd9e0;
+  border-radius: 6px 6px 0 0;
+}
+details.setup-fold[open] > summary::before { transform: rotate(90deg); }
+
 /* mrmhub console output — cli message-stream feedback (green ✔ success, grey ℹ
    info). pkgdown wraps EACH cli message in its own
    <div class="cell-output cell-output-stderr"><pre><code>. Bootstrap styles that
@@ -164,4 +207,12 @@ caption,
 .navbar .dropdown-menu {
   max-height: calc(100vh - 4rem);
   overflow-y: auto;
+}
+
+/* Function map (manual-13): reveal that the names in the inline SVG are links. */
+.fnmap a { cursor: pointer; }
+.fnmap a:hover text,
+.fnmap a:hover tspan {
+  fill: #2C6E8F;
+  text-decoration: underline;
 }

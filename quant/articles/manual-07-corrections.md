@@ -2,8 +2,8 @@
 
 Manual
 
-`MRMhub` provides functions for run-order drift and batch correction.
-The correction is based on user-selected reference sample types
+MRMhub provides functions for run-order drift and batch correction. The
+correction is based on user-selected reference sample types
 (`ref_qc_types`), relative to which all other samples are adjusted. The
 corrections can be applied to `intensity`, `norm_intensity`, or `conc`
 data.
@@ -22,7 +22,7 @@ well-randomised cohorts.
 
 ## Drift correction (smoothing)
 
-The following drift correction methods are available in `MRMhub`, two of
+The following drift correction methods are available in MRMhub, two of
 which are typically used for QC samples and one (gaussian kernel-based)
 for study samples.
 
@@ -46,10 +46,10 @@ details, refer to the description of
 [`plot_runscatter()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.md).
 This, however, doubles the processing time.
 
-**Note**: The function outputs a message indicating the median CV change
-and the mean absolute CV before and after correction for all samples.
-However, these metrics are experimental and should not be used as
-definitive criteria for correction (see function documentation).
+The function outputs a message indicating the median CV change and the
+mean absolute CV before and after correction for all samples. However,
+these metrics are experimental and should not be used as definitive
+criteria for correction (see function documentation).
 
 | Method | Function | Details |
 |----|----|----|
@@ -69,7 +69,7 @@ for more information on how to use these functions and plot the results.
 
 ## Batch-effect correction
 
-`MRMhub` provides three batch-correction methods. Batch correction is
+MRMhub provides three batch-correction methods. Batch correction is
 applied after normalization and, where used, drift correction.
 
 - **Median centering**

@@ -45,18 +45,21 @@ detailed instructions on how to use INTEGRATOR.
 
 #### QUANT (Postprocessing and Quality Control)
 
-Install the `mrmhub` package from Github using the following command:
+Read the [Installation
+guide](https://slinghub.github.io/MRMhub/quant/articles/manual-00-installation.html)
+before installing the `mrmhub` package.
 
 ``` r
 
-if (!require("pak")) install.packages("pak")
-pak::pak("SLINGhub/MRMhub")
+# mrmhub from the MRMhub R-universe repository, dependencies from CRAN
+install.packages("mrmhub",
+                 repos = c("https://slinghub.r-universe.dev",
+                           "https://cloud.r-project.org"))
 library(mrmhub)
 ```
 
-`pak` resolves locked packages and parallelises downloads;
-`remotes::install_github("SLINGhub/MRMhub")` is an equivalent fallback.
-For detailed usage instructions and examples, refer to the
+Installation from GitHub with `pak` or `remotes` is described in that
+guide. For detailed usage instructions and examples, refer to the
 [Documentation](https://slinghub.github.io/MRMhub/quant/).
 
 ## Documentation
@@ -101,11 +104,11 @@ contact Jonathan Tan ( <jonathan_tan@nus.edu.sg> ).
 
 ## Next Steps
 
-- [Installation](https://slinghub.github.io/MRMhub/quant/articles/manual-00-installation.html)
-  — requirements and setup
+- [Installation](https://slinghub.github.io/MRMhub/quant/articles/manual-00-installation.html) -
+  requirements and setup
 - [MRMhub
-  overview](https://slinghub.github.io/MRMhub/quant/articles/manual-01-key-concepts.html)
-  — core terminology and the MRMhubExperiment object
-- [Your First
-  Analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.html)
-  — a short end-to-end walkthrough
+  overview](https://slinghub.github.io/MRMhub/quant/articles/manual-01-key-concepts.html) -
+  core terminology and the MRMhubExperiment object
+- [Getting started with
+  MRMhub](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-getting-started-mrmhub.html) -
+  a short end-to-end walkthrough

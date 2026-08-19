@@ -59,9 +59,8 @@
 - [Getting help from an AI
   assistant](https://slinghub.github.io/MRMhub/quant/articles/manual-09-ai-assistants.md):
 
-  How a lab scientist can use Claude, ChatGPT, or a local model to help
-  plan, write, and troubleshoot MRMhub QUANT workflows – accurately, and
-  without exposing study data.
+  How to use Claude, ChatGPT, or a local model to plan, draft, and
+  troubleshoot MRMhub QUANT workflows without exposing study data.
 
 - [Troubleshooting and
   FAQ](https://slinghub.github.io/MRMhub/quant/articles/manual-10-troubleshooting.md):
@@ -78,17 +77,15 @@
 - [Isotopic interference
   correction](https://slinghub.github.io/MRMhub/quant/articles/manual-12-interference-correction.md):
 
-  Reference for MRMhub’s isotopic interference correction: the
-  fragment-based (MRM) and whole-molecule (MS1) derivation levels, the
-  co-elution requirement, and the provenance of the derived contribution
-  factors.
+  Reference for MRMhub’s LICAR-based isotopic interference correction:
+  the mrm_pattern labels, the MRM and MS1 derivation levels, and the
+  co-elution rule.
 
-- [Customising
-  plots](https://slinghub.github.io/MRMhub/quant/articles/manual-13-plot-customization.md):
+- [Function
+  map](https://slinghub.github.io/MRMhub/quant/articles/manual-13-function-map.md):
 
-  How the shared appearance arguments of the MRMhub plotting functions
-  control text size, legend placement, and automatic sizing, so a
-  balanced figure needs little or no manual ggplot2 theming.
+  Every MRMhub function, grouped by pipeline stage and linked to its
+  reference.
 
 - [Glossary](https://slinghub.github.io/MRMhub/quant/articles/manual-14-glossary.md):
 
@@ -101,51 +98,18 @@
 
 - [MRMhub](https://slinghub.github.io/MRMhub/quant/articles/mrmhub.md):
 
-- [Custom QC
-  report](https://slinghub.github.io/MRMhub/quant/articles/recipe-02-custom-qc-report.md):
-
-  Create a detailed HTML QC report from a processed MRMhubExperiment
-  using a parameterized Quarto template.
-
-- [Import and export
-  mzTab-M](https://slinghub.github.io/MRMhub/quant/articles/recipe-03-mztab-export.md):
-
-  Exchange data with the HUPO-PSI mzTab-M standard format: export a
-  processed MRMhubExperiment for sharing or MetaboLights submission, and
-  import results from tools such as Lipid Data Analyzer, MS-DIAL or
-  MZmine.
-
-- [Validating and fixing
-  metadata](https://slinghub.github.io/MRMhub/quant/articles/recipe-04-validate-metadata.md):
-
-  Validate analysis, feature, and ISTD annotations against imported
-  data, diagnose the common defects, and generate a metadata template.
-
-- [Import metadata from files or a
-  template](https://slinghub.github.io/MRMhub/quant/articles/recipe-05-import-metadata.md):
-
-  Attach sample, feature, ISTD and QC metadata to an MRMhubExperiment,
-  file by file, from Excel sheets, from a data.frame, or in one step
-  from an MSOrganiser template.
-
-- [Quick
-  tour](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md):
-
-  A short walkthrough on the bundled demo data: import a result file,
-  normalize by internal standard, inspect the run, and export: no
-  external files needed.
-
 - [Preparing and importing
   data](https://slinghub.github.io/MRMhub/quant/articles/tutorial-01-prep-data.md):
 
   Import analytical data from the supported platforms and bring in the
   sample and feature metadata that the MRMhub workflow depends on.
 
-- [A basic MRMhub
-  workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md):
+- [Getting started with
+  MRMhub](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-getting-started-mrmhub.md):
 
-  A realistic end-to-end workflow, from project setup through drift and
-  batch correction, QC filtering, and export.
+  Create a MRMhubExperiment, import the bundled demo data, then
+  normalize, plot, and export — a first end-to-end MRMhub analysis in a
+  Quarto notebook.
 
 - [Lipidomics data
   processing](https://slinghub.github.io/MRMhub/quant/articles/tutorial-03-lipidomics-workflow.md):
@@ -187,28 +151,21 @@
   for repositories, or a Bioconductor SummarizedExperiment for
   downstream analysis.
 
-- [Export to Bioconductor
-  (SummarizedExperiment)](https://slinghub.github.io/MRMhub/quant/articles/tutorial-08-summarizedexperiment.md):
+- [Correcting isotopic
+  interference](https://slinghub.github.io/MRMhub/quant/articles/tutorial-11-interference-correction.md):
 
-  Export a processed MRMhubExperiment as a Bioconductor
-  SummarizedExperiment, and take it downstream: differential abundance
-  with limma, or lipid-specific analysis with lipidr.
+  Annotate the mrm_pattern, derive the M+2 overlaps, inspect them, and
+  subtract them — the step-by-step isotopic interference-correction
+  workflow.
 
-- [Isotopic interference
-  correction](https://slinghub.github.io/MRMhub/quant/articles/tutorial-11-interference-correction.md):
-
-  Correct fragment-level isotopic (M+2) overlap in class-based targeted
-  MRM assays: annotate mrm_pattern, auto-derive the overlaps, inspect,
-  and subtract.
-
-- [Build a workflow without
-  code](https://slinghub.github.io/MRMhub/quant/articles/tutorial-12-workflow-builder.md):
+- [Using the interactive workflow
+  builder](https://slinghub.github.io/MRMhub/quant/articles/tutorial-12-workflow-builder.md):
 
   Use the point-and-click builder to turn a data file into a runnable
   Quarto workflow.
 
-- [Introduction to R, Quarto, and
-  MRMhub](https://slinghub.github.io/MRMhub/quant/articles/tutorial-13-intro-to-r-quarto-mrmhub.md):
+- [Getting started with R and Quarto
+  notebooks](https://slinghub.github.io/MRMhub/quant/articles/tutorial-13-getting-started-r-quarto.md):
 
-  Install R and an IDE, create a Quarto project, and run a complete
-  MRMhub analysis in it — written for readers new to R and Quarto.
+  Install R and an IDE, create a Quarto project, learn to read and run
+  notebook code, and render a report, for readers new to R and Quarto.

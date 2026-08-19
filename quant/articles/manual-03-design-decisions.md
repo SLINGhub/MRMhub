@@ -2,12 +2,12 @@
 
 Manual
 
-This article documents the main architectural choices behind MRMhub
-QUANT and the reasoning for each. It is written for contributors and for
-users who want to understand how the package is structured before
-extending it. For a task-oriented introduction to running an analysis,
-see [Your first
-analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md).
+The main architectural choices behind MRMhub QUANT, and the reasoning
+for each, are set out below for contributors and for users who want to
+understand how the package is structured before extending it. For a
+task-oriented introduction to running an analysis, see [Getting started
+with
+MRMhub](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-getting-started-mrmhub.md).
 
 ## One S4 object holds data, metadata, and state
 
@@ -33,19 +33,15 @@ annotations being accounted for. And the status flags
 has been applied, which lets later functions detect and refuse
 accidental double-processing.
 
-QUANT does not use `SummarizedExperiment` as its internal
-representation, though it exports to one. SE models a feature × sample
-matrix and offers no typed home for `dataset_orig`, for the processing
-state, or for the annotation tables that are not one row per feature
-(`annot_responsecurves`, `annot_qcconcentrations`,
-`metrics_calibration`); those can only ride along in an untyped
-`metadata()` list. While `colData` can carry `qc_type` and `batch_id`,
-no Bioconductor class models them, nor calibration curves or
-internal-standard relationships. The distinction concerns only the
-internal representation: once an experiment is processed,
-[`save_dataset_summarizedexperiment()`](https://slinghub.github.io/MRMhub/quant/articles/tutorial-08-summarizedexperiment.md)
-hands it to the Bioconductor ecosystem (`limma`, `lipidr`, `POMA`),
-where the several parallel intensity variables map onto parallel assays.
+QUANT does not use `SummarizedExperiment` internally, though it exports
+to one. SE models a feature × sample matrix, with no typed home for
+`dataset_orig`, the processing state, or the non-rectangular annotation
+tables (`annot_responsecurves`, `annot_qcconcentrations`,
+`metrics_calibration`), which can only ride along in an untyped
+`metadata()` list. Once an experiment is processed,
+[`save_dataset_summarizedexperiment()`](https://slinghub.github.io/MRMhub/quant/articles/tutorial-08-export-formats.md)
+hands it to the Bioconductor ecosystem (`limma`, `lipidr`), where the
+parallel intensity variables map onto parallel assays.
 
 ``` r
 
