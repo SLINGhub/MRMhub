@@ -1,24 +1,24 @@
 [
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "MRMhub",
+    "objectID": "news.html",
+    "href": "news.html",
+    "title": "NEWS",
     "section": "",
-    "text": "Reproducible, automated and scalable processing of targeted metabolomics and lipidomics data\n\n\n\n\nMRMhub is an open-source, one-stop framework for reproducible, automated processing of targeted metabolomics and lipidomics data acquired by liquid chromatography–mass spectrometry (LC-MS) in multiple reaction monitoring (MRM) mode. Addressing well-known gaps in the robustness and scalability of existing software, it provides a reproducible, end-to-end workflow — from raw instrument data to quality-controlled quantitative results — at population scale on standard hardware, processing large studies within minutes while recording a full digital footprint of every step for reproducibility and traceability. Its modular functions and defined data structures adapt to diverse study designs and data formats, and support collaboration between analytical and bioinformatics scientists.\n\n\n\n\n\nOpen MRMhub-INTEGRATOR\n\n Peak Integration  INTEGRATOR  \n\nOpen MRMhub-QUANT\n\n   Quantitation Quality Control Reporting  QUANT     Retention time alignment Peak identification / selection Peak border refinement Integration Reporting ISTD normalization Isotopic correction Calibration curves Quantification Drift and batch correction Data integrity Feature annotation Outlier detection Runtime effects Processing efficacy Feature filtering Dataset export QC reporting Process reporting FAIR data sharing\n\n\n\n\nBoth are customizable and can be used together or independently:\n\n\nINTEGRATOR ↗ — a fast, memory-efficient standalone application for consensus-based peak integration of large-scale analyses, with per-feature integration settings. It reads mzML (vendor raw files converted via msconvert) and exports integrated peak areas that feed directly into QUANT or other post-processing tools.\nQUANT ↗ — a programmatic R library (mrmhub) for building tailored, reproducible post-processing and quality-control pipelines. It reads INTEGRATOR results directly, or feature-intensity data from other sources (CSV, mzTab-M, Skyline).\n\n\n\n\n\n\n\nBrowse real analyses ↗ — annotated, end-to-end reports from large-scale studies.\nINTEGRATOR Quick Start ↗ (peak integration) and Getting started with QUANT ↗ (post-processing).\nRun the demo — the bundled demo project with data showcasing both modules.\n\n\n\n Citation: Burla B. et al. (2025). MRMhub: one-stop solution for automated processing of large-scale targeted metabolomics data. bioRxiv. doi:10.64898/2025.12.20.695370  |  Source: github.com/SLINGhub/MRMhub \n\n\n\n\n\n\n\nBrowse source code\nReport a bug\n\n\n\n\n\nAGPLv3 (non-commercial use)\nCommercial licensing — contact Jonathan Tan\n\n\n\n\n\nCiting MRMhub\n\n\n\n\n\n\nBo Burla Author, maintainer\n\n\nGuo Shou Teo Author\n\n\nHyungwon Choi Author"
+    "text": "Highlights of recent updates to the two MRMhub modules. For the full details see the QUANT NEWS and the INTEGRATOR NEWS."
   },
   {
-    "objectID": "index.html#the-mrmhub-modules",
-    "href": "index.html#the-mrmhub-modules",
-    "title": "MRMhub",
-    "section": "",
-    "text": "Both are customizable and can be used together or independently:\n\n\nINTEGRATOR ↗ — a fast, memory-efficient standalone application for consensus-based peak integration of large-scale analyses, with per-feature integration settings. It reads mzML (vendor raw files converted via msconvert) and exports integrated peak areas that feed directly into QUANT or other post-processing tools.\nQUANT ↗ — a programmatic R library (mrmhub) for building tailored, reproducible post-processing and quality-control pipelines. It reads INTEGRATOR results directly, or feature-intensity data from other sources (CSV, mzTab-M, Skyline)."
+    "objectID": "news.html#integrator",
+    "href": "news.html#integrator",
+    "title": "NEWS",
+    "section": "INTEGRATOR",
+    "text": "INTEGRATOR\n\nComplete Rust source code, including the MRMhub-viz viewer app, with build instructions.\nPer-feature baseline determination: the baseline mode (default 5th-percentile, v_drop, or valley-to-valley v2v) can be set globally or overridden individually for each feature.\nInput files referenced by column name, not position: run_order.csv and feature_list.csv are matched on their header names, so columns may appear in any order, improving robustness.\nOptional retention-time crop window: crop_window restricts retention-time alignment and peak integration to a window around the expected retention time, useful for static-MRM acquisitions that record the full retention-time range.\nExplicit transition-to-chromatogram mapping: the optional chromatogram_index column selects which chromatogram ID to use when an mzML file contains multiple identical transitions.\nVersion number embedded in the code and executable, carrying version and publisher metadata so binaries are properly identified, reducing antivirus/SmartScreen warnings."
   },
   {
-    "objectID": "index.html#getting-started",
-    "href": "index.html#getting-started",
-    "title": "MRMhub",
-    "section": "",
-    "text": "Browse real analyses ↗ — annotated, end-to-end reports from large-scale studies.\nINTEGRATOR Quick Start ↗ (peak integration) and Getting started with QUANT ↗ (post-processing).\nRun the demo — the bundled demo project with data showcasing both modules.\n\n\n\n Citation: Burla B. et al. (2025). MRMhub: one-stop solution for automated processing of large-scale targeted metabolomics data. bioRxiv. doi:10.64898/2025.12.20.695370  |  Source: github.com/SLINGhub/MRMhub"
+    "objectID": "news.html#quant-r-package",
+    "href": "news.html#quant-r-package",
+    "title": "NEWS",
+    "section": "QUANT (R package)",
+    "text": "QUANT (R package)\n\nConsiderably enhanced console output and error messages: clearer, more actionable messages, up-front argument validation, and truthful processing summaries make each step easier to follow and debug.\nSubstantially improved data and metadata import: more robust sample and feature ID normalization and matching, deduplication, and stronger schema validation greatly reduce silent input errors.\nConsistent, configurable plotting: shared appearance arguments (font sizes, colours, legend placement and sizing) with a refined house theme, now settable globally via the new mrmhub_set_plot_defaults().\nMS1 and MS2 (MRM) isotope interference correction: a full correction engine for both precursor (MS1) and transition-level (MRM) isotopic interferences, with MRM patterns based on the LICAR method (Gao et al., Anal. Chem., 2021).\nExport to SummarizedExperiment and LipidomicsExperiment: results convert directly to Bioconductor SummarizedExperiment and lipidr LipidomicsExperiment objects for downstream analysis.\nFurther new features: mzTab-M import and export, and a status() dashboard with compact object printing for a quick overview.\nImproved robustness, speed, and stability: better handling of missing values and analytical-sequence gaps, faster QC-metric computation, and many bug fixes based on user feedback.\nFully revised documentation: a rewritten, task-oriented pkgdown site with tutorials, manual, and recipes."
   },
   {
     "objectID": "get-started.html",
@@ -56,24 +56,31 @@
     "text": "Next steps\n\nMRMhub-INTEGRATOR manual ↗ — peak detection, parameters, review, and visualisation.\nMRMhub-QUANT articles ↗ — importers, corrections, quantitation, QC, and reporting.\nExample workflows ↗ — annotated, end-to-end example pipelines."
   },
   {
-    "objectID": "news.html",
-    "href": "news.html",
-    "title": "NEWS",
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "MRMhub",
     "section": "",
-    "text": "Highlights of recent updates to the two MRMhub modules. For the full details see the QUANT NEWS and the INTEGRATOR NEWS."
+    "text": "Reproducible, automated and scalable processing of targeted metabolomics and lipidomics data\n\n\n\n\nMRMhub is an open-source, one-stop framework for reproducible, automated processing of targeted metabolomics and lipidomics data acquired by liquid chromatography–mass spectrometry (LC-MS) in multiple reaction monitoring (MRM) mode. Addressing well-known gaps in the robustness and scalability of existing software, it provides a reproducible, end-to-end workflow, from raw instrument data to quality-controlled quantitative results, at population scale on standard hardware, processing large studies within minutes while recording a full digital footprint of every step for reproducibility and traceability. Its modular functions and defined data structures adapt to diverse study designs and data formats, and support collaboration between analytical and bioinformatics scientists.\n\n\n\n\n\nOpen MRMhub-INTEGRATOR\n\n Peak Integration  INTEGRATOR  \n\nOpen MRMhub-QUANT\n\n   Quantitation Quality Control Reporting  QUANT     Retention time alignment Peak identification / selection Peak border refinement Integration Reporting ISTD normalization Isotopic correction Calibration curves Quantification Drift and batch correction Data integrity Feature annotation Outlier detection Runtime effects Processing efficacy Feature filtering Dataset export QC reporting Process reporting FAIR data sharing\n\n\n\n\nBoth are customizable and can be used together or independently:\n\n\nINTEGRATOR ↗ - a fast, memory-efficient standalone application for consensus-based peak integration of large-scale analyses, with per-feature integration settings. It reads mzML (vendor raw files converted via msconvert) and exports integrated peak areas that feed directly into QUANT or other post-processing tools.\nQUANT ↗ - a programmatic R library (mrmhub) for building tailored, reproducible post-processing and quality-control pipelines. It reads INTEGRATOR results directly, or feature-intensity data from other sources (CSV, mzTab-M, Skyline).\n\n\n\n\n\n\n\nINTEGRATOR - download the macOS or Windows build from Releases ↗, then follow the setup guide ↗ for first-launch security warnings and per-project setup.\nQUANT - install the mrmhub R package from R-universe (requires R ≥ 4.1).\nRead the QUANT installation guide ↗ before installing.\n# mrmhub from the MRMhub R-universe repository, dependencies from CRAN\ninstall.packages(\"mrmhub\",\n                 repos = c(\"https://slinghub.r-universe.dev\",\n                           \"https://cloud.r-project.org\"))\n\n\n\n\n\n\n\nBrowse real analyses ↗ - annotated, end-to-end reports from large-scale studies.\nINTEGRATOR Quick Start ↗ (peak integration) and Getting started with QUANT ↗ (post-processing).\nRun the demo - the bundled demo project with data showcasing both modules.\n\n\n\n Citation: Burla B. et al. (2025). MRMhub: one-stop solution for automated processing of large-scale targeted metabolomics data. bioRxiv. doi:10.64898/2025.12.20.695370  |  Source: github.com/SLINGhub/MRMhub \n\n\n\n\n\n\n\nBrowse source code\nReport a bug\n\n\n\n\n\nAGPLv3 (non-commercial use)\nCommercial licensing - contact Jonathan Tan\n\n\n\n\n\nCiting MRMhub\n\n\n\n\n\n\nBo Burla Author, maintainer\n\n\nGuo Shou Teo Author\n\n\nHyungwon Choi Author"
   },
   {
-    "objectID": "news.html#integrator",
-    "href": "news.html#integrator",
-    "title": "NEWS",
-    "section": "INTEGRATOR",
-    "text": "INTEGRATOR\n\nComplete Rust source code, including the MRMhub-viz viewer app, with build instructions.\nPer-feature baseline determination: the baseline mode (default 5th-percentile, v_drop, or valley-to-valley v2v) can be set globally or overridden individually for each feature.\nInput files referenced by column name, not position: run_order.csv and feature_list.csv are matched on their header names, so columns may appear in any order, improving robustness.\nOptional retention-time crop window: crop_window restricts retention-time alignment and peak integration to a window around the expected retention time, useful for static-MRM acquisitions that record the full retention-time range.\nExplicit transition-to-chromatogram mapping: the optional chromatogram_index column selects which chromatogram ID to use when an mzML file contains multiple identical transitions.\nVersion number embedded in the code and executable, carrying version and publisher metadata so binaries are properly identified, reducing antivirus/SmartScreen warnings."
+    "objectID": "index.html#the-mrmhub-modules",
+    "href": "index.html#the-mrmhub-modules",
+    "title": "MRMhub",
+    "section": "",
+    "text": "Both are customizable and can be used together or independently:\n\n\nINTEGRATOR ↗ - a fast, memory-efficient standalone application for consensus-based peak integration of large-scale analyses, with per-feature integration settings. It reads mzML (vendor raw files converted via msconvert) and exports integrated peak areas that feed directly into QUANT or other post-processing tools.\nQUANT ↗ - a programmatic R library (mrmhub) for building tailored, reproducible post-processing and quality-control pipelines. It reads INTEGRATOR results directly, or feature-intensity data from other sources (CSV, mzTab-M, Skyline)."
   },
   {
-    "objectID": "news.html#quant-r-package",
-    "href": "news.html#quant-r-package",
-    "title": "NEWS",
-    "section": "QUANT (R package)",
-    "text": "QUANT (R package)\n\nConsiderably enhanced console output and error messages: clearer, more actionable messages, up-front argument validation, and truthful processing summaries make each step easier to follow and debug.\nSubstantially improved data and metadata import: more robust sample and feature ID normalization and matching, deduplication, and stronger schema validation greatly reduce silent input errors.\nConsistent, configurable plotting: shared appearance arguments (font sizes, colours, legend placement and sizing) with a refined house theme, now settable globally via the new mrmhub_set_plot_defaults().\nMS1 and MS2 (MRM) isotope interference correction: a full correction engine for both precursor (MS1) and transition-level (MRM) isotopic interferences, with MRM patterns based on the LICAR method (Gao et al., Anal. Chem., 2021).\nExport to SummarizedExperiment and LipidomicsExperiment: results convert directly to Bioconductor SummarizedExperiment and lipidr LipidomicsExperiment objects for downstream analysis.\nFurther new features: mzTab-M import and export, and a status() dashboard with compact object printing for a quick overview.\nImproved robustness, speed, and stability: better handling of missing values and analytical-sequence gaps, faster QC-metric computation, and many bug fixes based on user feedback.\nFully revised documentation: a rewritten, task-oriented pkgdown site with tutorials, manual, and recipes."
+    "objectID": "index.html#installation",
+    "href": "index.html#installation",
+    "title": "MRMhub",
+    "section": "",
+    "text": "INTEGRATOR - download the macOS or Windows build from Releases ↗, then follow the setup guide ↗ for first-launch security warnings and per-project setup.\nQUANT - install the mrmhub R package from R-universe (requires R ≥ 4.1).\nRead the QUANT installation guide ↗ before installing.\n# mrmhub from the MRMhub R-universe repository, dependencies from CRAN\ninstall.packages(\"mrmhub\",\n                 repos = c(\"https://slinghub.r-universe.dev\",\n                           \"https://cloud.r-project.org\"))"
+  },
+  {
+    "objectID": "index.html#getting-started",
+    "href": "index.html#getting-started",
+    "title": "MRMhub",
+    "section": "",
+    "text": "Browse real analyses ↗ - annotated, end-to-end reports from large-scale studies.\nINTEGRATOR Quick Start ↗ (peak integration) and Getting started with QUANT ↗ (post-processing).\nRun the demo - the bundled demo project with data showcasing both modules.\n\n\n\n Citation: Burla B. et al. (2025). MRMhub: one-stop solution for automated processing of large-scale targeted metabolomics data. bioRxiv. doi:10.64898/2025.12.20.695370  |  Source: github.com/SLINGhub/MRMhub"
   }
 ]
