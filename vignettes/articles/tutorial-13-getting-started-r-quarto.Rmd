@@ -2,7 +2,7 @@
 title: "Getting started with R and Quarto notebooks"
 description: >
   Install R and an IDE, create a Quarto project, learn to read and run notebook
-  code, and render a report — for readers new to R and Quarto.
+  code, and render a report, for readers new to R and Quarto.
 output:
   rmarkdown::html_vignette:
     fig_width: 7
@@ -32,7 +32,7 @@ here.
 ## 1. Install R and an editor
 
 Two pieces of software are needed. **R** is the language the analysis runs in; an **integrated
-development environment** (IDE) is the editor you write and run it in. Install R first — the IDE
+development environment** (IDE) is the editor you write and run it in. Install R first, as the IDE
 looks for it on startup.
 
 - Install R from [CRAN](https://cran.r-project.org/) (version 4.1 or newer). Pick the download for
@@ -47,13 +47,13 @@ Both are installed once per machine and shared by every project you create after
 
 When RStudio opens it shows four panes, each used at some point in an analysis:
 
-- **Source** (top-left) — where you edit the notebook and run its code. Its toolbar carries the
+- **Source** (top-left) - where you edit the notebook and run its code. Its toolbar carries the
   **Render** button, and each code chunk gets a green ▶ arrow that runs it.
-- **Console** (bottom-left) — runs a single line of R immediately, without saving it in the
+- **Console** (bottom-left) - runs a single line of R immediately, without saving it in the
   notebook. This is where software is installed and where MRMhub's step messages appear.
-- **Environment** (top-right) — lists the objects that currently exist in the session, such as the
+- **Environment** (top-right) - lists the objects that currently exist in the session, such as the
   `mexp` data object once the notebook has created it.
-- **Files / Plots / Help** (bottom-right) — browses the project folder, shows figures, and displays
+- **Files / Plots / Help** (bottom-right) - browses the project folder, shows figures, and displays
   function help pages.
 
 <div style="text-align: center; margin: 2em 0;">
@@ -62,7 +62,7 @@ When RStudio opens it shows four panes, each used at some point in an analysis:
   <circle cx="30" cy="29" r="5" fill="#dee2e6"/>
   <circle cx="48" cy="29" r="5" fill="#dee2e6"/>
   <circle cx="66" cy="29" r="5" fill="#dee2e6"/>
-  <text x="320" y="34" text-anchor="middle" font-weight="700" font-size="15" fill="#2C3E50">my_study — RStudio</text>
+  <text x="320" y="34" text-anchor="middle" font-weight="700" font-size="15" fill="#2C3E50">my_study - RStudio</text>
   <line x1="8" y1="46" x2="632" y2="46" stroke="#dee2e6"/>
   <rect x="20" y="58" width="290" height="190" rx="6" fill="#d6e4eb" stroke="#5B8FA8"/>
   <rect x="20" y="58" width="290" height="24" rx="6" fill="#ffffff" fill-opacity="0.55"/>
@@ -123,26 +123,25 @@ configuring.
 ## 3. Install MRMhub
 
 With R and RStudio installed, open RStudio and install MRMhub from the Console (the bottom-left
-pane). The first line installs `pak`, a package installer; the second uses it to fetch MRMhub and its
-dependencies:
+pane). The command fetches MRMhub from its R-universe repository, and its dependencies from CRAN:
 
 ```{r install, eval = FALSE}
-if (!require("pak")) install.packages("pak")
-pak::pak("SLINGhub/MRMhub")
+install.packages("mrmhub",
+                 repos = c("https://slinghub.r-universe.dev",
+                           "https://cloud.r-project.org"))
 ```
 
-Installing is a once-per-machine step, and running the same two lines again later updates MRMhub
-to the current version. Making its functions available is a separate, per-session step —
-`library(mrmhub)` — which belongs in the notebook rather than the Console, so that every render
+Installing is a once-per-machine step, and running the same command again later updates MRMhub
+to the current version. Making its functions available is a separate, per-session step,
+`library(mrmhub)`, which belongs in the notebook rather than the Console, so that every render
 loads the package itself.
 
 If the installation reports an error, the [Installation guide](manual-00-installation.html) lists the
-common causes (a missing compiler on Windows or macOS, a firewall blocking the download) and their
-fixes.
+common causes (a firewall blocking the download, for example) and their fixes.
 
 ## 4. Create a Quarto project
 
-A **project** keeps everything for one analysis — data, code, and results — in a single folder that
+A **project** keeps the data, code, and results for one analysis in a single folder that
 the IDE treats as a unit. In RStudio, choose *File → New Project → New Directory → Quarto Project*,
 give it a name, and create it. Quarto itself ships with RStudio, so nothing further needs
 installing; if the *Quarto Project* entry is missing, update RStudio or install Quarto from
@@ -150,11 +149,11 @@ installing; if the *Quarto Project* entry is missing, update RStudio or install 
 [project documentation](https://quarto.org/docs/tools/rstudio/) covers the dialog in detail.
 
 The dialog creates the folder, a first `.qmd` document, and an `.Rproj` file. That `.Rproj` file is
-how the project is reopened later — by double-clicking it, or through the project menu at the
+how the project is reopened later, by double-clicking it or through the project menu at the
 top-right of the RStudio window. Opening the project, rather than the `.qmd` on its own, is what
 points R at the right folder.
 
-Inside the new project, add two folders to keep raw inputs separate from generated results — the
+Inside the new project, add two folders to keep raw inputs separate from generated results, the
 convention MRMhub's own workflows follow:
 
 ```
@@ -174,12 +173,12 @@ the whole folder can be zipped and shared as a self-contained unit.
 
 A `.qmd` file is plain text with three kinds of content: a header, prose, and code chunks.
 
-At the top, a short **header** fenced by `---` sets the title and the output format — `html`, `pdf`,
+At the top, a short **header** fenced by `---` sets the title and the output format - `html`, `pdf`,
 or `docx`. A new project starts with a sensible HTML header, and
 [Quarto workflows](manual-11-quarto-workflows.html) covers the options that matter for a MRMhub
 report.
 
-Below the header, **prose** is written in Markdown — plain paragraphs, with `#` for headings,
+Below the header, **prose** is written in Markdown - plain paragraphs, with `#` for headings,
 `**bold**`, and `-` for lists. Quarto's
 [Markdown basics](https://quarto.org/docs/authoring/markdown-basics.html) is the full reference for
 tables, figures, cross-references, and citations.
@@ -217,15 +216,15 @@ The options a processing notebook needs are few:
 | <code>#&#124; label:</code> | A unique name for the chunk; also names any figure it produces. |
 | <code>#&#124; eval:</code> | Whether the code runs. `false` shows the code without executing it. |
 | <code>#&#124; echo:</code> | Whether the code itself appears in the report. |
-| <code>#&#124; output:</code> | Whether the results appear — printed values, tables, figures. |
+| <code>#&#124; output:</code> | Whether the results appear - printed values, tables, figures. |
 | <code>#&#124; message:</code> | Whether messages appear. MRMhub's step feedback travels here. |
 | <code>#&#124; warning:</code> | Whether warnings appear. |
-| <code>#&#124; include:</code> | `false` runs the chunk but hides both code and output — used for setup chunks. |
+| <code>#&#124; include:</code> | `false` runs the chunk but hides both code and output, used for setup chunks. |
 | <code>#&#124; cache:</code> | Stores the result, so an unchanged chunk is not re-run on the next render. |
 | <code>#&#124; fig-width:</code>, <code>#&#124; fig-height:</code> | Size, in inches, of the figures the chunk produces. |
 
-MRMhub reports what each processing step did as a console message — a count, and a truncated list
-of the features or analyses affected — so keeping `#| message: true` on the chunks that run a step
+MRMhub reports what each processing step did as a console message, a count and a truncated list
+of the features or analyses affected, so keeping `#| message: true` on the chunks that run a step
 turns the rendered report into a record of the processing. Defaults for the whole document are set
 in the header instead of chunk by chunk:
 
@@ -254,8 +253,8 @@ with the cursor inside it. Because each chunk builds on the objects the earlier 
 the project, when the session starts with an empty Environment.
 
 **Rendering** turns the whole document into a finished report: click **Render** (Ctrl/Cmd + Shift +
-K), and Quarto runs every chunk in order and assembles the output — `analysis.html` alongside the
-document — which opens in the Preview pane and refreshes on each render.
+K), and Quarto runs every chunk in order and assembles the output, `analysis.html` alongside the
+document, which opens in the Preview pane and refreshes on each render.
 
 Rendering runs in a **fresh R session**, top to bottom, so the report is built from what the
 document itself contains and nothing else. A chunk that works interactively because a needed object
@@ -287,7 +286,7 @@ throughout. Recognising them is enough to follow along:
 - **The pipe** (`|>`) passes a result straight into the next function, so
   `plot_pca(mexp) |> save_plot("pca.pdf")` plots and then saves in one line, with no temporary name.
 
-Each processing step follows the same shape — take the data object, return an updated one, and store
+Each processing step follows the same shape - take the data object, return an updated one, and store
 it back under the same name: `mexp <- normalize_by_istd(mexp)`. The functions do not modify the
 object in place, so the assignment is what carries the result forward; running
 `normalize_by_istd(mexp)` on its own leaves `mexp` as it was. All the documentation names the object

@@ -1,7 +1,7 @@
 # MRMhub <a href="https://slinghub.github.io/MRMhub/"><img src="man/figures/logo.png" alt="MRMhub logo" align="right" height="139"/></a>
 
 <!-- badges: start -->
-[![Version](https://img.shields.io/badge/version-0.9.9-blue.svg)](https://github.com/SLINGhub/MRMhub/releases) [![License: AGPL v3](https://img.shields.io/badge/License-AGPLv3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0) [![bioRxiv](https://img.shields.io/badge/bioRxiv-preprint-b31b1b.svg)](https://doi.org/10.64898/2025.12.20.695370) [![R-CMD-check](https://github.com/SLINGhub/MRMhub/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/SLINGhub/MRMhub/actions/workflows/R-CMD-check.yml) [![Codecov test coverage](https://codecov.io/gh/SLINGhub/MRMhub/graph/badge.svg)](https://app.codecov.io/gh/SLINGhub/MRMhub)
+[![Version](https://img.shields.io/badge/version-0.9.9-blue.svg)](https://github.com/SLINGhub/MRMhub/releases) [![R-universe version](https://slinghub.r-universe.dev/mrmhub/badges/version)](https://slinghub.r-universe.dev/mrmhub) [![License: AGPL v3](https://img.shields.io/badge/License-AGPLv3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0) [![bioRxiv](https://img.shields.io/badge/bioRxiv-preprint-b31b1b.svg)](https://doi.org/10.64898/2025.12.20.695370) [![R-CMD-check](https://github.com/SLINGhub/MRMhub/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/SLINGhub/MRMhub/actions/workflows/R-CMD-check.yml) [![Codecov test coverage](https://codecov.io/gh/SLINGhub/MRMhub/graph/badge.svg)](https://app.codecov.io/gh/SLINGhub/MRMhub)
 <!-- badges: end -->
 
 [**MRMhub**](https://slinghub.github.io/MRMhub/) is an open-source, one-stop framework for reproducible, automated processing of targeted metabolomics and lipidomics data acquired by liquid chromatography–mass spectrometry (LC–MS) in Multiple Reaction Monitoring (MRM) mode. Addressing well-known gaps in the robustness and scalability of existing software, it takes an experiment from raw instrument data to quality-controlled quantitative results, processing population-scale studies within minutes on standard hardware while recording a full digital footprint of every step for reproducibility and traceability. Built for both analytical and bioinformatics scientists, MRMhub provides modular functions and defined data structures that adapt to diverse study designs and data formats, supporting customizable, fully documented end-to-end workflows across two complementary modules:
@@ -18,11 +18,15 @@
 ## Installation
 
 - **INTEGRATOR:** download the macOS or Windows build from [Releases](https://github.com/SLINGhub/MRMhub/releases), but read the [INTEGRATOR installation guide](https://slinghub.github.io/MRMhub/integrator/setup.html) first (for first-launch security warnings and project setup).
-- **QUANT:** install from [GitHub](https://github.com/SLINGhub/MRMhub) in a fresh RStudio/Positron session (requires R ≥ 4.1). Please read the [QUANT installation guide](https://slinghub.github.io/MRMhub/quant/articles/manual-00-installation.html) first for full instructions and troubleshooting.
+- **QUANT:** install the `mrmhub` R package from [R-universe](https://slinghub.r-universe.dev/mrmhub) in a fresh RStudio/Positron session (requires R ≥ 4.1).
+
+  Read the [QUANT installation guide](https://slinghub.github.io/MRMhub/quant/articles/manual-00-installation.html) before installing.
 
   ```r
-  if (!require("pak")) install.packages("pak")
-  pak::pak("SLINGhub/MRMhub")
+  # mrmhub from the MRMhub R-universe repository, dependencies from CRAN
+  install.packages("mrmhub",
+                   repos = c("https://slinghub.r-universe.dev",
+                             "https://cloud.r-project.org"))
   library(mrmhub)
   ```
 
