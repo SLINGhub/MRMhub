@@ -534,7 +534,7 @@ plot_abundanceprofile <- function(
 
   # --- 6. Optional Density Strip ---
   if (density_strip) {
-    check_installed("patchwork")
+    check_pkg_installed("patchwork")
 
     x_for_density <- if (log_scale) {
       log10(d_features$abundance_mean)

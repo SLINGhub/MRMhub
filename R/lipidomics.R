@@ -70,7 +70,7 @@ parse_lipid_feature_names <- function(
   add_transition_names = FALSE,
   add_chain_composition = TRUE
 ) {
-  check_installed("rgoslin")
+  check_pkg_installed("rgoslin")
   use_as_feature_class_s <- rlang::sym(use_as_feature_class)
 
   # Nothing to parse for an empty table. `rgoslin::parseLipidNames()` returns a

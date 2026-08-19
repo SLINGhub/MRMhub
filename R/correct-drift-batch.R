@@ -1580,7 +1580,7 @@ correct_drift_gam <- function(
   show_progress = TRUE
 ) {
   # {ggpmisc} neeeded for plots
-  check_installed("mgcv")
+  check_pkg_installed("mgcv")
 
   check_data(data)
 

@@ -379,7 +379,7 @@ licar_fragment_formula <- function(c_raw, h_raw, offset) {
 #' @keywords internal
 #' @noRd
 licar_mCalc <- function(formula, n = 2L) {
-  rlang::check_installed("enviPat")
+  check_pkg_installed("enviPat")
   if (is.null(pkg.env$licar_resolution)) {
     e <- new.env()
     utils::data("resolution_list", package = "enviPat", envir = e)

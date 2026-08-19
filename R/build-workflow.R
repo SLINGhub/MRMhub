@@ -1046,10 +1046,9 @@ qmd_export_section <- function(spec) {
 #'   build_workflow()
 #' }
 build_workflow <- function() {
-  # shiny + bslib are Suggests (not pulled in when mrmhub is installed). On an
-  # interactive first run this prompts the user and installs any that are
-  # missing; non-interactively it errors with an install hint.
-  rlang::check_installed(
+  # shiny + bslib are Suggests (not pulled in when mrmhub is installed), so
+  # error with an install hint when they are missing.
+  check_pkg_installed(
     c("shiny", "bslib"),
     reason = "to run the MRMhub workflow builder."
   )

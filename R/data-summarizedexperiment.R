@@ -96,7 +96,7 @@ save_dataset_summarizedexperiment <- function(
 ) {
   check_data(data)
   as <- rlang::arg_match(as)
-  check_installed(
+  check_pkg_installed(
     "SummarizedExperiment",
     reason = "to export an experiment as a SummarizedExperiment."
   )
@@ -238,7 +238,7 @@ save_dataset_summarizedexperiment <- function(
 # validity check, so an object missing them constructs cleanly and then
 # misbehaves. Everything needed is already in the MRMhubExperiment.
 .se_as_lipidomics_experiment <- function(se) {
-  check_installed(
+  check_pkg_installed(
     "lipidr",
     reason = "to export an experiment as a LipidomicsExperiment."
   )

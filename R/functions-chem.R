@@ -34,7 +34,7 @@ calc_average_molweight <- function(formula) {
       "No chemical formula provided. Please provide on or more valid chemical formula."
     )
 
-  rlang::check_installed("enviPat")
+  check_pkg_installed("enviPat")
   # isotopes was obtained via data(isotopes, package = "enviPat") and saved as internal dataset
   formula_checked <- enviPat::check_chemform(
     isotopes = isotopes,
@@ -84,7 +84,7 @@ calc_average_molweight <- function(formula) {
 #' @keywords internal
 #' @noRd
 mN_rel_abundance <- function(formula, n = 2L) {
-  rlang::check_installed("enviPat")
+  check_pkg_installed("enviPat")
   out <- rep(NA_real_, length(formula))
   ok <- !is.na(formula) & nzchar(formula)
   if (!any(ok)) {
