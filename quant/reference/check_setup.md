@@ -53,13 +53,10 @@ check_setup()
 #> ✔ rmarkdown (2.31)
 #> ✔ testthat (3.3.2)
 #> ✔ patchwork (1.3.2)
-#> ✔ ggvenn (0.1.19)
-#> ✔ ggbeeswarm (0.7.3)
 #> ✔ ggrepel (0.9.8)
 #> ✔ rgoslin (1.16.0)
 #> ✔ lancer (0.1.1)
 #> ✔ enviPat (2.8)
-#> Warning: replacing previous import ‘S4Arrays::makeNindexFromArrayViewport’ by ‘DelayedArray::makeNindexFromArrayViewport’ when loading ‘SummarizedExperiment’
 #> ✔ SummarizedExperiment (1.42.0)
 #> ✔ lipidr (2.26.0)
 #> 

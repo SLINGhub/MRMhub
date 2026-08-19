@@ -5,8 +5,9 @@ Manual
 MRMhub provides plotting functions covering every stage of the workflow.
 All functions return `ggplot2` objects (or, for paged outputs, a list of
 `ggplot2` objects), so the standard ggplot2 grammar can be used to
-further customise titles, themes, scales, and facets. The functions
-below are grouped by the workflow stage at which they are most useful.
+further customise titles, themes, scales, and facets. This reference
+groups the functions by the workflow stage at which they are most
+useful.
 
 ### Setup
 
@@ -296,176 +297,8 @@ through shared arguments (`font_base_size`, `legend_position`,
 `legend_size`, and, on the core QC plots, `strip_text_size`,
 `show_legend_title`, `legend_bg_alpha`); paged and faceted plots size
 their text and points automatically from `cols_page`. See [Customising
-plots](#customising-plots) for the full argument reference.
-
-### Customising plots
-
-Every `plot_*()` function returns a `ggplot2` object built from a shared
-house theme (faint grey gridlines, a thin panel border, dark-navy facet
-strips). A small set of arguments exposes the common appearance choices,
-so a balanced figure usually comes from the plotting call alone, without
-a trailing `+ theme(...)`.
-
-#### The shared arguments
-
-Every plotting function accepts the three common arguments. The
-higher-use QC plots
-([`plot_pca()`](https://slinghub.github.io/MRMhub/quant/reference/plot_pca.md),
-[`plot_pca_loading()`](https://slinghub.github.io/MRMhub/quant/reference/plot_pca_loading.md),
-[`plot_runscatter()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.md),
-[`plot_rla_boxplot()`](https://slinghub.github.io/MRMhub/quant/reference/plot_rla_boxplot.md),
-[`plot_normalization_qc()`](https://slinghub.github.io/MRMhub/quant/reference/plot_normalization_qc.md)
-and
-[`plot_qcmetrics_comparison()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qcmetrics_comparison.md))
-accept further arguments for finer legend and facet control.
-
-| Argument | Applies to | Effect |
-|----|----|----|
-| `font_base_size` | all plots | Base font size in points; all plot text scales proportionally |
-| `legend_position` | all plots | Legend placement (keyword, corner, or coordinate) |
-| `legend_size` | all plots | Scales the whole legend: text, title, key and plotted symbols |
-| `show_legend_title` | all plots | `FALSE` hides the legend title |
-| `title` | all plots | A string sets the plot title; `NULL`/`NA` show none |
-| `strip_text_size` | faceted plots | Facet strip label size |
-| `strip_bg_color` | faceted plots | Facet strip background fill (strip text auto-contrasts light/dark) |
-| `legend_bg_alpha` | core QC plots | Opacity of a white background box behind an inside legend |
-| `aspect_ratio` | [`plot_pca()`](https://slinghub.github.io/MRMhub/quant/reference/plot_pca.md) | Panel aspect ratio; default `1` (square score plot) |
-
-Arguments left at their default (`NULL`, or the per-function default)
-leave that aspect of the plot at the house setting. Setting one
-overrides only that property.
-
-#### Setting defaults for a whole notebook
-
-The same appearance choices can be made once, for every subsequent plot,
-with
-[`mrmhub_set_plot_defaults()`](https://slinghub.github.io/MRMhub/quant/reference/mrmhub_set_plot_defaults.md),
-convenient when a document targets a particular medium (a smaller base
-font and point size for a dense multi-panel report, say) and the choice
-should apply throughout without repeating it on each call.
-
-``` r
-
-mrmhub_set_plot_defaults(font_base_size = 8, point_size = 0.8)
-```
-
-The resolution order for every argument is: a value passed explicitly to
-a plotting function wins, then the global default set here, then the
-function’s built-in default (including the automatic `cols_page` sizing
-on faceted plots). A one-off call therefore still overrides the global
-setting:
-
-``` r
-
-# uses the global font_base_size = 8 set above
-plot_pca(mexp, variable = "norm_intensity")
-
-# this single plot overrides it
-plot_pca(mexp, variable = "norm_intensity", font_base_size = 11)
-```
-
-[`mrmhub_get_plot_defaults()`](https://slinghub.github.io/MRMhub/quant/reference/mrmhub_get_plot_defaults.md)
-reports the active settings and
-[`mrmhub_reset_plot_defaults()`](https://slinghub.github.io/MRMhub/quant/reference/mrmhub_reset_plot_defaults.md)
-clears them. The defaults are ordinary R options
-(`mrmhub.font_base_size` and so on), so they can also be scoped to a
-single section with
-[`withr::local_options()`](https://withr.r-lib.org/reference/with_options.html)
-rather than set for the whole session. The arguments that can be set
-globally are `font_base_size`, `point_size`, `legend_position`,
-`legend_size`, `show_legend_title`, `strip_bg_color`, and the `units`
-and `dpi` used by
-[`save_plot()`](https://slinghub.github.io/MRMhub/quant/reference/save_plot.md)
-(see [Setting the unit and resolution
-once](#setting-the-unit-and-resolution-once)). Figure width and height
-are deliberately not settable globally: the physical size of a saved
-figure should be readable from the call that writes it.
-
-#### Placing the legend
-
-`legend_position` accepts the standard ggplot2 keywords, four corner
-shortcuts for a legend drawn inside the panel, or a raw coordinate.
-
-| Value | Result |
-|----|----|
-| `"right"`, `"left"`, `"top"`, `"bottom"` | Legend outside the panel on that side |
-| `"none"` | No legend |
-| `"inside-tr"`, `"inside-tl"`, `"inside-br"`, `"inside-bl"` | Inside the panel, anchored to that corner |
-| `c(x, y)` | Inside the panel at that coordinate (`0`–`1`) |
-
-All plots default to `"right"`. For a legend drawn inside the panel over
-the points, a translucent background box (`legend_bg_alpha`) keeps it
-readable:
-
-``` r
-
-plot_normalization_qc(mexp,
-  before_norm_var = "intensity",
-  after_norm_var  = "norm_intensity",
-  plot_type       = "diff",
-  legend_position = "inside-br",
-  legend_bg_alpha = 0.6)
-```
-
-#### Sizing text and symbols
-
-`font_base_size` is the single text knob: increasing it scales axis
-text, titles, strip labels and the legend together. `legend_size` scales
-the legend independently: its text, title, key box, and the plotted
-symbol (the glyph in the key, which a plain `legend.key.size` does not
-resize). A value of `3` or less is read as a multiplier of
-`font_base_size`; a larger value is an absolute point size.
-`strip_text_size` follows the same convention for facet labels.
-
-``` r
-
-plot_rt_vs_chain(mexp,
-  font_base_size  = 6,
-  legend_position = "right",
-  legend_size     = 0.8)     # legend text and glyphs at 6 * 0.8 pt
-```
-
-#### Automatic sizing on paged and faceted plots
-
-Plots that lay panels out in a grid
-([`plot_runscatter()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.md),
-[`plot_responsecurves()`](https://slinghub.github.io/MRMhub/quant/reference/plot_responsecurves.md),
-[`plot_qcmetrics_comparison()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qcmetrics_comparison.md),
-[`plot_normalization_qc()`](https://slinghub.github.io/MRMhub/quant/reference/plot_normalization_qc.md)
-and
-[`plot_rt_vs_chain()`](https://slinghub.github.io/MRMhub/quant/reference/plot_rt_vs_chain.md))
-size their text and points from the number of facet columns, since
-column count is the main driver of panel size. With `autoscale = TRUE`
-(the default), `font_base_size` and `point_size` left unset are filled
-from `cols_page`:
-
-| `cols_page` | `font_base_size` | `point_size` |
-|-------------|------------------|--------------|
-| 1–2         | 9                | 1.0          |
-| 3           | 7                | 0.7          |
-| 4–5         | 6                | 0.5          |
-| 6 or more   | 5                | 0.4          |
-
-A value passed explicitly always wins, so autoscaling only fills what is
-left unset:
-
-``` r
-
-# 3-column page: text and points sized automatically
-plot_runscatter(mexp, variable = "norm_intensity", cols_page = 3)
-
-# keep the automatic font, but set the point size by hand
-plot_runscatter(mexp, variable = "norm_intensity", cols_page = 3,
-                point_size = 1.2)
-```
-
-Setting `autoscale = FALSE` ignores the grid and uses the single-plot
-defaults (`font_base_size = 11`, `point_size = 1.5`) for anything left
-unset. Single-panel plots such as
-[`plot_pca()`](https://slinghub.github.io/MRMhub/quant/reference/plot_pca.md)
-and
-[`plot_matrixeffects()`](https://slinghub.github.io/MRMhub/quant/reference/plot_matrixeffects.md)
-use `font_base_size = 11` by default.
+plots](https://slinghub.github.io/MRMhub/quant/articles/manual-13-plot-customization.md)
+for the full argument reference.
 
 ### ggplot2 layering
 
@@ -647,3 +480,6 @@ p_seq / (p_pca | p_rla)
 - [External calibration &
   QC](https://slinghub.github.io/MRMhub/quant/articles/tutorial-06-external-calibration.md):
   calibration plots in workflow
+- [Custom QC report
+  (recipe)](https://slinghub.github.io/MRMhub/quant/articles/recipe-02-custom-qc-report.md):
+  combine plots in a report

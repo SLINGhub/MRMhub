@@ -1,7 +1,7 @@
 # Drift and batch correction
 
-Tutorial Prerequisites: [Full
-workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-03-lipidomics-workflow.md)
+Tutorial Intermediate Prerequisites: [Basic
+workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md)
 
 Signal intensities in a mass-spectrometry run drift with injection order
 and shift between analytical batches. MRMhub corrects run-order drift by
@@ -23,9 +23,9 @@ for the expected format.
 
 library(mrmhub)
 
-mexp <- MRMhubExperiment()
-mexp <- import_data_csv_wide(
-  mexp,
+myexp <- MRMhubExperiment()
+myexp <- import_data_csv_wide(
+  myexp,
   path = "smooth-testdata.csv",
   variable_name = "conc",
   import_metadata = TRUE
@@ -41,7 +41,7 @@ whether the correction improved analytical precision.
 ``` r
 
 mexp_drift <- correct_drift_cubicspline(
-  mexp,
+  myexp,
   variable = "conc",
   batch_wise = FALSE,
   ref_qc_types = "BQC",
@@ -102,7 +102,7 @@ result above is modest.
 ``` r
 
 mexp_drift <- correct_drift_gaussiankernel(
-  mexp,
+  myexp,
   variable = "conc",
   batch_wise = FALSE,
   ref_qc_types = "SPL",
@@ -135,7 +135,7 @@ drift, fit the trend within each batch by setting `batch_wise = TRUE`.
 ``` r
 
 mexp_drift <- correct_drift_gaussiankernel(
-  mexp,
+  myexp,
   variable = "conc",
   batch_wise = TRUE,
   ref_qc_types = "SPL",
@@ -200,9 +200,9 @@ Each batch is centered on a reference QC type, here the study samples
 
 ``` r
 
-mexp_batch <- MRMhubExperiment()
-mexp_batch <- import_data_csv_wide(
-  mexp_batch,
+myexp_batch <- MRMhubExperiment()
+myexp_batch <- import_data_csv_wide(
+  myexp_batch,
   path = "simdata-u1000-sd100_7batches.csv",
   variable_name = "conc",
   import_metadata = TRUE
@@ -211,8 +211,8 @@ mexp_batch <- import_data_csv_wide(
 
 ``` r
 
-mexp_batch <- correct_batch_centering(
-  mexp_batch,
+myexp_batch <- correct_batch_centering(
+  myexp_batch,
   variable = "conc",
   ref_qc_types = "SPL",
   correct_scale = FALSE
@@ -228,7 +228,7 @@ mexp_batch <- correct_batch_centering(
 ``` r
 
 plot_runscatter(
-  mexp_batch,
+  myexp_batch,
   variable = "conc_before",
   rows_page = 1, cols_page = 1
 )
@@ -243,7 +243,7 @@ offset from one another.
 ``` r
 
 plot_runscatter(
-  mexp_batch,
+  myexp_batch,
   variable = "conc",
   rows_page = 1, cols_page = 1
 )
@@ -261,15 +261,15 @@ batches.
 
 ``` r
 
-mexp_batch <- correct_batch_centering(
-  mexp_batch,
+myexp_batch <- correct_batch_centering(
+  myexp_batch,
   variable = "conc",
   ref_qc_types = "SPL",
   correct_scale = TRUE
 )
 
 plot_runscatter(
-  mexp_batch,
+  myexp_batch,
   variable = "conc",
   rows_page = 1, cols_page = 1
 )
@@ -286,31 +286,32 @@ both location and spread are consistent across batches.
 Besides median centering, two model-based methods are available. Both
 are experimental and require an optional package.
 
-**ComBat** (Johnson et al. 2007) applies an empirical-Bayes location and
-scale adjustment, shrinking the batch estimates across features
-(requires the `sva` package). Unlike centering and SERRF, it estimates
-batch effects from all samples; pass `covariates` to protect biology on
-unbalanced designs.
+**ComBat** \[@johnson2007AdjustingBatchEffects\] applies an
+empirical-Bayes location and scale adjustment, shrinking the batch
+estimates across features (requires the `sva` package). Unlike centering
+and SERRF, it estimates batch effects from all samples; pass
+`covariates` to protect biology on unbalanced designs.
 
 ``` r
 
-mexp_batch <- correct_batch_combat(
-  mexp_batch,
+myexp_batch <- correct_batch_combat(
+  myexp_batch,
   variable = "conc",
   ref_qc_types = "SPL"
 )
 ```
 
-**SERRF** (Fan et al. 2019) trains a per-feature random forest on the
-reference QCs and removes the predicted systematic error, capturing
-non-linear batch and drift effects jointly (requires the `ranger`
-package). It suits larger panels with dense QC coverage; the
-implementation adapts the `malbacR` reference (Leach et al. 2023).
+**SERRF** \[@fan2019SystematicErrorRemoval\] trains a per-feature random
+forest on the reference QCs and removes the predicted systematic error,
+capturing non-linear batch and drift effects jointly (requires the
+`ranger` package). It suits larger panels with dense QC coverage; the
+implementation adapts the `malbacR` reference
+\[@leach2023MalbacRPackage\].
 
 ``` r
 
-mexp_batch <- correct_batch_serrf(
-  mexp_batch,
+myexp_batch <- correct_batch_serrf(
+  myexp_batch,
   variable = "conc",
   ref_qc_types = "SPL"
 )
@@ -339,7 +340,7 @@ smoothness.
 ``` r
 
 mexp_drift_loess <- correct_drift_loess(
-  mexp,
+  myexp,
   variable = "conc",
   batch_wise = TRUE,
   ref_qc_types = "BQC",
@@ -375,20 +376,3 @@ save_dataset_csv(
 - [Calibration by a reference
   sample](https://slinghub.github.io/MRMhub/quant/articles/tutorial-07-calibration-reference.md):
   normalise to a reference material
-
-## References
-
-Fan, Sili, Tobias Kind, Tomas Cajka, et al. 2019. “Systematic Error
-Removal Using Random Forest for Normalizing Large-Scale Untargeted
-Lipidomics Data.” *Analytical Chemistry* 91 (5): 3590–96.
-<https://doi.org/10.1021/acs.analchem.8b05592>.
-
-Johnson, W. Evan, Cheng Li, and Ariel Rabinovic. 2007. “Adjusting Batch
-Effects in Microarray Expression Data Using Empirical Bayes Methods.”
-*Biostatistics* 8 (1): 118–27.
-<https://doi.org/10.1093/biostatistics/kxj037>.
-
-Leach, Damon L., Kelly A. Trujillo, Rachel A. Richardson, et al. 2023.
-“malbacR: A Package for Standardized Implementation of Batch Correction
-Methods for Omics Data.” *Metabolites* 13 (11): 1130.
-<https://doi.org/10.3390/metabo13111130>.

@@ -6,9 +6,10 @@ Metadata in this context refers to analysis metadata, i.e., data that
 annotate the analytical data. MRMhub stores it in five tables (analyses,
 features, internal standards, response curves, and calibration/QC
 concentrations) that are attached to an `MRMhubExperiment` and linked to
-the measurements by identifier. For the steps to obtain the templates
-and import metadata, see [Preparing & importing
-data](https://slinghub.github.io/MRMhub/quant/articles/tutorial-01-prep-data.md).
+the measurements by identifier. This page documents the structure of
+each table and how identifiers are matched. For the steps to obtain the
+templates and import metadata, see [Import metadata from files or a
+template](https://slinghub.github.io/MRMhub/quant/articles/recipe-05-import-metadata.md).
 
 Integrity of metadata and data is essential for correct post-processing:
 MRMhub inspects imported data and metadata for completeness and for
@@ -174,7 +175,7 @@ trailing whitespace and case mismatches are the most frequent.
 
 ``` r
 
-data_ids <- unique(mexp@dataset_orig$analysis_id)
+data_ids <- unique(myexp@dataset_orig$analysis_id)
 annot_ids <- annot_analyses$analysis_id
 
 # IDs present in data but missing from annotation
@@ -233,7 +234,7 @@ integration-software output and a hand-edited Excel file.
 
 ``` r
 
-data_features <- unique(mexp@dataset_orig$feature_id)
+data_features <- unique(myexp@dataset_orig$feature_id)
 annot_feat_ids <- annot_features$feature_id
 
 # In data but missing from annotation
@@ -259,8 +260,8 @@ setdiff(annot_feat_ids, data_features)
 
 ## Next steps
 
-- [Preparing & importing
-  data](https://slinghub.github.io/MRMhub/quant/articles/tutorial-01-prep-data.md):
+- [Import metadata from files or a
+  template](https://slinghub.github.io/MRMhub/quant/articles/recipe-05-import-metadata.md):
   the import steps
 - [Importing analytical
   data](https://slinghub.github.io/MRMhub/quant/articles/manual-04-data-import.md):

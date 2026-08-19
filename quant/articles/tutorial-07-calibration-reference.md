@@ -1,9 +1,7 @@
 # Calibration by a reference sample
 
-Tutorial Prerequisites: [Full
-workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-03-lipidomics-workflow.md),
-[External
-calibration](https://slinghub.github.io/MRMhub/quant/articles/tutorial-06-external-calibration.md)
+Tutorial Intermediate Prerequisites: [Basic
+workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md)
 
 Feature abundances in samples can also be calibrated to corresponding
 abundances in a specified reference sample. MRMhub supports absolute
@@ -39,9 +37,9 @@ mexp <- import_metadata_istds(mexp, path = meta_file, sheet = "ISTDs")
 ## 2. Load known concentrations of the reference sample
 
 A table of known analyte concentrations for the NIST SRM1950 reference
-sample is added to the `MRMhubExperiment` object. The S1P concentrations
-in this table are for illustration only; the actual absolute S1P
-concentrations in NIST SRM1950 may differ significantly.
+sample is added to the `MRMhubExperiment` object. Note that the S1P
+concentrations in this table are for illustration only; the actual
+absolute S1P concentrations in NIST SRM1950 may differ significantly.
 
 ``` r
 
@@ -133,7 +131,7 @@ report.
 save_dataset_csv(mexp_res, tempfile(fileext = ".csv"), variable = "conc")
 ```
 
-    ✔ Concentration values for 65 analyses and 7 features have been exported to '/tmp/RtmpCLJCXO/file3abba222fe0.csv'.
+    ✔ Concentration values for 65 analyses and 7 features have been exported to '/tmp/Rtmpn2ZzuC/file46847d7ba514.csv'.
 
 ``` r
 
@@ -142,7 +140,7 @@ save_dataset_csv(mexp_res, tempfile(fileext = ".csv"), variable = "conc")
 save_dataset_csv(mexp_res, tempfile(fileext = ".csv"), variable = "conc_beforecal")
 ```
 
-    ✔ Conc_beforecal values for 65 analyses and 16 features have been exported to '/tmp/RtmpCLJCXO/file3abb1292d02a.csv'.
+    ✔ Conc_beforecal values for 65 analyses and 16 features have been exported to '/tmp/Rtmpn2ZzuC/file46843de098c6.csv'.
 
 ``` r
 
@@ -151,14 +149,14 @@ save_dataset_csv(mexp_res, tempfile(fileext = ".csv"), variable = "conc_beforeca
 save_report_xlsx(mexp_res, tempfile(fileext = ".xlsx"), filtered_variable = "conc")
 ```
 
-    ✔ The data processing report has been saved to /tmp/RtmpCLJCXO/file3abb50905bac.xlsx.
+    ✔ The data processing report has been saved to /tmp/Rtmpn2ZzuC/file4684798e6c57.xlsx.
 
 ## 5. Normalization (relative calibration)
 
 Normalization against a reference sample is performed with the same
-function, setting `absolute_calibration = FALSE`. Where multiple
-analyses of the reference sample are present, either their mean or
-median is used (defined via `summarize_fun`).
+function, setting `absolute_calibration = FALSE`. As above, where
+multiple analyses of the reference sample are present, either their mean
+or median is used (defined via `summarize_fun`).
 
 ``` r
 
@@ -205,7 +203,7 @@ save_report_xlsx(
   filtered_variable = "conc_normalized")
 ```
 
-    ✔ The data processing report has been saved to /tmp/RtmpCLJCXO/file3abb3e27eb93.xlsx.
+    ✔ The data processing report has been saved to /tmp/Rtmpn2ZzuC/file46842a947415.xlsx.
 
 ## 6. Batch-wise calibration
 
@@ -239,7 +237,7 @@ mexp_res <- calibrate_by_reference(
 save_dataset_csv(mexp_res, tempfile(fileext = ".csv"), variable = "conc_beforecal")
 ```
 
-    ✔ Conc_beforecal values for 65 analyses and 16 features have been exported to '/tmp/RtmpCLJCXO/file3abb5a15adc9.csv'.
+    ✔ Conc_beforecal values for 65 analyses and 16 features have been exported to '/tmp/Rtmpn2ZzuC/file468410883c83.csv'.
 
 ## 7. Concentration ratio and bias
 
@@ -342,6 +340,6 @@ gt::gt(tbl) |> gt::fmt_number(decimals = 3)
 - [External calibration and
   QC](https://slinghub.github.io/MRMhub/quant/articles/tutorial-06-external-calibration.md):
   full calibration-curve workflow with QC
-- [Lipidomics
-  workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-03-lipidomics-workflow.md):
+- [Basic MRMhub
+  workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md):
   revisit the full pipeline

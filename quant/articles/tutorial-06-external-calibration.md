@@ -1,7 +1,7 @@
 # Quantification with external calibration
 
-Tutorial Prerequisites: [Full
-workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-03-lipidomics-workflow.md)
+Tutorial Intermediate Prerequisites: [Basic
+workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md)
 
 External calibration quantifies each analyte from a calibration curve
 measured alongside the samples, as used in clinical chemistry,
@@ -16,8 +16,8 @@ The target concentrations for the calibrators and QCs live in the
 `QCconcentrations` metadata, which requires `sample_id` in the analysis
 metadata and `analyte_id` in the feature metadata.
 
-The full, reproducible report for this dataset (including drift-range
-flags, exports and the underlying data) is published as [Dataset
+The full, reproducible report for this dataset — including drift-range
+flags, exports and the underlying data — is published as [Dataset
 4](https://slinghub.github.io/MRMhub-workflows/Dataset4.html) in the
 MRMhub-workflows supplement.
 
@@ -80,8 +80,8 @@ E = Error, W = Warning, W* = Suppressed Warning, N = Note
 divides each analyte’s peak area by that of its internal standard,
 writing the ratio to `feature_norm_intensity`.
 [`calc_calibration_results()`](https://slinghub.github.io/MRMhub/quant/reference/calc_calibration_results.md)
-then fits one curve per analyte from the calibrator levels (here a
-quadratic model with `1/x` weighting for all analytes). The model and
+then fits one curve per analyte from the calibrator levels — here a
+quadratic model with `1/x` weighting for all analytes. The model and
 weighting can also be set per analyte in the feature metadata.
 
 ``` r
@@ -101,11 +101,6 @@ mexp <- calc_calibration_results(
 ```
 
     ✔ Calibration curve fits calculated for all 15 quantifier features. Average r²: 0.9978.
-
-Inspect the fitted curves before quantifying: each analyte’s response
-should rise steadily across the calibrator range and fit the points
-well, and the samples should fall inside that range rather than on the
-dotted, extrapolated section.
 
 ``` r
 
@@ -189,8 +184,8 @@ The final check compares the measured QC concentrations against their
 known targets.
 [`get_qc_bias_variability()`](https://slinghub.github.io/MRMhub/quant/reference/get_qc_bias_variability.md)
 reports, per analyte and QC level, the mean measured concentration, the
-**bias** (percent deviation from target, i.e. accuracy) and the
-intra-batch **%CV** (precision).
+**bias** (percent deviation from target — accuracy) and the intra-batch
+**%CV** (precision).
 
 ``` r
 get_qc_bias_variability(
@@ -212,10 +207,6 @@ get_qc_bias_variability(
 # ℹ 20 more rows
 # ℹ 1 more variable: frac_conc_out_of_range <dbl>
 ```
-
-For a quantitative assay, bias and CV within roughly ±15% (±20% near the
-quantification limit) is a common acceptance guide, though the exact
-limits depend on the application and any regulatory requirements.
 
 ## 5. Export the concentrations
 
@@ -240,6 +231,9 @@ save_dataset_csv(
 - [Calibration by a reference
   sample](https://slinghub.github.io/MRMhub/quant/articles/tutorial-07-calibration-reference.md):
   an alternative when no calibration series is available
+- [Custom QC
+  report](https://slinghub.github.io/MRMhub/quant/articles/recipe-02-custom-qc-report.md):
+  build a formatted QC report from processed data
 - [Visualisation
   functions](https://slinghub.github.io/MRMhub/quant/articles/manual-08-visualization.md):
   the plotting reference, including calibration and QC plots

@@ -3,8 +3,9 @@
 Manual
 
 MRMhub performs postprocessing, quality control, and reporting of
-targeted mass spectrometry data. Its core data structure is used by
-MRMhub’s data-exchange, processing, and plotting functions.
+targeted mass spectrometry data. This page gives a short overview of
+MRMhub’s core data structure and how it is used by MRMhub’s
+data-exchange, processing, and plotting functions.
 
 **MRMhub’s data** is structured around two levels: **analyses**, the
 individual measurements (often corresponding to MS injections), and
@@ -14,8 +15,9 @@ analysis–feature pair is a **measurement**, which can carry one or more
 in this context is a physical sample that was measured (several analyses
 can come from one sample) and an **analyte** can be represented by
 several features (i.e., different transitions, isotopes and adducts).
-See also the
-[Glossary](https://slinghub.github.io/MRMhub/quant/articles/manual-14-glossary.md).
+See the
+[Glossary](https://slinghub.github.io/MRMhub/quant/articles/manual-14-glossary.md)
+for these and other terms.
 
 ## The MRMhubExperiment data object
 
@@ -69,8 +71,6 @@ a consistent convention:
 - **QC filtering** — apply pass/fail thresholds to features and exclude
   features or analyses that fail QC.
 
-For these functions arranged by pipeline stage, see the [Function
-map](https://slinghub.github.io/MRMhub/quant/articles/manual-13-function-map.md).
 The [Function
 reference](https://slinghub.github.io/MRMhub/quant/reference/index.md)
 lists every function with full parameter detail.
@@ -85,8 +85,8 @@ lists every function with full parameter detail.
 - [Sample types & QC
   roles](https://slinghub.github.io/MRMhub/quant/articles/manual-06-sample-types.md):
   the QC labels used throughout
-- [Lipidomics
-  workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-03-lipidomics-workflow.md):
+- [Basic MRMhub
+  workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md):
   these functions in a real script
 - [Function
   reference](https://slinghub.github.io/MRMhub/quant/reference/index.md):

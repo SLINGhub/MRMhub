@@ -7,19 +7,19 @@ A reproducible MRMhub analysis is recorded as a
 interleaves the processing code, its console feedback, and the resulting
 figures and tables. Rendering it re-runs the whole pipeline from raw
 import to final report, so the record and the result never drift apart.
-[Getting started with
-MRMhub](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-getting-started-mrmhub.md)
+[Introduction to R, Quarto, and
+MRMhub](https://slinghub.github.io/MRMhub/quant/articles/tutorial-13-intro-to-r-quarto-mrmhub.md)
 covers writing such a document from scratch, and the [Workflow
 builder](https://slinghub.github.io/MRMhub/quant/articles/tutorial-12-workflow-builder.md)
 emits one automatically.
 
-Two aspects of rendering are specific to MRMhub: preserving its
-coloured, step-by-step console feedback in the output, and controlling
-figure size independently of that feedback. Because MRMhub reports each
-processing step on the console — a count and a truncated list of the
-features or analyses affected — a rendered notebook doubles as an
-**audit trail** of what each step did, and keeping that feedback intact
-is the main concern here.
+This page documents the two aspects of rendering that are specific to
+MRMhub: preserving its coloured, step-by-step console feedback in the
+output, and controlling figure size independently of that feedback.
+Because MRMhub reports each processing step on the console — a count and
+a truncated list of the features or analyses affected — a rendered
+notebook doubles as an **audit trail** of what each step did, and
+keeping that feedback intact is the main concern here.
 
 ## Session setup
 
@@ -139,16 +139,21 @@ save_plot(
 
 To render the same notebook against different inputs — one report per
 batch or per project — declare its input paths as Quarto *parameters*
-rather than string literals.
+rather than string literals; [Custom QC
+report](https://slinghub.github.io/MRMhub/quant/articles/recipe-02-custom-qc-report.md)
+is the worked example.
 
 ## Next steps
 
-- [Getting started with
-  MRMhub](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-getting-started-mrmhub.md):
+- [Introduction to R, Quarto, and
+  MRMhub](https://slinghub.github.io/MRMhub/quant/articles/tutorial-13-intro-to-r-quarto-mrmhub.md):
   writing a workflow notebook from scratch
 - [Using the workflow
   builder](https://slinghub.github.io/MRMhub/quant/articles/tutorial-12-workflow-builder.md):
   generate a ready-to-render `.qmd` from your data
+- [Custom QC
+  report](https://slinghub.github.io/MRMhub/quant/articles/recipe-02-custom-qc-report.md):
+  render one notebook once per batch or project
 - [Troubleshooting &
   FAQ](https://slinghub.github.io/MRMhub/quant/articles/manual-10-troubleshooting.md):
   resolving common rendering problems

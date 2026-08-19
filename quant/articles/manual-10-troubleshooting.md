@@ -2,95 +2,66 @@
 
 Manual
 
-Common errors and questions, grouped by workflow stage. For installation
-problems,
-[`check_setup()`](https://slinghub.github.io/MRMhub/quant/reference/check_setup.md)
-reports what the R environment is missing; unresolved bugs belong on
-[GitHub Issues](https://github.com/SLINGhub/MRMhub/issues).
+This page collects the errors and questions that come up most often when
+installing and using MRMhub QUANT, grouped by where they occur in the
+workflow. Each entry expands to a diagnosis and a fix.
 
-## Installation and setup
+## Installation issues
 
-**Q: How do I confirm my R environment is ready for MRMhub?**
+The single most common cause of failed installations is that one of
+MRMhub’s dependencies is currently *loaded* in the active R session,
+typically `rlang`, `cli`, `vctrs`, `dplyr`, `tibble`, or `ggplot2`.
+RStudio and Positron load several of these on startup (Environment pane,
+Plots pane), so a “fresh session” via *Restart R* is sometimes not
+enough on Windows. When in doubt, **quit the IDE entirely** and reopen
+it before installing.
 
-**A:**
-[`check_setup()`](https://slinghub.github.io/MRMhub/quant/reference/check_setup.md)
-checks the R version (≥ 4.1.0 is required), the packages MRMhub needs,
-and the optional packages that unlock extra features. Missing required
-packages are listed with a copy-pasteable install command.
+**“cannot remove prior installation of package ‘X’” or “permission
+denied”** (Windows, most common)
+
+A dependency DLL is locked by another running R session, RStudio, or
+Positron. Restarting R does not always release the lock on Windows.
 
 ``` r
 
-check_setup()
+# Fix:
+# 1. Quit RStudio / Positron entirely (close all windows, not just the project)
+# 2. Make sure no other R.exe / Rterm.exe is running in Task Manager
+# 3. Reopen RStudio / Positron in a new session (NOT loading a project that
+#    auto-attaches mrmhub or any tidyverse package via an .Rprofile)
+# 4. Immediately, before opening any project, run the install command
+remotes::install_github("SLINGhub/mrmhub")
 ```
 
-**Q:
-[`build_workflow()`](https://slinghub.github.io/MRMhub/quant/reference/build_workflow.md)
-reports that shiny or bslib is not installed.**
+If the message names a specific package (e.g. `'rlang'` is locked),
+install just that package first into a fresh session, then retry MRMhub.
 
-**A:** The Workflow Builder is an optional feature, so `shiny` and
-`bslib` are not installed with MRMhub. Run interactively,
-[`build_workflow()`](https://slinghub.github.io/MRMhub/quant/reference/build_workflow.md)
-offers to install them; otherwise add them yourself.
+**“namespace ‘rlang’ is already loaded”**
 
-``` r
-
-install.packages(c("shiny", "bslib"))
-```
-
-If instead it reports *“Could not find the workflow builder app. Try
-reinstalling mrmhub.”*, the app files are missing from the installed
-package — reinstall MRMhub.
-
-**Q: On Windows, installation fails with *“cannot remove prior
-installation of package ‘X’”* or *“permission denied”*.**
-
-**A:** A dependency’s DLL is locked by another running R session,
-RStudio, or Positron, and *Restart R* does not always release the lock
-on Windows. Quit the IDE entirely (close all windows), confirm no
-`R.exe`/`Rterm.exe` is left in Task Manager, reopen, and run the install
-command before opening any project that auto-attaches a tidyverse
-package.
-
-**Q: *“namespace ‘rlang’ is already loaded”* (or another core
-package).**
-
-**A:** A package that others depend on is pinned in the current
-namespace. Restart R, update the named package first in the fresh
-session, then retry.
+A package that other packages depend on is locked into the current
+namespace. Quitting RStudio entirely (see above) usually resolves it;
+the lighter touch is:
 
 ``` r
 
+# 1. Restart R: Session > Restart R (or Ctrl+Shift+F10)
+# 2. Update the locked package first in the fresh session
 install.packages("rlang")
+# 3. Then retry mrmhub installation
 ```
 
-**Q: After updating MRMhub, a function fails with *“lazy-load database
-‘…/mrmhub.rdb’ is corrupt”*.**
+**“Rtools is required to build R packages”** (Windows)
 
-**A:** The package was reinstalled while it was loaded in the running
-session, so R still holds the index of the previous installation and
-looks up functions at offsets that no longer match the new file on disk.
-Nothing is actually damaged. Restart R and attach the package again.
+Install [Rtools](https://cran.r-project.org/bin/windows/Rtools/) for
+your R version (Rtools43 for R 4.3, Rtools44 for R 4.4, …), then restart
+R and retry. Rtools is needed for compiling source packages, which some
+MRMhub dependencies require when a Windows binary is not yet available.
 
-``` r
+**Use `pak` instead of `remotes`**
 
-library(mrmhub)
-```
-
-Restarting R after every install or update of MRMhub avoids this. In
-RStudio and Positron, *Session ▸ Restart R* (Ctrl/Cmd+Shift+F10).
-
-**Q: *“Rtools is required to build R packages”* (Windows).**
-
-**A:** Install [Rtools](https://cran.r-project.org/bin/windows/Rtools/)
-matching your R version (Rtools43 for R 4.3, Rtools44 for R 4.4, …),
-restart R, and retry. Rtools compiles the source packages a few
-dependencies still need when no Windows binary is available yet.
-
-**Q: `remotes` keeps failing on a locked or transitive dependency.**
-
-**A:** [`pak`](https://pak.r-lib.org/) resolves the dependency graph in
-one pass, handles locked packages more cleanly on Windows, and gives
-clearer messages on transitive failures.
+[`pak`](https://pak.r-lib.org/) handles locked packages more cleanly
+than `remotes` on Windows, gives clearer error messages on transitive
+failures, and parallelises downloads. If `remotes` fails:
 
 ``` r
 
@@ -98,267 +69,214 @@ install.packages("pak")
 pak::pak("SLINGhub/mrmhub")
 ```
 
-**Q: *“installation of package ‘X’ had non-zero exit status”*.**
+`pak` automatically restarts R if needed to release locks, and resolves
+the dependency graph in one pass.
 
-**A:** By default every optional (Suggests) dependency is installed too,
-so one broken optional package aborts the whole install. Install only
-the strictly required dependencies and add optional ones later.
+**“cannot open URL” or timeout during install**
+
+The network is blocking GitHub or a CRAN mirror.
 
 ``` r
 
+# Option 1: change download method
+options(download.file.method = "libcurl")
+
+# Option 2: clone locally and install
+# In terminal: git clone https://github.com/SLINGhub/MRMhub.git
+remotes::install_local("path/to/MRMhub")
+
+# Option 3: if behind a corporate proxy, configure it before installing
+Sys.setenv(http_proxy  = "http://proxy.example.com:8080")
+Sys.setenv(https_proxy = "http://proxy.example.com:8080")
+```
+
+**“installation of package ‘X’ had non-zero exit status”** (Suggests
+dependency failure)
+
+By default `remotes::install_github(..., dependencies = TRUE)` installs
+every Suggests dependency too. A single broken Suggests package,
+e.g. `lancer` (a non-CRAN GitHub package needed only for the optional
+response-curve saturation statistics of
+`get_response_curve_stats(with_saturation_stats = TRUE)`) when the
+network blocks GitHub clones, aborts the whole install. Fix:
+
+``` r
+
+# Install only the strictly required dependencies
 remotes::install_github(
   "SLINGhub/mrmhub",
   dependencies = c("Depends", "Imports", "LinkingTo")
 )
 ```
 
-## Importing data
+Optional packages can be added later as needed:
+`install.packages(c("patchwork", "ggrepel"))`.
 
-**Q: Which importer should I use?**
+**Apple Silicon: package compilation fails / “no binary available”**
 
-**A:** See [Import and prepare data
+On Apple Silicon, if a dependency is not yet built as an `arm64` binary
+on CRAN, R falls back to building from source, which then requires Xcode
+Command Line Tools. Two fixes:
+
+``` r
+
+# Option A: install Xcode Command Line Tools (run in terminal, not R)
+# xcode-select --install
+
+# Option B: ask R to skip source builds when only a binary is missing
+options(install.packages.compile.from.source = "never")
+remotes::install_github("SLINGhub/mrmhub")
+```
+
+Option B may leave slightly older versions of those packages but avoids
+the toolchain entirely.
+
+------------------------------------------------------------------------
+
+## Data import issues
+
+**“Column X not found” or unexpected column names**
+
+The CSV uses different column names than expected. Check with:
+
+``` r
+
+# Read the first few rows to inspect
+readr::read_csv("your_file.csv", n_max = 5)
+```
+
+Common causes:
+
+- MassHunter exports have locale-specific headers (e.g., German vs
+  English)
+- Extra BOM characters in UTF-8 files (open in a plain text editor to
+  check)
+- Delimiter mismatch: file uses `;` but R expects `,`
+
+``` r
+
+# For semicolon-separated files:
+readr::read_csv2("your_file.csv", n_max = 5)
+```
+
+**Features in the data don’t match the feature annotation**
+
+The feature names in the data file do not match those in the feature
+annotation. Check for:
+
+- Trailing whitespace: `"Compound A "` vs `"Compound A"`
+- Case differences: `"compound_a"` vs `"Compound_A"`
+
+``` r
+
+# Debug: compare feature names
+data_features <- unique(mexp@dataset$feature_id)
+annot_features <- mexp@annot_features$feature_id
+
+# Find mismatches
+setdiff(data_features, annot_features)
+setdiff(annot_features, data_features)
+```
+
+**Which importer should I use?**
+
+See [Import and prepare data
 files](https://slinghub.github.io/MRMhub/quant/articles/manual-04-data-import.md)
-for a decision flowchart matching each vendor/file layout to its
-importer.
+for a visual decision flowchart.
 
-**Q:
-[`import_data_masshunter()`](https://slinghub.github.io/MRMhub/quant/reference/import_data_masshunter.md)
-aborts with *“Data file is in an unsupported or corrupted format…”*.**
+------------------------------------------------------------------------
 
-**A:** Almost always the wrong importer for the file — a plain, Skyline,
-or INTEGRATOR CSV passed to the MassHunter parser. Use the importer that
-matches the file’s format. If the file really is a MassHunter export,
-re-export it from MH Quant with compounds as columns.
+## Processing issues
 
-**Q: An importer aborts with *“Required `analysis_id` column is
-missing”* (or `feature_id`).**
+**Normalised values are NA**
 
-**A:** The column holding the analysis or feature identifier was not
-recognised. Map it explicitly with `column_mapping` (names are matched
-case-insensitively).
-
-``` r
-
-import_data_csv_long(
-  mexp,
-  path = "your_file.csv",
-  column_mapping = c(analysis_id = "Sample", feature_id = "Compound")
-)
-```
-
-**Q: *“The file was read as a single column using the ‘,’ delimiter.”***
-
-**A:** The file is semicolon- or tab-delimited (common in European Excel
-locales), so a comma reader sees one column. Re-export as *CSV UTF-8
-(Comma delimited)* and re-import.
-
-**Q: *“Imported data measures the same feature more than once in the
-same analysis.”***
-
-**A:** Read the values in the message. **Identical** values mean the
-same data was read twice (the same result file, or an overlapping part
-of it). **Differing** values mean two real measurements carry the same
-IDs: two injections sharing a `raw_data_filename` (the default
-`analysis_id`), or the wrong column mapped to
-`analysis_id`/`feature_id`.
-
-**Q: A wide CSV aborts with *“All columns with feature values must be
-numeric.”***
-
-**A:** Metadata columns are mixed into the feature block. Point
-`first_feature_column` at the first real feature column, and pass
-`na_strings` for any text missing-value tokens.
-
-``` r
-
-import_data_csv_wide(
-  mexp,
-  path = "your_file.csv",
-  first_feature_column = 5,
-  na_strings = c("NA", "n.a.", "")
-)
-```
-
-**Q: Skyline import aborts with *“`Molecule Name` is not unique
-identifier for each transition.”***
-
-**A:** Several transitions share a molecule name. Build unique IDs from
-the precursor/product names or masses.
-
-``` r
-
-import_data_skyline(
-  mexp,
-  path = "your_file.csv",
-  transition_id_columns = "name"
-)
-```
-
-**Q: Feature names in the data don’t match the feature annotation.**
-
-**A:** Trailing whitespace or case differences (`"Compound A "` vs
-`"Compound A"`) break the join. Compare both directions:
-
-``` r
-
-data_ids  <- unique(mexp@dataset$feature_id)
-annot_ids <- mexp@annot_features$feature_id
-setdiff(data_ids, annot_ids)  # in data, not annotated
-setdiff(annot_ids, data_ids)  # annotated, not in data
-```
-
-## Adding metadata
-
-**Q: *“None of the analyses in the data match the imported analysis
-metadata.”***
-
-**A:** Either the wrong metadata file, or the `analysis_id`s are
-formatted differently in the two sources. Import strips raw-file
-extensions and squishes whitespace, so a residual mismatch means the IDs
-genuinely differ — compare them with
-[`setdiff()`](https://rdrr.io/r/base/sets.html) as above.
-
-**Q: *“Not all analyses in the data have corresponding metadata.”***
-
-**A:** Some analyses have no row in the analysis metadata. Add the
-missing rows, or import with `excl_unmatched_analyses = TRUE` to drop
-the unannotated analyses.
-
-**Q: The metadata import aborts on validation warnings.**
-
-**A:** A validation report is printed, then *“Please verify warnings in
-corresponding metadata. Use `ignore_warnings = TRUE` to ignore
-warnings.”* Fix the flagged issues, or re-import with
-`ignore_warnings = TRUE`. A hard *“Metadata validation failed — see the
-report above.”* (duplicate IDs, missing mandatory values) cannot be
-bypassed and must be corrected.
-
-## Processing
-
-**Q: Normalised intensities come back `NA`.**
-
-**A:**
 [`normalize_by_istd()`](https://slinghub.github.io/MRMhub/quant/reference/normalize_by_istd.md)
-aborts by default when a feature has no internal standard assigned
-(*“…no ISTD was defined…”*), or when no feature carries an
-`istd_feature_id` at all (*“No ISTDs defined in feature metadata.”*).
-Find the unassigned features, then assign an `istd_feature_id` to each —
-or pass `ignore_missing_annotation = TRUE` to set them to `NA` and
-continue.
+does not fail silently: it warns when a feature cannot be normalised,
+e.g. *“For N feature(s) no ISTD was defined, normalized intensities will
+be NA”*, or when the internal-standard row is missing from a group or
+had zero intensity. The usual cause is a missing or incorrect ISTD
+assignment:
 
 ``` r
 
+# Check ISTD assignments
 mexp@annot_features |>
   dplyr::select(feature_id, istd_feature_id) |>
   dplyr::filter(is.na(istd_feature_id))
 ```
 
-**Q: *“Data needs to be ISTD normalized, please run ‘normalize_by_istd’
-first.”***
+Each feature must reference an internal standard via `istd_feature_id`,
+and that ISTD must itself be present as a feature (`is_istd`) in every
+analysis.
 
-**A:** Quantitation and drift/batch correction on normalised or
-concentration variables run after normalisation. Run
-[`normalize_by_istd()`](https://slinghub.github.io/MRMhub/quant/reference/normalize_by_istd.md)
-before
-[`quantify_by_istd()`](https://slinghub.github.io/MRMhub/quant/reference/quantify_by_istd.md)
-or
-[`quantify_by_calibration()`](https://slinghub.github.io/MRMhub/quant/reference/quantify_by_calibration.md).
+**Drift correction makes data worse**
 
-**Q: *“Acquisition timestamps are not present in analysis results.”***
+This can happen when:
 
-**A:** The vendor export carries no acquisition time, so
-[`set_analysis_order()`](https://slinghub.github.io/MRMhub/quant/reference/set_analysis_order.md)
-cannot order by `"timestamp"`. Order by the result-file name or by a
-column in the metadata instead.
+- Too few QC samples (need ≥ 5 per batch for loess)
+- QC samples are not evenly spaced across the run
+- The drift is not systematic (random noise, not a trend)
 
 ``` r
 
-set_analysis_order(mexp, order_by = "resultfile")
+# Visualise before correcting
+plot_runscatter(mexp,
+                variable = "norm_intensity",
+                include_feature_filter = "your_feature",
+                qc_types = c("BQC", "SPL"))
 ```
 
-**Q: Drift or batch correction aborts with *“One or more specified
-`qc_types` are not present in the dataset.”***
+If the QC trend is flat, skip drift correction for that batch.
 
-**A:** The reference QC label has no matching rows — a misspelled QC
-type, no such QC samples in the run, or
-[`add_metadata()`](https://slinghub.github.io/MRMhub/quant/reference/add_metadata.md)
-was not run so `qc_type` is still empty. Drift and batch correction fit
-on QC samples only, so a valid QC type must be present.
+**Batch correction flattens real biological signal**
 
-**Q: Correction fails with *“Normalized intensities not available”* or
-*“Concentration data are not available”*.**
+[`correct_batch_centering()`](https://slinghub.github.io/MRMhub/quant/reference/correct_batch_centering.md)
+assumes QC samples have equal concentration across batches. If the QC
+pool differs between batches, centering will introduce artefacts.
 
-**A:** You asked to correct a variable that has not been produced yet.
-Run the upstream step first
-([`normalize_by_istd()`](https://slinghub.github.io/MRMhub/quant/reference/normalize_by_istd.md),
-then a `quantify_*()`), or correct `variable = "intensity"`.
+**Solution:** Ensure the same QC pool is used across all batches.
 
-**Q: *“Batch correction was not applied as there is only one batch.”***
+------------------------------------------------------------------------
 
-**A:** Between-batch correction needs more than one `batch_id`. With a
-single batch there is nothing to centre — skip it and run the rest of
-the pipeline normally.
+## Object and data access
 
-**Q: Drift correction makes the data worse.**
-
-**A:** Loess fitting needs enough evenly-spaced QC samples per batch;
-with too few, or when the QC trend is flat (noise, not drift), the fit
-can add variance. Inspect the QC trend before correcting, and skip drift
-correction for batches where it is flat.
+**How do I extract the final data as a data frame?**
 
 ``` r
 
-plot_runscatter(
-  mexp,
-  variable = "norm_intensity",
-  qc_types = c("BQC", "SPL"),
-  include_feature_filter = "your_feature"
-)
+# After all processing and filtering:
+final_data <- get_analyticaldata(mexp, annotated = TRUE)
+
+# Or the filtered dataset directly:
+final_filtered <- mexp@dataset_filtered
 ```
 
-## Quantitation and calibration
-
-**Q:
-[`quantify_by_istd()`](https://slinghub.github.io/MRMhub/quant/reference/quantify_by_istd.md)
-aborts about missing ISTD concentrations or amounts.**
-
-**A:** ISTD quantitation needs internal-standard concentrations plus
-per-analysis amounts. Import ISTD metadata (`annot_istds`) with
-concentrations in nmol/L or ng/mL, and make sure `sample_amount` and
-`istd_volume` are present in the analysis metadata. Missing amounts can
-be tolerated with `ignore_missing_annotation = TRUE`.
-
-**Q: *“Calibration curve data missing…”***
-
-**A:** No calibrator samples and no concentrations are annotated. Flag
-the calibrator analyses with `qc_type = "CAL"` in the analysis metadata,
-and supply their known concentrations in the QC-concentration metadata
-(`annot_qcconcentrations`).
-
-**Q: *“Calibration curve annotations for N features are missing.”***
-
-**A:** Those features have no concentrations in
-`annot_qcconcentrations`, which is keyed on `sample_id` and
-`analyte_id`. Add the missing entries, or skip those features with
-`ignore_missing_annotation = TRUE`.
-
-**Q: A calibration curve has R² \< 0.9.**
-
-**A:** Inspect the fits, then try removing outlier calibration points,
-switching `fit_model` (`"linear"`/`"quadratic"`) or `fit_weighting`
-(`"none"`, `"1/x"`, `"1/x^2"`) — globally or per feature via the
-`curve_fit_model` / `curve_fit_weighting` metadata columns — and check
-for saturation at high concentrations.
+**How do I check what processing has been applied?**
 
 ``` r
 
-get_calibration_metrics(mexp) |>
-  dplyr::filter(r2 < 0.9)
+# Check processing status flags
+mexp@is_istd_normalized
+mexp@is_quantitated
+mexp@var_drift_corrected
+mexp@var_batch_corrected
 ```
+
+**How do I go back to the original data?**
+
+The original data is always preserved:
+
+``` r
+
+# Reset to original
+mexp@dataset <- mexp@dataset_orig
+```
+
+------------------------------------------------------------------------
 
 ## QC and filtering
 
-**Q: What do the QC metrics mean?**
+**What do the QC metrics mean?**
 
 | Metric     | Meaning                                  | Typical threshold |
 |------------|------------------------------------------|-------------------|
@@ -366,18 +284,17 @@ get_calibration_metrics(mexp) |>
 | Bias (%)   | Systematic deviation from expected value | \< 20%            |
 | n_detected | Number of QC samples with signal         | ≥ 50–67% of QCs   |
 
-**Q: All my features are filtered out.**
+**My features are all filtered out**
 
-**A:**
-[`filter_features_qc()`](https://slinghub.github.io/MRMhub/quant/reference/filter_features_qc.md)
-requires you to state `include_qualifier` and `include_istd` explicitly.
-If every feature then fails the thresholds it raises no error —
-`dataset_filtered` simply comes back empty, and the next step aborts
-with *“Data has not been QC-filtered.”* Inspect the metrics and loosen
-the thresholds.
+The thresholds may be too strict. Check:
 
 ``` r
 
+# See QC metrics before filtering
+mexp@metrics_qc |>
+  dplyr::arrange(dplyr::desc(norm_intensity_cv_bqc))
+
+# Use more lenient thresholds
 mexp <- filter_features_qc(
   mexp,
   include_qualifier = FALSE,
@@ -387,178 +304,89 @@ mexp <- filter_features_qc(
 )
 ```
 
-## Working with the object
+------------------------------------------------------------------------
 
-**Q: The pipeline does not run through, or the results look wrong.**
+## Calibration
 
-**A:** A common cause is an inconsistent object name across chunks —
-assigning a step to one name but running the next step on another (a
-typo, or mixing `mexp` and `myexp`). Because every function takes and
-returns the `MRMhubExperiment`, a mismatched name quietly processes an
-earlier or wrong object instead of raising an error. Use a single name
-throughout, assign each step back to it, and confirm with
-[`mrmhub_status()`](https://slinghub.github.io/MRMhub/quant/reference/mrmhub_status.md)
-that the steps you expect have run.
+**“Calibration curve annotations for N features are missing”**
 
-**Q: How do I extract the final data as a data frame?**
+The QC-concentration metadata does not cover the features being
+quantified. The `annot_qcconcentrations` table is keyed on `sample_id`
+and `analyte_id` (not `analysis_id`), so check that both match the
+values in the data. Features without a matching curve can be skipped by
+setting `ignore_missing_annotation = TRUE`.
 
-**A:**
-[`get_analyticaldata()`](https://slinghub.github.io/MRMhub/quant/reference/get_analyticaldata.md)
-returns the metadata-joined working table; the filtered table is a slot.
+**Calibration curve has R² \< 0.9**
 
-``` r
+Consider:
 
-final <- get_analyticaldata(mexp, annotated = TRUE)
-final_filtered <- mexp@dataset_filtered
-```
-
-**Q: How do I check what processing has been applied?**
-
-**A:** The status flags record it.
+- Removing outlier calibration points
+- Changing the fit with `fit_model` (linear or quadratic) or
+  `fit_weighting` (`"none"`, `"1/x"`, `"1/x^2"`), set globally or per
+  feature via the `curve_fit_model` / `curve_fit_weighting` metadata
+  columns
+- Checking for saturation at high concentrations
 
 ``` r
 
-mexp@is_istd_normalized
-mexp@is_quantitated
-mexp@var_drift_corrected
-mexp@var_batch_corrected
+# Inspect calibration metrics
+get_calibration_metrics(mexp) |>
+  dplyr::filter(r2 < 0.9)
 ```
 
-**Q: How do I go back to the original data?**
-
-**A:** The raw import is always preserved in `dataset_orig`. Restoring
-it resets the working table (which drops the processing columns added
-since import).
-
-``` r
-
-mexp@dataset <- mexp@dataset_orig
-```
-
-## Workflow Builder
-
-**Q: Some processing steps are greyed out with a yellow badge.**
-
-**A:** Steps are gated by the metadata you imported; the badge names
-what is missing — *No feature metadata*, *No ISTDs defined*, *No ISTD
-concentrations*, *No QC concentrations*, *No sample_id metadata*, or
-*Only one batch*. Import the metadata that step needs (or, for the batch
-step, a run with more than one batch) to enable it.
-
-**Q: A banner says *“N things to check before this will run.”***
-
-**A:** The builder pre-checks each selected step. Amber means warnings
-only — it still generates the workflow; red means errors to fix first.
-Open *Show details* to see each message, then import the missing
-metadata or select the upstream step it names.
-
-**Q: The banner says *“Configure your columns.”***
-
-**A:** A generic long/wide CSV cannot be read until its columns are
-mapped. Click *Configure columns…* at the top of the sidebar, map the
-identifier and value columns, and *Apply* — the sidebar then shows
-*columns configured*.
-
-**Q: Which metadata source do I choose, and why did *“Embedded in the
-data file”* disappear?**
-
-**A:** There are four sources: embedded in the data file, an MSOrganiser
-workbook, separate metadata tables (one `.xlsx`), or none for now. The
-app probes your uploaded file and only offers *Embedded* when the data
-actually carries in-file metadata columns; when it does not, that option
-is removed — use one of the workbook routes.
-
-**Q: A red banner says *“Import failed:”***
-
-**A:** The importer threw while reading your files. The most common
-causes are the wrong importer for the file’s format, or a
-non-MSOrganiser workbook (or an unsupported template version) fed to the
-MSOrganiser route. The message after *“Import failed:”* is the
-underlying error — see the import and metadata sections above.
-
-**Q: I clicked *Browse…* and nothing happened.**
-
-**A:** The native file and folder pickers only work when the app runs
-locally with a system dialog available. On a server or headless session
-there is no picker — type or paste the path into the text field instead.
-
-**Q: Will my large INTEGRATOR file upload?**
-
-**A:** Yes, up to 500 MB (the app raises Shiny’s default 5 MB cap). The
-data input accepts `.csv`, `.tsv`, and `.txt`; Excel files are only for
-the metadata routes.
-
-**Q: Did the app run my analysis?**
-
-**A:** No — the Workflow Builder validates your inputs and generates a
-Quarto workflow (`mrmhub_workflow.qmd`); it never runs the pipeline.
-Download or copy the `.qmd`, then render it yourself.
-
-``` bash
-quarto render mrmhub_workflow.qmd
-```
-
-**Q: How do I try it without my own data?**
-
-**A:** *Try the example* loads the bundled demo dataset (with embedded
-metadata) so you can reach a green *Ready to render* banner end to end.
+------------------------------------------------------------------------
 
 ## FAQ
 
-**Q: Can I change the default text size, point size, or legend in
-plots?**
+**Can I change the default text size (or point size, legend) in plots?**
 
-**A:**
+Yes.
 [`mrmhub_set_plot_defaults()`](https://slinghub.github.io/MRMhub/quant/reference/mrmhub_set_plot_defaults.md)
 sets session-wide defaults for the shared appearance arguments of the
-`plot_*()` functions, so you can set them once at the top of a notebook
-instead of on every call.
+`plot_*()` functions, so a smaller base font or point size can be set
+once at the top of a notebook instead of on every call:
 
 ``` r
 
 mrmhub_set_plot_defaults(font_base_size = 8, point_size = 0.8)
 ```
 
-It also accepts `legend_position`, `legend_size`, `show_legend_title`,
-and `strip_bg_color`; a value passed directly to a plotting function
-always wins.
+Besides `font_base_size` and `point_size`, it accepts `legend_position`,
+`legend_size`, `show_legend_title` and `strip_bg_color`. A value passed
+directly to a plotting function always overrides the global default. Use
 [`mrmhub_get_plot_defaults()`](https://slinghub.github.io/MRMhub/quant/reference/mrmhub_get_plot_defaults.md)
-shows the active settings and
+to see the active settings and
 [`mrmhub_reset_plot_defaults()`](https://slinghub.github.io/MRMhub/quant/reference/mrmhub_reset_plot_defaults.md)
-clears them. See [Customising
-plots](https://slinghub.github.io/MRMhub/quant/articles/manual-08-visualization.html#customising-plots)
+to clear them. See [Plot
+customization](https://slinghub.github.io/MRMhub/quant/articles/manual-13-plot-customization.md)
 for the full reference.
 
-**Q: Can I use MRMhub with non-MRM data (PRM, SRM)?**
+**Can I use MRMhub with non-MRM data (e.g., PRM, SRM)?**
 
-**A:** Yes, provided the data can be formatted as a long CSV with
-feature IDs and peak areas. The processing is agnostic to acquisition
-mode.
+Yes, provided the data can be formatted as a long CSV with feature IDs
+and peak areas. The processing is agnostic to acquisition mode.
 
-**Q: Can I process only one batch?**
+**Can I process only one batch?**
 
-**A:** Yes. Skip batch correction; every other function works with
+Yes. Do not apply batch correction. All other functions work with
 single-batch data.
 
-**Q: Is there a size limit?**
+**Is there a size limit?**
 
-**A:** No hard limit, but very large datasets are slower in the drift
-and batch steps. If needed, process batches separately and merge.
+No hard limit, but very large datasets (\>100k rows) may be slow for
+drift correction. Consider processing batches separately and merging.
 
-**Q: Where do I report bugs?**
+**Where do I report bugs?**
 
-**A:** [GitHub Issues](https://github.com/SLINGhub/MRMhub/issues).
+[GitHub Issues](https://github.com/SLINGhub/MRMhub/issues)
+
+------------------------------------------------------------------------
 
 ## Next steps
 
-- [Import and prepare data
-  files](https://slinghub.github.io/MRMhub/quant/articles/manual-04-data-import.md):
-  pick the right importer for your export
-- [Metadata](https://slinghub.github.io/MRMhub/quant/articles/manual-05-metadata.md):
-  the annotation tables the pipeline joins against
-- [Installation](https://slinghub.github.io/MRMhub/quant/articles/manual-00-installation.md):
-  diagnose setup problems with
-  [`check_setup()`](https://slinghub.github.io/MRMhub/quant/reference/check_setup.md)
 - [Design decisions behind MRMhub
   QUANT](https://slinghub.github.io/MRMhub/quant/articles/manual-03-design-decisions.md):
   why the pipeline is built this way
+- [Installation](https://slinghub.github.io/MRMhub/quant/articles/manual-00-installation.md):
+  diagnose setup problems with
+  [`check_setup()`](https://slinghub.github.io/MRMhub/quant/reference/check_setup.md)

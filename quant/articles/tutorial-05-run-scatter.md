@@ -1,10 +1,10 @@
 # Exploring QC: RunScatter and PCA
 
-Tutorial Prerequisites: [Full
-workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-03-lipidomics-workflow.md)
+Tutorial Intermediate Prerequisites: [Basic
+workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md)
 
-The built-in lipidomics dataset supports two complementary
-QC-exploration views.
+This tutorial covers two complementary QC-exploration views on the
+built-in lipidomics dataset.
 [`plot_runscatter()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.md)
 shows a feature’s signal across the analysis sequence, which helps to
 identify trends, detect outliers, and assess analytical performance.
@@ -473,8 +473,8 @@ plots](https://slinghub.github.io/MRMhub/quant/articles/manual-08-visualization.
   functions](https://slinghub.github.io/MRMhub/quant/articles/manual-08-visualization.md):
   the full list of plotting functions
 - [Customising
-  plots](https://slinghub.github.io/MRMhub/quant/articles/manual-08-visualization.html#customising-plots):
+  plots](https://slinghub.github.io/MRMhub/quant/articles/manual-13-plot-customization.md):
   sizing text, legends and points without `+ theme()`
-- [Lipidomics
-  workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-03-lipidomics-workflow.md):
+- [Basic MRMhub
+  workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md):
   where these checks fit in the pipeline

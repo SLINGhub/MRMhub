@@ -62,7 +62,7 @@ mexp <- data_load_example(MRMhubExperiment(), 1)
 dataset  <- get_analyticaldata(mexp, annotated = TRUE)  # processed data
 analyses <- mexp$annot_analyses                         # sample metadata
 
-saveRDS(mexp, "mexp-mrmhub.rds", compress = TRUE)
+saveRDS(mexp, "myexp-mrmhub.rds", compress = TRUE)
 ```
 
 ### Inspecting the processing state

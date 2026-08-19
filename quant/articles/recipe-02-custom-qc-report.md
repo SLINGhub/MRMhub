@@ -1,0 +1,234 @@
+# Custom QC report
+
+Recipe Prerequisites: [Basic
+workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md)
+
+A QC report gathers the quality indicators for a processed experiment
+into a single self-contained HTML file that can be shared, emailed or
+archived. This recipe assembles one from a fully processed
+`MRMhubExperiment`: a summary of sample and feature counts, the QC CV
+distribution, run-order scatter plots for the least reproducible
+features, a feature pass/fail table, calibration metrics where a
+calibration was run, and any excluded analyses. Each piece can be
+dropped into the parameterized Quarto template given at the end, so the
+same report regenerates for any study.
+
+The report reads an experiment that has already been through import,
+metadata annotation, normalization and QC-metric calculation:
+
+``` r
+
+library(mrmhub)
+library(dplyr)
+library(ggplot2)
+library(gt)
+
+mexp <- readRDS("results/mexp_processed.rds")
+```
+
+## Summary table
+
+A compact overview: counts of analyses, samples, blanks and features,
+the number of batches, and whether drift and batch correction were
+applied.
+
+``` r
+
+summary_tbl <- tibble::tibble(
+  Metric = c("Total analyses", "Study samples (SPL)", "QC samples",
+             "Blanks", "Features (total)", "Features (measured)",
+             "Batches", "Drift corrected?", "Batch corrected?"),
+  Value = c(
+    get_analysis_count(mexp),
+    mexp@annot_analyses |> filter(qc_type == "SPL") |> nrow(),
+    mexp@annot_analyses |> filter(grepl("QC", qc_type)) |> nrow(),
+    mexp@annot_analyses |> filter(grepl("BLK", qc_type)) |> nrow(),
+    nrow(mexp@annot_features),
+    get_feature_count(mexp),
+    length(unique(mexp@annot_analyses$batch_id)),
+    ifelse(any(mexp@var_drift_corrected), "Yes", "No"),
+    ifelse(any(mexp@var_batch_corrected), "Yes", "No")
+  )
+)
+
+summary_tbl |> gt::gt() |> gt::tab_header(title = "Study Summary")
+```
+
+## CV distribution
+
+The coefficient of variation across the batch QC (BQC) samples is the
+primary precision metric; the histogram shows how many features fall
+within a chosen CV limit. The 30 % line here is illustrative. See
+[Sample types and QC
+roles](https://slinghub.github.io/MRMhub/quant/articles/manual-06-sample-types.md)
+for which QC types drive this metric.
+
+``` r
+
+cv_data <- mexp@metrics_qc |>
+  select(feature_id, cv = norm_intensity_cv_bqc) |>
+  filter(!is.na(cv))
+
+ggplot(cv_data, aes(x = cv)) +
+  geom_histogram(binwidth = 5, fill = "#5B8FA8", colour = "white") +
+  geom_vline(xintercept = 30, linetype = "dashed", colour = "red") +
+  labs(
+    title = "QC CV Distribution",
+    subtitle = paste0(sum(cv_data$cv <= 30), "/", nrow(cv_data),
+                      " features with CV \u2264 30%"),
+    x = "CV (%)", y = "Count"
+  ) +
+  theme_minimal()
+```
+
+## Run-order scatter for the worst features
+
+Plotting the least reproducible features against acquisition order shows
+whether the high CV comes from drift, a step change between batches, or
+scattered outliers.
+
+``` r
+
+top_cv_features <- cv_data |>
+  arrange(desc(cv)) |>
+  head(4) |>
+  pull(feature_id)
+
+plots <- lapply(top_cv_features, function(feat) {
+  plot_runscatter(mexp,
+                  variable = "norm_intensity",
+                  include_feature_filter = feat,
+                  qc_types = c("BQC", "SPL")) +
+    ggtitle(feat)
+})
+
+if (requireNamespace("patchwork", quietly = TRUE)) {
+  patchwork::wrap_plots(plots, ncol = 2)
+}
+```
+
+## Feature pass/fail table
+
+A per-feature verdict from the BQC CV and D-ratio. The thresholds below
+(CV ≤ 30 %, D-ratio ≤ 0.5) are illustrative defaults; MRMhub’s own
+feature filtering is applied with
+[`filter_features_qc()`](https://slinghub.github.io/MRMhub/quant/reference/filter_features_qc.md).
+
+``` r
+
+qc_table <- mexp@metrics_qc |>
+  select(feature_id, norm_intensity_cv_bqc, normint_dratio_sd_bqc) |>
+  mutate(
+    cv_pass = norm_intensity_cv_bqc <= 30,
+    dratio_pass = normint_dratio_sd_bqc <= 0.5,
+    status = case_when(
+      cv_pass & dratio_pass ~ "PASS",
+      !cv_pass & !dratio_pass ~ "FAIL (CV + D-ratio)",
+      !cv_pass ~ "FAIL (CV)",
+      !dratio_pass ~ "FAIL (D-ratio)"
+    )
+  ) |>
+  arrange(desc(norm_intensity_cv_bqc))
+
+qc_table |>
+  gt::gt() |>
+  gt::fmt_number(
+    columns = c(norm_intensity_cv_bqc, normint_dratio_sd_bqc),
+    decimals = 1) |>
+  gt::data_color(
+    columns = status,
+    fn = function(x) ifelse(x == "PASS", "#d4e8d4", "#f8d4d4")
+  ) |>
+  gt::tab_header(title = "Feature QC Summary")
+```
+
+## Calibration summary
+
+Where the experiment was quantified against external calibration curves,
+the fit metrics summarise each curve: model, weighting, R² and the
+calibrated range.
+
+``` r
+
+if (nrow(mexp@metrics_calibration) > 0) {
+  cal_summary <- get_calibration_metrics(mexp) |>
+    select(
+      feature_id, r2, fit_model, fit_weighting,
+      lowest_cal, highest_cal) |>
+    arrange(r2)
+
+  cal_summary |>
+    gt::gt() |>
+    gt::fmt_number(columns = c(r2, lowest_cal, highest_cal), decimals = 4) |>
+    gt::tab_header(title = "Calibration Curve Metrics")
+}
+```
+
+## Excluded analyses
+
+Any analyses removed from processing and reporting, kept in the report
+for the audit trail.
+
+``` r
+
+if (!all(is.na(mexp@analyses_excluded))) {
+  tibble::tibble(
+    analysis_id = mexp@analyses_excluded,
+    reason = "Excluded during processing"
+  ) |> gt::gt() |> gt::tab_header(title = "Excluded Analyses")
+}
+```
+
+## Parameterized Quarto template
+
+**Full template (click to expand)**
+
+Save as `qc-report-template.qmd`:
+
+    ---
+    title: "QC Report"
+    date: today
+    format:
+      html:
+        self-contained: true
+        toc: true
+    params:
+      rds_path: "results/mexp_processed.rds"
+    ---
+
+Then include each section above as a code chunk in the template.
+
+Render the template:
+
+``` r
+
+quarto::quarto_render(
+  "qc-report-template.qmd",
+  execute_params = list(rds_path = "results/mexp_processed.rds"))
+```
+
+## Tips
+
+- **Self-contained HTML**: a single file that can be emailed or
+  archived.
+- **Parameterize** the RDS path so the same template works for any
+  study.
+- **Date stamp** (`date: today`) for an audit trail.
+- **Session info** at the end for reproducibility.
+- **Export the figures too**:
+  `save_plot(p, "figures/cv", format = c("pdf", "png"), width = 180, height = 120)`
+  writes a print-ready vector file and a web-ready raster one in a
+  single call. See [Saving
+  plots](https://slinghub.github.io/MRMhub/quant/articles/manual-08-visualization.html#saving-plots).
+
+## Next steps
+
+- [Basic MRMhub
+  workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md):
+  full processing before reporting
+- [External calibration &
+  QC](https://slinghub.github.io/MRMhub/quant/articles/tutorial-06-external-calibration.md):
+  calibration workflow
+- [Troubleshooting &
+  FAQ](https://slinghub.github.io/MRMhub/quant/articles/manual-10-troubleshooting.md):
+  common issues

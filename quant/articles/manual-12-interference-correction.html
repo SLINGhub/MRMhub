@@ -17,11 +17,13 @@
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <meta property="og:title" content="Isotopic interference correction">
-<meta name="description" content="Reference for MRMhub's LICAR-based isotopic interference correction: the
-mrm_pattern labels, the MRM and MS1 derivation levels, and the co-elution rule.
+<meta name="description" content="Reference for MRMhub's isotopic interference correction: the fragment-based
+(MRM) and whole-molecule (MS1) derivation levels, the co-elution requirement,
+and the provenance of the derived contribution factors.
 ">
-<meta property="og:description" content="Reference for MRMhub's LICAR-based isotopic interference correction: the
-mrm_pattern labels, the MRM and MS1 derivation levels, and the co-elution rule.
+<meta property="og:description" content="Reference for MRMhub's isotopic interference correction: the fragment-based
+(MRM) and whole-molecule (MS1) derivation levels, the co-elution requirement,
+and the provenance of the derived contribution factors.
 ">
 <meta property="og:image" content="https://slinghub.github.io/MRMhub/quant/logo.svg">
 </head>
@@ -45,30 +47,43 @@ mrm_pattern labels, the MRM and MS1 derivation levels, and the co-elution rule.
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-get-started" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Get Started</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-get-started">
-<li><a class="dropdown-item" href="../articles/manual-01-key-concepts.html">MRMhub overview</a></li>
+<li><a class="dropdown-item" href="../articles/tutorial-13-intro-to-r-quarto-mrmhub.html">Intro to R, Quarto &amp; MRMhub</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-01-key-concepts.html">Key concepts of MRMhub</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/manual-00-installation.html">Installation</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-13-getting-started-r-quarto.html">Getting started with R and Quarto notebooks</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-02-getting-started-mrmhub.html">Getting started with MRMhub</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-12-workflow-builder.html">Using the workflow builder</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Quick tour</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="../articles/manual-10-troubleshooting.html">Troubleshooting &amp; FAQ</a></li>
   </ul>
 </li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-tutorials" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Tutorials</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-tutorials">
-<li><h6 class="dropdown-header" data-toc-skip>Example workflows</h6></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-03-lipidomics-workflow.html">Lipidomics</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-06-external-calibration.html">Quantitative assay with external calibration</a></li>
+<li><h6 class="dropdown-header" data-toc-skip>Start here</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-13-intro-to-r-quarto-mrmhub.html">Intro to R, Quarto &amp; MRMhub</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Quick tour</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-12-workflow-builder.html">Build a workflow (no code)</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-01-prep-data.html">Preparing &amp; importing data</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-02-basic-workflow.html">Basic MRMhub workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-03-lipidomics-workflow.html">Lipidomics (full workflow)</a></li>
     <li><hr class="dropdown-divider"></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-01-prep-data.html">Preparing and importing data</a></li>
-    <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Data processing</h6></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-11-interference-correction.html">Correcting isotopic interference</a></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Techniques</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-04-drift-correction.html">Drift and batch correction</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-07-calibration-reference.html">Calibration by a reference sample</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-06-external-calibration.html">Quantification with external calibration</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-07-calibration-reference.html">Calibration by reference sample</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-11-interference-correction.html">Isotopic interference correction</a></li>
     <li><hr class="dropdown-divider"></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-05-run-scatter.html">Exploring QC: RunScatter and PCA</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-08-export-formats.html">Exporting results</a></li>
+    <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-05-run-scatter.html">RunScatter and PCA</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Downstream / export</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-08-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Recipes</h6></li>
+    <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-04-validate-metadata.html">Validate &amp; fix metadata</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul>
 </li>
 <li class="active nav-item dropdown">
@@ -78,32 +93,32 @@ mrm_pattern labels, the MRM and MS1 derivation levels, and the co-elution rule.
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Getting started</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-00-installation.html">Installation</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-01-key-concepts.html">MRMhub overview</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-01-key-concepts.html">Overview</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Preparing and running</h6></li>
-    <li><a class="dropdown-item" href="../articles/manual-04-data-import.html">Importing analytical data</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-05-metadata.html">Metadata tables &amp; matching</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-12-interference-correction.html">Isotopic interference correction</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-07-corrections.html">Drift and batch correction</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-11-quarto-workflows.html">Quarto workflows</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-04-data-import.html">Importing Analytical Data</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-05-metadata.html">Metadata Tables &amp; Matching</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-07-corrections.html">Drift and Batch Correction</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-12-interference-correction.html">Isotopic Interference Correction</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-11-quarto-workflows.html">Quarto Workflows</a></li>
     <li><hr class="dropdown-divider"></li>
-    <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation functions</a></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
+    <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-13-plot-customization.html">Customising Plots</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Getting Help from an AI Assistant</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
-    <li><a class="dropdown-item" href="../articles/manual-02-data-object.html">The MRMhubExperiment data object</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-13-function-map.html">Function map</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-02-data-object.html">The MRMhubExperiment Data Object</a></li>
     <li><a class="dropdown-item" href="../articles/manual-14-glossary.html">Glossary</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-03-design-decisions.html">Design decisions</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-06-sample-types.html">Sample types &amp; QC roles</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Getting help from an AI assistant</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-03-design-decisions.html">Design Decisions</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-06-sample-types.html">Sample Types &amp; QC Roles</a></li>
     <li><a class="dropdown-item" href="../articles/manual-10-troubleshooting.html">Troubleshooting &amp; FAQ</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">NEWS</a></li>
       </ul>
 <ul class="navbar-nav">
-<li class="nav-item"><a class="nav-link" href="../articles/manual-10-troubleshooting.html">Help</a></li>
-<li class="nav-item"><a class="nav-link" href="../news/index.html">NEWS</a></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://slinghub.github.io/MRMhub/">← MRMhub home</a></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://slinghub.github.io/MRMhub/integrator/">INTEGRATOR ↗</a></li>
 <li class="nav-item"><form class="form-inline" role="search">
@@ -119,19 +134,13 @@ mrm_pattern labels, the MRM and MS1 derivation levels, and the co-elution rule.
 
 
 
-<link href="manual-12-interference-correction_files/htmltools-fill-0.5.9/fill.css" rel="stylesheet">
-<script src="manual-12-interference-correction_files/htmlwidgets-1.6.4/htmlwidgets.js"></script><link href="manual-12-interference-correction_files/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet">
-<script src="manual-12-interference-correction_files/datatables-binding-0.34.0/datatables.js"></script><link href="manual-12-interference-correction_files/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
-<link href="manual-12-interference-correction_files/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet">
-<script src="manual-12-interference-correction_files/dt-core-1.13.6/js/jquery.dataTables.min.js"></script><link href="manual-12-interference-correction_files/nouislider-7.0.10/jquery.nouislider.min.css" rel="stylesheet">
-<script src="manual-12-interference-correction_files/nouislider-7.0.10/jquery.nouislider.min.js"></script><link href="manual-12-interference-correction_files/selectize-0.12.0/selectize.bootstrap3.css" rel="stylesheet">
-<script src="manual-12-interference-correction_files/selectize-0.12.0/selectize.min.js"></script><link href="manual-12-interference-correction_files/crosstalk-1.2.2/css/crosstalk.min.css" rel="stylesheet">
-<script src="manual-12-interference-correction_files/crosstalk-1.2.2/js/crosstalk.min.js"></script><div class="row">
+
+<div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Isotopic interference correction</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/mrmhub-gui-v1.2.1/vignettes/articles/manual-12-interference-correction.Rmd" class="external-link"><code>vignettes/articles/manual-12-interference-correction.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/development/vignettes/articles/manual-12-interference-correction.Rmd" class="external-link"><code>vignettes/articles/manual-12-interference-correction.Rmd</code></a></small>
       <div class="d-none name"><code>manual-12-interference-correction.Rmd</code></div>
     </div>
 
@@ -140,105 +149,32 @@ mrm_pattern labels, the MRM and MS1 derivation levels, and the co-elution rule.
 <p class="page-kind page-kind-manual">
 Manual
 </p>
-<p>In class-based targeted assays, the natural M+2 isotopologue of a
-lighter species can fall in the transition window of a species two mass
-units heavier and inflate its measured area. MRMhub corrects this with
-the LICAR method <span class="citation">(Gao et al. 2021)</span>: for
-each affected (target) feature it subtracts a fixed fraction <em>K</em>
-of the interference source’s area, where <em>K</em> is the source’s
-theoretical M+2 abundance. This is a Type II correction (overlap between
-different species); Type I natural-abundance (MID) correction of a
-compound’s own isotopes is not performed.</p>
-<p>For MRM data the factor is computed at the fragment, not the whole
-molecule. Whether the heavy isotope ends up on the product ion or on the
-neutral loss changes <em>K</em>, so a whole-molecule (MS1) factor does
-not give the right value for a fragment transition. Class-based LC-MRM
-therefore uses <code>level = "MRM"</code>; <code>level = "MS1"</code> is
-reserved for genuine full-scan data and is not a fallback when a product
-<em>m/z</em> is missing.</p>
-<p>The <a href="tutorial-11-interference-correction.html">Isotopic
-interference correction tutorial</a> gives the step-by-step workflow;
-this page is the concept and label reference.</p>
+<p>In targeted assays that measure many species of one lipid class under
+a shared precursor or product scan, the natural-abundance heavy
+isotopologues (chiefly M+2 from two <code>¹³C</code>) of a lighter
+species can fall into the transition window of a species two mass units
+heavier. The heavier species’ measured area is then inflated by a fixed
+fraction of the lighter species’ area. MRMhub removes this bias with a
+contribution-based subtraction ported from the LICAR method <span class="citation">(Gao et al. 2021)</span>: for each affected
+(<em>victim</em>) feature it subtracts a proportion <code>K</code> of
+each <em>interfering</em> feature’s area, where <code>K</code> is the
+interferer’s theoretical M+2 relative abundance.</p>
+<p>This page is the conceptual reference for the correction. The
+step-by-step workflow (annotating <code>mrm_pattern</code>, deriving
+relationships, inspecting them, and applying the subtraction) is covered
+in the <a href="tutorial-11-interference-correction.html">Interference
+correction tutorial</a>.</p>
 <div class="section level2">
-<h2 id="the-mrm_pattern-annotation">The <code>mrm_pattern</code> annotation<a class="anchor" aria-label="anchor" href="#the-mrm_pattern-annotation"></a>
+<h2 id="two-derivation-levels-one-subtraction-engine">Two derivation levels, one subtraction engine<a class="anchor" aria-label="anchor" href="#two-derivation-levels-one-subtraction-engine"></a>
 </h2>
-<p>Automatic derivation needs one hand-added column,
-<code>mrm_pattern</code>, in the <strong>Features</strong> sheet of the
-metadata workbook. It names the lipid class and the product-ion type,
-from which <code><a href="../reference/calc_isotopic_interferences.html">calc_isotopic_interferences()</a></code> builds the
-fragment formula; the precursor and product <em>m/z</em> and the
-polarity come from the imported data or the metadata. Feature names are
-parsed with rgoslin, so the usual lipid shorthand is accepted;
-fatty-acyl (FA) and sphingoid-base (LCB) patterns additionally need a
-chain-resolved name (<code>PC 16:0_18:1</code>,
-<code>Cer 18:1;O2/16:0</code>), while a sum-composition name
-(<code>PC 34:1</code>) suffices for head-group patterns.</p>
-<table class="table">
-<caption>The <code>mrm_pattern</code> column in the Features metadata
-sheet (other feature columns omitted; values illustrative).</caption>
-<colgroup>
-<col width="20%">
-<col width="16%">
-<col width="15%">
-<col width="13%">
-<col width="10%">
-<col width="23%">
-</colgroup>
-<thead><tr class="header">
-<th align="left">feature_id</th>
-<th align="left">feature_class</th>
-<th align="right">precursor_mz</th>
-<th align="right">product_mz</th>
-<th align="left">polarity</th>
-<th align="left">mrm_pattern</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">PC 34:1</td>
-<td align="left">PC</td>
-<td align="right">760.6</td>
-<td align="right">184.1</td>
-<td align="left">Pos</td>
-<td align="left">PC (Pos) Pro=184.1</td>
-</tr>
-<tr class="even">
-<td align="left">SM 34:1;O2</td>
-<td align="left">SM</td>
-<td align="right">703.6</td>
-<td align="right">184.1</td>
-<td align="left">Pos</td>
-<td align="left">SM (Pos) Pro=184.1</td>
-</tr>
-<tr class="odd">
-<td align="left">Cer 18:1;O2/16:0</td>
-<td align="left">Cer</td>
-<td align="right">538.5</td>
-<td align="right">264.3</td>
-<td align="left">Pos</td>
-<td align="left">Cer (Pos) SphB-2H2O</td>
-</tr>
-</tbody>
-</table>
-<p>On import the label is validated: an unknown label is an error, and a
-label whose class disagrees with the feature name, or a sum-composition
-name under an FA/LCB pattern, is a warning. The <a href="../reference/save_metadata_templates.html"><code>save_metadata_templates()</code></a>
-workbook offers the labels as a filtered dropdown.</p>
-<p>Most lipidomics assays use a handful of classes: the head-group
-patterns (<code>PC (Pos) Pro=184.1</code>,
-<code>SM (Pos) Pro=184.1</code>, <code>LPC (Pos) Pro=184.1</code>,
-<code>PE (Pos) Pre-Pro=141</code>), the sphingoid-base patterns for
-ceramides (<code>Cer (Pos) SphB-2H2O</code>,
-<code>Hex1Cer (Pos) SphB-2H2O</code>), and, in negative mode, the
-fatty-acyl patterns (<code>PC (Neg, FA) FA</code>,
-<code>PE (Neg) FA</code>). Not every valid label is auto-derived (see
-the note below the list). The complete list is at the <a href="#mrm-pattern-labels">end of this page</a>.</p>
-</div>
-<div class="section level2">
-<h2 id="derivation-levels">Derivation levels<a class="anchor" aria-label="anchor" href="#derivation-levels"></a>
-</h2>
-<p><code><a href="../reference/calc_isotopic_interferences.html">calc_isotopic_interferences()</a></code> discovers the overlaps and
-stores them in <code>annot_interferences</code>; the <code>level</code>
-argument selects how <em>K</em> is computed.</p>
+<p>Interference relationships are discovered by <a href="../reference/calc_isotopic_interferences.html"><code>calc_isotopic_interferences()</code></a>
+and stored in the <code>annot_interferences</code> slot as a long table
+of edges
+<code>(feature_id, interference_feature_id, interference_contribution, overlap_type, source)</code>.
+A shared engine applies them: <a href="../reference/correct_isotopic_interferences.html"><code>correct_isotopic_interferences()</code></a>
+subtracts the auto-derived (isotopic) edges, and <a href="../reference/correct_custom_interferences.html"><code>correct_custom_interferences()</code></a>
+the ones you declared in the metadata. Two derivation <em>levels</em>
+feed the engine:</p>
 <table class="table">
 <colgroup>
 <col width="33%">
@@ -247,20 +183,34 @@ argument selects how <em>K</em> is computed.</p>
 </colgroup>
 <thead><tr class="header">
 <th></th>
-<th><code>level = "MRM"</code></th>
-<th><code>level = "MS1"</code></th>
+<th>
+<strong>MRM</strong> (<code>level = "MRM"</code>)</th>
+<th>
+<strong>MS1</strong> (<code>level = "MS1"</code>)</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
 <td>Intended data</td>
-<td>Class-based LC-MRM (precursor <strong>and</strong> product
-<em>m/z</em>)</td>
-<td>Genuine MS1 / full-scan (precursor <em>m/z</em> only)</td>
+<td>Class-based LC-MRM (precursor <strong>and</strong> product m/z)</td>
+<td>Genuine MS1 / full-scan (precursor m/z only)</td>
 </tr>
 <tr class="even">
 <td>Correction basis</td>
-<td>Fragment formula (product ion or neutral loss)</td>
+<td>Fragment-level (front + back)</td>
 <td>Whole-molecule precursor formula</td>
+</tr>
+<tr class="odd">
+<td>Overlaps per feature</td>
+<td>Up to two (front and back)</td>
+<td>One</td>
+</tr>
+<tr class="even">
+<td>Factor source</td>
+<td>Ported LICAR per-class fragment offsets →
+<code><a href="https://rdrr.io/pkg/enviPat/man/isowrap.html" class="external-link">enviPat::isowrap</a></code> M+2</td>
+<td>
+<code>mrmhub</code> native <code>isopattern</code> M+2 of the
+molecular formula</td>
 </tr>
 <tr class="odd">
 <td>Pairing scope</td>
@@ -270,80 +220,150 @@ argument selects how <em>K</em> is computed.</p>
 </td>
 </tr>
 <tr class="even">
-<td>Applies to</td>
-<td>Lipids (needs the class fragment chemistry)</td>
-<td>Any compound with a formula</td>
+<td>Chain chemistry</td>
+<td>rgoslin-parsed per-chain C / double bonds</td>
+<td>Not required (formula only)</td>
 </tr>
 </tbody>
 </table>
-<p>At the MRM level a head-group transition carries a single overlap. A
-fatty-acyl or sphingoid-base transition can carry two at once: one
-source whose extra mass sits on the retained product ion, and one on the
-neutral loss. The correction subtracts both. Each overlap is one row of
-<code>annot_interferences</code>, with <code>overlap_type</code>
-<code>m2_head</code>, <code>m2_front</code>, <code>m2_back</code>, or
-<code>ms1_m2</code>, and <code>source</code> <code>auto</code> (derived)
-or <code>manual</code> (declared in the metadata).
-<code><a href="../reference/calc_isotopic_interferences.html">calc_isotopic_interferences()</a></code> warns when MS1 derivation is
-run on data whose product <em>m/z</em> differs from the precursor,
-i.e. real MRM transitions.</p>
+<p>The MRM level is lipid-scoped because it needs the class
+fragmentation chemistry; the MS1 level is purely formula-based and
+therefore extends to non-lipids. Interferences beyond the reach of
+either level are handled through the manual annotation path (see the
+tutorial).</p>
 </div>
 <div class="section level2">
-<h2 id="co-elution">Co-elution<a class="anchor" aria-label="anchor" href="#co-elution"></a>
+<h2 id="why-mrm-needs-front-and-back">Why MRM needs front <em>and</em> back<a class="anchor" aria-label="anchor" href="#why-mrm-needs-front-and-back"></a>
 </h2>
-<p>The correction subtracts the source’s full area, so it applies only
-where the interference source and target peaks co-elute and/or are
-co-integrated. The experimental <code>check_coelution = TRUE</code>
-enforces this, dropping <em>m/z</em>-matched pairs that are
-chromatographically resolved. It is off by default while the gate is
-validated.</p>
+<p>Under class-based separation a victim transition <code>(m, p)</code>
+can be perturbed by <strong>two different</strong> interferers, each one
+M+2 lighter at the precursor. Their M+2 isotopologue reaches the
+victim’s precursor window, but they differ in where that +2 sits
+relative to the product ion:</p>
+<ul>
+<li>a <strong>front</strong> interferer shares the product ion
+(<code>ΔQ3 = 0</code>), the +2 is on the neutral loss;</li>
+<li>a <strong>back</strong> interferer carries the +2 on the product ion
+itself (<code>ΔQ3 = +2</code>).</li>
+</ul>
+<p>Each contributes its own M+2 factor, so a victim can carry a front
+edge and a back edge simultaneously. The engine composes them as
+<code>X − front − back</code>.</p>
+<svg viewbox="0 0 460 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="m/z scatter of front and back interferers overlapping the victim transition"><defs><marker id="ah" markerwidth="8" markerheight="8" refx="6" refy="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#2C3E50"></path></marker></defs><line x1="55" y1="205" x2="425" y2="205" stroke="#2C3E50" stroke-width="1.2"></line><line x1="55" y1="205" x2="55" y2="30" stroke="#2C3E50" stroke-width="1.2"></line><text x="240" y="235" font-family="sans-serif" font-size="11" fill="#2C3E50" text-anchor="middle">Q1
+precursor m/z →</text><text x="20" y="120" font-family="sans-serif" font-size="11" fill="#2C3E50" text-anchor="middle" transform="rotate(-90 20 120)">Q3
+product m/z →</text><line x1="250" y1="110" x2="332" y2="110" stroke="#2C3E50" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#ah)"></line><line x1="252" y1="178" x2="333" y2="118" stroke="#2C3E50" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#ah)"></line><circle cx="340" cy="110" r="8" fill="#5B8FA8" stroke="#2C3E50" stroke-width="1.5"></circle><circle cx="250" cy="110" r="6" fill="#C27171" stroke="#9c4a4a" stroke-width="1"></circle><circle cx="250" cy="178" r="6" fill="#D4914E" stroke="#9a6427" stroke-width="1"></circle><text x="352" y="107" font-family="sans-serif" font-size="11" fill="#2C3E50">victim
+B (m, p)</text><text x="150" y="107" font-family="sans-serif" font-size="10" fill="#9c4a4a">front
+(m−2, p)</text><text x="150" y="182" font-family="sans-serif" font-size="10" fill="#9a6427">back
+(m−2, p−2)</text><text x="292" y="102" font-family="sans-serif" font-size="9" fill="#2C3E50" text-anchor="middle">M+2
+· ΔQ3=0</text><text x="300" y="152" font-family="sans-serif" font-size="9" fill="#2C3E50" text-anchor="middle">M+2
+· ΔQ3=+2</text></svg>
 </div>
 <div class="section level2">
-<h2 id="provenance">Provenance<a class="anchor" aria-label="anchor" href="#provenance"></a>
+<h2 id="mrm-correction-is-fragment-based-ms1-is-not-a-fallback">MRM correction is fragment-based: MS1 is not a fallback<a class="anchor" aria-label="anchor" href="#mrm-correction-is-fragment-based-ms1-is-not-a-fallback"></a>
 </h2>
-<p>The factors are theoretical isotope abundances, computed with
-<code>enviPat</code> 2.8 <span class="citation">(Loos et al.
-2015)</span>. The version is pinned to reproduce the published LICAR
-values, and <code><a href="../reference/calc_isotopic_interferences.html">calc_isotopic_interferences()</a></code> warns when a
-different version is installed. Derivation is deterministic, and the
-derived <code>annot_interferences</code> table travels with the saved
-object and the report workbook, so the correction is reproducible from
-the metadata alone.</p>
+<div class="callout callout-caution">
+<p><strong>MS1 is never a substitute for MRM correction.</strong> For
+MRM data the isotopic correction must be <em>fragment-based</em>: the
+contribution of a heavy isotope to a transition depends on whether that
+isotope ends up on the retained product ion or on the neutral loss <span class="citation">(Gao et al. 2021)</span>. The whole-molecule
+(<code>level = "MS1"</code>) factor ignores that split and is valid
+<strong>only</strong> for genuine MS1 / full-scan measurements. It must
+<strong>not</strong> be used for MRM data that merely happens to lack a
+recorded product m/z. Use <code>level = "MRM"</code> (and supply the
+product m/z) there. <code><a href="../reference/calc_isotopic_interferences.html">calc_isotopic_interferences()</a></code> warns
+when MS1 derivation is run on data whose product m/z differs from the
+precursor (i.e. real MRM transitions).</p>
+</div>
+<p>Because the front and back fragments carry different numbers of
+carbons, their M+2 abundances differ, and a single precursor-level
+factor would be wrong for at least one of the two overlaps. This is the
+core reason the MRM level reproduces the class fragment chemistry rather
+than falling back to the molecular formula.</p>
 </div>
 <div class="section level2">
-<h2 id="mrm-pattern-labels">
-<code>mrm_pattern</code> labels<a class="anchor" aria-label="anchor" href="#mrm-pattern-labels"></a>
+<h2 id="co-elution-decides-validity">Co-elution decides validity<a class="anchor" aria-label="anchor" href="#co-elution-decides-validity"></a>
 </h2>
-<p>The valid labels follow the original LICAR class list <span class="citation">(Gao et al. 2021)</span>, grouped by the product-ion
-type the transition monitors: head group, fatty acyl (FA), and sphingoid
-base (LCB), which MRMhub extends with neutral-loss and reversed-phase
-(RPLC) patterns. <a href="../reference/licar_pattern_choices.html"><code>licar_pattern_choices()</code></a>
-returns the same list from R.</p>
-<div class="datatables html-widget html-fill-item" id="htmlwidget-ac96cb3ee4656e2e9ec3" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-ac96cb3ee4656e2e9ec3">{"x":{"filter":"top","vertical":false,"filterHTML":"<tr>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n<\/tr>","data":[["Head group","Head group","Head group","Head group","Head group","Head group","Head group","Head group","Head group","Head group","Head group","Head group","Head group","Head group","Head group","Head group","Head group","Head group","Head group","Head group","Head group","Head group","Head group","Head group","Fatty acyl (FA)","Fatty acyl (FA)","Fatty acyl (FA)","Fatty acyl (FA)","Fatty acyl (FA)","Fatty acyl (FA)","Fatty acyl (FA)","Fatty acyl (FA)","Fatty acyl (FA)","Fatty acyl (FA)","Fatty acyl (FA)","Fatty acyl (FA)","Fatty acyl (FA)","Fatty acyl (FA)","Fatty acyl (FA)","Fatty acyl (FA)","Fatty acyl (FA)","Fatty acyl (FA)","Fatty acyl (FA)","Fatty acyl (FA)","Fatty acyl (FA)","Fatty acyl (FA)","Fatty acyl (FA)","Fatty acyl (FA)","Sphingoid base (LCB)","Sphingoid base (LCB)","Sphingoid base (LCB)","Sphingoid base (LCB)","Sphingoid base (LCB)","Sphingoid base (LCB)","Sphingoid base (LCB)","Sphingoid base (LCB)","Sphingoid base (LCB)","Neutral loss","Neutral loss","Neutral loss","Neutral loss","Neutral loss","RPLC (cross-class)","RPLC (cross-class)"],["AcylCarnitine (Pos) Pro=85","LPC (Pos) Pro=184.1","LPC (Pos) Pro=104.1","LPC d9 Pro=193.1","LPC-O (Pos) Pro=104.1","LPC-O (Pos, qualifier) Pro=184.1","LPE (Pos) Pre-Pro=141","LPE (Neg) Pro=196.1","LPI (Pos) Pre-Pro=277","PC (Pos) Pro=184.1","PC d9 Pro=193.1","PCO (Pos) Pro=184.1","PCP (Pos) Pro=184.1","PE (Pos) Pre-Pro=141","PE (Neg) Pro=196.1","PG (Pos) Pre-Pro=189","PG (Neg) Pro=153","PI (Pos) Pre-Pro=277","PI (Neg) Pro=241","PS (Pos) Pre-Pro=185","PS (Neg) Pre-Pro=87","S1P (Pos) Pro=60.1","S1Pql (Pos, QL) Pro=113","SM (Pos) Pro=184.1","CL (Neg) FA","LPC (Neg, FA) FA","LPC (Neg, AA) FA","LPC (Neg, -CH3) FA","LPE (Neg) FA","LPI (Neg) FA","LPG (Neg) FA","FA (Neg) SIM","PC (Neg, FA) FA","PCO (Neg, FA) FA","PCP (Neg, FA) FA","PC (Neg, AA) FA","PC (Neg, -CH3) FA","PCO (Neg, AA) FA","PCO (Neg, -CH3) FA","PCP (Neg, AA) FA","PCP (Neg, -CH3) FA","PE (Neg) FA","PEO (Neg) FA","PEP (Neg) FA","PE-P (Pos) FA","PG (Neg) FA","PI (Neg) FA","PS (Neg) FA","Hex1Sph (Pos) SphB-H2O","Cer (Pos) SphB-2H2O","deoxyCer (Pos) SphB-H2O","dhCer (Pos) SphB-H2O","dhCer (Pos) SphB-2H2O","GM3 (Pos) SphB-2H2O","Hex1Cer (Pos) SphB-2H2O","Hex2Cer (Pos) SphB-2H2O","Hex3Cer (Pos) SphB-2H2O","CE (Pos) FANL","DG (Pos) FANL","TG (Pos) FANL","MG (Pos) Pre-Pro=109","MG (Pos) SIM","SM -&gt; PC Pro=184.1","PC-P -&gt; PC-O Pro=184.1"],["Pos","Pos","Pos","—","Pos","Pos","Pos","Neg","Pos","Pos","—","Pos","Pos","Pos","Neg","Pos","Neg","Pos","Neg","Pos","Neg","Pos","Pos","Pos","Neg","Neg","Neg","Neg","Neg","Neg","Neg","Neg","Neg","Neg","Neg","Neg","Neg","Neg","Neg","Neg","Neg","Neg","Neg","Neg","Pos","Neg","Neg","Neg","Pos","Pos","Pos","Pos","Pos","Pos","Pos","Pos","Pos","Pos","Pos","Pos","Pos","Pos","—","—"]],"container":"<table class=\"compact stripe\">\n  <thead>\n    <tr>\n      <th>Product-ion type<\/th>\n      <th>mrm_pattern<\/th>\n      <th>Polarity<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":12,"dom":"ftip","columnDefs":[{"name":"Product-ion type","targets":0},{"name":"mrm_pattern","targets":1},{"name":"Polarity","targets":2}],"order":[],"autoWidth":false,"orderClasses":false,"orderCellsTop":true,"lengthMenu":[10,12,25,50,100]}},"evals":[],"jsHooks":[]}</script><p>Automatic derivation covers the head-group, fatty-acyl (FA), and
-sphingoid-base (LCB) patterns. Neutral-loss classes (<code>CE</code>,
-<code>DG</code>, <code>TG</code>) and cardiolipin FA (<code>CL</code>)
-can be annotated but are not auto-derived at the MRM level:
-<code><a href="../reference/calc_isotopic_interferences.html">calc_isotopic_interferences()</a></code> skips them with a warning,
-and a correction for them must be declared manually with
-<code><a href="../reference/correct_custom_interferences.html">correct_custom_interferences()</a></code>. The RPLC labels and a few
-placeholder entries (<code>PC d9</code>, <code>MG</code>) are valid
-labels but are not offered in the template dropdown.</p>
+<p>An M+2 isotopologue elutes at the monoisotopic apex of its own
+species. An m/z match between a lighter interferer and a heavier victim
+is therefore a real interference <strong>only if the two
+co-elute</strong>: the correction subtracts <code>K ×</code> the
+interferer’s <em>full</em> area, so it is justified only when the
+victim’s integration window captures essentially all of that
+interferer’s M+2 peak.</p>
+<svg viewbox="0 0 720 210" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="three chromatogram panels: co-eluting valid, partial overlap over-subtracts, resolved do not correct"><rect x="75" y="55" width="80" height="110" fill="#2C3E50" opacity="0.05"></rect><line x1="75" y1="55" x2="75" y2="165" stroke="#2C3E50" stroke-width="1" stroke-dasharray="4 3" opacity="0.6"></line><line x1="155" y1="55" x2="155" y2="165" stroke="#2C3E50" stroke-width="1" stroke-dasharray="4 3" opacity="0.6"></line><path d="M70 165 C94.75 165 92.5 65 115 65 C137.5 65 135.25 165 160 165 Z" fill="#5B8FA8" fill-opacity="0.3" stroke="#2C3E50" stroke-width="1.5"></path><path d="M70 165 C94.75 165 92.5 123 115 123 C137.5 123 135.25 165 160 165 Z" fill="#C27171" fill-opacity="0.55" stroke="#9c4a4a" stroke-width="1"></path><line x1="15" y1="165" x2="225" y2="165" stroke="#2C3E50" stroke-width="1"></line><text x="120" y="30" font-family="sans-serif" font-size="12" fill="#2C3E50" text-anchor="middle" font-weight="bold">Co-eluting</text><text x="120" y="46" font-family="sans-serif" font-size="10" fill="#2C3E50" text-anchor="middle">apexes
+coincide</text><text x="120" y="188" font-family="sans-serif" font-size="11" fill="#6B9E5E" text-anchor="middle" font-weight="bold">✓
+correct (full K·A)</text><rect x="320" y="55" width="80" height="110" fill="#2C3E50" opacity="0.05"></rect><line x1="320" y1="55" x2="320" y2="165" stroke="#2C3E50" stroke-width="1" stroke-dasharray="4 3" opacity="0.6"></line><line x1="400" y1="55" x2="400" y2="165" stroke="#2C3E50" stroke-width="1" stroke-dasharray="4 3" opacity="0.6"></line><path d="M315 165 C339.75 165 337.5 65 360 65 C382.5 65 380.25 165 405 165 Z" fill="#5B8FA8" fill-opacity="0.3" stroke="#2C3E50" stroke-width="1.5"></path><path d="M273 165 C297.75 165 295.5 113 318 113 C340.5 113 338.25 165 363 165 Z" fill="#C27171" fill-opacity="0.55" stroke="#9c4a4a" stroke-width="1"></path><line x1="255" y1="165" x2="465" y2="165" stroke="#2C3E50" stroke-width="1"></line><text x="360" y="30" font-family="sans-serif" font-size="12" fill="#2C3E50" text-anchor="middle" font-weight="bold">Partial
+/ apex offset</text><text x="360" y="46" font-family="sans-serif" font-size="10" fill="#2C3E50" text-anchor="middle">window
+catches only A’s tail</text><text x="360" y="188" font-family="sans-serif" font-size="11" fill="#C27171" text-anchor="middle" font-weight="bold">⚠
+over-subtracts → drop</text><rect x="575" y="55" width="80" height="110" fill="#2C3E50" opacity="0.05"></rect><line x1="575" y1="55" x2="575" y2="165" stroke="#2C3E50" stroke-width="1" stroke-dasharray="4 3" opacity="0.6"></line><line x1="655" y1="55" x2="655" y2="165" stroke="#2C3E50" stroke-width="1" stroke-dasharray="4 3" opacity="0.6"></line><path d="M573 165 C596.1 165 594 65 615 65 C636 65 633.9 165 657 165 Z" fill="#5B8FA8" fill-opacity="0.3" stroke="#2C3E50" stroke-width="1.5"></path><path d="M497 165 C519.9 165 517 113 535 113 C553 113 550.1 165 573 165 Z" fill="#C27171" fill-opacity="0.55" stroke="#9c4a4a" stroke-width="1"></path><line x1="495" y1="165" x2="705" y2="165" stroke="#2C3E50" stroke-width="1"></line><text x="600" y="30" font-family="sans-serif" font-size="12" fill="#2C3E50" text-anchor="middle" font-weight="bold">Resolved</text><text x="600" y="46" font-family="sans-serif" font-size="10" fill="#2C3E50" text-anchor="middle">A’s
+M+2 outside window</text><text x="600" y="188" font-family="sans-serif" font-size="11" fill="#C27171" text-anchor="middle" font-weight="bold">✗
+don’t correct</text></svg><p><em>Blue = victim peak; rose = the interferer’s M+2 contribution;
+dashed = the victim integration window.</em></p>
+<p>The optional co-elution gate (the experimental
+<code>check_coelution = TRUE</code>; the default is
+<code>check_coelution = FALSE</code>) keeps an edge only when the
+interferer’s apex falls inside the victim’s integration window
+(<code>feature_int_start</code>..<code>feature_int_end</code>, from the
+imported integration borders, or <code>feature_rt ± FWHM</code> where
+borders are absent). Chromatographically resolved pairs are dropped and
+reported, because subtracting a full <code>K·A</code> there would delete
+real victim signal. Border overlap alone is necessary but not
+sufficient. Apex coincidence is the test. When no retention data are
+available the gate cannot be evaluated, a warning is emitted, and all
+m/z-matched edges are kept. This gate is a deliberate enhancement over
+LICAR, which assumes class co-elution with no per-pair retention
+check.</p>
+</div>
+<div class="section level2">
+<h2 id="provenance-and-reproducibility">Provenance and reproducibility<a class="anchor" aria-label="anchor" href="#provenance-and-reproducibility"></a>
+</h2>
+<p>The derived factors are theoretical isotope abundances and depend on
+the abundance engine:</p>
+<ul>
+<li>
+<strong>MRM</strong> uses LICAR’s <code><a href="https://rdrr.io/pkg/enviPat/man/isowrap.html" class="external-link">enviPat::isowrap</a></code>
+centroided M+2 (<code>resolution_list[[7]]</code>,
+<code>charge = 1</code>), which reproduces the published LICAR factors;
+the native <code>isopattern</code> differs by ~0.4 % and is not used at
+this level.</li>
+<li>
+<strong>MS1</strong> uses <code>mrmhub</code>’s native
+<code>isopattern</code> M+2 of the molecular formula, appropriate for a
+full-scan measurement.</li>
+</ul>
+<p>Both engines are pinned to <strong><code>enviPat</code> version
+2.8</strong> <span class="citation">(Loos et al. 2015)</span>, the
+reference used for the golden parity tests;
+<code><a href="../reference/calc_isotopic_interferences.html">calc_isotopic_interferences()</a></code> warns when a different
+version is installed. Because derivation is deterministic under that
+pin, re-importing the <code>mrm_pattern</code> annotation and re-running
+<code><a href="../reference/calc_isotopic_interferences.html">calc_isotopic_interferences()</a></code> regenerates identical edges.
+The metadata alone reproduces the correction. The exact factors
+additionally survive an <code>enviPat</code> upgrade because the derived
+<code>annot_interferences</code> table travels with the saved object and
+is written to the report workbook as a human-readable factor
+archive.</p>
+<p>Only the LICAR <em>data</em> (the per-class fragment offsets and the
+pattern labels) is vendored; the abundance calculation, name parsing
+(rgoslin), and subtraction are <code>mrmhub</code>’s own. This
+correction is distinct from <code>¹³C</code>/<code>¹⁵N</code>
+natural-abundance metabolic-flux (MID) correction, which MRMhub does not
+perform.</p>
 </div>
 <div class="section level2">
 <h2 id="next-steps">Next steps<a class="anchor" aria-label="anchor" href="#next-steps"></a>
 </h2>
 <ul>
 <li>
-<a href="tutorial-11-interference-correction.html">Isotopic
-interference correction tutorial</a>: the step-by-step workflow</li>
+<a href="tutorial-11-interference-correction.html">Interference
+correction</a>: the step-by-step workflow</li>
 <li>
 <a href="manual-07-corrections.html">Drift and batch correction</a>:
-applied after interference correction</li>
+apply after interference correction</li>
 <li>
 <a href="manual-02-data-object.html#feature-variables">The
-MRMhubExperiment data object</a>: how <code>_orig</code> preserves the
-raw intensities</li>
+MRMhubExperiment data object</a>: how <code>_orig</code> postfixes
+preserve raw values</li>
 <li>
 <a href="../reference/calc_isotopic_interferences.html"><code>calc_isotopic_interferences()</code></a>
 · <a href="../reference/correct_isotopic_interferences.html"><code>correct_isotopic_interferences()</code></a>:

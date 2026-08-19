@@ -17,11 +17,13 @@
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <meta property="og:title" content="Getting help from an AI assistant">
-<meta name="description" content="How to use Claude, ChatGPT, or a local model to plan, draft, and troubleshoot
-MRMhub QUANT workflows without exposing study data.
+<meta name="description" content="How a lab scientist can use Claude, ChatGPT, or a local model to help plan,
+write, and troubleshoot MRMhub QUANT workflows -- accurately, and without
+exposing study data.
 ">
-<meta property="og:description" content="How to use Claude, ChatGPT, or a local model to plan, draft, and troubleshoot
-MRMhub QUANT workflows without exposing study data.
+<meta property="og:description" content="How a lab scientist can use Claude, ChatGPT, or a local model to help plan,
+write, and troubleshoot MRMhub QUANT workflows -- accurately, and without
+exposing study data.
 ">
 <meta property="og:image" content="https://slinghub.github.io/MRMhub/quant/logo.svg">
 </head>
@@ -45,30 +47,43 @@ MRMhub QUANT workflows without exposing study data.
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-get-started" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Get Started</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-get-started">
-<li><a class="dropdown-item" href="../articles/manual-01-key-concepts.html">MRMhub overview</a></li>
+<li><a class="dropdown-item" href="../articles/tutorial-13-intro-to-r-quarto-mrmhub.html">Intro to R, Quarto &amp; MRMhub</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-01-key-concepts.html">Key concepts of MRMhub</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/manual-00-installation.html">Installation</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-13-getting-started-r-quarto.html">Getting started with R and Quarto notebooks</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-02-getting-started-mrmhub.html">Getting started with MRMhub</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-12-workflow-builder.html">Using the workflow builder</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Quick tour</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="../articles/manual-10-troubleshooting.html">Troubleshooting &amp; FAQ</a></li>
   </ul>
 </li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-tutorials" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Tutorials</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-tutorials">
-<li><h6 class="dropdown-header" data-toc-skip>Example workflows</h6></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-03-lipidomics-workflow.html">Lipidomics</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-06-external-calibration.html">Quantitative assay with external calibration</a></li>
+<li><h6 class="dropdown-header" data-toc-skip>Start here</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-13-intro-to-r-quarto-mrmhub.html">Intro to R, Quarto &amp; MRMhub</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-00-first-analysis.html">Quick tour</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-12-workflow-builder.html">Build a workflow (no code)</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-01-prep-data.html">Preparing &amp; importing data</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-02-basic-workflow.html">Basic MRMhub workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-03-lipidomics-workflow.html">Lipidomics (full workflow)</a></li>
     <li><hr class="dropdown-divider"></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-01-prep-data.html">Preparing and importing data</a></li>
-    <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Data processing</h6></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-11-interference-correction.html">Correcting isotopic interference</a></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Techniques</h6></li>
     <li><a class="dropdown-item" href="../articles/tutorial-04-drift-correction.html">Drift and batch correction</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-07-calibration-reference.html">Calibration by a reference sample</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-06-external-calibration.html">Quantification with external calibration</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-07-calibration-reference.html">Calibration by reference sample</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-11-interference-correction.html">Isotopic interference correction</a></li>
     <li><hr class="dropdown-divider"></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-05-run-scatter.html">Exploring QC: RunScatter and PCA</a></li>
-    <li><a class="dropdown-item" href="../articles/tutorial-08-export-formats.html">Exporting results</a></li>
+    <li><h6 class="dropdown-header" data-toc-skip>QC &amp; exploration</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-05-run-scatter.html">RunScatter and PCA</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Downstream / export</h6></li>
+    <li><a class="dropdown-item" href="../articles/tutorial-08-summarizedexperiment.html">Export to Bioconductor (SummarizedExperiment)</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Recipes</h6></li>
+    <li><a class="dropdown-item" href="../articles/recipe-02-custom-qc-report.html">Custom QC report</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-03-mztab-export.html">Import &amp; export mzTab-M</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-04-validate-metadata.html">Validate &amp; fix metadata</a></li>
+    <li><a class="dropdown-item" href="../articles/recipe-05-import-metadata.html">Import metadata from files or a template</a></li>
   </ul>
 </li>
 <li class="active nav-item dropdown">
@@ -78,32 +93,32 @@ MRMhub QUANT workflows without exposing study data.
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Getting started</h6></li>
     <li><a class="dropdown-item" href="../articles/manual-00-installation.html">Installation</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-01-key-concepts.html">MRMhub overview</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-01-key-concepts.html">Overview</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Preparing and running</h6></li>
-    <li><a class="dropdown-item" href="../articles/manual-04-data-import.html">Importing analytical data</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-05-metadata.html">Metadata tables &amp; matching</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-12-interference-correction.html">Isotopic interference correction</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-07-corrections.html">Drift and batch correction</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-11-quarto-workflows.html">Quarto workflows</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-04-data-import.html">Importing Analytical Data</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-05-metadata.html">Metadata Tables &amp; Matching</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-07-corrections.html">Drift and Batch Correction</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-12-interference-correction.html">Isotopic Interference Correction</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-11-quarto-workflows.html">Quarto Workflows</a></li>
     <li><hr class="dropdown-divider"></li>
-    <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation functions</a></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Results and downstream use</h6></li>
+    <li><a class="dropdown-item" href="../articles/manual-08-visualization.html">Visualisation Functions</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-13-plot-customization.html">Customising Plots</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Getting Help from an AI Assistant</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Reference</h6></li>
-    <li><a class="dropdown-item" href="../articles/manual-02-data-object.html">The MRMhubExperiment data object</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-13-function-map.html">Function map</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-02-data-object.html">The MRMhubExperiment Data Object</a></li>
     <li><a class="dropdown-item" href="../articles/manual-14-glossary.html">Glossary</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-03-design-decisions.html">Design decisions</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-06-sample-types.html">Sample types &amp; QC roles</a></li>
-    <li><a class="dropdown-item" href="../articles/manual-09-ai-assistants.html">Getting help from an AI assistant</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-03-design-decisions.html">Design Decisions</a></li>
+    <li><a class="dropdown-item" href="../articles/manual-06-sample-types.html">Sample Types &amp; QC Roles</a></li>
     <li><a class="dropdown-item" href="../articles/manual-10-troubleshooting.html">Troubleshooting &amp; FAQ</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">NEWS</a></li>
       </ul>
 <ul class="navbar-nav">
-<li class="nav-item"><a class="nav-link" href="../articles/manual-10-troubleshooting.html">Help</a></li>
-<li class="nav-item"><a class="nav-link" href="../news/index.html">NEWS</a></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://slinghub.github.io/MRMhub/">← MRMhub home</a></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://slinghub.github.io/MRMhub/integrator/">INTEGRATOR ↗</a></li>
 <li class="nav-item"><form class="form-inline" role="search">
@@ -125,7 +140,7 @@ MRMhub QUANT workflows without exposing study data.
       <img src="../logo.svg" class="logo" alt=""><h1>Getting help from an AI assistant</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/mrmhub-gui-v1.2.1/vignettes/articles/manual-09-ai-assistants.Rmd" class="external-link"><code>vignettes/articles/manual-09-ai-assistants.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/development/vignettes/articles/manual-09-ai-assistants.Rmd" class="external-link"><code>vignettes/articles/manual-09-ai-assistants.Rmd</code></a></small>
       <div class="d-none name"><code>manual-09-ai-assistants.Rmd</code></div>
     </div>
 
@@ -134,81 +149,212 @@ MRMhub QUANT workflows without exposing study data.
 <p class="page-kind page-kind-manual">
 Manual
 </p>
-<p>An AI assistant (Claude, ChatGPT, or a locally hosted model) can help
-you plan an analysis, draft R code, fix errors, and explain a step in
-MRMhub QUANT, whether or not you write much R. It cannot run your data
-or confirm the numbers; that stays with you.</p>
 <div class="section level2">
-<h2 id="use-it-in-three-steps">Use it in three steps<a class="anchor" aria-label="anchor" href="#use-it-in-three-steps"></a>
+<h2 id="who-this-is-for">Who this is for<a class="anchor" aria-label="anchor" href="#who-this-is-for"></a>
 </h2>
-<ol style="list-style-type: decimal">
-<li>
-<strong>Give it the package reference first.</strong> An assistant
-has read little about a recently published, specialised package, so from
-memory it invents function names that sound right but do not exist.
-MRMhub publishes its whole interface as one file: <a href="https://slinghub.github.io/MRMhub/quant/llms.txt" class="uri">https://slinghub.github.io/MRMhub/quant/llms.txt</a>. Give
-the assistant that <strong>link</strong> and tell it to <strong>use only
-functions that appear there</strong>, or paste the file’s contents if it
-cannot browse the web. For regular use, add the file once to a Claude
-Project or a ChatGPT custom GPT. Ask it to keep the
-<strong><code>mexp &lt;- f(mexp, ...)</code> step pattern</strong> in
-the recommended pipeline order, and to use <strong>current
-terminology</strong> in prose (interference source/target, precursor and
-product ions, not parent/daughter) and the plain name MRMhub.</li>
-<li>
-<strong>Ask for what you need</strong>, adapting one of the prompts
-below.</li>
-<li>
-<strong>Run it and check the numbers yourself.</strong> Run
-generated code on data you understand first, the bundled demo
-(<code>system.file("extdata", "MRMhub_demo.tsv", package = "mrmhub")</code>)
-is ideal; confirm every function it used appears in the <a href="../reference/index.html">function reference</a>; and cross-check
-the results against QC plots and metrics, not just that the script
-ran.</li>
-</ol>
+<p>You run targeted MS assays and have a chat assistant open – Claude
+Desktop, ChatGPT, or a model running on your own machine – and you would
+like it to help with the analysis in MRMhub QUANT. You may write a
+little R, or none at all.</p>
+<p>An assistant can genuinely help here, but only if you set it up
+correctly. Out of the box it has read very little about a specialised,
+young package like MRMhub, so it tends to guess. This page shows the
+everyday tasks it is good at, the one step that makes its answers
+reliable, and the two rules that keep your results and your data safe.
+If you have never run the package by hand, start with <a href="tutorial-00-first-analysis.html">Your first analysis</a> so you
+have a baseline to compare against.</p>
 </div>
 <div class="section level2">
-<h2 id="prompts-to-copy">Prompts to copy<a class="anchor" aria-label="anchor" href="#prompts-to-copy"></a>
+<h2 id="what-it-can-and-cannot-do-for-you">What it can – and cannot – do for you<a class="anchor" aria-label="anchor" href="#what-it-can-and-cannot-do-for-you"></a>
 </h2>
-<p>Ground the assistant (step 1), then adapt one of these.</p>
-<p><strong>Explain a step</strong></p>
+<p>An assistant is a fast, patient explainer and a first-draft writer.
+It is not a substitute for running the analysis or for your own
+judgement.</p>
+<p><strong>Good at</strong></p>
+<ul>
+<li>Explaining a step or a concept in plain language (“why is drift
+correction fitted on QC samples only?”).</li>
+<li>Drafting R code for your workflow, which you then run.</li>
+<li>Reading an R error message and suggesting a fix.</li>
+<li>Helping you plan an analysis from a description of your samples and
+standards.</li>
+</ul>
+<p><strong>Not able to</strong></p>
+<ul>
+<li>Run your data or check that the numbers are right – only you can do
+that.</li>
+<li>Guarantee the code is correct; it can produce plausible code that
+fails.</li>
+<li>Know MRMhub’s functions reliably unless you show it the package’s
+own documentation first.</li>
+</ul>
+<p>That last point is the one worth acting on, and it is easy.</p>
+</div>
+<div class="section level2">
+<h2 id="make-its-answers-accurate-show-it-the-packages-own-docs">Make its answers accurate: show it the package’s own docs<a class="anchor" aria-label="anchor" href="#make-its-answers-accurate-show-it-the-packages-own-docs"></a>
+</h2>
+<p>Left to memory, an assistant invents function names that sound right
+but do not exist – <code>normalize()</code> instead of
+<code><a href="../reference/normalize_by_istd.html">normalize_by_istd()</a></code>, or a single
+<code>run_pipeline()</code> that was never written. The fix is to give
+it the package’s real reference and tell it to use only what it finds
+there.</p>
+<p>MRMhub publishes a compact map of its entire interface as a single
+file, built automatically with the documentation site:</p>
+<p><a href="https://slinghub.github.io/MRMhub/quant/llms.txt" class="uri">https://slinghub.github.io/MRMhub/quant/llms.txt</a></p>
+<p>Open that link, copy the contents into your chat, and start with an
+instruction like this:</p>
+<pre class="text"><code>I am analysing targeted MS data in R with the package mrmhub. Below is the
+package's function reference. Use ONLY functions that appear in it. If you are
+unsure a function exists, say so rather than inventing one.
+
+&lt;paste the contents of https://slinghub.github.io/MRMhub/quant/llms.txt here&gt;</code></pre>
+<p>If your assistant can browse the web – Claude with web access,
+ChatGPT with browsing – you can skip the copy-and-paste and simply give
+it the link, asking it to read that page and follow the links to
+individual function pages as needed.</p>
+</div>
+<div class="section level2">
+<h2 id="common-tasks">Common tasks<a class="anchor" aria-label="anchor" href="#common-tasks"></a>
+</h2>
+<p>Each task below is a short prompt you can adapt. Paste the reference
+first (or set it up once, further down) so the assistant is working from
+the real interface.</p>
+<div class="section level3">
+<h3 id="understand-a-step">Understand a step<a class="anchor" aria-label="anchor" href="#understand-a-step"></a>
+</h3>
 <pre class="text"><code>In one short paragraph, explain what correct_drift_loess() does and why drift
 and batch corrections in mrmhub are fitted on QC samples, not study samples.</code></pre>
-<p><strong>Draft a workflow script</strong></p>
+</div>
+<div class="section level3">
+<h3 id="draft-a-script-for-your-workflow">Draft a script for your workflow<a class="anchor" aria-label="anchor" href="#draft-a-script-for-your-workflow"></a>
+</h3>
+<p>Ask for a complete script, and insist it keep MRMhub’s core pattern:
+every processing step takes an <code>MRMhubExperiment</code> and returns
+an updated one.</p>
 <pre class="text"><code>Write an R script using mrmhub that imports my data, normalises by internal
 standard, corrects signal drift, quantifies against calibration curves,
 computes QC metrics, filters failing features, and writes an Excel report.
 Keep the mexp &lt;- f(mexp, ...) pattern for every step, in recommended order.</code></pre>
-<p><strong>Explain and fix an error</strong> (paste the line and the
-exact message)</p>
-<pre class="text"><code>Running: mexp &lt;- normalize_by_istd(mexp)
-I get: &lt;paste the exact error message&gt;
+<p>A grounded assistant should return real function names in the right
+order. The runnable core looks like the block below; it imports the
+bundled demo so it works as is, and you would swap in your own file:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/SLINGhub/MRMhub" class="external-link">mrmhub</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Bundled demo file, so this runs as written; use your own file instead</span></span>
+<span><span class="va">demo</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"MRMhub_demo.tsv"</span>, package <span class="op">=</span> <span class="st">"mrmhub"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/MRMhubExperiment.html">MRMhubExperiment</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/import_data_mrmhub.html">import_data_mrmhub</a></span><span class="op">(</span><span class="va">mexp</span>, path <span class="op">=</span> <span class="va">demo</span>, import_metadata <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Normalise each feature by its internal standard -&gt; feature_norm_intensity</span></span>
+<span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/normalize_by_istd.html">normalize_by_istd</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Write the multi-sheet Excel report</span></span>
+<span><span class="fu"><a href="../reference/save_report_xlsx.html">save_report_xlsx</a></span><span class="op">(</span><span class="va">mexp</span>, path <span class="op">=</span> <span class="st">"results.xlsx"</span><span class="op">)</span></span></code></pre></div>
+<p>From that base, ask the assistant to add drift correction,
+calibration, QC metrics, and filtering for your own data; the full
+pipeline and its order are laid out in <a href="tutorial-02-basic-workflow.html">Basic MRMhub workflow</a>.</p>
+</div>
+<div class="section level3">
+<h3 id="explain-and-fix-an-error">Explain and fix an error<a class="anchor" aria-label="anchor" href="#explain-and-fix-an-error"></a>
+</h3>
+<p>Paste the error together with the line that produced it – the
+assistant reads both far better than a description.</p>
+<pre class="text"><code>Running this line: mexp &lt;- normalize_by_istd(mexp)
+I get this error: &lt;paste the exact error message&gt;
 What does it mean, and how do I fix it?</code></pre>
-<p><strong>Plan the analysis</strong></p>
+</div>
+<div class="section level3">
+<h3 id="choose-or-understand-a-parameter">Choose or understand a parameter<a class="anchor" aria-label="anchor" href="#choose-or-understand-a-parameter"></a>
+</h3>
+<p>Point it at that function’s reference page, published alongside the
+map above (for example
+<code>.../quant/reference/filter_features_qc.md</code>), and ask what an
+argument controls and how to set it for your assay.</p>
+</div>
+<div class="section level3">
+<h3 id="plan-the-analysis">Plan the analysis<a class="anchor" aria-label="anchor" href="#plan-the-analysis"></a>
+</h3>
 <pre class="text"><code>My samples are plasma extracts with stable-isotope-labelled internal standards
 and a 7-point external calibration curve. Which mrmhub steps apply, in what
 order, and where do QC samples come in?</code></pre>
-<p>Prefer not to write R at all? <code><a href="../reference/build_workflow.html">build_workflow()</a></code> generates
-a correct, runnable Quarto workflow from your data and metadata; handing
-that to an assistant to explain or adjust is safer than asking it to
-write a pipeline from scratch (see <a href="tutorial-12-workflow-builder.html">Build a workflow without
-code</a>).</p>
+</div>
 </div>
 <div class="section level2">
-<h2 id="limits-and-risks">Limits and risks<a class="anchor" aria-label="anchor" href="#limits-and-risks"></a>
+<h2 id="set-it-up-once">Set it up once<a class="anchor" aria-label="anchor" href="#set-it-up-once"></a>
 </h2>
-<p>An assistant produces plausible code that can be wrong. It cannot run
-your data, cannot guarantee the code is correct, and does not know
-MRMhub’s functions reliably unless you show it the reference (step 1).
-Treat its output as a first draft to verify, never as a result.</p>
-<p>Do not paste study data into a cloud assistant. Sample intensities,
-subject metadata, and unpublished results sent to a hosted service
-(Claude, ChatGPT) leave your control and may be retained. Share only
-code and the <a href="manual-13-function-map.html">function map</a>,
-<code>llms.txt</code>, and reference pages, never the measurements. If
-the data must stay on the machine, use a locally hosted model (through
-Ollama or LM Studio), which keeps everything on-device but depends even
-more on being shown the reference.</p>
+<p>If you use the assistant regularly, load the reference once instead
+of pasting it into every chat. In <strong>Claude</strong>, create a
+Project and add the <code>llms.txt</code> file (and a manual page or
+two) to its knowledge. In <strong>ChatGPT</strong>, do the same with a
+Project or a custom GPT, attaching the same files as knowledge. Every
+conversation in that Project is then grounded in the real interface from
+the start.</p>
+</div>
+<div class="section level2">
+<h2 id="the-no-code-shortcut-build_workflow">The no-code shortcut: <code>build_workflow()</code><a class="anchor" aria-label="anchor" href="#the-no-code-shortcut-build_workflow"></a>
+</h2>
+<p>If you would rather not write R at all, the package gives the
+assistant a head start. <code><a href="../reference/build_workflow.html">build_workflow()</a></code> opens an
+interactive application: you point it at your data and metadata, tick
+the processing steps you want, and it validates your inputs and
+generates a correct, runnable Quarto (<code>.qmd</code>) workflow to
+download (see <a href="tutorial-12-workflow-builder.html">Build a
+workflow without code</a>).</p>
+<p>Handing that generated script to an assistant – to explain a step, or
+to adjust one part – is far safer than asking it to write a pipeline
+from nothing, because it starts from something already valid.</p>
+</div>
+<div class="section level2">
+<h2 id="two-rules-you-cannot-skip">Two rules you cannot skip<a class="anchor" aria-label="anchor" href="#two-rules-you-cannot-skip"></a>
+</h2>
+<div class="callout callout-caution">
+<p><strong>Verify every AI-generated pipeline before trusting its
+results.</strong></p>
+<ul>
+<li>
+<strong>Run it on data you understand</strong> first – the bundled
+demo
+(<code>system.file("extdata", "MRMhub_demo.tsv", package = "mrmhub")</code>)
+is ideal. A made-up function fails immediately as “could not find
+function”.</li>
+<li>
+<strong>Cross-check every function name</strong> against the <a href="../reference/index.html">function reference</a>. If a call is not
+listed there, it does not exist, however convincing it looks.</li>
+<li>
+<strong>Confirm the step order</strong> and that drift and batch
+corrections are fitted on QC samples, not study samples. See <a href="manual-03-design-decisions.html">Design decisions</a> for why this
+matters.</li>
+<li>
+<strong>Inspect the numbers</strong>, not just that the script ran.
+A pipeline can complete and still be wrong. Sanity-check against QC
+plots and metrics.</li>
+</ul>
+</div>
+<div class="callout callout-caution">
+<p><strong>Do not paste study data into a cloud assistant.</strong>
+Sample intensities, subject metadata, and unpublished results sent to a
+hosted service leave your control and may be retained. Share <em>code
+and the function map</em> – <code>llms.txt</code>, reference pages, and
+the function calls themselves – never the measurements. When the data
+must stay on the machine, use a locally hosted model, which keeps
+everything on-device.</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="going-further">Going further<a class="anchor" aria-label="anchor" href="#going-further"></a>
+</h2>
+<p>More capable tooling exists for those who want it. Agentic coding
+assistants such as Claude Code and Cursor operate directly on a project
+folder and can read the package source as they write. Claude Desktop can
+connect to your files through an MCP connector, though their contents
+then reach the provider like any other message. Locally hosted models
+(through Ollama or LM Studio) keep everything on-device, but a smaller
+local model has memorised even less of a niche package, so it depends
+<em>more</em> on being shown the reference, not less. Whichever you use,
+the two rules above still apply.</p>
 </div>
 <div class="section level2">
 <h2 id="next-steps">Next steps<a class="anchor" aria-label="anchor" href="#next-steps"></a>
@@ -216,15 +362,14 @@ more on being shown the reference.</p>
 <ul>
 <li>
 <a href="manual-03-design-decisions.html">Design decisions</a>: the
-conventions an assistant must respect, the <code>mexp -&gt; mexp</code>
+conventions an assistant must respect – the <code>mexp -&gt; mexp</code>
 pattern and the pipeline order</li>
 <li>
 <a href="manual-01-key-concepts.html">Key concepts and glossary</a>:
 the data model and terms to share with the assistant</li>
 <li>
-<a href="tutorial-02-getting-started-mrmhub.html">Getting started
-with MRMhub</a>: a hand-run baseline to compare generated code
-against</li>
+<a href="tutorial-00-first-analysis.html">Your first analysis</a>: a
+hand-run baseline to compare generated code against</li>
 </ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

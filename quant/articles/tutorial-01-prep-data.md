@@ -1,7 +1,7 @@
 # Preparing and importing data
 
-Tutorial Prerequisites: [Getting started with
-MRMhub](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-getting-started-mrmhub.md)
+Tutorial Beginner Prerequisites: [Your first
+analysis](https://slinghub.github.io/MRMhub/quant/articles/tutorial-00-first-analysis.md)
 
 Every analysis begins with the analytical data: the pre-processed
 measurements from the instrument, such as peak areas. That alone is
@@ -236,11 +236,21 @@ Only the tables required by the intended workflow need to be completed;
 the import reads every table that has been filled in:
 
 ``` r
-
 mexp <- import_metadata_msorganiser(
   mexp,
   path = "datasets/sPerfect_Metadata.xlsx",
   ignore_warnings = TRUE)
+Found no errors, 4 warnings, and no notes in the metadata.
+----------------------------------------------------------------------------
+  Type  Table    Column                Issue                           Count
+1 W*    Analyses analysis_id           Analyses not in analysis data      15
+2 W*    Features feature_id            Feature(s) without metadata         1
+3 W*    Features feature_id            Feature(s) not in analysis data     4
+4 W*    ISTDs    quant_istd_feature_id Internal standard(s) not used       1
+
+----------------------------------------------------------------------------
+E = Error, W = Warning, W* = Suppressed Warning, N = Note
+----------------------------------------------------------------------------
 ```
 
 See [Importing
@@ -255,9 +265,9 @@ for the full set of metadata tables, templates and validation checks.
 - [Importing
   metadata](https://slinghub.github.io/MRMhub/quant/articles/manual-05-metadata.md):
   metadata tables, templates and validation
-- [Common defects and
-  fixes](https://slinghub.github.io/MRMhub/quant/articles/manual-05-metadata.md):
+- [Validating
+  metadata](https://slinghub.github.io/MRMhub/quant/articles/recipe-04-validate-metadata.md):
   checking metadata for common errors
-- [Lipidomics
-  workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-03-lipidomics-workflow.md):
+- [Basic MRMhub
+  workflow](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-basic-workflow.md):
   a complete walkthrough from import to export

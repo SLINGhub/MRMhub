@@ -84,7 +84,7 @@ a set can be undone with `options(old)` or scoped to a block with
 [`mrmhub_reset_plot_defaults()`](https://slinghub.github.io/MRMhub/quant/reference/mrmhub_reset_plot_defaults.md),
 [`mrmhub_get_plot_defaults()`](https://slinghub.github.io/MRMhub/quant/reference/mrmhub_get_plot_defaults.md),
 [`save_plot()`](https://slinghub.github.io/MRMhub/quant/reference/save_plot.md)
-and the `vignette("manual-08-visualization")` article.
+and the `vignette("manual-13-plot-customization")` article.
 
 ## Examples
 
