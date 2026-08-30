@@ -8,6 +8,7 @@ const originalRtMatrix = "RT_matrix_original.csv";
 const formatRt = d3.format(".2f");
 const formatIntensity = d3.format(",.0f");
 const sampleTypeColorPreference = "mrmhub-visualizer-color-sample-types";
+const sharedAlignmentPreference = "mrmhub-visualizer-align-shared";
 const sampleTypePalette = [
   "#1f77b4",
   "#e67e22",
@@ -31,6 +32,7 @@ const elements = {
   exportPngsWrap: document.querySelector("#visualizer-export-wrap"),
   sampleTypeLegend: document.querySelector("#visualizer-sample-type-legend"),
   applyShared: document.querySelector("#visualizer-apply-shared"),
+  alignShared: document.querySelector("#visualizer-align-shared"),
   refresh: document.querySelector("#visualizer-refresh"),
   save: document.querySelector("#visualizer-save"),
   overrideBackup: document.querySelector("#visualizer-override-backup"),
@@ -184,6 +186,7 @@ applySampleTypeColorPreference(
   storedPreference(sampleTypeColorPreference) === "true",
   false,
 );
+elements.alignShared.checked = storedPreference(sharedAlignmentPreference) !== "false";
 
 // updates the visible visualizer status text
 function setStatus(message, options = {}) {
@@ -2103,8 +2106,11 @@ function updateSaveButton() {
   elements.save.disabled = !hasEdits || state.loading;
   elements.applyShared.disabled = selectedReferences.length === 0 || state.loading;
   elements.applyShared.title = selectedReferences.length
-    ? `average the current bounds from ${selectedReferences.length.toLocaleString()} selected reference plot(s), apply them to every sample, and reintegrate`
+    ? elements.alignShared.checked
+      ? `average the current bounds from ${selectedReferences.length.toLocaleString()} selected reference plot(s), cosine-align qualifying samples, and reintegrate`
+      : `average the current bounds from ${selectedReferences.length.toLocaleString()} selected reference plot(s), apply the exact same limits to every sample, and reintegrate`
     : "select at least one reference plot with usable integration bounds";
+  elements.alignShared.disabled = state.loading;
   elements.toolbar.classList.toggle("has-unsaved", hasEdits);
   elements.toolbar.classList.toggle(
     "has-reference-selection",
@@ -2807,10 +2813,38 @@ function sharedReferenceBoundEdits() {
   return { edits, windowCount: windows.size };
 }
 
+// Alignment needs the same windows plus each selected plot's sample identity,
+// allowing Rust to read only the relevant transition traces from disk.
+function selectedAlignmentReferences() {
+  return state.traceRecords
+    .filter(
+      (record) =>
+        state.referenceChoices.get(referenceChoiceKey(record)) === true &&
+        record.editContext?.cqq,
+    )
+    .flatMap((record) =>
+      [...referenceBounds(record).entries()].map(([isomerIndex, edit]) => ({
+        cqq: record.editContext.cqq,
+        sampleIndex: record.editContext.sampleIndex,
+        fileName: record.editContext.fileName,
+        isomerIndex,
+        rtStart: edit.start,
+        rtEnd: edit.end,
+      })),
+    )
+    .filter(
+      (reference) =>
+        Number.isFinite(reference.rtStart) &&
+        Number.isFinite(reference.rtEnd) &&
+        reference.rtEnd > reference.rtStart,
+    );
+}
+
 async function writeAndReintegrate(edits, options = {}) {
   if (state.loading || !edits.length) return;
   const scrollY = window.scrollY;
   const shared = Boolean(options.shared);
+  const aligned = Boolean(options.aligned);
   const overrideName = options.overrideName ?? null;
   const sharedWindowCount = Number(options.windowCount) || edits.length;
   const sharedScope = `${sharedWindowCount.toLocaleString()} RT window(s) across ${state.samples.length.toLocaleString()} samples`;
@@ -2825,18 +2859,36 @@ async function writeAndReintegrate(edits, options = {}) {
   elements.importBackup.disabled = true;
   elements.backups.disabled = true;
   setStatus(
-    shared
+    aligned
+      ? `Building reference profiles and aligning ${sharedScope}...`
+      : shared
       ? `Applying ${sharedScope}...`
       : `Saving ${edits.length} integration bound(s)...`,
   );
   try {
-    const written = await invoke(
-      shared ? "visualizer_save_shared_bounds" : "visualizer_save_bounds",
+    const response = await invoke(
+      aligned
+        ? "visualizer_align_shared_bounds"
+        : shared
+        ? "visualizer_save_shared_bounds"
+        : "visualizer_save_bounds",
       {
         projectPath: state.projectPath,
-        edits,
+        ...(aligned ? { references: edits } : { edits }),
       },
     );
+    const written = typeof response === "number" ? response : response.written;
+    const incompleteProfiles =
+      aligned && response.referenceProfiles < sharedWindowCount;
+    const alignmentSummary = aligned
+      ? `${response.shifted.toLocaleString()} cosine-shifted` +
+        (response.averageScore == null
+          ? ""
+          : ` (average score ${response.averageScore.toFixed(3)})`) +
+        (incompleteProfiles
+          ? `; ${response.referenceProfiles.toLocaleString()} of ${sharedWindowCount.toLocaleString()} reference shape(s) usable, exact limits kept for the rest`
+          : "")
+      : "";
     for (const record of state.traceRecords) {
       record.editRts?.clear();
       if (record.graph) {
@@ -2847,12 +2899,16 @@ async function writeAndReintegrate(edits, options = {}) {
 
     if (!bridge?.runStep) {
       setStatus(
-        `${shared ? "Applied" : "Saved"} ${written} bound(s) to RT_matrix.csv. Run Step 3 to recompute.`,
+        aligned
+          ? `Aligned ${written.toLocaleString()} bound(s), ${alignmentSummary}. Run Step 3 to recompute.`
+          : `${shared ? "Applied" : "Saved"} ${written} bound(s) to RT_matrix.csv. Run Step 3 to recompute.`,
       );
       return;
     }
     setStatus(
-      shared
+      aligned
+        ? `Aligned ${sharedScope}; ${alignmentSummary}. Re-integrating (Step 3)...`
+        : shared
         ? `Applied ${sharedScope} (${written.toLocaleString()} bounds). Re-integrating (Step 3)...`
         : `Saved ${written} bound(s). Re-integrating (Step 3)...`,
     );
@@ -2883,6 +2939,8 @@ async function writeAndReintegrate(edits, options = {}) {
       setStatus(
         overrideName
           ? `Overrode ${backupLabel(overrideName)} and re-integrated.`
+          : aligned
+          ? `Uniform-aligned ${sharedScope}; ${alignmentSummary}.`
           : shared
           ? `Applied ${sharedScope} and re-integrated.`
           : `Saved and re-integrated ${written} bound(s).`,
@@ -2892,7 +2950,7 @@ async function writeAndReintegrate(edits, options = {}) {
       setStatus(`Saved to RT_matrix.csv, but Step 3 did not finish.`);
     }
   } catch (error) {
-    setStatus(`Save failed: ${String(error)}`);
+    setStatus(`${aligned ? "Alignment" : "Save"} failed: ${String(error)}`);
   } finally {
     elements.backups.disabled = false;
     updateSaveButton();
@@ -2933,12 +2991,15 @@ async function overrideSelectedBackup() {
 }
 
 async function applySharedRtLimits() {
-  const { edits, windowCount } = sharedReferenceBoundEdits();
+  const aligned = elements.alignShared.checked;
+  const references = selectedAlignmentReferences();
+  const { edits: strictEdits, windowCount } = sharedReferenceBoundEdits();
+  const edits = aligned ? references : strictEdits;
   if (!edits.length || windowCount === 0) {
     setStatus("Select at least one RT reference plot with usable integration bounds.");
     return;
   }
-  await writeAndReintegrate(edits, { shared: true, windowCount });
+  await writeAndReintegrate(edits, { shared: true, aligned, windowCount });
 }
 
 // renders the current chooser value without allowing overlapping streams
@@ -3057,6 +3118,11 @@ elements.intensity.addEventListener("input", () => {
 elements.save.addEventListener("click", saveBounds);
 elements.overrideBackup.addEventListener("click", overrideSelectedBackup);
 elements.applyShared.addEventListener("click", applySharedRtLimits);
+elements.alignShared.addEventListener("change", () => {
+  rememberPreference(sharedAlignmentPreference, elements.alignShared.checked);
+  updateSaveButton();
+  elements.alignShared.blur();
+});
 elements.deleteBackup.addEventListener("click", deleteSelectedBackup);
 elements.deleteAllBackups.addEventListener("click", deleteAllBackups);
 elements.renameBackup.addEventListener("click", renameSelectedBackup);

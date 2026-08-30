@@ -7,7 +7,7 @@
       name="description"
       content="graphical interface for mrmhub integrator peak detection and integration"
     />
-    <title>MRMhub Integrator GUI [v1.2.1]</title>
+    <title>MRMhub Integrator GUI [v1.2.2]</title>
     <script>
       try {
         document.documentElement.dataset.theme =
@@ -16,8 +16,8 @@
         document.documentElement.dataset.theme = "light";
       }
     </script>
-    <link rel="stylesheet" href="styles.css?v=1.2.1" />
-    <script src="app.js?v=1.2.1" defer></script>
+    <link rel="stylesheet" href="styles.css?v=1.2.2" />
+    <script src="app.js?v=1.2.2" defer></script>
   </head>
   <body>
     <div class="app-shell">
@@ -620,6 +620,13 @@
               <input id="visualizer-color-sample-types" type="checkbox" />
               <span>Color sample types</span>
             </label>
+            <label
+              class="visualizer-shortcut-toggle"
+              title="after applying the averaged reference limits, cosine-match each sample and shift qualifying windows"
+            >
+              <input id="visualizer-align-shared" type="checkbox" checked />
+              <span>Auto-align shared RTs</span>
+            </label>
             <span
               class="visualizer-export-wrap"
               id="visualizer-export-wrap"
@@ -732,7 +739,7 @@
       </main>
 
       <footer>
-        <span>MRMhub Integrator GUI [v1.2.1]</span>
+        <span>MRMhub Integrator GUI [v1.2.2]</span>
         <a
           class="external-sling-link"
           href="https://sling.sg/"
