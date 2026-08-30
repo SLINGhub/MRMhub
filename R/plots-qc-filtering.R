@@ -486,8 +486,8 @@ plot_qc_summary_overall <- function(
 
   # prevent creating log file
   if (with_venn) {
-    check_installed("ggvenn")
-    check_installed("patchwork")
+    check_pkg_installed("ggvenn")
+    check_pkg_installed("patchwork")
 
     d_qc_venn <- d_qc
 

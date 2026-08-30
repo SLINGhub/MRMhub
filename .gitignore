@@ -79,3 +79,6 @@ vignettes/articles/norm.csv
 
 # metadata-template generator eyeball byproduct
 data-raw/mrmhub_metadata_template_preview.xlsx
+
+/.quarto/
+**/*.quarto_ipynb

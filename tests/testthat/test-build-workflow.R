@@ -675,10 +675,7 @@ test_that("build_workflow() aborts when its Shiny dependencies are missing", {
   # bypassed the test fails fast instead of launching a real server and
   # hanging the suite.
   local_mocked_bindings(
-    check_installed = function(pkg, ...) {
-      rlang::abort("The shiny package is required.")
-    },
-    .package = "rlang"
+    is_installed = function(pkg, ...) pkg != "shiny"
   )
   local_mocked_bindings(
     runApp = function(...)
@@ -690,10 +687,7 @@ test_that("build_workflow() aborts when its Shiny dependencies are missing", {
 
 test_that("build_workflow() aborts when only bslib is missing", {
   local_mocked_bindings(
-    check_installed = function(pkg, ...) {
-      rlang::abort("The bslib package is required.")
-    },
-    .package = "rlang"
+    is_installed = function(pkg, ...) pkg != "bslib"
   )
   local_mocked_bindings(
     runApp = function(...)

@@ -69,13 +69,19 @@
 
 ## Installing and Updating
 
-Make sure to use a fresh R session without loaded packages (restart RStudio/Positron first). Please read [the Installation guide](articles/manual-00-installation.html) first for full instructions and troubleshooting.
+Make sure to use a fresh R session without loaded packages (restart RStudio/Positron first).
+
+Read [the Installation guide](articles/manual-00-installation.html) before installing.
 
 ```r
-if (!require("pak")) install.packages("pak")
-pak::pak("SLINGhub/MRMhub")
+# mrmhub from the MRMhub R-universe repository, dependencies from CRAN
+install.packages("mrmhub",
+                 repos = c("https://slinghub.r-universe.dev",
+                           "https://cloud.r-project.org"))
 library(mrmhub)
 ```
+
+The same command installs later updates. [Alternative methods](articles/manual-00-installation.html#alternative-installation-methods) using `pak` or `remotes` are described in the guide.
 
 ## Contributing
 

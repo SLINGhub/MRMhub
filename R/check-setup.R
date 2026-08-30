@@ -137,3 +137,92 @@ check_setup <- function(verbose = TRUE) {
 
   invisible(results)
 }
+
+
+# Suggested packages that do not come from CRAN. Everything else is installed
+# with `install.packages()`.
+pkg_source_bioc <- c(
+  "sva",
+  "SummarizedExperiment",
+  "S4Vectors",
+  "lipidr",
+  "rgoslin"
+)
+pkg_source_github <- c(
+  lancer = "SLINGhub/lancer",
+  rmzTabM = "lifs-tools/rmzTabM"
+)
+
+# Quote a package vector as R code: "a" or c("a", "b")
+pkg_code <- function(x) {
+  if (length(x) == 1) {
+    paste0('"', x, '"')
+  } else {
+    paste0('c("', paste(x, collapse = '", "'), '")')
+  }
+}
+
+# One install command per package source, bootstrapping the installer itself
+# when it is missing.
+pkg_install_hints <- function(pkgs) {
+  hints <- character()
+
+  cran <- setdiff(pkgs, c(pkg_source_bioc, names(pkg_source_github)))
+  if (length(cran) > 0) {
+    hints <- c(hints, paste0("install.packages(", pkg_code(cran), ")"))
+  }
+
+  bioc <- intersect(pkgs, pkg_source_bioc)
+  if (length(bioc) > 0) {
+    boot <- if (is_installed("BiocManager")) "" else
+      'install.packages("BiocManager"); '
+    hints <- c(
+      hints,
+      paste0(boot, "BiocManager::install(", pkg_code(bioc), ")")
+    )
+  }
+
+  gh <- pkg_source_github[intersect(names(pkg_source_github), pkgs)]
+  if (length(gh) > 0) {
+    boot <- if (is_installed("pak")) "" else 'install.packages("pak"); '
+    hints <- c(hints, paste0(boot, "pak::pak(", pkg_code(unname(gh)), ")"))
+  }
+
+  hints
+}
+
+#' Require suggested packages
+#'
+#' Replacement for [rlang::check_installed()] that never prompts. The prompt
+#' only works at a plain R console: in a notebook the `menu()` question is
+#' either invisible or swallows the code sent after it, leaving the user with
+#' no way to answer. This always aborts instead, naming the packages and the
+#' command that installs them (CRAN, Bioconductor or GitHub as appropriate).
+#'
+#' @param pkg Character vector of package names.
+#' @param reason Sentence completing "The package(s) ... are required", with
+#'   its own trailing period.
+#' @param call Calling environment, used for the error message.
+#'
+#' @return Invisibly `TRUE` if all packages are installed, otherwise an error.
+#' @noRd
+check_pkg_installed <- function(pkg, reason = NULL, call = caller_env()) {
+  missing <- pkg[!vapply(pkg, is_installed, logical(1))]
+  if (length(missing) == 0) {
+    return(invisible(TRUE))
+  }
+
+  reason <- if (is.null(reason)) "." else paste0(" ", reason)
+  hints <- pkg_install_hints(missing)
+
+  cli_abort(
+    c(
+      paste0("The package{?s} {.pkg {missing}} {?is/are} required", reason),
+      set_names(
+        paste0("Install with {.code ", hints, "}"),
+        rep("i", length(hints))
+      )
+    ),
+    call = call
+  )
+}

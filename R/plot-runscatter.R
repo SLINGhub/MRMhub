@@ -265,11 +265,11 @@ plot_runscatter <- function(
   }
 
   if (multithreading) {
-    res <- check_installed(
+    check_pkg_installed(
       "mirai",
       reason = "to use multithreading for plot generation."
     )
-    if (rlang::is_installed("mirai") && mirai::status()$daemons == 0) {
+    if (mirai::status()$daemons == 0) {
       mh_warn(
         "To use multithreading for plot generation, please set `mirai::daemon(number_of_cores)` where `number_of_cores` is the number of CPU cores to use."
       )
@@ -754,7 +754,7 @@ plot_runscatter <- function(
 
   flush.console()
   if (multithreading && output_pdf) {
-    check_installed("qpdf")
+    check_pkg_installed("qpdf")
     # Combine individual page PDFs into a single PDF
     qpdf::pdf_combine(page_group_files, output = path)
     fs::dir_delete(tmp_dir)

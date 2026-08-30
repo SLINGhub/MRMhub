@@ -88,6 +88,13 @@ your R version (Rtools43 for R 4.3, Rtools44 for R 4.4, …), restart R, and
 retry. Rtools compiles the source packages a few dependencies still need when no
 Windows binary is available yet.
 
+**Q: *"Could not find tools necessary to compile a package"* (macOS).**
+
+**A:** Install the Xcode command line tools with `xcode-select --install` in a
+Terminal, accept the dialog, and retry in a fresh session. `mrmhub` contains no
+compiled code; the requirement comes from the installer, so `remotes` is an
+alternative to `pak` here.
+
 **Q: `remotes` keeps failing on a locked or transitive dependency.**
 
 **A:** [`pak`](https://pak.r-lib.org/) resolves the dependency graph in one pass,

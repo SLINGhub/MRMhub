@@ -255,7 +255,7 @@ plot_pca_sling2 <- function(
   # if (!requireNamespace("ggforce", quietly = TRUE)) {
   #   cli_abort("Please install 'ggforce' to use this function via `install.packages('ggforce')`.")
   # }
-  check_installed("ggforce")
+  check_pkg_installed("ggforce")
 
   d_wide <- data |>
     pivot_wider(names_from = "feature_id", values_from = "feature_conc")
@@ -664,8 +664,8 @@ plot_dotboxplus <- function(
   #   cli_abort("Please install 'ggsignif' to use this function via `install.packages('ggsignif')`.")
   # }
 
-  check_installed("ggsignif")
-  check_installed("ggbeeswarm")
+  check_pkg_installed("ggsignif")
+  check_pkg_installed("ggbeeswarm")
 
   d_long_full <- data |>
     right_join(d_metadata |> rename(analysis_id = .data$sample_id))

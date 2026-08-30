@@ -446,7 +446,7 @@ correct_batch_combat <- function(
   replace_exisiting_trendcurves = FALSE
 ) {
   lifecycle::signal_stage("experimental", "correct_batch_combat()")
-  check_installed("sva", reason = "to apply ComBat batch correction.")
+  check_pkg_installed("sva", reason = "to apply ComBat batch correction.")
   ctx <- prepare_batch_correction(
     data,
     variable,
@@ -622,7 +622,7 @@ correct_batch_serrf <- function(
   replace_exisiting_trendcurves = FALSE
 ) {
   lifecycle::signal_stage("experimental", "correct_batch_serrf()")
-  check_installed("ranger", reason = "to apply SERRF batch correction.")
+  check_pkg_installed("ranger", reason = "to apply SERRF batch correction.")
   ctx <- prepare_batch_correction(
     data,
     variable,

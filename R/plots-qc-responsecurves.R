@@ -136,7 +136,7 @@ plot_responsecurves <- function(
 ) {
   # {ggpmisc} needed for plots; load it quietly so ggpp's one-time
   # S3-methods-overwritten note does not surface to the user.
-  suppressMessages(check_installed("ggpmisc"))
+  suppressMessages(check_pkg_installed("ggpmisc"))
   curve_layout <- rlang::arg_match(curve_layout, c("overlay", "cols", "rows"))
 
   # Validate arguments and corresponding data
