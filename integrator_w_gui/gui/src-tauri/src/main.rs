@@ -12,7 +12,7 @@ use tauri::{AppHandle, Emitter, Manager, State, WindowEvent};
 
 mod visualizer;
 
-// names the folder that holds timestamped RT_matrix.csv snapshots
+// names the backup folder stored directly inside each selected dataset
 const BACKUP_DIR: &str = "RT_matrix_backups";
 
 // names the protected snapshot created from the latest Step 2 output
@@ -337,10 +337,7 @@ fn append_exit_log_entry(project: &Path, entry: &str) -> Result<(), String> {
 // records that the gui window closed in the remembered dataset folder
 fn append_exit_log(project: &Path) -> Result<(), String> {
     let timestamp = chrono::Local::now().format("%d/%m/%Y , %Hh:%Mm:%Ss");
-    append_exit_log_entry(
-        project,
-        &format!("exit // mrmhub-gui closed @ {timestamp}"),
-    )
+    append_exit_log_entry(project, &format!("exit // mrmhub-gui closed @ {timestamp}"))
 }
 
 // writes a close entry for the current dataset, if one is remembered
@@ -375,6 +372,130 @@ fn safe_backup_name(name: &str) -> Result<&str, String> {
         return Err("the backup name is invalid".to_string());
     }
     Ok(name)
+}
+
+fn backup_directory(project: &Path) -> PathBuf {
+    project.join(BACKUP_DIR)
+}
+
+// Resolves the short-lived v1.2.0/v1.2.1 nested layout so those backups can be
+// flattened back into the dataset's own RT_matrix_backups directory once.
+fn previous_nested_backup_directory(project: &Path) -> PathBuf {
+    let name = project
+        .file_name()
+        .and_then(|name| name.to_str())
+        .unwrap_or("dataset");
+    let mut safe: String = name
+        .chars()
+        .map(|character| {
+            if character.is_control()
+                || matches!(
+                    character,
+                    '<' | '>' | ':' | '"' | '/' | '\\' | '|' | '?' | '*'
+                )
+            {
+                '_'
+            } else {
+                character
+            }
+        })
+        .collect();
+    while safe.ends_with(' ') || safe.ends_with('.') {
+        safe.pop();
+    }
+    let folder = if safe.is_empty() || safe == "." || safe == ".." {
+        "dataset".to_string()
+    } else {
+        safe
+    };
+    backup_directory(project).join(folder)
+}
+
+fn files_match(left: &Path, right: &Path) -> Result<bool, String> {
+    if fs::metadata(left).map_err(|error| error.to_string())?.len()
+        != fs::metadata(right)
+            .map_err(|error| error.to_string())?
+            .len()
+    {
+        return Ok(false);
+    }
+    let mut left = BufReader::new(fs::File::open(left).map_err(|error| error.to_string())?);
+    let mut right = BufReader::new(fs::File::open(right).map_err(|error| error.to_string())?);
+    let mut left_buffer = [0_u8; 16 * 1024];
+    let mut right_buffer = [0_u8; 16 * 1024];
+    loop {
+        let left_count = left
+            .read(&mut left_buffer)
+            .map_err(|error| error.to_string())?;
+        let right_count = right
+            .read(&mut right_buffer)
+            .map_err(|error| error.to_string())?;
+        if left_count != right_count || left_buffer[..left_count] != right_buffer[..right_count] {
+            return Ok(false);
+        }
+        if left_count == 0 {
+            return Ok(true);
+        }
+    }
+}
+
+fn unique_flattened_target(directory: &Path, source: &Path) -> Result<PathBuf, String> {
+    let name = source
+        .file_name()
+        .and_then(|name| name.to_str())
+        .ok_or_else(|| "a nested backup has an invalid file name".to_string())?;
+    let direct = directory.join(name);
+    if !direct.exists() || files_match(source, &direct)? {
+        return Ok(direct);
+    }
+    let stem = source
+        .file_stem()
+        .and_then(|stem| stem.to_str())
+        .unwrap_or("RT_matrix");
+    for index in 1..=10_000 {
+        let candidate = directory.join(format!("{stem}_nested_{index}.csv"));
+        if !candidate.exists() || files_match(source, &candidate)? {
+            return Ok(candidate);
+        }
+    }
+    Err("could not create a unique name for a nested RT_matrix backup".to_string())
+}
+
+// Safely moves any backups made by the briefly nested layout back to the
+// dataset-level backup folder. Same-named files with different content are
+// retained under a collision-safe name; exact duplicates are removed.
+fn flatten_previous_nested_backups(project: &Path) -> Result<usize, String> {
+    let directory = backup_directory(project);
+    let nested = previous_nested_backup_directory(project);
+    fs::create_dir_all(&directory).map_err(|error| error.to_string())?;
+    if !nested.is_dir() {
+        return Ok(0);
+    }
+    let mut sources: Vec<PathBuf> = fs::read_dir(&nested)
+        .map_err(|error| error.to_string())?
+        .filter_map(Result::ok)
+        .map(|entry| entry.path())
+        .filter(|path| {
+            path.is_file()
+                && path
+                    .extension()
+                    .and_then(|extension| extension.to_str())
+                    .is_some_and(|extension| extension.eq_ignore_ascii_case("csv"))
+        })
+        .collect();
+    sources.sort_unstable();
+    let mut moved = 0;
+    for source in sources {
+        let target = unique_flattened_target(&directory, &source)?;
+        if target.exists() {
+            fs::remove_file(source).map_err(|error| error.to_string())?;
+        } else {
+            fs::rename(source, target).map_err(|error| error.to_string())?;
+            moved += 1;
+        }
+    }
+    let _ = fs::remove_dir(nested);
+    Ok(moved)
 }
 
 // validates a generated fallback file name supplied by the local GUI
@@ -944,7 +1065,7 @@ fn capture_original(project: &Path) -> Result<(), String> {
     if !source.is_file() {
         return Ok(());
     }
-    let directory = project.join(BACKUP_DIR);
+    let directory = backup_directory(project);
     fs::create_dir_all(&directory).map_err(|error| error.to_string())?;
     fs::copy(source, directory.join(ORIGINAL_BACKUP))
         .map(|_| ())
@@ -953,7 +1074,7 @@ fn capture_original(project: &Path) -> Result<(), String> {
 
 // captures an existing RT matrix once without replacing an earlier original
 fn ensure_original(project: &Path) -> Result<(), String> {
-    if !project.join(BACKUP_DIR).join(ORIGINAL_BACKUP).is_file() {
+    if !backup_directory(project).join(ORIGINAL_BACKUP).is_file() {
         capture_original(project)?;
     }
     Ok(())
@@ -962,8 +1083,8 @@ fn ensure_original(project: &Path) -> Result<(), String> {
 // creates only internal application state; user-facing input templates require
 // confirmation and are created by create_missing_project_files
 fn scaffold_project(project: &Path) {
-    let _ = fs::create_dir_all(project.join(BACKUP_DIR));
-    let _ = ensure_original(project);
+    let _ = fs::create_dir_all(backup_directory(project));
+    let _ = flatten_previous_nested_backups(project);
 }
 
 // resolves a worker binary name with this platform's executable extension
@@ -1398,7 +1519,7 @@ fn backup_rtmatrix(project_path: String, name: String) -> Result<Option<String>,
     if !source.is_file() {
         return Ok(None);
     }
-    let directory = project.join(BACKUP_DIR);
+    let directory = backup_directory(&project);
     fs::create_dir_all(&directory).map_err(|error| error.to_string())?;
     fs::copy(&source, directory.join(name)).map_err(|error| error.to_string())?;
     Ok(Some(name.to_string()))
@@ -1411,7 +1532,7 @@ fn delete_rtmatrix_backup_file(project: &Path, name: &str) -> Result<(), String>
     if name == ORIGINAL_BACKUP {
         return Err("Original RT_matrix cannot be deleted".to_string());
     }
-    let source = project.join(BACKUP_DIR).join(name);
+    let source = backup_directory(project).join(name);
     if !source.is_file() {
         return Err("that backup version no longer exists".to_string());
     }
@@ -1467,7 +1588,7 @@ fn import_rtmatrix_backup(
         return Err("select a CSV file to import".to_string());
     }
     let name = safe_backup_name(&name)?.to_string();
-    let directory = project.join(BACKUP_DIR);
+    let directory = backup_directory(&project);
     fs::create_dir_all(&directory).map_err(|error| error.to_string())?;
     let target = directory.join(&name);
     if target.exists() {
@@ -1524,6 +1645,84 @@ fn delete_rtmatrix_backup(
     Ok(())
 }
 
+fn delete_all_user_rtmatrix_backup_files(project: &Path) -> Result<usize, String> {
+    let directory = backup_directory(project);
+    if !directory.is_dir() {
+        return Ok(0);
+    }
+    let mut deleted = 0;
+    for entry in fs::read_dir(directory).map_err(|error| error.to_string())? {
+        let path = entry.map_err(|error| error.to_string())?.path();
+        let is_csv = path.is_file()
+            && path
+                .extension()
+                .and_then(|extension| extension.to_str())
+                .is_some_and(|extension| extension.eq_ignore_ascii_case("csv"));
+        let is_original = path
+            .file_name()
+            .and_then(|name| name.to_str())
+            .is_some_and(|name| name == ORIGINAL_BACKUP);
+        if is_csv && !is_original {
+            fs::remove_file(path).map_err(|error| error.to_string())?;
+            deleted += 1;
+        }
+    }
+    Ok(deleted)
+}
+
+// Restores the protected Original as the working matrix before removing every
+// user-created snapshot. This leaves both the data on disk and the dropdown's
+// remembered selection on a real, recoverable version after Delete All.
+fn restore_original_and_delete_all_rtmatrix_backups(project: &Path) -> Result<usize, String> {
+    ensure_original(project)?;
+    let original = backup_directory(project).join(ORIGINAL_BACKUP);
+    fs::copy(original, project.join("RT_matrix.csv")).map_err(|error| error.to_string())?;
+    delete_all_user_rtmatrix_backup_files(project)
+}
+
+// Deletes every user-created backup for only the selected dataset. The
+// protected Step 2 Original becomes the active working matrix afterward.
+#[tauri::command]
+fn delete_all_rtmatrix_backups(app: AppHandle, project_path: String) -> Result<usize, String> {
+    let project = PathBuf::from(&project_path);
+    if !project.is_dir() {
+        return Err("the selected dataset folder does not exist".to_string());
+    }
+    let deleted = restore_original_and_delete_all_rtmatrix_backups(&project)?;
+    let mut settings = read_settings(&app).unwrap_or_default();
+    settings
+        .last_backups
+        .insert(project_path.clone(), ORIGINAL_BACKUP.to_string());
+    settings.backup_labels.remove(&project_path);
+    write_settings(&app, &settings)?;
+    Ok(deleted)
+}
+
+// Replaces one existing user-created backup with the current working matrix.
+// Original stays immutable so an override can never destroy the Step 2 baseline.
+#[tauri::command]
+fn overwrite_rtmatrix_backup(project_path: String, name: String) -> Result<(), String> {
+    let project = PathBuf::from(project_path);
+    if !project.is_dir() {
+        return Err("the selected dataset folder does not exist".to_string());
+    }
+    let name = safe_backup_name(&name)?;
+    if name == ORIGINAL_BACKUP {
+        return Err("Original RT_matrix cannot be overridden".to_string());
+    }
+    let source = project.join("RT_matrix.csv");
+    if !source.is_file() {
+        return Err("RT_matrix.csv does not exist".to_string());
+    }
+    let target = backup_directory(&project).join(name);
+    if !target.is_file() {
+        return Err("that backup version no longer exists".to_string());
+    }
+    fs::copy(source, target)
+        .map(|_| ())
+        .map_err(|error| error.to_string())
+}
+
 // stores a friendly dropdown label for one saved RT_matrix snapshot without
 // renaming the file, preserving chronological ordering and restore safety
 #[tauri::command]
@@ -1541,7 +1740,7 @@ fn rename_rtmatrix_backup(
     if name == ORIGINAL_BACKUP {
         return Err("Original RT_matrix cannot be renamed".to_string());
     }
-    if !project.join(BACKUP_DIR).join(&name).is_file() {
+    if !backup_directory(&project).join(&name).is_file() {
         return Err("that backup version no longer exists".to_string());
     }
     let label = safe_backup_label(&label)?;
@@ -1558,8 +1757,9 @@ fn rename_rtmatrix_backup(
 #[tauri::command]
 fn list_rtmatrix_backups(app: AppHandle, project_path: String) -> Result<BackupList, String> {
     let project = PathBuf::from(&project_path);
+    flatten_previous_nested_backups(&project)?;
     ensure_original(&project)?;
-    let directory = project.join(BACKUP_DIR);
+    let directory = backup_directory(&project);
     let backups: Vec<String> = if directory.is_dir() {
         fs::read_dir(&directory)
             .map_err(|error| error.to_string())?
@@ -1603,7 +1803,7 @@ fn restore_rtmatrix_backup(project_path: String, name: String) -> Result<(), Str
         return Err("the selected dataset folder does not exist".to_string());
     }
     let name = safe_backup_name(&name)?;
-    let source = project.join(BACKUP_DIR).join(name);
+    let source = backup_directory(&project).join(name);
     if !source.is_file() {
         return Err("that backup version no longer exists".to_string());
     }
@@ -1665,53 +1865,112 @@ fn open_sling() -> Result<(), String> {
         .map_err(|error| format!("the sling website could not be opened: {error}"))
 }
 
-// emits complete lines from a worker output stream
+// Removes terminal-only styling/control sequences before worker output reaches
+// the GUI. This keeps colored or underlined CLI messages readable in Activity.
+fn clean_worker_output(bytes: &[u8]) -> String {
+    let mut clean = Vec::with_capacity(bytes.len());
+    let mut index = 0;
+    while index < bytes.len() {
+        if bytes[index] == 0x1b {
+            index += 1;
+            match bytes.get(index) {
+                // CSI sequence, such as ESC[1;4m for bold + underline.
+                Some(b'[') => {
+                    index += 1;
+                    while index < bytes.len() {
+                        let byte = bytes[index];
+                        index += 1;
+                        if (0x40..=0x7e).contains(&byte) {
+                            break;
+                        }
+                    }
+                }
+                // OSC sequence, terminated by BEL or ESC + backslash.
+                Some(b']') => {
+                    index += 1;
+                    while index < bytes.len() {
+                        if bytes[index] == 0x07 {
+                            index += 1;
+                            break;
+                        }
+                        if bytes[index] == 0x1b && bytes.get(index + 1) == Some(&b'\\') {
+                            index += 2;
+                            break;
+                        }
+                        index += 1;
+                    }
+                }
+                Some(_) => index += 1,
+                None => {}
+            }
+        } else if bytes[index] < 0x20 && bytes[index] != b'\t' {
+            index += 1;
+        } else {
+            clean.push(bytes[index]);
+            index += 1;
+        }
+    }
+    String::from_utf8_lossy(&clean).trim().to_string()
+}
+
+// Drains worker output in chunks and treats both carriage returns and newlines
+// as progress boundaries. Chunking avoids flooding Windows WebView2 with tiny
+// native reads, while the size cap prevents malformed output from accumulating.
+fn read_output_records<R, F>(mut reader: R, mut on_record: F) -> Result<(), String>
+where
+    R: Read,
+    F: FnMut(String),
+{
+    const MAX_RECORD_BYTES: usize = 64 * 1024;
+    let mut chunk = [0_u8; 8192];
+    let mut pending = Vec::with_capacity(256);
+    let emit = |pending: &mut Vec<u8>, on_record: &mut F| {
+        if pending.is_empty() {
+            return;
+        }
+        let text = clean_worker_output(pending);
+        pending.clear();
+        if !text.is_empty() {
+            on_record(text);
+        }
+    };
+    loop {
+        let count = reader.read(&mut chunk).map_err(|error| error.to_string())?;
+        if count == 0 {
+            break;
+        }
+        for &byte in &chunk[..count] {
+            if byte == b'\n' || byte == b'\r' {
+                emit(&mut pending, &mut on_record);
+            } else {
+                pending.push(byte);
+                if pending.len() >= MAX_RECORD_BYTES {
+                    emit(&mut pending, &mut on_record);
+                }
+            }
+        }
+    }
+    emit(&mut pending, &mut on_record);
+    Ok(())
+}
+
+// emits complete cleaned records from a worker output stream
 fn forward_output<R: Read>(
     reader: R,
     app: &AppHandle,
     step: u8,
     stream: &str,
 ) -> Result<(), String> {
-    let mut reader = BufReader::new(reader);
-    let mut line = Vec::new();
-    let mut byte = [0_u8; 1];
-    loop {
-        match reader.read(&mut byte) {
-            Ok(0) => break,
-            Ok(_) if byte[0] == b'\n' || byte[0] == b'\r' => {
-                if !line.is_empty() {
-                    let text = String::from_utf8_lossy(&line).trim().to_string();
-                    if !text.is_empty() {
-                        let _ = app.emit(
-                            "worker-output",
-                            WorkerOutput {
-                                step,
-                                stream: stream.to_string(),
-                                line: text,
-                            },
-                        );
-                    }
-                    line.clear();
-                }
-            }
-            Ok(_) => line.push(byte[0]),
-            Err(error) => return Err(error.to_string()),
-        }
-    }
-    if !line.is_empty() {
-        let text = String::from_utf8_lossy(&line).trim().to_string();
-        if !text.is_empty() {
-            let _ = app.emit(
-                "worker-output",
-                WorkerOutput {
-                    step,
-                    stream: stream.to_string(),
-                    line: text,
-                },
-            );
-        }
-    }
-    Ok(())
+    read_output_records(reader, |line| {
+        let _ = app.emit(
+            "worker-output",
+            WorkerOutput {
+                step,
+                stream: stream.to_string(),
+                line,
+            },
+        );
+    })
 }
 
 // runs one processing step inside the selected project
@@ -1952,8 +2211,10 @@ fn main() {
             create_missing_project_files,
             backup_rtmatrix,
             delete_rtmatrix_backup,
+            delete_all_rtmatrix_backups,
             import_rtmatrix_backup,
             list_rtmatrix_backups,
+            overwrite_rtmatrix_backup,
             rename_rtmatrix_backup,
             restore_rtmatrix_backup,
             set_last_backup,
@@ -1972,6 +2233,8 @@ fn main() {
             visualizer::visualizer_get_sh,
             visualizer::visualizer_get_r,
             visualizer::visualizer_save_bounds,
+            visualizer::visualizer_save_shared_bounds,
+            visualizer::visualizer_align_shared_bounds,
             visualizer::visualizer_prepare_png_export,
             visualizer::visualizer_save_png,
             run_step
@@ -1989,6 +2252,23 @@ mod tests {
         let _ = fs::remove_dir_all(&dir);
         fs::create_dir_all(&dir).unwrap();
         dir
+    }
+
+    #[test]
+    fn worker_output_removes_terminal_formatting_before_display() {
+        let output = clean_worker_output(b"Check \x1b[1;4mmissing_compounds.txt\x1b[0m.");
+        assert_eq!(output, "Check missing_compounds.txt.");
+    }
+
+    #[test]
+    fn worker_progress_splits_carriage_returns_without_large_buffering() {
+        let mut records = Vec::new();
+        read_output_records(
+            std::io::Cursor::new(b"first\rsecond\r\nthird\nlast"),
+            |record| records.push(record),
+        )
+        .unwrap();
+        assert_eq!(records, ["first", "second", "third", "last"]);
     }
 
     #[test]
@@ -2153,16 +2433,10 @@ mod tests {
     fn exit_log_appends_blank_line_between_close_entries() {
         let dir = temp_project("exit_log");
 
-        append_exit_log_entry(
-            &dir,
-            "exit // mrmhub-gui closed @ 23/07/2026 , 18h:22m:30s",
-        )
-        .unwrap();
-        append_exit_log_entry(
-            &dir,
-            "exit // mrmhub-gui closed @ 24/07/2026 , 10h:51m:19s",
-        )
-        .unwrap();
+        append_exit_log_entry(&dir, "exit // mrmhub-gui closed @ 23/07/2026 , 18h:22m:30s")
+            .unwrap();
+        append_exit_log_entry(&dir, "exit // mrmhub-gui closed @ 24/07/2026 , 10h:51m:19s")
+            .unwrap();
 
         let log = fs::read_to_string(dir.join("exit_log.txt")).unwrap();
         assert_eq!(
@@ -2180,7 +2454,7 @@ mod tests {
         let name = "RT_matrix_2026-07-09_14-30-45.csv".to_string();
         let written = backup_rtmatrix(dir.to_string_lossy().into_owned(), name.clone()).unwrap();
         assert_eq!(written.as_deref(), Some(name.as_str()));
-        assert!(dir.join(BACKUP_DIR).join(&name).is_file());
+        assert!(backup_directory(&dir).join(&name).is_file());
 
         // the working copy changes, then a restore brings the snapshot back
         fs::write(dir.join("RT_matrix.csv"), "edited").unwrap();
@@ -2243,7 +2517,7 @@ mod tests {
     #[test]
     fn deletes_timestamped_backup_but_keeps_original() {
         let dir = temp_project("delete_backup");
-        let directory = dir.join(BACKUP_DIR);
+        let directory = backup_directory(&dir);
         fs::create_dir_all(&directory).unwrap();
         let backup = "RT_matrix_2026-07-10_09-00-00.csv";
         fs::write(directory.join(backup), "backup").unwrap();
@@ -2281,7 +2555,7 @@ mod tests {
 
         // first sight captures the current file as the Original...
         ensure_original(&dir).unwrap();
-        let original = dir.join(BACKUP_DIR).join(ORIGINAL_BACKUP);
+        let original = backup_directory(&dir).join(ORIGINAL_BACKUP);
         assert_eq!(fs::read_to_string(&original).unwrap(), "detected");
 
         // ...and later edits do NOT overwrite that captured Original
@@ -2306,5 +2580,108 @@ mod tests {
         assert_eq!(backups[0], ORIGINAL_BACKUP);
         assert_eq!(backups[1], "RT_matrix_2026-07-09_14-30-45.csv");
         assert_eq!(backups[2], "RT_matrix_2026-07-10_09-00-00.csv");
+    }
+
+    #[test]
+    fn backup_directory_is_directly_inside_the_dataset() {
+        let dir = temp_project("direct_backup_folder");
+        assert_eq!(backup_directory(&dir), dir.join(BACKUP_DIR));
+        fs::remove_dir_all(&dir).unwrap();
+    }
+
+    #[test]
+    fn nested_layout_is_flattened_without_losing_backups() {
+        let dir = temp_project("flatten_nested");
+        let root = dir.join(BACKUP_DIR);
+        let nested = previous_nested_backup_directory(&dir);
+        fs::create_dir_all(&nested).unwrap();
+        let first = "RT_matrix_2026-08-01_10-00-00.csv";
+        fs::write(nested.join(first), "nested backup").unwrap();
+        fs::write(nested.join(ORIGINAL_BACKUP), "nested original").unwrap();
+
+        assert_eq!(flatten_previous_nested_backups(&dir).unwrap(), 2);
+        assert_eq!(
+            fs::read_to_string(root.join(first)).unwrap(),
+            "nested backup"
+        );
+        assert_eq!(
+            fs::read_to_string(root.join(ORIGINAL_BACKUP)).unwrap(),
+            "nested original"
+        );
+        assert!(!nested.exists());
+        assert_eq!(flatten_previous_nested_backups(&dir).unwrap(), 0);
+        fs::remove_dir_all(&dir).unwrap();
+    }
+
+    #[test]
+    fn flattening_preserves_different_same_named_backups() {
+        let dir = temp_project("flatten_collision");
+        let root = dir.join(BACKUP_DIR);
+        let nested = previous_nested_backup_directory(&dir);
+        fs::create_dir_all(&nested).unwrap();
+        let name = "RT_matrix_2026-08-01_10-00-00.csv";
+        fs::write(root.join(name), "direct backup").unwrap();
+        fs::write(nested.join(name), "nested backup").unwrap();
+
+        assert_eq!(flatten_previous_nested_backups(&dir).unwrap(), 1);
+        assert_eq!(
+            fs::read_to_string(root.join(name)).unwrap(),
+            "direct backup"
+        );
+        assert_eq!(
+            fs::read_to_string(root.join("RT_matrix_2026-08-01_10-00-00_nested_1.csv")).unwrap(),
+            "nested backup"
+        );
+        fs::remove_dir_all(&dir).unwrap();
+    }
+
+    #[test]
+    fn delete_all_backups_restores_and_preserves_original() {
+        let dir = temp_project("delete_all");
+        let scoped = backup_directory(&dir);
+        fs::create_dir_all(&scoped).unwrap();
+        fs::write(scoped.join(ORIGINAL_BACKUP), "original").unwrap();
+        fs::write(scoped.join("RT_matrix_1.csv"), "one").unwrap();
+        fs::write(scoped.join("RT_matrix_2.csv"), "two").unwrap();
+        fs::write(dir.join("RT_matrix.csv"), "current edits").unwrap();
+
+        assert_eq!(
+            restore_original_and_delete_all_rtmatrix_backups(&dir).unwrap(),
+            2
+        );
+        assert_eq!(
+            fs::read_to_string(dir.join("RT_matrix.csv")).unwrap(),
+            "original"
+        );
+        assert!(scoped.join(ORIGINAL_BACKUP).is_file());
+        assert!(!scoped.join("RT_matrix_1.csv").exists());
+        assert!(!scoped.join("RT_matrix_2.csv").exists());
+        fs::remove_dir_all(&dir).unwrap();
+    }
+
+    #[test]
+    fn override_replaces_selected_backup_but_rejects_original() {
+        let dir = temp_project("override");
+        let scoped = backup_directory(&dir);
+        fs::create_dir_all(&scoped).unwrap();
+        let name = "RT_matrix_2026-08-01_10-00-00.csv";
+        fs::write(dir.join("RT_matrix.csv"), "edited").unwrap();
+        fs::write(scoped.join(name), "before").unwrap();
+        fs::write(scoped.join(ORIGINAL_BACKUP), "original").unwrap();
+
+        overwrite_rtmatrix_backup(dir.to_string_lossy().into_owned(), name.to_string()).unwrap();
+        assert_eq!(fs::read_to_string(scoped.join(name)).unwrap(), "edited");
+        assert!(
+            overwrite_rtmatrix_backup(
+                dir.to_string_lossy().into_owned(),
+                ORIGINAL_BACKUP.to_string()
+            )
+            .is_err()
+        );
+        assert_eq!(
+            fs::read_to_string(scoped.join(ORIGINAL_BACKUP)).unwrap(),
+            "original"
+        );
+        fs::remove_dir_all(&dir).unwrap();
     }
 }

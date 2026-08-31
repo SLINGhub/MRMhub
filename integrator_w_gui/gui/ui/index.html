@@ -7,7 +7,7 @@
       name="description"
       content="graphical interface for mrmhub integrator peak detection and integration"
     />
-    <title>MRMhub Integrator GUI [v1.2.0]</title>
+    <title>MRMhub Integrator GUI [v1.2.2]</title>
     <script>
       try {
         document.documentElement.dataset.theme =
@@ -16,8 +16,8 @@
         document.documentElement.dataset.theme = "light";
       }
     </script>
-    <link rel="stylesheet" href="styles.css?v=1.2.0" />
-    <script src="app.js?v=1.2.0" defer></script>
+    <link rel="stylesheet" href="styles.css?v=1.2.2" />
+    <script src="app.js?v=1.2.2" defer></script>
   </head>
   <body>
     <div class="app-shell">
@@ -196,6 +196,17 @@
               </span>
               <h3>Validate data</h3>
               <p>-</p>
+              <div
+                class="step-progress hidden indeterminate"
+                data-step-progress
+                role="progressbar"
+                aria-label="Validate data progress"
+                aria-valuemin="0"
+                aria-valuemax="100"
+              >
+                <div><span></span></div>
+                <small>Preparing validation…</small>
+              </div>
               <div class="step-output">
                 <code>misc/</code>
                 <span class="card-run-indicator">
@@ -225,6 +236,17 @@
               </span>
               <h3>Detect peaks</h3>
               <p>-</p>
+              <div
+                class="step-progress hidden indeterminate"
+                data-step-progress
+                role="progressbar"
+                aria-label="Detect peaks progress"
+                aria-valuemin="0"
+                aria-valuemax="100"
+              >
+                <div><span></span></div>
+                <small>Preparing peak detection…</small>
+              </div>
               <div class="step-output">
                 <code>RT_matrix.csv</code>
                 <span class="card-run-indicator">
@@ -255,6 +277,17 @@
               </span>
               <h3>Integrate peaks</h3>
               <p>-</p>
+              <div
+                class="step-progress hidden indeterminate"
+                data-step-progress
+                role="progressbar"
+                aria-label="Integrate peaks progress"
+                aria-valuemin="0"
+                aria-valuemax="100"
+              >
+                <div><span></span></div>
+                <small>Preparing peak integration…</small>
+              </div>
               <div class="step-output">
                 <code>long.csv</code>
                 <span class="card-run-indicator">
@@ -284,6 +317,17 @@
               </span>
               <h3>Generate reports</h3>
               <p>-</p>
+              <div
+                class="step-progress hidden indeterminate"
+                data-step-progress
+                role="progressbar"
+                aria-label="Generate reports progress"
+                aria-valuemin="0"
+                aria-valuemax="100"
+              >
+                <div><span></span></div>
+                <small>Preparing report generation…</small>
+              </div>
               <div class="step-output">
                 <code>by_transition/</code>
                 <span class="card-run-indicator">
@@ -449,6 +493,19 @@
                 </svg>
               </button>
               <button
+                class="icon-button visualizer-override visualizer-labelled-action"
+                id="visualizer-override-backup"
+                type="button"
+                disabled
+                aria-label="save dragged integration bounds over the selected RT_matrix backup"
+                title="override the selected RT_matrix backup with these dragged bounds"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M5 4h11l3 3v13H5zM8 4v5h6V4M8 20v-6h8v6" />
+                </svg>
+                <span>Override</span>
+              </button>
+              <button
                 class="icon-button visualizer-refresh"
                 id="visualizer-refresh"
                 type="button"
@@ -470,6 +527,19 @@
                 <svg viewBox="0 0 24 24" aria-hidden="true">
                   <path d="M4 7h16M10 11v6M14 11v6M6 7l1 14h10l1-14M9 7V4h6v3" />
                 </svg>
+              </button>
+              <button
+                class="icon-button visualizer-delete-all visualizer-labelled-action"
+                id="visualizer-delete-all-backups"
+                type="button"
+                disabled
+                aria-label="delete all user-created RT_matrix backups for this dataset"
+                title="delete all user-created RT_matrix backups for this dataset"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 7h16M10 11v6M14 11v6M6 7l1 14h10l1-14M9 7V4h6v3" />
+                </svg>
+                <span>Delete all</span>
               </button>
               <button
                 class="icon-button visualizer-rename"
@@ -550,6 +620,13 @@
               <input id="visualizer-color-sample-types" type="checkbox" />
               <span>Color sample types</span>
             </label>
+            <label
+              class="visualizer-shortcut-toggle"
+              title="after applying the averaged reference limits, cosine-match each sample and shift qualifying windows"
+            >
+              <input id="visualizer-align-shared" type="checkbox" checked />
+              <span>Auto-align shared RTs</span>
+            </label>
             <span
               class="visualizer-export-wrap"
               id="visualizer-export-wrap"
@@ -570,12 +647,9 @@
               id="visualizer-apply-shared"
               type="button"
               disabled
-              title="select a reference plot and adjust its integration bounds first"
+              title="select at least one reference plot with usable integration bounds"
             >
-              Reintegrate shared RT
-            </button>
-            <button class="secondary-button" id="visualizer-back" type="button">
-              Back to Integrator
+              Apply selected RTs to all samples
             </button>
           </div>
         </section>
@@ -665,7 +739,7 @@
       </main>
 
       <footer>
-        <span>MRMhub Integrator GUI [v1.2.0]</span>
+        <span>MRMhub Integrator GUI [v1.2.2]</span>
         <a
           class="external-sling-link"
           href="https://sling.sg/"

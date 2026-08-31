@@ -8,17 +8,28 @@ use std::path::Path;
 pub fn calc_auc() -> Result<(), Box<dyn Error>> {
     let (s_trans, rt_vec_d) = read_rtmat()?;
     let t_to_istd = crate::common::get_trans_istd()?;
-    let area_all = areas(&s_trans, &rt_vec_d, &t_to_istd);
+    let transition_count = s_trans
+        .iter()
+        .map(|transition| transition.0.as_str())
+        .collect::<std::collections::HashSet<_>>()
+        .len();
+    let progress = crate::progress::Reporter::new(transition_count + 3);
+    let area_all = areas(&s_trans, &rt_vec_d, &t_to_istd, &progress);
     let mzml_fs = crate::common::get_mzml()?;
     write_long(&s_trans, &area_all, &t_to_istd, &mzml_fs)?;
+    progress.advance("writing detailed results");
     write_area(&s_trans, &area_all, &t_to_istd, &mzml_fs)?;
-    crate::common::write_by_sample(&t_to_istd, &mzml_fs)
+    progress.advance("writing quantification results");
+    crate::common::write_by_sample(&t_to_istd, &mzml_fs)?;
+    progress.advance("writing sample outputs");
+    Ok(())
 }
 // calculates feature measurements for every transition
 fn areas(
     s_trans: &[(String, String)],
     rt_vec_d: &[(f32, f32)],
     t_to_istd: &[crate::common::ValidT],
+    progress: &crate::progress::Reporter,
 ) -> Vec<Vec<RowDat>> {
     let mut trans_name_l: Vec<&str> = s_trans.iter().map(|x| x.0.as_str()).collect();
     trans_name_l.dedup();
@@ -38,9 +49,13 @@ fn areas(
                     .map_or_else(|_| panic!("{t} transition not found"), |k| &t_to_istd[k])
             };
             let rt_i_all = write_trans(trans, rt_vec_d, (s_trans.len(), pos0, pos1), k).unwrap();
-            (pos0..pos1).map(move |i| {
-                feat_data(i - pos0, &rt_i_all, &rt_vec_d[i..], s_trans.len(), k).unwrap()
-            })
+            let rows = (pos0..pos1)
+                .map(move |i| {
+                    feat_data(i - pos0, &rt_i_all, &rt_vec_d[i..], s_trans.len(), k).unwrap()
+                })
+                .collect::<Vec<_>>();
+            progress.advance("integrating peak areas");
+            rows
         })
         .collect::<Vec<_>>()
 }

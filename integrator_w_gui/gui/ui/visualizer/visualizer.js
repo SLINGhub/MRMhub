@@ -1,3 +1,5 @@
+import { referenceBounds } from "./reference-bounds.js";
+
 const { invoke, Channel } = window.__TAURI__.core;
 const dialog = window.__TAURI__.dialog;
 const d3 = window.d3;
@@ -6,6 +8,7 @@ const originalRtMatrix = "RT_matrix_original.csv";
 const formatRt = d3.format(".2f");
 const formatIntensity = d3.format(",.0f");
 const sampleTypeColorPreference = "mrmhub-visualizer-color-sample-types";
+const sharedAlignmentPreference = "mrmhub-visualizer-align-shared";
 const sampleTypePalette = [
   "#1f77b4",
   "#e67e22",
@@ -29,9 +32,12 @@ const elements = {
   exportPngsWrap: document.querySelector("#visualizer-export-wrap"),
   sampleTypeLegend: document.querySelector("#visualizer-sample-type-legend"),
   applyShared: document.querySelector("#visualizer-apply-shared"),
+  alignShared: document.querySelector("#visualizer-align-shared"),
   refresh: document.querySelector("#visualizer-refresh"),
   save: document.querySelector("#visualizer-save"),
+  overrideBackup: document.querySelector("#visualizer-override-backup"),
   deleteBackup: document.querySelector("#visualizer-delete-backup"),
+  deleteAllBackups: document.querySelector("#visualizer-delete-all-backups"),
   renameBackup: document.querySelector("#visualizer-rename-backup"),
   importBackup: document.querySelector("#visualizer-import-backup"),
   backups: document.querySelector("#visualizer-backups"),
@@ -71,6 +77,7 @@ const state = {
   hoveredGraph: null,
   rangeManuallySet: false,
   backupLabels: {},
+  backupNames: [],
   transitionSearch: "",
   chartId: 0,
   selectedIsomerIndex: null,
@@ -179,6 +186,7 @@ applySampleTypeColorPreference(
   storedPreference(sampleTypeColorPreference) === "true",
   false,
 );
+elements.alignShared.checked = storedPreference(sharedAlignmentPreference) !== "false";
 
 // updates the visible visualizer status text
 function setStatus(message, options = {}) {
@@ -516,6 +524,7 @@ export function resetVisualizer() {
   state.transitions.length = 0;
   state.samples.length = 0;
   state.backupLabels = {};
+  state.backupNames = [];
   state.sampleTypeColors.clear();
   state.referenceChoices.clear();
   renderSampleTypeLegend();
@@ -545,6 +554,7 @@ export async function initializeVisualizer(projectPath) {
   state.references.length = 0;
   state.transitions.length = 0;
   state.samples.length = 0;
+  state.backupNames = [];
   state.referenceChoices.clear();
   setStatus("Loading dataset index...");
 
@@ -2080,28 +2090,31 @@ async function renderReference(reference, token) {
   }
 }
 
-// enables Save whenever any graph (transition or reference view) holds an
-// unsaved dragged band that maps to a known transition
+// Enables Save for dragged edits and the shared action for any selected plot
+// that already contains a valid existing or edited integration window.
 function updateSaveButton() {
   const hasEdits = state.traceRecords.some(
     (record) => record.editRts?.size > 0 && record.editContext?.cqq,
   );
   const selection = elements.transition.value;
-  const changedReferences = state.traceRecords.filter(
+  const selectedReferences = state.traceRecords.filter(
     (record) =>
       state.referenceChoices.get(referenceChoiceKey(record)) === true &&
-      record.editRts?.size > 0 &&
-      record.editContext?.cqq,
+      record.editContext?.cqq &&
+      referenceBounds(record).size > 0,
   );
   elements.save.disabled = !hasEdits || state.loading;
-  elements.applyShared.disabled = changedReferences.length === 0 || state.loading;
-  elements.applyShared.title = changedReferences.length
-    ? `average ${changedReferences.length.toLocaleString()} changed reference plot(s), apply the RT limits to every sample, and reintegrate`
-    : "select a reference plot and adjust its integration bounds first";
+  elements.applyShared.disabled = selectedReferences.length === 0 || state.loading;
+  elements.applyShared.title = selectedReferences.length
+    ? elements.alignShared.checked
+      ? `average the current bounds from ${selectedReferences.length.toLocaleString()} selected reference plot(s), cosine-align qualifying samples, and reintegrate`
+      : `average the current bounds from ${selectedReferences.length.toLocaleString()} selected reference plot(s), apply the exact same limits to every sample, and reintegrate`
+    : "select at least one reference plot with usable integration bounds";
+  elements.alignShared.disabled = state.loading;
   elements.toolbar.classList.toggle("has-unsaved", hasEdits);
   elements.toolbar.classList.toggle(
-    "has-reference-edits",
-    changedReferences.length > 0,
+    "has-reference-selection",
+    selectedReferences.length > 0,
   );
   const canExport =
     Boolean(selection) &&
@@ -2116,6 +2129,7 @@ function updateSaveButton() {
   elements.exportPngs.disabled = !canExport;
   elements.exportPngs.title = exportTitle;
   elements.exportPngsWrap.title = exportTitle;
+  updateDeleteButton();
 }
 
 // enables deletion only for user-created snapshots, keeping the protected
@@ -2123,8 +2137,14 @@ function updateSaveButton() {
 function updateDeleteButton() {
   const name = elements.backups.value;
   const disabled = state.loading || !name || name === originalRtMatrix;
+  const hasEdits = state.traceRecords.some(
+    (record) => record.editRts?.size > 0 && record.editContext?.cqq,
+  );
   elements.deleteBackup.disabled = disabled;
   elements.renameBackup.disabled = disabled;
+  elements.overrideBackup.disabled = disabled || !hasEdits;
+  elements.deleteAllBackups.disabled =
+    disabled || !state.backupNames.some((backup) => backup !== originalRtMatrix);
   elements.importBackup.disabled = state.loading || !state.projectPath;
 }
 
@@ -2482,6 +2502,7 @@ async function refreshBackups(selected) {
     appendOption(fragment, "No saved versions yet", "");
     elements.backups.replaceChildren(fragment);
     state.backupLabels = {};
+    state.backupNames = [];
     updateDeleteButton();
   };
   if (!state.projectPath) {
@@ -2498,6 +2519,7 @@ async function refreshBackups(selected) {
     return;
   }
   state.backupLabels = list.labels ?? {};
+  state.backupNames = list.backups ?? [];
   const fragment = document.createDocumentFragment();
   if (!list.backups.length) {
     appendOption(fragment, "No saved versions yet", "");
@@ -2527,7 +2549,9 @@ async function onBackupChange() {
   const scrollY = window.scrollY;
   elements.backups.disabled = true;
   elements.deleteBackup.disabled = true;
+  elements.deleteAllBackups.disabled = true;
   elements.renameBackup.disabled = true;
+  elements.overrideBackup.disabled = true;
   setStatus(`Restoring ${backupLabel(name)} and re-integrating...`);
   try {
     await invoke("restore_rtmatrix_backup", {
@@ -2562,7 +2586,9 @@ async function deleteSelectedBackup() {
   );
   if (!confirmed) return;
   elements.deleteBackup.disabled = true;
+  elements.deleteAllBackups.disabled = true;
   elements.renameBackup.disabled = true;
+  elements.overrideBackup.disabled = true;
   elements.backups.disabled = true;
   setStatus(`Deleting ${backupLabel(name)}...`);
   try {
@@ -2575,6 +2601,58 @@ async function deleteSelectedBackup() {
     setStatus(`Deleted ${backupLabel(name)}.`);
   } catch (error) {
     setStatus(`Delete failed: ${String(error)}`);
+  } finally {
+    elements.backups.disabled = false;
+    updateDeleteButton();
+  }
+}
+
+// Removes every user-created matrix version for this dataset, restores the
+// protected Original, and re-integrates it. The in-app confirmation works on
+// both native webviews.
+async function deleteAllBackups() {
+  const bridge = shell();
+  const count = state.backupNames.filter(
+    (name) => name !== originalRtMatrix,
+  ).length;
+  if (state.loading || count === 0 || !state.projectPath) return;
+  const message = `Delete all ${count.toLocaleString()} user-created RT_matrix backup(s) for this dataset?\n\nBefore continuing, copy any matrix versions you still need to a safe location. This cannot be undone. The protected Original RT_matrix will be restored and re-integrated.`;
+  const confirmed = bridge?.confirm
+    ? await bridge.confirm(
+        message,
+        "Delete all RT_matrix backups?",
+        "Delete backups",
+        "Keep backups",
+      )
+    : window.confirm(message);
+  if (!confirmed) return;
+  elements.deleteBackup.disabled = true;
+  elements.deleteAllBackups.disabled = true;
+  elements.renameBackup.disabled = true;
+  elements.overrideBackup.disabled = true;
+  elements.backups.disabled = true;
+  setStatus("Deleting all user-created RT_matrix backups...");
+  try {
+    const scrollY = window.scrollY;
+    const deleted = await invoke("delete_all_rtmatrix_backups", {
+      projectPath: state.projectPath,
+    });
+    await refreshBackups(originalRtMatrix);
+    setStatus("Original RT_matrix restored; re-integrating...");
+    const result = await bridge?.runStep?.(3, { backup: false });
+    if (result?.success) {
+      await renderSelected({ preserveScroll: true, scrollY });
+      bridge?.showToast?.(
+        `Deleted ${deleted.toLocaleString()} backup(s) and restored Original.`,
+      );
+      setStatus("Showing Original RT_matrix.");
+    } else {
+      setStatus(
+        `Deleted ${deleted.toLocaleString()} backup(s) and restored Original, but Step 3 did not finish.`,
+      );
+    }
+  } catch (error) {
+    setStatus(`Delete all failed: ${String(error)}`);
   } finally {
     elements.backups.disabled = false;
     updateDeleteButton();
@@ -2601,7 +2679,9 @@ async function renameSelectedBackup() {
     return;
   }
   elements.deleteBackup.disabled = true;
+  elements.deleteAllBackups.disabled = true;
   elements.renameBackup.disabled = true;
+  elements.overrideBackup.disabled = true;
   elements.backups.disabled = true;
   setStatus(`Renaming ${current}...`);
   try {
@@ -2635,7 +2715,9 @@ async function importBackupCsv() {
   const scrollY = window.scrollY;
   elements.importBackup.disabled = true;
   elements.deleteBackup.disabled = true;
+  elements.deleteAllBackups.disabled = true;
   elements.renameBackup.disabled = true;
+  elements.overrideBackup.disabled = true;
   elements.backups.disabled = true;
   setStatus("Importing RT_matrix backup...");
   try {
@@ -2685,22 +2767,23 @@ function individualBoundEdits() {
     );
 }
 
-// averages changed reference windows by transition/isomer, then expands each
-// average across every sample row so the resulting RT limits are identical.
+// Averages selected reference windows by transition/isomer. Existing bounds
+// are used when a reference was selected without being dragged; an edited
+// isomer uses its dragged bounds instead. The backend applies each compact edit
+// directly to every RT_matrix sample row.
 function sharedReferenceBoundEdits() {
   const windows = new Map();
-  for (const graph of state.traceRecords) {
+  for (const record of state.traceRecords) {
     if (
-      state.referenceChoices.get(referenceChoiceKey(graph)) !== true ||
-      !graph.editContext?.cqq ||
-      !graph.editRts?.size
+      state.referenceChoices.get(referenceChoiceKey(record)) !== true ||
+      !record.editContext?.cqq
     ) {
       continue;
     }
-    for (const [isomerIndex, edit] of graph.editRts) {
-      const key = `${graph.editContext.cqq}:${isomerIndex}`;
+    for (const [isomerIndex, edit] of referenceBounds(record)) {
+      const key = `${record.editContext.cqq}:${isomerIndex}`;
       const window = windows.get(key) ?? {
-        cqq: graph.editContext.cqq,
+        cqq: record.editContext.cqq,
         isomerIndex,
         startTotal: 0,
         endTotal: 0,
@@ -2720,39 +2803,92 @@ function sharedReferenceBoundEdits() {
     if (!Number.isFinite(rtStart) || !Number.isFinite(rtEnd) || rtEnd <= rtStart) {
       continue;
     }
-    state.samples.forEach((sample, sampleIndex) => {
-      edits.push({
-        cqq: window.cqq,
-        sampleIndex,
-        fileName: sample[0] ?? "",
-        isomerIndex: window.isomerIndex,
-        rtStart,
-        rtEnd,
-      });
+    edits.push({
+      cqq: window.cqq,
+      isomerIndex: window.isomerIndex,
+      rtStart,
+      rtEnd,
     });
   }
   return { edits, windowCount: windows.size };
+}
+
+// Alignment needs the same windows plus each selected plot's sample identity,
+// allowing Rust to read only the relevant transition traces from disk.
+function selectedAlignmentReferences() {
+  return state.traceRecords
+    .filter(
+      (record) =>
+        state.referenceChoices.get(referenceChoiceKey(record)) === true &&
+        record.editContext?.cqq,
+    )
+    .flatMap((record) =>
+      [...referenceBounds(record).entries()].map(([isomerIndex, edit]) => ({
+        cqq: record.editContext.cqq,
+        sampleIndex: record.editContext.sampleIndex,
+        fileName: record.editContext.fileName,
+        isomerIndex,
+        rtStart: edit.start,
+        rtEnd: edit.end,
+      })),
+    )
+    .filter(
+      (reference) =>
+        Number.isFinite(reference.rtStart) &&
+        Number.isFinite(reference.rtEnd) &&
+        reference.rtEnd > reference.rtStart,
+    );
 }
 
 async function writeAndReintegrate(edits, options = {}) {
   if (state.loading || !edits.length) return;
   const scrollY = window.scrollY;
   const shared = Boolean(options.shared);
+  const aligned = Boolean(options.aligned);
+  const overrideName = options.overrideName ?? null;
+  const sharedWindowCount = Number(options.windowCount) || edits.length;
+  const sharedScope = `${sharedWindowCount.toLocaleString()} RT window(s) across ${state.samples.length.toLocaleString()} samples`;
 
   const bridge = shell();
   elements.save.disabled = true;
+  elements.overrideBackup.disabled = true;
   elements.applyShared.disabled = true;
   elements.deleteBackup.disabled = true;
+  elements.deleteAllBackups.disabled = true;
+  elements.renameBackup.disabled = true;
+  elements.importBackup.disabled = true;
+  elements.backups.disabled = true;
   setStatus(
-    shared
-      ? `Applying shared RT limits to ${state.samples.length.toLocaleString()} samples...`
+    aligned
+      ? `Building reference profiles and aligning ${sharedScope}...`
+      : shared
+      ? `Applying ${sharedScope}...`
       : `Saving ${edits.length} integration bound(s)...`,
   );
   try {
-    const written = await invoke("visualizer_save_bounds", {
-      projectPath: state.projectPath,
-      edits,
-    });
+    const response = await invoke(
+      aligned
+        ? "visualizer_align_shared_bounds"
+        : shared
+        ? "visualizer_save_shared_bounds"
+        : "visualizer_save_bounds",
+      {
+        projectPath: state.projectPath,
+        ...(aligned ? { references: edits } : { edits }),
+      },
+    );
+    const written = typeof response === "number" ? response : response.written;
+    const incompleteProfiles =
+      aligned && response.referenceProfiles < sharedWindowCount;
+    const alignmentSummary = aligned
+      ? `${response.shifted.toLocaleString()} cosine-shifted` +
+        (response.averageScore == null
+          ? ""
+          : ` (average score ${response.averageScore.toFixed(3)})`) +
+        (incompleteProfiles
+          ? `; ${response.referenceProfiles.toLocaleString()} of ${sharedWindowCount.toLocaleString()} reference shape(s) usable, exact limits kept for the rest`
+          : "")
+      : "";
     for (const record of state.traceRecords) {
       record.editRts?.clear();
       if (record.graph) {
@@ -2763,26 +2899,50 @@ async function writeAndReintegrate(edits, options = {}) {
 
     if (!bridge?.runStep) {
       setStatus(
-        `${shared ? "Applied" : "Saved"} ${written} bound(s) to RT_matrix.csv. Run Step 3 to recompute.`,
+        aligned
+          ? `Aligned ${written.toLocaleString()} bound(s), ${alignmentSummary}. Run Step 3 to recompute.`
+          : `${shared ? "Applied" : "Saved"} ${written} bound(s) to RT_matrix.csv. Run Step 3 to recompute.`,
       );
       return;
     }
     setStatus(
-      `${shared ? "Applied shared RT limits to" : "Saved"} ${written} bound(s). Re-integrating (Step 3)...`,
+      aligned
+        ? `Aligned ${sharedScope}; ${alignmentSummary}. Re-integrating (Step 3)...`
+        : shared
+        ? `Applied ${sharedScope} (${written.toLocaleString()} bounds). Re-integrating (Step 3)...`
+        : `Saved ${written} bound(s). Re-integrating (Step 3)...`,
     );
-    const result = await bridge.runStep(3, { backup: true });
+    const result = await bridge.runStep(3, { backup: !overrideName });
     if (result.success) {
-      if (result.backup) {
+      if (overrideName) {
+        await invoke("overwrite_rtmatrix_backup", {
+          projectPath: state.projectPath,
+          name: overrideName,
+        });
+        await invoke("set_last_backup", {
+          projectPath: state.projectPath,
+          name: overrideName,
+        });
+      } else if (result.backup) {
         await invoke("set_last_backup", {
           projectPath: state.projectPath,
           name: result.backup,
         });
       }
-      await refreshBackups(result.backup);
+      await refreshBackups(overrideName ?? result.backup);
+      // A successful shared apply consumes the reference selection. Clear it
+      // before re-rendering so the refreshed plots and toolbar return to their
+      // unselected/disabled state; failed Step 3 runs retain the selection for
+      // an easy retry.
+      if (shared) state.referenceChoices.clear();
       await renderSelected({ preserveScroll: true, scrollY });
       setStatus(
-        shared
-          ? `Applied shared RT limits and re-integrated ${written} bound(s).`
+        overrideName
+          ? `Overrode ${backupLabel(overrideName)} and re-integrated.`
+          : aligned
+          ? `Uniform-aligned ${sharedScope}; ${alignmentSummary}.`
+          : shared
+          ? `Applied ${sharedScope} and re-integrated.`
           : `Saved and re-integrated ${written} bound(s).`,
       );
     } else {
@@ -2790,8 +2950,9 @@ async function writeAndReintegrate(edits, options = {}) {
       setStatus(`Saved to RT_matrix.csv, but Step 3 did not finish.`);
     }
   } catch (error) {
-    setStatus(`Save failed: ${String(error)}`);
+    setStatus(`${aligned ? "Alignment" : "Save"} failed: ${String(error)}`);
   } finally {
+    elements.backups.disabled = false;
     updateSaveButton();
     updateDeleteButton();
   }
@@ -2804,13 +2965,41 @@ async function saveBounds() {
   await writeAndReintegrate(individualBoundEdits());
 }
 
-async function applySharedRtLimits() {
-  const { edits, windowCount } = sharedReferenceBoundEdits();
-  if (!edits.length || windowCount === 0) {
-    setStatus("Select an RT reference plot and drag its integration bounds first.");
+async function overrideSelectedBackup() {
+  const name = elements.backups.value;
+  const bridge = shell();
+  const edits = individualBoundEdits();
+  if (
+    state.loading ||
+    !edits.length ||
+    !name ||
+    name === originalRtMatrix
+  ) {
     return;
   }
-  await writeAndReintegrate(edits, { shared: true });
+  const message = `Replace the selected backup "${backupLabel(name)}" with these edited integration bounds?\n\nNo new RT_matrix backup will be created. The selected version will be overwritten after Step 3 finishes successfully.`;
+  const confirmed = bridge?.confirm
+    ? await bridge.confirm(
+        message,
+        "Override selected RT_matrix?",
+        "Override backup",
+        "Cancel",
+      )
+    : window.confirm(message);
+  if (!confirmed) return;
+  await writeAndReintegrate(edits, { overrideName: name });
+}
+
+async function applySharedRtLimits() {
+  const aligned = elements.alignShared.checked;
+  const references = selectedAlignmentReferences();
+  const { edits: strictEdits, windowCount } = sharedReferenceBoundEdits();
+  const edits = aligned ? references : strictEdits;
+  if (!edits.length || windowCount === 0) {
+    setStatus("Select at least one RT reference plot with usable integration bounds.");
+    return;
+  }
+  await writeAndReintegrate(edits, { shared: true, aligned, windowCount });
 }
 
 // renders the current chooser value without allowing overlapping streams
@@ -2824,9 +3013,11 @@ async function renderSelected(options = {}) {
   elements.transition.disabled = true;
   elements.refresh.disabled = true;
   elements.save.disabled = true;
+  elements.overrideBackup.disabled = true;
   elements.exportPngs.disabled = true;
   elements.applyShared.disabled = true;
   elements.deleteBackup.disabled = true;
+  elements.deleteAllBackups.disabled = true;
   elements.renameBackup.disabled = true;
   elements.importBackup.disabled = true;
   setRangeControlsDisabled(true);
@@ -2925,8 +3116,15 @@ elements.intensity.addEventListener("input", () => {
   });
 });
 elements.save.addEventListener("click", saveBounds);
+elements.overrideBackup.addEventListener("click", overrideSelectedBackup);
 elements.applyShared.addEventListener("click", applySharedRtLimits);
+elements.alignShared.addEventListener("change", () => {
+  rememberPreference(sharedAlignmentPreference, elements.alignShared.checked);
+  updateSaveButton();
+  elements.alignShared.blur();
+});
 elements.deleteBackup.addEventListener("click", deleteSelectedBackup);
+elements.deleteAllBackups.addEventListener("click", deleteAllBackups);
 elements.renameBackup.addEventListener("click", renameSelectedBackup);
 elements.importBackup.addEventListener("click", importBackupCsv);
 elements.backups.addEventListener("change", onBackupChange);

@@ -1,4 +1,5 @@
 use base64::{Engine as _, engine::general_purpose::STANDARD as BASE64_STANDARD};
+use std::collections::{BTreeMap, BTreeSet};
 use std::error::Error;
 use std::fs::File;
 use std::io::{self, BufRead, BufReader, Read};
@@ -214,11 +215,370 @@ pub struct BoundEdit {
     rt_end: f32,
 }
 
+// A shared edit intentionally has no sample identity. The backend applies it
+// to every data row in RT_matrix.csv, avoiding any dependency on the order or
+// spelling of names in the separate mzML sample index.
+#[derive(serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SharedBoundEdit {
+    cqq: String,
+    isomer_index: usize,
+    rt_start: f32,
+    rt_end: f32,
+}
+
+// One selected reference window used to build a per-transition/isomer shape
+// profile. Unlike a strict shared edit, its sample identity is required so the
+// backend can read the correct reference chromatogram from te_<transition>.
+#[derive(Clone, serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct AlignmentReferenceEdit {
+    cqq: String,
+    sample_index: usize,
+    file_name: String,
+    isomer_index: usize,
+    rt_start: f32,
+    rt_end: f32,
+}
+
+// Summarizes a uniform alignment without returning one result per sample over
+// WebView IPC. "uniform" includes selected references and candidates that did
+// not pass the cosine threshold and therefore retained the averaged bounds.
+#[derive(serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct AlignedBoundsResult {
+    written: usize,
+    shifted: usize,
+    uniform: usize,
+    reference_profiles: usize,
+    reference_windows: usize,
+    average_score: Option<f32>,
+}
+
+const ALIGNMENT_PROFILE_POINTS: usize = 64;
+const ALIGNMENT_MIN_SIGNAL: f32 = 1.0;
+const ALIGNMENT_MIN_SCORE: f32 = 0.78;
+const ALIGNMENT_MIN_IMPROVEMENT: f32 = 0.025;
+const ALIGNMENT_APEX_TOLERANCE: f32 = 0.28;
+const ALIGNMENT_DISTANCE_PENALTY: f32 = 0.05;
+
+struct ShapeProfile {
+    values: Vec<f32>,
+    apex_fraction: f32,
+}
+
+struct ReferenceProfile {
+    values: Vec<f32>,
+    width: f32,
+    apex_fraction: f32,
+    count: usize,
+}
+
+struct AlignmentCandidate {
+    shift: f32,
+    score: f32,
+    adjusted_score: f32,
+    base_score: f32,
+}
+
 // drops a trailing .mzML extension so sample names compare regardless of it
 fn strip_mzml(name: &str) -> &str {
     name.strip_suffix(".mzML")
         .or_else(|| name.strip_suffix(".mzml"))
         .unwrap_or(name)
+}
+
+fn sample_name_matches(left: &str, right: &str) -> bool {
+    strip_mzml(left.trim()).eq_ignore_ascii_case(strip_mzml(right.trim()))
+}
+
+// Reads the authoritative trace order used by every te_<transition> file.
+fn visualizer_sample_names(misc: &Path) -> Result<Vec<String>, String> {
+    csv::ReaderBuilder::new()
+        .has_headers(false)
+        .delimiter(b'\t')
+        .flexible(true)
+        .from_path(misc.join("mzML_list.txt"))
+        .map_err(|error| error.to_string())?
+        .records()
+        .map(|record| {
+            record
+                .map_err(|error| error.to_string())?
+                .get(0)
+                .map(str::to_string)
+                .ok_or_else(|| "mzML_list.txt contains an empty sample row".to_string())
+        })
+        .collect()
+}
+
+fn resolve_sample_index(
+    names: &[String],
+    requested_index: usize,
+    requested_name: &str,
+) -> Option<usize> {
+    if names
+        .get(requested_index)
+        .is_some_and(|name| sample_name_matches(name, requested_name))
+    {
+        return Some(requested_index);
+    }
+    names
+        .iter()
+        .position(|name| sample_name_matches(name, requested_name))
+}
+
+// Reads one transition a sample at a time without retaining peak/baseline
+// sidecars. The command processes one transition group at a time, keeping its
+// memory bounded even when references were selected in reference view.
+fn read_transition_traces(misc: &Path, cqq: &str) -> Result<Vec<Vec<Point>>, String> {
+    let cqq = safe_component(cqq)?;
+    let mut reader = BufReader::new(
+        File::open(misc.join(format!("te_{cqq}"))).map_err(|error| error.to_string())?,
+    );
+    let mut traces = Vec::new();
+    loop {
+        let mut metadata = [0_u8; 5];
+        match reader.read_exact(&mut metadata) {
+            Ok(()) => {}
+            Err(error) if error.kind() == io::ErrorKind::UnexpectedEof => break,
+            Err(error) => return Err(error.to_string()),
+        }
+        let point_count = unpack_u16(&mut reader).map_err(|error| error.to_string())?;
+        let trace = (0..point_count)
+            .map(|_| {
+                Ok(Point {
+                    x: unpack_f32(&mut reader)?,
+                    y: unpack_f32(&mut reader)?,
+                })
+            })
+            .collect::<io::Result<Vec<_>>>()
+            .map_err(|error| error.to_string())?;
+        traces.push(trace);
+    }
+    Ok(traces)
+}
+
+fn interpolated_intensity(points: &[Point], rt: f32) -> f32 {
+    if points.is_empty() {
+        return 0.0;
+    }
+    if rt <= points[0].x {
+        return points[0].y;
+    }
+    if rt >= points[points.len() - 1].x {
+        return points[points.len() - 1].y;
+    }
+    let right_index = points.partition_point(|point| point.x < rt);
+    let right = &points[right_index];
+    let left = &points[right_index - 1];
+    let span = (right.x - left.x).max(f32::EPSILON);
+    left.y + (right.y - left.y) * ((rt - left.x) / span)
+}
+
+// MRMhub's existing Step 2 shift scorer compares baseline-adjusted signal
+// distributions. For local integration windows we retain RFkit's normalized
+// resampling, but square-root the corrected intensities before cosine scoring;
+// this mirrors MRMhub's distribution-oriented score and reduces apex dominance.
+fn normalized_shape_profile(points: &[Point], rt_start: f32, rt_end: f32) -> Option<ShapeProfile> {
+    if points.len() < 3 || !rt_start.is_finite() || !rt_end.is_finite() || rt_end <= rt_start {
+        return None;
+    }
+    if rt_start < points.first()?.x || rt_end > points.last()?.x {
+        return None;
+    }
+    let mut corrected = (0..ALIGNMENT_PROFILE_POINTS)
+        .map(|index| {
+            let amount = index as f32 / (ALIGNMENT_PROFILE_POINTS - 1) as f32;
+            interpolated_intensity(points, rt_start + (rt_end - rt_start) * amount)
+        })
+        .collect::<Vec<_>>();
+    if corrected.iter().any(|value| !value.is_finite()) {
+        return None;
+    }
+    let baseline = corrected.iter().copied().fold(f32::INFINITY, f32::min);
+    for value in &mut corrected {
+        *value = (*value - baseline).max(0.0);
+    }
+    let (apex_index, signal) = corrected
+        .iter()
+        .copied()
+        .enumerate()
+        .max_by(|left, right| left.1.total_cmp(&right.1))?;
+    if signal < ALIGNMENT_MIN_SIGNAL {
+        return None;
+    }
+    let edge = corrected[0].max(corrected[ALIGNMENT_PROFILE_POINTS - 1]);
+    if signal <= edge * 1.08 {
+        return None;
+    }
+    let mut values = corrected.into_iter().map(f32::sqrt).collect::<Vec<_>>();
+    let norm = values.iter().map(|value| value * value).sum::<f32>().sqrt();
+    if norm <= f32::EPSILON {
+        return None;
+    }
+    for value in &mut values {
+        *value /= norm;
+    }
+    Some(ShapeProfile {
+        values,
+        apex_fraction: apex_index as f32 / (ALIGNMENT_PROFILE_POINTS - 1) as f32,
+    })
+}
+
+fn cosine_similarity(left: &[f32], right: &[f32]) -> f32 {
+    if left.len() != right.len() {
+        return 0.0;
+    }
+    left.iter()
+        .zip(right)
+        .map(|(left, right)| left * right)
+        .sum()
+}
+
+fn build_reference_profile(
+    traces: &[Vec<Point>],
+    windows: &[(usize, f32, f32)],
+) -> Option<ReferenceProfile> {
+    let profiles = windows
+        .iter()
+        .filter_map(|(sample_index, start, end)| {
+            normalized_shape_profile(traces.get(*sample_index)?, *start, *end)
+                .map(|profile| (profile, end - start))
+        })
+        .collect::<Vec<_>>();
+    if profiles.is_empty() {
+        return None;
+    }
+    let mut values = vec![0.0; ALIGNMENT_PROFILE_POINTS];
+    for (profile, _) in &profiles {
+        for (average, value) in values.iter_mut().zip(&profile.values) {
+            *average += value / profiles.len() as f32;
+        }
+    }
+    let norm = values.iter().map(|value| value * value).sum::<f32>().sqrt();
+    if norm <= f32::EPSILON {
+        return None;
+    }
+    for value in &mut values {
+        *value /= norm;
+    }
+    let width = profiles.iter().map(|(_, width)| width).sum::<f32>() / profiles.len() as f32;
+    let apex_fraction = (profiles
+        .iter()
+        .map(|(profile, _)| profile.apex_fraction)
+        .sum::<f32>()
+        / profiles.len() as f32)
+        .clamp(0.12, 0.88);
+    Some(ReferenceProfile {
+        values,
+        width,
+        apex_fraction,
+        count: profiles.len(),
+    })
+}
+
+fn median_point_spacing(points: &[Point]) -> f32 {
+    let mut gaps = points
+        .windows(2)
+        .filter_map(|pair| {
+            let gap = pair[1].x - pair[0].x;
+            (gap.is_finite() && gap > 0.0).then_some(gap)
+        })
+        .collect::<Vec<_>>();
+    if gaps.is_empty() {
+        return 0.005;
+    }
+    let middle = gaps.len() / 2;
+    gaps.select_nth_unstable_by(middle, f32::total_cmp);
+    gaps[middle]
+}
+
+fn candidate_score(points: &[Point], rt_start: f32, profile: &ReferenceProfile) -> Option<f32> {
+    let candidate = normalized_shape_profile(points, rt_start, rt_start + profile.width)?;
+    if (candidate.apex_fraction - profile.apex_fraction).abs() > ALIGNMENT_APEX_TOLERANCE {
+        return None;
+    }
+    Some(cosine_similarity(&profile.values, &candidate.values))
+}
+
+fn best_uniform_alignment(
+    points: &[Point],
+    base_start: f32,
+    profile: &ReferenceProfile,
+    shift_limits: (f32, f32),
+) -> Option<AlignmentCandidate> {
+    if points.len() < 3 || profile.width <= 0.0 {
+        return None;
+    }
+    let adaptive_limit = (profile.width * 1.7).max(0.08);
+    let shift_start = shift_limits.0.max(-adaptive_limit);
+    let shift_end = shift_limits.1.min(adaptive_limit);
+    if shift_end < shift_start {
+        return None;
+    }
+    let step = median_point_spacing(points).clamp(0.002, 0.01);
+    let base_score = candidate_score(points, base_start, profile).unwrap_or(0.0);
+    let mut best = AlignmentCandidate {
+        shift: 0.0,
+        score: base_score,
+        adjusted_score: base_score,
+        base_score,
+    };
+    let distance_scale = shift_start.abs().max(shift_end.abs()).max(f32::EPSILON);
+    let mut shift = shift_start;
+    while shift <= shift_end + step / 2.0 {
+        let start = base_start + shift;
+        if let Some(score) = candidate_score(points, start, profile) {
+            let adjusted_score =
+                score - (shift.abs() / distance_scale).min(1.0) * ALIGNMENT_DISTANCE_PENALTY;
+            if adjusted_score > best.adjusted_score {
+                best = AlignmentCandidate {
+                    shift,
+                    score,
+                    adjusted_score,
+                    base_score,
+                };
+            }
+        }
+        shift += step;
+    }
+    if best.shift.abs() < step / 2.0
+        || best.score < ALIGNMENT_MIN_SCORE
+        || best.score - best.base_score < ALIGNMENT_MIN_IMPROVEMENT
+    {
+        return None;
+    }
+    Some(best)
+}
+
+// Uses the dataset's configured Step 2 shift search range. This keeps manual
+// uniform alignment consistent with the assay's expected chromatographic drift.
+fn configured_shift_limits(project: &Path) -> (f32, f32) {
+    let parsed = std::fs::read_to_string(project.join("param.txt"))
+        .ok()
+        .and_then(|text| text.parse::<toml::Value>().ok());
+    let values = parsed
+        .as_ref()
+        .and_then(|value| value.get("RT_shift"))
+        .and_then(toml::Value::as_array);
+    let number = |value: &toml::Value| {
+        value
+            .as_float()
+            .map(|number| number as f32)
+            .or_else(|| value.as_integer().map(|number| number as f32))
+    };
+    let Some((left, right)) =
+        values.and_then(|values| Some((number(values.first()?)?, number(values.get(1)?)?)))
+    else {
+        return (-0.22, 0.22);
+    };
+    if !left.is_finite() || !right.is_finite() {
+        return (-0.22, 0.22);
+    }
+    (
+        left.min(right).min(0.0).max(-1.0),
+        left.max(right).max(0.0).min(1.0),
+    )
 }
 
 // rewrites only the dragged integration bounds in RT_matrix.csv, leaving
@@ -319,6 +679,272 @@ pub fn visualizer_save_bounds(project_path: &str, edits: Vec<BoundEdit>) -> Resu
     }
     writer.flush().map_err(|error| error.to_string())?;
     Ok(written)
+}
+
+// Applies each averaged reference window directly to every sample row. Shared
+// reintegration used to expand one edit per sample in JavaScript, then look up
+// every row again by index/name. That made the operation fail when the sample
+// index and RT_matrix.csv differed even slightly.
+#[tauri::command]
+pub fn visualizer_save_shared_bounds(
+    project_path: &str,
+    edits: Vec<SharedBoundEdit>,
+) -> Result<usize, String> {
+    if edits.is_empty() {
+        return Ok(0);
+    }
+    let project = PathBuf::from(project_path);
+    if !project.is_dir() {
+        return Err("the selected dataset folder does not exist".to_string());
+    }
+    let rtm_path = project.join("RT_matrix.csv");
+    if !rtm_path.is_file() {
+        return Err("RT_matrix.csv was not found; run step 2 before editing bounds".to_string());
+    }
+
+    let mut records: Vec<Vec<String>> = csv::ReaderBuilder::new()
+        .has_headers(false)
+        .flexible(true)
+        .from_path(&rtm_path)
+        .map_err(|error| error.to_string())?
+        .records()
+        .map(|record| {
+            record
+                .map(|record| record.iter().map(str::to_string).collect())
+                .map_err(|error| error.to_string())
+        })
+        .collect::<Result<_, _>>()?;
+    if records.len() < 4 {
+        return Err("RT_matrix.csv does not contain any samples".to_string());
+    }
+
+    let mut written = 0;
+    for edit in &edits {
+        let columns: Vec<usize> = records[0]
+            .iter()
+            .enumerate()
+            .filter(|(_, cell)| {
+                cell.trim()
+                    .rsplit_once(" / ")
+                    .is_some_and(|(_, id)| id == edit.cqq)
+            })
+            .map(|(index, _)| index)
+            .collect();
+        let start_col = *columns
+            .get(edit.isomer_index * 2)
+            .ok_or_else(|| format!("transition {} was not found in RT_matrix.csv", edit.cqq))?;
+        let end_col = *columns.get(edit.isomer_index * 2 + 1).ok_or_else(|| {
+            format!(
+                "transition {} is missing an integration column in RT_matrix.csv",
+                edit.cqq
+            )
+        })?;
+        if records[3..]
+            .iter()
+            .any(|row| start_col >= row.len() || end_col >= row.len())
+        {
+            return Err("RT_matrix.csv is malformed for this transition".to_string());
+        }
+
+        let (low, high) = if edit.rt_start <= edit.rt_end {
+            (edit.rt_start, edit.rt_end)
+        } else {
+            (edit.rt_end, edit.rt_start)
+        };
+        for row in &mut records[3..] {
+            row[start_col] = format!("{low:.3}");
+            row[end_col] = format!("{high:.3}");
+            written += 1;
+        }
+    }
+
+    let mut writer = csv::WriterBuilder::new()
+        .flexible(true)
+        .from_path(&rtm_path)
+        .map_err(|error| error.to_string())?;
+    for record in &records {
+        writer
+            .write_record(record)
+            .map_err(|error| error.to_string())?;
+    }
+    writer.flush().map_err(|error| error.to_string())?;
+    Ok(written)
+}
+
+// Builds one shape profile per selected transition/isomer, applies the
+// references' averaged window to every sample, then moves that window only
+// when a sample's local chromatogram passes the cosine/alignment safeguards.
+// Selected references deliberately keep the averaged window: they define the
+// anchor rather than being aligned back against themselves.
+#[tauri::command]
+pub fn visualizer_align_shared_bounds(
+    project_path: &str,
+    references: Vec<AlignmentReferenceEdit>,
+) -> Result<AlignedBoundsResult, String> {
+    if references.is_empty() {
+        return Ok(AlignedBoundsResult {
+            written: 0,
+            shifted: 0,
+            uniform: 0,
+            reference_profiles: 0,
+            reference_windows: 0,
+            average_score: None,
+        });
+    }
+    let project = PathBuf::from(project_path);
+    if !project.is_dir() {
+        return Err("the selected dataset folder does not exist".to_string());
+    }
+    let rtm_path = project.join("RT_matrix.csv");
+    if !rtm_path.is_file() {
+        return Err("RT_matrix.csv was not found; run step 2 before editing bounds".to_string());
+    }
+    let misc = misc_dir(project_path)?;
+    let sample_names = visualizer_sample_names(&misc)?;
+    let mut records: Vec<Vec<String>> = csv::ReaderBuilder::new()
+        .has_headers(false)
+        .flexible(true)
+        .from_path(&rtm_path)
+        .map_err(|error| error.to_string())?
+        .records()
+        .map(|record| {
+            record
+                .map(|record| record.iter().map(str::to_string).collect())
+                .map_err(|error| error.to_string())
+        })
+        .collect::<Result<_, _>>()?;
+    if records.len() < 4 {
+        return Err("RT_matrix.csv does not contain any samples".to_string());
+    }
+    let sample_indices = sample_names
+        .iter()
+        .enumerate()
+        .map(|(index, sample)| (strip_mzml(sample.trim()).to_ascii_lowercase(), index))
+        .collect::<BTreeMap<_, _>>();
+    let row_sample_indices = records[3..]
+        .iter()
+        .map(|row| {
+            row.first().and_then(|name| {
+                sample_indices
+                    .get(&strip_mzml(name.trim()).to_ascii_lowercase())
+                    .copied()
+            })
+        })
+        .collect::<Vec<_>>();
+
+    let mut grouped: BTreeMap<(String, usize), Vec<(usize, f32, f32)>> = BTreeMap::new();
+    for reference in references {
+        safe_component(&reference.cqq)?;
+        if !reference.rt_start.is_finite()
+            || !reference.rt_end.is_finite()
+            || reference.rt_end <= reference.rt_start
+        {
+            return Err("a selected reference has invalid integration bounds".to_string());
+        }
+        let sample_index =
+            resolve_sample_index(&sample_names, reference.sample_index, &reference.file_name)
+                .ok_or_else(|| {
+                    format!(
+                        "sample {} was not found in mzML_list.txt",
+                        reference.file_name
+                    )
+                })?;
+        grouped
+            .entry((reference.cqq, reference.isomer_index))
+            .or_default()
+            .push((sample_index, reference.rt_start, reference.rt_end));
+    }
+
+    let shift_limits = configured_shift_limits(&project);
+    let mut written = 0;
+    let mut shifted = 0;
+    let mut reference_profiles = 0;
+    let mut reference_windows = 0;
+    let mut shifted_score_total = 0.0;
+
+    for ((cqq, isomer_index), windows) in grouped {
+        let columns = records[0]
+            .iter()
+            .enumerate()
+            .filter(|(_, cell)| {
+                cell.trim()
+                    .rsplit_once(" / ")
+                    .is_some_and(|(_, id)| id == cqq)
+            })
+            .map(|(index, _)| index)
+            .collect::<Vec<_>>();
+        let start_col = *columns
+            .get(isomer_index * 2)
+            .ok_or_else(|| format!("transition {cqq} was not found in RT_matrix.csv"))?;
+        let end_col = *columns.get(isomer_index * 2 + 1).ok_or_else(|| {
+            format!("transition {cqq} is missing an integration column in RT_matrix.csv")
+        })?;
+        if records[3..]
+            .iter()
+            .any(|row| start_col >= row.len() || end_col >= row.len())
+        {
+            return Err("RT_matrix.csv is malformed for this transition".to_string());
+        }
+
+        let base_start =
+            windows.iter().map(|(_, start, _)| start).sum::<f32>() / windows.len() as f32;
+        let base_end = windows.iter().map(|(_, _, end)| end).sum::<f32>() / windows.len() as f32;
+        if base_end <= base_start {
+            return Err(format!(
+                "transition {cqq} has an invalid averaged RT window"
+            ));
+        }
+        let selected_samples = windows
+            .iter()
+            .map(|(sample_index, _, _)| *sample_index)
+            .collect::<BTreeSet<_>>();
+        let traces = read_transition_traces(&misc, &cqq)?;
+        let profile = build_reference_profile(&traces, &windows);
+        reference_windows += profile.as_ref().map_or(0, |profile| profile.count);
+        reference_profiles += usize::from(profile.is_some());
+
+        for (row_offset, row) in records[3..].iter_mut().enumerate() {
+            let candidate = row_sample_indices[row_offset].and_then(|sample_index| {
+                if selected_samples.contains(&sample_index) {
+                    return None;
+                }
+                best_uniform_alignment(
+                    traces.get(sample_index)?,
+                    base_start,
+                    profile.as_ref()?,
+                    shift_limits,
+                )
+            });
+            let shift = candidate.as_ref().map_or(0.0, |candidate| candidate.shift);
+            row[start_col] = format!("{:.3}", base_start + shift);
+            row[end_col] = format!("{:.3}", base_end + shift);
+            written += 1;
+            if let Some(candidate) = candidate {
+                shifted += 1;
+                shifted_score_total += candidate.score;
+            }
+        }
+    }
+
+    let mut writer = csv::WriterBuilder::new()
+        .flexible(true)
+        .from_path(&rtm_path)
+        .map_err(|error| error.to_string())?;
+    for record in &records {
+        writer
+            .write_record(record)
+            .map_err(|error| error.to_string())?;
+    }
+    writer.flush().map_err(|error| error.to_string())?;
+
+    Ok(AlignedBoundsResult {
+        written,
+        shifted,
+        uniform: written.saturating_sub(shifted),
+        reference_profiles,
+        reference_windows,
+        average_score: (shifted > 0).then_some(shifted_score_total / shifted as f32),
+    })
 }
 
 // lists the available reference chromatogram files
@@ -642,6 +1268,33 @@ mod tests {
         writer.flush().unwrap();
     }
 
+    fn write_alignment_traces(dir: &Path) {
+        let misc = dir.join("misc");
+        std::fs::create_dir_all(&misc).unwrap();
+        std::fs::write(
+            misc.join("mzML_list.txt"),
+            "sample one.mzML\treference\nsample two.mzML\tunknown\n",
+        )
+        .unwrap();
+        std::fs::write(dir.join("param.txt"), "RT_shift = [-0.2, 0.2]\n").unwrap();
+
+        let mut bytes = Vec::new();
+        for center in [1.5_f32, 1.62_f32] {
+            // Five transition metadata bytes precede each sample trace.
+            bytes.extend_from_slice(&[0; 5]);
+            let point_count = 301_u16;
+            bytes.extend_from_slice(&point_count.to_le_bytes());
+            for index in 0..point_count {
+                let rt = index as f32 / 100.0;
+                let distance = (rt - center) / 0.075;
+                let intensity = 50.0 + 10_000.0 * (-0.5 * distance * distance).exp();
+                bytes.extend_from_slice(&rt.to_le_bytes());
+                bytes.extend_from_slice(&intensity.to_le_bytes());
+            }
+        }
+        std::fs::write(misc.join("te_0000"), bytes).unwrap();
+    }
+
     fn read_rows(dir: &Path) -> Vec<Vec<String>> {
         csv::ReaderBuilder::new()
             .has_headers(false)
@@ -780,6 +1433,72 @@ mod tests {
         assert_eq!(rows[3][6], "3.900");
         // the other sample row is untouched
         assert_eq!(rows[4][2], "1.100");
+        std::fs::remove_dir_all(&dir).unwrap();
+    }
+
+    #[test]
+    fn shared_bounds_write_the_same_window_to_every_sample_row() {
+        let dir = temp_project("shared");
+        write_fixture(&dir);
+        let written = visualizer_save_shared_bounds(
+            dir.to_str().unwrap(),
+            vec![SharedBoundEdit {
+                cqq: "0000".to_string(),
+                isomer_index: 0,
+                rt_start: 8.25,
+                rt_end: 8.75,
+            }],
+        )
+        .unwrap();
+        assert_eq!(written, 2);
+
+        let rows = read_rows(&dir);
+        assert_eq!(rows[3][2], "8.250");
+        assert_eq!(rows[3][3], "8.750");
+        assert_eq!(rows[4][2], "8.250");
+        assert_eq!(rows[4][3], "8.750");
+        // Other transitions remain untouched.
+        assert_eq!(rows[3][5], "3.000");
+        assert_eq!(rows[4][8], "6.100");
+        std::fs::remove_dir_all(&dir).unwrap();
+    }
+
+    #[test]
+    fn cosine_alignment_keeps_the_reference_and_shifts_a_matching_sample() {
+        let dir = temp_project("aligned");
+        write_fixture(&dir);
+        write_alignment_traces(&dir);
+        let result = visualizer_align_shared_bounds(
+            dir.to_str().unwrap(),
+            vec![AlignmentReferenceEdit {
+                cqq: "0000".to_string(),
+                sample_index: 0,
+                file_name: "sample one".to_string(),
+                isomer_index: 0,
+                rt_start: 1.2,
+                rt_end: 1.8,
+            }],
+        )
+        .unwrap();
+
+        let rows = read_rows(&dir);
+        assert_eq!(result.written, 2);
+        assert_eq!(result.shifted, 1);
+        assert_eq!(result.uniform, 1);
+        assert_eq!(result.reference_profiles, 1);
+        assert_eq!(result.reference_windows, 1);
+        assert!(result.average_score.is_some_and(|score| score > 0.95));
+        // The selected reference is the uniform anchor.
+        assert_eq!(rows[3][2], "1.200");
+        assert_eq!(rows[3][3], "1.800");
+        // The second chromatogram has the same peak shape shifted by +0.12 min;
+        // the RFkit-style distance penalty may favor the adjacent 0.01 point.
+        let aligned_start = rows[4][2].parse::<f32>().unwrap();
+        let aligned_end = rows[4][3].parse::<f32>().unwrap();
+        assert!((1.30..=1.33).contains(&aligned_start));
+        assert!((aligned_end - aligned_start - 0.6).abs() < 0.002);
+        // Other transitions remain untouched.
+        assert_eq!(rows[4][5], "3.100");
         std::fs::remove_dir_all(&dir).unwrap();
     }
 

@@ -1,6 +1,6 @@
 [package]
 name = "mrmhub-integrator-gui"
-version = "1.2.0"
+version = "1.2.2"
 description = "cross-platform graphical interface for mrmhub integrator"
 edition = "2024"
 
