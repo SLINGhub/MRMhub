@@ -34,6 +34,7 @@ correct_batch_combat(
   covariates = NULL,
   ref_batch = NULL,
   parametric = TRUE,
+  ignore_istd = TRUE,
   replace_previous = TRUE,
   log_transform_internal = TRUE,
   feature_list = NULL,
@@ -75,6 +76,12 @@ correct_batch_combat(
 
   Use the parametric empirical-Bayes prior (`TRUE`, default) or the
   non-parametric prior (`FALSE`).
+
+- ignore_istd:
+
+  Logical. Exclude internal standards (ISTDs) from correction if `TRUE`
+  (the default). Their values are left unchanged, and they do not
+  contribute to the empirical-Bayes prior.
 
 - replace_previous:
 

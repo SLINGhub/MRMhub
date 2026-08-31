@@ -141,6 +141,7 @@ the selected variable are left uncorrected (ComBat requires complete data).</p>
 <span>  covariates <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ref_batch <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  parametric <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  ignore_istd <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  replace_previous <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  log_transform_internal <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  feature_list <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -179,6 +180,12 @@ trend curves (not for the ComBat fit itself).</p></dd>
 <dt id="arg-parametric">parametric<a class="anchor" aria-label="anchor" href="#arg-parametric"></a></dt>
 <dd><p>Use the parametric empirical-Bayes prior (<code>TRUE</code>, default)
 or the non-parametric prior (<code>FALSE</code>).</p></dd>
+
+
+<dt id="arg-ignore-istd">ignore_istd<a class="anchor" aria-label="anchor" href="#arg-ignore-istd"></a></dt>
+<dd><p>Logical. Exclude internal standards (ISTDs) from correction
+if <code>TRUE</code> (the default). Their values are left unchanged, and they do not
+contribute to the empirical-Bayes prior.</p></dd>
 
 
 <dt id="arg-replace-previous">replace_previous<a class="anchor" aria-label="anchor" href="#arg-replace-previous"></a></dt>

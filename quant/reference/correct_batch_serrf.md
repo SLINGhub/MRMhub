@@ -34,6 +34,7 @@ correct_batch_serrf(
   seed = 1L,
   num_threads = 1L,
   show_progress = TRUE,
+  ignore_istd = TRUE,
   replace_previous = TRUE,
   feature_list = NULL,
   replace_exisiting_trendcurves = FALSE
@@ -83,6 +84,12 @@ correct_batch_serrf(
 - show_progress:
 
   Show a progress bar over batches. Default `TRUE`.
+
+- ignore_istd:
+
+  Logical. Exclude internal standards (ISTDs) from correction if `TRUE`
+  (the default). Their values are left unchanged, and they are not
+  available as random-forest predictors.
 
 - replace_previous:
 

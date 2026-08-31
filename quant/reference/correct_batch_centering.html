@@ -115,6 +115,7 @@ on top of previous corrections or replace all prior batch corrections.</p>
 <span>  <span class="va">variable</span>,</span>
 <span>  <span class="va">ref_qc_types</span>,</span>
 <span>  correct_scale <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  ignore_istd <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  replace_previous <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  log_transform_internal <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  feature_list <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -145,6 +146,11 @@ used as references for batch centering.</p></dd>
 <dt id="arg-correct-scale">correct_scale<a class="anchor" aria-label="anchor" href="#arg-correct-scale"></a></dt>
 <dd><p>A logical value indicating whether to equalize the scale
 of the batches in addition to center them. Defaults to <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-ignore-istd">ignore_istd<a class="anchor" aria-label="anchor" href="#arg-ignore-istd"></a></dt>
+<dd><p>Logical. Exclude internal standards (ISTDs) from correction
+if <code>TRUE</code> (the default). Their values are left unchanged.</p></dd>
 
 
 <dt id="arg-replace-previous">replace_previous<a class="anchor" aria-label="anchor" href="#arg-replace-previous"></a></dt>

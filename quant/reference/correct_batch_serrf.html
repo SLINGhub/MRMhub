@@ -143,6 +143,7 @@ normalization and drift correction in the recommended pipeline.</p>
 <span>  seed <span class="op">=</span> <span class="fl">1L</span>,</span>
 <span>  num_threads <span class="op">=</span> <span class="fl">1L</span>,</span>
 <span>  show_progress <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  ignore_istd <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  replace_previous <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  feature_list <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  replace_exisiting_trendcurves <span class="op">=</span> <span class="cn">FALSE</span></span>
@@ -189,6 +190,12 @@ each forest trains on a small QC set.</p></dd>
 
 <dt id="arg-show-progress">show_progress<a class="anchor" aria-label="anchor" href="#arg-show-progress"></a></dt>
 <dd><p>Show a progress bar over batches. Default <code>TRUE</code>.</p></dd>
+
+
+<dt id="arg-ignore-istd">ignore_istd<a class="anchor" aria-label="anchor" href="#arg-ignore-istd"></a></dt>
+<dd><p>Logical. Exclude internal standards (ISTDs) from correction
+if <code>TRUE</code> (the default). Their values are left unchanged, and they are not
+available as random-forest predictors.</p></dd>
 
 
 <dt id="arg-replace-previous">replace_previous<a class="anchor" aria-label="anchor" href="#arg-replace-previous"></a></dt>
