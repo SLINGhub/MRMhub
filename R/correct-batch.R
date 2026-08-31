@@ -32,6 +32,8 @@
 #'   regular expression); `NULL` selects all features.
 #' @param log_transform_internal Whether the guard should treat the data as
 #'   log-transformed (drops non-positive values before a log step).
+#' @param ignore_istd Exclude internal standards; dropped rows are absent from
+#'   `ds`, so the finalizer's left join keeps their original values.
 #' @param replace_previous Replace a previous batch correction or add on top.
 #' @param replace_exisiting_trendcurves Reseed the plotting trend curves.
 #' @return A list (`ctx`) with the mutated `data`, the long `ds`, the derived
@@ -45,6 +47,7 @@ prepare_batch_correction <- function(
   ref_qc_types,
   feature_list = NULL,
   log_transform_internal = TRUE,
+  ignore_istd = TRUE,
   replace_previous = TRUE,
   replace_exisiting_trendcurves = FALSE
 ) {
@@ -148,6 +151,7 @@ prepare_batch_correction <- function(
       "feature_id",
       "qc_type",
       "batch_id",
+      "is_istd",
       y_fit_after = variable_fit_after,
       y = variable
     )))
@@ -170,6 +174,16 @@ prepare_batch_correction <- function(
       ds <- ds |> dplyr::filter(.data$feature_id %in% feature_list)
     }
   }
+
+  if (ignore_istd) {
+    ds <- ds |> dplyr::filter(!.data$is_istd)
+    if (nrow(ds) == 0) {
+      cli::cli_abort(
+        "No features left after excluding ISTDs. Set {.arg ignore_istd} to {.val FALSE} to correct ISTDs as well."
+      )
+    }
+  }
+  ds <- ds |> select(-"is_istd")
 
   # Zero/negative values cannot be log-transformed downstream; set them to NA
   # and report (only relevant for the log-space methods).
@@ -409,6 +423,9 @@ finalize_batch_correction <- function(
 #'   (passed to [sva::ComBat()] as `ref.batch`). Defaults to `NULL`.
 #' @param parametric Use the parametric empirical-Bayes prior (`TRUE`, default)
 #'   or the non-parametric prior (`FALSE`).
+#' @param ignore_istd Logical. Exclude internal standards (ISTDs) from correction
+#'   if `TRUE` (the default). Their values are left unchanged, and they do not
+#'   contribute to the empirical-Bayes prior.
 #' @param replace_previous Replace a previous batch correction (`TRUE`, default)
 #'   or apply on top of it.
 #' @param log_transform_internal Fit ComBat in log10 space (`TRUE`, default,
@@ -440,6 +457,7 @@ correct_batch_combat <- function(
   covariates = NULL,
   ref_batch = NULL,
   parametric = TRUE,
+  ignore_istd = TRUE,
   replace_previous = TRUE,
   log_transform_internal = TRUE,
   feature_list = NULL,
@@ -453,6 +471,7 @@ correct_batch_combat <- function(
     ref_qc_types,
     feature_list = feature_list,
     log_transform_internal = log_transform_internal,
+    ignore_istd = ignore_istd,
     replace_previous = replace_previous,
     replace_exisiting_trendcurves = replace_exisiting_trendcurves
   )
@@ -586,6 +605,9 @@ fun_batch_combat <- function(
 #'   Default `1`; kept low because batches are already corrected in parallel and
 #'   each forest trains on a small QC set.
 #' @param show_progress Show a progress bar over batches. Default `TRUE`.
+#' @param ignore_istd Logical. Exclude internal standards (ISTDs) from correction
+#'   if `TRUE` (the default). Their values are left unchanged, and they are not
+#'   available as random-forest predictors.
 #' @param replace_previous Replace a previous batch correction (`TRUE`, default)
 #'   or apply on top of it.
 #' @param feature_list Optional feature selection (character vector or a single
@@ -617,6 +639,7 @@ correct_batch_serrf <- function(
   seed = 1L,
   num_threads = 1L,
   show_progress = TRUE,
+  ignore_istd = TRUE,
   replace_previous = TRUE,
   feature_list = NULL,
   replace_exisiting_trendcurves = FALSE
@@ -629,6 +652,7 @@ correct_batch_serrf <- function(
     ref_qc_types,
     feature_list = feature_list,
     log_transform_internal = FALSE,
+    ignore_istd = ignore_istd,
     replace_previous = replace_previous,
     replace_exisiting_trendcurves = replace_exisiting_trendcurves
   )

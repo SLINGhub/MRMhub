@@ -9,6 +9,7 @@ correct_batch_centering(
   variable,
   ref_qc_types,
   correct_scale = FALSE,
+  ignore_istd = TRUE,
   replace_previous = TRUE,
   log_transform_internal = TRUE,
   feature_list = NULL,
@@ -28,6 +29,9 @@ used as references for batch centering.}
 
 \item{correct_scale}{A logical value indicating whether to equalize the scale
 of the batches in addition to center them. Defaults to \code{FALSE}.}
+
+\item{ignore_istd}{Logical. Exclude internal standards (ISTDs) from correction
+if \code{TRUE} (the default). Their values are left unchanged.}
 
 \item{replace_previous}{A logical value indicating whether to replace any
 previous batch corrections or apply the new correction on top. Defaults to

@@ -1643,7 +1643,7 @@ test_that("correct_batch_centering works", {
       ref_qc_types = "SPL",
       variable = "conc"
     )),
-    "Batch median-centering of 6 batches was applied to drift-corrected concentrations of all 29 features",
+    "Batch median-centering of 6 batches was applied to drift-corrected concentrations of all 20 features",
     fixed = TRUE
   )
 
@@ -1800,7 +1800,7 @@ test_that("correct_batch_centering works", {
       variable = "intensity",
       replace_exisiting_trendcurves = FALSE
     ),
-    "-16.40% to 1.40%",
+    "-9.60% to 1.40%",
     fixed = TRUE
   )
 
@@ -1817,6 +1817,35 @@ test_that("correct_batch_centering works", {
     fixed = TRUE
   )
 })
+
+test_that("correct_batch_centering excludes ISTDs unless ignore_istd = FALSE", {
+  mexp_ign <- suppressMessages(correct_batch_centering(
+    mexp,
+    variable = "intensity",
+    ref_qc_types = "SPL"
+  ))
+  d_ign <- mexp_ign@dataset |> filter(.data$is_istd)
+  expect_equal(d_ign$feature_intensity, d_ign$feature_intensity_raw)
+
+  mexp_all <- suppressMessages(correct_batch_centering(
+    mexp,
+    variable = "intensity",
+    ref_qc_types = "SPL",
+    ignore_istd = FALSE
+  ))
+  d_all <- mexp_all@dataset |> filter(.data$is_istd)
+  expect_false(isTRUE(all.equal(
+    d_all$feature_intensity,
+    d_all$feature_intensity_raw
+  )))
+
+  # Centering is per-feature, so dropping ISTDs must not change the others
+  expect_equal(
+    mexp_ign@dataset |> filter(!.data$is_istd) |> pull("feature_intensity"),
+    mexp_all@dataset |> filter(!.data$is_istd) |> pull("feature_intensity")
+  )
+})
+
 
 test_that("correct_batch_centering works with replace_previous", {
   # add on top of previous with only drift correction before is same result as replace previous
@@ -2207,7 +2236,7 @@ test_that("correct_batch for specific feature_list", {
       variable = "conc",
       feature_list = c("PC")
     ),
-    "selected 8",
+    "selected 6",
     fixed = TRUE
   )
 })
@@ -2464,9 +2493,13 @@ test_that("correct_batch_combat corrects and stays workflow-compatible", {
       variable = "conc",
       ref_qc_types = "BQC"
     )),
-    "ComBat batch correction of 6 batches was applied to raw concentrations of all 29 features",
+    "ComBat batch correction of 6 batches was applied to raw concentrations of all 20 features",
     fixed = TRUE
   )
+
+  # ISTDs are excluded by default and keep their original values
+  d_istd <- mexp_cb@dataset |> filter(.data$is_istd)
+  expect_equal(d_istd$feature_conc, d_istd$feature_conc_raw)
 
   # status flag flipped and QC metrics invalidated -> pipeline-compatible
   expect_true(mexp_cb@var_batch_corrected[["feature_conc"]])
@@ -2493,9 +2526,13 @@ test_that("correct_batch_serrf corrects, is reproducible, workflow-compatible", 
       ref_qc_types = "BQC",
       seed = 1L
     )),
-    "SERRF normalization of 6 batches was applied to raw concentrations of all 29 features",
+    "SERRF normalization of 6 batches was applied to raw concentrations of all 20 features",
     fixed = TRUE
   )
+
+  # ISTDs are excluded by default and keep their original values
+  d_istd <- mexp_sr@dataset |> filter(.data$is_istd)
+  expect_equal(d_istd$feature_conc, d_istd$feature_conc_raw)
 
   expect_true(mexp_sr@var_batch_corrected[["feature_conc"]])
   expect_false(mexp_sr@is_filtered)

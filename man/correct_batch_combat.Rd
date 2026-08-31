@@ -11,6 +11,7 @@ correct_batch_combat(
   covariates = NULL,
   ref_batch = NULL,
   parametric = TRUE,
+  ignore_istd = TRUE,
   replace_previous = TRUE,
   log_transform_internal = TRUE,
   feature_list = NULL,
@@ -34,6 +35,10 @@ trend curves (not for the ComBat fit itself).}
 
 \item{parametric}{Use the parametric empirical-Bayes prior (\code{TRUE}, default)
 or the non-parametric prior (\code{FALSE}).}
+
+\item{ignore_istd}{Logical. Exclude internal standards (ISTDs) from correction
+if \code{TRUE} (the default). Their values are left unchanged, and they do not
+contribute to the empirical-Bayes prior.}
 
 \item{replace_previous}{Replace a previous batch correction (\code{TRUE}, default)
 or apply on top of it.}

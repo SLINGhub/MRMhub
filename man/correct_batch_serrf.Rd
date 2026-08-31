@@ -13,6 +13,7 @@ correct_batch_serrf(
   seed = 1L,
   num_threads = 1L,
   show_progress = TRUE,
+  ignore_istd = TRUE,
   replace_previous = TRUE,
   feature_list = NULL,
   replace_exisiting_trendcurves = FALSE
@@ -40,6 +41,10 @@ Default \code{1}; kept low because batches are already corrected in parallel and
 each forest trains on a small QC set.}
 
 \item{show_progress}{Show a progress bar over batches. Default \code{TRUE}.}
+
+\item{ignore_istd}{Logical. Exclude internal standards (ISTDs) from correction
+if \code{TRUE} (the default). Their values are left unchanged, and they are not
+available as random-forest predictors.}
 
 \item{replace_previous}{Replace a previous batch correction (\code{TRUE}, default)
 or apply on top of it.}
