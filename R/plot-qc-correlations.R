@@ -262,8 +262,7 @@ plot_feature_correlations <- function(
     d_plot$qc_type,
     levels = pkg.env$qc_type_annotation$qc_type_levels
   ))
-  d_plot <- d_plot |>
-    dplyr::arrange(.data$qc_type)
+  d_plot <- arrange_qc_type_draw_order(d_plot)
 
   # Prepare PDF output
   if (output_pdf && !is.na(path)) {

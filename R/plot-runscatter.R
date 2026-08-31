@@ -661,9 +661,13 @@ plot_runscatter <- function(
   # subset the dataset with only the rows used for plotting the facets of the selected page
   n_samples <- length(unique(d_filt$analysis_id))
 
-  # Arrange the data first
+  # Arrange the data first. The second step sets the point draw order within each
+  # feature (SPL at the back, blanks on top). It has to run here, in the main
+  # process: the parallel workers below resolve internals against the *installed*
+  # namespace, not this one.
   d_arranged <- d_filt |>
-    arrange(.data$feature_id, .data$analysis_order)
+    arrange(.data$feature_id, .data$analysis_order) |>
+    arrange_qc_type_draw_order(within = "feature_id")
 
   # Calculate page size
   n_samples <- length(unique(d_arranged$analysis_id))
@@ -830,17 +834,15 @@ runscatter_plot_pages <- function(
       point_border_width <- dplyr::if_else(output_pdf, .1, .4)
     }
 
-    #d_subset$qc_type <- forcats::fct_relevel(d_subset$qc_type, pkg.env$qc_type_annotation$qc_type_levels)
-
-    # Reorder QC types and assign values
+    # Reorder QC types and assign values. The relevel/rev pair is not a no-op --
+    # it leaves QC types unknown to mrmhub as the *first* levels, which decides
+    # their legend position and `extra_shapes` assignment below.
 
     d_subset$qc_type <- d_subset$qc_type |>
       factor() |>
       forcats::fct_expand(pkg.env$qc_type_annotation$qc_type_levels) |>
       forcats::fct_relevel(rev(pkg.env$qc_type_annotation$qc_type_levels)) |>
       forcats::fct_rev()
-
-    d_subset <- d_subset |> arrange(desc(.data$qc_type))
 
     defined_qctypes <- levels(d_subset$qc_type)
 
@@ -880,9 +882,6 @@ runscatter_plot_pages <- function(
     )
 
     qc_types_shape <- c(pkg.env$qc_type_annotation$qc_type_shape, new_shapes)
-
-    d_subset <- d_subset |>
-      dplyr::arrange(rev(.data$qc_type))
 
     # https://stackoverflow.com/questions/46327431/facet-wrap-add-geom-hline
     if (nrow(d_subset) > 0) {

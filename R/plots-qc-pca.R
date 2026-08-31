@@ -250,15 +250,15 @@ plot_pca <- function(
   pca_res <- prcomp(m_raw, scale = TRUE, center = TRUE)
   pca_annot <- pca_augment(pca_res, d_metadata)
 
-  # Order by the master qc_type levels (not a hard-coded subset), so QC types
+  # Level by the master qc_type levels (not a hard-coded subset), so QC types
   # the default selection includes (HQC/MQC/LQC, ...) keep their level and get a
-  # colour/shape/legend from the scales below instead of collapsing to NA.
+  # colour/shape/legend from the scales below instead of collapsing to NA. Row
+  # order is a separate concern -- it sets the point draw order (SPL at the back).
   pca_annot$qc_type <- droplevels(factor(
     pca_annot$qc_type,
     levels = pkg.env$qc_type_annotation$qc_type_levels
   ))
-  pca_annot <- pca_annot |>
-    dplyr::arrange(.data$qc_type)
+  pca_annot <- arrange_qc_type_draw_order(pca_annot)
 
   pca_contrib <- pca_eigenvalues(pca_res)
 

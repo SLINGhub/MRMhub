@@ -344,3 +344,37 @@ resolve_page_size <- function(
     paper = "special"
   )
 }
+
+#' Arrange rows by the QC-type point draw order
+#'
+#' Internal helper ordering rows so that ggplot draws QC types in the intended
+#' z-order (`pkg.env$qc_type_annotation$qc_type_plot_order`): study samples and
+#' calibrators at the back, blanks and rare QCs on top. The `qc_type` factor
+#' levels are left untouched, so legend order and the colour/fill/shape scales
+#' are unaffected. QC types missing from the order table (user-defined) sort
+#' last, i.e. are drawn on top, so they stay visible.
+#'
+#' Uses base `order()` rather than `dplyr::arrange()`: it also handles plain
+#' data frames, and its stable sort keeps rows of the same QC type in their
+#' incoming order (e.g. runscatter's `analysis_order` sorting).
+#'
+#' @param data A data frame with a `qc_type` column.
+#' @param within Optional name of a grouping column (e.g. `"feature_id"`) to
+#'   order *inside*. The groups themselves are ranked by first appearance, never
+#'   by value, so an existing grouping stays put -- runscatter pages by row
+#'   position and needs its features contiguous and in the incoming order.
+#' @return `data`, row-reordered.
+#' @noRd
+arrange_qc_type_draw_order <- function(data, within = NULL) {
+  ord <- match(
+    as.character(data$qc_type),
+    pkg.env$qc_type_annotation$qc_type_plot_order
+  )
+  idx <- if (is.null(within)) {
+    order(ord, na.last = TRUE)
+  } else {
+    grp <- data[[within]]
+    order(match(grp, unique(grp)), ord, na.last = TRUE)
+  }
+  data[idx, , drop = FALSE]
+}
