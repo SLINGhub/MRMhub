@@ -84,7 +84,6 @@ check_setup <- function(verbose = TRUE) {
     "patchwork",
     "ggvenn",
     "ggbeeswarm",
-    "ggrepel",
     "rgoslin",
     "lancer",
     "enviPat",

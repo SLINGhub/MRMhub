@@ -145,10 +145,6 @@ plot_pca <- function(
   PCx <- rlang::sym(paste0(".fittedPC", pca_dims[1]))
   PCy <- rlang::sym(paste0(".fittedPC", pca_dims[2]))
 
-  if (show_labels) {
-    check_pkg_installed("ggrepel")
-  }
-
   if (all(is.na(qc_types))) {
     qc_types <- intersect(
       data$dataset$qc_type,

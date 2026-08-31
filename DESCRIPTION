@@ -48,7 +48,6 @@ Suggests:
     ggsignif,
     ggforce,
     ggpmisc,
-    ggrepel,
     covr,
     ragg,
     svglite,
