@@ -584,8 +584,8 @@ test_that("plot_runscatter show trend works", {
   plot_data <- ggplot2::ggplot_build(p[[1]])$data
   expect_equal(dim(plot_data[[2]]), c(5184, 10))
   expect_equal(dim(plot_data[[3]]), c(5184, 9)) # ref data points
-  expect_equal(mean(plot_data[[2]]$y), 2039591.3) #  data points
-  expect_equal(mean(plot_data[[3]]$y), 2084560.8) #  ref data points (batch-wise)
+  expect_equal(mean(plot_data[[2]]$y), 2045106.6) #  data points
+  expect_equal(mean(plot_data[[3]]$y), 2090341.04) #  ref data points (batch-wise)
 
   p <- plot_runscatter(
     data = mexp_drift,

@@ -1628,6 +1628,8 @@ correct_drift_gam <- function(
 #'   used as references for batch centering.
 #' @param correct_scale A logical value indicating whether to equalize the scale
 #' of the batches in addition to center them. Defaults to `FALSE`.
+#' @param ignore_istd Logical. Exclude internal standards (ISTDs) from correction
+#'   if `TRUE` (the default). Their values are left unchanged.
 #' @param replace_previous A logical value indicating whether to replace any
 #'   previous batch corrections or apply the new correction on top. Defaults to
 #'   `TRUE` (replace).
@@ -1654,6 +1656,7 @@ correct_batch_centering <- function(
   ref_qc_types,
   #correct_location = TRUE,
   correct_scale = FALSE,
+  ignore_istd = TRUE,
   replace_previous = TRUE,
   log_transform_internal = TRUE,
   feature_list = NULL,
@@ -1672,6 +1675,7 @@ correct_batch_centering <- function(
     ref_qc_types,
     feature_list = feature_list,
     log_transform_internal = log_transform_internal,
+    ignore_istd = ignore_istd,
     replace_previous = replace_previous,
     replace_exisiting_trendcurves = replace_exisiting_trendcurves
   )
