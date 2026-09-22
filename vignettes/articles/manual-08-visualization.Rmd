@@ -229,8 +229,10 @@ plot_calibrationcurves(mexp,
                        qc_types = NA)
 ```
 
-The fit model is taken from the calibration setup unless overridden with `fit_overwrite =
-"linear"` or `"quadratic"`.
+Without `fit_overwrite`, the plot shows the fit model and weighting used by
+`quantify_by_calibration()`. A different fit is plotted with `fit_overwrite = TRUE` together with
+`fit_model` and `fit_weighting`; a message then lists the features whose plotted fit differs from
+the stored calibration.
 
 ## `plot_responsecurves()`: RQC linearity
 
