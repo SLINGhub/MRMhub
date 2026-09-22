@@ -605,6 +605,38 @@ test_that("plot_calibrationcurves draws the solid fit over the calibrated range 
   expect_gte(min(solid$concentration), lowest_cal)
 })
 
+test_that("plot_calibrationcurves skips QC concentrations without a measured analysis", {
+  plot <- function(m, ...) {
+    suppressMessages(plot_calibrationcurves(
+      m,
+      fit_overwrite = TRUE,
+      fit_model = "linear",
+      fit_weighting = "1/x",
+      return_plots = TRUE,
+      ...
+    ))
+  }
+  # A feature filter leaves the other analytes' concentrations unmatched.
+  expect_s3_class(plot(mexp, include_feature_filter = "Cortisol")[[1]], "gg")
+
+  # Targets for an unmeasured sample and for a blank sample ID, with a blank-ID
+  # CAL analysis, must neither abort nor add a point.
+  mexp_extra <- mexp
+  mexp_extra@dataset$sample_id[mexp_extra@dataset$analysis_id == "CalA"] <- NA
+  mexp_extra@annot_qcconcentrations <- dplyr::bind_rows(
+    mexp_extra@annot_qcconcentrations,
+    dplyr::tibble(
+      sample_id = c("CAL-Z", NA),
+      analyte_id = "Cortisol",
+      concentration = 50,
+      concentration_unit = "nmol/L",
+      include_in_analysis = TRUE
+    )
+  )
+  p <- plot(mexp_extra)
+  expect_false(any(p[[1]]$data$concentration == 50, na.rm = TRUE))
+})
+
 test_that("plot_calibrationcurves accepts the 1/sqrt(x) weighting", {
   p <- suppressMessages(plot_calibrationcurves(
     mexp,

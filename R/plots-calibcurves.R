@@ -254,9 +254,11 @@ plot_calibrationcurves <- function(
       feature_id = forcats::fct_inorder(.data$feature_id)
     ) |>
     # REMOVE filter(str_detect(.data$qc_type, "CAL|[MLH]QC|^QC|EQA")) |>
-    dplyr::right_join(
+    # Only measured analyses can be plotted; blank IDs never match.
+    dplyr::inner_join(
       data@annot_qcconcentrations,
-      by = c("sample_id" = "sample_id", "analyte_id" = "analyte_id")
+      by = c("sample_id" = "sample_id", "analyte_id" = "analyte_id"),
+      na_matches = "never"
     ) |>
     drop_na("concentration") |>
     arrange(.data$feature_id)
@@ -493,7 +495,9 @@ plot_calibrationcurves <- function(
     prediction_data
   }
 
-  d_calib_stats <- data@metrics_calibration
+  # Only the plotted (filtered) features; the refit covers all features.
+  d_calib_stats <- data@metrics_calibration |>
+    filter(.data$feature_id %in% d_calib_subset$feature_id)
   d_calib_stats_grp <- d_calib_stats |>
     dplyr::group_split(.data$feature_id) # TOD |> O .data$curve_id
 
