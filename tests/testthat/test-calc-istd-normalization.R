@@ -803,3 +803,16 @@ test_that("quantify_by_istd after calibration drops the calibration's range flag
   expect_false("feature_conc_out_of_range" %in% names(mexp@dataset))
   expect_equal(nrow(mexp@metrics_calibration), 0)
 })
+
+test_that("re-normalizing clears the calibration metrics", {
+  mexp <- suppressMessages(quantify_by_calibration(
+    normalize_by_istd(quant_lcms_dataset),
+    fit_overwrite = FALSE,
+    fit_model = "linear",
+    fit_weighting = "1/x"
+  ))
+  expect_gt(nrow(mexp@metrics_calibration), 0)
+
+  mexp <- suppressWarnings(suppressMessages(normalize_by_istd(mexp)))
+  expect_equal(nrow(mexp@metrics_calibration), 0)
+})

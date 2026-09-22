@@ -213,6 +213,8 @@ normalize_by_istd <- function(data = NULL, ignore_missing_annotation = FALSE) {
   data@var_batch_corrected[c("feature_norm_intensity", "feature_conc")] <- FALSE
   data@is_filtered <- FALSE
   data@metrics_qc <- data@metrics_qc[FALSE, ]
+  # Calibration fits were made on the previous normalized intensities.
+  data@metrics_calibration <- data@metrics_calibration[FALSE, ]
   data
 }
 
