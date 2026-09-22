@@ -2,7 +2,7 @@
 #'
 #' Concentrations of all features in all analyses are determined using ISTD-normalized intensities and corresponding external calibration curves.
 #' Calibration curves are calculated for each feature based on calibration sample concentrations defined in the `qc_concentrations` metadata.
-#' The regression fit model (linear or quadratic) and the weighting method (either "none", "1/x", or "1/x^2") can be defined globally via
+#' The regression fit model (linear or quadratic) and the weighting method (either "none", "1/x", "1/x^2", or "1/sqrt(x)") can be defined globally via
 #' the arguments `fit_model` and `fit_weighting` for all features, if `fit_overwrite` is `TRUE`.
 #' Alternatively, the model and weighting can be defined individually for each feature in the `feature` metadata (columns `curve_fit_model` and `curve_fit_weighting`).
 #' If these details are missing in the metadata, the default values provided via `fit_model` and `fit_weighting` will be used.
@@ -22,7 +22,7 @@
 #'   when `fit_overwrite = TRUE`.
 #' @param fit_weighting A character string specifying the default weighting
 #'   method for the regression points in the calibration curve. Must be one of
-#'   `"none"`, `"1/x"`, or `"1/x^2"`. This method will be applied if no
+#'   `"none"`, `"1/x"`, `"1/x^2"`, or `"1/sqrt(x)"`. This method will be applied if no
 #'   specific weighting method is defined for a feature in the metadata, or
 #'   when `fit_overwrite = TRUE`.
 #'@param ignore_failed_calibration If `FALSE`, raises error if calibration curve fit fails for any feature. If `TRUE`, failed fits will be ignored, and resulting feature concentration will be `NA`.
@@ -43,7 +43,7 @@ quantify_by_calibration <- function(
   include_qualifier = TRUE,
   fit_overwrite,
   fit_model = c("linear", "quadratic"),
-  fit_weighting = c("none", "1/x", "1/x^2"),
+  fit_weighting = c("none", "1/x", "1/x^2", "1/sqrt(x)"),
   ignore_failed_calibration = FALSE,
   ignore_missing_annotation = FALSE,
   lod_sigma = c("residual", "intercept")
@@ -287,7 +287,8 @@ quantify_by_calibration <- function(
 #' Calibration curves are calculated for each feature using ISTD-normalized
 #' intensities and the corresponding concentrations of calibration samples, as
 #' defined in the `qc_concentrations` metadata. The regression fit model (linear
-#' or quadratic) and the weighting method (either "none", "1/x", or "1/x^2")
+#' or quadratic) and the weighting method (either "none", "1/x", "1/x^2", or
+#' "1/sqrt(x)")
 #' can be defined globally via the arguments `fit_model` and `fit_weighting`
 #' for all features, if `fit_overwrite` is `TRUE`. Alternatively, the
 #' model and weighting can be defined individually for each feature in the
@@ -354,7 +355,7 @@ quantify_by_calibration <- function(
 #'   when `fit_overwrite = TRUE`.
 #' @param fit_weighting A character string specifying the default weighting
 #'   method for the regression points in the calibration curve. Must be one of
-#'   `"none"`, `"1/x"`, or `"1/x^2"`. This method will be applied if no
+#'   `"none"`, `"1/x"`, `"1/x^2"`, or `"1/sqrt(x)"`. This method will be applied if no
 #'   specific weighting method is defined for a feature in the metadata, or
 #'   when `fit_overwrite = TRUE`.
 #' @param ignore_missing_annotation If `FALSE`, an error will be raised if
@@ -400,8 +401,10 @@ calc_calibration_results <- function(
     )
   }
 
-  rlang::arg_match(fit_model, c("linear", "quadratic"))
-  rlang::arg_match(fit_weighting, c("none", "1/x", "1/x^2"))
+  fit_models <- c("linear", "quadratic")
+  fit_weightings <- c("none", "1/x", "1/x^2", "1/sqrt(x)")
+  rlang::arg_match(fit_model, fit_models)
+  rlang::arg_match(fit_weighting, fit_weightings)
   rlang::arg_match(variable, c("feature_intensity", "feature_norm_intensity"))
   lod_sigma <- rlang::arg_match(lod_sigma)
 
@@ -640,6 +643,30 @@ calc_calibration_results <- function(
   } else {
     d_calib <- d_calib |>
       mutate(fit_model = fit_model, fit_weighting = fit_weighting)
+  }
+
+  # Per-feature values from `annot_features` bypass `arg_match()`; an unknown
+  # string would be fitted and back-calculated with inconsistent models.
+  bad_fit <- d_calib |>
+    dplyr::distinct(.data$feature_id, .data$fit_model, .data$fit_weighting) |>
+    filter(
+      !.data$fit_model %in% fit_models |
+        !.data$fit_weighting %in% fit_weightings
+    )
+  if (nrow(bad_fit) > 0) {
+    bad_desc <- paste0(
+      bad_fit$feature_id,
+      " (",
+      bad_fit$fit_model,
+      ", ",
+      bad_fit$fit_weighting,
+      ")"
+    )
+    cli::cli_abort(c(
+      "Unknown calibration fit model or weighting for {length(bad_desc)} feature{?s}: {.val {mh_vec(bad_desc)}}.",
+      "i" = "Allowed models are {.val {fit_models}}; allowed weightings are {.val {fit_weightings}}.",
+      "i" = "Check the {.field curve_fit_model} and {.field curve_fit_weighting} columns of the feature metadata."
+    ))
   }
 
   # A zero-concentration (blank) calibrator cannot be inverse-weighted

@@ -259,6 +259,56 @@ test_that("calc_calibration_results error handling works", {
   )
 })
 
+test_that("calc_calibration_results aborts on an unknown per-feature fit model or weighting", {
+  mexp_temp <- mexp_norm
+  mexp_temp@annot_features$curve_fit_model[
+    mexp_temp@annot_features$feature_id == "Cortisol"
+  ] <- "cubic"
+  expect_error(
+    calc_calibration_results(
+      mexp_temp,
+      fit_overwrite = FALSE,
+      fit_model = "linear",
+      fit_weighting = "1/x"
+    ),
+    "Cortisol.*cubic"
+  )
+
+  mexp_temp <- mexp_norm
+  mexp_temp@annot_features$curve_fit_weighting[
+    mexp_temp@annot_features$feature_id == "Cortisone"
+  ] <- "1/y"
+  expect_error(
+    calc_calibration_results(
+      mexp_temp,
+      fit_overwrite = FALSE,
+      fit_model = "linear",
+      fit_weighting = "1/x"
+    ),
+    "Cortisone.*1/y"
+  )
+})
+
+test_that("the 1/sqrt(x) weighting is accepted and applied", {
+  res <- suppressMessages(calc_calibration_results(
+    mexp_norm,
+    fit_overwrite = TRUE,
+    fit_model = "linear",
+    fit_weighting = "1/sqrt(x)",
+    include_fit_object = TRUE
+  ))@metrics_calibration
+  expect_equal(unique(res$fit_weighting), "1/sqrt(x)")
+  fit <- res$fit_cal_1[[1]]
+  expect_equal(unname(weights(fit)), 1 / sqrt(unname(model.matrix(fit)[, 2])))
+
+  expect_no_error(suppressMessages(quantify_by_calibration(
+    mexp_norm,
+    fit_overwrite = TRUE,
+    fit_model = "linear",
+    fit_weighting = "1/sqrt(x)"
+  )))
+})
+
 
 test_that("quantify_by_calibration works", {
   expect_message(

@@ -41,7 +41,7 @@ when \code{fit_overwrite = TRUE}.}
 
 \item{fit_weighting}{A character string specifying the default weighting
 method for the regression points in the calibration curve. Must be one of
-\code{"none"}, \code{"1/x"}, or \code{"1/x^2"}. This method will be applied if no
+\code{"none"}, \code{"1/x"}, \code{"1/x^2"}, or \code{"1/sqrt(x)"}. This method will be applied if no
 specific weighting method is defined for a feature in the metadata, or
 when \code{fit_overwrite = TRUE}.}
 
@@ -66,7 +66,8 @@ including concentrations, LoD, and LoQ values for each feature.
 Calibration curves are calculated for each feature using ISTD-normalized
 intensities and the corresponding concentrations of calibration samples, as
 defined in the \code{qc_concentrations} metadata. The regression fit model (linear
-or quadratic) and the weighting method (either "none", "1/x", or "1/x^2")
+or quadratic) and the weighting method (either "none", "1/x", "1/x^2", or
+"1/sqrt(x)")
 can be defined globally via the arguments \code{fit_model} and \code{fit_weighting}
 for all features, if \code{fit_overwrite} is \code{TRUE}. Alternatively, the
 model and weighting can be defined individually for each feature in the

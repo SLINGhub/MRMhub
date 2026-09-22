@@ -577,6 +577,17 @@ test_that("plot_calibrationcurves rejects an invalid page_orientation", {
   )
 })
 
+test_that("plot_calibrationcurves accepts the 1/sqrt(x) weighting", {
+  p <- suppressMessages(plot_calibrationcurves(
+    mexp,
+    fit_overwrite = TRUE,
+    fit_model = "linear",
+    fit_weighting = "1/sqrt(x)",
+    return_plots = TRUE
+  ))
+  expect_s3_class(p[[1]], "gg")
+})
+
 # Branch 5: shared pretty-axis helper -> >=3 non-empty labels per facet axis.
 test_that("plot_calibrationcurves axes render >=3 non-empty labels", {
   axis_labels <- function(p, axis) {

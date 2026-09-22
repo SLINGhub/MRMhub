@@ -316,7 +316,7 @@ features with `ignore_missing_annotation = TRUE`.
 
 **A:** Inspect the fits, then try removing outlier calibration points, switching
 `fit_model` (`"linear"`/`"quadratic"`) or `fit_weighting` (`"none"`, `"1/x"`,
-`"1/x^2"`) — globally or per feature via the `curve_fit_model` /
+`"1/x^2"`, `"1/sqrt(x)"`) — globally or per feature via the `curve_fit_model` /
 `curve_fit_weighting` metadata columns — and check for saturation at high
 concentrations.
 

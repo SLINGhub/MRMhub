@@ -3,7 +3,7 @@
 #' This function plots calibration curves of each feature where defined
 #' and displays QC samples with defined concentrations within the plot.
 #' Users can select a regression model (`linear` or `quadratic`) and apply
-#' weighting (`none`, `"1/x"`, or `"1/x^2"`), either through function arguments
+#' weighting (`none`, `"1/x"`, `"1/x^2"`, or `"1/sqrt(x)"`), either through function arguments
 #' or feature metadata.
 #'
 #' Features for plotting can be filtered using QC filters defined via
@@ -38,7 +38,7 @@
 #'   when `fit_overwrite = TRUE`.
 #' @param fit_weighting A character string specifying the default weighting
 #'   method for the regression points in the calibration curve. Must be one of
-#'   `"none"`, `"1/x"`, or `"1/x^2"`. This method will be applied if no
+#'   `"none"`, `"1/x"`, `"1/x^2"`, or `"1/sqrt(x)"`. This method will be applied if no
 #'   specific weighting method is defined for a feature in the metadata, or
 #'   when `fit_overwrite = TRUE`.
 #' @param ci_show Logical, if `TRUE`, displays the confidence interval as ribbon.
@@ -111,7 +111,7 @@ plot_calibrationcurves <- function(
   qc_types = NA,
   fit_overwrite,
   fit_model = c("linear", "quadratic"),
-  fit_weighting = c(NA, "none", "1/x", "1/x^2"),
+  fit_weighting = c(NA, "none", "1/x", "1/x^2", "1/sqrt(x)"),
   ci_show = NA,
   ci_clip = TRUE,
   zoom_n_points = NA,
