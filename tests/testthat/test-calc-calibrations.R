@@ -259,6 +259,36 @@ test_that("calc_calibration_results error handling works", {
   )
 })
 
+test_that("calc_calibration_results names the missing calibration input", {
+  calib <- function(m) {
+    suppressMessages(calc_calibration_results(
+      m,
+      fit_overwrite = FALSE,
+      fit_model = "linear",
+      fit_weighting = "1/x"
+    ))
+  }
+
+  no_targets <- mexp_norm
+  no_targets@annot_qcconcentrations <- no_targets@annot_qcconcentrations[0, ]
+  expect_error(calib(no_targets), "QC-concentration")
+
+  no_cal <- mexp_norm
+  no_cal@dataset$qc_type[no_cal@dataset$qc_type == "CAL"] <- "SPL"
+  expect_error(calib(no_cal), "No calibration .*CAL")
+
+  no_match <- mexp_norm
+  no_match@annot_qcconcentrations$sample_id <- paste0(
+    no_match@annot_qcconcentrations$sample_id,
+    "_x"
+  )
+  expect_error(calib(no_match), "matched")
+
+  all_excluded <- mexp_norm
+  all_excluded@annot_qcconcentrations$include_in_analysis <- FALSE
+  expect_error(calib(all_excluded), "matched")
+})
+
 test_that("calc_calibration_results aborts on an unknown per-feature fit model or weighting", {
   mexp_temp <- mexp_norm
   mexp_temp@annot_features$curve_fit_model[

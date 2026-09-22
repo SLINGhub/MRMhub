@@ -426,13 +426,17 @@ calc_calibration_results <- function(
     )
   }
 
-  if (
-    !any("CAL" %in% data@dataset$qc_type) &
-      nrow(data@annot_qcconcentrations) == 0
-  ) {
-    cli::cli_abort(
-      "Calibration curve data missing...Please verify data and correct annotation om `analyis` and `qc_concentration` metadata. See this function's documentation."
-    )
+  if (!"CAL" %in% data@dataset$qc_type) {
+    cli::cli_abort(c(
+      "No calibration analyses found: no analysis has {.field qc_type} {.val CAL}.",
+      "i" = "Annotate the calibration standards as {.val CAL} in the analysis metadata."
+    ))
+  }
+  if (nrow(data@annot_qcconcentrations) == 0) {
+    cli::cli_abort(c(
+      "No QC-concentration metadata found, so calibrator concentrations are unknown.",
+      "i" = "Import it with {.fn import_metadata_qcconcentrations} or {.fn import_metadata_msorganiser}."
+    ))
   }
 
   # Pre-flight validation of the QC-concentration table before the calibration
@@ -629,6 +633,13 @@ calc_calibration_results <- function(
     ) |>
     filter(.data$include_in_analysis) |>
     mutate(curve_id = "1")
+
+  if (nrow(d_calib) == 0) {
+    cli::cli_abort(c(
+      "No CAL analysis matched an included QC-concentration entry.",
+      "i" = "Check that {.field sample_id} and {.field analyte_id} agree between the analysis/feature and QC-concentration metadata, and that {.field include_in_analysis} is not FALSE for all calibrators."
+    ))
+  }
 
   if (!fit_overwrite) {
     d_calib <- d_calib |>
