@@ -763,9 +763,9 @@ assert_metadata <- function(
         description = "E; Must be NA, 'linear' or 'quadratic';Features;curve_fit_model"
       ) |>
       assertr::assert(
-        assertr::in_set(NA, "1/x", "1/x^2"),
+        assertr::in_set(NA, "none", "1/x", "1/x^2", "1/sqrt(x)"),
         "curve_fit_weighting",
-        description = "E; Must be NA, '1/x' or '1/x^2';Features;curve_fit_weighting"
+        description = "E; Must be NA, 'none', '1/x', '1/x^2' or '1/sqrt(x)';Features;curve_fit_weighting"
       ) |>
       assertr::assert(
         assertr::in_set(unique(metadata$annot_features$feature_id)),

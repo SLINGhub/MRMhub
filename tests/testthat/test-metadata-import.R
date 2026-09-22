@@ -537,6 +537,28 @@ test_that("Add indidual metadata types to data, first analyses then features", {
   )
 })
 
+test_that("feature metadata accepts every supported curve_fit_weighting", {
+  mexp <- suppressMessages(mrmhub::import_data_masshunter(
+    mrmhub::MRMhubExperiment(),
+    path = testthat::test_path("testdata/masshunter/MRMhub_MHQuant_S1P.csv"),
+    import_metadata = FALSE
+  ))
+  tbl <- readxl::read_excel(
+    testthat::test_path(
+      "testdata/metadata/MRMhub_TestData_MHQuant_S1P_metadata_tables.xlsx"
+    ),
+    sheet = "Features"
+  )
+  weightings <- c(NA, "none", "1/x", "1/x^2", "1/sqrt(x)")
+  tbl$curve_fit_weighting <- rep_len(weightings, nrow(tbl))
+
+  mexp <- suppressMessages(mrmhub:::import_metadata_features(
+    mexp,
+    table = tbl,
+    ignore_warnings = TRUE
+  ))
+  expect_setequal(unique(mexp@annot_features$curve_fit_weighting), weightings)
+})
 
 test_that("Add indidual metadata types to data, first features then analyses", {
   mexp <- mrmhub::MRMhubExperiment()
