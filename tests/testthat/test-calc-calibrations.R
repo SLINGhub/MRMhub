@@ -386,6 +386,28 @@ test_that("quantify_by_calibration linear back-calculation recovers known concen
   expect_equal(recovered[1], nominal[1], tolerance = 0.05) # top point within 5%
 })
 
+test_that("quantifying by calibration twice gives the same concentrations as once", {
+  quant <- function(m) {
+    suppressMessages(quantify_by_calibration(
+      m,
+      fit_overwrite = FALSE,
+      fit_model = "linear",
+      fit_weighting = "1/x"
+    ))
+  }
+  once <- quant(mexp_norm)
+  expect_true("quadratic" %in% once@metrics_calibration$fit_model)
+  twice <- quant(once)
+
+  expect_equal(twice@dataset$feature_conc, once@dataset$feature_conc)
+  expect_false(any(startsWith(names(twice@dataset), "fit_model")))
+
+  # An object saved by an earlier version still carries `fit_model`.
+  stale <- once
+  stale@dataset$fit_model <- "linear"
+  expect_equal(quant(stale)@dataset$feature_conc, once@dataset$feature_conc)
+})
+
 test_that("quantify_by_calibration handles errors", {
   mexp_temp <- mexp_norm
   mexp_temp@annot_qcconcentrations <- mexp_temp@annot_qcconcentrations |>

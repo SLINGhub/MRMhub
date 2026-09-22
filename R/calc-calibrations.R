@@ -112,7 +112,9 @@ quantify_by_calibration <- function(
       "highest_cal_cal_1"
     )
 
+  # Drop `fit_model` left by earlier versions, or the join makes `.x`/`.y`.
   d_conc <- data@dataset |>
+    select(-any_of("fit_model")) |>
     left_join(
       d_stats_calc,
       by = c("feature_id" = "feature_id")
@@ -233,6 +235,7 @@ quantify_by_calibration <- function(
   data@dataset <- data@dataset |>
     select(
       -c(
+        "fit_model",
         "coef_a_cal_1",
         "coef_b_cal_1",
         "coef_c_cal_1",
