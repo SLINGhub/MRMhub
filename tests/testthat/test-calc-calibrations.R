@@ -46,7 +46,7 @@ test_that("calc_calibration_results works", {
   expect_equal(unique(res$fit_model), c("quadratic", "linear"))
   expect_equal(unique(res$fit_weighting), "1/x")
   expect_equal(mean(res$r2_cal_1), 0.97955745)
-  expect_equal(mean(res$lowest_cal_cal_1), 3.30675)
+  expect_equal(mean(res$lowest_cal_cal_1), 3.34825)
   expect_equal(mean(res$loq_cal_1, na.rm = T), 7.911120433)
 
   # Missing fit parameter replaced with defauls provided with fit_ args.
@@ -256,6 +256,29 @@ test_that("calc_calibration_results error handling works", {
       fit_weighting = "1/x"
     ),
     "All calibration curve fits failed"
+  )
+})
+
+test_that("the calibrated range spans only calibrators with a response", {
+  # In the fixture, CalA has no response for the Aldosterone qualifier, nor
+  # CalE/CalF for the Cortisone qualifier.
+  res <- suppressMessages(calc_calibration_results(
+    mexp_norm,
+    fit_overwrite = TRUE,
+    fit_model = "linear",
+    fit_weighting = "1/x"
+  ))@metrics_calibration
+  qc <- mexp_norm@annot_qcconcentrations
+  conc <- function(sample, analyte) {
+    qc$concentration[qc$sample_id == sample & qc$analyte_id == analyte]
+  }
+  expect_equal(
+    res$lowest_cal_cal_1[res$feature_id == "Aldosterone [QUAL 361.2 -> 343.1]"],
+    conc("CAL-B", "Aldosterone")
+  )
+  expect_equal(
+    res$highest_cal_cal_1[res$feature_id == "Cortisone [QUAL 361.2 -> 121.1]"],
+    conc("CAL-D", "Cortisone")
   )
 })
 

@@ -478,17 +478,18 @@ calc_calibration_results <- function(
   calc_lm <- function(dt) {
     # Descriptor fields are identical across all four result shapes below
     # (linear/quadratic x success/error), so build them once here.
+    # The calibrated range spans the non-zero calibrators that have a response.
+    in_range <- dt$concentration[
+      dt$concentration != 0 & !is.na(dt[[variable]])
+    ]
     base_info <- list(
       feature_id = dt$feature_id[1],
       is_quantifier = dt$is_quantifier[1],
       curve_id = dt$curve_id[1],
       fit_model = dt$fit_model[1],
       fit_weighting = dt$fit_weighting[1],
-      lowest_cal = sort(dt$concentration[dt$concentration != 0])[1],
-      highest_cal = sort(
-        dt$concentration[dt$concentration != 0],
-        decreasing = TRUE
-      )[1]
+      lowest_cal = sort(in_range)[1],
+      highest_cal = sort(in_range, decreasing = TRUE)[1]
     )
     tryCatch(
       {
@@ -1060,8 +1061,8 @@ get_qc_bias_variability <- function(
 #' - `is_quantifier`: Logical, indicates if the feature is a quantifier.
 #' - `fit_model`: Regression model used for fitting.
 #' - `fit_weighting`: Weighting method used in fitting.
-#' - `lowest_cal`: Lowest nonzero calibration concentration.
-#' - `highest_cal`: Highest calibration concentration.
+#' - `lowest_cal`: Lowest non-zero calibrator concentration with a response.
+#' - `highest_cal`: Highest calibrator concentration with a response.
 #' - `r2`: R² value, indicating goodness of fit. For a **weighted**
 #'   fit this is the weighted coefficient of determination (computed from weighted
 #'   sums of squares), matching the value reported by vendor software such as

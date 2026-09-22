@@ -51,8 +51,8 @@ See its documentation for details.
 \item \code{is_quantifier}: Logical, indicates if the feature is a quantifier.
 \item \code{fit_model}: Regression model used for fitting.
 \item \code{fit_weighting}: Weighting method used in fitting.
-\item \code{lowest_cal}: Lowest nonzero calibration concentration.
-\item \code{highest_cal}: Highest calibration concentration.
+\item \code{lowest_cal}: Lowest non-zero calibrator concentration with a response.
+\item \code{highest_cal}: Highest calibrator concentration with a response.
 \item \code{r2}: R² value, indicating goodness of fit. For a \strong{weighted}
 fit this is the weighted coefficient of determination (computed from weighted
 sums of squares), matching the value reported by vendor software such as
