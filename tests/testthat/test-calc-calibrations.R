@@ -577,6 +577,41 @@ test_that("get_qc_bias_variability counts only non-missing replicates in n", {
   expect_equal(sum(after$n), sum(base$n) - 1L)
 })
 
+test_that("a blank sample_id never matches a blank QC-concentration sample_id", {
+  # CalA has a blank Sample ID, as do the SPL/SBLK/IBLK analyses.
+  base <- mexp_norm
+  base@dataset$sample_id[base@dataset$analysis_id == "CalA"] <- NA
+  with_blank_target <- base
+  with_blank_target@annot_qcconcentrations <- dplyr::bind_rows(
+    base@annot_qcconcentrations,
+    dplyr::tibble(
+      sample_id = NA_character_,
+      analyte_id = "Cortisol",
+      concentration = 50,
+      concentration_unit = "nmol/L",
+      include_in_analysis = TRUE
+    )
+  )
+  calib <- function(m) {
+    suppressMessages(calc_calibration_results(
+      m,
+      fit_overwrite = FALSE,
+      fit_model = "linear",
+      fit_weighting = "1/x"
+    ))@metrics_calibration
+  }
+  expect_equal(calib(with_blank_target), calib(base))
+
+  quantified <- suppressMessages(quantify_by_calibration(
+    with_blank_target,
+    fit_overwrite = FALSE,
+    fit_model = "linear",
+    fit_weighting = "1/x"
+  ))
+  res <- get_qc_bias_variability(quantified)
+  expect_false(anyNA(res$sample_id))
+})
+
 test_that("get_qc_bias_variability handles errors", {
   expect_error(
     get_qc_bias_variability(
