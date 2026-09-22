@@ -487,15 +487,20 @@ test_that("clean_response_metadata strips analysis_id extensions consistently (b
   expect_equal(meta$analysis_id, c("Study.data_01", "sample"))
 })
 
-test_that("clean_qcconc_metadata strips sample_id extensions consistently (bug 2.1)", {
-  tbl <- data.frame(
-    sample_id = c("Study.data_01.d", "sample.wiff2"),
-    analyte_id = c("a1", "a2"),
-    concentration = c(0.1, 0.2),
-    concentration_unit = c("uM", "uM")
-  )
-  meta <- clean_qcconc_metadata(tbl)
-  expect_equal(meta$sample_id, c("Study.data_01", "sample"))
+test_that("clean_qcconc_metadata normalizes sample_id like the analysis metadata", {
+  ids <- c(" CAL1.d ", "Study.data_01.d", "sample.wiff2")
+  meta <- clean_qcconc_metadata(data.frame(
+    sample_id = ids,
+    analyte_id = "a1",
+    concentration = c(0.1, 0.2, 0.3),
+    concentration_unit = "uM"
+  ))
+  analyses <- clean_analysis_metadata(data.frame(
+    analysis_id = paste0("A", 1:3),
+    sample_id = ids
+  ))
+  expect_equal(meta$sample_id, analyses$sample_id)
+  expect_equal(meta$sample_id, c("CAL1.d", "Study.data_01.d", "sample.wiff2"))
 })
 
 test_that("clean_qcconc_metadata rejects an unrecognized include_in_analysis value", {

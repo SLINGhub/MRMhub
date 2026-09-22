@@ -2225,7 +2225,8 @@ clean_qcconc_metadata <- function(d_cal) {
 
   d_cal <- d_cal |>
     dplyr::mutate(
-      sample_id = strip_raw_extension(.data$sample_id),
+      # A sample ID, not a file name: normalized like the Analyses `sample_id`.
+      sample_id = stringr::str_squish(as.character(.data$sample_id)),
       analyte_id = stringr::str_squish(as.character(.data$analyte_id)),
       concentration = coerce_checked(.data$concentration, "concentration"),
       concentration_unit = stringr::str_squish(.data$concentration_unit),
