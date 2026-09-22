@@ -445,7 +445,9 @@ plot_calibrationcurves <- function(
     }
     if (!stats$reg_failed_cal_1) {
       fit <- stats$fit_cal_1[[1]]
-      conc_orig <- model.matrix(fit)[, 2]
+      # Solid segment spans the calibrated range, as does the out-of-range flag.
+      lo <- stats$lowest_cal_cal_1
+      hi <- stats$highest_cal_cal_1
 
       predictions <- suppressWarnings(predict(
         fit,
@@ -462,20 +464,17 @@ plot_calibrationcurves <- function(
       ) |>
         mutate(
           y_pred_fit = if_else(
-            .data$concentration < min(conc_orig) |
-              .data$concentration > max(conc_orig),
+            .data$concentration < lo | .data$concentration > hi,
             NA_real_,
             .data$y_pred
           ),
           lwr_fit = if_else(
-            .data$concentration < min(conc_orig) |
-              .data$concentration > max(conc_orig),
+            .data$concentration < lo | .data$concentration > hi,
             NA_real_,
             .data$lwr
           ),
           upr_fit = if_else(
-            .data$concentration < min(conc_orig) |
-              .data$concentration > max(conc_orig),
+            .data$concentration < lo | .data$concentration > hi,
             NA_real_,
             .data$upr
           )

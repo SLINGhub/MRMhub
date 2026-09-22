@@ -577,6 +577,34 @@ test_that("plot_calibrationcurves rejects an invalid page_orientation", {
   )
 })
 
+test_that("plot_calibrationcurves draws the solid fit over the calibrated range only", {
+  # A zero calibrator stays in an unweighted fit, but the calibrated range (and
+  # the out-of-range flag) starts at the lowest non-zero calibrator.
+  mexp_zero <- mexp
+  qc <- mexp_zero@annot_qcconcentrations
+  is_zero <- qc$sample_id == "CAL-A" & qc$analyte_id == "Cortisol"
+  mexp_zero@annot_qcconcentrations$concentration[is_zero] <- 0
+  lowest_cal <- min(qc$concentration[qc$analyte_id == "Cortisol" & !is_zero])
+
+  p <- suppressMessages(plot_calibrationcurves(
+    mexp_zero,
+    fit_overwrite = TRUE,
+    fit_model = "linear",
+    fit_weighting = "none",
+    include_qualifier = FALSE,
+    return_plots = TRUE
+  ))
+  is_solid <- vapply(
+    p[[1]]$layers,
+    function(l) identical(rlang::as_label(l$mapping$y), "y_pred_fit"),
+    logical(1)
+  )
+  solid <- p[[1]]$layers[[which(is_solid)]]$data
+  solid <- solid[solid$feature_id == "Cortisol" & !is.na(solid$y_pred_fit), ]
+  expect_gt(nrow(solid), 0)
+  expect_gte(min(solid$concentration), lowest_cal)
+})
+
 test_that("plot_calibrationcurves accepts the 1/sqrt(x) weighting", {
   p <- suppressMessages(plot_calibrationcurves(
     mexp,
