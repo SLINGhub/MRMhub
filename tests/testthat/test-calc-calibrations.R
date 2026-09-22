@@ -628,6 +628,16 @@ test_that("get_qc_bias_variability counts only non-missing replicates in n", {
   expect_equal(sum(after$n), sum(base$n) - 1L)
 })
 
+test_that("get_qc_bias_variability selects by sample_ids", {
+  res <- get_qc_bias_variability(mexp_quant_norm, sample_ids = "CAL-C")
+  expect_equal(unique(res$sample_id), "CAL-C")
+
+  expect_error(
+    get_qc_bias_variability(mexp_quant_norm, sample_ids = "nope"),
+    "sample_ids.*nope"
+  )
+})
+
 test_that("get_qc_bias_variability reports the SD of the replicate conc ratios", {
   res <- get_qc_bias_variability(
     mexp_quant_norm,
