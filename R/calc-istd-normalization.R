@@ -486,7 +486,13 @@ quantify_by_istd <- function(
 
   if ("feature_conc" %in% names(data@dataset)) {
     data@dataset <- data@dataset |>
-      select(-dplyr::any_of(c("feature_pmol_total", "feature_conc")))
+      select(
+        -dplyr::any_of(c(
+          "feature_pmol_total",
+          "feature_conc",
+          "feature_conc_out_of_range"
+        ))
+      )
     mh_warn(
       "Replacing previously calculated concentrations."
     )
@@ -540,6 +546,8 @@ quantify_by_istd <- function(
   data <- update_after_quantitation(data, TRUE)
   data@is_filtered <- FALSE
   data@metrics_qc <- data@metrics_qc[FALSE, ]
+  # Calibration results no longer describe these concentrations.
+  data@metrics_calibration <- data@metrics_calibration[FALSE, ]
 
   data
 }

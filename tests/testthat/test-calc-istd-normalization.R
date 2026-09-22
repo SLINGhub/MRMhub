@@ -737,3 +737,17 @@ test_that("get_conc_analyte_unit tolerates objects saved before the slot existed
     NA_character_
   )
 })
+
+test_that("quantify_by_istd after calibration drops the calibration's range flag and metrics", {
+  mexp <- suppressMessages(quantify_by_calibration(
+    normalize_by_istd(quant_lcms_dataset),
+    fit_overwrite = FALSE,
+    fit_model = "linear",
+    fit_weighting = "1/x"
+  ))
+  expect_true("feature_conc_out_of_range" %in% names(mexp@dataset))
+
+  mexp <- suppressMessages(quantify_by_istd(mexp))
+  expect_false("feature_conc_out_of_range" %in% names(mexp@dataset))
+  expect_equal(nrow(mexp@metrics_calibration), 0)
+})
