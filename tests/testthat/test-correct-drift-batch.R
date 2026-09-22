@@ -1124,7 +1124,9 @@ test_that("fits resulting in invalid values are handeled", {
     fixed = TRUE
   )
 
-  expect_message(
+  # The upper bound (~6.985) sits on a rounding boundary, so its printed value
+  # flips with numeric noise across platforms; compare with a tolerance.
+  msgs <- capture_messages(
     mexp_drift1 <- correct_drift_cubicspline(
       mexp,
       cv = FALSE,
@@ -1137,10 +1139,13 @@ test_that("fits resulting in invalid values are handeled", {
       recalc_trend_after = TRUE,
       use_original_if_fail = TRUE,
       ignore_istd = TRUE
-    ),
-    "-0.31% to 6.99%",
-    fixed = TRUE
+    )
   )
+  cv_range <- stringr::str_match(
+    paste(msgs, collapse = " "),
+    "range: (-?[0-9.]+)% to (-?[0-9.]+)%"
+  )[, 2:3]
+  expect_lt(max(abs(as.numeric(cv_range) - c(-0.31, 6.99))), 0.02)
 
   expect_message(
     mexp_drift1 <- correct_drift_cubicspline(
