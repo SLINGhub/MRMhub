@@ -58,7 +58,10 @@ The default is \code{NA}, which means any of the QC types "CAL", "HQC", "MQC", "
 \item{fit_overwrite}{If \code{TRUE},
 the function will use the provided \code{fit_model} and \code{fit_weighting} values
 for all analytes and ignore any fit method and weighting settings defined in
-the metadata.}
+the metadata. If omitted, the fit model and weighting stored in
+\code{metrics_calibration} (i.e. those used by \code{\link[=quantify_by_calibration]{quantify_by_calibration()}}) are
+plotted; this requires calibration results. When given, a warning is shown
+if the plotted fit differs from the stored one.}
 
 \item{fit_model}{A character string specifying the default regression fit
 method to use for the calibration curve. Must be one of \code{"linear"} or

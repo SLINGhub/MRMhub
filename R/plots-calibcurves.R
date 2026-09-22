@@ -30,7 +30,10 @@
 #' @param fit_overwrite If `TRUE`,
 #'   the function will use the provided `fit_model` and `fit_weighting` values
 #'   for all analytes and ignore any fit method and weighting settings defined in
-#'   the metadata.
+#'   the metadata. If omitted, the fit model and weighting stored in
+#'   `metrics_calibration` (i.e. those used by [quantify_by_calibration()]) are
+#'   plotted; this requires calibration results. When given, a warning is shown
+#'   if the plotted fit differs from the stored one.
 #' @param fit_model A character string specifying the default regression fit
 #'   method to use for the calibration curve. Must be one of `"linear"` or
 #'   `"quadratic"`. This method will be applied if no specific fit method is
@@ -227,6 +230,31 @@ plot_calibrationcurves <- function(
     )
   }
 
+  # The stored calibration (as used for the concentrations) is plotted when
+  # `fit_overwrite` is omitted, and compared with the plotted fit otherwise.
+  fits_used <- data@metrics_calibration
+  if (missing(fit_overwrite)) {
+    if (nrow(fits_used) == 0) {
+      cli::cli_abort(
+        "{.arg fit_overwrite} is required when no calibration results are available. Set it, or run {.fn quantify_by_calibration} first."
+      )
+    }
+    data@annot_features <- data@annot_features |>
+      dplyr::rows_update(
+        fits_used |>
+          select(
+            "feature_id",
+            curve_fit_model = "fit_model",
+            curve_fit_weighting = "fit_weighting"
+          ),
+        by = "feature_id",
+        unmatched = "ignore"
+      )
+    fit_overwrite <- FALSE
+    # Fallback for features without stored results only.
+    if (is.na(fit_weighting)) fit_weighting <- "none"
+  }
+
   # Subset dataset according to filter arguments
 
   d_filt <- get_dataset_subset(
@@ -412,6 +440,42 @@ plot_calibrationcurves <- function(
     fit_weighting = fit_weighting,
     include_fit_object = TRUE
   )
+
+  if (nrow(fits_used) > 0) {
+    d_mismatch <- data@metrics_calibration |>
+      select("feature_id", "fit_model", "fit_weighting") |>
+      dplyr::inner_join(
+        fits_used |>
+          select(
+            "feature_id",
+            used_model = "fit_model",
+            used_weighting = "fit_weighting"
+          ),
+        by = "feature_id"
+      ) |>
+      filter(
+        .data$feature_id %in% d_calib_subset$feature_id,
+        .data$fit_model != .data$used_model |
+          .data$fit_weighting != .data$used_weighting
+      )
+    if (nrow(d_mismatch) > 0) {
+      mismatch_desc <- paste0(
+        d_mismatch$feature_id,
+        " (",
+        d_mismatch$fit_model,
+        ", ",
+        d_mismatch$fit_weighting,
+        " vs ",
+        d_mismatch$used_model,
+        ", ",
+        d_mismatch$used_weighting,
+        ")"
+      )
+      mh_warn(
+        "The plotted fit differs from the stored calibration ({.field metrics_calibration}) for {nrow(d_mismatch)} feature{?s}: {.val {mh_vec(mismatch_desc)}}. Omit {.arg fit_overwrite} to plot the stored fits."
+      )
+    }
+  }
 
   count_regfailed <- sum(data@metrics_calibration$reg_failed_cal_1)
   if (count_regfailed > 0) {

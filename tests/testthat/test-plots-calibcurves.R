@@ -637,6 +637,61 @@ test_that("plot_calibrationcurves skips QC concentrations without a measured ana
   expect_false(any(p[[1]]$data$concentration == 50, na.rm = TRUE))
 })
 
+plotted_fits <- function(p) {
+  is_label <- vapply(
+    p[[1]]$layers,
+    function(l) "label" %in% names(l$mapping),
+    logical(1)
+  )
+  p[[1]]$layers[[which(is_label)[1]]]$data
+}
+
+test_that("plot_calibrationcurves plots the stored calibration when fit_overwrite is omitted", {
+  quant <- suppressMessages(quantify_by_calibration(
+    mexp,
+    fit_overwrite = TRUE,
+    fit_model = "linear",
+    fit_weighting = "none"
+  ))
+  fits <- plotted_fits(suppressMessages(plot_calibrationcurves(
+    quant,
+    return_plots = TRUE
+  )))
+  expect_equal(unique(fits$fit_model), "linear")
+  expect_equal(unique(fits$fit_weighting), "none")
+
+  no_results <- mexp
+  no_results@metrics_calibration <- no_results@metrics_calibration[0, ]
+  expect_error(
+    plot_calibrationcurves(no_results),
+    "fit_overwrite.*calibration results"
+  )
+})
+
+test_that("plot_calibrationcurves warns when the plotted fit differs from the stored one", {
+  # The stored calibration of `mexp` is quadratic, 1/x for all features.
+  suppressMessages(expect_message(
+    plot_calibrationcurves(
+      mexp,
+      fit_overwrite = TRUE,
+      fit_model = "linear",
+      fit_weighting = "none",
+      return_plots = TRUE
+    ),
+    "differs from the stored calibration"
+  ))
+  suppressMessages(expect_no_message(
+    plot_calibrationcurves(
+      mexp,
+      fit_overwrite = TRUE,
+      fit_model = "quadratic",
+      fit_weighting = "1/x",
+      return_plots = TRUE
+    ),
+    message = "differs from the stored calibration"
+  ))
+})
+
 test_that("plot_calibrationcurves accepts the 1/sqrt(x) weighting", {
   p <- suppressMessages(plot_calibrationcurves(
     mexp,
