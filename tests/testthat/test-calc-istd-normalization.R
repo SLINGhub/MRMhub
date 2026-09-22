@@ -660,6 +660,58 @@ test_that("normalize_by_istd warns when an ISTD group has no is_istd row", {
   expect_true(all(is.na(affected)))
 })
 
+test_that("re-normalizing after a drift correction does not restore stale values", {
+  drift <- function(m, var) {
+    suppressMessages(suppressWarnings(correct_drift_loess(
+      m,
+      variable = var,
+      ref_qc_types = "BQC",
+      batch_wise = TRUE,
+      show_progress = FALSE
+    )))
+  }
+  norm_quant <- function(m) {
+    suppressMessages(quantify_by_istd(suppressMessages(normalize_by_istd(m))))
+  }
+  double_analytes <- function(m) {
+    m@dataset <- m@dataset |>
+      dplyr::mutate(
+        feature_intensity = dplyr::if_else(
+          .data$is_istd,
+          .data$feature_intensity,
+          .data$feature_intensity * 2
+        )
+      )
+    m
+  }
+  values <- function(m, var) {
+    m@dataset |>
+      dplyr::arrange(.data$analysis_id, .data$feature_id) |>
+      dplyr::pull(var)
+  }
+  base <- suppressMessages(exclude_analyses(
+    lipidomics_dataset,
+    analyses = "Longit_batch6_51",
+    clear_existing = TRUE
+  ))
+  fresh <- norm_quant(double_analytes(base))
+
+  # normalize -> drift(norm) -> data changes -> normalize -> drift(norm)
+  m <- drift(norm_quant(base), "norm_intensity")
+  m <- drift(norm_quant(double_analytes(m)), "norm_intensity")
+  expect_equal(
+    values(m, "feature_norm_intensity"),
+    values(drift(fresh, "norm_intensity"), "feature_norm_intensity")
+  )
+
+  # same for concentrations
+  m <- drift(norm_quant(base), "conc")
+  m <- drift(norm_quant(double_analytes(m)), "conc")
+  expect_equal(
+    values(m, "feature_conc"),
+    values(drift(fresh, "conc"), "feature_conc")
+  )
+})
 
 test_that("quantify_by_istd aborts on a duplicated join key (fan-out guards)", {
   mexp <- suppressMessages(normalize_by_istd(lipidomics_dataset))
