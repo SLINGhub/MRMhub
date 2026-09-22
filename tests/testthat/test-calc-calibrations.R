@@ -577,6 +577,27 @@ test_that("get_qc_bias_variability counts only non-missing replicates in n", {
   expect_equal(sum(after$n), sum(base$n) - 1L)
 })
 
+test_that("get_qc_bias_variability reports the SD of the replicate conc ratios", {
+  res <- get_qc_bias_variability(
+    mexp_quant_norm,
+    qc_types = "HQC",
+    with_conc_ratio = TRUE
+  )
+  expect_true("conc_ratio_sd" %in% names(res))
+
+  target <- mexp_quant_norm@annot_qcconcentrations |>
+    filter(sample_id == "HQC", analyte_id == "Cortisol") |>
+    pull(concentration)
+  ratios <- mexp_quant_norm@dataset |>
+    filter(sample_id == "HQC", feature_id == "Cortisol") |>
+    pull(feature_conc) /
+    target
+  expect_equal(
+    res$conc_ratio_sd[res$feature_id == "Cortisol"],
+    sd(ratios, na.rm = TRUE)
+  )
+})
+
 test_that("a blank sample_id never matches a blank QC-concentration sample_id", {
   # CalA has a blank Sample ID, as do the SPL/SBLK/IBLK analyses.
   base <- mexp_norm

@@ -934,8 +934,9 @@ get_qc_bias_variability <- function(
       cv_intra = .data$conc_sd / .data$conc_mean * 100,
       bias = mean(.data$bias_val, na.rm = TRUE),
       bias_abs = mean(.data$bias_abs_val, na.rm = TRUE),
-      conc_ratio = mean(.data$conc_ratio, na.rm = TRUE),
+      # Before `conc_ratio`: later expressions see the summarised column.
       conc_ratio_sd = sd(.data$conc_ratio, na.rm = TRUE),
+      conc_ratio = mean(.data$conc_ratio, na.rm = TRUE),
       frac_conc_out_of_range = if (has_conc_out_of_range) {
         mean(.data$feature_conc_out_of_range, na.rm = TRUE)
       } else {
