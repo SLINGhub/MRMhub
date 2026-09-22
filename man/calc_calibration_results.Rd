@@ -13,7 +13,8 @@ calc_calibration_results(
   fit_weighting,
   ignore_missing_annotation = FALSE,
   include_fit_object = FALSE,
-  lod_sigma = c("residual", "intercept")
+  lod_sigma = c("residual", "intercept"),
+  ignore_failed_calibration = FALSE
 )
 }
 \arguments{
@@ -56,6 +57,11 @@ regression fit objects for each feature in the \code{metrics_calibration} table.
 (the residual standard error of the regression, Sy/x; the default) or
 \code{"intercept"} (the standard error of the intercept). No averaging of the two
 is performed.}
+
+\item{ignore_failed_calibration}{If \code{FALSE}, an error is raised if all
+quantifier calibration curve fits fail. If \code{TRUE}, a warning is shown
+instead and the failed fits are returned, so resulting concentrations are
+\code{NA}.}
 }
 \value{
 A modified \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object with an updated

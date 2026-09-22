@@ -62,7 +62,8 @@ quantify_by_calibration <- function(
     fit_model = fit_model,
     fit_weighting = fit_weighting,
     ignore_missing_annotation = ignore_missing_annotation,
-    lod_sigma = lod_sigma
+    lod_sigma = lod_sigma,
+    ignore_failed_calibration = ignore_failed_calibration
   )
   d_calib <- data@metrics_calibration
 
@@ -370,6 +371,10 @@ quantify_by_calibration <- function(
 #'   (the residual standard error of the regression, Sy/x; the default) or
 #'   `"intercept"` (the standard error of the intercept). No averaging of the two
 #'   is performed.
+#' @param ignore_failed_calibration If `FALSE`, an error is raised if all
+#'   quantifier calibration curve fits fail. If `TRUE`, a warning is shown
+#'   instead and the failed fits are returned, so resulting concentrations are
+#'   `NA`.
 #'
 #' @return A modified [`MRMhubExperiment`][MRMhubExperiment-class] object with an updated
 #'   `metrics_calibration` table containing the calibration curve results,
@@ -394,7 +399,8 @@ calc_calibration_results <- function(
   fit_weighting,
   ignore_missing_annotation = FALSE,
   include_fit_object = FALSE,
-  lod_sigma = c("residual", "intercept")
+  lod_sigma = c("residual", "intercept"),
+  ignore_failed_calibration = FALSE
 ) {
   check_data(data)
 
@@ -768,20 +774,29 @@ calc_calibration_results <- function(
     paste0(count_qual_pass, " (of ", count_qual_all, ")")
   )
 
+  # No quantifier fit succeeded: abort, or warn and return the failed fits.
+  all_failed <- function(msg) {
+    if (!ignore_failed_calibration) {
+      cli::cli_abort(c(
+        msg,
+        "i" = "Please check data, and feature/qc-concentration metadata, or ignore by setting {.code ignore_failed_calibration = TRUE}."
+      ))
+    }
+    mh_warn("{msg} Resulting concentrations will be `NA`.")
+  }
+
   if (include_qualifier && any(!d_stats$is_quantifier)) {
     if (count_quant_pass == 0) {
-      cli::cli_abort(
-        "All calibration curve fits for quantifier features failed. Please check data, and feature/qc-concentration metadata."
-      )
+      all_failed("All calibration curve fits for quantifier features failed.")
+      return(data)
     }
     mh_success(
       "Calibration curve fits calculated for {text_total_quant} quantifier and {text_total_qual} qualifier features. Average r\u00B2: {sprintf('%.4f', mean(d_stats$r2_cal_1[d_stats$is_quantifier], na.rm = TRUE))} and {sprintf('%.4f', mean(d_stats$r2_cal_1[!d_stats$is_quantifier], na.rm = TRUE))}."
     )
   } else {
     if (count_quant_pass == 0) {
-      cli::cli_abort(
-        "All calibration curve fits failed. Please check data, and feature/qc-concentration metadata."
-      )
+      all_failed("All calibration curve fits failed.")
+      return(data)
     }
     mh_success(
       "Calibration curve fits calculated for {text_total_quant} quantifier features. Average r\u00B2: {sprintf('%.4f', mean(d_stats$r2_cal_1[d_stats$is_quantifier], na.rm = TRUE))}."

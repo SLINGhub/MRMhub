@@ -408,6 +408,27 @@ test_that("quantifying by calibration twice gives the same concentrations as onc
   expect_equal(quant(stale)@dataset$feature_conc, once@dataset$feature_conc)
 })
 
+test_that("ignore_failed_calibration = TRUE continues when every fit fails", {
+  # A single calibrator per curve: no fit can succeed.
+  mexp_temp <- mexp_norm
+  qc <- mexp_temp@annot_qcconcentrations
+  mexp_temp@annot_qcconcentrations$include_in_analysis <- qc$sample_id ==
+    "CAL-A"
+
+  suppressMessages(expect_message(
+    res <- quantify_by_calibration(
+      mexp_temp,
+      fit_overwrite = FALSE,
+      fit_model = "linear",
+      fit_weighting = "1/x",
+      ignore_failed_calibration = TRUE,
+      ignore_missing_annotation = TRUE
+    ),
+    "All calibration curve fits"
+  ))
+  expect_true(all(is.na(res@dataset$feature_conc[!res@dataset$is_istd])))
+})
+
 test_that("quantify_by_calibration handles errors", {
   mexp_temp <- mexp_norm
   mexp_temp@annot_qcconcentrations <- mexp_temp@annot_qcconcentrations |>
