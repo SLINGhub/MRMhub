@@ -206,6 +206,11 @@ normalize_by_istd <- function(data = NULL, ignore_missing_annotation = FALSE) {
   data@status_processing <- "ISTD-normalized data"
   data <- update_after_normalization(data, TRUE)
   data <- update_after_quantitation(data, FALSE)
+  # Normalized intensities and concentrations are recomputed, so earlier drift
+  # and batch corrections of them no longer apply. Leaving the flags set made the
+  # next correction restore the stale `_raw`/`_before` snapshot.
+  data@var_drift_corrected[c("feature_norm_intensity", "feature_conc")] <- FALSE
+  data@var_batch_corrected[c("feature_norm_intensity", "feature_conc")] <- FALSE
   data@is_filtered <- FALSE
   data@metrics_qc <- data@metrics_qc[FALSE, ]
   data
