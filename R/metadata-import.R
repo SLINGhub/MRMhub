@@ -2208,6 +2208,21 @@ clean_qcconc_metadata <- function(d_cal) {
       all_na_replace = TRUE
     )
 
+  # Reject unrecognized `include_in_analysis` tokens (e.g. "0"), which the lookup
+  # below would otherwise turn into TRUE. Blank/NA is allowed (means "include").
+  ia_norm <- tolower(stringr::str_squish(as.character(
+    d_cal$include_in_analysis
+  )))
+  ia_unrecognized <- !is.na(ia_norm) &
+    ia_norm != "" &
+    !(ia_norm %in% c("yes", "true", "no", "false"))
+  if (any(ia_unrecognized)) {
+    cli::cli_abort(c(
+      "Unrecognized value(s) in {.field include_in_analysis}: {.val {unique(d_cal$include_in_analysis[ia_unrecognized])}}.",
+      "i" = "Use one of {.val yes}, {.val no}, {.val true}, or {.val false}, or leave blank."
+    ))
+  }
+
   d_cal <- d_cal |>
     dplyr::mutate(
       sample_id = strip_raw_extension(.data$sample_id),
@@ -2230,13 +2245,6 @@ clean_qcconc_metadata <- function(d_cal) {
     ) |>
     dplyr::mutate(dplyr::across(where(is.character), stringr::str_squish))
 
-  if (all(is.na(d_cal$include_in_analysis))) {
-    d_cal$include_in_analysis <- TRUE
-  } else if (any(is.na(d_cal$include_in_analysis))) {
-    cli::cli_abort(
-      "Invalid value(s) detected in `include_in_analysis`. Please check the QC concentration metadata, allowed values are 'true', 'false', 'yes', 'no', or empty (case-insensitive)."
-    )
-  }
   d_cal <- dplyr::bind_rows(
     pkg.env$table_templates$annot_qcconcentrations_template,
     d_cal

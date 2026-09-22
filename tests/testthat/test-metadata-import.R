@@ -498,6 +498,23 @@ test_that("clean_qcconc_metadata strips sample_id extensions consistently (bug 2
   expect_equal(meta$sample_id, c("Study.data_01", "sample"))
 })
 
+test_that("clean_qcconc_metadata rejects an unrecognized include_in_analysis value", {
+  tbl <- data.frame(
+    sample_id = c("CAL1", "CAL2", "CAL3"),
+    analyte_id = "a1",
+    concentration = c(0.1, 0.2, 0.3),
+    concentration_unit = "uM",
+    include_in_analysis = c(NA, "no", "Yes")
+  )
+  expect_equal(
+    clean_qcconc_metadata(tbl)$include_in_analysis,
+    c(TRUE, FALSE, TRUE)
+  )
+
+  tbl$include_in_analysis <- c("yes", "0", "no")
+  expect_error(clean_qcconc_metadata(tbl), "include_in_analysis.*0")
+})
+
 test_that("Add indidual metadata types to data, first analyses then features", {
   mexp <- mrmhub::MRMhubExperiment()
   mexp <- mrmhub::import_data_masshunter(
