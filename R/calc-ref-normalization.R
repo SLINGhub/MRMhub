@@ -138,11 +138,6 @@ calibrate_by_reference <- function(
   variable_sym <- rlang::sym(variable)
   variable_norm <- stringr::str_c("feature_", variable_strip, "_normalized")
   variable_norm_sym <- rlang::sym(variable_norm)
-  variable_beforecal_sym <- rlang::sym(stringr::str_c(
-    "feature_",
-    variable_strip,
-    "_beforecal"
-  ))
   check_var_in_dataset(data@dataset, variable)
 
   if (is.null(store_conc_ratio)) {
@@ -385,7 +380,10 @@ calibrate_by_reference <- function(
       dplyr::select(-"ref_conc") |>
       ungroup()
 
-    if (variable == "feature_conc") {
+    # Absolute calibration always writes feature_conc, whatever the input
+    # variable, so back up existing concentrations -- not only when the input is
+    # conc itself.
+    if ("feature_conc" %in% names(data@dataset)) {
       data@dataset <- data@dataset |>
         mutate(feature_conc_beforecal = .data$feature_conc)
     }

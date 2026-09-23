@@ -912,3 +912,22 @@ test_that("quantify_by_istd clears a stale feature_conc_ratio", {
   mexp_requant <- suppressMessages(quantify_by_istd(mexp_cal))
   expect_false("feature_conc_ratio" %in% names(mexp_requant@dataset))
 })
+
+test_that("calibrate_by_reference backs up feature_conc when calibrating from another variable", {
+  # Absolute calibration always writes feature_conc, whatever the input
+  # variable, so existing concentrations must be backed up in every case -- not
+  # only when the input is conc itself.
+  mexp_res <- suppressMessages(calibrate_by_reference(
+    data = mexp,
+    variable = "feature_norm_intensity",
+    reference_sample_id = "NIST_SRM1950",
+    absolute_calibration = TRUE,
+    undefined_conc_action = "na"
+  ))
+
+  expect_true("feature_conc_beforecal" %in% names(mexp_res@dataset))
+  expect_equal(
+    mexp_res@dataset$feature_conc_beforecal,
+    mexp@dataset$feature_conc
+  )
+})
