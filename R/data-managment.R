@@ -453,7 +453,6 @@ update_after_quantitation <- function(
         -any_of(c(
           "feature_pmol_total",
           "feature_conc",
-          "feature_raw_conc",
           "feature_conc_ratio",
           "feature_conc_out_of_range"
         ))
@@ -1010,8 +1009,6 @@ set_intensity_var <- function(
     calc_cols <- c(
       "feature_norm_intensity",
       "feature_conc",
-      "feature_amount",
-      "feature_raw_conc",
       "feature_conc_out_of_range"
     )
     if (any(calc_cols %in% names(data@dataset))) {

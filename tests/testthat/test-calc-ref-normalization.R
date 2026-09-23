@@ -893,3 +893,22 @@ test_that("calibrate_by_reference does not match a blank analyte_id to a referen
     mexp_res@dataset$feature_conc[mexp_res@dataset$feature_id == victim]
   )))
 })
+
+test_that("quantify_by_istd clears a stale feature_conc_ratio", {
+  # feature_conc_ratio is derived from feature_conc, so re-quantifying must drop
+  # it. Otherwise it is carried over unchanged and no longer corresponds to the
+  # concentration it was computed from. Tested here because the column is owned
+  # by calibrate_by_reference().
+  mexp_cal <- suppressMessages(calibrate_by_reference(
+    data = mexp,
+    variable = "feature_conc",
+    reference_sample_id = "NIST_SRM1950",
+    absolute_calibration = TRUE,
+    store_conc_ratio = TRUE,
+    undefined_conc_action = "na"
+  ))
+  expect_true("feature_conc_ratio" %in% names(mexp_cal@dataset))
+
+  mexp_requant <- suppressMessages(quantify_by_istd(mexp_cal))
+  expect_false("feature_conc_ratio" %in% names(mexp_requant@dataset))
+})

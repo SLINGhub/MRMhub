@@ -497,6 +497,7 @@ quantify_by_istd <- function(
         -dplyr::any_of(c(
           "feature_pmol_total",
           "feature_conc",
+          "feature_conc_ratio",
           "feature_conc_out_of_range"
         ))
       )
