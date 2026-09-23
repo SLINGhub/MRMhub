@@ -1,4 +1,33 @@
-# mrmhub 0.9.9 (development)
+# mrmhub 0.9.10 (development)
+
+## New features
+
+* Calibration curves can be fitted with `1/sqrt(x)` weighting, and
+  `plot_calibrationcurves()` no longer requires `fit_overwrite`.
+
+## Bug fixes
+
+* Features with no analyte assigned in the feature metadata are no longer
+  given a concentration belonging to an unrelated QC entry.
+
+* `calibrate_by_reference()` now reports concentrations in the reference
+  sample's unit, rather than keeping the unit of the preceding quantification.
+
+* `calibrate_by_reference()` now always keeps the previous concentrations as
+  `conc_beforecal`, also when calibrating from intensities.
+
+* Calibration results (r², LoD, LoQ) and calculated concentrations are cleared
+  when the values they were derived from change, so outdated numbers can no
+  longer appear in QC filtering or the report.
+
+* In the analysis and feature metadata, `yes`/`no` entries surrounded by spaces
+  are now read correctly, and unrecognized entries raise an error instead of
+  being silently treated as `yes`.
+
+* `save_dataset_summarizedexperiment()` no longer exports internal backup and
+  drift-model columns as assays; name them explicitly to include them.
+
+# mrmhub 0.9.9
 
 This release focuses on usability, robustness, and new functions.
 
