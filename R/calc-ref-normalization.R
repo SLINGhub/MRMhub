@@ -432,6 +432,10 @@ calibrate_by_reference <- function(
 
     data <- update_after_quantitation(data, is_quantitated = TRUE)
 
+    # feature_conc now carries the reference sample's unit, whatever unit the
+    # preceding quantitation recorded.
+    data@conc_analyte_unit <- ref_feature_conc_unit
+
     data@is_filtered <- FALSE
     data@metrics_qc <- data@metrics_qc[FALSE, ]
     # Concentrations are re-derived from the reference sample, so external

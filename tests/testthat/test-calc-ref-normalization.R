@@ -970,3 +970,28 @@ test_that("the conc backup does not outlive the concentrations it backs up", {
   mexp_requant <- suppressMessages(quantify_by_istd(mexp_cal))
   expect_false("feature_conc_beforecal" %in% names(mexp_requant@dataset))
 })
+
+test_that("calibrate_by_reference records the reference sample's concentration unit", {
+  # Absolute calibration rewrites feature_conc into the reference sample's
+  # unit, so the recorded unit must follow or every consumer mislabels.
+  expect_equal(mexp@conc_analyte_unit, "pmol")
+
+  mexp_abs <- suppressMessages(calibrate_by_reference(
+    data = mexp,
+    variable = "feature_conc",
+    reference_sample_id = "NIST_SRM1950",
+    absolute_calibration = TRUE,
+    undefined_conc_action = "na"
+  ))
+  expect_equal(mexp_abs@conc_analyte_unit, "umol/L")
+
+  # Relative calibration writes feature_conc_normalized and leaves feature_conc
+  # untouched, so the recorded unit must stay as it was.
+  mexp_rel <- suppressMessages(calibrate_by_reference(
+    data = mexp,
+    variable = "feature_conc",
+    reference_sample_id = "NIST_SRM1950",
+    absolute_calibration = FALSE
+  ))
+  expect_equal(mexp_rel@conc_analyte_unit, mexp@conc_analyte_unit)
+})
