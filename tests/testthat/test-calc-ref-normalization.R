@@ -947,3 +947,26 @@ test_that("calibrate_by_reference clears calibration metrics", {
   )))
   expect_equal(nrow(res@metrics_calibration), 0)
 })
+
+test_that("the conc backup does not outlive the concentrations it backs up", {
+  # Re-normalizing invalidates the quantitation and drops feature_conc, so the
+  # pre-calibration snapshot must go too. Otherwise it stays exportable via
+  # save_dataset_csv(variable = "conc_beforecal") from a run the package has
+  # already marked not quantitated.
+  mexp_cal <- suppressMessages(calibrate_by_reference(
+    data = mexp,
+    variable = "feature_conc",
+    reference_sample_id = "NIST_SRM1950",
+    absolute_calibration = TRUE,
+    undefined_conc_action = "na"
+  ))
+  expect_true("feature_conc_beforecal" %in% names(mexp_cal@dataset))
+
+  mexp_renorm <- suppressMessages(normalize_by_istd(mexp_cal))
+  expect_false("feature_conc" %in% names(mexp_renorm@dataset))
+  expect_false("feature_conc_beforecal" %in% names(mexp_renorm@dataset))
+
+  # Same for re-quantification, which recomputes feature_conc from scratch.
+  mexp_requant <- suppressMessages(quantify_by_istd(mexp_cal))
+  expect_false("feature_conc_beforecal" %in% names(mexp_requant@dataset))
+})
