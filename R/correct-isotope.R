@@ -212,6 +212,8 @@ correct_interference_manual <- function(
   )
   data@is_filtered <- FALSE
   data@metrics_qc <- data@metrics_qc[FALSE, ]
+  # Calibration fits were made on the uncorrected intensities.
+  data@metrics_calibration <- data@metrics_calibration[FALSE, ]
 
   mh_success(
     "Interference-correction was manually applied to feature `{feature}` (interferer `{interfering_feature}`, factor {interference_contribution})."
@@ -654,6 +656,8 @@ apply_interference_edges <- function(
   )
   data@is_filtered <- FALSE
   data@metrics_qc <- data@metrics_qc[FALSE, ]
+  # Calibration fits were made on the uncorrected intensities.
+  data@metrics_calibration <- data@metrics_calibration[FALSE, ]
 
   n_corr <- length(unique(features_to_correct$feature_id))
   n_auto <- sum(features_to_correct$source == "auto")

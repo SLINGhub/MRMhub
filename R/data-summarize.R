@@ -226,6 +226,8 @@ data_sum_features <- function(
     feature_conc = FALSE
   )
   data@metrics_qc <- data@metrics_qc[FALSE, ]
+  # Per-feature fits are orphaned once transitions are merged into analytes.
+  data@metrics_calibration <- data@metrics_calibration[FALSE, ]
 
   # `update_after_normalization()` drops the normalized/quantitated variables
   # themselves, but not the correction snapshots derived from them (`_orig`,

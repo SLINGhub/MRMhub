@@ -931,3 +931,19 @@ test_that("calibrate_by_reference backs up feature_conc when calibrating from an
     mexp@dataset$feature_conc
   )
 })
+
+test_that("calibrate_by_reference clears calibration metrics", {
+  # Concentrations are re-derived from the reference sample, so the external
+  # calibration fits no longer describe them.
+  mexp_cal <- calibrated_experiment()
+  expect_gt(nrow(mexp_cal@metrics_calibration), 0)
+
+  res <- suppressMessages(suppressWarnings(calibrate_by_reference(
+    mexp_cal,
+    variable = "feature_conc",
+    reference_sample_id = "HQC",
+    absolute_calibration = TRUE,
+    undefined_conc_action = "na"
+  )))
+  expect_equal(nrow(res@metrics_calibration), 0)
+})

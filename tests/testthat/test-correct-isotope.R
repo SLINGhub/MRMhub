@@ -565,3 +565,36 @@ test_that("correction tolerates a feature absent from some analyses (ragged data
     40
   )
 })
+
+test_that("manual interference correction clears calibration metrics", {
+  # The fits were made on the pre-correction intensities.
+  mexp_cal <- calibrated_experiment()
+  expect_gt(nrow(mexp_cal@metrics_calibration), 0)
+
+  non_istd <- mexp_cal@annot_features$feature_id[
+    !mexp_cal@annot_features$is_istd
+  ]
+  res <- suppressMessages(correct_interference_manual(
+    mexp_cal,
+    variable = "feature_intensity",
+    feature = non_istd[1],
+    interfering_feature = non_istd[2],
+    interference_contribution = 0.1
+  ))
+  expect_equal(nrow(res@metrics_calibration), 0)
+})
+
+test_that("custom interference correction clears calibration metrics", {
+  mexp_cal <- calibrated_experiment()
+  non_istd <- mexp_cal@annot_features$feature_id[
+    !mexp_cal@annot_features$is_istd
+  ]
+  i <- which(mexp_cal@annot_features$feature_id == non_istd[1])
+  mexp_cal@annot_features$interference_feature_id[i] <- non_istd[2]
+  mexp_cal@annot_features$interference_contribution[i] <- 0.05
+
+  res <- suppressMessages(suppressWarnings(
+    correct_custom_interferences(mexp_cal)
+  ))
+  expect_equal(nrow(res@metrics_calibration), 0)
+})

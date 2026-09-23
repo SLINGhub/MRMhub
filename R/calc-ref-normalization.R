@@ -434,6 +434,9 @@ calibrate_by_reference <- function(
 
     data@is_filtered <- FALSE
     data@metrics_qc <- data@metrics_qc[FALSE, ]
+    # Concentrations are re-derived from the reference sample, so external
+    # calibration fits no longer describe them.
+    data@metrics_calibration <- data@metrics_calibration[FALSE, ]
 
     data@status_processing <- paste0(
       "Re-calibrated",

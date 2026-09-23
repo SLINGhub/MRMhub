@@ -257,3 +257,12 @@ test_that("data_sum_features returns NA (not a fabricated 0) when all merged tra
 test_that("data_sum_features() rejects a non-MRMhubExperiment first arg", {
   expect_error(data_sum_features(data.frame(x = 1)), "MRMhubExperiment")
 })
+
+test_that("data_sum_features clears calibration metrics", {
+  # Transitions are merged into analytes, so the per-feature fits are orphaned.
+  mexp_cal <- calibrated_experiment()
+  expect_gt(nrow(mexp_cal@metrics_calibration), 0)
+
+  res <- suppressMessages(suppressWarnings(data_sum_features(mexp_cal)))
+  expect_equal(nrow(res@metrics_calibration), 0)
+})
