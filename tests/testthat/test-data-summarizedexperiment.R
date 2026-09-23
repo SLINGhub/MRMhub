@@ -293,3 +293,36 @@ test_that("exporting a sub-1 assay to lipidr warns about the log clamp", {
     )
   )
 })
+
+test_that("backup snapshots and model fits are not assays by default", {
+  # Backups (`_orig`, `_before`, `_beforecal`) and the drift model's fitted
+  # curve (`_fit`) are bookkeeping, not measurements, so exporting them as
+  # peers of `conc` misrepresents them. The uncorrected `_raw` values are kept:
+  # they are measured quantities worth comparing against the corrected ones.
+  mexp_drift <- suppressMessages(suppressWarnings(
+    correct_drift_gaussiankernel(
+      mexp,
+      variable = "feature_conc",
+      ref_qc_types = "BQC"
+    )
+  ))
+  cols <- names(mexp_drift@dataset)
+  expect_true("feature_conc_before" %in% cols)
+  expect_true("feature_conc_fit_after" %in% cols)
+
+  assays <- SummarizedExperiment::assayNames(
+    save_dataset_summarizedexperiment(mexp_drift)
+  )
+  expect_false(any(grepl("_fit", assays)))
+  expect_false("conc_before" %in% assays)
+  expect_true(all(c("intensity", "norm_intensity", "conc") %in% assays))
+  expect_true("conc_raw" %in% assays)
+
+  # Excluded from the default only -- still exported when named.
+  expect_identical(
+    SummarizedExperiment::assayNames(
+      save_dataset_summarizedexperiment(mexp_drift, variable = "conc_before")
+    ),
+    "conc_before"
+  )
+})

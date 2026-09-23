@@ -51,8 +51,11 @@
 #'   [saveRDS()] and returned invisibly; a `.rds` extension is appended if
 #'   missing. When `NULL` (default) the object is returned.
 #' @param variable Feature variables to export as assays, e.g. `"conc"` or
-#'   `c("intensity", "conc")`. `NULL` (default) exports every `feature_*`
-#'   variable present in the data.
+#'   `c("intensity", "conc")`. `NULL` (default) exports the numeric `feature_*`
+#'   variables present in the data, except the backup snapshots (`_orig`,
+#'   `_before`, `_beforecal`) and drift-model fit points (`_fit`), which are
+#'   internal bookkeeping rather than measurements. Name one of those
+#'   explicitly to export it.
 #' @param as Class to produce. `"SummarizedExperiment"` (default) or
 #'   `"LipidomicsExperiment"`, which additionally requires the `lipidr` package
 #'   and is only meaningful for lipidomics data.
@@ -116,7 +119,14 @@ save_dataset_summarizedexperiment <- function(
   ]
 
   if (is.null(variable)) {
-    variables <- available
+    # Backup snapshots (`_orig`, `_before`, `_beforecal`) and the drift model's
+    # fitted curve (`_fit`) are bookkeeping, not measurements, so exporting them
+    # as peers of `conc` misrepresents them. They stay available when named
+    # explicitly. The uncorrected `_raw` values are measured quantities and are
+    # kept. Non-numeric bookkeeping (`_fit_error`, ...) is already excluded.
+    variables <- available[
+      !stringr::str_detect(available, "_(orig|before|beforecal)$|_fit(_|$)")
+    ]
   } else {
     variables <- stringr::str_c("feature_", str_remove(variable, "^feature_"))
     for (v in variables) {

@@ -124,7 +124,7 @@ coerce_logical_checked <- function(x, column = NULL) {
 #' typos read as all-TRUE -- marking every analysis valid, every qualifier a
 #' quantifier, or every excluded calibrator included. This aborts instead.
 #'
-#' Deliberately stricter than [coerce_logical_checked()], which warns rather
+#' Deliberately stricter than `coerce_logical_checked()`, which warns rather
 #' than aborts and also accepts `y`/`n`/`1`/`0`: for these flags an ambiguous
 #' `0` is rejected rather than guessed at.
 #'
