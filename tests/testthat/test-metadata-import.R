@@ -565,7 +565,7 @@ test_that("feature metadata accepts every supported curve_fit_weighting", {
     path = testthat::test_path("testdata/masshunter/MRMhub_MHQuant_S1P.csv"),
     import_metadata = FALSE
   ))
-  tbl <- readxl::read_excel(
+  tbl <- openxlsx2::wb_to_df(
     testthat::test_path(
       "testdata/metadata/MRMhub_TestData_MHQuant_S1P_metadata_tables.xlsx"
     ),
