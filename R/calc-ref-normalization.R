@@ -339,7 +339,8 @@ calibrate_by_reference <- function(
       dplyr::left_join(
         d_ref_conc,
         by = c("analyte_id"),
-        relationship = "many-to-one"
+        relationship = "many-to-one",
+        na_matches = "never"
       ) |>
       dplyr::group_by(!!!syms(adj_groups)) |>
       mutate(

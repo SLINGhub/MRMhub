@@ -850,3 +850,46 @@ test_that("calibrate_by_reference aborts on conflicting reference concentrations
     "Conflicting reference concentrations"
   )
 })
+
+test_that("calibrate_by_reference does not match a blank analyte_id to a reference concentration", {
+  # A blank `analyte_id` means "not specified" on both sides of the join, so
+  # dplyr's default `na_matches = "na"` paired every feature lacking an analyte
+  # with a stray QC-concentration row that also lacked one, silently
+  # calibrating it against an unrelated concentration.
+  mexp_na <- mexp
+  victim <- mexp_na@annot_features$feature_id[
+    !mexp_na@annot_features$is_istd &
+      !is.na(mexp_na@annot_features$analyte_id)
+  ][1]
+  mexp_na@annot_features$analyte_id[
+    mexp_na@annot_features$feature_id == victim
+  ] <- NA_character_
+  mexp_na@dataset$analyte_id[
+    mexp_na@dataset$feature_id == victim
+  ] <- NA_character_
+
+  # A sheet row with a sample_id but a blank analyte_id survives the stray-cell
+  # trimmer, which drops a row only when every key column is NA.
+  mexp_na@annot_qcconcentrations <- dplyr::bind_rows(
+    mexp_na@annot_qcconcentrations,
+    dplyr::tibble(
+      sample_id = "NIST_SRM1950",
+      analyte_id = NA_character_,
+      concentration = 999,
+      concentration_unit = "umol/L",
+      include_in_analysis = TRUE
+    )
+  )
+
+  mexp_res <- suppressMessages(calibrate_by_reference(
+    data = mexp_na,
+    variable = "feature_conc",
+    reference_sample_id = "NIST_SRM1950",
+    absolute_calibration = TRUE,
+    undefined_conc_action = "na"
+  ))
+
+  expect_true(all(is.na(
+    mexp_res@dataset$feature_conc[mexp_res@dataset$feature_id == victim]
+  )))
+})
