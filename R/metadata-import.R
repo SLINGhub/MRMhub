@@ -1781,23 +1781,6 @@ clean_analysis_metadata <- function(d_analyses) {
       make_lowercase = FALSE
     )
 
-  # Reject unrecognized `valid_analysis` tokens up front. Without this, a typo
-  # maps to NA in the lookup below and a column made entirely of typos would be
-  # all-NA, which the "non-mandatory field" branch then turns into all-TRUE --
-  # silently marking every analysis valid. Blank/NA is allowed (means "valid").
-  va_norm <- tolower(stringr::str_squish(as.character(
-    d_analyses$valid_analysis
-  )))
-  va_unrecognized <- !is.na(va_norm) &
-    va_norm != "" &
-    !(va_norm %in% c("yes", "true", "no", "false"))
-  if (any(va_unrecognized)) {
-    cli::cli_abort(c(
-      "Unrecognized value(s) in {.field valid_analysis}: {.val {unique(d_analyses$valid_analysis[va_unrecognized])}}.",
-      "i" = "Use one of {.val yes}, {.val no}, {.val true}, or {.val false}, or leave blank."
-    ))
-  }
-
   d_analyses <- d_analyses |>
     dplyr::select(
       "analysis_order",
@@ -1826,12 +1809,10 @@ clean_analysis_metadata <- function(d_analyses) {
       sample_amount = coerce_checked(.data$sample_amount, "sample_amount"),
       istd_volume = coerce_checked(.data$istd_volume, "istd_volume"),
       specimen = stringr::str_squish(as.character(.data$specimen)),
-      valid_analysis = unname(c(
-        "yes" = TRUE,
-        "true" = TRUE,
-        "no" = FALSE,
-        "false" = FALSE
-      )[tolower(stringr::str_squish(as.character(.data$valid_analysis)))]),
+      valid_analysis = coerce_yes_no_checked(
+        .data$valid_analysis,
+        "valid_analysis"
+      ),
       # Squish before the alias/known-set tests: the data side squishes qc_type,
       # so an internal double space (" Sample", "B QC") must be collapsed here
       # too or it fails the alias lookup and drops to NA at factor().
@@ -2015,14 +1996,14 @@ clean_feature_metadata <- function(d_features) {
       # quant_istd_feature_id is derived from istd_feature_id, not taken as a
       # separate user input. A distinct quant ISTD is intentionally not supported.
       quant_istd_feature_id = stringr::str_squish(.data$istd_feature_id),
-      is_quantifier = {
-        lkp <- c("yes" = TRUE, "true" = TRUE, "no" = FALSE, "false" = FALSE)
-        unname(lkp[tolower(.data$is_quantifier)])
-      },
-      valid_feature = {
-        lkp <- c("yes" = TRUE, "true" = TRUE, "no" = FALSE, "false" = FALSE)
-        unname(lkp[tolower(.data$valid_feature)])
-      },
+      is_quantifier = coerce_yes_no_checked(
+        .data$is_quantifier,
+        "is_quantifier"
+      ),
+      valid_feature = coerce_yes_no_checked(
+        .data$valid_feature,
+        "valid_feature"
+      ),
       mrm_pattern = stringr::str_squish(.data$mrm_pattern),
       interference_feature_id = stringr::str_squish(
         .data$interference_feature_id
@@ -2208,21 +2189,6 @@ clean_qcconc_metadata <- function(d_cal) {
       all_na_replace = TRUE
     )
 
-  # Reject unrecognized `include_in_analysis` tokens (e.g. "0"), which the lookup
-  # below would otherwise turn into TRUE. Blank/NA is allowed (means "include").
-  ia_norm <- tolower(stringr::str_squish(as.character(
-    d_cal$include_in_analysis
-  )))
-  ia_unrecognized <- !is.na(ia_norm) &
-    ia_norm != "" &
-    !(ia_norm %in% c("yes", "true", "no", "false"))
-  if (any(ia_unrecognized)) {
-    cli::cli_abort(c(
-      "Unrecognized value(s) in {.field include_in_analysis}: {.val {unique(d_cal$include_in_analysis[ia_unrecognized])}}.",
-      "i" = "Use one of {.val yes}, {.val no}, {.val true}, or {.val false}, or leave blank."
-    ))
-  }
-
   d_cal <- d_cal |>
     dplyr::mutate(
       # A sample ID, not a file name: normalized like the Analyses `sample_id`.
@@ -2230,11 +2196,11 @@ clean_qcconc_metadata <- function(d_cal) {
       analyte_id = stringr::str_squish(as.character(.data$analyte_id)),
       concentration = coerce_checked(.data$concentration, "concentration"),
       concentration_unit = stringr::str_squish(.data$concentration_unit),
-      include_in_analysis = {
-        lkp <- c("yes" = TRUE, "true" = TRUE, "no" = FALSE, "false" = FALSE)
-        v <- unname(lkp[tolower(.data$include_in_analysis)])
-        dplyr::if_else(is.na(v), TRUE, v)
-      },
+      # A blank means "include".
+      include_in_analysis = dplyr::coalesce(
+        coerce_yes_no_checked(.data$include_in_analysis, "include_in_analysis"),
+        TRUE
+      ),
     ) |>
     dplyr::select(
       "sample_id",

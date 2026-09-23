@@ -115,6 +115,37 @@ coerce_logical_checked <- function(x, column = NULL) {
   out
 }
 
+#' Coerce a yes/no metadata column to logical, aborting on unrecognized tokens
+#'
+#' Metadata sheets encode the boolean flags `valid_analysis`, `valid_feature`,
+#' `is_quantifier` and `include_in_analysis` as yes/no/true/false. Each caller
+#' treats a blank as "not specified" and defaults an all-blank column to `TRUE`,
+#' so an unrecognized token that silently became `NA` would make a column of
+#' typos read as all-TRUE -- marking every analysis valid, every qualifier a
+#' quantifier, or every excluded calibrator included. This aborts instead.
+#'
+#' Deliberately stricter than [coerce_logical_checked()], which warns rather
+#' than aborts and also accepts `y`/`n`/`1`/`0`: for these flags an ambiguous
+#' `0` is rejected rather than guessed at.
+#'
+#' @param x A vector to coerce (character, logical, numeric, or factor).
+#' @param column Column name used in the error message.
+#' @return A logical vector the same length as `x`, `NA` where `x` was blank.
+#' @keywords internal
+#' @noRd
+coerce_yes_no_checked <- function(x, column = NULL) {
+  norm <- tolower(stringr::str_squish(as.character(x)))
+  norm[!is.na(norm) & norm == ""] <- NA_character_
+  unrecognized <- !is.na(norm) & !(norm %in% c("yes", "true", "no", "false"))
+  if (any(unrecognized)) {
+    cli::cli_abort(c(
+      "Unrecognized value(s) in {.field {column}}: {.val {unique(x[unrecognized])}}.",
+      "i" = "Use one of {.val yes}, {.val no}, {.val true}, or {.val false}, or leave blank."
+    ))
+  }
+  unname(c("yes" = TRUE, "true" = TRUE, "no" = FALSE, "false" = FALSE)[norm])
+}
+
 #' Whitespace-normalize identifier columns of a table
 #'
 #' Applies [stringr::str_squish()] (trim leading/trailing, collapse internal

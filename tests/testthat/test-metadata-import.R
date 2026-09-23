@@ -986,3 +986,46 @@ test_that("metadata validation warns (overridably) on <=0 divisors, notes on mis
     suppressMessages(mrmhub::import_metadata_analyses(mexp, table = df_na))
   )
 })
+
+test_that("clean_qcconc_metadata normalizes whitespace in include_in_analysis", {
+  # Regression (fa6fe763): the validator squished the value but the lookup did
+  # not, so a padded " no " fell through to the NA -> TRUE default and an
+  # excluded calibrator silently rejoined the curve.
+  tbl <- data.frame(
+    sample_id = paste0("CAL", 1:4),
+    analyte_id = "a1",
+    concentration = c(0.1, 0.2, 0.3, 0.4),
+    concentration_unit = "uM",
+    include_in_analysis = c(" no ", "false ", " FALSE", " yes ")
+  )
+  metadata <- clean_qcconc_metadata(tbl)
+  metadata <- metadata[!is.na(metadata$sample_id), ]
+  expect_equal(metadata$include_in_analysis, c(FALSE, FALSE, FALSE, TRUE))
+})
+
+test_that("clean_feature_metadata normalizes whitespace in is_quantifier / valid_feature", {
+  tbl <- dplyr::tibble(
+    feature_id = c("A", "B"),
+    is_quantifier = c(" no ", "yes"),
+    valid_feature = c("false ", " TRUE")
+  )
+  metadata <- clean_feature_metadata(tbl)
+  metadata <- metadata[!is.na(metadata$feature_id), ]
+  expect_equal(metadata$is_quantifier, c(FALSE, TRUE))
+  expect_equal(metadata$valid_feature, c(FALSE, TRUE))
+
+  # All rows padded: every value maps to NA, which the "non-mandatory field"
+  # fallback then turns into all-TRUE -- a silent flip, not an error.
+  tbl$is_quantifier <- c(" no ", " no ")
+  metadata <- clean_feature_metadata(tbl)
+  metadata <- metadata[!is.na(metadata$feature_id), ]
+  expect_equal(metadata$is_quantifier, c(FALSE, FALSE))
+})
+
+test_that("clean_feature_metadata rejects unrecognized is_quantifier / valid_feature values", {
+  tbl <- dplyr::tibble(feature_id = c("A", "B"), is_quantifier = c(1, 0))
+  expect_error(clean_feature_metadata(tbl), "Unrecognized value.*is_quantifier")
+
+  tbl <- dplyr::tibble(feature_id = c("A", "B"), valid_feature = c("Y", "N"))
+  expect_error(clean_feature_metadata(tbl), "Unrecognized value.*valid_feature")
+})
