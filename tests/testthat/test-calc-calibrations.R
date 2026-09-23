@@ -659,6 +659,17 @@ test_that("get_qc_bias_variability selects by sample_ids", {
     get_qc_bias_variability(mexp_quant_norm, sample_ids = "nope"),
     "sample_ids.*nope"
   )
+
+  # A valid sample_id that the qc_types filter excludes is reported by the same
+  # check, so no separate "nothing selected" branch is needed.
+  expect_error(
+    get_qc_bias_variability(
+      mexp_quant_norm,
+      qc_types = "LQC",
+      sample_ids = "CAL-C"
+    ),
+    "sample_ids.*CAL-C"
+  )
 })
 
 test_that("get_qc_bias_variability reports the SD of the replicate conc ratios", {

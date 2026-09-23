@@ -921,22 +921,15 @@ get_qc_bias_variability <- function(
   d_qc_summary <- d_qc_summary |> filter(.data$qc_type %in% qc_types)
 
   if (!all(is.na(sample_ids))) {
+    # Checked against the qc_type-filtered table, so an id excluded by qc_types
+    # is reported here too and the filter below always keeps a row.
     missing_ids <- setdiff(sample_ids, unique(d_qc_summary$sample_id))
     if (length(missing_ids) > 0) {
       cli::cli_abort(
         "Selected {.arg sample_ids} {.val {missing_ids}} {?is/are} not present in the data or {?has/have} no defined analyte concentrations. Please verify the analyses, feature and QC-concentration metadata, or select other {.arg sample_ids}."
       )
     }
-  }
-
-  # Check if qc type and sample id are not paired resulting in no selected analyses
-  if (!all(is.na(sample_ids))) {
     d_qc_summary <- d_qc_summary |> filter(.data$sample_id %in% sample_ids)
-    if (nrow(d_qc_summary) == 0) {
-      cli::cli_abort(paste(
-        "No analyses with the selected `sample_id` and `qc_types` were found. Please verify the argument values, and corresponding feature metadata."
-      ))
-    }
   }
 
   if (!include_qualifier) {
