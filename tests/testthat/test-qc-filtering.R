@@ -790,10 +790,10 @@ test_that("an invalid response.curves.summary is rejected for one curve too", {
 })
 
 
-# Regression: a min-intensity (LOD) filter enabled on a clear_existing = FALSE
+# Regression: a min-intensity filter enabled on a clear_existing = FALSE
 # re-run, when it was not enabled in the previous run, used to be silently
 # discarded (the previous, disabled state was restored). It must now apply.
-test_that("LOD filter applies on clear_existing = FALSE re-run (regression)", {
+test_that("Min-intensity filter applies on clear_existing = FALSE re-run (regression)", {
   thr <- 5e5
   fresh <- filter_features_qc(
     mexp_proc,
@@ -816,13 +816,13 @@ test_that("LOD filter applies on clear_existing = FALSE re-run (regression)", {
     min.intensity.median.spl = thr
   )
 
-  # the LOD filter must fail some features in a fresh run ...
-  expect_gt(sum(!fresh@metrics_qc$pass_lod, na.rm = TRUE), 0)
+  # the min-intensity filter must fail some features in a fresh run ...
+  expect_gt(sum(!fresh@metrics_qc$pass_minint, na.rm = TRUE), 0)
   # ... and the reconciled re-run must apply it identically (not revert it)
-  expect_true(all(reconciled@metrics_qc$filter_lod))
+  expect_true(all(reconciled@metrics_qc$filter_minint))
   expect_equal(
-    sort(reconciled@metrics_qc$pass_lod),
-    sort(fresh@metrics_qc$pass_lod)
+    sort(reconciled@metrics_qc$pass_minint),
+    sort(fresh@metrics_qc$pass_minint)
   )
 })
 

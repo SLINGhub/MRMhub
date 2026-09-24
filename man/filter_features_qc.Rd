@@ -133,6 +133,9 @@ filter_features_qc(
 }
 \value{
 The input \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object with the feature filtering criteria applied.
+Per-criterion verdicts are stored in \code{metrics_qc}: \code{pass_minint} (the
+\verb{min.intensity.*} criteria), \code{pass_sb}, \code{pass_cva}, \code{pass_dratio},
+\code{pass_linearity} and \code{pass_missingval}, combined in \code{all_filter_pass}.
 }
 \description{
 Filters a dataset based on quality control (QC) criteria, including intensity,

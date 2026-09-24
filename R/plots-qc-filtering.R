@@ -3,10 +3,10 @@
 #' This function provides a summary of feature QC filtering based on feature class,
 #' showing the number of features that passed or failed various quality control criteria.
 #' It visualizes the filtering in a hierarchical sequence. Features are first evaluated
-#' against lower-level filters such as signal-to-blank (S/B) ratios and limit of detection (LOD),
+#' against lower-level filters such as signal-to-blank (S/B) ratios and minimum intensity,
 #' followed by higher-level filters like the coefficient of variation (CV) or linear regression results.
 #' This means that a feature is classified as failing a given criterion (e.g., `CV`)
-#' only if it has passed all hierarchically lower filters (e.g., `S/B` ratio and `LOD`).
+#' only if it has passed all hierarchically lower filters (e.g., `S/B` ratio and minimum intensity).
 #'
 #' @template data_mexp
 #' @template font_base_size
@@ -90,23 +90,23 @@ plot_qc_summary_byclass <- function(
           !replace_na(.data$pass_missingval, TRUE)),
         na.rm = TRUE
       ),
-      below_lod = sum(
+      below_minint = sum(
         (!replace_na(.data$na_in_all, TRUE) &
           replace_na(.data$pass_missingval, TRUE)) &
-          !replace_na(.data$pass_lod, TRUE),
+          !replace_na(.data$pass_minint, TRUE),
         na.rm = TRUE
       ),
       below_sb = sum(
         (!replace_na(.data$na_in_all, TRUE) &
           replace_na(.data$pass_missingval, TRUE) &
-          replace_na(.data$pass_lod, TRUE)) &
+          replace_na(.data$pass_minint, TRUE)) &
           !replace_na(.data$pass_sb, TRUE),
         na.rm = TRUE
       ),
       above_cva = sum(
         (!replace_na(.data$na_in_all, TRUE) &
           replace_na(.data$pass_missingval, TRUE) &
-          replace_na(.data$pass_lod, TRUE) &
+          replace_na(.data$pass_minint, TRUE) &
           replace_na(.data$pass_sb, TRUE)) &
           !replace_na(.data$pass_cva, TRUE),
         na.rm = TRUE
@@ -114,7 +114,7 @@ plot_qc_summary_byclass <- function(
       bad_linearity = sum(
         (!replace_na(.data$na_in_all, TRUE) &
           replace_na(.data$pass_missingval, TRUE) &
-          replace_na(.data$pass_lod, TRUE) &
+          replace_na(.data$pass_minint, TRUE) &
           replace_na(.data$pass_sb, TRUE) &
           replace_na(.data$pass_cva, TRUE)) &
           !replace_na(.data$pass_linearity, TRUE),
@@ -123,7 +123,7 @@ plot_qc_summary_byclass <- function(
       above_dratio = sum(
         (!replace_na(.data$na_in_all, TRUE) &
           replace_na(.data$pass_missingval, TRUE) &
-          replace_na(.data$pass_lod, TRUE) &
+          replace_na(.data$pass_minint, TRUE) &
           replace_na(.data$pass_sb, TRUE) &
           replace_na(.data$pass_cva, TRUE) &
           replace_na(.data$pass_linearity, TRUE)) &
@@ -150,7 +150,7 @@ plot_qc_summary_byclass <- function(
     bad_linearity = "#abdeed",
     above_cva = "#F44336",
     below_sb = "#d9d5b6",
-    below_lod = "#ada3a3",
+    below_minint = "#ada3a3",
     above_missingness = "yellow",
     has_only_na = "#111111"
   )
@@ -172,10 +172,10 @@ plot_qc_summary_byclass <- function(
       NULL = "above_missingness"
     )
   }
-  if (all(is.na(d_qc$pass_lod))) {
+  if (all(is.na(d_qc$pass_minint))) {
     d_qc_sum$qc_criteria <- forcats::fct_recode(
       d_qc_sum$qc_criteria,
-      NULL = "below_lod"
+      NULL = "below_minint"
     )
   }
   if (all(is.na(d_qc$pass_sb))) {
@@ -280,7 +280,7 @@ plot_qc_summary_byclass <- function(
 #' @return A `ggplot` object showing the feature QC filtering summary with or without a Venn diagram.
 #'
 #' @details
-#' The QC filtering process follows a hierarchical structure, where features are first evaluated against lower-level filters such as signal-to-blank ratios and limit of detection (LOD).
+#' The QC filtering process follows a hierarchical structure, where features are first evaluated against lower-level filters such as signal-to-blank ratios and minimum intensity.
 #' Only features that pass these basic criteria are then subjected to higher-level filters like the coefficient of variation (CV) or linear regression results.
 #' A feature will only fail a higher-level filter (such as `CV` or `R²`) if it has passed all previous lower-level filters.
 #' This ensures that features are evaluated progressively, starting from fundamental quality checks up to more stringent filtering criteria.
@@ -317,23 +317,23 @@ plot_qc_summary_overall <- function(
           !replace_na(.data$pass_missingval, TRUE)),
         na.rm = TRUE
       ),
-      below_lod = sum(
+      below_minint = sum(
         (!replace_na(.data$na_in_all, TRUE) &
           replace_na(.data$pass_missingval, TRUE)) &
-          !replace_na(.data$pass_lod, TRUE),
+          !replace_na(.data$pass_minint, TRUE),
         na.rm = TRUE
       ),
       below_sb = sum(
         (!replace_na(.data$na_in_all, TRUE) &
           replace_na(.data$pass_missingval, TRUE) &
-          replace_na(.data$pass_lod, TRUE)) &
+          replace_na(.data$pass_minint, TRUE)) &
           !replace_na(.data$pass_sb, TRUE),
         na.rm = TRUE
       ),
       above_cva = sum(
         (!replace_na(.data$na_in_all, TRUE) &
           replace_na(.data$pass_missingval, TRUE) &
-          replace_na(.data$pass_lod, TRUE) &
+          replace_na(.data$pass_minint, TRUE) &
           replace_na(.data$pass_sb, TRUE)) &
           !replace_na(.data$pass_cva, TRUE),
         na.rm = TRUE
@@ -341,7 +341,7 @@ plot_qc_summary_overall <- function(
       bad_linearity = sum(
         (!replace_na(.data$na_in_all, TRUE) &
           replace_na(.data$pass_missingval, TRUE) &
-          replace_na(.data$pass_lod, TRUE) &
+          replace_na(.data$pass_minint, TRUE) &
           replace_na(.data$pass_sb, TRUE) &
           replace_na(.data$pass_cva, TRUE)) &
           !replace_na(.data$pass_linearity, TRUE),
@@ -350,7 +350,7 @@ plot_qc_summary_overall <- function(
       above_dratio = sum(
         (!replace_na(.data$na_in_all, TRUE) &
           replace_na(.data$pass_missingval, TRUE) &
-          replace_na(.data$pass_lod, TRUE) &
+          replace_na(.data$pass_minint, TRUE) &
           replace_na(.data$pass_sb, TRUE) &
           replace_na(.data$pass_cva, TRUE) &
           replace_na(.data$pass_linearity, TRUE)) &
@@ -376,7 +376,7 @@ plot_qc_summary_overall <- function(
         .data$qc_criteria,
         c(
           "above_missingness",
-          "below_lod",
+          "below_minint",
           "has_only_na",
           "below_sb",
           "above_cva",
@@ -393,7 +393,7 @@ plot_qc_summary_overall <- function(
     bad_linearity = "#abdeed",
     above_cva = "#F44336",
     below_sb = "#d9d5b6",
-    below_lod = "#ada3a3",
+    below_minint = "#ada3a3",
     above_missingness = "yellow",
     has_only_na = "#111111"
   )
@@ -418,10 +418,10 @@ plot_qc_summary_overall <- function(
       NULL = "above_missingness"
     )
   }
-  if (all(is.na(d_qc$pass_lod))) {
+  if (all(is.na(d_qc$pass_minint))) {
     d_qc_sum$qc_criteria <- forcats::fct_recode(
       d_qc_sum$qc_criteria,
-      NULL = "below_lod"
+      NULL = "below_minint"
     )
   }
   if (all(is.na(d_qc$pass_sb))) {
@@ -493,17 +493,17 @@ plot_qc_summary_overall <- function(
 
     sb_failed <- d_qc_venn$feature_id[
       !replace_na(d_qc_venn$na_in_all, TRUE) &
-        replace_na(d_qc_venn$pass_lod, TRUE) &
+        replace_na(d_qc_venn$pass_minint, TRUE) &
         !replace_na(d_qc_venn$pass_sb, TRUE)
     ]
     cva_failed <- d_qc_venn$feature_id[
       !replace_na(d_qc_venn$na_in_all, TRUE) &
-        replace_na(d_qc_venn$pass_lod, TRUE) &
+        replace_na(d_qc_venn$pass_minint, TRUE) &
         !replace_na(d_qc_venn$pass_cva, TRUE)
     ]
     lin_failed <- d_qc_venn$feature_id[
       !replace_na(d_qc_venn$na_in_all, TRUE) &
-        replace_na(d_qc_venn$pass_lod, TRUE) &
+        replace_na(d_qc_venn$pass_minint, TRUE) &
         !replace_na(d_qc_venn$pass_linearity, TRUE)
     ]
 

@@ -69,7 +69,7 @@
 <rect x='67.75' y='53.86' width='343.40' height='494.20' style='stroke-width: 0.78; stroke: #333333;' />
 </g>
 <g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHw1NzYuMDA=)'>
-<text x='64.16' y='467.89' text-anchor='end' style='font-size: 6.40px; fill: #4D4D4D; font-family: sans;' textLength='28.82px' lengthAdjust='spacingAndGlyphs'>below_lod</text>
+<text x='64.16' y='467.89' text-anchor='end' style='font-size: 6.40px; fill: #4D4D4D; font-family: sans;' textLength='37.36px' lengthAdjust='spacingAndGlyphs'>below_minint</text>
 <text x='64.16' y='303.16' text-anchor='end' style='font-size: 6.40px; fill: #4D4D4D; font-family: sans;' textLength='27.05px' lengthAdjust='spacingAndGlyphs'>below_sb</text>
 <text x='64.16' y='138.43' text-anchor='end' style='font-size: 6.40px; fill: #4D4D4D; font-family: sans;' textLength='39.13px' lengthAdjust='spacingAndGlyphs'>all_filter_pass</text>
 <polyline points='65.76,465.69 67.75,465.69 ' style='stroke-width: 0.78; stroke: #333333; stroke-linecap: butt;' />

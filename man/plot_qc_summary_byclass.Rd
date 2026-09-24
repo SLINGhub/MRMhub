@@ -47,10 +47,10 @@ A \code{ggplot} object showing the feature QC filtering summary by feature class
 This function provides a summary of feature QC filtering based on feature class,
 showing the number of features that passed or failed various quality control criteria.
 It visualizes the filtering in a hierarchical sequence. Features are first evaluated
-against lower-level filters such as signal-to-blank (S/B) ratios and limit of detection (LOD),
+against lower-level filters such as signal-to-blank (S/B) ratios and minimum intensity,
 followed by higher-level filters like the coefficient of variation (CV) or linear regression results.
 This means that a feature is classified as failing a given criterion (e.g., \code{CV})
-only if it has passed all hierarchically lower filters (e.g., \code{S/B} ratio and \code{LOD}).
+only if it has passed all hierarchically lower filters (e.g., \code{S/B} ratio and minimum intensity).
 }
 \seealso{
 \code{\link[=plot_qc_summary_overall]{plot_qc_summary_overall()}} for an overall summary plot

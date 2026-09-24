@@ -1,4 +1,17 @@
-# mrmhub 0.9.10 (development)
+# mrmhub 0.9.11 (development)
+
+## Breaking changes
+
+* `filter_features_qc()`: the minimum-intensity criterion columns in
+  `metrics_qc` are renamed from `pass_lod`/`filter_lod` to
+  `pass_minint`/`filter_minint`, and the summary-plot category from
+  `below_lod` to `below_minint`. The criterion is a floor on the
+  `min.intensity.*` values, not a limit-of-detection determination.
+
+* `calc_qc_metrics()`: the column `sb_ratio_q10_pbk` is renamed to
+  `sb_ratio_q10_pblk`.
+
+# mrmhub 0.9.10
 
 ## New features
 

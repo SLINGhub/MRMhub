@@ -26,7 +26,7 @@ It includes a Venn diagram showing the features excluded due to different filter
 The criteria are applied hierarchically, meaning a feature must pass all lower-tier filters before being considered for failure on higher-tier filters. See \code{\link[=plot_qc_summary_byclass]{plot_qc_summary_byclass()}} for more information.
 }
 \details{
-The QC filtering process follows a hierarchical structure, where features are first evaluated against lower-level filters such as signal-to-blank ratios and limit of detection (LOD).
+The QC filtering process follows a hierarchical structure, where features are first evaluated against lower-level filters such as signal-to-blank ratios and minimum intensity.
 Only features that pass these basic criteria are then subjected to higher-level filters like the coefficient of variation (CV) or linear regression results.
 A feature will only fail a higher-level filter (such as \code{CV} or \verb{R²}) if it has passed all previous lower-level filters.
 This ensures that features are evaluated progressively, starting from fundamental quality checks up to more stringent filtering criteria.

@@ -684,7 +684,7 @@ calc_qc_metrics <- function(
   if (do_int) {
     d_stats_var_final <- d_stats_var_final |>
       mutate(
-        sb_ratio_q10_pbk = .data$intensity_q10_spl /
+        sb_ratio_q10_pblk = .data$intensity_q10_spl /
           .data$intensity_median_pblk,
         sb_ratio_pblk = .data$intensity_median_spl /
           .data$intensity_median_pblk,
@@ -870,6 +870,9 @@ calc_qc_metrics <- function(
 #' @param max.dratio.mad.normint.tqc Maximum allowed D-ratio (MAD of normalized intensity in TQC / MAD of SPL) using median absolute deviation. Default is `NA`.
 #'
 #' @return The input [`MRMhubExperiment`][MRMhubExperiment-class] object with the feature filtering criteria applied.
+#'   Per-criterion verdicts are stored in `metrics_qc`: `pass_minint` (the
+#'   `min.intensity.*` criteria), `pass_sb`, `pass_cva`, `pass_dratio`,
+#'   `pass_linearity` and `pass_missingval`, combined in `all_filter_pass`.
 
 #' @export
 filter_features_qc <- function(
@@ -1033,7 +1036,7 @@ filter_features_qc <- function(
 
   metrics_qc_local <- metrics_qc_local |>
     mutate(
-      pass_lod = comp_lgl_vec(
+      pass_minint = comp_lgl_vec(
         list(
           compare_values(
             metrics_qc_local,
@@ -1080,7 +1083,7 @@ filter_features_qc <- function(
         ),
         .operator = "AND"
       ),
-      filter_lod = !(is.na(min.intensity.lowest.bqc) &
+      filter_minint = !(is.na(min.intensity.lowest.bqc) &
         is.na(min.intensity.lowest.tqc) &
         is.na(min.intensity.lowest.spl) &
         is.na(min.intensity.median.bqc) &
@@ -1391,7 +1394,7 @@ filter_features_qc <- function(
           "feature_id",
           "batch_id",
           qc_pass_before = "all_filter_pass",
-          pass_lod_before = "pass_lod",
+          pass_minint_before = "pass_minint",
           pass_sb_before = "pass_sb",
           pass_cva_before = "pass_cva",
           pass_linearity_before = "pass_linearity",
@@ -1400,7 +1403,7 @@ filter_features_qc <- function(
           pass_istd_before = "pass_istd",
           pass_qualifier_before = "pass_qualifier",
           pass_featureskeep_before = "pass_featureskeep",
-          filter_lod_before = "filter_lod",
+          filter_minint_before = "filter_minint",
           filter_sb_before = "filter_sb",
           filter_cva_before = "filter_cva",
           filter_dratio_before = "filter_dratio",
@@ -1428,7 +1431,11 @@ filter_features_qc <- function(
         pass = "pass_missingval",
         label = "Missing Values"
       ),
-      list(filter = "filter_lod", pass = "pass_lod", label = "Min-Intensity"),
+      list(
+        filter = "filter_minint",
+        pass = "pass_minint",
+        label = "Min-Intensity"
+      ),
       list(filter = "filter_sb", pass = "pass_sb", label = "Signal-to-Blank"),
       list(filter = "filter_cva", pass = "pass_cva", label = "%CV"),
       list(filter = "filter_dratio", pass = "pass_dratio", label = "D-ratio")
@@ -1494,7 +1501,7 @@ filter_features_qc <- function(
 
   metrics_qc_local <- metrics_qc_local |>
     mutate(
-      all_qc_filter_pass = ((is.na(.data$pass_lod) | .data$pass_lod) &
+      all_qc_filter_pass = ((is.na(.data$pass_minint) | .data$pass_minint) &
         (is.na(.data$pass_sb) | .data$pass_sb) &
         (is.na(.data$pass_cva) | .data$pass_cva) &
         (is.na(.data$pass_linearity) | .data$pass_linearity) &

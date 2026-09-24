@@ -188,7 +188,7 @@
 <rect x='609.68' y='343.18' width='15.86' height='15.86' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #02BF83;' />
 <text x='631.73' y='233.18' style='font-size: 8.80px; font-family: sans;' textLength='49.92px' lengthAdjust='spacingAndGlyphs'>has_only_na</text>
 <text x='631.73' y='250.46' style='font-size: 8.80px; font-family: sans;' textLength='77.31px' lengthAdjust='spacingAndGlyphs'>above_missingness</text>
-<text x='631.73' y='267.74' style='font-size: 8.80px; font-family: sans;' textLength='39.63px' lengthAdjust='spacingAndGlyphs'>below_lod</text>
+<text x='631.73' y='267.74' style='font-size: 8.80px; font-family: sans;' textLength='51.36px' lengthAdjust='spacingAndGlyphs'>below_minint</text>
 <text x='631.73' y='285.02' style='font-size: 8.80px; font-family: sans;' textLength='37.19px' lengthAdjust='spacingAndGlyphs'>below_sb</text>
 <text x='631.73' y='302.30' style='font-size: 8.80px; font-family: sans;' textLength='42.58px' lengthAdjust='spacingAndGlyphs'>above_cva</text>
 <text x='631.73' y='319.58' style='font-size: 8.80px; font-family: sans;' textLength='49.90px' lengthAdjust='spacingAndGlyphs'>bad_linearity</text>

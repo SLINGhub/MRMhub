@@ -79,7 +79,7 @@
 </g>
 <g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHw1NzYuMDA=)'>
 <text x='81.25' y='496.21' text-anchor='end' style='font-size: 6.40px; fill: #4D4D4D; font-family: sans;' textLength='56.23px' lengthAdjust='spacingAndGlyphs'>above_missingness</text>
-<text x='81.25' y='431.86' text-anchor='end' style='font-size: 6.40px; fill: #4D4D4D; font-family: sans;' textLength='28.82px' lengthAdjust='spacingAndGlyphs'>below_lod</text>
+<text x='81.25' y='431.86' text-anchor='end' style='font-size: 6.40px; fill: #4D4D4D; font-family: sans;' textLength='37.36px' lengthAdjust='spacingAndGlyphs'>below_minint</text>
 <text x='81.25' y='367.51' text-anchor='end' style='font-size: 6.40px; fill: #4D4D4D; font-family: sans;' textLength='27.05px' lengthAdjust='spacingAndGlyphs'>below_sb</text>
 <text x='81.25' y='303.16' text-anchor='end' style='font-size: 6.40px; fill: #4D4D4D; font-family: sans;' textLength='30.97px' lengthAdjust='spacingAndGlyphs'>above_cva</text>
 <text x='81.25' y='238.81' text-anchor='end' style='font-size: 6.40px; fill: #4D4D4D; font-family: sans;' textLength='36.29px' lengthAdjust='spacingAndGlyphs'>bad_linearity</text>
