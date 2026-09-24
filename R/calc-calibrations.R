@@ -114,8 +114,17 @@ quantify_by_calibration <- function(
     )
 
   # Drop `fit_model` left by earlier versions, or the join makes `.x`/`.y`.
+  # feature_conc is re-derived below, so values derived from the concentrations
+  # of a previous calibrate_by_reference() run go too, as quantify_by_istd()
+  # does.
   d_conc <- data@dataset |>
-    select(-any_of("fit_model")) |>
+    select(
+      -any_of(c(
+        "fit_model",
+        "feature_conc_ratio",
+        "feature_conc_beforecal"
+      ))
+    ) |>
     left_join(
       d_stats_calc,
       by = c("feature_id" = "feature_id")

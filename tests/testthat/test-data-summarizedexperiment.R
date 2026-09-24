@@ -326,3 +326,26 @@ test_that("backup snapshots and model fits are not assays by default", {
     "conc_before"
   )
 })
+
+test_that("the _orig and _beforecal backups are excluded from the default assays", {
+  # The exclusion pattern covers `_orig`, `_before`, `_beforecal` and `_fit`.
+  # `_before`/`_fit` are exercised above; these are the remaining branches.
+  mexp_bc <- mexp
+  mexp_bc@dataset$feature_conc_beforecal <- mexp_bc@dataset$feature_conc
+  mexp_bc@dataset$feature_intensity_orig <- mexp_bc@dataset$feature_intensity
+
+  assays <- SummarizedExperiment::assayNames(
+    save_dataset_summarizedexperiment(mexp_bc)
+  )
+  expect_false("conc_beforecal" %in% assays)
+  expect_false("intensity_orig" %in% assays)
+  expect_true(all(c("intensity", "conc") %in% assays))
+
+  # Still exported when named explicitly.
+  expect_identical(
+    SummarizedExperiment::assayNames(
+      save_dataset_summarizedexperiment(mexp_bc, variable = "intensity_orig")
+    ),
+    "intensity_orig"
+  )
+})

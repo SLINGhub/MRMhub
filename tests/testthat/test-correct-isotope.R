@@ -586,6 +586,8 @@ test_that("manual interference correction clears calibration metrics", {
 
 test_that("custom interference correction clears calibration metrics", {
   mexp_cal <- calibrated_experiment()
+  expect_gt(nrow(mexp_cal@metrics_calibration), 0)
+
   non_istd <- mexp_cal@annot_features$feature_id[
     !mexp_cal@annot_features$is_istd
   ]

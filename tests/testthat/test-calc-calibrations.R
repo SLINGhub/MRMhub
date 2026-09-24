@@ -851,3 +851,32 @@ test_that("quantify_by_calibration errors cleanly on empty / zero-row input", {
     "No data to quantify"
   )
 })
+
+test_that("quantify_by_calibration clears values derived from a previous calibration", {
+  # calibrate_by_reference() derives feature_conc_ratio and feature_conc_beforecal
+  # from the concentrations of that run. Re-deriving feature_conc from the
+  # calibration curves invalidates both.
+  mexp_cal <- calibrated_experiment()
+  # HQC has no usable signal for some features in this dataset; assert that
+  # warning rather than suppressing it, so a different one would surface.
+  expect_warning(
+    mexp_ref <- suppressMessages(calibrate_by_reference(
+      mexp_cal,
+      variable = "feature_conc",
+      reference_sample_id = "HQC",
+      absolute_calibration = TRUE,
+      store_conc_ratio = TRUE,
+      undefined_conc_action = "na"
+    )),
+    "reference summary was zero or undefined"
+  )
+  expect_true("feature_conc_ratio" %in% names(mexp_ref@dataset))
+  expect_true("feature_conc_beforecal" %in% names(mexp_ref@dataset))
+
+  res <- suppressMessages(quantify_by_calibration(
+    mexp_ref,
+    fit_overwrite = FALSE
+  ))
+  expect_false("feature_conc_ratio" %in% names(res@dataset))
+  expect_false("feature_conc_beforecal" %in% names(res@dataset))
+})
