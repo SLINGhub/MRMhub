@@ -28,8 +28,9 @@
 #'  data is missing.
 #'
 #' If `use_batch_medians = TRUE`, batch-specific QC statistics are computed
-#' first, and then the median of these values is returned for each feature.
-#' However, response curve and calibration statistics are calculated per
+#' first, and then the median of these values is returned for each feature;
+#' signal-to-blank ratios take the lower median, so that one batch with a ratio
+#' of `Inf` does not make the result `Inf`. However, response curve and calibration statistics are calculated per
 #' curve, irrespective of batches and `use_batch_medians` settings.
 #'
 #' The calculated metrics are stored in the `metrics_qc` table of the
@@ -68,8 +69,8 @@
 #'   - `intensity_median_*`: Median intensity for various QC sample types.
 #'   - `intensity_cv_*`: Coefficient of variation (CV) of intensity values for specific QC types.
 #'   - `sb_ratio_*`: Signal-to-blank ratios such as the ratio of intensity values for SPL vs PBLK, UBLK, or SBLK.
-#'     Blank medians count a blank without detected signal as zero, giving a
-#'     ratio of `Inf`.
+#'     Blank medians count a blank analysis without detected signal (a missing
+#'     value or no row for the feature) as zero, giving a ratio of `Inf`.
 #'   - `intensity_q10_*`: The 10th percentile of intensity values for the SPL sample type.
 #'
 #' - **Normalized Intensity Metrics** (only if `include_norm_intensity_stats = TRUE`):
@@ -284,6 +285,7 @@ calc_qc_metrics <- function(
   # Select relevant variables needed for statistics
   d_stats_var <- data@dataset |>
     select(any_of(c(
+      "analysis_id",
       "batch_id",
       "feature_id",
       "qc_type",
@@ -294,6 +296,18 @@ calc_qc_metrics <- function(
     ))) |>
     filter(.data$qc_type != "RQC") |>
     mutate(qc_type = factor(.data$qc_type), batch_id = factor(.data$batch_id))
+
+  # A blank analysis without a row for a feature counts as not detected, so it
+  # enters the blank medians as zero, like a missing value
+  is_blank <- d_stats_var$qc_type %in% c("PBLK", "UBLK", "SBLK")
+  d_stats_var <- dplyr::bind_rows(
+    d_stats_var[!is_blank, ],
+    d_stats_var[is_blank, ] |>
+      tidyr::complete(
+        feature_id = unique(d_stats_var$feature_id),
+        tidyr::nesting(!!!syms(c("analysis_id", "qc_type", "batch_id")))
+      )
+  )
 
   # Minimum non-missing replicates for a QC %CV to be a meaningful precision
   # estimate (cf. FDA/EMA bioanalytical guidance, which expects >= 3). Below this
@@ -687,11 +701,20 @@ calc_qc_metrics <- function(
       relocate(dplyr::starts_with("sb_ratio"), .after = "intensity_q10_spl")
   }
 
-  # If batch medians are requested, calculate the median of all columns (except ID columns) for each feature
+  # If batch medians are requested, calculate the median of all columns (except
+  # ID columns) for each feature. S/B ratios take the lower median, as the
+  # median of a finite and an Inf ratio (2 batches) is Inf.
   if (use_batch_medians) {
     d_stats_var_final <- d_stats_var_final |>
       summarise(
-        across(-ends_with("_id"), ~ median(.x, na.rm = TRUE)),
+        across(
+          -ends_with("_id"),
+          ~ if (startsWith(dplyr::cur_column(), "sb_ratio")) {
+            unname(stats::quantile(.x, 0.5, type = 1, na.rm = TRUE))
+          } else {
+            median(.x, na.rm = TRUE)
+          }
+        ),
         .by = "feature_id"
       )
   }
@@ -1405,9 +1428,10 @@ filter_features_qc <- function(
       is.na(min.slope.response) &
       is.na(max.slope.response) &
       is.na(max.yintercept.response))
-    if (filter_linearity && all(rqc_r2_col %in% names(metrics_qc_local))) {
+    if (filter_linearity) {
       # As for the other criteria, a feature whose response-curve results are
-      # missing fails; ISTDs are exempt.
+      # missing fails; ISTDs are exempt. Only features that are otherwise kept
+      # are reported.
       lin_cols <- c(
         "rqc_r2__sum__"[!is.na(min.rsquare.response)],
         "rqc_slope__sum__min__"[!is.na(min.slope.response)],
@@ -1415,9 +1439,10 @@ filter_features_qc <- function(
         "rqc_y0__sum__"[!is.na(max.yintercept.response)]
       )
       lin_missing <- rowSums(is.na(metrics_qc_local[lin_cols])) > 0
-      no_lin <- metrics_qc_local$feature_id[
-        lin_missing & !metrics_qc_local$is_istd
-      ]
+      reported <- metrics_qc_local$in_data &
+        !metrics_qc_local$is_istd &
+        (metrics_qc_local$is_quantifier | include_qualifier)
+      no_lin <- metrics_qc_local$feature_id[lin_missing & reported %in% TRUE]
       if (length(no_lin) > 0) {
         mh_warn(
           "Response-curve results are missing for the following features: {glue::glue_collapse(no_lin, sep = ', ', width = 80, last = ', and ')}. These features failed QC."

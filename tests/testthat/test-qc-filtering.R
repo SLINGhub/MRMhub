@@ -1699,3 +1699,82 @@ test_that("calc_qc_metrics handles empty / zero-row inputs without crashing", {
   )
   expect_s4_class(mexp_res, "MRMhubExperiment")
 })
+
+test_that("blank analyses without a row for a feature count as zero", {
+  id <- mexp_proc@metrics_qc |>
+    dplyr::filter(!.data$is_istd, .data$in_data) |>
+    dplyr::pull(.data$feature_id) |>
+    dplyr::nth(5)
+  pblk_ids <- mexp@dataset |>
+    dplyr::filter(.data$qc_type == "PBLK") |>
+    dplyr::distinct(.data$analysis_id) |>
+    dplyr::pull()
+  mexp_blk <- mexp
+  mexp_blk@dataset <- mexp_blk@dataset |>
+    dplyr::filter(
+      !(.data$feature_id == id & .data$analysis_id %in% pblk_ids[-1])
+    )
+  mexp_blk <- calc_qc_metrics(mexp_blk)
+  m <- mexp_blk@metrics_qc[mexp_blk@metrics_qc$feature_id == id, ]
+  expect_equal(m$intensity_median_pblk, 0)
+  expect_equal(m$sb_ratio_pblk, Inf)
+})
+
+test_that("batch-median S/B is not Inf when only one of two blank batches is Inf", {
+  id <- mexp_proc@metrics_qc |>
+    dplyr::filter(!.data$is_istd, .data$in_data) |>
+    dplyr::pull(.data$feature_id) |>
+    dplyr::nth(5)
+  pblk <- mexp@dataset |>
+    dplyr::filter(.data$qc_type == "PBLK") |>
+    dplyr::distinct(.data$analysis_id, .data$batch_id)
+  expect_equal(dplyr::n_distinct(pblk$batch_id), 2)
+  mexp_blk <- mexp
+  mexp_blk@dataset <- mexp_blk@dataset |>
+    dplyr::mutate(
+      feature_intensity = dplyr::if_else(
+        .data$feature_id == id &
+          .data$analysis_id %in%
+            pblk$analysis_id[
+              pblk$batch_id == pblk$batch_id[1]
+            ],
+        NA,
+        .data$feature_intensity
+      )
+    )
+  mexp_blk <- calc_qc_metrics(mexp_blk, use_batch_medians = TRUE)
+  sb <- mexp_blk@metrics_qc$sb_ratio_pblk[mexp_blk@metrics_qc$feature_id == id]
+  expect_true(is.finite(sb))
+})
+
+test_that("missing response-curve results are not reported for filtered-out features", {
+  m <- mexp_proc@metrics_qc
+  ids <- m$feature_id[!m$is_istd][1:3]
+  mexp_na <- mexp_proc
+  mexp_na@metrics_qc <- m |>
+    dplyr::mutate(
+      dplyr::across(
+        dplyr::contains("_rqc_"),
+        \(x) dplyr::if_else(.data$feature_id %in% ids, NA, x)
+      ),
+      is_quantifier = dplyr::if_else(
+        .data$feature_id == ids[1],
+        FALSE,
+        .data$is_quantifier
+      ),
+      in_data = .data$in_data & .data$feature_id != ids[2]
+    )
+  msgs <- testthat::capture_messages(
+    filter_features_qc(
+      mexp_na,
+      include_qualifier = FALSE,
+      include_istd = TRUE,
+      response.curves.selection = 1,
+      min.rsquare.response = 0.5
+    )
+  )
+  lin_msg <- paste(msgs[grepl("Response-curve", msgs)], collapse = "")
+  expect_false(grepl(ids[1], lin_msg, fixed = TRUE))
+  expect_false(grepl(ids[2], lin_msg, fixed = TRUE))
+  expect_true(grepl(ids[3], lin_msg, fixed = TRUE))
+})

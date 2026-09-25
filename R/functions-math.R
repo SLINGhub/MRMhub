@@ -62,7 +62,7 @@ dratio <- function(x_qc, x_spl, use_mad = FALSE, min_n = 3L) {
   spread <- if (use_mad) stats::mad else stats::sd
   s_qc <- spread(x_qc)
   s_spl <- spread(x_spl)
-  if (s_qc == 0 || s_spl == 0) {
+  if (!isTRUE(s_qc > 0 && s_spl > 0)) {
     return(NA_real_)
   }
   s_qc / s_spl

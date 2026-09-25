@@ -471,3 +471,8 @@ test_that("higher method handles out-of-bounds case correctly", {
   # If x is larger than all available numbers, it should return the max of available numbers.
   expect_equal(find_closest(35, nums, "higher"), 30)
 })
+
+test_that("dratio() is NA when a spread is not finite", {
+  expect_identical(dratio(c(1, 2, Inf), c(1, 2, 3)), NA_real_)
+  expect_identical(dratio(c(1, 2, 3), c(1, 2, Inf)), NA_real_)
+})
