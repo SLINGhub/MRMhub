@@ -33,6 +33,11 @@
 
 ## New features
 
+* New `set_lipid_class()` sets `feature_class` from the lipid names via the
+  Goslin parser (`rgoslin`), filling only missing classes unless
+  `overwrite = TRUE`. It replaces the parsing that `calc_qc_metrics()` used to
+  apply implicitly.
+
 * `calc_qc_metrics()` reports the number of replicates behind the %CV and
   D-ratio as `n_bqc`, `n_tqc` and `n_spl`.
 

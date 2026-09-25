@@ -54,6 +54,65 @@ get_analyte_id <- function(transition_name, remove_nl_transitions) {
 }
 
 
+#' Set feature classes from lipid names
+#'
+#' Derives lipid classes from the `feature_id`s with the Goslin lipid name
+#' parser (package `rgoslin`) and writes them to `feature_class` in the feature
+#' metadata, the dataset and the QC metrics. The class is the lipid class
+#' including the long-chain base (e.g. `Cer;O2`, `SM;O2`).
+#'
+#' @template data_mexp
+#' @param overwrite Logical. If `FALSE` (default), only features without a
+#'   `feature_class` get one; if `TRUE`, all classes are replaced. Features
+#'   whose name cannot be parsed keep their class.
+#' @return [`MRMhubExperiment`][MRMhubExperiment-class] object with updated
+#'   `feature_class`.
+#' @seealso [parse_lipid_feature_names()]
+#' @export
+set_lipid_class <- function(data = NULL, overwrite = FALSE) {
+  check_data(data)
+  if (nrow(data@annot_features) == 0) {
+    cli::cli_abort(
+      "No feature metadata available. Import feature metadata first."
+    )
+  }
+  parsed <- parse_lipid_feature_names(
+    data@annot_features["feature_id"],
+    use_as_feature_class = "lipid_class_lcb",
+    add_chain_composition = FALSE
+  )
+  lipid_class <- parsed$feature_class[
+    match(data@annot_features$feature_id, parsed$feature_id)
+  ]
+  old_class <- data@annot_features$feature_class
+  new_class <- if (overwrite) {
+    dplyr::coalesce(lipid_class, old_class)
+  } else {
+    dplyr::coalesce(old_class, lipid_class)
+  }
+  n_set <- sum(!is.na(new_class) & (is.na(old_class) | new_class != old_class))
+  data@annot_features$feature_class <- new_class
+
+  # Only the class changes, so update it in place rather than relinking, which
+  # would discard normalization and quantification.
+  lookup <- rlang::set_names(
+    data@annot_features$feature_class,
+    data@annot_features$feature_id
+  )
+  data@dataset$feature_class <- unname(lookup[data@dataset$feature_id])
+  if (nrow(data@dataset_filtered) > 0) {
+    data@dataset_filtered$feature_class <- unname(
+      lookup[data@dataset_filtered$feature_id]
+    )
+  }
+  if (nrow(data@metrics_qc) > 0) {
+    data@metrics_qc$feature_class <- unname(lookup[data@metrics_qc$feature_id])
+  }
+  mh_success("Lipid classes set for {n_set} feature{?s}.")
+  data
+}
+
+
 #' Get lipid class, species and transition names
 #'
 #' This function retrieves lipid class, species and transition names from the `feature_id` column and adds them as columns to the dataset.
