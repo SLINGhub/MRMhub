@@ -719,3 +719,52 @@ test_that("plot_qcmetrics_comparison() names non-default metric settings", {
   p <- do.call(plot_qcmetrics_comparison, c(list(data = mexp_robust), args))
   expect_match(p$labels$caption, "robust %CV")
 })
+
+test_that("plot_qcmetrics_comparison ignores qc_types for a cross-type comparison", {
+  expect_warning(
+    p <- plot_qcmetrics_comparison(
+      mexp,
+      x_variable = "intensity_cv_bqc",
+      y_variable = "intensity_median_tqc",
+      plot_type = "scatter",
+      qc_types = c("BQC", "TQC")
+    ),
+    "qc_types"
+  )
+  expect_gt(nrow(p$data), 0)
+})
+
+test_that("plot_qcmetrics_comparison keeps zeros on linear scatter axes", {
+  mexp_zero <- mexp
+  mexp_zero@metrics_qc$missing_intensity_prop_spl <- 0
+  p <- plot_qcmetrics_comparison(
+    mexp_zero,
+    x_variable = "missing_intensity_prop_spl",
+    y_variable = "intensity_cv_spl",
+    plot_type = "scatter"
+  )
+  expect_gt(nrow(p$data), 0)
+})
+
+test_that("plot_qcmetrics_comparison selects only the named metric columns", {
+  p <- plot_qcmetrics_comparison(
+    mexp,
+    x_variable = "intensity_cv_bqc",
+    y_variable = "intensity_median_bqc",
+    plot_type = "scatter"
+  )
+  expect_false(any(startsWith(names(p$data), "norm_intensity")))
+})
+
+test_that("plot_qcmetrics_comparison frees x when only the upper y limit is set", {
+  p <- plot_qcmetrics_comparison(
+    mexp,
+    x_variable = "intensity_cv_bqc",
+    y_variable = "intensity_median_bqc",
+    plot_type = "scatter",
+    facet_by_class = TRUE,
+    y_shared = TRUE,
+    y_lim = c(NA, 1e8)
+  )
+  expect_true(p$facet$params$free$x)
+})

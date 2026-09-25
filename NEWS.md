@@ -45,6 +45,10 @@
 
 * `plot_pca()` and `plot_pca_loading()` accept `variable = "fwhm"`.
 
+* `plot_qcmetrics_comparison()` and `plot_normalization_qc()` gain
+  `include_istd` (default `FALSE`). ISTDs were previously hidden only because
+  their normalized CV of 0 was removed as a zero value.
+
 * New `set_lipid_class()` sets `feature_class` from the lipid names via the
   Goslin parser (`rgoslin`), filling only missing classes unless
   `overwrite = TRUE`. It replaces the parsing that `calc_qc_metrics()` used to
@@ -92,6 +96,12 @@
   `plot_pca()` does; a constant feature previously appeared as the top loading.
   Features with missing or non-positive values are now reported when excluded,
   and the horizontal layout's axis titles are no longer swapped.
+
+* `plot_qcmetrics_comparison()`: a comparison of metrics from different QC
+  types with `qc_types` set no longer gives an empty plot (`qc_types` is
+  ignored with a warning); zero values are kept on linear axes and removed only
+  for log axes and ratio plots; only the named metric columns are selected;
+  with `y_shared = TRUE` and one `y_lim` bound missing, the x-axis is free.
 
 * `plot_qc_summary_byclass()` and `plot_qc_summary_overall()` count each
   feature once. Features retained via `features.to.keep` despite failing QC

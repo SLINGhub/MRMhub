@@ -14,6 +14,7 @@ plot_normalization_qc(
   y_shared = FALSE,
   filter_data = FALSE,
   include_qualifier = FALSE,
+  include_istd = FALSE,
   cv_threshold_value = 25,
   x_lim = c(NA_real_, NA_real_),
   y_lim = c(NA_real_, NA_real_),
@@ -59,7 +60,10 @@ If \code{FALSE} (default), each facet has its own y-axis scale.}
 QC-filtered data (filtered via \code{\link[=filter_features_qc]{filter_features_qc()}}).}
 
 \item{include_qualifier}{Whether to include qualifier features
-(default is \code{TRUE}).}
+(default is \code{FALSE}).}
+
+\item{include_istd}{Whether to include internal standards (ISTDs) (default
+is \code{FALSE}).}
 
 \item{cv_threshold_value}{Numerical threshold value to be shown as dashed
 lines in the plot (default is \code{25}).}
