@@ -97,6 +97,12 @@
 * `filter_features_qc()`: ISTDs no longer get a signal-to-blank verdict when no
   signal-to-blank criterion is set.
 
+* Batch boundaries (`annot_batches`, used for batch shading in run-order
+  plots, the BatchInfo report sheet and `get_batch_boundaries()`) are taken
+  from the first and last analysis of each batch in analysis order, not in the
+  row order of the analysis metadata, and are updated by
+  `set_analysis_order()`. Processed values were not affected.
+
 * Plot and export functions with a `qc_types` argument: a single QC type such
   as `"QC"` or `"BLK"` is now matched exactly instead of as a regular expression
   that also selected BQC, TQC or PBLK, SBLK, ... Patterns such as `"QC|SPL"`

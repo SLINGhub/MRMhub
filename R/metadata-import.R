@@ -70,20 +70,15 @@ import_metadata_from_data <- function(
 # Retrieve batch info from analysis metadata
 
 get_metadata_batches <- function(annot_analyses) {
+  # Bounds and numbering by analysis order, independent of the row order
   annot_batches <- annot_analyses |>
-    mutate(
-      batch_no = dplyr::cur_group_id(),
-      .by = c("batch_id"),
-      .before = "batch_id"
-    ) |>
-    dplyr::group_by(.data$batch_no) |>
     dplyr::summarise(
-      batch_id = .data$batch_id[1],
-      id_batch_start = dplyr::first(.data$analysis_order),
-      id_batch_end = dplyr::last(.data$analysis_order)
+      id_batch_start = safe_min(.data$analysis_order),
+      id_batch_end = safe_max(.data$analysis_order),
+      .by = "batch_id"
     ) |>
-    dplyr::ungroup() |>
-    dplyr::arrange(.data$id_batch_start)
+    dplyr::arrange(.data$id_batch_start) |>
+    dplyr::mutate(batch_no = dplyr::row_number())
 
   annot_batches <- dplyr::bind_rows(
     pkg.env$table_templates$annot_batch_info_template,

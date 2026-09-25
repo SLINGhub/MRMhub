@@ -49,18 +49,6 @@ combine_experiments <- function(..., ordered_by_runsequence) {
     ) |>
     dplyr::ungroup()
 
-  mexp@annot_batches <- mexp@annot_analyses |>
-    dplyr::group_by(.data$batch_id) |>
-    dplyr::summarise(
-      batch_id = .data$batch_id[1],
-      batch_no = .data$batch_no[1],
-      id_batch_start = dplyr::first(.data$analysis_order),
-      id_batch_end = dplyr::last(.data$analysis_order)
-    ) |>
-    dplyr::ungroup() |>
-    dplyr::arrange(.data$id_batch_start) |>
-    dplyr::mutate(batch_no = dplyr::row_number())
-
-  # mexp@annot_batches <- dplyr::bind_rows(pkg.env$table_templates$annot_batch_info_template,mexp@annot_batches)
+  mexp@annot_batches <- get_metadata_batches(mexp@annot_analyses)
   mexp
 }

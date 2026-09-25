@@ -752,6 +752,7 @@ set_analysis_order <- function(
     multiple = FALSE
   )
   data <- set_analysis_order_analysismetadata(data, order_by)
+  data@annot_batches <- get_metadata_batches(data@annot_analyses)
   data <- link_data_metadata(data)
 
   mh_success(
