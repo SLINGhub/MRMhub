@@ -11,6 +11,28 @@
 * `calc_qc_metrics()`: the column `sb_ratio_q10_pbk` is renamed to
   `sb_ratio_q10_pblk`.
 
+* `calc_qc_metrics()` no longer replaces `feature_class` in the dataset with
+  lipid classes parsed from the feature names for lipidomics experiments. The
+  classes from the feature metadata are now always kept.
+
+* `filter_features_qc()`: when a response-curve criterion is set, a feature
+  whose response-curve results are missing now fails linearity with a warning,
+  as for all other criteria; before, it silently passed. ISTDs are exempt.
+
+## Bug fixes
+
+* `filter_features_qc()`: chained calls with `clear_existing = FALSE` can now
+  add response-curve criteria in a later step (this aborted with "There are
+  only 0 response curves"), and a linearity criterion from an earlier step is
+  kept when a later step does not set one.
+
+* `filter_features_qc()`: `use_robust_cv` and `use_batch_medians` are no longer
+  silently ignored when QC metrics already exist. Settings not given follow the
+  stored metrics; explicitly different settings recalculate them.
+
+* `filter_features_qc()`: ISTDs no longer get a signal-to-blank verdict when no
+  signal-to-blank criterion is set.
+
 # mrmhub 0.9.10
 
 ## New features

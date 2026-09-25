@@ -102,6 +102,11 @@ compare_values <- function(tbl, val, threshold, operator, na_replace = FALSE) {
 }
 
 
+# ISTDs pass a criterion they have a verdict for; NA ("not applied") stays NA
+exempt_istd <- function(x, is_istd) {
+  x | (is_istd & !is.na(x))
+}
+
 # performs element-wise logical operations (AND or OR) across multiple
 # logical vectors in a list. It returns a vector of the results,
 # where each element is the result of applying the specified operation to the

@@ -55,9 +55,13 @@ filter_features_qc(
 
 \item{recalc_metrics}{Logical. If \code{TRUE}, recalculates QC metrics before filtering. Default is \code{FALSE}.}
 
-\item{use_batch_medians}{Logical. If \code{TRUE}, uses batch-wise median QC values for filtering. Default is \code{FALSE}.}
+\item{use_batch_medians}{Logical. If \code{TRUE}, uses batch-wise median QC values for filtering. Default is \code{FALSE}.
+If not given and QC metrics already exist, the setting they were
+calculated with is kept; a different explicit value recalculates them.}
 
-\item{use_robust_cv}{Logical. If \code{TRUE}, uses robust coefficient of variation (MAD/median) instead of standard CV (SD/mean). Default is \code{FALSE}.}
+\item{use_robust_cv}{Logical. If \code{TRUE}, uses robust coefficient of variation (MAD/median) instead of standard CV (SD/mean). Default is \code{FALSE}.
+If not given and QC metrics already exist, the setting they were
+calculated with is kept; a different explicit value recalculates them.}
 
 \item{include_qualifier}{Logical. If \code{TRUE}, includes qualifier features in the filtering process.}
 

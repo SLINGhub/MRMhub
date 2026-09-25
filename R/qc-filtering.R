@@ -147,27 +147,6 @@ calc_qc_metrics <- function(
   # Check if the input data is valid
   check_data(data)
 
-  # If the analysis type is lipidomics, (re)derive lipid-class names into the
-  # dataset so QC metrics/plots can group by `feature_class` (= lipid_class_lcb).
-  # STOPGAP: this parsing side-effects `data@dataset` from inside a metrics
-  # function; it really belongs upstream in the import / add_metadata pipeline.
-  # Relocating it there (and having QC + plots consume the already-parsed
-  # classes) would let this branch be removed. Safe to call repeatedly for now:
-  # parse_lipid_feature_names() drops any pre-existing lipid columns before
-  # re-joining, so it is idempotent.
-  if (
-    !is.na(data@analysis_type) &&
-      all(!is.na(data@annot_features$feature_class)) &&
-      tolower(data@analysis_type) == "lipidomics"
-  ) {
-    data@dataset <- parse_lipid_feature_names(
-      data@dataset,
-      add_chain_composition = FALSE,
-      use_as_feature_class = "lipid_class_lcb",
-      add_transition_names = FALSE
-    )
-  }
-
   # Select relevant feature information from the dataset
   d_feature_info <- data@annot_features |>
     select(
@@ -777,6 +756,12 @@ calc_qc_metrics <- function(
     }
   }
 
+  # Record the CV settings, so filter_features_qc() can reuse or recalculate
+  attr(data@metrics_qc, "qc_metrics_settings") <- list(
+    use_robust_cv = use_robust_cv,
+    use_batch_medians = use_batch_medians
+  )
+
   # Summarize what was computed. Metric-group membership is measured from the
   # output columns, so the report reflects what actually landed in metrics_qc.
   n_features <- length(features_in_dataset)
@@ -831,7 +816,11 @@ calc_qc_metrics <- function(
 #' @param clear_existing Logical. If `TRUE`, replaces any existing filters; if `FALSE`, adds new filters on top of existing ones. Default is `TRUE`.
 #' @param recalc_metrics Logical. If `TRUE`, recalculates QC metrics before filtering. Default is `FALSE`.
 #' @param use_batch_medians Logical. If `TRUE`, uses batch-wise median QC values for filtering. Default is `FALSE`.
+#'   If not given and QC metrics already exist, the setting they were
+#'   calculated with is kept; a different explicit value recalculates them.
 #' @param use_robust_cv Logical. If `TRUE`, uses robust coefficient of variation (MAD/median) instead of standard CV (SD/mean). Default is `FALSE`.
+#'   If not given and QC metrics already exist, the setting they were
+#'   calculated with is kept; a different explicit value recalculates them.
 #' @param include_qualifier Logical. If `TRUE`, includes qualifier features in the filtering process.
 #' @param include_istd Logical. If `TRUE`, includes internal standards (ISTDs) in the filtering process.
 #' @param features.to.keep A vector of feature identifiers to retain, even if they do not meet the filtering criteria.
@@ -990,19 +979,37 @@ filter_features_qc <- function(
 
   # Check which criteria categories were defined
   arg_names <- names(as.list(match.call()))
-  intensity_criteria_defined <- any(str_detect(
-    arg_names,
-    "[^\\.]intensity|signalblank"
-  ))
-  norm_intensity_criteria_defined <- any(str_detect(
-    arg_names,
-    "norm_intensity"
-  ))
-  conc_criteria_defined <- any(str_detect(arg_names, "conc"))
   resp_criteria_defined <- any(str_detect(arg_names, "response"))
 
-  if (recalc_metrics || nrow(data@metrics_qc) == 0) {
-    if (rlang::is_interactive()) {
+  # CV settings not given explicitly follow the stored metrics; metrics are
+  # recalculated when an explicit setting differs from the stored one.
+  settings <- attr(data@metrics_qc, "qc_metrics_settings")
+  has_metrics <- nrow(data@metrics_qc) > 0 && !is.null(settings)
+  if (has_metrics) {
+    if (missing(use_robust_cv)) {
+      use_robust_cv <- settings$use_robust_cv
+    }
+    if (missing(use_batch_medians)) {
+      use_batch_medians <- settings$use_batch_medians
+    }
+  }
+  settings_changed <- has_metrics &&
+    !identical(
+      settings,
+      list(use_robust_cv = use_robust_cv, use_batch_medians = use_batch_medians)
+    )
+
+  if (recalc_metrics || settings_changed || nrow(data@metrics_qc) == 0) {
+    if (settings_changed) {
+      mh_info(
+        "QC metrics recalculated with {.arg use_robust_cv} = {use_robust_cv} and {.arg use_batch_medians} = {use_batch_medians}."
+      )
+      if (!clear_existing && "all_filter_pass" %in% names(data@metrics_qc)) {
+        mh_warn(
+          "Previously applied QC filters were evaluated with the earlier CV settings and are kept as they were."
+        )
+      }
+    } else if (rlang::is_interactive()) {
       message("Calculating feature QC metrics - please wait...")
     }
     data_local <- calc_qc_metrics(
@@ -1011,7 +1018,7 @@ filter_features_qc <- function(
       use_robust_cv = use_robust_cv,
       include_norm_intensity_stats = data@is_istd_normalized,
       include_conc_stats = data@is_quantitated,
-      include_response_stats = resp_criteria_defined
+      include_response_stats = if (resp_criteria_defined) TRUE else NA
     )
   } else {
     data_local <- data
@@ -1093,27 +1100,33 @@ filter_features_qc <- function(
 
       pass_sb = comp_lgl_vec(
         list(
-          compare_values(
-            metrics_qc_local,
-            "sb_ratio_pblk",
-            min.signalblank.median.spl.pblk,
-            ">"
-          ) |
-            .data$is_istd,
-          compare_values(
-            metrics_qc_local,
-            "sb_ratio_ublk",
-            min.signalblank.median.spl.ublk,
-            ">"
-          ) |
-            .data$is_istd,
-          compare_values(
-            metrics_qc_local,
-            "sb_ratio_sblk",
-            min.signalblank.median.spl.sblk,
-            ">"
-          ) |
+          exempt_istd(
+            compare_values(
+              metrics_qc_local,
+              "sb_ratio_pblk",
+              min.signalblank.median.spl.pblk,
+              ">"
+            ),
             .data$is_istd
+          ),
+          exempt_istd(
+            compare_values(
+              metrics_qc_local,
+              "sb_ratio_ublk",
+              min.signalblank.median.spl.ublk,
+              ">"
+            ),
+            .data$is_istd
+          ),
+          exempt_istd(
+            compare_values(
+              metrics_qc_local,
+              "sb_ratio_sblk",
+              min.signalblank.median.spl.sblk,
+              ">"
+            ),
+            .data$is_istd
+          )
         ),
         .operator = "AND"
       ),
@@ -1251,7 +1264,8 @@ filter_features_qc <- function(
 
   ##tictoc::toc()
   # Check if linearity criteria are defined
-  metrics_qc_local <- metrics_qc_local |> mutate(pass_linearity = NA)
+  metrics_qc_local <- metrics_qc_local |>
+    mutate(pass_linearity = NA, filter_linearity = FALSE)
 
   if (resp_criteria_defined) {
     if (is.numeric(response.curves.selection)) {
@@ -1346,15 +1360,33 @@ filter_features_qc <- function(
         )
       )
 
-    # Check if columns exist before mutating pass_linearity
-    if (all(rqc_r2_col %in% names(metrics_qc_local))) {
+    filter_linearity <- !(is.na(min.rsquare.response) &
+      is.na(min.slope.response) &
+      is.na(max.slope.response) &
+      is.na(max.yintercept.response))
+    if (filter_linearity && all(rqc_r2_col %in% names(metrics_qc_local))) {
+      # As for the other criteria, a feature whose response-curve results are
+      # missing fails; ISTDs are exempt.
+      lin_cols <- c(
+        "rqc_r2__sum__"[!is.na(min.rsquare.response)],
+        "rqc_slope__sum__min__"[!is.na(min.slope.response)],
+        "rqc_slope__sum__max__"[!is.na(max.slope.response)],
+        "rqc_y0__sum__"[!is.na(max.yintercept.response)]
+      )
+      lin_missing <- rowSums(is.na(metrics_qc_local[lin_cols])) > 0
+      no_lin <- metrics_qc_local$feature_id[
+        lin_missing & !metrics_qc_local$is_istd
+      ]
+      if (length(no_lin) > 0) {
+        mh_warn(
+          "Response-curve results are missing for the following features: {glue::glue_collapse(no_lin, sep = ', ', width = 80, last = ', and ')}. These features failed QC."
+        )
+      }
       metrics_qc_local <- metrics_qc_local |>
         mutate(
           pass_linearity = if_else(
-            !is.na(.data$rqc_r2__sum__) |
-              (!is.na(min.slope.response) &
-                !is.na(max.slope.response) &
-                !is.na(max.yintercept.response)),
+            lin_missing,
+            if_else(.data$is_istd, NA, FALSE),
             (.data$rqc_r2__sum__ > min.rsquare.response |
               is.na(min.rsquare.response)) &
               (.data$rqc_slope__sum__min__ > min.slope.response |
@@ -1362,13 +1394,9 @@ filter_features_qc <- function(
               (.data$rqc_slope__sum__max__ <= max.slope.response |
                 is.na(max.slope.response)) &
               (.data$rqc_y0__sum__ < max.yintercept.response |
-                is.na(max.yintercept.response)),
-            NA
+                is.na(max.yintercept.response))
           ),
-          filter_linearity = !(is.na(min.rsquare.response) &
-            is.na(min.slope.response) &
-            is.na(max.slope.response) &
-            is.na(max.yintercept.response))
+          filter_linearity = TRUE
         )
     }
   }
@@ -1438,7 +1466,12 @@ filter_features_qc <- function(
       ),
       list(filter = "filter_sb", pass = "pass_sb", label = "Signal-to-Blank"),
       list(filter = "filter_cva", pass = "pass_cva", label = "%CV"),
-      list(filter = "filter_dratio", pass = "pass_dratio", label = "D-ratio")
+      list(filter = "filter_dratio", pass = "pass_dratio", label = "D-ratio"),
+      list(
+        filter = "filter_linearity",
+        pass = "pass_linearity",
+        label = "Linearity"
+      )
     )
     for (f in restore_filters) {
       filter_before <- paste0(f$filter, "_before")
@@ -1449,19 +1482,6 @@ filter_features_qc <- function(
         } else {
           metrics_qc_local[[f$pass]] <- metrics_qc_local[[pass_before]]
           metrics_qc_local[[f$filter]] <- metrics_qc_local[[filter_before]]
-        }
-      }
-    }
-
-    # Linearity is handled separately: unlike the filters above its columns are
-    # only present when linearity filtering is configured, so guard on presence.
-    if ("filter_linearity_before" %in% names(metrics_qc_local)) {
-      if (all(metrics_old$filter_linearity_before)) {
-        if (all(metrics_qc_local$filter_linearity)) {
-          prev_filters <- append(prev_filters, "Linearity")
-        } else {
-          metrics_qc_local$pass_linearity <- metrics_qc_local$pass_linearity_before
-          metrics_qc_local$filter_linearity <- metrics_qc_local$filter_linearity_before
         }
       }
     }
@@ -1525,7 +1545,7 @@ filter_features_qc <- function(
   metrics_qc_local <- metrics_qc_local |>
     mutate(
       all_filter_pass = .data$all_qc_filter_pass |
-        (is.na(.data$pass_featureskeep) | .data$pass_featureskeep)
+        .data$pass_featureskeep
     )
 
   #TODO: deal with invalid integrations (as defined by user in metadata)

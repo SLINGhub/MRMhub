@@ -827,6 +827,110 @@ test_that("Min-intensity filter applies on clear_existing = FALSE re-run (regres
 })
 
 
+test_that("ISTDs get no S/B verdict when no S/B criterion is set", {
+  mexp_res <- filter_features_qc(
+    mexp_proc,
+    include_qualifier = FALSE,
+    include_istd = TRUE,
+    max.cv.conc.bqc = 20
+  )
+  expect_equal(unique(mexp_res@metrics_qc$pass_sb), NA)
+})
+
+
+test_that("a feature without response-curve results fails linearity, ISTDs excepted", {
+  m <- mexp_proc@metrics_qc
+  ids <- c(m$feature_id[!m$is_istd][1], m$feature_id[m$is_istd][1])
+  mexp_na <- mexp_proc
+  mexp_na@metrics_qc <- m |>
+    dplyr::mutate(dplyr::across(
+      dplyr::contains("_rqc_"),
+      \(x) dplyr::if_else(.data$feature_id %in% ids, NA, x)
+    ))
+
+  expect_message(
+    mexp_res <- filter_features_qc(
+      mexp_na,
+      include_qualifier = FALSE,
+      include_istd = TRUE,
+      response.curves.selection = 1,
+      min.rsquare.response = 0.5
+    ),
+    ids[1],
+    fixed = TRUE
+  )
+  pass <- rlang::set_names(
+    mexp_res@metrics_qc$pass_linearity,
+    mexp_res@metrics_qc$feature_id
+  )
+  expect_identical(pass[[ids[1]]], FALSE)
+  expect_identical(pass[[ids[2]]], NA)
+})
+
+
+test_that("chained filter steps accumulate CV, linearity and S/B criteria", {
+  step1 <- filter_features_qc(
+    mexp,
+    max.cv.conc.bqc = 20,
+    include_qualifier = FALSE,
+    include_istd = FALSE
+  )
+  step2 <- filter_features_qc(
+    step1,
+    clear_existing = FALSE,
+    include_qualifier = FALSE,
+    include_istd = FALSE,
+    response.curves.selection = 1,
+    min.rsquare.response = 0.95
+  )
+  step3 <- filter_features_qc(
+    step2,
+    clear_existing = FALSE,
+    include_qualifier = FALSE,
+    include_istd = FALSE,
+    min.signalblank.median.spl.pblk = 10
+  )
+
+  m <- step3@metrics_qc
+  expect_equal(unique(m$filter_cva), TRUE)
+  expect_equal(unique(m$filter_linearity), TRUE)
+  expect_equal(unique(m$filter_sb), TRUE)
+  expect_equal(m$pass_cva, step1@metrics_qc$pass_cva)
+  expect_equal(m$pass_linearity, step2@metrics_qc$pass_linearity)
+  expect_lt(sum(m$all_filter_pass), sum(step1@metrics_qc$all_filter_pass))
+})
+
+
+test_that("filter_features_qc keeps the CV settings of stored metrics unless asked", {
+  robust <- calc_qc_metrics(mexp, use_robust_cv = TRUE)
+  mexp_res <- filter_features_qc(
+    robust,
+    max.cv.conc.bqc = 20,
+    include_qualifier = FALSE,
+    include_istd = FALSE
+  )
+  expect_equal(mexp_res@metrics_qc$conc_cv_bqc, robust@metrics_qc$conc_cv_bqc)
+
+  expect_message(
+    mexp_res <- filter_features_qc(
+      mexp_proc,
+      use_robust_cv = TRUE,
+      include_qualifier = FALSE,
+      include_istd = FALSE,
+      max.cv.conc.bqc = 20
+    ),
+    "recalculated"
+  )
+  expect_equal(mexp_res@metrics_qc$conc_cv_bqc, robust@metrics_qc$conc_cv_bqc)
+})
+
+
+test_that("calc_qc_metrics leaves the feature classes unchanged", {
+  mexp_res <- calc_qc_metrics(mexp)
+  expect_equal(mexp_res@dataset, mexp@dataset)
+})
+
+
 # Confirm overwriting of QC criteria works
 
 test_that("Confirm overwriting of QC criteria works", {
