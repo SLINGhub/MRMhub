@@ -28,15 +28,18 @@ missing): with \code{qualifier_action = "include"} all of them, with \code{"sepa
 quantifiers and qualifiers each into their own feature (the qualifier sum is
 named \verb{<analyte_id>_qual}), and with \code{"exclude"} only the quantifiers, while
 qualifiers are kept as they are. An analyte with a single feature in its group
-keeps its \code{feature_id}.
+keeps its \code{feature_id}. Only features present in the dataset are summed:
+excluded features and features listed only in the metadata keep their
+\code{feature_id} and do not affect the sum.
 
 Only raw signal variables are aggregated across the transitions of an analyte:
 \code{feature_intensity}, \code{feature_height} and \code{feature_area} are summed, and
 \code{feature_rt} is averaged. A sum is \code{NA} in an analysis where a constituent is
 missing, since a partial sum would look like a valid value; a warning reports
-these analyses. \code{feature_fwhm} and \code{feature_width} are set to \code{NA} for merged
-analytes: the constituents are separate chromatographic peaks, so no
-aggregate of their peak widths describes the merged quantity.
+these analyses. \code{feature_fwhm}, \code{feature_width}, \code{feature_int_start} and
+\code{feature_int_end} are set to \code{NA} for merged analytes: the constituents are
+separate chromatographic peaks, so no aggregate of their peak widths or
+borders describes the merged quantity.
 
 Summing transitions redefines \code{feature_intensity}, so all values \emph{derived}
 from the pre-merge intensities are invalidated and removed: normalized
@@ -46,9 +49,12 @@ merging. A message reports this when such values were present.
 
 The summed features must be measured and quantified alike: an error is raised
 when they combine internal standards with analytes, or differ in
-\code{istd_feature_id}, \code{quant_istd_feature_id} or \code{response_factor}. Transitions
-of one internal standard can be summed; references to them in the feature,
-ISTD and interference metadata are updated. Other metadata (\code{feature_class},
+\code{istd_feature_id}, \code{quant_istd_feature_id}, \code{response_factor} or
+\code{interference_feature_id}. An error is also raised when a summed id equals
+the \code{feature_id} of another feature. Transitions of one internal standard can
+be summed; references to summed features in the feature, ISTD and
+interference metadata are updated, and interferences between transitions
+summed into one feature are removed. Other metadata (\code{feature_class},
 \code{feature_label}) comes from the first constituent, with a warning when the
 constituents disagree.
 

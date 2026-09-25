@@ -23,15 +23,18 @@
 #' quantifiers and qualifiers each into their own feature (the qualifier sum is
 #' named `<analyte_id>_qual`), and with `"exclude"` only the quantifiers, while
 #' qualifiers are kept as they are. An analyte with a single feature in its group
-#' keeps its `feature_id`.
+#' keeps its `feature_id`. Only features present in the dataset are summed:
+#' excluded features and features listed only in the metadata keep their
+#' `feature_id` and do not affect the sum.
 #'
 #' Only raw signal variables are aggregated across the transitions of an analyte:
 #' `feature_intensity`, `feature_height` and `feature_area` are summed, and
 #' `feature_rt` is averaged. A sum is `NA` in an analysis where a constituent is
 #' missing, since a partial sum would look like a valid value; a warning reports
-#' these analyses. `feature_fwhm` and `feature_width` are set to `NA` for merged
-#' analytes: the constituents are separate chromatographic peaks, so no
-#' aggregate of their peak widths describes the merged quantity.
+#' these analyses. `feature_fwhm`, `feature_width`, `feature_int_start` and
+#' `feature_int_end` are set to `NA` for merged analytes: the constituents are
+#' separate chromatographic peaks, so no aggregate of their peak widths or
+#' borders describes the merged quantity.
 #'
 #' Summing transitions redefines `feature_intensity`, so all values *derived*
 #' from the pre-merge intensities are invalidated and removed: normalized
@@ -41,9 +44,12 @@
 #'
 #' The summed features must be measured and quantified alike: an error is raised
 #' when they combine internal standards with analytes, or differ in
-#' `istd_feature_id`, `quant_istd_feature_id` or `response_factor`. Transitions
-#' of one internal standard can be summed; references to them in the feature,
-#' ISTD and interference metadata are updated. Other metadata (`feature_class`,
+#' `istd_feature_id`, `quant_istd_feature_id`, `response_factor` or
+#' `interference_feature_id`. An error is also raised when a summed id equals
+#' the `feature_id` of another feature. Transitions of one internal standard can
+#' be summed; references to summed features in the feature, ISTD and
+#' interference metadata are updated, and interferences between transitions
+#' summed into one feature are removed. Other metadata (`feature_class`,
 #' `feature_label`) comes from the first constituent, with a warning when the
 #' constituents disagree.
 #'
@@ -68,15 +74,28 @@ data_sum_features <- function(
   )
   af <- data@annot_features |>
     dplyr::left_join(
-      sum_feature_mapping(data@annot_features, qualifier_action),
+      sum_feature_mapping(
+        data@annot_features,
+        qualifier_action,
+        unique(data@dataset$feature_id)
+      ),
       by = "feature_id"
     )
   remap <- function(x) {
     dplyr::if_else(x %in% af$feature_id, af$new_id[match(x, af$feature_id)], x)
   }
-  # ISTD references follow the summed ids (an ISTD refers to itself)
+  # ISTD and interference references follow the summed ids (an ISTD refers to
+  # itself)
   af <- af |>
-    mutate(across(any_of(c("istd_feature_id", "quant_istd_feature_id")), remap))
+    mutate(across(
+      any_of(c(
+        "istd_feature_id",
+        "quant_istd_feature_id",
+        "interference_feature_id"
+      )),
+      remap
+    ))
+  af <- drop_internal_interferences(af)
   check_merged_metadata(af)
 
   # Feature metadata: one row per new id; a merged analyte is a quantifier if
@@ -104,6 +123,12 @@ data_sum_features <- function(
     c("feature_intensity", "feature_height", "feature_area"),
     names(data@dataset)
   )
+  peak_vars <- c(
+    "feature_fwhm",
+    "feature_width",
+    "feature_int_start",
+    "feature_int_end"
+  )
   ds <- data@dataset |>
     select(-all_of(annot_cols)) |>
     dplyr::left_join(
@@ -121,14 +146,13 @@ data_sum_features <- function(
         ~ if (all(is.na(.x))) NA_real_ else mean(.x, na.rm = TRUE)
       ),
       # The constituents are separate chromatographic peaks, so no aggregate of
-      # their widths describes the merged analyte.
-      across(any_of(c("feature_fwhm", "feature_width")), ~NA_real_),
+      # their widths or borders describes the merged analyte.
+      across(any_of(peak_vars), ~NA_real_),
       across(
         -any_of(c(
           sum_vars,
           "feature_rt",
-          "feature_fwhm",
-          "feature_width",
+          peak_vars,
           "feature_id",
           "n_members"
         )),
@@ -209,11 +233,13 @@ data_sum_features <- function(
 }
 
 # Maps each feature to the id it has after summing (`new_id`) and the number of
-# transitions summed into it (`n_members`). Features share a group when they
-# share an `analyte_id` (an empty one counts as missing) and, depending on
-# `qualifier_action`, their quantifier role; a group of one keeps its id.
-sum_feature_mapping <- function(annot_features, qualifier_action) {
+# transitions summed into it (`n_members`). Features in the data (`present`)
+# share a group when they share an `analyte_id` (an empty one counts as missing)
+# and, depending on `qualifier_action`, their quantifier role; a group of one
+# and features absent from the data (excluded, metadata-only) keep their id.
+sum_feature_mapping <- function(annot_features, qualifier_action, present) {
   analyte <- dplyr::na_if(annot_features$analyte_id, "")
+  analyte[!annot_features$feature_id %in% present] <- NA
   qual <- !annot_features$is_quantifier %in% TRUE
   suffix <- switch(
     qualifier_action,
@@ -245,6 +271,13 @@ check_merged_metadata <- function(af) {
   if (nrow(merged) == 0) {
     return(invisible(NULL))
   }
+  clash <- intersect(merged$new_id, af$feature_id[af$n_members == 1])
+  if (length(clash) > 0) {
+    cli::cli_abort(c(
+      "x" = "Summed feature id{?s} {.val {mh_vec(clash)}} {?is/are} already used by another feature.",
+      "i" = "Change the {.field analyte_id} of the summed transitions, or give the other feature the same {.field analyte_id} to include it in the sum."
+    ))
+  }
   differs <- function(cols) {
     cols <- intersect(cols, names(merged))
     merged |>
@@ -266,7 +299,8 @@ check_merged_metadata <- function(af) {
   quant <- differs(c(
     "istd_feature_id",
     "quant_istd_feature_id",
-    "response_factor"
+    "response_factor",
+    "interference_feature_id"
   ))
   if (nrow(quant) > 0) {
     cli::cli_abort(c(
@@ -283,6 +317,22 @@ check_merged_metadata <- function(af) {
     ))
   }
   invisible(NULL)
+}
+
+# An interference between transitions summed into one feature no longer
+# describes an interference: it is removed from the feature metadata.
+drop_internal_interferences <- function(af) {
+  self <- af$n_members > 1 &
+    (af$interference_feature_id == af$new_id) %in% TRUE
+  if (any(self)) {
+    cli::cli_warn(c(
+      "!" = "Interferences between transitions summed into one feature were removed from the feature metadata.",
+      "i" = "Affected: {.val {mh_vec(unique(af$new_id[self]))}}"
+    ))
+    af$interference_feature_id[self] <- NA_character_
+    af$interference_contribution[self] <- NA_real_
+  }
+  af
 }
 
 # ISTD rows follow the summed ISTD ids; rows that collapse must agree on the

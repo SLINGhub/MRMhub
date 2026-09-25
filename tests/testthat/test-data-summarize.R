@@ -32,6 +32,9 @@ mexp2@annot_features[
 mexp2@annot_features[
   str_detect(mexp2@annot_features$feature_id, "^PC 4"),
 ]$is_quantifier <- FALSE
+# summed transitions must agree on their interference
+mexp2@annot_features$interference_feature_id <- NA_character_
+mexp2@annot_features$interference_contribution <- NA_real_
 mexp2 <- mrmhub:::link_data_metadata(mexp2)
 
 test_that("Default plot_matrixeffects looks as expected", {
@@ -406,4 +409,79 @@ test_that("data_sum_features clears calibration metrics", {
 
   res <- suppressMessages(suppressWarnings(data_sum_features(mexp_cal)))
   expect_equal(nrow(res@metrics_calibration), 0)
+})
+
+test_that("an excluded or unmeasured transition does not void the sum", {
+  mexp_ex <- suppressMessages(exclude_features(
+    mexp,
+    "LPC 18:1 (b)",
+    clear_existing = TRUE
+  ))
+  ded <- suppressMessages(data_sum_features(mexp_ex))
+  v <- ded@dataset$feature_intensity[ded@dataset$feature_id == "LPC 18:1 (a)"]
+  expect_gt(sum(!is.na(v)), 0)
+  expect_false("LPC 18:1" %in% ded@dataset$feature_id)
+
+  mexp_panel <- mexp
+  mexp_panel@annot_features <- dplyr::bind_rows(
+    mexp_panel@annot_features,
+    mexp_panel@annot_features |>
+      dplyr::filter(.data$feature_id == "LPC 18:1 (a)") |>
+      dplyr::mutate(feature_id = "LPC 18:1 (c)")
+  )
+  ded <- suppressMessages(data_sum_features(mexp_panel))
+  v <- ded@dataset$feature_intensity[ded@dataset$feature_id == "LPC 18:1"]
+  expect_gt(sum(!is.na(v)), 0)
+})
+
+test_that("a summed id that equals another feature_id aborts", {
+  mexp_clash <- mexp_orig
+  sm <- mexp_clash@annot_features$feature_id %in% c("SM 32:1", "PC 32:1")
+  mexp_clash@annot_features$analyte_id[sm] <- "PE 34:1"
+  mexp_clash@annot_features$istd_feature_id[sm] <- "PC 33:1 d7 (ISTD)"
+  mexp_clash@annot_features$quant_istd_feature_id[sm] <- "PC 33:1 d7 (ISTD)"
+  mexp_clash <- mrmhub:::link_data_metadata(mexp_clash)
+  expect_error(data_sum_features(mexp_clash), "PE 34:1")
+})
+
+test_that("interference references in the feature metadata follow summed ids", {
+  mexp_int <- mexp
+  af <- mexp_int@annot_features
+  af$interference_feature_id[af$feature_id == "PC 32:1"] <- "LPC 18:1 (a)"
+  af$interference_contribution[af$feature_id == "PC 32:1"] <- 0.1
+  mexp_int@annot_features <- af
+  mexp_int <- mrmhub:::link_data_metadata(mexp_int)
+  ded <- suppressMessages(data_sum_features(mexp_int))
+  ref <- ded@annot_features$interference_feature_id[
+    ded@annot_features$feature_id == "PC 32:1"
+  ]
+  expect_equal(ref, "LPC 18:1")
+})
+
+test_that("merged analytes get NA peak borders", {
+  mexp_b <- mexp
+  mexp_b@dataset$feature_int_start <- mexp_b@dataset$feature_rt - 0.1
+  mexp_b@dataset$feature_int_end <- mexp_b@dataset$feature_rt + 0.1
+  ded <- suppressMessages(data_sum_features(mexp_b))
+  merged <- ded@dataset[ded@dataset$feature_id == "LPC 18:1", ]
+  expect_true(all(is.na(merged$feature_int_start)))
+  expect_true(all(is.na(merged$feature_int_end)))
+  kept <- ded@dataset[ded@dataset$feature_id == "CE 18:1", ]
+  expect_false(anyNA(kept$feature_int_start))
+})
+
+test_that("an interference within a summed feature is removed from the feature metadata", {
+  mexp_int <- mexp
+  af <- mexp_int@annot_features
+  af$interference_feature_id[af$feature_id == "LPC 18:1 (a)"] <- "LPC 18:1 (b)"
+  af$interference_contribution[af$feature_id == "LPC 18:1 (a)"] <- 0.1
+  mexp_int@annot_features <- af
+  mexp_int <- mrmhub:::link_data_metadata(mexp_int)
+  expect_warning(
+    ded <- suppressMessages(data_sum_features(mexp_int)),
+    "LPC 18:1"
+  )
+  row <- ded@annot_features[ded@annot_features$feature_id == "LPC 18:1", ]
+  expect_true(is.na(row$interference_feature_id))
+  expect_true(is.na(row$interference_contribution))
 })
