@@ -659,7 +659,11 @@ test_that("plot_qcmetrics_comparison starts only CV scatter axes at 0", {
   expect_equal(rt[["y"]], 0)
   # diff/ratio keep NA lower limits (negatives = improvement)
   expect_true(all(is.na(lower("diff", "intensity_cv_tqc", "intensity_cv_bqc"))))
-  expect_true(all(is.na(lower("ratio", "intensity_cv_tqc", "intensity_cv_bqc"))))
+  expect_true(all(is.na(lower(
+    "ratio",
+    "intensity_cv_tqc",
+    "intensity_cv_bqc"
+  ))))
 })
 
 # Branch 5: shared pretty-axis helper must render >=3 non-empty labels on both
@@ -668,12 +672,16 @@ test_that("plot_qcmetrics_comparison axes render >=3 non-empty labels", {
   axis_labels <- function(p, axis) {
     b <- ggplot2::ggplot_build(p)
     lbl <- b$layout$panel_params[[1]][[axis]]$get_labels()
-    lbl[!vapply(
-      lbl,
-      function(x) is.null(x) || (length(x) == 1 && is.na(x)) ||
-        (is.character(x) && !nzchar(x)),
-      logical(1)
-    )]
+    lbl[
+      !vapply(
+        lbl,
+        function(x)
+          is.null(x) ||
+            (length(x) == 1 && is.na(x)) ||
+            (is.character(x) && !nzchar(x)),
+        logical(1)
+      )
+    ]
   }
 
   p <- plot_qcmetrics_comparison(
@@ -696,4 +704,18 @@ test_that("plot_qcmetrics_comparison axes render >=3 non-empty labels", {
   )
   expect_gte(length(axis_labels(p_log, "x")), 3)
   expect_gte(length(axis_labels(p_log, "y")), 3)
+})
+
+test_that("plot_qcmetrics_comparison() names non-default metric settings", {
+  args <- list(
+    x_variable = "intensity_cv_bqc",
+    y_variable = "norm_intensity_cv_bqc",
+    plot_type = "scatter"
+  )
+  p <- do.call(plot_qcmetrics_comparison, c(list(data = mexp), args))
+  expect_null(p$labels$caption)
+
+  mexp_robust <- calc_qc_metrics(mexp, use_robust_cv = TRUE)
+  p <- do.call(plot_qcmetrics_comparison, c(list(data = mexp_robust), args))
+  expect_match(p$labels$caption, "robust %CV")
 })

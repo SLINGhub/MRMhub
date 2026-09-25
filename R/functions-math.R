@@ -50,6 +50,24 @@ cv <- function(x, na.rm = FALSE, use_robust_cv = FALSE, min_n = 1L) {
   spread / center * 100
 }
 
+# D-ratio (Broadhurst 2018): spread of the QC values over the spread of the
+# study-sample values, SD- or MAD-based. NA below `min_n` non-missing values on
+# either side, or for a zero spread (ties make a MAD of 0 common at small n).
+dratio <- function(x_qc, x_spl, use_mad = FALSE, min_n = 3L) {
+  x_qc <- x_qc[!is.na(x_qc)]
+  x_spl <- x_spl[!is.na(x_spl)]
+  if (length(x_qc) < min_n || length(x_spl) < min_n) {
+    return(NA_real_)
+  }
+  spread <- if (use_mad) stats::mad else stats::sd
+  s_qc <- spread(x_qc)
+  s_spl <- spread(x_spl)
+  if (s_qc == 0 || s_spl == 0) {
+    return(NA_real_)
+  }
+  s_qc / s_spl
+}
+
 #' Percent coefficient of variation (%CV) based on log-transformation
 #'
 #' Computes the percent coefficient of variation (CV) based on the log-transformation of

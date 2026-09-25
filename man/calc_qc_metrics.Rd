@@ -106,6 +106,10 @@ The latter would indicate inconsistent analysis conditions.
 }
 \item \strong{Intensity Metrics}:
 \itemize{
+\item \code{n_bqc}, \code{n_tqc}, \code{n_spl}: Number of analyses with a non-missing intensity
+per QC type, i.e. the replicates behind the \%CV and D-ratio (the median
+of the per-batch counts with \code{use_batch_medians = TRUE}). \%CV and D-ratio
+are \code{NA} below 3 replicates.
 \item \verb{intensity_min_*}: Minimum intensity value for features across different QC sample types such as SPL, TQC, BQC, etc.
 \item \verb{intensity_max_*}: Maximum intensity values across sample types.
 \item \verb{intensity_median_*}: Median intensity for various QC sample types.

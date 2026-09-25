@@ -16,7 +16,7 @@ test_that("calc_qc_metrics works for all qc groups", {
   mexp_res <- calc_qc_metrics(mexp, use_batch_medians = FALSE)
 
   expect_s4_class(mexp_res, "MRMhubExperiment")
-  expect_equal(dim(mexp_res@metrics_qc), c(29, 79))
+  expect_equal(dim(mexp_res@metrics_qc), c(29, 82))
 
   expect_equal(max(mexp_res@metrics_qc$product_mz), 829.4)
   expect_equal(min(mexp_res@metrics_qc$missing_intensity_prop_spl), 0)
@@ -110,7 +110,7 @@ test_that("calc_qc_metrics floors QC %CV below 3 replicates and surfaces it", {
 
   expect_message(
     mexp_res <- calc_qc_metrics(mexp_low, use_batch_medians = FALSE),
-    "%CV not computed"
+    "%CV and D-ratio not computed"
   )
   # the floored QC type -> all NA
   expect_true(all(is.na(mexp_res@metrics_qc$intensity_cv_tqc)))
@@ -124,7 +124,7 @@ test_that("calc_qc_metrics batch-wise works for all qc groups", {
   mexp_res <- calc_qc_metrics(mexp, use_batch_medians = TRUE)
 
   expect_s4_class(mexp_res, "MRMhubExperiment")
-  expect_equal(dim(mexp_res@metrics_qc), c(29, 79))
+  expect_equal(dim(mexp_res@metrics_qc), c(29, 82))
 
   expect_equal(max(mexp_res@metrics_qc$product_mz), 829.4)
   expect_equal(min(mexp_res@metrics_qc$missing_intensity_prop_spl), 0)
@@ -206,7 +206,7 @@ test_that("calc_qc_metrics batch-wise works for all with all incl FALSE ", {
   )
 
   expect_s4_class(mexp_res, "MRMhubExperiment")
-  expect_equal(dim(mexp_res@metrics_qc), c(29, 50))
+  expect_equal(dim(mexp_res@metrics_qc), c(29, 53))
 
   expect_false("norm_intensity_cv_spl" %in% colnames(mexp_res@metrics_qc))
   expect_false("conc_cv_spl" %in% colnames(mexp_res@metrics_qc))
@@ -224,7 +224,7 @@ test_that("calc_qc_metrics batch-wise works for all with all incl FALSE across b
     include_calibration_results = FALSE
   )
 
-  expect_equal(dim(mexp_res@metrics_qc), c(29, 50))
+  expect_equal(dim(mexp_res@metrics_qc), c(29, 53))
 
   expect_false("norm_intensity_cv_spl" %in% colnames(mexp_res@metrics_qc))
   expect_false("conc_cv_spl" %in% colnames(mexp_res@metrics_qc))
@@ -241,7 +241,7 @@ test_that("calc_qc_metrics batch-wise works for some incl FALSE ", {
     include_response_stats = TRUE,
     include_calibration_results = FALSE
   )
-  expect_equal(dim(mexp_res@metrics_qc), c(29, 65))
+  expect_equal(dim(mexp_res@metrics_qc), c(29, 68))
 
   expect_true("norm_intensity_cv_spl" %in% colnames(mexp_res@metrics_qc))
   expect_false("conc_cv_spl" %in% colnames(mexp_res@metrics_qc))
@@ -258,7 +258,7 @@ test_that("calc_qc_metrics batch-wise works for some other incl FALSE ", {
     include_response_stats = TRUE,
     include_calibration_results = FALSE
   )
-  expect_equal(dim(mexp_res@metrics_qc), c(29, 70))
+  expect_equal(dim(mexp_res@metrics_qc), c(29, 73))
 
   expect_false("norm_intensity_cv_spl" %in% colnames(mexp_res@metrics_qc))
   expect_true("conc_cv_spl" %in% colnames(mexp_res@metrics_qc))
@@ -275,7 +275,7 @@ test_that("calc_qc_metrics batch-wise works at different processing status ", {
 
   #mexp_temp@annot_responsecurves <- mexp_temp@annot_responsecurves[0,]
   mexp_res <- calc_qc_metrics(mexp_temp, use_batch_medians = TRUE)
-  expect_equal(dim(mexp_res@metrics_qc), c(29, 56))
+  expect_equal(dim(mexp_res@metrics_qc), c(29, 59))
   expect_false("norm_intensity_cv_spl" %in% colnames(mexp_res@metrics_qc))
   expect_false("conc_cv_spl" %in% colnames(mexp_res@metrics_qc))
 })
@@ -994,6 +994,42 @@ test_that("an S/B criterion for a blank type absent from the data aborts", {
     ),
     "No UBLK analyses"
   )
+})
+
+
+test_that("D-ratios need 3 replicates and a non-zero spread", {
+  ids <- mexp_proc@metrics_qc |>
+    dplyr::filter(!.data$is_istd) |>
+    dplyr::pull(.data$feature_id)
+  bqc_ids <- mexp@dataset |>
+    dplyr::filter(.data$qc_type == "BQC") |>
+    dplyr::distinct(.data$analysis_id) |>
+    dplyr::pull()
+  mexp_dr <- mexp
+  mexp_dr@dataset <- mexp_dr@dataset |>
+    dplyr::mutate(
+      feature_conc = dplyr::case_when(
+        # only two BQC replicates
+        .data$feature_id == ids[1] & .data$analysis_id %in% bqc_ids[-(1:2)] ~
+          NA,
+        # identical BQC values: zero spread
+        .data$feature_id == ids[2] & .data$qc_type == "BQC" ~ 1,
+        .default = .data$feature_conc
+      ),
+      feature_intensity = dplyr::if_else(
+        .data$feature_id == ids[1] & .data$analysis_id %in% bqc_ids[-(1:2)],
+        NA,
+        .data$feature_intensity
+      )
+    )
+  expect_message(
+    mexp_dr <- calc_qc_metrics(mexp_dr),
+    "D-ratio not computed"
+  )
+  m <- mexp_dr@metrics_qc |> dplyr::filter(.data$feature_id %in% ids[1:3])
+  expect_equal(m$n_bqc, c(2, length(bqc_ids), length(bqc_ids)))
+  expect_equal(is.na(m$conc_dratio_sd_bqc), c(TRUE, TRUE, FALSE))
+  expect_equal(is.na(m$conc_dratio_mad_bqc), c(TRUE, TRUE, FALSE))
 })
 
 

@@ -59,6 +59,10 @@
 #'   - `rt_median_*`: Median retention time for specific QC sample types like PBLK, SPL, BQC, TQC, etc.
 #'
 #' - **Intensity Metrics**:
+#'   - `n_bqc`, `n_tqc`, `n_spl`: Number of analyses with a non-missing intensity
+#'     per QC type, i.e. the replicates behind the %CV and D-ratio (the median
+#'     of the per-batch counts with `use_batch_medians = TRUE`). %CV and D-ratio
+#'     are `NA` below 3 replicates.
 #'   - `intensity_min_*`: Minimum intensity value for features across different QC sample types such as SPL, TQC, BQC, etc.
 #'   - `intensity_max_*`: Maximum intensity values across sample types.
 #'   - `intensity_median_*`: Median intensity for various QC sample types.
@@ -334,7 +338,7 @@ calc_qc_metrics <- function(
     if (nrow(low_rep) > 0) {
       by_qc <- dplyr::count(low_rep, .data$qc_type)
       mh_warn(
-        "%CV not computed for {nrow(low_rep)} feature\u00d7QC-type\u00d7variable combination{?s} with fewer than {min_cv_replicates} replicates ({paste0(by_qc$qc_type, ': ', by_qc$n, collapse = ', ')})."
+        "%CV and D-ratio not computed for {nrow(low_rep)} feature\u00d7QC-type\u00d7variable combination{?s} with fewer than {min_cv_replicates} replicates ({paste0(by_qc$qc_type, ': ', by_qc$n, collapse = ', ')})."
       )
     }
   }
@@ -420,6 +424,9 @@ calc_qc_metrics <- function(
     },
     if (do_int) {
       rlang::exprs(
+        n_bqc = sum(!is.na(.data$feature_intensity[.data$qc_type == "BQC"])),
+        n_tqc = sum(!is.na(.data$feature_intensity[.data$qc_type == "TQC"])),
+        n_spl = sum(!is.na(.data$feature_intensity[.data$qc_type == "SPL"])),
         intensity_min_spl = safe_min(
           .data$feature_intensity[.data$qc_type == "SPL"],
           na.rm = TRUE
@@ -543,38 +550,30 @@ calc_qc_metrics <- function(
           use_robust_cv,
           min_n = min_cv_replicates
         ),
-        normint_dratio_sd_bqc = sd(
+        normint_dratio_sd_bqc = dratio(
           .data$feature_norm_intensity[.data$qc_type == "BQC"],
-          na.rm = TRUE
-        ) /
-          sd(
-            .data$feature_norm_intensity[.data$qc_type == "SPL"],
-            na.rm = TRUE
-          ),
-        normint_dratio_sd_tqc = sd(
+          .data$feature_norm_intensity[.data$qc_type == "SPL"],
+          use_mad = FALSE,
+          min_n = min_cv_replicates
+        ),
+        normint_dratio_sd_tqc = dratio(
           .data$feature_norm_intensity[.data$qc_type == "TQC"],
-          na.rm = TRUE
-        ) /
-          sd(
-            .data$feature_norm_intensity[.data$qc_type == "SPL"],
-            na.rm = TRUE
-          ),
-        normint_dratio_mad_bqc = mad(
+          .data$feature_norm_intensity[.data$qc_type == "SPL"],
+          use_mad = FALSE,
+          min_n = min_cv_replicates
+        ),
+        normint_dratio_mad_bqc = dratio(
           .data$feature_norm_intensity[.data$qc_type == "BQC"],
-          na.rm = TRUE
-        ) /
-          mad(
-            .data$feature_norm_intensity[.data$qc_type == "SPL"],
-            na.rm = TRUE
-          ),
-        normint_dratio_mad_tqc = mad(
+          .data$feature_norm_intensity[.data$qc_type == "SPL"],
+          use_mad = TRUE,
+          min_n = min_cv_replicates
+        ),
+        normint_dratio_mad_tqc = dratio(
           .data$feature_norm_intensity[.data$qc_type == "TQC"],
-          na.rm = TRUE
-        ) /
-          mad(
-            .data$feature_norm_intensity[.data$qc_type == "SPL"],
-            na.rm = TRUE
-          )
+          .data$feature_norm_intensity[.data$qc_type == "SPL"],
+          use_mad = TRUE,
+          min_n = min_cv_replicates
+        )
       )
     },
     if (do_conc) {
@@ -629,26 +628,30 @@ calc_qc_metrics <- function(
           use_robust_cv,
           min_n = min_cv_replicates
         ),
-        conc_dratio_sd_bqc = sd(
+        conc_dratio_sd_bqc = dratio(
           .data$feature_conc[.data$qc_type == "BQC"],
-          na.rm = TRUE
-        ) /
-          sd(.data$feature_conc[.data$qc_type == "SPL"], na.rm = TRUE),
-        conc_dratio_sd_tqc = sd(
+          .data$feature_conc[.data$qc_type == "SPL"],
+          use_mad = FALSE,
+          min_n = min_cv_replicates
+        ),
+        conc_dratio_sd_tqc = dratio(
           .data$feature_conc[.data$qc_type == "TQC"],
-          na.rm = TRUE
-        ) /
-          sd(.data$feature_conc[.data$qc_type == "SPL"], na.rm = TRUE),
-        conc_dratio_mad_bqc = mad(
+          .data$feature_conc[.data$qc_type == "SPL"],
+          use_mad = FALSE,
+          min_n = min_cv_replicates
+        ),
+        conc_dratio_mad_bqc = dratio(
           .data$feature_conc[.data$qc_type == "BQC"],
-          na.rm = TRUE
-        ) /
-          mad(.data$feature_conc[.data$qc_type == "SPL"], na.rm = TRUE),
-        conc_dratio_mad_tqc = mad(
+          .data$feature_conc[.data$qc_type == "SPL"],
+          use_mad = TRUE,
+          min_n = min_cv_replicates
+        ),
+        conc_dratio_mad_tqc = dratio(
           .data$feature_conc[.data$qc_type == "TQC"],
-          na.rm = TRUE
-        ) /
-          mad(.data$feature_conc[.data$qc_type == "SPL"], na.rm = TRUE)
+          .data$feature_conc[.data$qc_type == "SPL"],
+          use_mad = TRUE,
+          min_n = min_cv_replicates
+        )
       )
     }
   )

@@ -26,6 +26,19 @@
   not detected in the study samples still fails. A signal-to-blank criterion
   for a blank type with no analyses in the dataset raises a clearer error.
 
+* `calc_qc_metrics()`: D-ratios are `NA` when the QC or the study samples have
+  fewer than 3 non-missing values, or a spread of zero, matching the existing
+  3-replicate floor for %CV. A zero MAD from tied values previously gave a
+  D-ratio of 0, which passed any D-ratio criterion.
+
+## New features
+
+* `calc_qc_metrics()` reports the number of replicates behind the %CV and
+  D-ratio as `n_bqc`, `n_tqc` and `n_spl`.
+
+* `plot_qcmetrics_comparison()` notes in a caption when the metrics were
+  calculated as robust %CV or as medians of within-batch values.
+
 ## Bug fixes
 
 * `filter_features_qc()`: chained calls with `clear_existing = FALSE` can now

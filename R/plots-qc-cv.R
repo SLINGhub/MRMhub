@@ -699,5 +699,19 @@ plot_qcmetrics_comparison <- function(
       legend_bg_alpha = legend_bg_alpha
     )
 
+  # Name non-default metric settings, which change what a %CV means
+  settings <- attr(data@metrics_qc, "qc_metrics_settings")
+  metric_notes <- c(
+    "robust %CV (1.4826\u00b7MAD/median)"[
+      isTRUE(settings$use_robust_cv) &&
+        any(str_detect(c(x_variable, y_variable), "_cv"))
+    ],
+    "median of within-batch values"[isTRUE(settings$use_batch_medians)]
+  )
+  if (length(metric_notes) > 0) {
+    g <- g +
+      ggplot2::labs(caption = paste0(paste(metric_notes, collapse = "; "), "."))
+  }
+
   return(g)
 }
