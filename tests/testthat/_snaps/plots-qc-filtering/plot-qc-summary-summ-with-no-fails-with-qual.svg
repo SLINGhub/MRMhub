@@ -60,10 +60,10 @@
 <polyline points='179.61,548.06 179.61,53.86 ' style='stroke-width: 0.43; stroke: #CCCCCC; stroke-dasharray: 1.00,3.00; stroke-linecap: butt;' />
 <polyline points='285.34,548.06 285.34,53.86 ' style='stroke-width: 0.43; stroke: #CCCCCC; stroke-dasharray: 1.00,3.00; stroke-linecap: butt;' />
 <polyline points='391.06,548.06 391.06,53.86 ' style='stroke-width: 0.43; stroke: #CCCCCC; stroke-dasharray: 1.00,3.00; stroke-linecap: butt;' />
-<rect x='73.88' y='300.96' width='0.00' height='247.10' style='stroke-width: 0.78; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #ADA3A3;' />
 <rect x='73.88' y='53.86' width='306.61' height='247.10' style='stroke-width: 0.78; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #02BF83;' />
-<text x='81.12' y='426.75' style='font-size: 6.50px; font-family: sans;' textLength='3.62px' lengthAdjust='spacingAndGlyphs'>0</text>
+<rect x='73.88' y='300.96' width='0.00' height='247.10' style='stroke-width: 0.78; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #ADA3A3;' />
 <text x='373.26' y='179.65' text-anchor='end' style='font-size: 6.50px; font-family: sans;' textLength='7.23px' lengthAdjust='spacingAndGlyphs'>29</text>
+<text x='81.12' y='426.75' style='font-size: 6.50px; font-family: sans;' textLength='3.62px' lengthAdjust='spacingAndGlyphs'>0</text>
 <rect x='67.75' y='53.86' width='343.40' height='494.20' style='stroke-width: 0.78; stroke: #333333;' />
 </g>
 <g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHw1NzYuMDA=)'>

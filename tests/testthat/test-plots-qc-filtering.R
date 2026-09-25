@@ -81,6 +81,44 @@ test_that("plot_qc_summary_byclass plots correctly", {
 })
 
 
+test_that("QC summary plots count each feature once, incl. kept features", {
+  mexp_res <- filter_features_qc(
+    mexp_proc,
+    include_qualifier = FALSE,
+    include_istd = FALSE,
+    max.cv.conc.bqc = 5,
+    features.to.keep = "CE 18:1"
+  )
+  p <- plot_qc_summary_overall(mexp_res, with_venn = FALSE)
+  bars <- ggplot2::ggplot_build(p)$data[[1]]
+  expect_equal(sum(bars$y), 19)
+  expect_equal(p$data$count_pass[p$data$qc_criteria == "kept_failed_qc"], 1)
+
+  p <- plot_qc_summary_byclass(mexp_res)
+  expect_equal(sum(p$data$count_pass), 19)
+  ce <- p$data[p$data$feature_class == "CE" & p$data$count_pass > 0, ]
+  expect_equal(as.character(ce$qc_criteria), "kept_failed_qc")
+})
+
+
+test_that("the Venn diagram covers the same features as the bars", {
+  mexp_res <- filter_features_qc(
+    mexp_proc,
+    include_qualifier = FALSE,
+    include_istd = FALSE,
+    min.signalblank.median.spl.pblk = 10,
+    max.cv.conc.bqc = 10
+  )
+  p_venn <- plot_qc_summary_overall(mexp_res)[[2]]
+  venn_ids <- unlist(lapply(ggplot2::ggplot_build(p_venn)$data, \(d) {
+    unlist(d[vapply(d, is.character, logical(1))])
+  }))
+  m <- mexp_res@metrics_qc
+  out_of_scope <- m$feature_id[m$is_istd | !m$is_quantifier]
+  expect_false(any(out_of_scope %in% venn_ids))
+})
+
+
 test_that("plot_qc_summary_x handle errors", {
   expect_error(
     plot_qc_summary_byclass(mexp_proc),

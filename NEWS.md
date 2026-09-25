@@ -58,6 +58,17 @@
 * `filter_features_qc()`: ISTDs no longer get a signal-to-blank verdict when no
   signal-to-blank criterion is set.
 
+* `plot_qc_summary_byclass()` and `plot_qc_summary_overall()` count each
+  feature once. Features retained via `features.to.keep` despite failing QC
+  are shown as a separate `kept_failed_qc` category instead of being counted
+  both as failed and as passed, which inflated totals and per-class
+  percentages. Features with only missing values are no longer also counted as
+  passed.
+
+* `plot_qc_summary_overall()`: the Venn diagram now covers the same features as
+  the bars (no ISTDs or qualifiers when these are excluded) and also requires
+  the missing-value criterion to be passed.
+
 # mrmhub 0.9.10
 
 ## New features

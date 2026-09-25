@@ -7,6 +7,8 @@
 #' followed by higher-level filters like the coefficient of variation (CV) or linear regression results.
 #' This means that a feature is classified as failing a given criterion (e.g., `CV`)
 #' only if it has passed all hierarchically lower filters (e.g., `S/B` ratio and minimum intensity).
+#' Each feature is counted once; features retained via `features.to.keep`
+#' despite failing are shown as `kept_failed_qc`.
 #'
 #' @template data_mexp
 #' @template font_base_size
@@ -27,7 +29,6 @@
 # @param exclude_istd Whether to exclude any internal standard features in the plot. Default is `FALSE`.
 
 # TODO: handling of features with (many) missing values, in SPL, in QC
-# TOOD: handle user_defined_keeper, i.e. add lighter green color for features that were forced kept
 # TODO: add option to facet by batch (required qc matrix by batch)
 plot_qc_summary_byclass <- function(
   data = NULL,
@@ -77,133 +78,41 @@ plot_qc_summary_byclass <- function(
 
   # d_qc$feature_class <- forcats::fct(d_qc$feature_class)
 
-  # Count how many features failed qc criteria, excluding features that failed before tested criteria (lower hiarchy)
-  # TODO: can surely be better implemented
-  d_qc_sum <- d_qc |>
-    ungroup() |>
+  # Each feature counts once, in the first QC criterion it fails
+  d_qc_in <- d_qc |>
     filter(.data$pass_istd, .data$pass_qualifier) |>
-    group_by(.data$feature_class) |>
-    summarise(
-      has_only_na = sum(.data$na_in_all, na.rm = TRUE),
-      above_missingness = sum(
-        (!replace_na(.data$na_in_all, TRUE) &
-          !replace_na(.data$pass_missingval, TRUE)),
-        na.rm = TRUE
-      ),
-      below_minint = sum(
-        (!replace_na(.data$na_in_all, TRUE) &
-          replace_na(.data$pass_missingval, TRUE)) &
-          !replace_na(.data$pass_minint, TRUE),
-        na.rm = TRUE
-      ),
-      below_sb = sum(
-        (!replace_na(.data$na_in_all, TRUE) &
-          replace_na(.data$pass_missingval, TRUE) &
-          replace_na(.data$pass_minint, TRUE)) &
-          !replace_na(.data$pass_sb, TRUE),
-        na.rm = TRUE
-      ),
-      above_cva = sum(
-        (!replace_na(.data$na_in_all, TRUE) &
-          replace_na(.data$pass_missingval, TRUE) &
-          replace_na(.data$pass_minint, TRUE) &
-          replace_na(.data$pass_sb, TRUE)) &
-          !replace_na(.data$pass_cva, TRUE),
-        na.rm = TRUE
-      ),
-      bad_linearity = sum(
-        (!replace_na(.data$na_in_all, TRUE) &
-          replace_na(.data$pass_missingval, TRUE) &
-          replace_na(.data$pass_minint, TRUE) &
-          replace_na(.data$pass_sb, TRUE) &
-          replace_na(.data$pass_cva, TRUE)) &
-          !replace_na(.data$pass_linearity, TRUE),
-        na.rm = TRUE
-      ),
-      above_dratio = sum(
-        (!replace_na(.data$na_in_all, TRUE) &
-          replace_na(.data$pass_missingval, TRUE) &
-          replace_na(.data$pass_minint, TRUE) &
-          replace_na(.data$pass_sb, TRUE) &
-          replace_na(.data$pass_cva, TRUE) &
-          replace_na(.data$pass_linearity, TRUE)) &
-          !replace_na(.data$pass_dratio, TRUE),
-        na.rm = TRUE
-      ),
-      all_filter_pass = sum(.data$all_filter_pass, na.rm = TRUE)
-    ) |>
-    tidyr::pivot_longer(
-      -"feature_class",
-      names_to = "qc_criteria",
-      values_to = "count_pass"
-    ) |>
-    ungroup() |>
-    group_by(.data$feature_class) |>
     mutate(
-      percent_pass = .data$count_pass /
-        sum(.data$count_pass, na.rm = TRUE) *
-        100
+      feature_class = droplevels(.data$feature_class),
+      qc_criteria = qc_summary_category(pick(everything()))
     )
-  qc_colors <- c(
-    all_filter_pass = "#02bf83",
-    above_dratio = "#b5a2f5",
-    bad_linearity = "#abdeed",
-    above_cva = "#F44336",
-    below_sb = "#d9d5b6",
-    below_minint = "#ada3a3",
-    above_missingness = "yellow",
-    has_only_na = "#111111"
-  )
-  d_qc_sum$qc_criteria <- forcats::fct_relevel(
-    d_qc_sum$qc_criteria,
-    rev(names(qc_colors))
-  )
-
-  # Remove levels/qc criteria for which was not filtered for
-  if (all(is.na(d_qc$na_in_all))) {
-    d_qc_sum$qc_criteria <- forcats::fct_recode(
-      d_qc_sum$qc_criteria,
-      NULL = "has_only_na"
+  d_qc_sum <- tidyr::expand_grid(
+    feature_class = levels(d_qc_in$feature_class),
+    qc_criteria = names(qc_summary_colors)
+  ) |>
+    left_join(
+      d_qc_in |>
+        mutate(feature_class = as.character(.data$feature_class)) |>
+        summarise(count_pass = n(), .by = c("feature_class", "qc_criteria")),
+      by = c("feature_class", "qc_criteria")
+    ) |>
+    mutate(
+      count_pass = replace_na(.data$count_pass, 0L),
+      percent_pass = .data$count_pass / sum(.data$count_pass) * 100,
+      .by = "feature_class"
     )
-  }
-  if (all(is.na(d_qc$pass_missingval))) {
-    d_qc_sum$qc_criteria <- forcats::fct_recode(
-      d_qc_sum$qc_criteria,
-      NULL = "above_missingness"
+  unused <- qc_summary_unused(d_qc_in, d_qc_sum)
+  d_qc_sum <- d_qc_sum |>
+    filter(!.data$qc_criteria %in% unused) |>
+    mutate(
+      feature_class = factor(
+        .data$feature_class,
+        levels(d_qc_in$feature_class)
+      ),
+      qc_criteria = factor(
+        .data$qc_criteria,
+        rev(setdiff(names(qc_summary_colors), unused))
+      )
     )
-  }
-  if (all(is.na(d_qc$pass_minint))) {
-    d_qc_sum$qc_criteria <- forcats::fct_recode(
-      d_qc_sum$qc_criteria,
-      NULL = "below_minint"
-    )
-  }
-  if (all(is.na(d_qc$pass_sb))) {
-    d_qc_sum$qc_criteria <- forcats::fct_recode(
-      d_qc_sum$qc_criteria,
-      NULL = "below_sb"
-    )
-  }
-  if (all(is.na(d_qc$pass_cva))) {
-    d_qc_sum$qc_criteria <- forcats::fct_recode(
-      d_qc_sum$qc_criteria,
-      NULL = "above_cva"
-    )
-  }
-  if (all(is.na(d_qc$pass_linearity))) {
-    d_qc_sum$qc_criteria <- forcats::fct_recode(
-      d_qc_sum$qc_criteria,
-      NULL = "bad_linearity"
-    )
-  }
-  if (all(is.na(d_qc$pass_dratio))) {
-    d_qc_sum$qc_criteria <- forcats::fct_recode(
-      d_qc_sum$qc_criteria,
-      NULL = "above_dratio"
-    )
-  }
-
-  d_qc_sum <- d_qc_sum |> drop_na("qc_criteria")
 
   p <- ggplot(
     d_qc_sum,
@@ -220,7 +129,7 @@ plot_qc_summary_byclass <- function(
       stat = "identity",
       na.rm = TRUE
     ) +
-    scale_fill_manual(values = qc_colors, na.value = "purple", drop = FALSE) +
+    scale_fill_manual(values = qc_summary_colors, drop = FALSE) +
     # facet_wrap(~Tissue) +
     # guides(fill = guide_legend(override.aes = list(size = 6))) +
     ggplot2::coord_flip() +
@@ -270,8 +179,14 @@ plot_qc_summary_byclass <- function(
 #' Plot overall QC filtering summary
 #'
 #' This function generates a summary of the feature QC filtering process, visualizing the number of features that passed or failed the various QC criteria.
-#' It includes a Venn diagram showing the features excluded due to different filtering criteria such as signal-to-blank ratios, CV thresholds, and linearity.
-#' The criteria are applied hierarchically, meaning a feature must pass all lower-tier filters before being considered for failure on higher-tier filters. See [plot_qc_summary_byclass()] for more information.
+#' The bars apply the criteria hierarchically: a feature is counted once, under
+#' the first criterion it fails, and features retained via `features.to.keep`
+#' despite failing are shown as `kept_failed_qc`. See [plot_qc_summary_byclass()]
+#' for more information.
+#' The optional Venn diagram shows, for the features passing the missing-value
+#' and minimum-intensity criteria, the overlap of features failing the
+#' signal-to-blank, CV and linearity criteria; unlike the bars, it is not
+#' hierarchical.
 #'
 #' @template data_mexp
 #' @param with_venn Whether to include a Venn diagram summarizing the features excluded due to different QC criteria. Default is `TRUE`.
@@ -307,147 +222,22 @@ plot_qc_summary_overall <- function(
   d_qc <- data@metrics_qc |>
     filter(.data$valid_feature, .data$in_data)
 
-  d_qc_sum <- d_qc |>
-    ungroup() |>
-    filter(.data$pass_istd, .data$pass_qualifier) |>
-    summarise(
-      has_only_na = sum(.data$na_in_all, na.rm = TRUE),
-      above_missingness = sum(
-        (!replace_na(.data$na_in_all, TRUE) &
-          !replace_na(.data$pass_missingval, TRUE)),
-        na.rm = TRUE
-      ),
-      below_minint = sum(
-        (!replace_na(.data$na_in_all, TRUE) &
-          replace_na(.data$pass_missingval, TRUE)) &
-          !replace_na(.data$pass_minint, TRUE),
-        na.rm = TRUE
-      ),
-      below_sb = sum(
-        (!replace_na(.data$na_in_all, TRUE) &
-          replace_na(.data$pass_missingval, TRUE) &
-          replace_na(.data$pass_minint, TRUE)) &
-          !replace_na(.data$pass_sb, TRUE),
-        na.rm = TRUE
-      ),
-      above_cva = sum(
-        (!replace_na(.data$na_in_all, TRUE) &
-          replace_na(.data$pass_missingval, TRUE) &
-          replace_na(.data$pass_minint, TRUE) &
-          replace_na(.data$pass_sb, TRUE)) &
-          !replace_na(.data$pass_cva, TRUE),
-        na.rm = TRUE
-      ),
-      bad_linearity = sum(
-        (!replace_na(.data$na_in_all, TRUE) &
-          replace_na(.data$pass_missingval, TRUE) &
-          replace_na(.data$pass_minint, TRUE) &
-          replace_na(.data$pass_sb, TRUE) &
-          replace_na(.data$pass_cva, TRUE)) &
-          !replace_na(.data$pass_linearity, TRUE),
-        na.rm = TRUE
-      ),
-      above_dratio = sum(
-        (!replace_na(.data$na_in_all, TRUE) &
-          replace_na(.data$pass_missingval, TRUE) &
-          replace_na(.data$pass_minint, TRUE) &
-          replace_na(.data$pass_sb, TRUE) &
-          replace_na(.data$pass_cva, TRUE) &
-          replace_na(.data$pass_linearity, TRUE)) &
-          !replace_na(.data$pass_dratio, TRUE),
-        na.rm = TRUE
-      ),
-      all_filter_pass = sum(.data$all_filter_pass, na.rm = TRUE)
-    ) |>
-    tidyr::pivot_longer(
-      names_to = "qc_criteria",
-      values_to = "count_pass",
-      cols = everything()
-    ) |>
-    ungroup() |>
-    mutate(
-      percent_pass = .data$count_pass /
-        sum(.data$count_pass, na.rm = TRUE) *
-        100
-    ) |>
-    ungroup() |>
+  # Each feature counts once, in the first QC criterion it fails
+  d_qc_in <- d_qc |> filter(.data$pass_istd, .data$pass_qualifier)
+  category <- factor(qc_summary_category(d_qc_in), names(qc_summary_colors))
+  d_qc_sum <- tibble(
+    qc_criteria = levels(category),
+    count_pass = as.vector(table(category))
+  )
+  unused <- qc_summary_unused(d_qc_in, d_qc_sum)
+  d_qc_sum <- d_qc_sum |>
+    filter(!.data$qc_criteria %in% unused) |>
     mutate(
       qc_criteria = factor(
         .data$qc_criteria,
-        c(
-          "above_missingness",
-          "below_minint",
-          "has_only_na",
-          "below_sb",
-          "above_cva",
-          "above_dratio",
-          "bad_linearity",
-          "all_filter_pass"
-        )
+        rev(setdiff(names(qc_summary_colors), unused))
       )
     )
-
-  qc_colors <- c(
-    all_filter_pass = "#02bf83",
-    above_dratio = "#b5a2f5",
-    bad_linearity = "#abdeed",
-    above_cva = "#F44336",
-    below_sb = "#d9d5b6",
-    below_minint = "#ada3a3",
-    above_missingness = "yellow",
-    has_only_na = "#111111"
-  )
-  d_qc_sum$qc_criteria <- forcats::fct_relevel(
-    d_qc_sum$qc_criteria,
-    rev(names(qc_colors))
-  )
-
-  # Remove levels/qc criteria for which was not filtered for
-  if (
-    all(is.na(d_qc$na_in_all)) |
-      d_qc_sum$count_pass[d_qc_sum$qc_criteria == "has_only_na"] == 0
-  ) {
-    d_qc_sum$qc_criteria <- forcats::fct_recode(
-      d_qc_sum$qc_criteria,
-      NULL = "has_only_na"
-    )
-  }
-  if (all(is.na(d_qc$pass_missingval))) {
-    d_qc_sum$qc_criteria <- forcats::fct_recode(
-      d_qc_sum$qc_criteria,
-      NULL = "above_missingness"
-    )
-  }
-  if (all(is.na(d_qc$pass_minint))) {
-    d_qc_sum$qc_criteria <- forcats::fct_recode(
-      d_qc_sum$qc_criteria,
-      NULL = "below_minint"
-    )
-  }
-  if (all(is.na(d_qc$pass_sb))) {
-    d_qc_sum$qc_criteria <- forcats::fct_recode(
-      d_qc_sum$qc_criteria,
-      NULL = "below_sb"
-    )
-  }
-  if (all(is.na(d_qc$pass_cva))) {
-    d_qc_sum$qc_criteria <- forcats::fct_recode(
-      d_qc_sum$qc_criteria,
-      NULL = "above_cva"
-    )
-  }
-  if (all(is.na(d_qc$pass_linearity))) {
-    d_qc_sum$qc_criteria <- forcats::fct_recode(
-      d_qc_sum$qc_criteria,
-      NULL = "bad_linearity"
-    )
-  }
-  if (all(is.na(d_qc$pass_dratio))) {
-    d_qc_sum$qc_criteria <- forcats::fct_recode(
-      d_qc_sum$qc_criteria,
-      NULL = "above_dratio"
-    )
-  }
 
   p_bar <- ggplot(
     d_qc_sum |> drop_na("qc_criteria"),
@@ -455,7 +245,7 @@ plot_qc_summary_overall <- function(
   ) +
     geom_bar(width = 1, stat = "identity") +
     coord_flip() +
-    scale_fill_manual(values = qc_colors) +
+    scale_fill_manual(values = qc_summary_colors) +
     ggplot2::scale_y_continuous(expand = expansion(mult = c(0.02, 0.1))) +
     ggplot2::scale_x_discrete(expand = expansion(0.12, 0.12)) +
     # geom_text(aes(label = Count), size=4 ) +
@@ -489,22 +279,19 @@ plot_qc_summary_overall <- function(
     check_installed("ggvenn")
     check_installed("patchwork")
 
-    d_qc_venn <- d_qc
-
-    sb_failed <- d_qc_venn$feature_id[
-      !replace_na(d_qc_venn$na_in_all, TRUE) &
-        replace_na(d_qc_venn$pass_minint, TRUE) &
-        !replace_na(d_qc_venn$pass_sb, TRUE)
-    ]
-    cva_failed <- d_qc_venn$feature_id[
-      !replace_na(d_qc_venn$na_in_all, TRUE) &
-        replace_na(d_qc_venn$pass_minint, TRUE) &
-        !replace_na(d_qc_venn$pass_cva, TRUE)
-    ]
+    # Same features as the bars; among those passing the missing-value and
+    # minimum-intensity criteria, the (non-hierarchical) S/B, CV and linearity
+    # failures
+    d_qc_venn <- d_qc_in |>
+      filter(
+        !replace_na(.data$na_in_all, TRUE),
+        replace_na(.data$pass_missingval, TRUE),
+        replace_na(.data$pass_minint, TRUE)
+      )
+    sb_failed <- d_qc_venn$feature_id[!replace_na(d_qc_venn$pass_sb, TRUE)]
+    cva_failed <- d_qc_venn$feature_id[!replace_na(d_qc_venn$pass_cva, TRUE)]
     lin_failed <- d_qc_venn$feature_id[
-      !replace_na(d_qc_venn$na_in_all, TRUE) &
-        replace_na(d_qc_venn$pass_minint, TRUE) &
-        !replace_na(d_qc_venn$pass_linearity, TRUE)
+      !replace_na(d_qc_venn$pass_linearity, TRUE)
     ]
 
     sb_label <- "below S/B"
@@ -543,4 +330,53 @@ plot_qc_summary_overall <- function(
   }
 
   return(plt)
+}
+
+
+# QC summary categories, from the top of the stacked bar down, and colours
+qc_summary_colors <- c(
+  all_filter_pass = "#02bf83",
+  kept_failed_qc = "#00796b",
+  above_dratio = "#b5a2f5",
+  bad_linearity = "#abdeed",
+  above_cva = "#F44336",
+  below_sb = "#d9d5b6",
+  below_minint = "#ada3a3",
+  above_missingness = "yellow",
+  has_only_na = "#111111"
+)
+
+# One QC summary category per feature: the first criterion it fails, in the
+# hierarchical order. Features kept via `features.to.keep` despite failing get
+# their own category, so each feature is counted once.
+qc_summary_category <- function(d_qc) {
+  fails <- function(x) !replace_na(x, TRUE)
+  case_when(
+    !d_qc$all_qc_filter_pass & d_qc$pass_featureskeep ~ "kept_failed_qc",
+    replace_na(d_qc$na_in_all, FALSE) ~ "has_only_na",
+    fails(d_qc$pass_missingval) ~ "above_missingness",
+    fails(d_qc$pass_minint) ~ "below_minint",
+    fails(d_qc$pass_sb) ~ "below_sb",
+    fails(d_qc$pass_cva) ~ "above_cva",
+    fails(d_qc$pass_linearity) ~ "bad_linearity",
+    fails(d_qc$pass_dratio) ~ "above_dratio",
+    .default = "all_filter_pass"
+  )
+}
+
+# Categories not shown: criteria that were not applied, and empty NA or kept
+# categories
+qc_summary_unused <- function(d_qc, d_qc_sum) {
+  n <- function(x) sum(d_qc_sum$count_pass[d_qc_sum$qc_criteria == x])
+  unused <- c(
+    has_only_na = n("has_only_na") == 0,
+    kept_failed_qc = n("kept_failed_qc") == 0,
+    above_missingness = all(is.na(d_qc$pass_missingval)),
+    below_minint = all(is.na(d_qc$pass_minint)),
+    below_sb = all(is.na(d_qc$pass_sb)),
+    above_cva = all(is.na(d_qc$pass_cva)),
+    bad_linearity = all(is.na(d_qc$pass_linearity)),
+    above_dratio = all(is.na(d_qc$pass_dratio))
+  )
+  names(unused)[unused]
 }
