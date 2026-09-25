@@ -244,7 +244,7 @@ plot_qc_summary_overall <- function(
     )
 
   p_bar <- ggplot(
-    d_qc_sum |> drop_na("qc_criteria"),
+    d_qc_sum,
     aes(x = .data$qc_criteria, y = .data$count_pass, fill = .data$qc_criteria)
   ) +
     geom_bar(width = 1, stat = "identity") +
@@ -301,18 +301,17 @@ plot_qc_summary_overall <- function(
       !replace_na(d_qc_venn$pass_linearity, TRUE)
     ]
 
-    sb_label <- qc_summary_labels[["below_sb"]]
-    cva_label <- qc_summary_labels[["above_cva"]]
-    lin_label <- qc_summary_labels[["bad_linearity"]]
-
-    x2 <- list(sb_failed, cva_failed, lin_failed)
-    names(x2) <- c(sb_label, cva_label, lin_label)
+    keys <- c("below_sb", "above_cva", "bad_linearity")
+    x2 <- rlang::set_names(
+      list(sb_failed, cva_failed, lin_failed),
+      qc_summary_labels[keys]
+    )
 
     p_venn <- ggvenn_nowarning(
       x2,
-      c(sb_label, cva_label, lin_label),
+      names(x2),
       show_percentage = FALSE,
-      fill_color = c("#d9d5b6", "#F44336", "#abdeed"),
+      fill_color = unname(qc_summary_colors[keys]),
       fill_alpha = 0.5,
       stroke_size = 0.0,
       text_size = font_base_size / 3.5,

@@ -478,10 +478,6 @@ save_report_xlsx <- function(
   }
 
   names(table_list)[4:5] <- c(name_filt_spl, name_filt_all)
-  too_long <- names(table_list)[nchar(names(table_list)) > 31]
-  if (length(too_long) > 0) {
-    cli_abort("Sheet name{?s} longer than 31 characters: {.val {too_long}}.")
-  }
 
   if (rlang::is_interactive()) {
     message("Saving report to disk - please wait...")

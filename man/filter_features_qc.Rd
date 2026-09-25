@@ -89,10 +89,7 @@ explicit value recalculates them.}
 
 \item{min.intensity.highest.spl}{Minimum intensity of the highest intensity study sample (SPL). Default is \code{NA}.}
 
-\item{min.signalblank.median.spl.pblk}{Minimum signal-to-blank ratio for SPL samples and PBLK. Default is \code{NA}.
-A feature not detected in at least half of the blank analyses has a blank
-median of zero and a ratio of \code{Inf}, and passes; the same applies to UBLK
-and SBLK.}
+\item{min.signalblank.median.spl.pblk}{Minimum signal-to-blank ratio for SPL samples and PBLK. Default is \code{NA}.}
 
 \item{min.signalblank.median.spl.ublk}{Minimum signal-to-blank ratio for SPL samples and UBLK. Default is \code{NA}.}
 

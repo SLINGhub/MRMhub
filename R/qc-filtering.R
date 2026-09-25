@@ -871,9 +871,6 @@ calc_qc_metrics <- function(
 #' @param min.intensity.median.spl Minimum median intensity of study samples (SPL). Default is `NA`.
 #' @param min.intensity.highest.spl Minimum intensity of the highest intensity study sample (SPL). Default is `NA`.
 #' @param min.signalblank.median.spl.pblk Minimum signal-to-blank ratio for SPL samples and PBLK. Default is `NA`.
-#'   A feature not detected in at least half of the blank analyses has a blank
-#'   median of zero and a ratio of `Inf`, and passes; the same applies to UBLK
-#'   and SBLK.
 #' @param min.signalblank.median.spl.ublk Minimum signal-to-blank ratio for SPL samples and UBLK. Default is `NA`.
 #' @param min.signalblank.median.spl.sblk Minimum signal-to-blank ratio for SPL samples and SBLK. Default is `NA`.
 #'   For all signal-to-blank criteria, a feature not detected in a blank
@@ -1167,37 +1164,31 @@ filter_features_qc <- function(
         is.na(min.intensity.median.spl) &
         is.na(min.intensity.highest.spl)),
 
-      pass_sb = comp_lgl_vec(
-        list(
-          exempt_istd(
+      pass_sb = exempt_istd(
+        comp_lgl_vec(
+          list(
             compare_values(
               metrics_qc_local,
               "sb_ratio_pblk",
               min.signalblank.median.spl.pblk,
               ">"
             ),
-            .data$is_istd
-          ),
-          exempt_istd(
             compare_values(
               metrics_qc_local,
               "sb_ratio_ublk",
               min.signalblank.median.spl.ublk,
               ">"
             ),
-            .data$is_istd
-          ),
-          exempt_istd(
             compare_values(
               metrics_qc_local,
               "sb_ratio_sblk",
               min.signalblank.median.spl.sblk,
               ">"
-            ),
-            .data$is_istd
-          )
+            )
+          ),
+          .operator = "AND"
         ),
-        .operator = "AND"
+        .data$is_istd
       ),
       filter_sb = !(is.na(min.signalblank.median.spl.pblk) &
         is.na(min.signalblank.median.spl.ublk) &

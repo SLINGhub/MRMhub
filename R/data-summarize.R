@@ -97,6 +97,7 @@ data_sum_features <- function(
     ))
   af <- drop_internal_interferences(af)
   check_merged_metadata(af)
+  annot_istds <- remap_istd_table(data@annot_istds, remap)
 
   # Feature metadata: one row per new id; a merged analyte is a quantifier if
   # any constituent is one, other metadata comes from the first constituent.
@@ -135,8 +136,8 @@ data_sum_features <- function(
       af |> select("feature_id", "new_id", "n_members"),
       by = "feature_id"
     )
-  ds_merged <- ds |>
-    filter(.data$n_members > 1) |>
+  merged <- ds |> filter(.data$n_members > 1)
+  ds_merged <- merged |>
     summarise(
       .n_obs = sum(!is.na(.data$feature_intensity)),
       .complete = dplyr::n() == dplyr::first(.data$n_members),
@@ -145,22 +146,27 @@ data_sum_features <- function(
         any_of("feature_rt"),
         ~ if (all(is.na(.x))) NA_real_ else mean(.x, na.rm = TRUE)
       ),
-      # The constituents are separate chromatographic peaks, so no aggregate of
-      # their widths or borders describes the merged analyte.
-      across(any_of(peak_vars), ~NA_real_),
-      across(
-        -any_of(c(
-          sum_vars,
-          "feature_rt",
-          peak_vars,
-          "feature_id",
-          "n_members"
-        )),
-        dplyr::first
-      ),
       .by = c("analysis_id", "new_id")
     ) |>
-    mutate(across(all_of(sum_vars), ~ if_else(.data$.complete, .x, NA_real_)))
+    mutate(across(
+      all_of(sum_vars),
+      ~ if_else(.data$.complete, .x, NA_real_)
+    )) |>
+    # Other columns come from the first constituent. The constituents are
+    # separate chromatographic peaks, so no aggregate of their widths or
+    # borders describes the merged analyte.
+    dplyr::left_join(
+      merged |>
+        distinct(.data$analysis_id, .data$new_id, .keep_all = TRUE) |>
+        select(
+          -all_of(sum_vars),
+          -any_of("feature_rt"),
+          -"feature_id",
+          -"n_members"
+        ) |>
+        mutate(across(any_of(peak_vars), ~NA_real_)),
+      by = c("analysis_id", "new_id")
+    )
 
   partial <- ds_merged |>
     filter(.data$.n_obs > 0, is.na(.data$feature_intensity)) |>
@@ -188,7 +194,7 @@ data_sum_features <- function(
   if (any(af$n_members > 1)) {
     attr(data@dataset_orig, "summed_features") <- TRUE
   }
-  data@annot_istds <- remap_istd_table(data@annot_istds, remap)
+  data@annot_istds <- annot_istds
   data@annot_interferences <- remap_interferences(
     data@annot_interferences,
     remap

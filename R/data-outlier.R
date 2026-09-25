@@ -127,6 +127,7 @@ detect_outlier_pca <- function(
   if (log_transform) {
     m_raw <- log2(m_raw)
   }
+  m_raw <- drop_constant_columns(m_raw)
   pca_res <- prcomp(m_raw, scale = TRUE, center = TRUE)
 
   d_metadata <- d_filt |>

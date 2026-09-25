@@ -129,6 +129,10 @@
   `feature_int_start` and `feature_int_end` are `NA` for merged analytes, like
   the peak widths.
 
+* `detect_outlier_pca()` drops features with zero variance across the selected
+  samples, with a warning, as `plot_pca()` does; they previously stopped the PCA
+  with "cannot rescale a constant/zero column".
+
 * `filter_features_qc()`: chained calls with `clear_existing = FALSE` can now
   add response-curve criteria in a later step (this aborted with "There are
   only 0 response curves"), and a linearity criterion from an earlier step is
