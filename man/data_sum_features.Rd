@@ -23,11 +23,20 @@ fragments) or isomers that you want to combine into a single analyte intensity
 value, such as LPC sn1 and sn2 species.
 }
 \details{
+Features are summed when they share an \code{analyte_id} (an empty one counts as
+missing): with \code{qualifier_action = "include"} all of them, with \code{"separate"}
+quantifiers and qualifiers each into their own feature (the qualifier sum is
+named \verb{<analyte_id>_qual}), and with \code{"exclude"} only the quantifiers, while
+qualifiers are kept as they are. An analyte with a single feature in its group
+keeps its \code{feature_id}.
+
 Only raw signal variables are aggregated across the transitions of an analyte:
 \code{feature_intensity}, \code{feature_height} and \code{feature_area} are summed, and
-\code{feature_rt} is averaged. \code{feature_fwhm} and \code{feature_width} are set to \code{NA}
-for merged analytes: the constituents are separate chromatographic peaks, so
-no aggregate of their peak widths describes the merged quantity.
+\code{feature_rt} is averaged. A sum is \code{NA} in an analysis where a constituent is
+missing, since a partial sum would look like a valid value; a warning reports
+these analyses. \code{feature_fwhm} and \code{feature_width} are set to \code{NA} for merged
+analytes: the constituents are separate chromatographic peaks, so no
+aggregate of their peak widths describes the merged quantity.
 
 Summing transitions redefines \code{feature_intensity}, so all values \emph{derived}
 from the pre-merge intensities are invalidated and removed: normalized
@@ -35,24 +44,26 @@ intensities, concentrations, drift/batch correction results and QC metrics.
 Re-run \code{\link[=normalize_by_istd]{normalize_by_istd()}} and the quantitation/correction steps after
 merging. A message reports this when such values were present.
 
-A merged analyte inherits the feature metadata (\code{feature_class},
-\code{feature_label}, \code{istd_feature_id}) of its \emph{first} constituent transition. A
-warning is issued when the constituents disagree, since the value that wins is
-then arbitrary -- for \code{istd_feature_id} it silently decides which internal
-standard the merged analyte is normalized against.
+The summed features must be measured and quantified alike: an error is raised
+when they combine internal standards with analytes, or differ in
+\code{istd_feature_id}, \code{quant_istd_feature_id} or \code{response_factor}. Transitions
+of one internal standard can be summed; references to them in the feature,
+ISTD and interference metadata are updated. Other metadata (\code{feature_class},
+\code{feature_label}) comes from the first constituent, with a warning when the
+constituents disagree.
 
 \code{is_quantifier} is not inherited but determined by the merge: the merged
-analyte is a quantifier if any of its constituents is one. A quantifier
-combined with either a qualifier or another quantifier therefore yields a
-quantifier, whereas qualifiers merged among themselves remain a qualifier.
+analyte is a quantifier if any of its constituents is one.
 }
 \section{Experimental}{
 
 This function is \strong{experimental} and its behaviour may change. It overwrites the
 \code{feature_id} of features sharing an \code{analyte_id} in both the dataset and the
-analysis metadata, and the original \code{feature_id} is not backed up anywhere. It is
-intended to run early (before normalization/quantitation); running it on a
-processed object drops the derived variables (see Details). Use with caution and
-check the results carefully.
+feature metadata, and the original \code{feature_id} is not backed up anywhere. Run
+it after importing metadata and after any exclusions, \code{\link[=set_analysis_order]{set_analysis_order()}}
+or \code{\link[=set_intensity_var]{set_intensity_var()}}, and before normalization/quantitation: these steps
+rebuild the dataset from the imported data and stop with an error once
+features were summed. Running it on a processed object drops the derived
+variables (see Details).
 }
 

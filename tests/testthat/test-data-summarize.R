@@ -26,7 +26,8 @@ test_that("Default plot_matrixeffects looks as expected", {
 
 mexp2 <- mexp_orig
 mexp2@annot_features[
-  str_detect(mexp2@annot_features$feature_id, "^PC"),
+  str_detect(mexp2@annot_features$feature_id, "^PC") &
+    !mexp2@annot_features$is_istd,
 ]$analyte_id <- "PC"
 mexp2@annot_features[
   str_detect(mexp2@annot_features$feature_id, "^PC 4"),
@@ -44,7 +45,7 @@ test_that("Default plot_matrixeffects looks as expected", {
       mexp2_dedup@dataset$feature_id == "PC",
     ]$feature_intensity
   )
-  expect_equal(sum_pc, 2937988066.1)
+  expect_equal(sum_pc, 1017024332.8)
   sum_pc <- sum(
     mexp2_dedup@dataset[
       mexp2_dedup@dataset$feature_id == "PC_qual",
@@ -62,11 +63,12 @@ test_that("Default plot_matrixeffects looks as expected", {
       mexp2_dedup@dataset$feature_id == "PC",
     ]$feature_intensity
   )
-  expect_equal(sum_pc, 4653673278.4)
+  expect_equal(sum_pc, 2732709545.1)
 
   mexp2_dedup <- data_sum_features(mexp2, qualifier_action = "exclude")
   expect_true("PC" %in% unique(mexp2_dedup@dataset$feature_id))
-  expect_false("PC 40:6" %in% unique(mexp2_dedup@dataset$feature_id))
+  # qualifiers are not summed and stay as they are
+  expect_true("PC 40:6" %in% unique(mexp2_dedup@dataset$feature_id))
   expect_false("PC 32:1" %in% unique(mexp2_dedup@dataset$feature_id))
 
   sum_pc <- sum(
@@ -74,7 +76,7 @@ test_that("Default plot_matrixeffects looks as expected", {
       mexp2_dedup@dataset$feature_id == "PC",
     ]$feature_intensity
   )
-  expect_equal(sum_pc, 2937988066.1)
+  expect_equal(sum_pc, 1017024332.8)
 })
 
 test_that("data_sum_features sums feature_area and NAs the peak widths of merged analytes", {
@@ -143,10 +145,7 @@ test_that("a merged analyte quantifies if any constituent does", {
   merge_two <- function(q1, q2) {
     m <- mexp_orig
     af <- m@annot_features
-    f <- head(
-      af$feature_id[!af$is_istd & !af$feature_id %in% af$istd_feature_id],
-      2
-    )
+    f <- c("Cer d18:1/16:0", "Cer d18:1/24:0") # same ISTD
     m@annot_features$analyte_id[m@annot_features$feature_id %in% f] <- "M"
     m@annot_features$is_quantifier[m@annot_features$feature_id %in% f] <- c(
       q1,
@@ -217,9 +216,9 @@ test_that("data_sum_features removes correction snapshots of the merged variable
 
 test_that("data_sum_features warns when merged transitions disagree on feature metadata", {
   mexp_conflict <- mexp
-  mexp_conflict@annot_features$istd_feature_id[
+  mexp_conflict@annot_features$feature_label[
     mexp_conflict@annot_features$feature_id == "LPC 18:1 (b)"
-  ] <- "CE 18:1 d7 (ISTD)"
+  ] <- "other label"
 
   expect_warning(
     suppressMessages(data_sum_features(
@@ -228,6 +227,148 @@ test_that("data_sum_features warns when merged transitions disagree on feature m
     )),
     "differing feature metadata"
   )
+})
+
+test_that("data_sum_features aborts when merged transitions use different ISTDs", {
+  mexp_conflict <- mexp
+  mexp_conflict@annot_features$istd_feature_id[
+    mexp_conflict@annot_features$feature_id == "LPC 18:1 (b)"
+  ] <- "CE 18:1 d7 (ISTD)"
+  expect_error(
+    data_sum_features(mexp_conflict, qualifier_action = "include"),
+    "LPC 18:1"
+  )
+})
+
+test_that("data_sum_features aborts when an ISTD is merged with analytes", {
+  mexp_istd <- mexp_orig
+  pc <- str_detect(mexp_istd@annot_features$feature_id, "^PC (32|33)")
+  mexp_istd@annot_features$analyte_id[pc] <- "PC"
+  mexp_istd <- mrmhub:::link_data_metadata(mexp_istd)
+  expect_error(
+    data_sum_features(mexp_istd, qualifier_action = "include"),
+    "internal standard"
+  )
+})
+
+# The dataset and the feature metadata must list the same features after summing
+expect_consistent_ids <- function(ded) {
+  expect_setequal(
+    unique(ded@dataset$feature_id),
+    ded@annot_features$feature_id[
+      ded@annot_features$feature_id %in%
+        unique(ded@dataset$feature_id) |
+        !ded@annot_features$feature_id %in% ded@dataset_orig$feature_id
+    ]
+  )
+  expect_true(all(
+    unique(ded@dataset$feature_id) %in% ded@annot_features$feature_id
+  ))
+}
+
+test_that("data_sum_features keeps dataset and feature metadata consistent in every mode", {
+  for (action in c("include", "separate", "exclude")) {
+    ded <- suppressWarnings(suppressMessages(
+      data_sum_features(mexp2, qualifier_action = action)
+    ))
+    expect_consistent_ids(ded)
+  }
+  ded <- suppressMessages(data_sum_features(
+    mexp2,
+    qualifier_action = "separate"
+  ))
+  expect_true("PC_qual" %in% ded@annot_features$feature_id)
+  expect_false(anyNA(ded@dataset$feature_class[
+    ded@dataset$feature_id == "PC_qual"
+  ]))
+})
+
+test_that("a quantifier-qualifier pair is left unmerged in separate and exclude mode", {
+  mexp_pe <- mexp_orig
+  pe <- str_detect(mexp_pe@annot_features$feature_id, "^PE P-16:0/18:1")
+  mexp_pe@annot_features$analyte_id[pe] <- "PE P-16:0/18:1"
+  mexp_pe <- mrmhub:::link_data_metadata(mexp_pe)
+  ids <- mexp_pe@annot_features$feature_id[pe]
+  for (action in c("separate", "exclude")) {
+    ded <- suppressMessages(data_sum_features(
+      mexp_pe,
+      qualifier_action = action
+    ))
+    expect_true(all(ids %in% unique(ded@dataset$feature_id)))
+    expect_true(all(ids %in% ded@annot_features$feature_id))
+  }
+  ded <- suppressMessages(data_sum_features(
+    mexp_pe,
+    qualifier_action = "include"
+  ))
+  expect_true("PE P-16:0/18:1" %in% unique(ded@dataset$feature_id))
+  expect_consistent_ids(ded)
+})
+
+test_that("a sum with a missing constituent is NA and reported", {
+  mexp_part <- mexp
+  an <- mexp_part@dataset$analysis_id[1]
+  mexp_part@dataset <- mexp_part@dataset |>
+    dplyr::filter(
+      !(.data$analysis_id == an & .data$feature_id == "LPC 18:1 (b)")
+    )
+  expect_warning(
+    ded <- suppressMessages(data_sum_features(mexp_part)),
+    "missing constituent"
+  )
+  v <- ded@dataset$feature_intensity[
+    ded@dataset$analysis_id == an & ded@dataset$feature_id == "LPC 18:1"
+  ]
+  expect_length(v, 1)
+  expect_true(is.na(v))
+  expect_false("LPC 18:1 (a)" %in% ded@dataset$feature_id)
+})
+
+test_that("an empty analyte_id is treated as missing", {
+  mexp_empty <- mexp_orig
+  sm <- str_detect(mexp_empty@annot_features$feature_id, "^SM 3[24]:1")
+  mexp_empty@annot_features$analyte_id[sm] <- ""
+  mexp_empty <- mrmhub:::link_data_metadata(mexp_empty)
+  ded <- suppressMessages(data_sum_features(mexp_empty))
+  expect_true(all(c("SM 32:1", "SM 34:1") %in% ded@dataset$feature_id))
+  expect_false("" %in% ded@dataset$feature_id)
+})
+
+test_that("summing ISTD transitions remaps the references to them", {
+  mexp_tg <- mexp_orig
+  tg <- mexp_tg@annot_features$feature_id %in%
+    c("TG 48:1 d7 (ISTD) [-15:0]", "TG 48:1 d7 (ISTD) [SIM]")
+  mexp_tg@annot_features$analyte_id[tg] <- "TG 48:1 d7 (ISTD)"
+  mexp_tg <- mrmhub:::link_data_metadata(mexp_tg)
+  ded <- suppressMessages(data_sum_features(mexp_tg))
+
+  af <- ded@annot_features
+  expect_false(any(
+    c(af$istd_feature_id, af$quant_istd_feature_id) %in%
+      c("TG 48:1 d7 (ISTD) [-15:0]", "TG 48:1 d7 (ISTD) [SIM]")
+  ))
+  expect_equal(
+    sum(ded@annot_istds$quant_istd_feature_id == "TG 48:1 d7 (ISTD)"),
+    1
+  )
+  expect_no_error(suppressMessages(normalize_by_istd(ded)))
+})
+
+test_that("relinking after data_sum_features aborts instead of dropping analytes", {
+  ded <- suppressMessages(data_sum_features(mexp))
+  expect_error(
+    exclude_analyses(ded, ded@dataset$analysis_id[1], clear_existing = TRUE),
+    "data_sum_features"
+  )
+})
+
+test_that("feature metadata listing features absent from the data still links", {
+  mexp_panel <- mexp_orig
+  mexp_panel@annot_features <- dplyr::bind_rows(
+    mexp_panel@annot_features,
+    mexp_panel@annot_features[1, ] |> dplyr::mutate(feature_id = "not measured")
+  )
+  expect_no_error(mrmhub:::link_data_metadata(mexp_panel))
 })
 
 test_that("data_sum_features stays silent when merged transitions agree on feature metadata", {

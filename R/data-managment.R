@@ -774,6 +774,16 @@ set_analysis_order <- function(
 ## - Only key information will be added
 link_data_metadata <- function(data = NULL, minimal_info = TRUE) {
   check_data(data)
+  # Summed features exist only in `@dataset`; rebuilding it from the original
+  # data would silently drop them. A new data import replaces `@dataset_orig`,
+  # and with it the marker set by data_sum_features().
+  if (isTRUE(attr(data@dataset_orig, "summed_features"))) {
+    summed <- setdiff(data@dataset$feature_id, data@dataset_orig$feature_id)
+    cli::cli_abort(c(
+      "x" = "Features were summed with {.fn data_sum_features}, so the data cannot be re-linked: {.val {mh_vec(summed)}}.",
+      "i" = "Exclude analyses or features, set the analysis order or intensity variable, and import metadata before {.fn data_sum_features}; or re-import the data and repeat the steps."
+    ))
+  }
   data@dataset <- data@dataset_orig |>
     select(
       "analysis_order",

@@ -41,6 +41,15 @@
   mean over all plotted analyses including blanks, which pulled the 100% line
   down. The y-axis label says so.
 
+* `data_sum_features()`: a sum is `NA` in analyses where one of the summed
+  transitions is missing (with a warning), instead of a partial sum. Summing
+  internal standards together with analytes, or transitions with different
+  ISTDs or response factors, is an error. With `qualifier_action = "exclude"`,
+  qualifiers are kept as they are instead of being dropped from the dataset.
+  Excluding analyses or features, setting the analysis order or intensity
+  variable, and importing metadata after summing now stop with an error; they
+  previously dropped the summed analytes silently.
+
 ## New features
 
 * `plot_pca()` and `plot_pca_loading()` accept `variable = "fwhm"`.
@@ -61,6 +70,12 @@
   calculated as robust %CV or as medians of within-batch values.
 
 ## Bug fixes
+
+* `data_sum_features()` keeps the dataset and the feature metadata consistent:
+  in `"separate"` mode the qualifier sum now also exists in the feature
+  metadata, a quantifier-qualifier pair is no longer renamed in one table only,
+  an empty `analyte_id` no longer merges unrelated features, and summed ISTD
+  transitions are updated in the ISTD, feature and interference metadata.
 
 * `filter_features_qc()`: chained calls with `clear_existing = FALSE` can now
   add response-curve criteria in a later step (this aborted with "There are
