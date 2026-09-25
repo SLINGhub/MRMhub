@@ -542,7 +542,7 @@ plot_abundanceprofile <- function(
     plt <- plt +
       ggplot2::scale_x_continuous(
         limits = plot_limits,
-        breaks = scales::pretty_breaks(n = 10),
+        breaks = scales::breaks_pretty(n = 10),
         expand = c(0.05, 0.002)
       )
   }
@@ -668,7 +668,7 @@ plot_abundanceprofile <- function(
       p_density <- p_density +
         ggplot2::scale_x_continuous(
           limits = plot_limits,
-          breaks = scales::pretty_breaks(n = 10),
+          breaks = scales::breaks_pretty(n = 10),
           expand = c(0.05, 0.002)
         )
     }
