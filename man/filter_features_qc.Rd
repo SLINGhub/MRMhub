@@ -93,7 +93,11 @@ calculated with is kept; a different explicit value recalculates them.}
 
 \item{min.signalblank.median.spl.ublk}{Minimum signal-to-blank ratio for SPL samples and UBLK. Default is \code{NA}.}
 
-\item{min.signalblank.median.spl.sblk}{Minimum signal-to-blank ratio for SPL samples and SBLK. Default is \code{NA}.}
+\item{min.signalblank.median.spl.sblk}{Minimum signal-to-blank ratio for SPL samples and SBLK. Default is \code{NA}.
+For all signal-to-blank criteria, a feature not detected in a blank
+(missing or zero intensity) has a blank median of zero, i.e. a ratio of
+\code{Inf}, and passes; a feature not detected in the study samples fails. A
+criterion for a blank type without analyses in the dataset raises an error.}
 
 \item{max.cv.intensity.bqc}{Maximum CV for intensity in BQC samples. Default is \code{NA}.}
 

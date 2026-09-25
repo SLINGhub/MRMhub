@@ -111,6 +111,8 @@ The latter would indicate inconsistent analysis conditions.
 \item \verb{intensity_median_*}: Median intensity for various QC sample types.
 \item \verb{intensity_cv_*}: Coefficient of variation (CV) of intensity values for specific QC types.
 \item \verb{sb_ratio_*}: Signal-to-blank ratios such as the ratio of intensity values for SPL vs PBLK, UBLK, or SBLK.
+Blank medians count a blank without detected signal as zero, giving a
+ratio of \code{Inf}.
 \item \verb{intensity_q10_*}: The 10th percentile of intensity values for the SPL sample type.
 }
 \item \strong{Normalized Intensity Metrics} (only if \code{include_norm_intensity_stats = TRUE}):

@@ -931,6 +931,72 @@ test_that("calc_qc_metrics leaves the feature classes unchanged", {
 })
 
 
+test_that("S/B treats an undetected blank as zero and passes the feature", {
+  ids <- mexp_proc@metrics_qc |>
+    dplyr::filter(!.data$is_istd) |>
+    dplyr::pull(.data$feature_id)
+  pblk_ids <- mexp@dataset |>
+    dplyr::filter(.data$qc_type == "PBLK") |>
+    dplyr::distinct(.data$analysis_id) |>
+    dplyr::pull()
+  mexp_blk <- mexp
+  mexp_blk@dataset <- mexp_blk@dataset |>
+    dplyr::mutate(
+      feature_intensity = dplyr::case_when(
+        # not detected in any PBLK
+        .data$feature_id == ids[1] & .data$qc_type == "PBLK" ~ NA,
+        # detected in only one of the three PBLKs
+        .data$feature_id == ids[2] &
+          .data$analysis_id %in% pblk_ids[-1] ~
+          NA,
+        # blank reported as zero
+        .data$feature_id == ids[3] & .data$qc_type == "PBLK" ~ 0,
+        # not detected in the study samples either
+        .data$feature_id == ids[4] &
+          .data$qc_type %in% c("PBLK", "SPL") ~
+          NA,
+        .default = .data$feature_intensity
+      )
+    )
+  mexp_blk <- calc_qc_metrics(mexp_blk)
+  sb <- rlang::set_names(
+    mexp_blk@metrics_qc$sb_ratio_pblk,
+    mexp_blk@metrics_qc$feature_id
+  )
+  expect_equal(unname(sb[ids[1:3]]), rep(Inf, 3))
+  expect_identical(sb[[ids[4]]], NA_real_)
+
+  mexp_res <- filter_features_qc(
+    mexp_blk,
+    include_qualifier = FALSE,
+    include_istd = FALSE,
+    min.signalblank.median.spl.pblk = 10
+  )
+  pass <- rlang::set_names(
+    mexp_res@metrics_qc$pass_sb,
+    mexp_res@metrics_qc$feature_id
+  )
+  expect_equal(unname(pass[ids[1:4]]), c(TRUE, TRUE, TRUE, FALSE))
+})
+
+
+test_that("an S/B criterion for a blank type absent from the data aborts", {
+  ublk_ids <- mexp@annot_analyses$analysis_id[
+    mexp@annot_analyses$qc_type == "UBLK"
+  ]
+  mexp_noublk <- exclude_analyses(mexp, ublk_ids, clear_existing = TRUE)
+  expect_error(
+    filter_features_qc(
+      mexp_noublk,
+      include_qualifier = FALSE,
+      include_istd = FALSE,
+      min.signalblank.median.spl.ublk = 10
+    ),
+    "No UBLK analyses"
+  )
+})
+
+
 # Confirm overwriting of QC criteria works
 
 test_that("Confirm overwriting of QC criteria works", {

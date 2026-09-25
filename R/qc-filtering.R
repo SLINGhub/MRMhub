@@ -64,6 +64,8 @@
 #'   - `intensity_median_*`: Median intensity for various QC sample types.
 #'   - `intensity_cv_*`: Coefficient of variation (CV) of intensity values for specific QC types.
 #'   - `sb_ratio_*`: Signal-to-blank ratios such as the ratio of intensity values for SPL vs PBLK, UBLK, or SBLK.
+#'     Blank medians count a blank without detected signal as zero, giving a
+#'     ratio of `Inf`.
 #'   - `intensity_q10_*`: The 10th percentile of intensity values for the SPL sample type.
 #'
 #' - **Normalized Intensity Metrics** (only if `include_norm_intensity_stats = TRUE`):
@@ -443,16 +445,13 @@ calc_qc_metrics <- function(
           na.rm = TRUE
         ),
         intensity_median_pblk = median(
-          .data$feature_intensity[.data$qc_type == "PBLK"],
-          na.rm = TRUE
+          replace_na(.data$feature_intensity[.data$qc_type == "PBLK"], 0)
         ),
         intensity_median_ublk = median(
-          .data$feature_intensity[.data$qc_type == "UBLK"],
-          na.rm = TRUE
+          replace_na(.data$feature_intensity[.data$qc_type == "UBLK"], 0)
         ),
         intensity_median_sblk = median(
-          .data$feature_intensity[.data$qc_type == "SBLK"],
-          na.rm = TRUE
+          replace_na(.data$feature_intensity[.data$qc_type == "SBLK"], 0)
         ),
         intensity_median_spl = median(
           .data$feature_intensity[.data$qc_type == "SPL"],
@@ -659,17 +658,28 @@ calc_qc_metrics <- function(
 
   # Signal-to-blank ratios derive from the intensity medians just computed.
   # Restore their original position (directly after the intensity block) so the
-  # metrics_qc column order is unchanged.
+  # metrics_qc column order is unchanged. A blank median of 0 (not detected)
+  # gives Inf; an undetected sample signal gives NA.
   if (do_int) {
+    sb_ratio <- function(spl, blk) if_else(spl > 0, spl / blk, NA_real_)
     d_stats_var_final <- d_stats_var_final |>
       mutate(
-        sb_ratio_q10_pblk = .data$intensity_q10_spl /
-          .data$intensity_median_pblk,
-        sb_ratio_pblk = .data$intensity_median_spl /
-          .data$intensity_median_pblk,
-        sb_ratio_ublk = .data$intensity_median_spl /
-          .data$intensity_median_ublk,
-        sb_ratio_sblk = .data$intensity_median_spl / .data$intensity_median_sblk
+        sb_ratio_q10_pblk = sb_ratio(
+          .data$intensity_q10_spl,
+          .data$intensity_median_pblk
+        ),
+        sb_ratio_pblk = sb_ratio(
+          .data$intensity_median_spl,
+          .data$intensity_median_pblk
+        ),
+        sb_ratio_ublk = sb_ratio(
+          .data$intensity_median_spl,
+          .data$intensity_median_ublk
+        ),
+        sb_ratio_sblk = sb_ratio(
+          .data$intensity_median_spl,
+          .data$intensity_median_sblk
+        )
       ) |>
       relocate(dplyr::starts_with("sb_ratio"), .after = "intensity_q10_spl")
   }
@@ -837,6 +847,10 @@ calc_qc_metrics <- function(
 #' @param min.signalblank.median.spl.pblk Minimum signal-to-blank ratio for SPL samples and PBLK. Default is `NA`.
 #' @param min.signalblank.median.spl.ublk Minimum signal-to-blank ratio for SPL samples and UBLK. Default is `NA`.
 #' @param min.signalblank.median.spl.sblk Minimum signal-to-blank ratio for SPL samples and SBLK. Default is `NA`.
+#'   For all signal-to-blank criteria, a feature not detected in a blank
+#'   (missing or zero intensity) has a blank median of zero, i.e. a ratio of
+#'   `Inf`, and passes; a feature not detected in the study samples fails. A
+#'   criterion for a blank type without analyses in the dataset raises an error.
 #' @param max.cv.intensity.bqc Maximum CV for intensity in BQC samples. Default is `NA`.
 #' @param max.cv.intensity.tqc Maximum CV for intensity in TQC samples. Default is `NA`.
 #' @param max.cv.normintensity.bqc Maximum CV for normalized intensity in BQC samples. Default is `NA`.
@@ -1022,6 +1036,30 @@ filter_features_qc <- function(
     )
   } else {
     data_local <- data
+  }
+
+  sb_thresholds <- c(
+    PBLK = min.signalblank.median.spl.pblk,
+    UBLK = min.signalblank.median.spl.ublk,
+    SBLK = min.signalblank.median.spl.sblk
+  )
+  sb_types <- names(sb_thresholds)[!is.na(sb_thresholds)]
+  sb_absent <- setdiff(sb_types, unique(as.character(data@dataset$qc_type)))
+  if (length(sb_absent) > 0) {
+    cli::cli_abort(c(
+      "No {sb_absent} analyses in the dataset, so the signal-to-blank criterion cannot be applied.",
+      "i" = "Set {.arg {paste0('min.signalblank.median.spl.', tolower(sb_absent))}} to {.val {NA}}."
+    ))
+  }
+  for (blk in sb_types) {
+    n_undetected <- sum(is.infinite(
+      data_local@metrics_qc[[paste0("sb_ratio_", tolower(blk))]]
+    ))
+    if (n_undetected > 0) {
+      mh_info(
+        "{n_undetected} feature{?s} with a {blk} median of zero (not detected in most {blk} analyses): signal-to-blank ratio is {.val Inf} and passes."
+      )
+    }
   }
 
   # Check if feature_ids defind with features.to.keep are present in the dataset

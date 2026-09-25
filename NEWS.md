@@ -19,6 +19,13 @@
   whose response-curve results are missing now fails linearity with a warning,
   as for all other criteria; before, it silently passed. ISTDs are exempt.
 
+* `calc_qc_metrics()` and `filter_features_qc()`: a feature not detected in a
+  blank now counts as zero intensity in that blank, so its signal-to-blank
+  ratio is `Inf` and it passes a signal-to-blank criterion; before, a missing
+  blank value failed the feature while a zero blank value passed it. A feature
+  not detected in the study samples still fails. A signal-to-blank criterion
+  for a blank type with no analyses in the dataset raises a clearer error.
+
 ## Bug fixes
 
 * `filter_features_qc()`: chained calls with `clear_existing = FALSE` can now
