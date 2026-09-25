@@ -301,6 +301,20 @@ plot_runscatter(
 )
 ```
 
+**Q: `exclude_analyses()`, `set_analysis_order()` or a metadata import fails
+after `data_sum_features()`.**
+
+**A:** Summed features exist only in the processed dataset, while these steps
+rebuild it from the imported data. Run them before `data_sum_features()`, or
+re-import the data and repeat the steps.
+
+**Q: `data_sum_features()` stops because the summed features combine internal
+standards and analytes, or differ in `istd_feature_id` or `response_factor`.**
+
+**A:** Only transitions of one compound, measured and quantified alike, can be
+summed. Give internal standards their own `analyte_id`, and harmonise the ISTD
+and response-factor columns of the summed features in the feature metadata.
+
 ## Quantitation and calibration
 
 **Q: `quantify_by_istd()` aborts about missing ISTD concentrations or amounts.**
@@ -352,7 +366,9 @@ get_calibration_metrics(mexp) |>
 |--------|---------|-------------------|
 | CV (%) | Coefficient of variation in QC samples | < 20–30% |
 | Bias (%) | Systematic deviation from expected value | < 20% |
-| n_detected | Number of QC samples with signal | ≥ 50–67% of QCs |
+| D-ratio | Spread in QC samples over spread in study samples | < 0.5 |
+| S/B ratio | Median study-sample signal over median blank signal; `Inf` when the feature is not detected in the blank (passes) | method-specific |
+| `n_bqc`, `n_tqc`, `n_spl` | Replicates with a value per QC type; %CV and D-ratio need at least 3 | ≥ 3 |
 
 **Q: All my features are filtered out.**
 

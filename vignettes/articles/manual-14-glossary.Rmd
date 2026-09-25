@@ -36,7 +36,8 @@ glossary <- data.frame(
     "MRM / SRM", "Transition", "Precursor / MS1", "Product / MS2",
     "Peak area", "Normalization", "Isotopic interference", "Drift",
     "Batch effect", "Calibration curve", "Response curve", "%CV",
-    "Long / wide format"
+    "Robust %CV", "D-ratio", "Process blank (PBLK)", "Signal-to-blank ratio",
+    "Minimum intensity", "Long / wide format"
   ),
   Definition = c(
     "A single injection or sample in a run; the unit that carries a QC role.",
@@ -59,6 +60,11 @@ glossary <- data.frame(
     "The relationship between known concentration and measured response, fitted from calibration standards to convert signal to concentration.",
     "A serial-dilution series of a QC pool used to assess linearity and dynamic range (not to assign concentrations).",
     "Coefficient of variation (SD / mean, as a percentage): the precision metric used to judge QC and feature quality.",
+    "A %CV computed as 1.4826 × MAD / median, less sensitive to single outlying values than SD / mean.",
+    "The spread of a feature in QC samples divided by its spread in study samples: technical relative to biological variation; lower is better.",
+    "A blank taken through the full sample preparation, usually with internal standards, to measure background and carry-over.",
+    "The median signal in study samples divided by the median signal in a blank; infinite when the feature is not detected in the blank.",
+    "A floor on a feature's lowest, median or highest signal; a filter criterion, not a limit-of-detection determination.",
     "Long format has one row per analysis × feature (tidy); wide format has one row per analysis with features as columns."
   ),
   stringsAsFactors = FALSE

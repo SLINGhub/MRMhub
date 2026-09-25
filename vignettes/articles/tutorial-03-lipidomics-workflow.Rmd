@@ -547,8 +547,9 @@ prefer a vector or a raster one.
 The final curation step removes features that fail defined QC criteria.
 `filter_features_qc()` combines several: the quality of the response curves
 (minimum r², slope, and maximum y-intercept), the signal-to-blank ratio against
-process blanks, the absolute signal level as a proxy for the limit of detection,
-and the precision in the batch QCs (`max.cv.conc.bqc`). The criteria are applied
+process blanks, a minimum signal level, and the precision in the batch QCs
+(`max.cv.conc.bqc`). A feature not detected in the process blanks has an
+infinite signal-to-blank ratio and passes that criterion. The criteria are applied
 *hierarchically* (a feature counts as failing CV only once it has passed the S/B
 and signal filters) and `features.to.keep` retains named species regardless. The
 filter can be run repeatedly, overwriting or, with `clear_existing = FALSE`,
@@ -582,8 +583,9 @@ The plot below summarises the filtering per lipid class. Green segments count th
 species that passed every criterion; the remaining segments count those that
 failed each one. Because the criteria are hierarchical, a species is attributed
 to the *first* filter it fails (for example `CV`), having already cleared the
-lower ones (`S/B`, `LOD`), so the counts partition the features rather than
-double-counting them.
+lower ones (`S/B`, minimum intensity), so the counts partition the features
+rather than double-counting them. Species retained via `features.to.keep`
+despite failing a criterion form their own segment (`kept_failed_qc`).
 
 ```{r qc-summary-byclass}
 #| fig.cap: !expr fig_cap("Feature QC filtering outcome per lipid class; green marks species passing all criteria.")
@@ -593,7 +595,8 @@ plot_qc_summary_byclass(mexp)
 
 The next plot gives the same picture across all features, with the total retained,
 and adds a Venn diagram showing how many features each individual criterion
-excluded, and where those exclusions overlap.
+excluded, and where those exclusions overlap. Unlike the bars, the Venn diagram
+is not hierarchical, so its counts can differ from the bar counts.
 
 ```{r qc-summary-overall}
 #| fig.cap: !expr fig_cap("Overall feature filtering summary with a Venn diagram of exclusion criteria.")
