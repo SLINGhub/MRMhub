@@ -26,7 +26,7 @@
 #'   features is added to the top of the plot.
 #' @param exclude_classes A character vector of feature classes to be excluded from the plot.
 #' @param filter_data A logical value indicating whether to use all data (`FALSE`, default)
-#'   or only QC-filtered data (`TRUE`, via [filter_features_qc()]). This is ignored if `use_qc_metrics` is `TRUE`.
+#'   or only QC-filtered data (`TRUE`, via [filter_features_qc()]).
 #' @param include_qualifier A logical value indicating whether to include qualifier features. Default is `FALSE`.
 #' @param include_istd A logical value indicating whether to include internal standard (ISTD) features. Default is `FALSE`.
 #' @param include_feature_filter Feature(s) to include by `feature_id`, as a
@@ -134,7 +134,14 @@ plot_abundanceprofile <- function(
   if (use_qc_metrics) {
     # --- 2a. Use Pre-summarized QC Metrics ---
     if (length(qc_types) != 1) {
-      warning("When `use_qc_metrics` is TRUE, `qc_types` will be ignored.")
+      warning(
+        "When `use_qc_metrics` is TRUE, the QC type is given by `variable`; `qc_types` should be a single type and will be ignored."
+      )
+    }
+    if (!all(is.na(analysis_range))) {
+      warning(
+        "When `use_qc_metrics` is TRUE, `analysis_range` is ignored; the metrics cover all analyses."
+      )
     }
 
     if (!variable %in% names(data@metrics_qc)) {
@@ -163,6 +170,20 @@ plot_abundanceprofile <- function(
     }
     if (!include_qualifier) {
       d_features <- d_features |> dplyr::filter(.data$is_quantifier)
+    }
+    if (!all(is.na(include_feature_filter) | include_feature_filter == "")) {
+      d_features <- d_features |>
+        dplyr::filter(
+          .data$feature_id %in%
+            match_feature_filter(.data$feature_id, include_feature_filter)
+        )
+    }
+    if (!all(is.na(exclude_feature_filter) | exclude_feature_filter == "")) {
+      d_features <- d_features |>
+        dplyr::filter(
+          !.data$feature_id %in%
+            match_feature_filter(.data$feature_id, exclude_feature_filter)
+        )
     }
   } else {
     # --- 2b. Summarize Data from Raw Dataset (Original Logic) ---
@@ -242,6 +263,16 @@ plot_abundanceprofile <- function(
       dplyr::filter(!(.data$feature_class %in% exclude_classes))
   }
 
+  unmapped <- is.na(d_features$feature_class) |
+    !d_features$feature_class %in% names(feature_map_resolved)
+  if (any(unmapped)) {
+    mh_info(
+      "{sum(unmapped)} feature{?s} without a class in {.arg feature_map} {?is/are} shown as {.val Other}."
+    )
+    d_features$feature_class[unmapped] <- "Other"
+    feature_map_resolved <- c(feature_map_resolved, Other = "grey70")
+  }
+
   if (drop_empty_classes) {
     present_classes <- unique(d_features$feature_class)
     feature_map_plot <- feature_map_resolved[
@@ -265,6 +296,15 @@ plot_abundanceprofile <- function(
       )
     ) |>
     tidyr::drop_na("feature_class", "abundance_mean")
+  if (log_scale) {
+    n_nonpos <- sum(d_features$abundance_mean <= 0)
+    if (n_nonpos > 0) {
+      mh_info(
+        "{n_nonpos} feature{?s} with non-positive values {?is/are} not shown on the log scale."
+      )
+      d_features <- d_features |> dplyr::filter(.data$abundance_mean > 0)
+    }
+  }
 
   d_summary <- d_features |>
     dplyr::group_by(.data$feature_class) |>
@@ -282,10 +322,11 @@ plot_abundanceprofile <- function(
         abundance_max_padded = .data$abundance_max * 1.2
       )
   } else {
+    pad <- 0.02 * diff(range(d_features$abundance_mean))
     d_summary <- d_summary |>
       dplyr::mutate(
-        abundance_min_padded = .data$abundance_min * 0.98,
-        abundance_max_padded = .data$abundance_max * 1.02
+        abundance_min_padded = .data$abundance_min - pad,
+        abundance_max_padded = .data$abundance_max + pad
       )
   }
 

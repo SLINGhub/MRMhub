@@ -61,7 +61,7 @@ abundance-related variables and \code{FALSE} for others (e.g., "rt", "fwhm").}
 \item{exclude_classes}{A character vector of feature classes to be excluded from the plot.}
 
 \item{filter_data}{A logical value indicating whether to use all data (\code{FALSE}, default)
-or only QC-filtered data (\code{TRUE}, via \code{\link[=filter_features_qc]{filter_features_qc()}}). This is ignored if \code{use_qc_metrics} is \code{TRUE}.}
+or only QC-filtered data (\code{TRUE}, via \code{\link[=filter_features_qc]{filter_features_qc()}}).}
 
 \item{include_qualifier}{A logical value indicating whether to include qualifier features. Default is \code{FALSE}.}
 

@@ -70,6 +70,13 @@
 * `filter_features_qc()`: ISTDs no longer get a signal-to-blank verdict when no
   signal-to-blank criterion is set.
 
+* `plot_abundanceprofile()`: features whose class is missing or not in
+  `feature_map` are shown as `Other` instead of being silently dropped. On a
+  linear scale, class ranges are padded by the data range, so negative values
+  are covered; on a log scale, non-positive values are removed with a message.
+  With `use_qc_metrics = TRUE`, the feature filters are applied, and a set
+  `analysis_range` is reported as ignored.
+
 * `plot_feature_correlations()`: a feature with a single missing value no
   longer silently drops out of every pair; correlations use the analyses where
   both features have values, for pairs sharing values in at least half of the
