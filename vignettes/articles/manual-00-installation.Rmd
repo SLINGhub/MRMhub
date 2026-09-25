@@ -120,7 +120,7 @@ install it.
 | `correct_drift_gam()` | mgcv | GAM-based drift correction |
 | `build_workflow()` | shiny, bslib | interactive workflow-builder app |
 | `save_dataset_summarizedexperiment()` | SummarizedExperiment, S4Vectors, lipidr *(Bioconductor)* | export to a `SummarizedExperiment` |
-| Lipid-name parsing (isotope correction, lipid plots) | rgoslin *(Bioconductor)* | parse and normalise lipid shorthand |
+| `set_lipid_class()`, lipid-name parsing (isotope correction, lipid plots) | rgoslin *(Bioconductor)* | parse and normalise lipid shorthand |
 | `get_response_curve_stats()` | lancer *(GitHub)* | only for specific response-curve metrics |
 
 To install all of them upfront, run the following in a fresh R session

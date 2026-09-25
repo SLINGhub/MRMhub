@@ -19,9 +19,10 @@ whose name cannot be parsed keep their class.}
 }
 \description{
 Derives lipid classes from the \code{feature_id}s with the Goslin lipid name
-parser (package \code{rgoslin}) and writes them to \code{feature_class} in the feature
-metadata, the dataset and the QC metrics. The class is the lipid class
-including the long-chain base (e.g. \verb{Cer;O2}, \verb{SM;O2}).
+parser and writes them to \code{feature_class} in the feature metadata, the
+dataset and the QC metrics. For sphingolipids, the class includes the number
+of oxygens on the sphingoid base (e.g. \verb{Cer;O2}, \verb{SM;O2}). Requires the
+Bioconductor package \code{rgoslin} (\code{BiocManager::install("rgoslin")}).
 }
 \seealso{
 \code{\link[=parse_lipid_feature_names]{parse_lipid_feature_names()}}

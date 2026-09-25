@@ -616,7 +616,7 @@ test_that("calibrate_by_reference results are exportable", {
       path = temp_file,
       normalized_variable = "conc"
     ),
-    "Normalized feature variable 'feature_conc' not found in dataset",
+    "Normalized feature variable 'feature_conc_normalized' not found in dataset",
     fixed = TRUE
   )
 
@@ -631,11 +631,15 @@ test_that("calibrate_by_reference results are exportable", {
 
 
 test_that("calibrate_by_reference with filtered data", {
-  mexp_temp <- mrmhub::filter_features_qc(
-    mexp,
-    include_qualifier = FALSE,
-    include_istd = FALSE,
-    max.cv.conc.bqc = 20
+  # the S1P response curves have missing points
+  expect_warning(
+    mexp_temp <- mrmhub::filter_features_qc(
+      mexp,
+      include_qualifier = FALSE,
+      include_istd = FALSE,
+      max.cv.conc.bqc = 20
+    ),
+    "missing points"
   )
 
   expect_message(

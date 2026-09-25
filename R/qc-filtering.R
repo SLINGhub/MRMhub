@@ -851,12 +851,12 @@ calc_qc_metrics <- function(
 #' @param data [`MRMhubExperiment`][MRMhubExperiment-class] object.
 #' @param clear_existing Logical. If `TRUE`, replaces any existing filters; if `FALSE`, adds new filters on top of existing ones. Default is `TRUE`.
 #' @param recalc_metrics Logical. If `TRUE`, recalculates QC metrics before filtering. Default is `FALSE`.
-#' @param use_batch_medians Logical. If `TRUE`, uses batch-wise median QC values for filtering. Default is `FALSE`.
-#'   If not given and QC metrics already exist, the setting they were
-#'   calculated with is kept; a different explicit value recalculates them.
-#' @param use_robust_cv Logical. If `TRUE`, uses robust coefficient of variation (MAD/median) instead of standard CV (SD/mean). Default is `FALSE`.
-#'   If not given and QC metrics already exist, the setting they were
-#'   calculated with is kept; a different explicit value recalculates them.
+#' @param use_batch_medians Logical. If `TRUE`, uses batch-wise median QC values for filtering.
+#'   Default is `FALSE`, or the setting of existing QC metrics; a different
+#'   explicit value recalculates them.
+#' @param use_robust_cv Logical. If `TRUE`, uses robust coefficient of variation (MAD/median) instead of standard CV (SD/mean).
+#'   Default is `FALSE`, or the setting of existing QC metrics; a different
+#'   explicit value recalculates them.
 #' @param include_qualifier Logical. If `TRUE`, includes qualifier features in the filtering process.
 #' @param include_istd Logical. If `TRUE`, includes internal standards (ISTDs) in the filtering process.
 #' @param features.to.keep A vector of feature identifiers to retain, even if they do not meet the filtering criteria.
@@ -871,6 +871,9 @@ calc_qc_metrics <- function(
 #' @param min.intensity.median.spl Minimum median intensity of study samples (SPL). Default is `NA`.
 #' @param min.intensity.highest.spl Minimum intensity of the highest intensity study sample (SPL). Default is `NA`.
 #' @param min.signalblank.median.spl.pblk Minimum signal-to-blank ratio for SPL samples and PBLK. Default is `NA`.
+#'   A feature not detected in at least half of the blank analyses has a blank
+#'   median of zero and a ratio of `Inf`, and passes; the same applies to UBLK
+#'   and SBLK.
 #' @param min.signalblank.median.spl.ublk Minimum signal-to-blank ratio for SPL samples and UBLK. Default is `NA`.
 #' @param min.signalblank.median.spl.sblk Minimum signal-to-blank ratio for SPL samples and SBLK. Default is `NA`.
 #'   For all signal-to-blank criteria, a feature not detected in a blank
@@ -902,6 +905,8 @@ calc_qc_metrics <- function(
 #'   Per-criterion verdicts are stored in `metrics_qc`: `pass_minint` (the
 #'   `min.intensity.*` criteria), `pass_sb`, `pass_cva`, `pass_dratio`,
 #'   `pass_linearity` and `pass_missingval`, combined in `all_filter_pass`.
+#'   With a response-curve criterion, a feature without response-curve results
+#'   fails `pass_linearity`; ISTDs without results are not failed.
 
 #' @export
 filter_features_qc <- function(
@@ -1046,7 +1051,7 @@ filter_features_qc <- function(
       )
       if (!clear_existing && "all_filter_pass" %in% names(data@metrics_qc)) {
         mh_warn(
-          "Previously applied QC filters were evaluated with the earlier CV settings and are kept as they were."
+          "Previously applied QC filters were evaluated with the earlier CV settings and are kept as they were. Use {.code clear_existing = TRUE} to evaluate all filters with the new settings."
         )
       }
     } else if (rlang::is_interactive()) {
@@ -1083,7 +1088,7 @@ filter_features_qc <- function(
     ))
     if (n_undetected > 0) {
       mh_info(
-        "{n_undetected} feature{?s} with a {blk} median of zero (not detected in most {blk} analyses): signal-to-blank ratio is {.val Inf} and passes."
+        "{n_undetected} feature{?s} with a {blk} median of zero (not detected in at least half of the {blk} analyses): signal-to-blank ratio is {.val Inf} and passes."
       )
     }
   }
@@ -1430,8 +1435,8 @@ filter_features_qc <- function(
       is.na(max.yintercept.response))
     if (filter_linearity) {
       # As for the other criteria, a feature whose response-curve results are
-      # missing fails; ISTDs are exempt. Only features that are otherwise kept
-      # are reported.
+      # missing fails; ISTDs without results are not failed. Only features that
+      # are otherwise kept are reported.
       lin_cols <- c(
         "rqc_r2__sum__"[!is.na(min.rsquare.response)],
         "rqc_slope__sum__min__"[!is.na(min.slope.response)],
@@ -1445,7 +1450,7 @@ filter_features_qc <- function(
       no_lin <- metrics_qc_local$feature_id[lin_missing & reported %in% TRUE]
       if (length(no_lin) > 0) {
         mh_warn(
-          "Response-curve results are missing for the following features: {glue::glue_collapse(no_lin, sep = ', ', width = 80, last = ', and ')}. These features failed QC."
+          "{length(no_lin)} feature{?s} without response-curve results (fewer than 3 RQC points with a value) failed the linearity criterion: {.val {mh_vec(no_lin)}}."
         )
       }
       metrics_qc_local <- metrics_qc_local |>

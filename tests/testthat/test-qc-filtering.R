@@ -1773,7 +1773,10 @@ test_that("missing response-curve results are not reported for filtered-out feat
       min.rsquare.response = 0.5
     )
   )
-  lin_msg <- paste(msgs[grepl("Response-curve", msgs)], collapse = "")
+  lin_msg <- paste(
+    msgs[grepl("without response-curve results", msgs)],
+    collapse = ""
+  )
   expect_false(grepl(ids[1], lin_msg, fixed = TRUE))
   expect_false(grepl(ids[2], lin_msg, fixed = TRUE))
   expect_true(grepl(ids[3], lin_msg, fixed = TRUE))

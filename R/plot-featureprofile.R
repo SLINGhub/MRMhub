@@ -5,13 +5,12 @@
 #' @template data_mexp
 #' @param variable A character string indicating the variable to plot. For `use_qc_metrics = FALSE`,
 #'   this must be a base name like "area" or "conc". For `use_qc_metrics = TRUE`, this is the
-#'   base name of a metric in the `metrics_qc` table (e.g., "rt" for "rt_mean_SPL").
+#'   name of a column in the `metrics_qc` table (e.g., "conc_median_spl").
 #' @param qc_types A character vector specifying the QC types to be averaged and plotted.
-#'   If `use_qc_metrics` is `TRUE`, this must be a single character string (e.g., "SPL").
+#'   Ignored if `use_qc_metrics` is `TRUE`, where the QC type is part of `variable`.
 #' @param log_scale A logical value indicating whether to use a log10 scale for the x-axis.
 #' @param use_qc_metrics A logical value. If `FALSE` (default), data is summarized on the fly from the main dataset.
 #'   If `TRUE`, pre-calculated summary data is used from the `metrics_qc` table, which is much faster.
-#'   When `TRUE`, `qc_types` must specify only one QC type.
 #' @param show_sum A logical value indicating whether to plot a summary point (diamond shape)
 #'   representing the mean of the summed abundances for each class. Defaults to `TRUE` for
 #'   abundance-related variables and `FALSE` for others (e.g., "rt", "fwhm").
@@ -135,7 +134,7 @@ plot_abundanceprofile <- function(
     # --- 2a. Use Pre-summarized QC Metrics ---
     if (length(qc_types) != 1) {
       warning(
-        "When `use_qc_metrics` is TRUE, the QC type is given by `variable`; `qc_types` should be a single type and will be ignored."
+        "When `use_qc_metrics` is TRUE, `qc_types` will be ignored: the QC type is part of the metric name in `variable` (e.g. \"conc_median_spl\")."
       )
     }
     if (!all(is.na(analysis_range))) {

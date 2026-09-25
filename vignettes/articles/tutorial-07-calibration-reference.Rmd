@@ -146,8 +146,9 @@ Unlike absolute calibration, the normalization results are stored as **ratios** 
 
 The normalized values can be exported as `[VARIABLE]_normalized` with `save_dataset_csv()`. In the
 MRMhub XLSX report from `save_report_xlsx()`, the unfiltered dataset with normalized concentrations
-is included by default; to include them as the filtered dataset, set
-`filtered_variable = "[VARIABLE]_normalized"`.
+is included by default (sheet `Conc_NormalizedByRef_Full`); to include them as the filtered dataset,
+set `filtered_variable = "[VARIABLE]_normalized"` (sheets `QCfilt_ConcRef_StudySamples` and
+`QCfilt_ConcRef_AllSamples`).
 
 ```{r export-normalized}
 #| results: false

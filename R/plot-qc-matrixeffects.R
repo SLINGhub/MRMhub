@@ -4,8 +4,10 @@
 #' where each value is shown as a percentage of the feature's median over the
 #' plotted non-blank analyses (per batch with `batchwise_normalization = TRUE`).
 #' Points are grouped by `qc_type` and spread using quasirandom jitter. An ISTD
-#' signal clearly lower in study samples than in QC samples suggests ion
-#' suppression by the sample matrix.
+#' signal higher in process blanks (ISTD without matrix) than in the samples may
+#' indicate ion suppression by the sample matrix. The spread between study
+#' samples and pooled QCs can reflect sample-to-sample differences in matrix
+#' effects.
 #'
 #' Include at least one QC type besides the study samples: the reference is
 #' computed from the plotted analyses, so with study samples only they centre on

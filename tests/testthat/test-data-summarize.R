@@ -485,3 +485,31 @@ test_that("an interference within a summed feature is removed from the feature m
   expect_true(is.na(row$interference_feature_id))
   expect_true(is.na(row$interference_contribution))
 })
+
+test_that("summing ISTDs with different concentrations names them", {
+  mexp_tg <- mexp_orig
+  tg <- mexp_tg@annot_features$feature_id %in%
+    c("TG 48:1 d7 (ISTD) [-15:0]", "TG 48:1 d7 (ISTD) [SIM]")
+  mexp_tg@annot_features$analyte_id[tg] <- "TG 48:1 d7 (ISTD)"
+  sim <- mexp_tg@annot_istds$quant_istd_feature_id == "TG 48:1 d7 (ISTD) [SIM]"
+  mexp_tg@annot_istds$istd_conc_nmolar[sim] <- 99
+  mexp_tg <- mrmhub:::link_data_metadata(mexp_tg)
+  err <- expect_error(data_sum_features(mexp_tg), "TG 48:1 d7 \\(ISTD\\)")
+  expect_equal(rlang::call_name(err$call), "data_sum_features")
+})
+
+test_that("data_sum_features errors name the user-facing function", {
+  mexp_clash <- mexp_orig
+  sm <- mexp_clash@annot_features$feature_id %in% c("SM 32:1", "PC 32:1")
+  mexp_clash@annot_features$analyte_id[sm] <- "PE 34:1"
+  mexp_clash <- mrmhub:::link_data_metadata(mexp_clash)
+  err <- expect_error(data_sum_features(mexp_clash))
+  expect_equal(rlang::call_name(err$call), "data_sum_features")
+
+  ded <- suppressMessages(data_sum_features(mexp))
+  err <- expect_error(
+    exclude_analyses(ded, ded@dataset$analysis_id[1], clear_existing = TRUE),
+    "would drop"
+  )
+  expect_equal(rlang::call_name(err$call), "exclude_analyses")
+})

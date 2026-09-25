@@ -55,13 +55,13 @@ filter_features_qc(
 
 \item{recalc_metrics}{Logical. If \code{TRUE}, recalculates QC metrics before filtering. Default is \code{FALSE}.}
 
-\item{use_batch_medians}{Logical. If \code{TRUE}, uses batch-wise median QC values for filtering. Default is \code{FALSE}.
-If not given and QC metrics already exist, the setting they were
-calculated with is kept; a different explicit value recalculates them.}
+\item{use_batch_medians}{Logical. If \code{TRUE}, uses batch-wise median QC values for filtering.
+Default is \code{FALSE}, or the setting of existing QC metrics; a different
+explicit value recalculates them.}
 
-\item{use_robust_cv}{Logical. If \code{TRUE}, uses robust coefficient of variation (MAD/median) instead of standard CV (SD/mean). Default is \code{FALSE}.
-If not given and QC metrics already exist, the setting they were
-calculated with is kept; a different explicit value recalculates them.}
+\item{use_robust_cv}{Logical. If \code{TRUE}, uses robust coefficient of variation (MAD/median) instead of standard CV (SD/mean).
+Default is \code{FALSE}, or the setting of existing QC metrics; a different
+explicit value recalculates them.}
 
 \item{include_qualifier}{Logical. If \code{TRUE}, includes qualifier features in the filtering process.}
 
@@ -89,7 +89,10 @@ calculated with is kept; a different explicit value recalculates them.}
 
 \item{min.intensity.highest.spl}{Minimum intensity of the highest intensity study sample (SPL). Default is \code{NA}.}
 
-\item{min.signalblank.median.spl.pblk}{Minimum signal-to-blank ratio for SPL samples and PBLK. Default is \code{NA}.}
+\item{min.signalblank.median.spl.pblk}{Minimum signal-to-blank ratio for SPL samples and PBLK. Default is \code{NA}.
+A feature not detected in at least half of the blank analyses has a blank
+median of zero and a ratio of \code{Inf}, and passes; the same applies to UBLK
+and SBLK.}
 
 \item{min.signalblank.median.spl.ublk}{Minimum signal-to-blank ratio for SPL samples and UBLK. Default is \code{NA}.}
 
@@ -144,6 +147,8 @@ The input \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object with th
 Per-criterion verdicts are stored in \code{metrics_qc}: \code{pass_minint} (the
 \verb{min.intensity.*} criteria), \code{pass_sb}, \code{pass_cva}, \code{pass_dratio},
 \code{pass_linearity} and \code{pass_missingval}, combined in \code{all_filter_pass}.
+With a response-curve criterion, a feature without response-curve results
+fails \code{pass_linearity}; ISTDs without results are not failed.
 }
 \description{
 Filters a dataset based on quality control (QC) criteria, including intensity,

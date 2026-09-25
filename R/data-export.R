@@ -47,7 +47,8 @@ ensure_output_dir <- function(path, create_dir = TRUE) {
 #'
 #' Internal standards are not included in the concentration and QC-filtered
 #' sheets. For reference-normalized variables, sheet names use short labels
-#' (e.g. `QCfilt_ConcRef_StudySamples`) to stay within Excel's 31 characters.
+#' to stay within Excel's 31 characters, with "Ref" marking values normalized
+#' by a reference sample (e.g. `QCfilt_ConcRef_StudySamples`).
 #'
 #'
 #' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] object containing original and processed data and metadata.

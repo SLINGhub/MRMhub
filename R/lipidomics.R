@@ -57,9 +57,10 @@ get_analyte_id <- function(transition_name, remove_nl_transitions) {
 #' Set feature classes from lipid names
 #'
 #' Derives lipid classes from the `feature_id`s with the Goslin lipid name
-#' parser (package `rgoslin`) and writes them to `feature_class` in the feature
-#' metadata, the dataset and the QC metrics. The class is the lipid class
-#' including the long-chain base (e.g. `Cer;O2`, `SM;O2`).
+#' parser and writes them to `feature_class` in the feature metadata, the
+#' dataset and the QC metrics. For sphingolipids, the class includes the number
+#' of oxygens on the sphingoid base (e.g. `Cer;O2`, `SM;O2`). Requires the
+#' Bioconductor package `rgoslin` (`BiocManager::install("rgoslin")`).
 #'
 #' @template data_mexp
 #' @param overwrite Logical. If `FALSE` (default), only features without a

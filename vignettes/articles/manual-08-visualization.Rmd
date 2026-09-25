@@ -263,8 +263,11 @@ plot_rt_vs_chain(mexp)
 ## `plot_matrixeffects()`: matrix-effect overview
 
 Shows each ISTD's signal per analysis as a percentage of its median over the plotted non-blank
-analyses (per batch by default), grouped by QC type. An ISTD signal clearly lower in study samples
-than in QC samples suggests ion suppression by the sample matrix.
+analyses (per batch by default), grouped by QC type. Blanks are plotted but not part of this
+reference. Include at least one QC type besides the study samples: with study samples only, they
+centre on 100% by construction. An ISTD signal higher in process blanks (ISTD without matrix) than
+in the samples may indicate ion suppression by the sample matrix. The spread between study samples
+and pooled QCs can reflect sample-to-sample differences in matrix effects.
 
 ```{r}
 plot_matrixeffects(mexp)

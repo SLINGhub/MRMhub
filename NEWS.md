@@ -2,11 +2,18 @@
 
 ## Breaking changes
 
-* `filter_features_qc()`: the minimum-intensity criterion columns in
-  `metrics_qc` are renamed from `pass_lod`/`filter_lod` to
-  `pass_minint`/`filter_minint`, and the summary-plot category from
-  `below_lod` to `below_minint`. The criterion is a floor on the
-  `min.intensity.*` values, not a limit-of-detection determination.
+* Plot and export functions with a `qc_types` argument: a single QC type such
+  as `"QC"` or `"BLK"` is now matched exactly instead of as a regular expression
+  that also selected BQC, TQC or PBLK, SBLK, ... Patterns such as `"QC|SPL"`
+  still work.
+
+* `calc_qc_metrics()` and `filter_features_qc()`: the columns of `metrics_qc`,
+  and of the report's Feature_QC_metrics sheet, change. `n_bqc`, `n_tqc` and
+  `n_spl` are inserted among the existing columns; `filter_features_qc()`
+  includes the response-curve statistics whenever response-curve data exist,
+  not only when a response-curve criterion is set, and always adds
+  `pass_linearity` and `filter_linearity`. Code selecting columns by position
+  needs updating.
 
 * `calc_qc_metrics()`: the column `sb_ratio_q10_pbk` is renamed to
   `sb_ratio_q10_pblk`.
@@ -15,40 +22,62 @@
   lipid classes parsed from the feature names for lipidomics experiments. The
   classes from the feature metadata are now always kept.
 
-* `filter_features_qc()`: when a response-curve criterion is set, a feature
-  whose response-curve results are missing now fails linearity with a warning,
-  as for all other criteria; before, it silently passed. ISTDs are exempt.
-
 * `calc_qc_metrics()` and `filter_features_qc()`: a feature not detected in a
-  blank now counts as zero intensity in that blank, so its signal-to-blank
-  ratio is `Inf` and it passes a signal-to-blank criterion; before, a missing
-  blank value failed the feature while a zero blank value passed it. A feature
-  not detected in the study samples still fails. A signal-to-blank criterion
-  for a blank type with no analyses in the dataset raises a clearer error.
+  blank now counts as zero intensity in that blank, so its signal-to-blank ratio
+  is `Inf` and it passes a signal-to-blank criterion; before, a missing blank
+  value failed the feature while a zero blank value passed it. This also applies
+  to a blank analysis without a row for the feature, which previously was left
+  out of the blank median. A feature not detected in the study samples still
+  fails. The blank medians (`intensity_median_pblk`, `_ublk`, `_sblk`) change
+  accordingly. A signal-to-blank criterion for a blank type with no analyses in
+  the dataset raises a clearer error. With `use_batch_medians = TRUE`,
+  signal-to-blank ratios take the lower median over batches, so a single batch
+  with a ratio of `Inf` no longer makes it `Inf` (e.g. with blanks in 2
+  batches).
 
 * `calc_qc_metrics()`: D-ratios are `NA` when the QC or the study samples have
-  fewer than 3 non-missing values, or a spread of zero, matching the existing
-  3-replicate floor for %CV. A zero MAD from tied values previously gave a
-  D-ratio of 0, which passed any D-ratio criterion.
+  fewer than 3 non-missing values, or a spread that is zero or not finite,
+  matching the existing 3-replicate floor for %CV. A zero MAD from tied values
+  previously gave a D-ratio of 0, which passed any D-ratio criterion.
 
-* `plot_pca()` labels a sample as an outlier when its score lies more than
-  `labels_threshold_mad` MADs from the median, on either side. The previous
-  rule compared the absolute score with `median + k * MAD`, which labelled
-  samples asymmetrically when the median was not zero.
+* `data_sum_features()`: a sum is `NA` in analyses where one of the summed
+  transitions is missing (with a warning), instead of a partial sum. Summing
+  internal standards together with analytes, or transitions with different
+  ISTDs, response factors or interference features, is an error, as is a summed
+  id that equals the `feature_id` of another feature. With
+  `qualifier_action = "exclude"`, qualifiers are kept as they are instead of
+  being dropped from the dataset. Excluding analyses or features, setting the
+  analysis order or intensity variable, and importing metadata after summing
+  now stop with an error; they previously dropped the summed analytes silently.
+
+* `filter_features_qc()`: the minimum-intensity criterion columns in
+  `metrics_qc` are renamed from `pass_lod`/`filter_lod` to
+  `pass_minint`/`filter_minint`, and the summary-plot category from
+  `below_lod` to `below_minint`. The criterion is a floor on the
+  `min.intensity.*` values, not a limit-of-detection determination.
+
+* `filter_features_qc()`: when a response-curve criterion is set, a feature
+  whose response-curve results are missing now fails linearity with a warning,
+  as for all other criteria; before, it silently passed. ISTDs without results
+  are not failed. The warning lists only features in the data that are not
+  already removed as ISTDs or qualifiers.
 
 * `plot_matrixeffects()` shows each ISTD signal as a percentage of its median
   over the plotted non-blank analyses (per batch by default), instead of the
   mean over all plotted analyses including blanks, which pulled the 100% line
   down. The y-axis label says so.
 
-* `data_sum_features()`: a sum is `NA` in analyses where one of the summed
-  transitions is missing (with a warning), instead of a partial sum. Summing
-  internal standards together with analytes, or transitions with different
-  ISTDs or response factors, is an error. With `qualifier_action = "exclude"`,
-  qualifiers are kept as they are instead of being dropped from the dataset.
-  Excluding analyses or features, setting the analysis order or intensity
-  variable, and importing metadata after summing now stop with an error; they
-  previously dropped the summed analytes silently.
+* `plot_pca()` labels a sample as an outlier when its score lies more than
+  `labels_threshold_mad` MADs from the median, on either side. The previous
+  rule compared the absolute score with `median + k * MAD`, which labelled
+  samples asymmetrically when the median was not zero. By default
+  (`qc_types = NA`), the PCA also includes samples of QC type `QC`, like the
+  other QC overview plots.
+
+* `plot_qcmetrics_comparison()` and `plot_normalization_qc()` gain
+  `include_istd` and hide ISTDs by default (`include_istd = FALSE`), also in
+  metrics other than the normalized CV. ISTDs were previously hidden only there,
+  because their normalized CV of 0 was removed as a zero value.
 
 * `save_report_xlsx()` excludes internal standards from the concentration and
   QC-filtered sheets by `is_istd` instead of by `(IS` in the feature name, so
@@ -56,34 +85,49 @@
   `(ISOMER …)` is no longer dropped. Sheets for reference-normalized variables
   use short names within Excel's 31 characters (e.g.
   `QCfilt_ConcRef_StudySamples`, `NormInt_NormalizedByRef_Full`); these names
-  previously exceeded the limit, and some reports failed to save.
+  previously exceeded the limit, and some reports failed to save. Infinite QC
+  metrics are written as the text `Inf` or `-Inf`, as Excel has no infinity, so
+  such a column holds text and numbers in Excel; `save_feature_qc_metrics()`
+  (CSV) keeps them numeric.
 
 ## New features
 
+* `calc_qc_metrics()` reports the number of replicates behind the %CV and
+  D-ratio as `n_bqc`, `n_tqc` and `n_spl`.
+
 * `plot_pca()` and `plot_pca_loading()` accept `variable = "fwhm"`.
 
-* `plot_qcmetrics_comparison()` and `plot_normalization_qc()` gain
-  `include_istd` (default `FALSE`). ISTDs were previously hidden only because
-  their normalized CV of 0 was removed as a zero value.
+* `plot_qc_summary_byclass()` and `plot_qc_summary_overall()` label the QC
+  categories in words (e.g. "< min S/B", "> max CV", "passed") instead of
+  internal codes such as `below_sb`.
+
+* `plot_qcmetrics_comparison()` notes in a caption when the metrics were
+  calculated as robust %CV or as medians of within-batch values.
 
 * New `set_lipid_class()` sets `feature_class` from the lipid names via the
   Goslin parser (`rgoslin`), filling only missing classes unless
   `overwrite = TRUE`. It replaces the parsing that `calc_qc_metrics()` used to
   apply implicitly.
 
-* `calc_qc_metrics()` reports the number of replicates behind the %CV and
-  D-ratio as `n_bqc`, `n_tqc` and `n_spl`.
-
-* `plot_qcmetrics_comparison()` notes in a caption when the metrics were
-  calculated as robust %CV or as medians of within-batch values.
-
 ## Bug fixes
+
+* Batch boundaries (`annot_batches`, used for batch shading in run-order
+  plots, the BatchInfo report sheet and `get_batch_boundaries()`) are taken
+  from the first and last analysis of each batch in analysis order, not in the
+  row order of the analysis metadata, and are updated by
+  `set_analysis_order()`. Processed values were not affected.
 
 * `data_sum_features()` keeps the dataset and the feature metadata consistent:
   in `"separate"` mode the qualifier sum now also exists in the feature
   metadata, a quantifier-qualifier pair is no longer renamed in one table only,
   an empty `analyte_id` no longer merges unrelated features, and summed ISTD
-  transitions are updated in the ISTD, feature and interference metadata.
+  transitions are updated in the ISTD, feature and interference metadata. An
+  excluded transition, or one listed only in the metadata, no longer sets all
+  sums of its analyte to `NA`. References to summed features in
+  `interference_feature_id` of the feature metadata are updated, and an
+  interference between transitions summed into one feature is removed.
+  `feature_int_start` and `feature_int_end` are `NA` for merged analytes, like
+  the peak widths.
 
 * `filter_features_qc()`: chained calls with `clear_existing = FALSE` can now
   add response-curve criteria in a later step (this aborted with "There are
@@ -100,26 +144,13 @@
 * `get_response_curve_stats()` (and the response-curve metrics of
   `calc_qc_metrics()`): a single missing point no longer makes r², slope and
   intercept of the whole curve `NA`; the curve is fitted on the points present,
-  with a warning.
-
-* Batch boundaries (`annot_batches`, used for batch shading in run-order
-  plots, the BatchInfo report sheet and `get_batch_boundaries()`) are taken
-  from the first and last analysis of each batch in analysis order, not in the
-  row order of the analysis metadata, and are updated by
-  `set_analysis_order()`. Processed values were not affected.
-
-* Plot and export functions with a `qc_types` argument: a single QC type such
-  as `"QC"` or `"BLK"` is now matched exactly instead of as a regular expression
-  that also selected BQC, TQC or PBLK, SBLK, ... Patterns such as `"QC|SPL"`
-  still work.
-
-* `save_report_xlsx()`: an explicit `normalized_variable` (e.g. `"conc"`)
-  now exports the reference-normalized values instead of the unnormalized ones,
-  and infinite signal-to-blank ratios appear as `Inf` instead of an Excel
-  error.
+  scaled to the largest amount among them, with a warning (also in
+  `calc_qc_metrics()`). A curve with fewer than 3 points present gives `NA`
+  instead of a perfect r² from 2 points.
 
 * `plot_abundanceprofile()`: features whose class is missing or not in
-  `feature_map` are shown as `Other` instead of being silently dropped. On a
+  `feature_map` are shown as `Other` instead of being silently dropped, in the
+  colour of an `Other` entry in `feature_map` if there is one. On a
   linear scale, class ranges are padded by the data range, so negative values
   are covered; on a log scale, non-positive values are removed with a message.
   With `use_qc_metrics = TRUE`, the feature filters are applied, and a set
@@ -141,15 +172,9 @@
   Features with missing or non-positive values are now reported when excluded,
   and the horizontal layout's axis titles are no longer swapped.
 
-* `plot_qcmetrics_comparison()`: a comparison of metrics from different QC
-  types with `qc_types` set no longer gives an empty plot (`qc_types` is
-  ignored with a warning); zero values are kept on linear axes and removed only
-  for log axes and ratio plots; only the named metric columns are selected;
-  with `y_shared = TRUE` and one `y_lim` bound missing, the x-axis is free.
-
 * `plot_qc_summary_byclass()` and `plot_qc_summary_overall()` count each
   feature once. Features retained via `features.to.keep` despite failing QC
-  are shown as a separate `kept_failed_qc` category instead of being counted
+  are shown as a separate "QC failed, kept" category instead of being counted
   both as failed and as passed, which inflated totals and per-class
   percentages. Features with only missing values are no longer also counted as
   passed.
@@ -157,6 +182,16 @@
 * `plot_qc_summary_overall()`: the Venn diagram now covers the same features as
   the bars (no ISTDs or qualifiers when these are excluded) and also requires
   the missing-value criterion to be passed.
+
+* `plot_qcmetrics_comparison()`: a comparison of metrics from different QC
+  types with `qc_types` set no longer gives an empty plot (`qc_types` is
+  ignored with a warning); zero values are kept on linear axes and removed only
+  for log axes and ratio plots; only the named metric columns are selected;
+  with `y_shared = TRUE` and one `y_lim` bound missing, the x-axis is free.
+
+* `save_report_xlsx()`: an explicit `normalized_variable` (e.g. `"conc"`)
+  now exports the reference-normalized values instead of the unnormalized ones,
+  and infinite QC metrics no longer appear as an Excel error.
 
 # mrmhub 0.9.10
 

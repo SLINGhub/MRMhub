@@ -267,10 +267,13 @@ check_merged_metadata <- function(af) {
   }
   clash <- intersect(merged$new_id, af$feature_id[af$n_members == 1])
   if (length(clash) > 0) {
-    cli::cli_abort(c(
-      "x" = "Summed feature id{?s} {.val {mh_vec(clash)}} {?is/are} already used by another feature.",
-      "i" = "Change the {.field analyte_id} of the summed transitions, or give the other feature the same {.field analyte_id} to include it in the sum."
-    ))
+    cli::cli_abort(
+      c(
+        "x" = "Summed feature id{?s} {.val {mh_vec(clash)}} {?is/are} already used by another feature.",
+        "i" = "Change the {.field analyte_id} of the summed transitions, or give the other feature the same {.field analyte_id} to include it in the sum."
+      ),
+      call = rlang::caller_env()
+    )
   }
   differs <- function(cols) {
     cols <- intersect(cols, names(merged))
@@ -285,10 +288,13 @@ check_merged_metadata <- function(af) {
 
   mixed <- differs("is_istd")
   if (nrow(mixed) > 0) {
-    cli::cli_abort(c(
-      "x" = "Summed features must not combine internal standards and analytes: {.val {mh_vec(mixed$new_id)}}.",
-      "i" = "Give the internal standards their own {.field analyte_id} in the feature metadata."
-    ))
+    cli::cli_abort(
+      c(
+        "x" = "Summed features must not combine internal standards and analytes: {.val {mh_vec(mixed$new_id)}}.",
+        "i" = "Give the internal standards their own {.field analyte_id} in the feature metadata."
+      ),
+      call = rlang::caller_env()
+    )
   }
   quant <- differs(c(
     "istd_feature_id",
@@ -297,10 +303,13 @@ check_merged_metadata <- function(af) {
     "interference_feature_id"
   ))
   if (nrow(quant) > 0) {
-    cli::cli_abort(c(
-      "x" = "Features summed into {.val {mh_vec(unique(quant$new_id))}} differ in {.field {unique(quant$field)}}.",
-      "i" = "Harmonise these values in the feature metadata before summing."
-    ))
+    cli::cli_abort(
+      c(
+        "x" = "Features summed into {.val {mh_vec(unique(quant$new_id))}} differ in {.field {unique(quant$field)}}.",
+        "i" = "Harmonise these values in the feature metadata before summing."
+      ),
+      call = rlang::caller_env()
+    )
   }
   other <- differs(c("feature_class", "feature_label"))
   if (nrow(other) > 0) {
@@ -348,8 +357,13 @@ remap_istd_table <- function(annot_istds, remap) {
     ) |>
     filter(.data$n > 1)
   if (nrow(conflicting) > 0) {
+    ids <- unique(conflicting[[key[length(key)]]])
     cli::cli_abort(
-      "Summed internal standards have different concentrations in the ISTD metadata."
+      c(
+        "x" = "Internal standards summed into {.val {mh_vec(ids)}} have different concentrations in the ISTD metadata.",
+        "i" = "Use one concentration for these transitions in the ISTD metadata, or give them different {.field analyte_id}s."
+      ),
+      call = rlang::caller_env()
     )
   }
   out[!duplicated(out[key]), ]
