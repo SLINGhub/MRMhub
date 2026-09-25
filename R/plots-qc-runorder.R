@@ -68,7 +68,10 @@ plot_runsequence <- function(
   if (!all(is.na(qc_types))) {
     d_filt <- d_filt |>
       filter(
-        if (is.vector(qc_types) && length(qc_types) > 1) {
+        if (
+          length(qc_types) > 1 ||
+            qc_types %in% pkg.env$qc_type_annotation$qc_type_levels
+        ) {
           .data$qc_type %in% qc_types
         } else {
           str_detect(.data$qc_type, qc_types)

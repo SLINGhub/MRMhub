@@ -338,15 +338,12 @@ save_report_xlsx <- function(
     )
   )
 
-  # Excel has no infinity: such cells are written as the text "Inf" below
-  qc_inf <- which(
-    as.matrix(dplyr::mutate(
-      data@metrics_qc,
-      dplyr::across(dplyr::everything(), ~ is.numeric(.x) & is.infinite(.x))
-    )),
-    arr.ind = TRUE
+  # Excel has no infinity: such cells are written as the text "Inf"/"-Inf" below
+  qc_inf <- purrr::keep(
+    purrr::map(data@metrics_qc, \(x) if (is.numeric(x)) which(is.infinite(x))),
+    \(rows) length(rows) > 0
   )
-  if (nrow(qc_inf) > 0) {
+  if (length(qc_inf) > 0) {
     d_info <- d_info |>
       tibble::add_row(
         Info = "Inf in Feature_QC_metrics",
@@ -508,14 +505,19 @@ save_report_xlsx <- function(
   #   wb <- openxlsx2::wb_remove_worksheet(wb, 9)
   # }
 
-  for (k in seq_len(nrow(qc_inf))) {
+  for (col in names(qc_inf)) {
+    rows <- qc_inf[[col]]
     wb <- wb |>
       openxlsx2::wb_add_data(
         sheet = "Feature_QC_metrics",
-        x = "Inf",
-        start_col = qc_inf[k, "col"],
-        start_row = qc_inf[k, "row"] + 1,
-        col_names = FALSE
+        x = as.character(data@metrics_qc[[col]][rows]),
+        dims = paste0(
+          openxlsx2::int2col(match(col, names(data@metrics_qc))),
+          rows + 1,
+          collapse = ","
+        ),
+        col_names = FALSE,
+        enforce = TRUE
       )
   }
 

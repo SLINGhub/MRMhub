@@ -183,12 +183,6 @@ data_sum_features <- function(
     ) |>
     select(all_of(names(data@dataset)))
 
-  missing_ids <- setdiff(ds_res$feature_id, annot$feature_id)
-  if (length(missing_ids) > 0) {
-    cli::cli_abort(
-      "Internal error: summed features missing from the feature metadata: {.val {mh_vec(missing_ids)}}."
-    )
-  }
   data@dataset <- ds_res
   data@annot_features <- annot
   if (any(af$n_members > 1)) {

@@ -734,3 +734,10 @@ test_that("plot_rla_boxplot min_feature_intensity thresholds on intensity, not t
   expect_lt(length(got), full_n)
   expect_false(setequal(got, variable_based))
 })
+
+test_that("plot_runsequence matches a single known QC type exactly", {
+  # "BLK" must not select PBLK, SBLK or UBLK
+  expect_error(plot_runsequence(mexp, qc_types = "BLK"), "qc_types")
+  p <- plot_runsequence(mexp, qc_types = "PBLK")
+  expect_setequal(unique(as.character(p$data$qc_type)), "PBLK")
+})

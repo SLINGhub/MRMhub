@@ -113,7 +113,7 @@ get_dataset_subset <- function(
         str_detect(d_filt$qc_type, qc_types)
       }
       if (any(in_types, na.rm = TRUE)) {
-        d_filt <- d_filt[in_types %in% TRUE, ]
+        d_filt <- d_filt |> dplyr::filter(in_types)
       } else {
         cli::cli_abort(
           "The defined `qc_type` filter criteria resulted in no analyses to plot. Please verify the criteria set in the arguments."

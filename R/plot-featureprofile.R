@@ -270,7 +270,9 @@ plot_abundanceprofile <- function(
       "{sum(unmapped)} feature{?s} without a class in {.arg feature_map} {?is/are} shown as {.val Other}."
     )
     d_features$feature_class[unmapped] <- "Other"
-    feature_map_resolved <- c(feature_map_resolved, Other = "grey70")
+    if (!"Other" %in% names(feature_map_resolved)) {
+      feature_map_resolved <- c(feature_map_resolved, Other = "grey70")
+    }
   }
 
   if (drop_empty_classes) {

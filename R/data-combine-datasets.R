@@ -21,6 +21,14 @@ combine_experiments <- function(..., ordered_by_runsequence) {
     x@dataset_orig
   }) |>
     dplyr::distinct()
+  if (
+    any(purrr::map_lgl(
+      exp_list,
+      \(x) isTRUE(attr(x@dataset_orig, "summed_features"))
+    ))
+  ) {
+    attr(mexp@dataset_orig, "summed_features") <- TRUE
+  }
   mexp@dataset <- purrr::map_dfr(.x = exp_list, .f = \(x) x@dataset) |>
     dplyr::distinct()
   mexp@annot_analyses <- purrr::map_dfr(.x = exp_list, .f = \(x) {

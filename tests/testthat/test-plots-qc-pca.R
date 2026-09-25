@@ -190,7 +190,7 @@ test_that("plot_pca filter work", {
       log_transform = FALSE,
       filter_data = FALSE
     ),
-    "2 features contained missing or non-numeric values and were exluded"
+    "2 features contained missing or non-numeric values and were excluded"
   )
 
   expect_message(
@@ -585,4 +585,16 @@ test_that("plot_pca and plot_pca_loading accept fwhm as variable", {
     "ggplot"
   )
   expect_s3_class(plot_pca_loading(mexp_fwhm, variable = "fwhm"), "ggplot")
+})
+
+test_that("plot_pca includes QC-type samples by default", {
+  mexp_qc <- mexp
+  spl <- unique(mexp_qc@dataset$analysis_id[mexp_qc@dataset$qc_type == "SPL"])
+  mexp_qc@dataset$qc_type[mexp_qc@dataset$analysis_id %in% spl[1:5]] <- "QC"
+  p <- suppressMessages(plot_pca(
+    mexp_qc,
+    variable = "conc",
+    filter_data = FALSE
+  ))
+  expect_true("QC" %in% p$data$qc_type)
 })

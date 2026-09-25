@@ -154,7 +154,7 @@ plot_pca <- function(
   if (all(is.na(qc_types))) {
     qc_types <- intersect(
       data$dataset$qc_type,
-      c("SPL", "TQC", "BQC", "TQC", "HQC", "MQC", "LQC", "NIST", "LTR")
+      pkg.env$qc_type_annotation$qc_type_levels_nonblank
     )
   }
 
@@ -217,7 +217,7 @@ plot_pca <- function(
   n_removed <- ncol(d_wide) - ncol(d_clean)
   if (n_removed > 0) {
     mh_warn(
-      "{n_removed} features contained missing or non-numeric values and were exluded."
+      "{n_removed} features contained missing or non-numeric values and were excluded."
     )
   }
 

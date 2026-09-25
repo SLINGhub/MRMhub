@@ -582,3 +582,17 @@ test_that("save_report_xlsx writes infinite QC metrics as the text Inf", {
   info <- openxlsx2::wb_to_df(temp_file, sheet = "Info")
   expect_true(any(grepl("signal-to-blank", unlist(info), ignore.case = TRUE)))
 })
+
+test_that("save_report_xlsx keeps the sign of infinite QC metrics", {
+  mexp_inf <- mexp
+  mexp_inf@metrics_qc$sb_ratio_pblk[1:2] <- c(Inf, -Inf)
+  temp_file <- tempfile(fileext = ".xlsx")
+  on.exit(unlink(temp_file))
+  suppressMessages(save_report_xlsx(mexp_inf, temp_file))
+  qc <- openxlsx2::wb_to_df(temp_file, sheet = "Feature_QC_metrics")
+  expect_equal(as.character(qc$sb_ratio_pblk[1:2]), c("Inf", "-Inf"))
+  expect_equal(
+    as.numeric(qc$sb_ratio_pblk[3]),
+    mexp_inf@metrics_qc$sb_ratio_pblk[3]
+  )
+})

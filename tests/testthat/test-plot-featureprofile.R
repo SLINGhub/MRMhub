@@ -504,3 +504,19 @@ test_that("use_qc_metrics applies the feature filters", {
     "analysis_range"
   )
 })
+
+test_that("an Other class in the feature map is not duplicated", {
+  mexp_cls <- mexp
+  cls <- mexp_cls@dataset$feature_class
+  mexp_cls@dataset$feature_class[cls == "CE"] <- NA_character_
+  map <- c(PC = "blue", TG = "orange", Other = "red")
+  p <- suppressMessages(plot_abundanceprofile(
+    mexp_cls,
+    variable = "conc",
+    qc_types = "SPL",
+    feature_map = map,
+    log_scale = TRUE
+  ))
+  expect_s3_class(p, "ggplot")
+  expect_true("Other" %in% p$data$feature_class)
+})
