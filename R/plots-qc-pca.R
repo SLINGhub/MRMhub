@@ -38,8 +38,9 @@
 #' @param labels_column A character string indicating the column to be used for the point labels. Typically "analysis_id" or "analysis_order".
 #' Default is "analysis_id".
 #' @param labels_threshold_mad A numeric value determining the threshold
-#' for showing labels based on the median absolute deviation (MAD). Default
-#' is 3. Set to `NULL` to suppress labels.
+#' for showing labels based on the median absolute deviation (MAD): samples
+#' whose score on either shown PC lies more than this many MADs from the
+#' median are labelled. Default is 3. Set to `NULL` to suppress labels.
 #' @param shared_labeltext_hide A character string representing text shared
 #' across labels to be hidden (case-sensitive). If this results in
 #' non-unique analysis_id's, an error will be raised.
@@ -132,7 +133,8 @@ plot_pca <- function(
       "response",
       "conc",
       "conc_raw",
-      "rt"
+      "rt",
+      "fwhm"
     )
   )
   variable <- stringr::str_c("feature_", variable)
@@ -235,16 +237,7 @@ plot_pca <- function(
     m_raw <- log2(m_raw)
   }
 
-  # prcomp(scale = TRUE) cannot rescale a constant (zero-variance) column; drop
-  # such features with a warning instead of surfacing a cryptic prcomp error.
-  col_sd <- apply(m_raw, 2, stats::sd, na.rm = TRUE)
-  constant <- !is.na(col_sd) & col_sd == 0
-  if (any(constant)) {
-    mh_warn(
-      "{sum(constant)} feature{?s} had zero variance across the selected samples and {?was/were} excluded from the PCA."
-    )
-    m_raw <- m_raw[, !constant, drop = FALSE]
-  }
+  m_raw <- drop_constant_columns(m_raw)
 
   # get pca result with annotation
   pca_res <- prcomp(m_raw, scale = TRUE, center = TRUE)
@@ -268,8 +261,8 @@ plot_pca <- function(
   if (!is.null(labels_threshold_mad) && !is.na(labels_threshold_mad)) {
     d_outlier <- pca_annot |>
       filter(
-        abs(!!PCx) > (median(!!PCx) + labels_threshold_mad * mad(!!PCx)) |
-          abs(!!PCy) > (median(!!PCy) + labels_threshold_mad * mad(!!PCy))
+        abs(!!PCx - median(!!PCx)) > labels_threshold_mad * mad(!!PCx) |
+          abs(!!PCy - median(!!PCy)) > labels_threshold_mad * mad(!!PCy)
       )
   } else {
     d_outlier <- pca_annot[0, ]
@@ -529,9 +522,9 @@ plot_pca <- function(
 #' @param filter_data A logical value indicating whether to use all data
 #' (default) or only QC-filtered data (filtered via [filter_features_qc()]).
 #' @param include_qualifier A logical value indicating whether to include
-#' qualifier features. Default is `TRUE`.
+#' qualifier features. Default is `FALSE`.
 #' @param include_istd A logical value indicating whether to include internal
-#' standard (ISTD) features. Default is `TRUE`.
+#' standard (ISTD) features. Default is `FALSE`.
 #' @template feature_filters
 #' @template font_base_size
 #' @template legend_args
@@ -566,8 +559,6 @@ plot_pca_loading <- function(
   strip_bg_color = NULL,
   legend_bg_alpha = NULL
 ) {
-  # ... (all data prep code remains the same) ...
-
   check_data(data)
   font_base_size <- resolve_plot_opt(font_base_size, "font_base_size", 11)
   variable <- str_remove(variable, "feature_")
@@ -581,7 +572,8 @@ plot_pca_loading <- function(
       "response",
       "conc",
       "conc_raw",
-      "rt"
+      "rt",
+      "fwhm"
     )
   )
   variable <- stringr::str_c("feature_", variable)
@@ -591,7 +583,7 @@ plot_pca_loading <- function(
   if (all(is.na(qc_types))) {
     qc_types <- intersect(
       data$dataset$qc_type,
-      c("SPL", "TQC", "BQC", "TQC", "HQC", "MQC", "LQC", "NIST", "LTR")
+      pkg.env$qc_type_annotation$qc_type_levels_nonblank
     )
   }
 
@@ -640,19 +632,23 @@ plot_pca_loading <- function(
     )
 
   d_filt <- d_filt |>
-    tibble::column_to_rownames("analysis_id") |>
-    dplyr::select(where(~ !any(is.na(.))))
-
+    tibble::column_to_rownames("analysis_id")
   m_raw <- d_filt |>
-    filter(if_any(dplyr::where(is.numeric), ~ !is.na(.))) |>
     dplyr::select(where(
       ~ !any(is.na(.) | is.nan(.) | is.infinite(.) | . <= 0)
     )) |>
     as.matrix()
+  n_removed <- ncol(d_filt) - ncol(m_raw)
+  if (n_removed > 0) {
+    mh_warn(
+      "{n_removed} feature{?s} with missing or non-positive values {?was/were} excluded from the PCA."
+    )
+  }
 
   if (log_transform) {
     m_raw <- log2(m_raw)
   }
+  m_raw <- drop_constant_columns(m_raw)
   pca_res <- prcomp(m_raw, scale = TRUE, center = TRUE)
 
   d_loading <- pca_rotation_wide(pca_res, name_col = "feature_name")
@@ -723,7 +719,7 @@ plot_pca_loading <- function(
         labels = d_loadings_selected$feature_name,
         breaks = d_loadings_selected$Feature
       ) +
-      ggplot2::labs(y = "Feature", x = "Loading")
+      ggplot2::labs(x = "Feature", y = "Loading")
   } else {
     p <- p +
       # --- FIX: `limits = rev` is KEPT for vertical bars ---
@@ -762,4 +758,18 @@ plot_pca_loading <- function(
       title = title,
       legend_bg_alpha = legend_bg_alpha
     )
+}
+
+
+# prcomp(scale = TRUE) cannot rescale a constant (zero-variance) column; drop
+# such features with a warning instead of surfacing a cryptic prcomp error.
+drop_constant_columns <- function(m) {
+  col_sd <- apply(m, 2, stats::sd, na.rm = TRUE)
+  constant <- !is.na(col_sd) & col_sd == 0
+  if (any(constant)) {
+    mh_warn(
+      "{sum(constant)} feature{?s} had zero variance across the selected samples and {?was/were} excluded from the PCA."
+    )
+  }
+  m[, !constant, drop = FALSE]
 }

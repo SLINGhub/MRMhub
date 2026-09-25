@@ -57,10 +57,10 @@ the data before the PCA. Default is \code{TRUE}.}
 (default) or only QC-filtered data (filtered via \code{\link[=filter_features_qc]{filter_features_qc()}}).}
 
 \item{include_qualifier}{A logical value indicating whether to include
-qualifier features. Default is \code{TRUE}.}
+qualifier features. Default is \code{FALSE}.}
 
 \item{include_istd}{A logical value indicating whether to include internal
-standard (ISTD) features. Default is \code{TRUE}.}
+standard (ISTD) features. Default is \code{FALSE}.}
 
 \item{include_feature_filter}{Feature(s) to include by \code{feature_id}, as a
 character vector. Each element is matched exactly when it names an existing

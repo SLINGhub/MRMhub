@@ -97,8 +97,9 @@ is \code{TRUE}.}
 Default is "analysis_id".}
 
 \item{labels_threshold_mad}{A numeric value determining the threshold
-for showing labels based on the median absolute deviation (MAD). Default
-is 3. Set to \code{NULL} to suppress labels.}
+for showing labels based on the median absolute deviation (MAD): samples
+whose score on either shown PC lies more than this many MADs from the
+median are labelled. Default is 3. Set to \code{NULL} to suppress labels.}
 
 \item{shared_labeltext_hide}{A character string representing text shared
 across labels to be hidden (case-sensitive). If this results in

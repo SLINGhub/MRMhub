@@ -31,7 +31,14 @@
   3-replicate floor for %CV. A zero MAD from tied values previously gave a
   D-ratio of 0, which passed any D-ratio criterion.
 
+* `plot_pca()` labels a sample as an outlier when its score lies more than
+  `labels_threshold_mad` MADs from the median, on either side. The previous
+  rule compared the absolute score with `median + k * MAD`, which labelled
+  samples asymmetrically when the median was not zero.
+
 ## New features
+
+* `plot_pca()` and `plot_pca_loading()` accept `variable = "fwhm"`.
 
 * New `set_lipid_class()` sets `feature_class` from the lipid names via the
   Goslin parser (`rgoslin`), filling only missing classes unless
@@ -57,6 +64,11 @@
 
 * `filter_features_qc()`: ISTDs no longer get a signal-to-blank verdict when no
   signal-to-blank criterion is set.
+
+* `plot_pca_loading()` drops features with zero variance, with a warning, as
+  `plot_pca()` does; a constant feature previously appeared as the top loading.
+  Features with missing or non-positive values are now reported when excluded,
+  and the horizontal layout's axis titles are no longer swapped.
 
 * `plot_qc_summary_byclass()` and `plot_qc_summary_overall()` count each
   feature once. Features retained via `features.to.keep` despite failing QC
