@@ -98,3 +98,56 @@ test_that("a single missing curve point does not void the curve fit", {
   expect_false(is.na(r2))
   expect_gt(r2, 0.5)
 })
+
+test_that("a curve with fewer than 3 points present is not fitted", {
+  rqc <- mexp@annot_responsecurves
+  pts <- rqc$analysis_id[rqc$curve_id == rqc$curve_id[1]]
+  mexp_na <- mexp
+  mexp_na@dataset$feature_intensity[
+    mexp_na@dataset$analysis_id %in%
+      pts[-(1:2)] &
+      mexp_na@dataset$feature_id == "PC 32:1"
+  ] <- NA
+  res <- suppressWarnings(get_response_curve_stats(mexp_na))
+  r2_col <- paste0("r2_rqc_", rqc$curve_id[1])
+  expect_true(is.na(res[[r2_col]][res$feature_id == "PC 32:1"]))
+})
+
+test_that("a curve missing its top point is scaled to the points present", {
+  rqc <- mexp@annot_responsecurves
+  crv <- rqc[rqc$curve_id == rqc$curve_id[1], ]
+  top <- crv$analysis_id[which.max(crv$analyzed_amount)]
+  mexp_na <- mexp
+  sel <- mexp_na@dataset$feature_id == "PC 32:1"
+  mexp_na@dataset$feature_intensity[
+    sel & mexp_na@dataset$analysis_id == top
+  ] <- NA
+  res <- suppressWarnings(get_response_curve_stats(mexp_na))
+
+  pts <- mexp_na@dataset[sel, c("analysis_id", "feature_intensity")] |>
+    dplyr::inner_join(crv, by = "analysis_id") |>
+    dplyr::filter(!is.na(.data$feature_intensity))
+  fit <- lm(
+    I(feature_intensity / max(feature_intensity)) ~
+      I(analyzed_amount / max(analyzed_amount)),
+    data = pts
+  )
+  slope_col <- paste0("slopenorm_rqc_", rqc$curve_id[1])
+  expect_equal(
+    res[[slope_col]][res$feature_id == "PC 32:1"],
+    unname(coef(fit)[2])
+  )
+})
+
+test_that("missing curve points are reported even with silent_invalid_data", {
+  rqc <- mexp@annot_responsecurves
+  mexp_na <- mexp
+  mexp_na@dataset$feature_intensity[
+    mexp_na@dataset$analysis_id == rqc$analysis_id[1] &
+      mexp_na@dataset$feature_id == "PC 32:1"
+  ] <- NA
+  expect_warning(
+    get_response_curve_stats(mexp_na, silent_invalid_data = TRUE),
+    "missing points"
+  )
+})
