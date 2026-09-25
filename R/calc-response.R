@@ -29,9 +29,11 @@ get_response_curve_stats <- function(
   get_lm_results <- function(tbl) {
     dt <- tbl
 
-    # Scale to max x and max y (1 = max)
-    dt$x_scaled <- (dt$analyzed_amount) / (max(dt$analyzed_amount))
-    dt$y_scaled <- (dt$feature_intensity) / (max(dt$feature_intensity))
+    # Scale to max x and max y (1 = max); a missing point must not void the fit
+    dt$x_scaled <- dt$analyzed_amount /
+      safe_max(dt$analyzed_amount, na.rm = TRUE)
+    dt$y_scaled <- dt$feature_intensity /
+      safe_max(dt$feature_intensity, na.rm = TRUE)
     tryCatch(
       {
         res <- lm(y_scaled ~ x_scaled, data = dt, na.action = na.exclude)
@@ -107,6 +109,21 @@ get_response_curve_stats <- function(
       "Some response curve analyses in the metadata are absent from the dataset and are skipped.",
       "i" = "Affected curve{?s}: {.val {sort(unique(missing_curves$curve_id))}}.",
       "i" = "Missing analysis ID{?s}: {.val {sort(n_diff)}}."
+    ))
+  }
+
+  # Curves with some (not all) points missing are fitted on the points present
+  partial <- d_stats |>
+    dplyr::summarise(
+      n_na = sum(is.na(.data$feature_intensity)),
+      n = dplyr::n(),
+      .by = c("feature_id", "curve_id")
+    ) |>
+    dplyr::filter(.data$n_na > 0, .data$n_na < .data$n)
+  if (nrow(partial) > 0 && !silent_invalid_data) {
+    cli::cli_warn(c(
+      "Response curves with missing points were fitted on the remaining points.",
+      "i" = "Affected feature{?s}: {.val {mh_vec(unique(partial$feature_id))}}."
     ))
   }
 

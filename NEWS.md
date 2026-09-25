@@ -97,6 +97,11 @@
 * `filter_features_qc()`: ISTDs no longer get a signal-to-blank verdict when no
   signal-to-blank criterion is set.
 
+* `get_response_curve_stats()` (and the response-curve metrics of
+  `calc_qc_metrics()`): a single missing point no longer makes r², slope and
+  intercept of the whole curve `NA`; the curve is fitted on the points present,
+  with a warning.
+
 * Batch boundaries (`annot_batches`, used for batch shading in run-order
   plots, the BatchInfo report sheet and `get_batch_boundaries()`) are taken
   from the first and last analysis of each batch in analysis order, not in the
