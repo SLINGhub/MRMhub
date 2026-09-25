@@ -97,6 +97,11 @@
 * `filter_features_qc()`: ISTDs no longer get a signal-to-blank verdict when no
   signal-to-blank criterion is set.
 
+* Plot and export functions with a `qc_types` argument: a single QC type such
+  as `"QC"` or `"BLK"` is now matched exactly instead of as a regular expression
+  that also selected BQC, TQC or PBLK, SBLK, ... Patterns such as `"QC|SPL"`
+  still work.
+
 * `save_report_xlsx()`: an explicit `normalized_variable` (e.g. `"conc"`)
   now exports the reference-normalized values instead of the unnormalized ones,
   and infinite signal-to-blank ratios appear as `Inf` instead of an Excel

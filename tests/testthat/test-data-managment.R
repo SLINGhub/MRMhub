@@ -855,3 +855,16 @@ test_that("check_var_in_dataset catches an absent, non-special-cased variable", 
   # a present variable still passes
   expect_no_error(check_var_in_dataset(tbl, "feature_rt"))
 })
+
+test_that("get_dataset_subset matches a single known QC type exactly", {
+  result <- get_dataset_subset(mexp, qc_types = "BQC")
+  expect_equal(as.character(unique(result$qc_type)), "BQC")
+  # "QC" is a QC type of its own, not a pattern for BQC, TQC, ...
+  expect_error(
+    get_dataset_subset(mexp, qc_types = "QC"),
+    "no analyses"
+  )
+  # a pattern that is not a QC type still works as a regular expression
+  result <- get_dataset_subset(mexp, qc_types = "BQC|TQC")
+  expect_setequal(as.character(unique(result$qc_type)), c("BQC", "TQC"))
+})

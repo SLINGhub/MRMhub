@@ -105,9 +105,15 @@ get_dataset_subset <- function(
       all(qc_types != "")
   ) {
     if (length(qc_types) == 1) {
-      # Single QC type: check if it exists in the dataset
-      if (any(str_detect(d_filt$qc_type, qc_types), na.rm = TRUE)) {
-        d_filt <- d_filt |> dplyr::filter(str_detect(.data$qc_type, qc_types))
+      # A single value is a regular expression, unless it is a QC type itself
+      # ("QC" would otherwise also match "BQC", "TQC", ...)
+      in_types <- if (qc_types %in% pkg.env$qc_type_annotation$qc_type_levels) {
+        d_filt$qc_type == qc_types
+      } else {
+        str_detect(d_filt$qc_type, qc_types)
+      }
+      if (any(in_types, na.rm = TRUE)) {
+        d_filt <- d_filt[in_types %in% TRUE, ]
       } else {
         cli::cli_abort(
           "The defined `qc_type` filter criteria resulted in no analyses to plot. Please verify the criteria set in the arguments."
@@ -180,7 +186,7 @@ get_dataset_subset <- function(
 #' Get the annotated or the originally imported analytical data
 #' @param data [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @param annotated Boolean indicating whether to return the annotated data
-#' (`FALSE`) or the original imported data (`TRUE`)
+#' (`TRUE`) or the original imported data (`FALSE`)
 #' @return A tibble with the analytical data in the long format
 #' @export
 

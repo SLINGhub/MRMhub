@@ -10,7 +10,7 @@ get_analyticaldata(data = NULL, annotated)
 \item{data}{\code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object}
 
 \item{annotated}{Boolean indicating whether to return the annotated data
-(\code{FALSE}) or the original imported data (\code{TRUE})}
+(\code{TRUE}) or the original imported data (\code{FALSE})}
 }
 \value{
 A tibble with the analytical data in the long format

@@ -48,7 +48,9 @@ as a scatter plot, "diff" plots the difference between the two CV values against
 \item{qc_types}{A character vector specifying the QC types to plot. It must
 contain at least one element. The default \code{NA} plots any of the non-blank
 QC types ("SPL", "TQC", "BQC", "HQC", "MQC", "LQC", "NIST", "LTR") present
-in the dataset.}
+in the dataset. A single value that is a QC type is matched exactly; any
+other single value is a regular expression, e.g. \code{"QC$"} for all QC types
+ending in "QC".}
 
 \item{facet_by_class}{If \code{TRUE}, facets the plot by \code{feature_class}, as defined
 in the feature metadata.}
