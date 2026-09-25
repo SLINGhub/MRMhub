@@ -515,3 +515,70 @@ test_that("save_report_xlsx() creates a missing output directory (create_dir = T
   suppressMessages(save_report_xlsx(mexp, path = path))
   expect_true(file.exists(path))
 })
+
+test_that("save_report_xlsx drops ISTDs by is_istd, not by name", {
+  mexp_ids <- mexp
+  ds <- mexp_ids@dataset
+  ds$feature_id[ds$feature_id == "PE 34:1"] <- "PE 34:1 (ISOMER)"
+  ds$feature_id[ds$feature_id == "PC 33:1 d7 (ISTD)"] <- "d7-PC 33:1"
+  mexp_ids@dataset <- ds
+  temp_file <- tempfile(fileext = ".xlsx")
+  on.exit(unlink(temp_file))
+  suppressMessages(save_report_xlsx(mexp_ids, temp_file))
+  conc <- openxlsx2::wb_to_df(temp_file, sheet = "Conc_FullDataset")
+  expect_true("PE 34:1 (ISOMER)" %in% names(conc))
+  expect_false("d7-PC 33:1" %in% names(conc))
+})
+
+test_that("save_report_xlsx exports the reference-normalized values", {
+  mexp_ref <- mexp
+  mexp_ref@dataset$feature_conc_normalized <- mexp_ref@dataset$feature_conc * 2
+  temp_file <- tempfile(fileext = ".xlsx")
+  on.exit(unlink(temp_file))
+  for (v in c("conc", "conc_normalized")) {
+    suppressMessages(save_report_xlsx(
+      mexp_ref,
+      temp_file,
+      normalized_variable = v
+    ))
+    ref <- openxlsx2::wb_to_df(temp_file, sheet = "Conc_NormalizedByRef_Full")
+    expected <- mexp_ref@dataset$feature_conc_normalized[
+      mexp_ref@dataset$analysis_id == ref$analysis_id[1] &
+        mexp_ref@dataset$feature_id == "PE 34:1"
+    ]
+    expect_equal(ref[["PE 34:1"]][1], expected)
+  }
+})
+
+test_that("save_report_xlsx keeps sheet names within Excel's 31 characters", {
+  mexp_n <- mexp_filt
+  mexp_n@dataset$feature_norm_intensity_normalized <- 1
+  mexp_n@dataset_filtered$feature_norm_intensity_normalized <- 1
+  temp_file <- tempfile(fileext = ".xlsx")
+  on.exit(unlink(temp_file))
+  suppressMessages(save_report_xlsx(
+    mexp_n,
+    temp_file,
+    filtered_variable = "norm_intensity_normalized"
+  ))
+  sheets <- openxlsx2::wb_load(temp_file)$sheet_names
+  expect_true(all(nchar(sheets) <= 31))
+  expect_true("NormInt_NormalizedByRef_Full" %in% sheets)
+  expect_equal(sum(startsWith(sheets, "QCfilt_NormIntRef_")), 2)
+})
+
+test_that("save_report_xlsx writes infinite QC metrics as the text Inf", {
+  mexp_inf <- mexp
+  mexp_inf@metrics_qc$sb_ratio_pblk[1] <- Inf
+  temp_file <- tempfile(fileext = ".xlsx")
+  on.exit(unlink(temp_file))
+  suppressMessages(save_report_xlsx(mexp_inf, temp_file))
+  qc <- openxlsx2::wb_to_df(temp_file, sheet = "Feature_QC_metrics")
+  expect_equal(as.character(qc$sb_ratio_pblk[1]), "Inf")
+  expect_equal(
+    as.numeric(qc$sb_ratio_pblk[2]),
+    mexp_inf@metrics_qc$sb_ratio_pblk[2]
+  )
+  info <- openxlsx2::wb_to_df(temp_file, sheet = "Info")
+  expect_true(any(grepl("signal-to-blank", unlist(info), ignore.case = TRUE)))
+})

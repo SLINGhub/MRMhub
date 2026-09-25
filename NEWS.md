@@ -50,6 +50,14 @@
   variable, and importing metadata after summing now stop with an error; they
   previously dropped the summed analytes silently.
 
+* `save_report_xlsx()` excludes internal standards from the concentration and
+  QC-filtered sheets by `is_istd` instead of by `(IS` in the feature name, so
+  an ISTD named differently is no longer included and an analyte named e.g.
+  `(ISOMER …)` is no longer dropped. Sheets for reference-normalized variables
+  use short names within Excel's 31 characters (e.g.
+  `QCfilt_ConcRef_StudySamples`, `NormInt_NormalizedByRef_Full`); these names
+  previously exceeded the limit, and some reports failed to save.
+
 ## New features
 
 * `plot_pca()` and `plot_pca_loading()` accept `variable = "fwhm"`.
@@ -88,6 +96,11 @@
 
 * `filter_features_qc()`: ISTDs no longer get a signal-to-blank verdict when no
   signal-to-blank criterion is set.
+
+* `save_report_xlsx()`: an explicit `normalized_variable` (e.g. `"conc"`)
+  now exports the reference-normalized values instead of the unnormalized ones,
+  and infinite signal-to-blank ratios appear as `Inf` instead of an Excel
+  error.
 
 * `plot_abundanceprofile()`: features whose class is missing or not in
   `feature_map` are shown as `Other` instead of being silently dropped. On a
