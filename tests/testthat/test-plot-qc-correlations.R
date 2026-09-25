@@ -23,6 +23,63 @@ test_that("get_feature_correlations works correctly", {
   expect_true(any(cors$value > 0.9)) # Should find high correlation
 })
 
+test_that("get_feature_correlations uses pairwise-complete values with 50% overlap", {
+  set.seed(1)
+  test_data <- data.frame(
+    analysis_id = 1:20,
+    qc_type = "SPL",
+    a = rnorm(20),
+    c = rnorm(20)
+  )
+  test_data$b <- test_data$a * 2 # perfect correlation with a
+  test_data$b[1:3] <- NA # few missing: pair kept
+  test_data$d <- test_data$a
+  test_data$d[1:12] <- NA # overlap below 50%: pair dropped
+
+  expect_message(
+    cors <- get_feature_correlations(
+      test_data,
+      cor_min_neg = -0.9,
+      cor_min = 0.9
+    ),
+    "2 features"
+  )
+  pairs <- paste(cors$var1, cors$var2)
+  expect_true("a b" %in% pairs)
+  expect_false(any(c("a d", "b d") %in% pairs))
+})
+
+
+test_that("pages keep each feature pair together when |r| ties", {
+  d_plot <- data.frame(
+    analysis_id = rep(c("s1", "s2", "s3"), 2),
+    qc_type = factor("SPL"),
+    x = c(1, 2, 3, 1, 2, 3),
+    y = c(1, 2, 3, 3, 2, 1),
+    pair = rep(c("A\nB", "C\nD"), each = 3),
+    r = rep(c("r = 0.995", "r = -0.995"), each = 3),
+    abs_cor = 0.995
+  )
+  p <- plot_feature_correlations_page(
+    d_plot,
+    rows_page = 1,
+    cols_page = 1,
+    specific_page = 1,
+    sort_by_corr = TRUE,
+    log_scale = FALSE,
+    point_size = 1,
+    point_alpha = 1,
+    point_stroke = 0.5,
+    line_width = 0.5,
+    line_color = "grey",
+    line_alpha = 1,
+    font_base_size = 8
+  )
+  expect_equal(length(unique(as.character(p$data$pair))), 1)
+  expect_equal(nrow(p$data), 3)
+})
+
+
 test_that("plot_feature_correlations handles invalid inputs", {
   # Test invalid variable
   expect_error(
@@ -346,12 +403,16 @@ test_that("plot_feature_correlations axes render >=3 non-empty labels", {
   axis_labels <- function(p, axis) {
     b <- ggplot2::ggplot_build(p)
     lbl <- b$layout$panel_params[[1]][[axis]]$get_labels()
-    lbl[!vapply(
-      lbl,
-      function(x) is.null(x) || (length(x) == 1 && is.na(x)) ||
-        (is.character(x) && !nzchar(x)),
-      logical(1)
-    )]
+    lbl[
+      !vapply(
+        lbl,
+        function(x)
+          is.null(x) ||
+            (length(x) == 1 && is.na(x)) ||
+            (is.character(x) && !nzchar(x)),
+        logical(1)
+      )
+    ]
   }
 
   p <- plot_feature_correlations(
@@ -376,4 +437,35 @@ test_that("plot_feature_correlations axes render >=3 non-empty labels", {
   )
   expect_gte(length(axis_labels(p[[1]], "x")), 3)
   expect_gte(length(axis_labels(p[[1]], "y")), 3)
+})
+
+test_that("non-positive values are dropped only on log axes", {
+  d_plot <- data.frame(
+    analysis_id = c("s1", "s2", "s3"),
+    qc_type = factor("SPL"),
+    x = c(-1, 2, 3),
+    y = c(1, -2, 3),
+    pair = "A\nB",
+    r = "r = 0.500",
+    abs_cor = 0.5
+  )
+  page <- function(log_scale) {
+    plot_feature_correlations_page(
+      d_plot,
+      rows_page = 1,
+      cols_page = 1,
+      specific_page = 1,
+      sort_by_corr = TRUE,
+      log_scale = log_scale,
+      point_size = 1,
+      point_alpha = 1,
+      point_stroke = 0.5,
+      line_width = 0.5,
+      line_color = "grey",
+      line_alpha = 1,
+      font_base_size = 8
+    )
+  }
+  expect_equal(nrow(page(FALSE)$data), 3)
+  expect_equal(nrow(page(TRUE)$data), 1)
 })

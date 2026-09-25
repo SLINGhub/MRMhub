@@ -18,7 +18,20 @@ get_feature_correlations <- function(tbl, cor_min_neg, cor_min) {
     dplyr::select(where(is.numeric)) |>
     as.matrix()
 
-  stats::cor(mat, method = "pearson") |>
+  # Pairwise-complete correlations, only for pairs with values in at least half
+  # of the analyses
+  n_with_na <- sum(colSums(is.na(mat)) > 0)
+  if (n_with_na > 0) {
+    mh_info(
+      "{n_with_na} feature{?s} {?has/have} missing values; correlations use the analyses where both features have values (at least 50% of all)."
+    )
+  }
+  r <- suppressWarnings(
+    stats::cor(mat, method = "pearson", use = "pairwise.complete.obs")
+  )
+  r[crossprod(!is.na(mat)) < nrow(mat) / 2] <- NA
+
+  r |>
     as.data.frame() |>
     tibble::rownames_to_column("var1") |>
     tidyr::pivot_longer(
@@ -37,6 +50,9 @@ get_feature_correlations <- function(tbl, cor_min_neg, cor_min) {
 #' Each pair is displayed in a separate facet with its correlation coefficient.
 #'
 #' This plot can be used to visually inspect highly correlated features, that may represent duplicate identifications or represent isomers.
+#'
+#' Correlations are Pearson's r over the analyses where both features have
+#' values; pairs sharing values in fewer than half of the analyses are skipped.
 #'
 #' @template data_mexp
 #' @param variable A character string indicating the signal variable to plot.
@@ -59,9 +75,9 @@ get_feature_correlations <- function(tbl, cor_min_neg, cor_min) {
 #' @param filter_data A logical value indicating whether to use all data
 #' (default) or only QC-filtered data (filtered via [filter_features_qc()]).
 #' @param include_qualifier A logical value indicating whether to include
-#' qualifier features. Default is `TRUE`.
+#' qualifier features. Default is `FALSE`.
 #' @param include_istd A logical value indicating whether to include internal
-#' standard (ISTD) features. Default is `TRUE`.
+#' standard (ISTD) features. Default is `FALSE`.
 #' @template feature_filters
 #' @param output_pdf If `TRUE`, saves the generated plots as a PDF
 #'   file. When `FALSE`, plots are directly plotted.
@@ -262,6 +278,14 @@ plot_feature_correlations <- function(
     d_plot$qc_type,
     levels = pkg.env$qc_type_annotation$qc_type_levels
   ))
+  if (log_scale) {
+    n_nonpos <- sum(d_plot$x <= 0 | d_plot$y <= 0, na.rm = TRUE)
+    if (n_nonpos > 0) {
+      mh_info(
+        "{n_nonpos} point{?s} with non-positive values {?is/are} not shown on the log scale but {?is/are} included in the correlations."
+      )
+    }
+  }
   d_plot <- d_plot |>
     dplyr::arrange(.data$qc_type)
 
@@ -384,7 +408,7 @@ plot_feature_correlations_page <- function(d_plot, ...) {
 
   if (args$sort_by_corr) {
     d_plot <- d_plot |>
-      arrange(desc(.data$abs_cor), .data$analysis_id) |>
+      arrange(desc(.data$abs_cor), .data$pair, .data$analysis_id) |>
       dplyr::mutate(pair = factor(.data$pair, levels = unique(.data$pair)))
   } else {
     d_plot <- d_plot |>
@@ -394,8 +418,10 @@ plot_feature_correlations_page <- function(d_plot, ...) {
 
   d_plot <- d_plot |>
     slice(row_start:row_end) |>
-    mutate(y = ifelse(.data$y <= 0, NA_real_, .data$y)) |>
     tidyr::drop_na("x", "y")
+  if (args$log_scale) {
+    d_plot <- d_plot |> filter(.data$x > 0, .data$y > 0)
+  }
 
   # Create plot
   p <- d_plot |>
@@ -431,12 +457,12 @@ plot_feature_correlations_page <- function(d_plot, ...) {
     p <- p +
       scale_pretty_x(
         n = n_breaks,
-        limits = function(x) c(0, max(x)),
+        limits = function(x) c(min(0, x[1]), x[2]),
         expand = axis_expand
       ) +
       scale_pretty_y(
         n = n_breaks,
-        limits = function(x) c(0, max(x)),
+        limits = function(x) c(min(0, x[1]), x[2]),
         expand = axis_expand
       )
   }

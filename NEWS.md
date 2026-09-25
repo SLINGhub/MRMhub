@@ -65,6 +65,12 @@
 * `filter_features_qc()`: ISTDs no longer get a signal-to-blank verdict when no
   signal-to-blank criterion is set.
 
+* `plot_feature_correlations()`: a feature with a single missing value no
+  longer silently drops out of every pair; correlations use the analyses where
+  both features have values, for pairs sharing values in at least half of the
+  analyses. Non-positive values are removed only on log axes (for x and y), and
+  pairs with the same |r| no longer split across pages.
+
 * `plot_pca_loading()` drops features with zero variance, with a warning, as
   `plot_pca()` does; a constant feature previously appeared as the top loading.
   Features with missing or non-positive values are now reported when excluded,
