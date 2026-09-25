@@ -27,7 +27,9 @@ or "conc".}
 trend curves (not for the ComBat fit itself).}
 
 \item{covariates}{Optional model matrix of biological covariates to preserve
-(passed to \code{\link[sva:ComBat]{sva::ComBat()}} as \code{mod}). Defaults to \code{NULL} (no covariates).}
+(passed to \code{\link[sva:ComBat]{sva::ComBat()}} as \code{mod}), with the analysis IDs as row names.
+Rows are matched to analyses by name; rows of analyses not used in the fit
+are ignored. Defaults to \code{NULL} (no covariates).}
 
 \item{ref_batch}{Optional reference batch to adjust the others towards
 (passed to \code{\link[sva:ComBat]{sva::ComBat()}} as \code{ref.batch}). Defaults to \code{NULL}.}
@@ -61,8 +63,10 @@ estimates across features, which can stabilise many small batches better than
 simple median centering.
 
 Unlike \code{\link[=correct_batch_centering]{correct_batch_centering()}} and \code{\link[=correct_batch_serrf]{correct_batch_serrf()}}, ComBat
-estimates batch effects from \strong{all} samples (optionally protecting biology
-via \code{covariates}), not from the reference QCs. On strongly unbalanced designs
+estimates batch effects from all study samples and routine QCs (optionally
+protecting biology via \code{covariates}), not only from the reference QCs.
+Blanks, response curves, calibrants and other analysis types are left out of
+the fit and keep their uncorrected values. On strongly unbalanced designs
 this can remove genuine biological signal, so supply \code{covariates} when the
 biological grouping is not balanced across batches. \code{ref_qc_types} is used
 only for the before/after QC-CV report and the plotting trend curves.

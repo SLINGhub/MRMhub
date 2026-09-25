@@ -40,6 +40,13 @@
   matching the existing 3-replicate floor for %CV. A zero MAD from tied values
   previously gave a D-ratio of 0, which passed any D-ratio criterion.
 
+* `correct_batch_combat()` and `correct_batch_serrf()` fit only study samples
+  and routine QCs (SPL, TQC, BQC, HQC, MQC, LQC, QC, NIST, LTR) plus the
+  `ref_qc_types`. Blanks, response curves, calibrants and other analyses are
+  left out of the fit and keep their uncorrected values; before, their presence
+  changed the corrected study-sample values. ComBat `covariates` need the
+  analysis IDs as row names and are matched to analyses by name.
+
 * `data_sum_features()`: a sum is `NA` in analyses where one of the summed
   transitions is missing (with a warning), instead of a partial sum. Summing
   internal standards together with analytes, or transitions with different

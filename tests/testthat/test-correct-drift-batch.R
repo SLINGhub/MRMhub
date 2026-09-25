@@ -2532,3 +2532,67 @@ test_that("model-based batch methods abort on a single batch", {
     fixed = TRUE
   )
 })
+
+test_that("ComBat and SERRF ignore blanks, RQCs and other non-sample analyses", {
+  skip_if_not_installed("sva")
+  skip_if_not_installed("ranger")
+  ana <- dplyr::distinct(mexp@dataset, .data$analysis_id, .data$qc_type)
+  other <- ana$analysis_id[
+    !ana$qc_type %in%
+      mrmhub:::pkg.env$qc_type_annotation$qc_type_levels_nonblank
+  ]
+  mexp_sub <- mexp_raw |>
+    exclude_analyses(analyses = other, clear_existing = FALSE) |>
+    normalize_by_istd() |>
+    quantify_by_istd() |>
+    suppressMessages()
+  spl <- function(m) {
+    m@dataset |>
+      dplyr::filter(.data$qc_type == "SPL") |>
+      dplyr::arrange(.data$analysis_id, .data$feature_id) |>
+      dplyr::pull("feature_conc")
+  }
+  run <- function(f, m, ...) {
+    suppressWarnings(suppressMessages(
+      f(m, variable = "conc", ref_qc_types = "BQC", ...)
+    ))
+  }
+  combat_all <- run(correct_batch_combat, mexp)
+  expect_equal(spl(combat_all), spl(run(correct_batch_combat, mexp_sub)))
+  expect_equal(
+    spl(run(correct_batch_serrf, mexp, num_trees = 50, show_progress = FALSE)),
+    spl(run(
+      correct_batch_serrf,
+      mexp_sub,
+      num_trees = 50,
+      show_progress = FALSE
+    ))
+  )
+  d_other <- combat_all@dataset |>
+    dplyr::filter(.data$analysis_id %in% other)
+  expect_equal(
+    d_other$feature_conc,
+    mexp@dataset$feature_conc[mexp@dataset$analysis_id %in% other]
+  )
+  expect_equal(d_other$feature_conc_before, d_other$feature_conc)
+})
+
+test_that("ComBat matches covariates to analyses by row name", {
+  skip_if_not_installed("sva")
+  ids <- unique(mexp@dataset$analysis_id)
+  qct <- mexp@dataset$qc_type[match(ids, mexp@dataset$analysis_id)]
+  covs <- model.matrix(~spl, data.frame(spl = qct == "SPL", row.names = ids))
+  run <- function(cv) {
+    suppressWarnings(suppressMessages(correct_batch_combat(
+      mexp,
+      variable = "conc",
+      ref_qc_types = "BQC",
+      covariates = cv
+    )))
+  }
+  expect_equal(
+    run(covs)@dataset$feature_conc,
+    run(covs[rev(ids), ])@dataset$feature_conc
+  )
+  expect_error(run(unname(covs)), "row names")
+})
