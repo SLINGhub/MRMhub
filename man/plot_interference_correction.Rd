@@ -38,7 +38,7 @@ QC types ("SPL", "TQC", "BQC", "HQC", "MQC", "LQC", "NIST", "LTR") present
 in the dataset.}
 
 \item{include_qualifier}{A logical value indicating whether to include
-qualifier features. Default is \code{TRUE}.}
+qualifier features. Default is \code{FALSE}.}
 
 \item{include_istd}{A logical value indicating whether to include internal
 standards (ISTD) features.  Default is \code{TRUE}.}

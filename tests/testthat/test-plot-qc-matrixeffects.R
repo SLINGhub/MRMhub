@@ -13,13 +13,11 @@ test_that("Default plot_matrixeffects looks as expected", {
 })
 
 
-test_that("y-axis label matches the standardization (% of mean)", {
+test_that("y-axis label matches the standardization (% of median)", {
   p <- plot_matrixeffects(data = mexp)
-  # The axis must describe what is plotted: each point is an intensity as a
-  # percentage of its (per-feature) mean, not a "% of uncorrected" baseline.
-  expect_match(p$labels$y, "% of mean", fixed = TRUE)
-  # The standardization sets each feature's mean to 100, so the pooled mean is 100.
-  expect_equal(mean(p$data$scaled_intensity, na.rm = TRUE), 100)
+  expect_match(p$labels$y, "% of batch median", fixed = TRUE)
+  p <- plot_matrixeffects(data = mexp, batchwise_normalization = FALSE)
+  expect_match(p$labels$y, "% of median)", fixed = TRUE)
 })
 
 
@@ -108,4 +106,39 @@ test_that("Object check: only_istd = FALSE correctly adds non-ISTD features to a
 # Missing check_data() let a non-MRMhubExperiment fail cryptically downstream.
 test_that("plot_matrixeffects validates the data object", {
   expect_error(plot_matrixeffects(data = 42), "MRMhubExperiment")
+})
+
+test_that("plot_matrixeffects keeps QC types outside the legacy level set", {
+  p <- plot_matrixeffects(mexp, qc_types = c("SPL", "SBLK", "UBLK"))
+  expect_false(anyNA(p$data$qc_type))
+  expect_setequal(
+    as.character(unique(p$data$qc_type)),
+    c("SPL", "SBLK", "UBLK")
+  )
+})
+
+test_that("plot_matrixeffects applies min_median_value to the plotted ISTDs", {
+  expect_error(
+    plot_matrixeffects(mexp, only_istd = TRUE, min_median_value = 5e6),
+    "passed the `min_median_value` filter"
+  )
+})
+
+test_that("plot_matrixeffects labels the x axis by the features shown", {
+  p <- plot_matrixeffects(mexp, only_istd = FALSE)
+  expect_equal(p$labels$x, "Feature")
+  p <- plot_matrixeffects(mexp, only_istd = TRUE)
+  expect_equal(p$labels$x, "Internal Standard")
+})
+
+test_that("plot_matrixeffects scales to the batch median of non-blank analyses", {
+  p <- plot_matrixeffects(mexp, qc_types = c("SPL", "BQC", "PBLK"))
+  ref <- p$data |>
+    dplyr::ungroup() |>
+    dplyr::filter(.data$qc_type != "PBLK") |>
+    dplyr::summarise(
+      m = median(.data$scaled_intensity),
+      .by = c("feature_id", "batch_id")
+    )
+  expect_equal(ref$m, rep(100, nrow(ref)))
 })

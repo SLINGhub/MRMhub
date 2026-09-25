@@ -4502,7 +4502,7 @@
 <text transform='translate(548.57,486.08) rotate(-45)' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='99.78px' lengthAdjust='spacingAndGlyphs'>TG 48:1 d7 (ISTD) [-15:0]</text>
 <text transform='translate(612.97,486.08) rotate(-45)' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='95.37px' lengthAdjust='spacingAndGlyphs'>TG 48:1 d7 (ISTD) [SIM]</text>
 <text x='351.08' y='568.24' text-anchor='middle' style='font-size: 11.00px; font-family: sans;' textLength='84.39px' lengthAdjust='spacingAndGlyphs'>Internal Standard</text>
-<text transform='translate(13.05,248.84) rotate(-90)' text-anchor='middle' style='font-size: 11.00px; font-family: sans;' textLength='171.83px' lengthAdjust='spacingAndGlyphs'>Standardized Intensity (% of mean)</text>
+<text transform='translate(13.05,248.84) rotate(-90)' text-anchor='middle' style='font-size: 11.00px; font-family: sans;' textLength='210.36px' lengthAdjust='spacingAndGlyphs'>Standardized Intensity (% of batch median)</text>
 <rect x='658.29' y='208.80' width='56.23' height='80.08' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
 <rect x='663.77' y='214.28' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
 <circle cx='672.41' cy='222.92' r='0.75' style='stroke-width: 0.43; stroke: #404040; stroke-opacity: 0.30; fill: #E4F2C4; fill-opacity: 0.30;' />

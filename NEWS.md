@@ -36,6 +36,11 @@
   rule compared the absolute score with `median + k * MAD`, which labelled
   samples asymmetrically when the median was not zero.
 
+* `plot_matrixeffects()` shows each ISTD signal as a percentage of its median
+  over the plotted non-blank analyses (per batch by default), instead of the
+  mean over all plotted analyses including blanks, which pulled the 100% line
+  down. The y-axis label says so.
+
 ## New features
 
 * `plot_pca()` and `plot_pca_loading()` accept `variable = "fwhm"`.
@@ -70,6 +75,11 @@
   both features have values, for pairs sharing values in at least half of the
   analyses. Non-positive values are removed only on log axes (for x and y), and
   pairs with the same |r| no longer split across pages.
+
+* `plot_matrixeffects()` no longer plots QC types outside a fixed list (e.g.
+  SBLK, UBLK, QC) as one unlabelled `NA` group, applies `min_median_value` to
+  the plotted ISTDs only, and labels the x-axis "Feature" when non-ISTDs are
+  shown.
 
 * `plot_pca_loading()` drops features with zero variance, with a warning, as
   `plot_pca()` does; a constant feature previously appeared as the top loading.

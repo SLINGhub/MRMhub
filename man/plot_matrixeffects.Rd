@@ -43,7 +43,7 @@ in the dataset.}
 \item{batchwise_normalization}{A logical value indicating whether to normalize the signals by batch instead of globally.}
 
 \item{include_qualifier}{A logical value indicating whether to include
-qualifier features. Default is \code{TRUE}.}
+qualifier features. Default is \code{FALSE}.}
 
 \item{only_istd}{A logical value indicating whether to show only internal
 standard (ISTD) features. Default is \code{TRUE}. Set to \code{FALSE} in combination with feature_filter parameters to show other features.}
@@ -106,8 +106,17 @@ A \code{ggplot} object showing the grouped standardized beeswarm plot.
 }
 \description{
 This function creates a grouped beeswarm plot of standardized feature intensities,
-where the y-axis represents intensity standardized such that the mean across all
-features is 100\%. Points are grouped by \code{qc_type} and spread using quasirandom jitter.
+where each value is shown as a percentage of the feature's median over the
+plotted non-blank analyses (per batch with \code{batchwise_normalization = TRUE}).
+Points are grouped by \code{qc_type} and spread using quasirandom jitter. An ISTD
+signal clearly lower in study samples than in QC samples suggests ion
+suppression by the sample matrix.
+}
+\details{
+Include at least one QC type besides the study samples: the reference is
+computed from the plotted analyses, so with study samples only they centre on
+100\% by construction. The plot compares ISTD signals between samples; it
+does not measure the matrix effect itself.
 }
 \seealso{
 Other QC plots:
