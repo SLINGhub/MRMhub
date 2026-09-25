@@ -24,7 +24,7 @@ A \code{ggplot} object showing the feature QC filtering summary with or without 
 This function generates a summary of the feature QC filtering process, visualizing the number of features that passed or failed the various QC criteria.
 The bars apply the criteria hierarchically: a feature is counted once, under
 the first criterion it fails, and features retained via \code{features.to.keep}
-despite failing are shown as \code{kept_failed_qc}. See \code{\link[=plot_qc_summary_byclass]{plot_qc_summary_byclass()}}
+despite failing are shown as "QC failed, kept". See \code{\link[=plot_qc_summary_byclass]{plot_qc_summary_byclass()}}
 for more information.
 The optional Venn diagram shows, for the features passing the missing-value
 and minimum-intensity criteria, the overlap of features failing the

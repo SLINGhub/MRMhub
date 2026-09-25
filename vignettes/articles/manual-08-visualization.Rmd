@@ -212,7 +212,7 @@ above indicate features made worse, typically a misassigned ISTD.
 After `filter_features_qc()`, these two functions summarise how many features passed each filter
 rule, broken down by feature class (`_byclass`) or aggregated (`_overall`). Each feature is counted
 once, under the first criterion it fails; features retained via `features.to.keep` despite failing
-are shown as `kept_failed_qc`.
+are shown as "QC failed, kept".
 
 ```{r}
 plot_qc_summary_overall(mexp)

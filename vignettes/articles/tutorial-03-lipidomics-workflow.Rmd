@@ -585,7 +585,7 @@ failed each one. Because the criteria are hierarchical, a species is attributed
 to the *first* filter it fails (for example `CV`), having already cleared the
 lower ones (`S/B`, minimum intensity), so the counts partition the features
 rather than double-counting them. Species retained via `features.to.keep`
-despite failing a criterion form their own segment (`kept_failed_qc`).
+despite failing a criterion form their own segment ("QC failed, kept").
 
 ```{r qc-summary-byclass}
 #| fig.cap: !expr fig_cap("Feature QC filtering outcome per lipid class; green marks species passing all criteria.")

@@ -143,3 +143,24 @@ test_that("plot_qc_summary_x handle errors", {
     plot_qc_summary_overall(mexp_temp)
   )
 })
+
+test_that("QC summary plots label the categories in words", {
+  mexp_res <- filter_features_qc(
+    mexp_proc,
+    include_qualifier = FALSE,
+    include_istd = FALSE,
+    clear_existing = TRUE,
+    min.signalblank.median.spl.pblk = 100,
+    max.cv.conc.bqc = 23,
+    max.dratio.sd.conc.bqc = 0.7
+  )
+  p <- plot_qc_summary_byclass(mexp_res)
+  lab <- ggplot2::get_guide_data(p, "fill")$.label
+  expect_true(all(c("passed", "< min S/B", "> max CV") %in% lab))
+  expect_false(any(grepl("_", lab)))
+
+  p <- plot_qc_summary_overall(mexp_res, with_venn = FALSE)
+  lab <- ggplot2::get_guide_data(p, "y")$.label # flipped
+  expect_true(all(c("passed", "< min S/B", "> max CV") %in% lab))
+  expect_false(any(grepl("_", lab)))
+})

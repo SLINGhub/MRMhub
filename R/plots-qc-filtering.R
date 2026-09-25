@@ -8,7 +8,7 @@
 #' This means that a feature is classified as failing a given criterion (e.g., `CV`)
 #' only if it has passed all hierarchically lower filters (e.g., `S/B` ratio and minimum intensity).
 #' Each feature is counted once; features retained via `features.to.keep`
-#' despite failing are shown as `kept_failed_qc`.
+#' despite failing are shown as "QC failed, kept".
 #'
 #' @template data_mexp
 #' @template font_base_size
@@ -129,7 +129,11 @@ plot_qc_summary_byclass <- function(
       stat = "identity",
       na.rm = TRUE
     ) +
-    scale_fill_manual(values = qc_summary_colors, drop = FALSE) +
+    scale_fill_manual(
+      values = qc_summary_colors,
+      labels = qc_summary_labels,
+      drop = FALSE
+    ) +
     # facet_wrap(~Tissue) +
     # guides(fill = guide_legend(override.aes = list(size = 6))) +
     ggplot2::coord_flip() +
@@ -181,7 +185,7 @@ plot_qc_summary_byclass <- function(
 #' This function generates a summary of the feature QC filtering process, visualizing the number of features that passed or failed the various QC criteria.
 #' The bars apply the criteria hierarchically: a feature is counted once, under
 #' the first criterion it fails, and features retained via `features.to.keep`
-#' despite failing are shown as `kept_failed_qc`. See [plot_qc_summary_byclass()]
+#' despite failing are shown as "QC failed, kept". See [plot_qc_summary_byclass()]
 #' for more information.
 #' The optional Venn diagram shows, for the features passing the missing-value
 #' and minimum-intensity criteria, the overlap of features failing the
@@ -247,7 +251,10 @@ plot_qc_summary_overall <- function(
     coord_flip() +
     scale_fill_manual(values = qc_summary_colors) +
     ggplot2::scale_y_continuous(expand = expansion(mult = c(0.02, 0.1))) +
-    ggplot2::scale_x_discrete(expand = expansion(0.12, 0.12)) +
+    ggplot2::scale_x_discrete(
+      labels = qc_summary_labels,
+      expand = expansion(0.12, 0.12)
+    ) +
     # geom_text(aes(label = Count), size=4 ) +
     geom_text(
       aes(
@@ -294,9 +301,9 @@ plot_qc_summary_overall <- function(
       !replace_na(d_qc_venn$pass_linearity, TRUE)
     ]
 
-    sb_label <- "below S/B"
-    cva_label <- "above CV(A)" # paste0('CV > ', percent(MAX_CV_NORM/100))
-    lin_label <- "bad linearity" # paste0('RQC r^2 < ', MIN_LINEARITY_RSQUARE, ' OR rel y0 > ', REL_Y_INTERSECT)
+    sb_label <- qc_summary_labels[["below_sb"]]
+    cva_label <- qc_summary_labels[["above_cva"]]
+    lin_label <- qc_summary_labels[["bad_linearity"]]
 
     x2 <- list(sb_failed, cva_failed, lin_failed)
     names(x2) <- c(sb_label, cva_label, lin_label)
@@ -344,6 +351,18 @@ qc_summary_colors <- c(
   below_minint = "#ada3a3",
   above_missingness = "yellow",
   has_only_na = "#111111"
+)
+
+qc_summary_labels <- c(
+  all_filter_pass = "passed",
+  kept_failed_qc = "QC failed, kept",
+  above_dratio = "> max D-ratio",
+  bad_linearity = "failed RQC",
+  above_cva = "> max CV",
+  below_sb = "< min S/B",
+  below_minint = "< min intensity",
+  above_missingness = "> max missing",
+  has_only_na = "all missing"
 )
 
 # One QC summary category per feature: the first criterion it fails, in the

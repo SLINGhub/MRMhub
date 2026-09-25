@@ -52,7 +52,7 @@ followed by higher-level filters like the coefficient of variation (CV) or linea
 This means that a feature is classified as failing a given criterion (e.g., \code{CV})
 only if it has passed all hierarchically lower filters (e.g., \code{S/B} ratio and minimum intensity).
 Each feature is counted once; features retained via \code{features.to.keep}
-despite failing are shown as \code{kept_failed_qc}.
+despite failing are shown as "QC failed, kept".
 }
 \seealso{
 \code{\link[=plot_qc_summary_overall]{plot_qc_summary_overall()}} for an overall summary plot
