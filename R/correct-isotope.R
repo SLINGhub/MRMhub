@@ -122,21 +122,24 @@ correct_interference_manual <- function(
   }
 
   # Correction
+  # first(): NA, not a size error, when the interferer is absent in an analysis
   data@dataset <- data@dataset |>
-    group_by(.data$analysis_id) |>
     mutate(
       !!variable_var := if_else(
         .data$feature_id == feature,
-        (!!variable_var)[.data$feature_id == feature] -
+        !!variable_var -
           interference_contribution *
-            (!!variable_var)[.data$feature_id == interfering_feature],
+            dplyr::first((!!variable_var)[
+              .data$feature_id == interfering_feature
+            ]),
         !!variable_var
       ),
       interference_corrected = if_else(
         .data$feature_id == feature,
         TRUE,
         .data$interference_corrected
-      )
+      ),
+      .by = "analysis_id"
     )
 
   neg_zero_sum <- data@dataset |>

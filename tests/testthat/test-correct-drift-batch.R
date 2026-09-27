@@ -2596,3 +2596,21 @@ test_that("ComBat matches covariates to analyses by row name", {
   )
   expect_error(run(unname(covs)), "row names")
 })
+
+test_that("replacing a drift correction keeps other variables' correction state", {
+  m <- suppressMessages(suppressWarnings(
+    correct_drift_loess(mexp_raw, "intensity", "BQC", show_progress = FALSE)
+  ))
+  raw <- m@dataset$feature_intensity_raw
+  m <- suppressMessages(suppressWarnings(normalize_by_istd(m)))
+  for (i in 1:2) {
+    m <- suppressMessages(suppressWarnings(
+      correct_drift_loess(m, "norm_intensity", "BQC", show_progress = FALSE)
+    ))
+  }
+  expect_true(m@var_drift_corrected[["feature_intensity"]])
+  m <- suppressMessages(suppressWarnings(
+    correct_drift_loess(m, "intensity", "BQC", show_progress = FALSE)
+  ))
+  expect_equal(m@dataset$feature_intensity_raw, raw)
+})

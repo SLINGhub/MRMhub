@@ -124,6 +124,17 @@
   row order of the analysis metadata, and are updated by
   `set_analysis_order()`. Processed values were not affected.
 
+* `correct_drift_*()` with `replace_previous = TRUE` no longer clears the drift
+  and batch correction state of the other variables. Re-correcting e.g.
+  `feature_norm_intensity` marked drift-corrected intensities as uncorrected, so
+  a later intensity drift correction was applied on top of the earlier one and
+  overwrote `feature_intensity_raw`.
+
+* `correct_interference_manual()` no longer leaves the dataset grouped, which
+  made later steps such as `calc_qc_metrics()` fail, and no longer fails when the
+  interfering feature is missing from an analysis; the corrected value is `NA`
+  there.
+
 * `data_sum_features()` keeps the dataset and the feature metadata consistent:
   in `"separate"` mode the qualifier sum now also exists in the feature
   metadata, a quantifier-qualifier pair is no longer renamed in one table only,

@@ -600,3 +600,22 @@ test_that("custom interference correction clears calibration metrics", {
   ))
   expect_equal(nrow(res@metrics_calibration), 0)
 })
+
+test_that("correct_interference_manual returns an ungrouped dataset and tolerates ragged data", {
+  m <- MRMhubExperiment()
+  m@dataset <- dplyr::tibble(
+    analysis_id = c("a1", "a1", "a2"),
+    feature_id = c("F0", "F1", "F1"), # a2 lacks the interferer F0
+    qc_type = factor("SPL"),
+    feature_intensity = c(100, 50, 40)
+  )
+  m@annot_features <- dplyr::tibble(
+    feature_id = c("F0", "F1"),
+    is_istd = FALSE
+  )
+  res <- suppressMessages(
+    correct_interference_manual(m, "feature_intensity", "F1", "F0", 0.1)
+  )
+  expect_false(dplyr::is_grouped_df(res@dataset))
+  expect_equal(res@dataset$feature_intensity, c(100, 40, NA))
+})

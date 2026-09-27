@@ -554,16 +554,8 @@ correct_drift <- function(
       mh_warn(
         "Replacing previous `{variable_strip}` {txt} corrections..."
       )
-      data@var_drift_corrected <- c(
-        feature_intensity = FALSE,
-        feature_norm_intensity = FALSE,
-        feature_conc = FALSE
-      )
-      data@var_batch_corrected <- c(
-        feature_intensity = FALSE,
-        feature_norm_intensity = FALSE,
-        feature_conc = FALSE
-      )
+      data@var_drift_corrected[[variable]] <- FALSE
+      data@var_batch_corrected[[variable]] <- FALSE
       data@dataset[[variable]] <- data@dataset[[variable_raw]]
     }
   } else {
