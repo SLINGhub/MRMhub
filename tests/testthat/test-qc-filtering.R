@@ -289,6 +289,27 @@ test_that("calc_qc_metrics no method data works", {
   #mexp_temp@annot_responsecurves <- mexp_temp@annot_responsecurves[0,]
   mexp_res <- calc_qc_metrics(mexp_temp, use_batch_medians = TRUE)
   expect_true(all(is.na(mexp_res@metrics_qc$precursor_mz)))
+  expect_type(mexp_res@metrics_qc$precursor_mz, "double")
+})
+
+test_that("calc_qc_metrics warns on inconsistent method values, ignores NA", {
+  mexp_temp <- mexp
+  ids <- unique(mexp_temp@dataset_orig$feature_id)[1:2]
+  i <- which(mexp_temp@dataset_orig$feature_id == ids[1])[1]
+  j <- which(mexp_temp@dataset_orig$feature_id == ids[2])[1]
+  mz_ok <- mexp_temp@dataset_orig$method_precursor_mz[j]
+  mexp_temp@dataset_orig$method_product_mz[i] <-
+    mexp_temp@dataset_orig$method_product_mz[i] + 1
+  mexp_temp@dataset_orig$method_precursor_mz[j] <- NA
+
+  expect_warning(
+    mexp_res <- calc_qc_metrics(mexp_temp, use_batch_medians = FALSE),
+    "differ between analyses"
+  )
+  m <- mexp_res@metrics_qc
+  expect_true(is.na(m$product_mz[m$feature_id == ids[1]]))
+  expect_equal(m$precursor_mz[m$feature_id == ids[2]], mz_ok)
+  expect_equal(nrow(m), 29)
 })
 
 test_that("calc_qc_metrics batch-wise raise error correctly when data missing ", {
@@ -434,6 +455,20 @@ test_that("calc_qc_metrics handles missing/missmatching info for response curve 
   )
   expect_s4_class(mexp_resp, "MRMhubExperiment")
   expect_true("r2_rqc_B" %in% names(mexp_resp@metrics_qc))
+})
+
+test_that("filter_features_qc adds no rows for metadata-only features", {
+  mexp_temp <- mexp
+  extra <- mexp_temp@annot_features[1, ]
+  extra$feature_id <- "Metadata only"
+  mexp_temp@annot_features <- dplyr::bind_rows(mexp_temp@annot_features, extra)
+  mexp_temp <- calc_qc_metrics(mexp_temp, use_batch_medians = FALSE)
+  mexp_res <- suppressMessages(
+    filter_features_qc(mexp_temp, include_qualifier = TRUE, include_istd = TRUE)
+  )
+  expect_false("Metadata only" %in% mexp_res@dataset_filtered$feature_id)
+  expect_false(anyNA(mexp_res@dataset_filtered$analysis_id))
+  expect_equal(nrow(mexp_res@dataset_filtered), nrow(mexp_res@dataset))
 })
 
 test_that("filter_features_qc works with istd and qualifier subsetting", {

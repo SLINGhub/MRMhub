@@ -83,15 +83,10 @@ The calculated metrics are stored in the \code{metrics_qc} table of the
 \item \strong{Feature details}:
 Specific feature information extracted from the feature metadata table,
 such as feature class, associated ISTD, quantifier status.
-\item \strong{Feature MS Method Information} (if method variables are available in the analysis data).
-Extracts and summarizes method-related variables for each feature. If multiple
-values exist for the same feature, these will be concatenated into a string.
-The latter would indicate inconsistent analysis conditions.
-\itemize{
-\item \code{precursor_mz}: The m/z value of the precursor ion(s),
-\item \code{product_mz}: The m/z value of the product ion(s), concatenated if multiple values exist for the same feature.
-\item \code{collision_energy}: The collision energy used for fragmentation, concatenated if multiple values exist for the same feature.
-}
+\item \strong{Feature MS method information} (if available in the imported data):
+\code{precursor_mz}, \code{product_mz} and \code{collision_energy} per feature. A value
+that differs between analyses indicates inconsistent acquisition
+conditions; it is set to \code{NA} with a warning naming the features.
 \item \strong{Missing Value Metrics}:
 \itemize{
 \item \code{missing_intensity_prop_spl}: Proportion of missing intensities for the SPL sample type.

@@ -130,6 +130,15 @@
   a later intensity drift correction was applied on top of the earlier one and
   overwrote `feature_intensity_raw`.
 
+* `filter_features_qc()` no longer adds an empty row to `dataset_filtered`
+  (and the report's filtered sheets) for each feature that is only in the
+  feature metadata.
+
+* `calc_qc_metrics()`: `precursor_mz`, `product_mz` and `collision_energy` that
+  differ between analyses of a feature are still `NA`, but now with a warning
+  naming the features; missing values in some analyses are ignored instead of
+  making the value `NA`. Without method data, these columns are numeric.
+
 * `correct_interference_manual()` no longer leaves the dataset grouped, which
   made later steps such as `calc_qc_metrics()` fail, and no longer fails when the
   interfering feature is missing from an analysis; the corrected value is `NA`

@@ -40,14 +40,11 @@
 #'  Specific feature information extracted from the feature metadata table,
 #'  such as feature class, associated ISTD, quantifier status.
 #'
-#' - **Feature MS Method Information** (if method variables are available in the analysis data).
-#'   Extracts and summarizes method-related variables for each feature. If multiple
-#'   values exist for the same feature, these will be concatenated into a string.
-#'   The latter would indicate inconsistent analysis conditions.
-#'   - `precursor_mz`: The m/z value of the precursor ion(s),
-#'   - `product_mz`: The m/z value of the product ion(s), concatenated if multiple values exist for the same feature.
-#'   - `collision_energy`: The collision energy used for fragmentation, concatenated if multiple values exist for the same feature.
-
+#' - **Feature MS method information** (if available in the imported data):
+#'   `precursor_mz`, `product_mz` and `collision_energy` per feature. A value
+#'   that differs between analyses indicates inconsistent acquisition
+#'   conditions; it is set to `NA` with a warning naming the features.
+#'
 #' - **Missing Value Metrics**:
 #'   - `missing_intensity_prop_spl`: Proportion of missing intensities for the SPL sample type.
 #'   - `missing_norm_intensity_prop_spl`: Proportion of missing normalized intensities for SPL samples.
@@ -167,54 +164,52 @@ calc_qc_metrics <- function(
       "response_factor"
     )
 
-  # Define method variables and template
-  method_var <- c(
-    "method_precursor_mz",
-    "method_product_mz",
-    "method_collision_energy"
+  # MS method info per feature; values differing between analyses become NA
+  method_vars <- c(
+    precursor_mz = "method_precursor_mz",
+    product_mz = "method_product_mz",
+    collision_energy = "method_collision_energy"
   )
-  d_method_template <- tibble(
-    "precursor_mz" = NA_character_,
-    "product_mz" = NA_character_,
-    "collision_energy" = NA_character_
-  )
+  d_method <- data@dataset_orig |> select("feature_id", any_of(method_vars))
+  d_method[setdiff(names(method_vars), names(d_method))] <- NA_real_
+  d_method <- d_method |>
+    tidyr::pivot_longer(
+      -"feature_id",
+      names_to = "field",
+      values_drop_na = TRUE
+    ) |>
+    distinct() |>
+    mutate(n = n(), .by = c("feature_id", "field"))
 
-  # Check if the method variables exist in the dataset
-  if (any(c(method_var) %in% names(data@dataset_orig))) {
-    # Summarize method information for each feature
-    method_vars <- c(
-      "method_precursor_mz",
-      "method_product_mz",
-      "method_collision_energy"
+  d_inconsistent <- d_method |>
+    filter(.data$n > 1) |>
+    distinct(.data$feature_id, .data$field)
+  if (nrow(d_inconsistent) > 0) {
+    inconsistent <- paste0(
+      d_inconsistent$feature_id,
+      " (",
+      d_inconsistent$field,
+      ")"
     )
-
-    d_method_info <- data@dataset_orig |>
-      select("feature_id", any_of(method_vars)) |>
-      group_by(.data$feature_id) |>
-      summarise(
-        across(
-          .cols = any_of(method_vars),
-          .fns = ~ stringr::str_c(unique(.x), collapse = "; "),
-          .names = "{.col}"
-        ),
-        .groups = "drop"
-      ) |>
-      dplyr::rename_with(
-        ~ stringr::str_replace(.x, "^method_", ""),
-        starts_with("method_")
-      ) |>
-      ungroup() |>
-      bind_rows(d_method_template) |>
-      dplyr::mutate(across(
-        where(is.character) & !c("feature_id"),
-        ~ as.numeric(suppressWarnings(as.numeric(.)))
-      ))
-  } else {
-    d_method_info <- d_feature_info |>
-      select("feature_id") |>
-      distinct() |>
-      bind_rows(d_method_template)
+    cli::cli_warn(c(
+      "MS method values differ between analyses and are set to NA in {.code metrics_qc}.",
+      "i" = "Affected feature{?s}: {.val {mh_vec(inconsistent)}}."
+    ))
   }
+
+  d_method_info <- d_method |>
+    filter(.data$n == 1) |>
+    tidyr::pivot_wider(
+      id_cols = "feature_id",
+      names_from = "field",
+      values_from = "value"
+    ) |>
+    bind_rows(tibble(
+      feature_id = character(),
+      precursor_mz = numeric(),
+      product_mz = numeric(),
+      collision_energy = numeric()
+    ))
 
   # Summarize missing value statistics for different QC types. Scope to the
   # canonical sample types minus RQC (response-curve samples), matching the RQC
@@ -1738,10 +1733,7 @@ filter_features_qc <- function(
   data@metrics_qc <- metrics_qc_local |> select(-dplyr::ends_with("before"))
 
   data@dataset_filtered <- data@dataset |>
-    dplyr::right_join(
-      d_filt |> filter(.data$all_filter_pass) |> dplyr::select("feature_id"),
-      by = "feature_id"
-    )
+    dplyr::semi_join(d_filt, by = "feature_id")
 
   data
 }
