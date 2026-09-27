@@ -768,7 +768,7 @@ assert_metadata <- function(
         description = "E;Interfering feature(s) not defined as feature;Features;interference_feature_id"
       ) |>
       assertr::verify(
-        any(
+        all(
           !xor(
             is.na(metadata$annot_features$interference_contribution),
             is.na(metadata$annot_features$interference_feature_id)
@@ -1027,10 +1027,10 @@ assert_metadata <- function(
         check_groupwise_identical_ids(
           metadata$annot_qcconcentrations,
           group_col = "sample_id",
-          id_col = .data$concentration_unit
+          id_col = "concentration_unit"
         ),
         obligatory = FALSE,
-        description = "W;Units not identical in at least one group;QC concentrations;analyzed_amount_unit"
+        description = "W;Units not identical in at least one group;QC concentrations;concentration_unit"
       ) |>
       assertr::assert(
         \(x) {

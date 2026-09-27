@@ -19,8 +19,8 @@ check_groupwise_identical_ids <- function(data, group_col, id_col) {
   }
   data |>
     summarise(
-      all_identical = dplyr::n_distinct({{ id_col }}) == 1,
-      .by = {{ group_col }}
+      all_identical = dplyr::n_distinct(.data[[id_col]]) == 1,
+      .by = all_of(group_col)
     ) |>
     pull(.data$all_identical) |>
     all()

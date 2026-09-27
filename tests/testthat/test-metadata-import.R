@@ -702,18 +702,21 @@ test_that("Replacing specific undefined metadata", {
   )
   expect_true(all(mexp@annot_analyses$valid_analysis))
 
+  # these sheets use the old column name `interference_proportion`
+  get_features <- function(sheet) {
+    get_metadata_table(path = path, sheet = sheet) |>
+      dplyr::rename(interference_contribution = "interference_proportion")
+  }
   mexp2 <- mrmhub:::import_metadata_features(
     mexp,
-    path = path,
-    sheet = "Features_missing_val",
+    table = get_features("Features_missing_val"),
     ignore_warnings = TRUE
   )
   expect_true(all(mexp@annot_features$valid_feature))
 
   mexp2 <- mrmhub:::import_metadata_features(
     mexp,
-    path = path,
-    sheet = "Features_missing_quan",
+    table = get_features("Features_missing_quan"),
     ignore_warnings = TRUE
   )
   expect_true(all(mexp@annot_features$is_quantifier))
@@ -796,6 +799,51 @@ test_that("assert_metadata rejects duplicated (sample_id, analyte_id) in QC conc
       mexp,
       metadata = list(annot_qcconcentrations = qc_dup),
       ignore_warnings = FALSE,
+      excl_unmatched_analyses = FALSE
+    ),
+    "Metadata validation failed"
+  )
+})
+
+test_that("assert_metadata flags mixed units within a response curve or QC sample", {
+  mexp <- lipidomics_dataset
+  rc <- mexp@annot_responsecurves
+  rc$analyzed_amount_unit[1] <- "nL"
+  expect_error(
+    mrmhub:::assert_metadata(
+      mexp,
+      metadata = list(annot_responsecurves = rc),
+      ignore_warnings = FALSE,
+      excl_unmatched_analyses = FALSE
+    ),
+    "verify warnings"
+  )
+
+  mexp <- quant_lcms_dataset
+  qc <- mexp@annot_qcconcentrations
+  qc$concentration_unit[1] <- "nM"
+  out <- testthat::capture_output(expect_error(
+    mrmhub:::assert_metadata(
+      mexp,
+      metadata = list(annot_qcconcentrations = qc),
+      ignore_warnings = FALSE,
+      excl_unmatched_analyses = FALSE
+    ),
+    "verify warnings"
+  ))
+  expect_match(out, "concentration_unit")
+})
+
+test_that("assert_metadata rejects incomplete interference info", {
+  mexp <- lipidomics_dataset
+  feat <- mexp@annot_features
+  i <- which(!is.na(feat$interference_feature_id))[1]
+  feat$interference_contribution[i] <- NA
+  expect_error(
+    mrmhub:::assert_metadata(
+      mexp,
+      metadata = list(annot_features = feat),
+      ignore_warnings = TRUE,
       excl_unmatched_analyses = FALSE
     ),
     "Metadata validation failed"

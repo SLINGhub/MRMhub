@@ -40,8 +40,8 @@ test_that("check_groupwise_identical_ids works", {
   )
   expect_true(check_groupwise_identical_ids(
     df_identical,
-    group_col = group,
-    id_col = id
+    group_col = "group",
+    id_col = "id"
   ))
 
   df_non_identical <- dplyr::tibble(
@@ -50,8 +50,8 @@ test_that("check_groupwise_identical_ids works", {
   )
   expect_false(check_groupwise_identical_ids(
     df_non_identical,
-    group_col = group,
-    id_col = id
+    group_col = "group",
+    id_col = "id"
   ))
 
   df_missing <- dplyr::tibble(
@@ -60,15 +60,15 @@ test_that("check_groupwise_identical_ids works", {
   )
   expect_false(check_groupwise_identical_ids(
     df_missing,
-    group_col = group,
-    id_col = id
+    group_col = "group",
+    id_col = "id"
   ))
 
   df_single <- dplyr::tibble(group = "A", id = 1)
   expect_true(check_groupwise_identical_ids(
     df_single,
-    group_col = group,
-    id_col = id
+    group_col = "group",
+    id_col = "id"
   ))
 
   df_empty <- dplyr::tibble(
@@ -76,7 +76,7 @@ test_that("check_groupwise_identical_ids works", {
     id = integer(0)
   )
   expect_error(
-    check_groupwise_identical_ids(df_empty, group_col = group, id_col = id),
+    check_groupwise_identical_ids(df_empty, group_col = "group", id_col = "id"),
     "data has no rows"
   )
 })

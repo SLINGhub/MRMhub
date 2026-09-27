@@ -130,6 +130,12 @@
   a later intensity drift correction was applied on top of the earlier one and
   overwrote `feature_intensity_raw`.
 
+* Metadata import now detects mixed units within a response curve (the check
+  always passed) and reports them for QC concentrations under
+  `concentration_unit` instead of `analyzed_amount_unit`. Features with an
+  interfering feature but no contribution, or vice versa, are now rejected; the
+  check passed whenever at least one feature was complete.
+
 * `filter_features_qc()` no longer adds an empty row to `dataset_filtered`
   (and the report's filtered sheets) for each feature that is only in the
   feature metadata.
