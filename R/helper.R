@@ -138,33 +138,18 @@ has_any_name = function(...) {
 }
 
 
-# Add a new column to a data frame if the specified column does not exist.
-# If the column already exists, it can rename the column to
-# lowercase (if `make_lowercase = TRUE`) and replace all `NA` values with a
-# specified initial value (`init_value`) `all_na_replace = TRUE`
-
-add_missing_column <- function(
-  data,
-  col_name,
-  init_value,
-  make_lowercase,
-  all_na_replace = FALSE
-) {
-  if (!tolower(col_name) %in% tolower(names(data))) {
-    data |> tibble::add_column({{ col_name }} := init_value)
-  } else {
-    if (make_lowercase) {
-      data <- data |>
-        dplyr::rename_with(
-          tolower,
-          dplyr::matches(col_name, ignore.case = TRUE)
-        )
+# Add each column of `defaults` (a named list: column = default value) that is
+# missing from `data` (names compared case-insensitively). Columns named in
+# `replace_all_na` are also set to their default when they hold only NA.
+add_missing_columns <- function(data, defaults, replace_all_na = character()) {
+  for (col in names(defaults)) {
+    if (!tolower(col) %in% tolower(names(data))) {
+      data[[col]] <- defaults[[col]]
+    } else if (col %in% replace_all_na && all(is.na(data[[col]]))) {
+      data[[col]] <- defaults[[col]]
     }
-    if (all_na_replace && all(is.na(data[[col_name]]))) {
-      data <- data |> mutate({{ col_name }} := init_value)
-    }
-    data
   }
+  data
 }
 
 #' Get concentration unit based on sample amount unit

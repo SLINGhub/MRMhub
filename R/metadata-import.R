@@ -1694,82 +1694,28 @@ clean_analysis_metadata <- function(d_analyses) {
   d_analyses <- trim_stray_cells(d_analyses, "analysis_id", "analysis")
 
   # Fill missing columns
-  d_analyses <- d_analyses |>
-    add_missing_column(
-      col_name = "analysis_order",
-      init_value = NA_real_,
-      make_lowercase = FALSE
+  d_analyses <- add_missing_columns(
+    d_analyses,
+    list(
+      analysis_order = NA_real_,
+      qc_type = NA_character_,
+      batch_id = 1,
+      sample_amount = NA_real_,
+      sample_amount_unit = NA_character_,
+      istd_volume = NA_real_,
+      valid_analysis = TRUE,
+      replicate_no = 1L,
+      specimen = NA_character_,
+      sample_id = NA_character_,
+      remarks = NA_character_
+    ),
+    replace_all_na = c(
+      "sample_amount_unit",
+      "istd_volume",
+      "valid_analysis",
+      "replicate_no"
     )
-  d_analyses <- d_analyses |>
-    add_missing_column(
-      col_name = "qc_type",
-      init_value = NA_character_,
-      make_lowercase = FALSE
-    )
-  d_analyses <- d_analyses |>
-    add_missing_column(
-      col_name = "batch_id",
-      init_value = 1,
-      make_lowercase = FALSE
-    )
-  d_analyses <- d_analyses |>
-    add_missing_column(
-      col_name = "sample_amount",
-      init_value = NA_real_,
-      make_lowercase = FALSE
-    )
-  d_analyses <- d_analyses |>
-    add_missing_column(
-      col_name = "sample_amount_unit",
-      init_value = NA_character_,
-      make_lowercase = FALSE,
-      all_na_replace = TRUE
-    )
-  d_analyses <- d_analyses |>
-    add_missing_column(
-      col_name = "istd_volume",
-      init_value = NA_real_,
-      make_lowercase = FALSE,
-      all_na_replace = TRUE
-    )
-  d_analyses <- d_analyses |>
-    add_missing_column(
-      col_name = "valid_analysis",
-      init_value = TRUE,
-      make_lowercase = FALSE,
-      all_na_replace = TRUE
-    )
-  d_analyses <- d_analyses |>
-    add_missing_column(
-      col_name = "replicate_no",
-      init_value = 1L,
-      make_lowercase = FALSE,
-      all_na_replace = TRUE
-    )
-  d_analyses <- d_analyses |>
-    add_missing_column(
-      col_name = "specimen",
-      init_value = NA_character_,
-      make_lowercase = FALSE
-    )
-  d_analyses <- d_analyses |>
-    add_missing_column(
-      col_name = "panel_id",
-      init_value = NA_character_,
-      make_lowercase = FALSE
-    )
-  d_analyses <- d_analyses |>
-    add_missing_column(
-      col_name = "sample_id",
-      init_value = NA_character_,
-      make_lowercase = FALSE
-    )
-  d_analyses <- d_analyses |>
-    add_missing_column(
-      col_name = "remarks",
-      init_value = NA_character_,
-      make_lowercase = FALSE
-    )
+  )
 
   d_analyses <- d_analyses |>
     dplyr::select(
@@ -1865,110 +1811,28 @@ clean_feature_metadata <- function(d_features) {
   }
 
   d_features <- trim_stray_cells(d_features, "feature_id", "feature")
-  d_features <- d_features |>
-    add_missing_column(
-      col_name = "feature_class",
-      init_value = NA_character_,
-      make_lowercase = FALSE,
-      all_na_replace = FALSE
-    )
-  d_features <- d_features |>
-    add_missing_column(
-      col_name = "chem_formula",
-      init_value = NA_character_,
-      make_lowercase = FALSE,
-      all_na_replace = FALSE
-    )
-  d_features <- d_features |>
-    add_missing_column(
-      col_name = "molecular_weight",
-      init_value = NA_real_,
-      make_lowercase = FALSE,
-      all_na_replace = FALSE
-    )
-  d_features <- d_features |>
-    add_missing_column(
-      col_name = "is_quantifier",
-      init_value = TRUE,
-      make_lowercase = FALSE,
-      all_na_replace = TRUE
-    )
-  d_features <- d_features |>
-    add_missing_column(
-      col_name = "valid_feature",
-      init_value = TRUE,
-      make_lowercase = FALSE,
-      all_na_replace = TRUE
-    )
-  d_features <- d_features |>
-    add_missing_column(
-      col_name = "istd_feature_id",
-      init_value = NA_character_,
-      make_lowercase = FALSE,
-      all_na_replace = FALSE
-    )
-  d_features <- d_features |>
-    add_missing_column(
-      col_name = "quant_istd_feature_id",
-      init_value = NA_character_,
-      make_lowercase = FALSE,
-      all_na_replace = FALSE
-    )
-  d_features <- d_features |>
-    add_missing_column(
-      col_name = "response_factor",
-      init_value = 1.0,
-      make_lowercase = FALSE,
-      all_na_replace = TRUE
-    )
-  d_features <- d_features |>
-    add_missing_column(
-      col_name = "feature_label",
-      init_value = NA_character_,
-      make_lowercase = FALSE
-    )
-  d_features <- d_features |>
-    add_missing_column(
-      col_name = "analyte_id",
-      init_value = NA_character_,
-      make_lowercase = FALSE
-    )
-  d_features <- d_features |>
-    add_missing_column(
-      col_name = "mrm_pattern",
-      init_value = NA_character_,
-      make_lowercase = FALSE
-    )
-  d_features <- d_features |>
-    add_missing_column(
-      col_name = "interference_feature_id",
-      init_value = NA_character_,
-      make_lowercase = FALSE
-    )
-  d_features <- d_features |>
-    add_missing_column(
-      col_name = "interference_contribution",
-      init_value = NA_real_,
-      make_lowercase = FALSE
-    )
-  d_features <- d_features |>
-    add_missing_column(
-      col_name = "curve_fit_model",
-      init_value = NA_character_,
-      make_lowercase = FALSE
-    )
-  d_features <- d_features |>
-    add_missing_column(
-      col_name = "curve_fit_weighting",
-      init_value = NA_character_,
-      make_lowercase = FALSE
-    )
-  d_features <- d_features |>
-    add_missing_column(
-      col_name = "remarks",
-      init_value = NA_character_,
-      make_lowercase = FALSE
-    )
+  d_features <- add_missing_columns(
+    d_features,
+    list(
+      feature_class = NA_character_,
+      chem_formula = NA_character_,
+      molecular_weight = NA_real_,
+      is_quantifier = TRUE,
+      valid_feature = TRUE,
+      istd_feature_id = NA_character_,
+      quant_istd_feature_id = NA_character_,
+      response_factor = 1.0,
+      feature_label = NA_character_,
+      analyte_id = NA_character_,
+      mrm_pattern = NA_character_,
+      interference_feature_id = NA_character_,
+      interference_contribution = NA_real_,
+      curve_fit_model = NA_character_,
+      curve_fit_weighting = NA_character_,
+      remarks = NA_character_
+    ),
+    replace_all_na = c("is_quantifier", "valid_feature", "response_factor")
+  )
 
   d_features <- d_features |>
     dplyr::mutate(
@@ -2060,12 +1924,12 @@ clean_istd_metadata <- function(d_istds) {
 
   d_istds <- trim_stray_cells(d_istds, "istd_feature_id", "ISTD")
 
-  d_istds <- d_istds |>
-    add_missing_column(
-      col_name = "remarks",
-      init_value = NA_character_,
-      make_lowercase = FALSE
+  d_istds <- add_missing_columns(
+    d_istds,
+    list(
+      remarks = NA_character_
     )
+  )
   d_istds <- d_istds |>
     mutate(across(where(is.character), str_trim)) |>
     dplyr::mutate(
@@ -2115,12 +1979,12 @@ clean_response_metadata <- function(d_rqc) {
 
   d_rqc <- trim_stray_cells(d_rqc, "analysis_id", "response curve")
 
-  d_rqc <- d_rqc |>
-    add_missing_column(
-      col_name = "remarks",
-      init_value = NA_character_,
-      make_lowercase = FALSE
+  d_rqc <- add_missing_columns(
+    d_rqc,
+    list(
+      remarks = NA_character_
     )
+  )
 
   d_rqc <- d_rqc |>
     dplyr::mutate(
@@ -2165,19 +2029,14 @@ clean_qcconc_metadata <- function(d_cal) {
     "QC concentration"
   )
 
-  d_cal <- d_cal |>
-    add_missing_column(
-      col_name = "remarks",
-      init_value = NA_character_,
-      make_lowercase = FALSE
-    )
-  d_cal <- d_cal |>
-    add_missing_column(
-      col_name = "include_in_analysis",
-      init_value = TRUE,
-      make_lowercase = FALSE,
-      all_na_replace = TRUE
-    )
+  d_cal <- add_missing_columns(
+    d_cal,
+    list(
+      remarks = NA_character_,
+      include_in_analysis = TRUE
+    ),
+    replace_all_na = c("include_in_analysis")
+  )
 
   d_cal <- d_cal |>
     dplyr::mutate(

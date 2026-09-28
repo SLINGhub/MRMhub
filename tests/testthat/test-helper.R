@@ -205,17 +205,19 @@ test_that("has_any_name works in assertr::verify as it should", {
   expect_equal(dim(res), c(5, 3))
 })
 
-test_that("add_missing_column works", {
-  # Create a sample data frame without the target column
-  dt <- tibble(A = 1:5, B = 6:10)
-
-  result <- add_missing_column(dt, "c", 99, make_lowercase = FALSE)
-  expect_equal(result$c, rep(99, 5))
-
-  result <- add_missing_column(dt, "A", 99, make_lowercase = TRUE)
-  expect_equal(result$a, 1:5)
-  result <- add_missing_column(dt, "A", 99, make_lowercase = FALSE)
-  expect_equal(result$A, 1:5)
+test_that("add_missing_columns adds missing columns and fills all-NA ones", {
+  dt <- tibble(A = 1:5, b = NA, d = c(NA, 2, NA, NA, NA))
+  res <- add_missing_columns(
+    dt,
+    list(c = 99, a = 0L, b = "x", d = 0),
+    replace_all_na = c("b", "d")
+  )
+  expect_equal(names(res), c("A", "b", "d", "c")) # `a` exists as `A`
+  expect_equal(res$c, rep(99, 5))
+  expect_equal(res$A, 1:5)
+  expect_equal(res$b, rep("x", 5)) # all NA: replaced, type follows default
+  expect_equal(res$d, c(NA, 2, NA, NA, NA)) # not all NA: kept
+  expect_equal(nrow(add_missing_columns(dt[0, ], list(c = 99))), 0)
 })
 
 
