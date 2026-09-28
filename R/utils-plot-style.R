@@ -437,3 +437,128 @@ render_pages <- function(
 
   if (return_plots) p_list[page_range] else invisible()
 }
+
+# Index-axis positions of the visible analysis orders (`unique_orders`, sorted)
+# for plots with `remove_gaps` / `collapse_excluded`. With `remove_gaps`, each
+# real gap -- orders missing from `all_orders` (the full dataset) between two
+# adjacent visible orders -- widens the axis by a band of 2 % of the analyses
+# (min 3). Returns the positions and the gap-marker table (NULL without gaps).
+gap_axis <- function(unique_orders, all_orders, remove_gaps, gap_scale) {
+  index <- seq_along(unique_orders)
+  if (!remove_gaps) {
+    return(list(index = index, d_gaps = NULL))
+  }
+  # For each gap in the full dataset, the last visible order before it and the
+  # first after it must be adjacent in `unique_orders` for a marker between them
+  all_gap_positions <- which(diff(all_orders) > 1)
+  gap_idx <- integer(0)
+  for (gi in all_gap_positions) {
+    cand_left <- which(unique_orders <= all_orders[gi])
+    pos_left <- if (length(cand_left) > 0) max(cand_left) else 0L
+    cand_right <- which(unique_orders >= all_orders[gi + 1L])
+    pos_right <- if (length(cand_right) > 0) {
+      min(cand_right)
+    } else {
+      length(unique_orders) + 1L
+    }
+    if (
+      pos_left >= 1L &&
+        pos_right <= length(unique_orders) &&
+        pos_right == pos_left + 1L
+    ) {
+      gap_idx <- c(gap_idx, pos_left)
+    }
+  }
+  if (length(gap_idx) == 0) {
+    return(list(index = index, d_gaps = NULL))
+  }
+
+  # Shift each position by one band per gap before it
+  gap_width <- max(3L, round(length(unique_orders) * 0.02 * gap_scale))
+  index <- index + gap_width * findInterval(index - 1L, gap_idx)
+  d_gaps <- dplyr::tibble(
+    gap_x = (index[gap_idx] + index[gap_idx + 1L]) / 2,
+    gap_x_left = index[gap_idx],
+    gap_x_right = index[gap_idx + 1L],
+    id_before = unique_orders[gap_idx],
+    id_after = unique_orders[gap_idx + 1L],
+    gap_label = paste0(id_before, " | ", id_after)
+  )
+  list(index = index, d_gaps = d_gaps)
+}
+
+# Gap marker layers: shaded band, border lines and a label with the orders on
+# either side of the gap
+gap_marker_layers <- function(d_gaps, colour, linewidth, label_size) {
+  list(
+    ggplot2::geom_rect(
+      data = d_gaps,
+      ggplot2::aes(
+        xmin = .data$gap_x_left + 0.5,
+        xmax = .data$gap_x_right - 0.5,
+        ymin = -Inf,
+        ymax = Inf
+      ),
+      inherit.aes = FALSE,
+      fill = colour,
+      color = NA,
+      alpha = 0.08,
+      na.rm = TRUE
+    ),
+    ggplot2::geom_vline(
+      data = d_gaps,
+      ggplot2::aes(xintercept = .data$gap_x_left + 0.5),
+      colour = colour,
+      linewidth = linewidth,
+      na.rm = TRUE
+    ),
+    ggplot2::geom_vline(
+      data = d_gaps,
+      ggplot2::aes(xintercept = .data$gap_x_right - 0.5),
+      colour = colour,
+      linewidth = linewidth,
+      na.rm = TRUE
+    ),
+    ggplot2::geom_label(
+      data = d_gaps,
+      ggplot2::aes(
+        x = .data$gap_x,
+        y = Inf,
+        label = .data$gap_label
+      ),
+      inherit.aes = FALSE,
+      size = label_size,
+      color = colour,
+      fill = "white",
+      linewidth = 0.15,
+      vjust = 1.2,
+      hjust = 0.5,
+      na.rm = TRUE
+    )
+  )
+}
+
+# Index-axis positions of batch boundaries: the first visible analysis at or
+# after each batch start and the last one at or before each batch end
+batches_to_index <- function(d_batches, order_map) {
+  idx <- order_map[c("analysis_order", "analysis_order_index")]
+  d_batches |>
+    dplyr::mutate(
+      mapped_start = purrr::map_dbl(
+        .data$id_batch_start,
+        ~ find_closest(.x, order_map$analysis_order, method = "higher")
+      ),
+      mapped_end = purrr::map_dbl(
+        .data$id_batch_end,
+        ~ find_closest(.x, order_map$analysis_order, method = "lower")
+      )
+    ) |>
+    dplyr::left_join(
+      dplyr::rename(idx, id_batch_start_index = "analysis_order_index"),
+      by = c("mapped_start" = "analysis_order")
+    ) |>
+    dplyr::left_join(
+      dplyr::rename(idx, id_batch_end_index = "analysis_order_index"),
+      by = c("mapped_end" = "analysis_order")
+    )
+}

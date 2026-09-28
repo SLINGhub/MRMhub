@@ -357,105 +357,23 @@ plot_runscatter <- function(
     # Only real gaps (excluded/missing analyses) are collapsed.
     # When collapse_excluded = TRUE, build from filtered data (d_filt) so that
     # gaps from excluded QC types are also collapsed.
-    if (collapse_excluded) {
-      unique_orders <- sort(unique(d_filt$analysis_order))
-    } else {
-      unique_orders <- sort(unique(data@dataset$analysis_order))
-    }
+    unique_orders <- sort(unique(
+      if (collapse_excluded) d_filt$analysis_order else
+        data@dataset$analysis_order
+    ))
+    gaps <- gap_axis(
+      unique_orders,
+      all_orders = sort(unique(data@dataset$analysis_order)),
+      remove_gaps = remove_gaps,
+      gap_scale = gap_scale
+    )
     order_map <- dplyr::tibble(
-      "analysis_order" := unique_orders,
-      "analysis_order_index" := seq_along(unique_orders)
+      analysis_order = unique_orders,
+      analysis_order_index = gaps$index
     )
     d_filt <- d_filt |>
       dplyr::left_join(order_map, by = "analysis_order")
-
-    # Detect real gaps: gaps that exist in the FULL unfiltered @dataset
-    # (excluded/missing analyses), NOT gaps caused by qc_types filtering.
-    d_gaps <- NULL
-    if (remove_gaps) {
-      all_orders <- sort(unique(data@dataset$analysis_order))
-      all_diffs <- diff(all_orders)
-      all_gap_positions <- which(all_diffs > 1)
-      # Map real gaps onto unique_orders: for each gap in the full dataset,
-      # find the last visible order <= the left boundary and the first
-      # visible order >= the right boundary. They must be adjacent in
-      # unique_orders so the gap marker sits between them.
-      gap_idx <- integer(0)
-      for (gi in all_gap_positions) {
-        ord_left <- all_orders[gi]
-        ord_right <- all_orders[gi + 1L]
-        # Last visible order at or before the gap
-        cand_left <- which(unique_orders <= ord_left)
-        pos_left <- if (length(cand_left) > 0) max(cand_left) else 0L
-        # First visible order at or after the gap
-        cand_right <- which(unique_orders >= ord_right)
-        pos_right <- if (length(cand_right) > 0) {
-          min(cand_right)
-        } else {
-          length(unique_orders) + 1L
-        }
-        if (
-          pos_left >= 1L &&
-            pos_right <= length(unique_orders) &&
-            pos_right == pos_left + 1L
-        ) {
-          gap_idx <- c(gap_idx, pos_left)
-        }
-      }
-      if (length(gap_idx) > 0) {
-        # Gap width in index units: use a fixed 2 % of n_analyses so the band
-        # is always clearly visible regardless of panel size or point_size.
-        # At default point_size = 1.5 this is ≈ one marker diameter for typical
-        # run lengths (200–600 analyses). Minimum 3 to handle small datasets.
-        n_analyses <- length(unique_orders)
-        gap_width <- max(3L, round(n_analyses * 0.02 * gap_scale))
-
-        # Shift all post-gap indices by gap_width per gap.
-        for (i in seq_along(gap_idx)) {
-          shifted_idx <- gap_idx[i] + (i - 1L) * gap_width
-          order_map <- order_map |>
-            dplyr::mutate(
-              analysis_order_index = dplyr::if_else(
-                .data$analysis_order_index > shifted_idx,
-                .data$analysis_order_index + gap_width,
-                .data$analysis_order_index
-              )
-            )
-        }
-        # Re-join updated indices onto d_filt
-        d_filt <- d_filt |>
-          dplyr::select(-"analysis_order_index") |>
-          dplyr::left_join(order_map, by = "analysis_order")
-
-        # Recompute gap positions using the updated order_map
-        updated_orders <- order_map$analysis_order_index[
-          match(unique_orders, order_map$analysis_order)
-        ]
-        gap_positions <- vapply(
-          gap_idx,
-          function(g) {
-            # midpoint between last pre-gap index and first post-gap index
-            left_idx <- updated_orders[g]
-            right_idx <- updated_orders[g + 1L]
-            (left_idx + right_idx) / 2
-          },
-          numeric(1)
-        )
-
-        d_gaps <- dplyr::tibble(
-          gap_x = gap_positions,
-          gap_x_left = updated_orders[gap_idx],
-          gap_x_right = updated_orders[gap_idx + 1L],
-          id_before = unique_orders[gap_idx],
-          id_after = unique_orders[gap_idx + 1L],
-          gap_label = paste0(
-            unique_orders[gap_idx],
-            " | ",
-            unique_orders[gap_idx + 1L]
-          )
-        )
-      }
-    }
+    d_gaps <- gaps$d_gaps
   }
 
   # Cleanup the data
@@ -889,24 +807,7 @@ runscatter_plot_pages <- function(
 
     # Remap batch boundaries to index space when use_index_axis is TRUE
     if (use_index_axis && !is.null(order_map)) {
-      d_batches <- d_batches |>
-        dplyr::mutate(
-          mapped_start = purrr::map_dbl(
-            .data$id_batch_start,
-            ~ find_closest(.x, order_map$analysis_order, method = "higher")
-          ),
-          mapped_end = purrr::map_dbl(
-            .data$id_batch_end,
-            ~ find_closest(.x, order_map$analysis_order, method = "lower")
-          )
-        ) |>
-        dplyr::left_join(
-          order_map,
-          by = c("mapped_start" = "analysis_order")
-        ) |>
-        dplyr::rename(id_batch_start_index = "analysis_order_index") |>
-        dplyr::left_join(order_map, by = c("mapped_end" = "analysis_order")) |>
-        dplyr::rename(id_batch_end_index = "analysis_order_index")
+      d_batches <- batches_to_index(d_batches, order_map)
     }
 
     d_batch_data <- d_batches |>
@@ -1270,52 +1171,11 @@ runscatter_plot_pages <- function(
     # border vlines + label. Drawn last so it renders on top of everything.
     if (remove_gaps && !is.null(d_gaps) && nrow(d_gaps) > 0) {
       p <- p +
-        # Transparent shaded rect to highlight the gap region
-        ggplot2::geom_rect(
-          data = d_gaps,
-          ggplot2::aes(
-            xmin = .data$gap_x_left + 0.5,
-            xmax = .data$gap_x_right - 0.5,
-            ymin = -Inf,
-            ymax = Inf
-          ),
-          inherit.aes = FALSE,
-          fill = gap_line_color,
-          color = NA,
-          alpha = 0.08,
-          na.rm = TRUE
-        ) +
-        # Left border vline
-        ggplot2::geom_vline(
-          data = d_gaps,
-          ggplot2::aes(xintercept = .data$gap_x_left + 0.5),
-          colour = gap_line_color,
-          linewidth = gap_line_width,
-          na.rm = TRUE
-        ) +
-        # Right border vline
-        ggplot2::geom_vline(
-          data = d_gaps,
-          ggplot2::aes(xintercept = .data$gap_x_right - 0.5),
-          colour = gap_line_color,
-          linewidth = gap_line_width,
-          na.rm = TRUE
-        ) +
-        ggplot2::geom_label(
-          data = d_gaps,
-          ggplot2::aes(
-            x = .data$gap_x,
-            y = Inf,
-            label = .data$gap_label
-          ),
-          inherit.aes = FALSE,
-          size = gap_label_size,
-          color = gap_line_color,
-          fill = "white",
-          linewidth = 0.15,
-          vjust = 1.2,
-          hjust = 0.5,
-          na.rm = TRUE
+        gap_marker_layers(
+          d_gaps,
+          gap_line_color,
+          gap_line_width,
+          gap_label_size
         )
     }
 
