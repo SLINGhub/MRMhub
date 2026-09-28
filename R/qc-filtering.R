@@ -456,7 +456,7 @@ calc_qc_metrics <- function(
           use_robust_cv,
           min_n = min_cv_replicates
         ),
-        dratio_exprs("normint", norm, qcs$dratio)
+        dratio_exprs("normint", norm, qcs$dratio, min_cv_replicates)
       )
     },
     if (do_conc) {
@@ -477,7 +477,7 @@ calc_qc_metrics <- function(
           use_robust_cv,
           min_n = min_cv_replicates
         ),
-        dratio_exprs("conc", conc, qcs$dratio)
+        dratio_exprs("conc", conc, qcs$dratio, min_cv_replicates)
       )
     }
   )
@@ -653,7 +653,7 @@ qc_stat_exprs <- function(prefix, var, qcs, fn, ...) {
 }
 
 # D-ratios (SD, then MAD based) of each QC type in `qcs` against SPL
-dratio_exprs <- function(prefix, var, qcs) {
+dratio_exprs <- function(prefix, var, qcs, min_n) {
   exprs <- list()
   for (use_mad in c(FALSE, TRUE)) {
     for (qc in qcs) {
@@ -668,7 +668,7 @@ dratio_exprs <- function(prefix, var, qcs) {
         .data[[!!var]][.data$qc_type == !!qc],
         .data[[!!var]][.data$qc_type == "SPL"],
         use_mad = !!use_mad,
-        min_n = min_cv_replicates
+        min_n = !!min_n
       ))
     }
   }

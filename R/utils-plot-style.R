@@ -482,9 +482,11 @@ gap_axis <- function(unique_orders, all_orders, remove_gaps, gap_scale) {
     gap_x = (index[gap_idx] + index[gap_idx + 1L]) / 2,
     gap_x_left = index[gap_idx],
     gap_x_right = index[gap_idx + 1L],
-    id_before = unique_orders[gap_idx],
-    id_after = unique_orders[gap_idx + 1L],
-    gap_label = paste0(id_before, " | ", id_after)
+    gap_label = paste0(
+      unique_orders[gap_idx],
+      " | ",
+      unique_orders[gap_idx + 1L]
+    )
   )
   list(index = index, d_gaps = d_gaps)
 }

@@ -1855,7 +1855,7 @@ test_that("qc_stat_exprs summarises any QC type, including new or absent ones", 
 
 test_that("dratio_exprs names the SD then MAD D-ratios per QC type", {
   expect_named(
-    dratio_exprs("conc", "feature_conc", c("BQC", "TQC")),
+    dratio_exprs("conc", "feature_conc", c("BQC", "TQC"), 3L),
     c(
       "conc_dratio_sd_bqc",
       "conc_dratio_sd_tqc",
