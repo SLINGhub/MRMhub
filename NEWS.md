@@ -262,6 +262,12 @@
   `specific_page` builds, draws and saves only the selected page instead of
   all pages; a page number beyond the last page is an error.
 
+* `plot_runscatter()`: infinite values are treated as missing, as intended;
+  they were drawn at the panel edge and entered the outlier caps and reference
+  lines. `log_scale = TRUE` no longer fails when a value is missing, and a zero
+  next to missing values is no longer dropped. `y_label_text` is also used
+  without `cap_outliers`.
+
 * `plot_runscatter(show_reference_lines = TRUE)`: the upper reference line and
   the top of the SD band are drawn at mean + k × SD. They were cut off at the
   highest reference-QC value, which lowered most batch-wise lines. With

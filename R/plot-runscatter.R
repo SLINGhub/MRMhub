@@ -465,27 +465,20 @@ plot_runscatter <- function(
     mutate(value = ifelse(is.infinite(!!variable_sym), NA, !!variable_sym))
 
   # Set the y-axis label text
-  y_label <- dplyr::if_else(
-    cap_outliers,
-    paste0(
-      ifelse(
-        is.na(y_label_text),
-        stringr::str_remove(variable, "feature\\_"),
-        y_label_text
-      ),
-      " (capped by MAD outlier filter) "
-    ),
+  y_label <- if (is.na(y_label_text)) {
     stringr::str_remove(variable, "feature\\_")
-  )
+  } else {
+    y_label_text
+  }
+  if (cap_outliers) {
+    y_label <- paste0(y_label, " (capped by MAD outlier filter) ")
+  }
 
   # Reorder QC types and assign values
   d_filt$qc_type <- d_filt$qc_type |>
     factor() |>
     forcats::fct_expand(pkg.env$qc_type_annotation$qc_type_levels) |>
     forcats::fct_relevel(pkg.env$qc_type_annotation$qc_type_levels)
-
-  d_filt <- d_filt |>
-    dplyr::mutate(value = !!variable_sym)
 
   # Cap outliers if the option is selected
   if (cap_outliers) {
@@ -573,7 +566,7 @@ plot_runscatter <- function(
   }
   if (log_scale) {
     # check if value_mod contains any negative or zero
-    if (any(d_filt$value_mod <= 0)) {
+    if (any(d_filt$value_mod <= 0, na.rm = TRUE)) {
       mh_warn(
         "Zero or negative values were replaced with the minimum positive value divided by 5 to avoid log(0) errors."
       )
@@ -582,7 +575,7 @@ plot_runscatter <- function(
         dplyr::mutate(
           value_mod = if_else(
             .data$value_mod <= 0,
-            min(.data$value_mod[.data$value_mod > 0]) / 5,
+            min(.data$value_mod[.data$value_mod > 0], na.rm = TRUE) / 5,
             .data$value_mod
           )
         )

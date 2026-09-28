@@ -1438,6 +1438,54 @@ test_that("plot_runscatter rejects a specific_page beyond the last page", {
   )
 })
 
+runscatter_one_feature <- function(data, ...) {
+  suppressMessages(suppressWarnings(plot_runscatter(
+    data,
+    variable = "intensity",
+    include_feature_filter = "^PC 32:1$",
+    rows_page = 1,
+    cols_page = 1,
+    return_plots = TRUE,
+    ...
+  )))[[1]]
+}
+
+test_that("plot_runscatter log_scale handles missing values", {
+  m <- mexp
+  rows <- which(m@dataset$feature_id == "PC 32:1")
+  m@dataset$feature_intensity[rows[1]] <- NA
+  expect_no_error(runscatter_one_feature(m, log_scale = TRUE))
+
+  # A zero next to a missing value is floored at min positive / 5, not dropped
+  m@dataset$feature_intensity[rows[2]] <- 0
+  d <- runscatter_one_feature(m, log_scale = TRUE)$data
+  floor_val <- min(d$value[d$value > 0], na.rm = TRUE) / 5
+  expect_equal(
+    d$value_mod[d$analysis_id == m@dataset$analysis_id[rows[2]]],
+    floor_val
+  )
+})
+
+test_that("plot_runscatter treats infinite values as missing", {
+  m <- mexp
+  rows <- which(m@dataset$feature_id == "PC 32:1")
+  m@dataset$feature_intensity[rows[1:3]] <- Inf
+  d <- runscatter_one_feature(m)$data
+  expect_false(any(is.infinite(d$value_mod)))
+  expect_equal(sum(is.na(d$value_mod)), 3)
+})
+
+test_that("plot_runscatter uses y_label_text with and without capping", {
+  p <- runscatter_one_feature(mexp, y_label_text = "My label")
+  expect_equal(p$labels$y, "My label")
+  p <- runscatter_one_feature(
+    mexp,
+    y_label_text = "My label",
+    cap_outliers = TRUE
+  )
+  expect_equal(p$labels$y, "My label (capped by MAD outlier filter) ")
+})
+
 # Helper: run plot_runscatter with capping and return all plotted rows.
 capped_runscatter_data <- function(...) {
   p <- suppressMessages(suppressWarnings(plot_runscatter(
