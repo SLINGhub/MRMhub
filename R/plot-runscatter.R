@@ -590,12 +590,17 @@ plot_runscatter <- function(
   }
 
   # Determine page range for the plots
+  n_pages <- ceiling(
+    dplyr::n_distinct(d_filt$feature_id) / (cols_page * rows_page)
+  )
   if (!is.numeric(specific_page)) {
-    page_range <- 1:ceiling(
-      dplyr::n_distinct(d_filt$feature_id) /
-        (cols_page * rows_page)
-    )
+    page_range <- seq_len(n_pages)
   } else {
+    if (any(specific_page > n_pages)) {
+      cli::cli_abort(
+        "Selected page exceeds the total number of pages. Please select a page number between {.strong 1} and {.strong {n_pages}}."
+      )
+    }
     page_range <- specific_page
   }
 
@@ -658,30 +663,21 @@ plot_runscatter <- function(
     label_wrap = label_wrap,
     label_wrap_width = label_wrap_width
   )
-  # subset the dataset with only the rows used for plotting the facets of the selected page
-  n_samples <- length(unique(d_filt$analysis_id))
-
-  # Arrange the data first
+  # Assign features to pages and keep only the pages to plot
   d_arranged <- d_filt |>
     arrange(.data$feature_id, .data$analysis_order)
-
-  # Calculate page size
-  n_samples <- length(unique(d_arranged$analysis_id))
-  page_size <- n_samples * cols_page * rows_page
-
-  if (multithreading) {
-    page_group_size <- page_size * pages_per_core
-  } else {
-    page_group_size <- ceiling(nrow(d_arranged))
-    pages_per_core = ceiling(nrow(d_arranged) / page_size)
+  feature_ids <- unique(d_arranged$feature_id)
+  if (!multithreading) {
+    pages_per_core <- n_pages
   }
-
-  # Add page_id
   d_with_page <- d_arranged |>
     mutate(
-      page_id = ceiling(row_number() / page_size),
+      page_id = ceiling(
+        match(.data$feature_id, feature_ids) / (cols_page * rows_page)
+      ),
       page_group = ceiling(.data$page_id / pages_per_core)
-    )
+    ) |>
+    filter(.data$page_id %in% page_range)
 
   # Split into list of page groups for parallel processing if multithreading is enabled otherwise include all pages in one group
   page_group_list <- split(d_with_page, d_with_page$page_group)
@@ -713,7 +709,7 @@ plot_runscatter <- function(
   if (rlang::is_interactive()) {
     message(
       cli::col_green(glue::glue(
-        "{action_text} ({max(page_range)} {ifelse(max(page_range) > 1, 'pages', 'page')}){ifelse(show_progress, '...', '')}"
+        "{action_text} ({length(page_range)} {ifelse(length(page_range) > 1, 'pages', 'page')}){ifelse(show_progress, '...', '')}"
       )),
       appendLF = FALSE
     )
@@ -761,7 +757,7 @@ plot_runscatter <- function(
   }
 
   if (return_plots) {
-    return(p_list[page_range])
+    return(p_list)
   } else {
     invisible()
   }

@@ -1385,6 +1385,59 @@ test_that("plot_runscatter upper reference line is mean + k*SD without capping",
   expect_equal(sort(upper$yend), sort(expected$up))
 })
 
+test_that("plot_runscatter paginates by feature when features have missing analyses", {
+  m <- mexp
+  feats <- sort(unique(m@dataset$feature_id))
+  drop <- m@dataset$feature_id %in%
+    feats[c(2, 5, 11, 20)] &
+    m@dataset$analysis_order <= 60
+  m@dataset <- m@dataset[!drop, ]
+  p <- suppressMessages(plot_runscatter(
+    m,
+    variable = "intensity",
+    rows_page = 3,
+    cols_page = 3,
+    return_plots = TRUE
+  ))
+  per_page <- lapply(p, \(x) unique(as.character(x$data$feature_id)))
+  expect_length(p, ceiling(length(feats) / 9))
+  expect_equal(unname(unlist(per_page)), feats)
+  expect_true(all(lengths(per_page) <= 9))
+})
+
+test_that("plot_runscatter builds and saves only the specific_page", {
+  skip_if_not_installed("qpdf")
+  f <- withr::local_tempfile(fileext = ".pdf")
+  p <- suppressMessages(plot_runscatter(
+    mexp,
+    variable = "intensity",
+    rows_page = 3,
+    cols_page = 3,
+    specific_page = 2,
+    output_pdf = TRUE,
+    path = f,
+    return_plots = TRUE
+  ))
+  feats <- sort(unique(mexp@dataset$feature_id))
+  expect_length(p, 1)
+  expect_equal(unique(as.character(p[[1]]$data$feature_id)), feats[10:18])
+  expect_equal(qpdf::pdf_length(f), 1)
+})
+
+test_that("plot_runscatter rejects a specific_page beyond the last page", {
+  expect_error(
+    plot_runscatter(
+      mexp,
+      variable = "intensity",
+      rows_page = 3,
+      cols_page = 3,
+      specific_page = 5,
+      return_plots = TRUE
+    ),
+    "between 1 and 4"
+  )
+})
+
 # Helper: run plot_runscatter with capping and return all plotted rows.
 capped_runscatter_data <- function(...) {
   p <- suppressMessages(suppressWarnings(plot_runscatter(

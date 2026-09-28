@@ -257,6 +257,11 @@
   SBLK, RQC or UBLK were shown as `NA`. `qc_types = NA` selects the non-blank QC
   types, as documented; it previously also included PBLK and SBLK.
 
+* `plot_runscatter()` assigns features to pages by feature, so features with
+  missing analyses no longer split across pages or make the plot fail.
+  `specific_page` builds, draws and saves only the selected page instead of
+  all pages; a page number beyond the last page is an error.
+
 * `plot_runscatter(show_reference_lines = TRUE)`: the upper reference line and
   the top of the SD band are drawn at mean + k × SD. They were cut off at the
   highest reference-QC value, which lowered most batch-wise lines. With
