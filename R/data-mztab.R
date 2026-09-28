@@ -885,7 +885,7 @@ import_data_mztab <- function(
     data = data,
     path = path,
     import_function = "parse_mztab",
-    file_ext = "*.mzTab|*.mztab",
+    file_ext = "[.](mzTab|mztab)$",
     silent = silent
   )
   data <- set_intensity_var(

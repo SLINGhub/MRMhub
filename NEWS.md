@@ -20,6 +20,10 @@
   types as study variables, a round trip turned QC types into batches. Supply
   batches with `add_metadata()`.
 
+* `save_dataset_csv()` adds the `qc_type` column whenever the export contains
+  more than one QC type, including the default `qc_types = NA`; it was added
+  only when `qc_types` listed several types.
+
 * `calc_qc_metrics()`: the column `sb_ratio_q10_pbk` is renamed to
   `sb_ratio_q10_pblk`.
 
@@ -140,6 +144,13 @@
   chemical formula and others only a molecular weight (mass concentrations, or
   ISTD concentrations in ng/mL); the formula takes precedence. An ISTD with
   neither now always raises an error unless `ignore_missing_annotation = TRUE`.
+
+* Importing from a folder only reads files ending in the expected extension
+  (`.csv`, `.tsv`, `.mzTab`); e.g. a `results.tsv.bak` was also imported.
+
+* `get_runtime_median()` and `get_analysis_breaks()`, used in the
+  `plot_runsequence()` title, no longer depend on the row order of the dataset;
+  unsorted rows gave wrong break counts.
 
 * `import_data_csv_long()` without `column_mapping` now imports `intensity`,
   `response` and `conc` columns (also with the `feature_` prefix), as

@@ -878,7 +878,11 @@ test_that("batch boundaries do not depend on the row order of the metadata", {
   expect_equal(ref$batch_no, seq_len(nrow(ref)))
   expect_equal(
     ref$id_batch_start,
-    tapply(mexp@annot_analyses$analysis_order, mexp@annot_analyses$batch_id, min)[
+    tapply(
+      mexp@annot_analyses$analysis_order,
+      mexp@annot_analyses$batch_id,
+      min
+    )[
       ref$batch_id
     ],
     ignore_attr = TRUE
@@ -894,5 +898,18 @@ test_that("set_analysis_order updates the batch boundaries", {
   expect_equal(
     mexp_meta@annot_batches,
     mrmhub:::get_metadata_batches(mexp_meta@annot_analyses)
+  )
+})
+
+test_that("run time and break counts do not depend on the dataset row order", {
+  m <- lipidomics_dataset
+  m_shuffled <- m
+  withr::with_seed(1, {
+    m_shuffled@dataset <- m@dataset[sample(nrow(m@dataset)), ]
+  })
+  expect_equal(get_runtime_median(m_shuffled), get_runtime_median(m))
+  expect_equal(
+    get_analysis_breaks(m_shuffled, 10),
+    get_analysis_breaks(m, 10)
   )
 })

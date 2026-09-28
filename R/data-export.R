@@ -634,10 +634,6 @@ save_dataset_csv <- function(
     }
   }
 
-  if (is.na(add_qctype)) {
-    add_qctype <- !(length(qc_types) == 1)
-  }
-
   if (!(variable %in% names(data@dataset))) {
     cli::cli_abort(
       "Variable '{variable}' has not yet been calculated. Please process data or choose other variable."
@@ -659,6 +655,9 @@ save_dataset_csv <- function(
     exclude_feature_filter = exclude_feature_filter
   )
 
+  if (is.na(add_qctype)) {
+    add_qctype <- dplyr::n_distinct(d_filt$qc_type) > 1
+  }
   if (add_qctype) {
     flds <- c("analysis_id", "qc_type", "feature_id")
   } else {

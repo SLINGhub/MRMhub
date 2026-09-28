@@ -166,6 +166,20 @@ test_that("Function exports correct variables", {
   expect_equal(mean(exported_data$`PC 40:6`), 0.082982104)
 })
 
+test_that("save_dataset_csv adds qc_type when more than one QC type is exported", {
+  f <- withr::local_tempfile(fileext = ".csv")
+  suppressMessages(save_dataset_csv(mexp, path = f, variable = "intensity"))
+  expect_true("qc_type" %in% names(readr::read_csv(f, show_col_types = FALSE)))
+
+  suppressMessages(save_dataset_csv(
+    mexp,
+    path = f,
+    variable = "intensity",
+    qc_types = "SPL"
+  ))
+  expect_false("qc_type" %in% names(readr::read_csv(f, show_col_types = FALSE)))
+})
+
 test_that("QC-filtered data is used when filter_data is TRUE", {
   temp_file <- tempfile(fileext = ".csv")
   expect_message(
@@ -179,7 +193,7 @@ test_that("QC-filtered data is used when filter_data is TRUE", {
   )
 
   exported_data <- readr::read_csv(temp_file)
-  expect_equal(dim(exported_data), c(499, 19))
+  expect_equal(dim(exported_data), c(499, 20)) # incl. qc_type
 })
 
 test_that("QC-filtered data is used when filter_data is TRUE", {

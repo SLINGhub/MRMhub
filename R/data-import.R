@@ -57,7 +57,7 @@ import_data_masshunter <- function(
     data,
     path,
     "parse_masshunter_csv",
-    "*.csv",
+    "[.]csv$",
     expand_qualifier_names = expand_qualifier_names,
     silent = silent,
     conc_column = conc_column
@@ -151,7 +151,7 @@ import_data_skyline <- function(
     data = data,
     path = path,
     import_function = "parse_skyline_result",
-    file_ext = "*.tsv|*.csv",
+    file_ext = "[.](tsv|csv)$",
     silent = silent,
     transition_id_columns = transition_id_columns
   )
@@ -215,7 +215,7 @@ import_data_mrmhub <- function(
     data = data,
     path = path,
     import_function = "parse_mrmhub_result",
-    file_ext = "*.tsv|*.csv",
+    file_ext = "[.](tsv|csv)$",
     silent = silent
   )
   data <- set_intensity_var(
@@ -370,7 +370,7 @@ import_data_csv_wide <- function(
     data = data,
     path = path,
     import_function = "parse_plain_wide_csv",
-    file_ext = "*.csv",
+    file_ext = "[.]csv$",
     silent = FALSE,
     variable_name = variable_name,
     analysis_id_col = analysis_id_col,
@@ -517,7 +517,7 @@ import_data_csv_long <- function(
     data = data,
     path = path,
     import_function = "parse_plain_long_csv",
-    file_ext = "*.csv",
+    file_ext = "[.]csv$",
     silent = silent,
     column_mapping = column_mapping,
     na_strings = na_strings,
@@ -558,7 +558,7 @@ import_data_main <- function(
   if (all(!fs::is_dir(path))) {
     file_paths <- fs::path_tidy(path)
   } else {
-    file_paths <- fs::dir_ls(path, glob = file_ext)
+    file_paths <- fs::dir_ls(path, regexp = file_ext)
   }
 
   # An empty match (wrong/empty folder, or no file of the expected type) would

@@ -1599,6 +1599,15 @@ test_that("import_data_skyline works", {
   expect_equal(mexp@dataset[[81, "feature_id"]], "Aldosterone D4_365_319")
 })
 
+test_that("folder import picks only files ending in the expected extension", {
+  dir <- withr::local_tempdir()
+  fs::file_copy(test_path("testdata/mrmhub/MRMhub_demo.tsv"), dir)
+  writeLines("not a result file", file.path(dir, "old.tsv.bak"))
+  expect_no_error(suppressMessages(
+    import_data_mrmhub(MRMhubExperiment(), path = dir, import_metadata = FALSE)
+  ))
+})
+
 test_that("importing from a folder with no matching files gives a clear error", {
   empty_dir <- withr::local_tempdir()
   expect_error(
