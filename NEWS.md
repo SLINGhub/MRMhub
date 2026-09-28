@@ -247,6 +247,12 @@
   for log axes and ratio plots; only the named metric columns are selected;
   with `y_shared = TRUE` and one `y_lim` bound missing, the x-axis is free.
 
+* `plot_responsecurves()` and `plot_feature_correlations()` with
+  `output_pdf = TRUE` and `return_plots = TRUE` write the pages to the PDF; the
+  file was empty. `plot_feature_correlations(output_pdf = TRUE)` without a
+  `path` is an error, as in `plot_responsecurves()`; it previously closed the
+  current graphics device.
+
 * `plot_interference_correction()` labels all QC types correctly; types such as
   SBLK, RQC or UBLK were shown as `NA`. `qc_types = NA` selects the non-blank QC
   types, as documented; it previously also included PBLK and SBLK.

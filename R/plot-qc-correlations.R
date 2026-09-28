@@ -151,6 +151,11 @@ plot_feature_correlations <- function(
   show_progress = TRUE
 ) {
   check_data(data)
+  if (output_pdf && (is.na(path) || path == "")) {
+    cli::cli_abort(
+      "The argument {.strong `path`} must be defined when {.strong output_pdf} is {.strong TRUE}."
+    )
+  }
   font_base_size <- resolve_plot_opt(font_base_size, "font_base_size", 8)
   point_size <- resolve_plot_opt(point_size, "point_size", 1)
   rlang::arg_match(page_orientation, c("LANDSCAPE", "PORTRAIT"))
@@ -364,7 +369,7 @@ plot_feature_correlations <- function(
       line_alpha = line_alpha,
       font_base_size = font_base_size
     )
-    if (!return_plots) {
+    if (output_pdf || !return_plots) {
       plot(p)
     }
     dev.flush() # Flush the plot

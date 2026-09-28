@@ -355,7 +355,7 @@ plot_responsecurves <- function(
       label_wrap_width = label_wrap_width,
       r2_vstep = r2_vstep
     )
-    if (!return_plots) {
+    if (output_pdf || !return_plots) {
       plot(p)
     }
     dev.flush() # Flush the plot

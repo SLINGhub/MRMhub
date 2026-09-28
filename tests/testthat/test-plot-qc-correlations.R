@@ -361,8 +361,7 @@ test_that("save plots", {
     line_color = "blue",
     output_pdf = TRUE,
     path = temp_pdf_path,
-
-    return_plot = FALSE,
+    return_plots = FALSE,
     font_base_size = 10
   )
 
@@ -371,6 +370,32 @@ test_that("save plots", {
   size_kb <- as.numeric(fs::file_size(temp_pdf_path)) / 1024
   expect_equal(size_kb, 239, tolerance = 0.2)
   fs::file_delete(temp_pdf_path)
+})
+
+test_that("plot_feature_correlations writes the PDF when also returning plots", {
+  skip_if_not_installed("qpdf")
+  f <- withr::local_tempfile(fileext = ".pdf")
+  p <- suppressMessages(plot_feature_correlations(
+    mexp,
+    variable = "intensity",
+    cor_min = 0.85,
+    output_pdf = TRUE,
+    path = f,
+    return_plots = TRUE
+  ))
+  expect_equal(qpdf::pdf_length(f), length(p))
+})
+
+test_that("plot_feature_correlations requires a path for PDF output", {
+  expect_error(
+    plot_feature_correlations(
+      mexp,
+      variable = "intensity",
+      cor_min = 0.85,
+      output_pdf = TRUE
+    ),
+    "path"
+  )
 })
 
 test_that("plot_feature_correlations keeps QC types outside the legacy level set", {

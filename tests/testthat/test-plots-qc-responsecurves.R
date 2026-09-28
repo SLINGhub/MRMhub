@@ -841,12 +841,16 @@ test_that("plot_responsecurves axes render >=3 non-empty labels", {
   axis_labels <- function(p, axis) {
     b <- ggplot2::ggplot_build(p)
     lbl <- b$layout$panel_params[[1]][[axis]]$get_labels()
-    lbl[!vapply(
-      lbl,
-      function(x) is.null(x) || (length(x) == 1 && is.na(x)) ||
-        (is.character(x) && !nzchar(x)),
-      logical(1)
-    )]
+    lbl[
+      !vapply(
+        lbl,
+        function(x)
+          is.null(x) ||
+            (length(x) == 1 && is.na(x)) ||
+            (is.character(x) && !nzchar(x)),
+        logical(1)
+      )
+    ]
   }
 
   p <- plot_responsecurves(
@@ -858,4 +862,21 @@ test_that("plot_responsecurves axes render >=3 non-empty labels", {
   )
   expect_gte(length(axis_labels(p[[1]], "x")), 3)
   expect_gte(length(axis_labels(p[[1]], "y")), 3)
+})
+
+test_that("plot_responsecurves writes all pages to the PDF when also returning them", {
+  skip_if_not_installed("qpdf")
+  f <- withr::local_tempfile(fileext = ".pdf")
+  p <- suppressMessages(plot_responsecurves(
+    lipidomics_dataset,
+    variable = "intensity",
+    rows_page = 3,
+    cols_page = 4,
+    output_pdf = TRUE,
+    path = f,
+    return_plots = TRUE,
+    show_progress = FALSE
+  ))
+  expect_gt(length(p), 1)
+  expect_equal(qpdf::pdf_length(f), length(p))
 })
