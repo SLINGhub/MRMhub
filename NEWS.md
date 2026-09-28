@@ -150,6 +150,11 @@
   analyses, instead of one per underlying gap (a double-width band with
   stacked labels).
 
+* `correct_drift_*()` smooth along the analysis order. They used the row order
+  of the dataset, which is not always the analysis order, e.g. for features
+  summed with `data_sum_features()`; the drift correction of such features
+  was then wrong.
+
 * `correct_drift_*()` with `replace_previous = TRUE` no longer clears the drift
   and batch correction state of the other variables. Re-correcting e.g.
   `feature_norm_intensity` marked drift-corrected intensities as uncorrected, so

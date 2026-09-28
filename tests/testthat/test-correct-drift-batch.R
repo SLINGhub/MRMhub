@@ -2595,3 +2595,20 @@ test_that("replacing a drift correction keeps other variables' correction state"
   ))
   expect_equal(m@dataset$feature_intensity_raw, raw)
 })
+
+test_that("drift correction does not depend on the row order of the dataset", {
+  drift <- function(m) {
+    suppressMessages(correct_drift_gaussiankernel(
+      m,
+      variable = "conc",
+      kernel_size = 10,
+      batch_wise = TRUE,
+      ref_qc_types = "SPL"
+    ))@dataset |>
+      dplyr::arrange(.data$feature_id, .data$analysis_id)
+  }
+  shuffled <- mexp
+  set.seed(1)
+  shuffled@dataset <- shuffled@dataset[sample(nrow(shuffled@dataset)), ]
+  expect_equal(drift(shuffled)$feature_conc, drift(mexp)$feature_conc)
+})

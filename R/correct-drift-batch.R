@@ -574,6 +574,7 @@ correct_drift <- function(
       "batch_id",
       "feature_id",
       "is_istd",
+      "analysis_order",
       "y_original" = all_of(variable)
     )
 
@@ -601,7 +602,10 @@ correct_drift <- function(
     ds <- ds |> filter(!.data$is_istd)
   }
 
-  ds <- ds |> mutate(x = dplyr::row_number(), .by = "feature_id")
+  # The smoothers take the run position from the row order
+  ds <- ds |>
+    dplyr::arrange(.data$analysis_order) |>
+    mutate(x = dplyr::row_number(), .by = "feature_id")
   ds$y <- ds$y_original
 
   if (log_transform_internal) {
