@@ -151,3 +151,40 @@ test_that("missing curve points are reported even with silent_invalid_data", {
     "missing points"
   )
 })
+
+rqc_curve_col <- function(stat) {
+  paste0(stat, "_rqc_", mexp@annot_responsecurves$curve_id[1])
+}
+rqc_curve_pts <- function(m) {
+  rqc <- m@annot_responsecurves
+  m@dataset$feature_id == "PC 32:1" &
+    m@dataset$analysis_id %in% rqc$analysis_id[rqc$curve_id == rqc$curve_id[1]]
+}
+
+test_that("a flat response curve has no R2", {
+  m <- mexp
+  m@dataset$feature_intensity[rqc_curve_pts(m)] <- 1000
+  res <- get_response_curve_stats(m)
+  row <- res$feature_id == "PC 32:1"
+  expect_true(is.na(res[[rqc_curve_col("r2")]][row]))
+  expect_equal(res[[rqc_curve_col("slopenorm")]][row], 0)
+})
+
+test_that("a response curve with equal amounts is not fitted", {
+  m <- mexp
+  rqc <- m@annot_responsecurves
+  m@annot_responsecurves$analyzed_amount[rqc$curve_id == rqc$curve_id[1]] <- 5
+  res <- get_response_curve_stats(m)
+  expect_true(all(is.na(res[[rqc_curve_col("r2")]])))
+  expect_true(all(is.na(res[[rqc_curve_col("slopenorm")]])))
+})
+
+test_that("an all-zero or all-missing response curve gives NA and keeps its row", {
+  for (value in c(0, NA)) {
+    m <- mexp
+    m@dataset$feature_intensity[rqc_curve_pts(m)] <- value
+    res <- get_response_curve_stats(m)
+    expect_equal(nrow(res), 29)
+    expect_true(is.na(res[[rqc_curve_col("r2")]][res$feature_id == "PC 32:1"]))
+  }
+})

@@ -232,6 +232,12 @@
   `calc_qc_metrics()`). A curve with fewer than 3 points present gives `NA`
   instead of a perfect r² from 2 points.
 
+* `get_response_curve_stats()`: a flat response curve (constant intensity) has
+  r² `NA`; it previously got a meaningless value from rounding noise (e.g.
+  0.56) that could pass a linearity criterion in `filter_features_qc()`. A
+  curve whose points all have the same amount is not fitted (r² was 0). The
+  fits are several times faster for large feature panels.
+
 * `plot_abundanceprofile()`: features whose class is missing or not in
   `feature_map` are shown as `Other` instead of being silently dropped, in the
   colour of an `Other` entry in `feature_map` if there is one. On a

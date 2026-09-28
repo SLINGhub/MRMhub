@@ -29,41 +29,6 @@ get_response_curve_stats <- function(
   silent_invalid_data = FALSE
 ) {
   check_data(data)
-  get_lm_results <- function(tbl) {
-    # Fit on the points present, each scaled to its max (1 = max); fewer than
-    # 3 points give no meaningful R2
-    dt <- tbl[!is.na(tbl$feature_intensity), ]
-    no_fit <- list(
-      feature_id = tbl$feature_id[1],
-      curve_id = tbl$curve_id[1],
-      r.squared = NA_real_,
-      slope = NA_real_,
-      intercept = NA_real_
-    )
-    if (nrow(dt) < 3) {
-      return(no_fit)
-    }
-    dt$x_scaled <- dt$analyzed_amount /
-      safe_max(dt$analyzed_amount, na.rm = TRUE)
-    dt$y_scaled <- dt$feature_intensity / max(dt$feature_intensity)
-    tryCatch(
-      {
-        res <- lm(y_scaled ~ x_scaled, data = dt)
-        r.squared <- summary(res)$r.squared
-        slope <- res$coefficients[[2]]
-        intercept <- res$coefficients[1]
-        return(list(
-          feature_id = dt$feature_id[1],
-          curve_id = dt$curve_id[1],
-          r.squared = r.squared,
-          slope = slope,
-          intercept = intercept
-        ))
-      },
-      error = function(e) no_fit
-    )
-  }
-
   d_stats <- data@dataset
 
   if (nrow(data@annot_responsecurves) == 0) {
@@ -133,21 +98,20 @@ get_response_curve_stats <- function(
   }
 
   d_stats <- d_stats |>
-    dplyr::filter(!all(is.na(.data$feature_intensity))) |>
-    dplyr::group_split(.data$feature_id, .data$curve_id)
-
-  d_stats <- map(d_stats, function(x) get_lm_results(x))
-
-  d_stats <- d_stats |>
-    bind_rows() |>
-    dplyr::mutate(slopenorm = .data$slope, y0norm = .data$intercept) |>
-    dplyr::select(
-      "feature_id",
-      "curve_id",
-      r2 = "r.squared",
-      "slopenorm",
-      "y0norm"
+    dplyr::summarise(
+      fit = list(fit_scaled_line(
+        .data$analyzed_amount,
+        .data$feature_intensity
+      )),
+      .by = c("feature_id", "curve_id")
     ) |>
+    dplyr::mutate(
+      r2 = vapply(.data$fit, `[[`, numeric(1), "r2"),
+      slopenorm = vapply(.data$fit, `[[`, numeric(1), "slopenorm"),
+      y0norm = vapply(.data$fit, `[[`, numeric(1), "y0norm"),
+      fit = NULL
+    ) |>
+    dplyr::arrange(.data$feature_id, .data$curve_id) |>
     tidyr::pivot_wider(
       names_from = "curve_id",
       values_from = c("r2", "slopenorm", "y0norm"),
@@ -210,4 +174,30 @@ get_response_curve_stats <- function(
     d_stats <- d_stats |> left_join(d_stats_lancer, by = c("feature_id"))
   }
   d_stats
+}
+
+# Straight-line fit of one response curve on the points with an intensity,
+# each scaled to its maximum (1 = max), by least squares as in lm(y ~ x). No fit
+# for fewer than 3 points or equal amounts; R2 is NA for a flat curve.
+fit_scaled_line <- function(amount, intensity) {
+  no_fit <- c(r2 = NA_real_, slopenorm = NA_real_, y0norm = NA_real_)
+  keep <- !is.na(intensity)
+  if (sum(keep) < 3) {
+    return(no_fit)
+  }
+  x <- amount[keep] / safe_max(amount[keep], na.rm = TRUE)
+  y <- intensity[keep] / max(intensity[keep])
+  ok <- is.finite(x) & is.finite(y) # as lm's na.omit
+  x <- x[ok]
+  y <- y[ok]
+  if (length(x) < 2 || stats::var(x) == 0) {
+    return(no_fit)
+  }
+  fit <- stats::.lm.fit(cbind(1, x), y)
+  tss <- sum((y - mean(y))^2)
+  c(
+    r2 = if (tss > 0) 1 - sum(fit$residuals^2) / tss else NA_real_,
+    slopenorm = fit$coefficients[[2]],
+    y0norm = fit$coefficients[[1]]
+  )
 }
