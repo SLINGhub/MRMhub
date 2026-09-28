@@ -227,6 +227,11 @@
 
 * `plot_pca_loading()` drops features with zero variance, with a warning, as
   `plot_pca()` does; a constant feature previously appeared as the top loading.
+
+* `plot_pca_loading()` runs the same PCA as `plot_pca()`: analyses without any
+  value are left out instead of making the function fail. Both functions report
+  such analyses, and `plot_pca()` reports the number of features actually used
+  in the PCA, not the number before excluding features with missing values.
   Features with missing or non-positive values are now reported when excluded,
   and the horizontal layout's axis titles are no longer swapped.
 

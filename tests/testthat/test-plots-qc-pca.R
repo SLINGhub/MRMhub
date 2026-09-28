@@ -190,7 +190,7 @@ test_that("plot_pca filter work", {
       log_transform = FALSE,
       filter_data = FALSE
     ),
-    "2 features contained missing or non-numeric values and were excluded"
+    "2 features with missing or non-positive values were excluded from the PCA"
   )
 
   expect_message(
@@ -203,7 +203,7 @@ test_that("plot_pca filter work", {
       log_transform = FALSE,
       filter_data = FALSE
     ),
-    "values of 13 features"
+    "values of 11 features"
   )
 })
 
@@ -597,4 +597,23 @@ test_that("plot_pca includes QC-type samples by default", {
     filter_data = FALSE
   ))
   expect_true("QC" %in% p$data$qc_type)
+})
+
+test_that("plot_pca and plot_pca_loading drop analyses without values alike", {
+  m <- mexp
+  spl <- m@dataset$analysis_id[m@dataset$qc_type == "SPL"][1]
+  m@dataset$feature_intensity[m@dataset$analysis_id == spl] <- NA
+
+  expect_message(
+    p <- plot_pca(m, variable = "intensity"),
+    "1 analysis with no values was excluded from the PCA"
+  )
+  expect_false(spl %in% p$data$analysis_id)
+
+  expect_message(
+    l <- plot_pca_loading(m, variable = "intensity"),
+    "1 analysis with no values was excluded from the PCA"
+  )
+  l_ref <- plot_pca_loading(mexp, variable = "intensity")
+  expect_setequal(unique(l$data$feature_name), unique(l_ref$data$feature_name))
 })

@@ -122,25 +122,6 @@ plot_pca <- function(
   # Fill sizes left unset from the global plot defaults, then the built-ins.
   font_base_size <- resolve_plot_opt(font_base_size, "font_base_size", 11)
   point_size <- resolve_plot_opt(point_size, "point_size", 1.5)
-  variable <- str_remove(variable, "feature_")
-  rlang::arg_match(
-    variable,
-    c(
-      "area",
-      "height",
-      "intensity",
-      "norm_intensity",
-      "response",
-      "conc",
-      "conc_raw",
-      "rt",
-      "fwhm"
-    )
-  )
-  variable <- stringr::str_c("feature_", variable)
-  check_var_in_dataset(data@dataset, variable)
-  variable_sym = rlang::sym(variable)
-
   rlang::arg_match(ellipse_variable, c("none", "qc_type", "batch_id"))
   ellipse_variable_sym = rlang::sym(ellipse_variable)
 
@@ -151,96 +132,21 @@ plot_pca <- function(
     check_installed("ggrepel")
   }
 
-  if (all(is.na(qc_types))) {
-    qc_types <- intersect(
-      data$dataset$qc_type,
-      pkg.env$qc_type_annotation$qc_type_levels_nonblank
-    )
-  }
-
-  # Subset dataset according to filter arguments
-  # -------------------------------------
-  d_filt <- get_dataset_subset(
+  d_sel <- qc_pca_select(
     data,
-    filter_data = filter_data,
+    variable = variable,
     qc_types = qc_types,
+    filter_data = filter_data,
     include_qualifier = include_qualifier,
     include_istd = include_istd,
     include_feature_filter = include_feature_filter,
-    exclude_feature_filter = exclude_feature_filter
+    exclude_feature_filter = exclude_feature_filter,
+    min_median_value = min_median_value
   )
-
-  d_filt <- d_filt |>
-    dplyr::select(
-      "analysis_id",
-      "analysis_order",
-      "qc_type",
-      "batch_id",
-      "feature_id",
-      {{ variable }}
-    )
-
-  if (!is.na(min_median_value)) {
-    d_minsignal <- d_filt |>
-      summarise(
-        median_signal = median(!!variable_sym, na.rm = TRUE),
-        .by = "feature_id"
-      ) |>
-      filter(.data$median_signal >= min_median_value)
-    if (nrow(d_minsignal) == 0) {
-      cli_abort(
-        "No features passed the `min_median_value` filter. Please review the filter value, `variable` and data."
-      )
-    } else if (nrow(d_minsignal) == 1) {
-      cli_abort(
-        "Only 1 feature passed the `min_median_value` filter. Please review the filter value, `variable`, and data."
-      )
-    }
-
-    d_filt <- d_filt |> semi_join(d_minsignal, by = "feature_id")
-  }
-
-  d_wide <- d_filt |>
-    tidyr::pivot_wider(
-      id_cols = "analysis_id",
-      names_from = "feature_id",
-      values_from = all_of(variable)
-    )
-
-  # if(!all(d_filt |> pull(analysis_id) == d_metadata |> pull(AnalyticalID))) cli::cli_abort("Data and Metadata missmatch")
-
-  # ToDo: warning when rows/cols with NA
-  d_clean <- d_wide |>
-    filter(if_any(dplyr::where(is.numeric), ~ !is.na(.))) |>
-    dplyr::select(where(~ !any(is.na(.) | is.nan(.) | is.infinite(.) | . <= 0)))
-
-  n_removed <- ncol(d_wide) - ncol(d_clean)
-  if (n_removed > 0) {
-    mh_warn(
-      "{n_removed} features contained missing or non-numeric values and were excluded."
-    )
-  }
-
-  d_metadata <- d_filt |>
-    dplyr::select("analysis_id", "analysis_order", "qc_type", "batch_id") |>
-    dplyr::distinct() |>
-    dplyr::right_join(
-      d_clean |> dplyr::select("analysis_id") |> distinct(),
-      by = c("analysis_id")
-    )
-
-  m_raw <- d_clean |>
-    tibble::column_to_rownames("analysis_id") |>
-    as.matrix()
-
-  if (log_transform) {
-    m_raw <- log2(m_raw)
-  }
-
-  m_raw <- drop_constant_columns(m_raw)
-
-  # get pca result with annotation
-  pca_res <- prcomp(m_raw, scale = TRUE, center = TRUE)
+  variable <- d_sel$variable
+  pca_fit <- pca_fit_long(d_sel$data, variable, log_transform)
+  pca_res <- pca_fit$pca
+  d_metadata <- pca_fit$metadata
   pca_annot <- pca_augment(pca_res, d_metadata)
 
   # Order by the master qc_type levels (not a hard-coded subset), so QC types
@@ -314,9 +220,9 @@ plot_pca <- function(
     ) {
       # If no ellipse_fillcolor is provided (NA or NULL), generate a discrete color scale
       n_col <- if (ellipse_variable == "qc_type") {
-        length(unique(d_filt$qc_type))
+        length(unique(d_metadata$qc_type))
       } else {
-        length(unique(d_filt$batch_id))
+        length(unique(d_metadata$batch_id))
       }
       if (ellipse_variable == "qc_type") {
         ellipse_fillcolor <- pkg.env$qc_type_annotation$qc_type_col
@@ -493,7 +399,7 @@ plot_pca <- function(
     )
 
   mh_success(
-    "The PCA was calculated based on `{variable}` values of {length(unique(d_filt$feature_id))} features."
+    "The PCA was calculated based on `{variable}` values of {ncol(pca_res$rotation)} features."
   )
 
   p
@@ -561,95 +467,18 @@ plot_pca_loading <- function(
 ) {
   check_data(data)
   font_base_size <- resolve_plot_opt(font_base_size, "font_base_size", 11)
-  variable <- str_remove(variable, "feature_")
-  rlang::arg_match(
-    variable,
-    c(
-      "area",
-      "height",
-      "intensity",
-      "norm_intensity",
-      "response",
-      "conc",
-      "conc_raw",
-      "rt",
-      "fwhm"
-    )
-  )
-  variable <- stringr::str_c("feature_", variable)
-  check_var_in_dataset(data@dataset, variable)
-  variable_sym = rlang::sym(variable)
-
-  if (all(is.na(qc_types))) {
-    qc_types <- intersect(
-      data$dataset$qc_type,
-      pkg.env$qc_type_annotation$qc_type_levels_nonblank
-    )
-  }
-
-  d_filt <- get_dataset_subset(
+  d_sel <- qc_pca_select(
     data,
-    filter_data = filter_data,
+    variable = variable,
     qc_types = qc_types,
+    filter_data = filter_data,
     include_qualifier = include_qualifier,
     include_istd = include_istd,
     include_feature_filter = include_feature_filter,
-    exclude_feature_filter = exclude_feature_filter
+    exclude_feature_filter = exclude_feature_filter,
+    min_median_value = min_median_value
   )
-
-  if (!is.na(min_median_value)) {
-    d_minsignal <- d_filt |>
-      summarise(
-        median_signal = median(!!variable_sym, na.rm = TRUE),
-        .by = "feature_id"
-      ) |>
-      filter(.data$median_signal >= min_median_value)
-    if (nrow(d_minsignal) == 0) {
-      cli_abort(
-        "No features passed the `min_median_value` filter. Please review the filter value, `variable` and data."
-      )
-    } else if (nrow(d_minsignal) == 1) {
-      cli_abort(
-        "Only 1 feature passed the `min_median_value` filter. Please review the filter value, `variable`, and data."
-      )
-    }
-
-    d_filt <- d_filt |> semi_join(d_minsignal, by = "feature_id")
-  }
-
-  d_filt <- d_filt |>
-    dplyr::select(
-      "analysis_id",
-      "qc_type",
-      "batch_id",
-      "feature_id",
-      {{ variable }}
-    ) |>
-    tidyr::pivot_wider(
-      id_cols = "analysis_id",
-      names_from = "feature_id",
-      values_from = {{ variable }}
-    )
-
-  d_filt <- d_filt |>
-    tibble::column_to_rownames("analysis_id")
-  m_raw <- d_filt |>
-    dplyr::select(where(
-      ~ !any(is.na(.) | is.nan(.) | is.infinite(.) | . <= 0)
-    )) |>
-    as.matrix()
-  n_removed <- ncol(d_filt) - ncol(m_raw)
-  if (n_removed > 0) {
-    mh_warn(
-      "{n_removed} feature{?s} with missing or non-positive values {?was/were} excluded from the PCA."
-    )
-  }
-
-  if (log_transform) {
-    m_raw <- log2(m_raw)
-  }
-  m_raw <- drop_constant_columns(m_raw)
-  pca_res <- prcomp(m_raw, scale = TRUE, center = TRUE)
+  pca_res <- pca_fit_long(d_sel$data, d_sel$variable, log_transform)$pca
 
   d_loading <- pca_rotation_wide(pca_res, name_col = "feature_name")
 
@@ -772,4 +601,133 @@ drop_constant_columns <- function(m) {
     )
   }
   m[, !constant, drop = FALSE]
+}
+
+# Shared input selection of plot_pca() and plot_pca_loading(): validates
+# `variable` and returns the long data of the selected analyses and features.
+qc_pca_select <- function(
+  data,
+  variable,
+  qc_types,
+  filter_data,
+  include_qualifier,
+  include_istd,
+  include_feature_filter,
+  exclude_feature_filter,
+  min_median_value,
+  call = rlang::caller_env()
+) {
+  variable <- str_remove(variable, "feature_")
+  rlang::arg_match(
+    variable,
+    c(
+      "area",
+      "height",
+      "intensity",
+      "norm_intensity",
+      "response",
+      "conc",
+      "conc_raw",
+      "rt",
+      "fwhm"
+    ),
+    error_call = call
+  )
+  variable <- stringr::str_c("feature_", variable)
+  check_var_in_dataset(data@dataset, variable)
+  variable_sym <- rlang::sym(variable)
+
+  if (all(is.na(qc_types))) {
+    qc_types <- intersect(
+      data@dataset$qc_type,
+      pkg.env$qc_type_annotation$qc_type_levels_nonblank
+    )
+  }
+
+  d_filt <- get_dataset_subset(
+    data,
+    filter_data = filter_data,
+    qc_types = qc_types,
+    include_qualifier = include_qualifier,
+    include_istd = include_istd,
+    include_feature_filter = include_feature_filter,
+    exclude_feature_filter = exclude_feature_filter
+  ) |>
+    dplyr::select(
+      "analysis_id",
+      "analysis_order",
+      "qc_type",
+      "batch_id",
+      "feature_id",
+      all_of(variable)
+    )
+
+  if (!is.na(min_median_value)) {
+    d_minsignal <- d_filt |>
+      summarise(
+        median_signal = median(!!variable_sym, na.rm = TRUE),
+        .by = "feature_id"
+      ) |>
+      filter(.data$median_signal >= min_median_value)
+    if (nrow(d_minsignal) == 0) {
+      cli_abort(
+        "No features passed the `min_median_value` filter. Please review the filter value, `variable` and data.",
+        call = call
+      )
+    } else if (nrow(d_minsignal) == 1) {
+      cli_abort(
+        "Only 1 feature passed the `min_median_value` filter. Please review the filter value, `variable`, and data.",
+        call = call
+      )
+    }
+    d_filt <- d_filt |> semi_join(d_minsignal, by = "feature_id")
+  }
+
+  list(data = d_filt, variable = variable)
+}
+
+# PCA of long feature data (one row per analysis x feature). Drops analyses
+# without any value and features with missing or non-positive values, then
+# log2-transforms (optional) and drops constant features. Returns the `prcomp`
+# result and the metadata (all non-feature columns of `d`) of its analyses.
+pca_fit_long <- function(d, variable, log_transform) {
+  d_wide <- d |>
+    tidyr::pivot_wider(
+      id_cols = "analysis_id",
+      names_from = "feature_id",
+      values_from = all_of(variable)
+    )
+
+  n_analyses <- nrow(d_wide)
+  d_wide <- d_wide |> filter(if_any(dplyr::where(is.numeric), ~ !is.na(.)))
+  n_empty <- n_analyses - nrow(d_wide)
+  if (n_empty > 0) {
+    mh_warn(
+      "{n_empty} analys{?is/es} with no values {?was/were} excluded from the PCA."
+    )
+  }
+
+  m_raw <- d_wide |>
+    tibble::column_to_rownames("analysis_id") |>
+    as.matrix()
+  bad <- colSums(is.na(m_raw) | is.infinite(m_raw) | m_raw <= 0) > 0
+  if (any(bad)) {
+    mh_warn(
+      "{sum(bad)} feature{?s} with missing or non-positive values {?was/were} excluded from the PCA."
+    )
+  }
+  m_raw <- m_raw[, !bad, drop = FALSE]
+
+  if (log_transform) {
+    m_raw <- log2(m_raw)
+  }
+  m_raw <- drop_constant_columns(m_raw)
+  pca <- prcomp(m_raw, scale = TRUE, center = TRUE)
+
+  metadata <- tibble::tibble(analysis_id = rownames(pca$x)) |>
+    dplyr::left_join(
+      d |> dplyr::select(-"feature_id", -all_of(variable)) |> dplyr::distinct(),
+      by = "analysis_id"
+    )
+  list(pca = pca, metadata = metadata)
 }
