@@ -41,11 +41,7 @@ get_analyte_id <- function(transition_name, remove_nl_transitions) {
   analyte_id <- str_replace(analyte_id, "\\-OH", ";OH")
   analyte_id <- str_replace(analyte_id, "\\-Me", ";Me")
   analyte_id <- str_replace(analyte_id, "^COH", "Chol")
-  analyte_id <- str_replace(analyte_id, " a ", " (a) ")
-  analyte_id <- str_replace(analyte_id, " b", " (b) ")
-  analyte_id <- str_replace(analyte_id, " b", " (c) ")
-  analyte_id <- str_replace(analyte_id, " ab", " (ab) ")
-  analyte_id <- str_replace(analyte_id, " bc", " (bc) ")
+  analyte_id <- str_replace(analyte_id, " (a|b|c|ab|bc)(?= |$)", " (\\1)")
   analyte_id <- str_remove(analyte_id, "\\|.*$")
 
   analyte_id <- remove_leading_round_brackets(analyte_id)

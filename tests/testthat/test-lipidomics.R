@@ -88,3 +88,25 @@ test_that("set_lipid_class() fills missing classes and keeps the processing", {
   expect_equal(cls(mexp_res@annot_features, "SM 34:1"), "SM;O2")
   expect_equal(cls(mexp_res@annot_features, "PE P-16:0/18:1 [-FA]"), "PE P")
 })
+
+test_that("get_analyte_id brackets isomer suffixes a, b, c, ab and bc", {
+  expect_equal(
+    get_analyte_id(
+      c("PC 34:1 a", "PC 34:1 b", "TG 50:1 c", "PC 34:1 ab", "PC 34:1 bc"),
+      remove_nl_transitions = FALSE
+    ),
+    c(
+      "PC 34:1 (a)",
+      "PC 34:1 (b)",
+      "TG 50:1 (c)",
+      "PC 34:1 (ab)",
+      "PC 34:1 (bc)"
+    )
+  )
+})
+
+test_that("lipid class colour keys use the letter O for oxygen counts", {
+  keys <- names(pkg.env$lipid_class_annotations$lipid_class_map)
+  expect_false(any(grepl(";0", keys, fixed = TRUE)))
+  expect_true("HexCer;O2" %in% keys)
+})

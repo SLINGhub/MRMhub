@@ -229,6 +229,15 @@
   With `use_qc_metrics = TRUE`, the feature filters are applied, and a set
   `analysis_range` is reported as ignored.
 
+* `plot_abundanceprofile()` colours the classes `HexCer;O2`, `Hex1Cer;O2`,
+  `Hex2Cer;O2`, `Hex3Cer;O2` and `SHexCer;O2` with the default lipid-class
+  colours; their keys were written with a zero (`;02`) and did not match.
+
+* Lipid-name parsing (e.g. for `set_lipid_class()`) puts the isomer suffixes
+  `a`, `b`, `c`, `ab` and `bc` at the end of a name in brackets, e.g.
+  `PC 34:1 bc` → `PC 34:1 (bc)`; `bc` was split into `(b) c`, and `c` and a
+  final `a` were left without brackets.
+
 * `plot_feature_correlations()`: a feature with a single missing value no
   longer silently drops out of every pair; correlations use the analyses where
   both features have values, for pairs sharing values in at least half of the
