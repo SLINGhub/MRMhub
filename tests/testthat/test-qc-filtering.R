@@ -12,6 +12,13 @@ mexp <- quantify_by_istd(mexp)
 mexp_proc <- calc_qc_metrics(mexp, use_batch_medians = FALSE)
 
 
+test_that("calc_qc_metrics column names and order are stable", {
+  expect_snapshot(names(mexp_proc@metrics_qc))
+  expect_snapshot(names(
+    suppressMessages(calc_qc_metrics(mexp, use_batch_medians = TRUE))@metrics_qc
+  ))
+})
+
 test_that("calc_qc_metrics works for all qc groups", {
   mexp_res <- calc_qc_metrics(mexp, use_batch_medians = FALSE)
 
@@ -1815,4 +1822,45 @@ test_that("missing response-curve results are not reported for filtered-out feat
   expect_false(grepl(ids[1], lin_msg, fixed = TRUE))
   expect_false(grepl(ids[2], lin_msg, fixed = TRUE))
   expect_true(grepl(ids[3], lin_msg, fixed = TRUE))
+})
+
+test_that("qc_stat_exprs summarises any QC type, including new or absent ones", {
+  d <- mexp@dataset
+  ex <- qc_stat_exprs(
+    "intensity_median",
+    "feature_intensity",
+    c("SPL", "HQC", "EQA"),
+    median,
+    na.rm = TRUE
+  )
+  expect_named(
+    ex,
+    c("intensity_median_spl", "intensity_median_hqc", "intensity_median_eqa")
+  )
+
+  d$qc_type[d$qc_type == "TQC"] <- "HQC" # stand-in for a new QC type
+  res <- dplyr::summarise(d, .by = "feature_id", !!!ex)
+  ref <- d |>
+    dplyr::filter(.data$qc_type == "HQC") |>
+    dplyr::summarise(
+      .by = "feature_id",
+      m = median(.data$feature_intensity, na.rm = TRUE)
+    )
+  expect_equal(
+    res$intensity_median_hqc[match(ref$feature_id, res$feature_id)],
+    ref$m
+  )
+  expect_true(all(is.na(res$intensity_median_eqa))) # QC type not in the data
+})
+
+test_that("dratio_exprs names the SD then MAD D-ratios per QC type", {
+  expect_named(
+    dratio_exprs("conc", "feature_conc", c("BQC", "TQC")),
+    c(
+      "conc_dratio_sd_bqc",
+      "conc_dratio_sd_tqc",
+      "conc_dratio_mad_bqc",
+      "conc_dratio_mad_tqc"
+    )
+  )
 })

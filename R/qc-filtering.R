@@ -382,285 +382,102 @@ calc_qc_metrics <- function(
   }
 
   # Compute every requested per-(feature[, batch]) metric in a SINGLE grouped
-  # pass over d_stats_var, rather than one pass per variable block joined
-  # together. The expression lists below are identical to the former per-block
-  # summaries; only the number of grouping passes changes. Signal-to-blank
-  # ratios (which derive from the intensity medians) are added afterwards.
+  # pass over d_stats_var. Signal-to-blank ratios (derived from the intensity
+  # medians) are added afterwards.
+  #
+  # QC types summarised by each statistic, in metrics_qc column order. To add a
+  # QC type, append it to the relevant sets; its columns follow the existing ones.
+  qcs <- list(
+    count = c("BQC", "TQC", "SPL"),
+    range = c("BQC", "TQC"),
+    blank = c("PBLK", "UBLK", "SBLK"),
+    rt_median = c("PBLK", "SPL", "BQC", "TQC", "NIST", "LTR"),
+    median = c("SPL", "BQC", "TQC", "NIST", "LTR"),
+    conc_median = c("TQC", "BQC", "SPL", "NIST", "LTR"),
+    cv = c("TQC", "BQC", "SPL", "LTR", "NIST"),
+    conc_cv = c("TQC", "BQC", "SPL", "NIST", "LTR"),
+    dratio = c("BQC", "TQC")
+  )
+  rt <- "feature_rt"
+  int <- "feature_intensity"
+  norm <- "feature_norm_intensity"
+  conc <- "feature_conc"
   stat_exprs <- c(
     if (do_rt) {
-      rlang::exprs(
-        rt_min_spl = safe_min(
-          .data$feature_rt[.data$qc_type == "SPL"],
-          na.rm = TRUE
-        ),
-        rt_max_spl = safe_max(
-          .data$feature_rt[.data$qc_type == "SPL"],
-          na.rm = TRUE
-        ),
-        rt_min_bqc = safe_min(
-          .data$feature_rt[.data$qc_type == "BQC"],
-          na.rm = TRUE
-        ),
-        rt_min_tqc = safe_min(
-          .data$feature_rt[.data$qc_type == "TQC"],
-          na.rm = TRUE
-        ),
-        rt_median_pblk = median(
-          .data$feature_rt[.data$qc_type == "PBLK"],
-          na.rm = TRUE
-        ),
-        rt_median_spl = median(
-          .data$feature_rt[.data$qc_type == "SPL"],
-          na.rm = TRUE
-        ),
-        rt_median_bqc = median(
-          .data$feature_rt[.data$qc_type == "BQC"],
-          na.rm = TRUE
-        ),
-        rt_median_tqc = median(
-          .data$feature_rt[.data$qc_type == "TQC"],
-          na.rm = TRUE
-        ),
-        rt_median_nist = median(
-          .data$feature_rt[.data$qc_type == "NIST"],
-          na.rm = TRUE
-        ),
-        rt_median_ltr = median(
-          .data$feature_rt[.data$qc_type == "LTR"],
-          na.rm = TRUE
-        )
+      c(
+        qc_stat_exprs("rt_min", rt, "SPL", safe_min, na.rm = TRUE),
+        qc_stat_exprs("rt_max", rt, "SPL", safe_max, na.rm = TRUE),
+        qc_stat_exprs("rt_min", rt, qcs$range, safe_min, na.rm = TRUE),
+        qc_stat_exprs("rt_median", rt, qcs$rt_median, median, na.rm = TRUE)
       )
     },
     if (do_int) {
-      rlang::exprs(
-        n_bqc = sum(!is.na(.data$feature_intensity[.data$qc_type == "BQC"])),
-        n_tqc = sum(!is.na(.data$feature_intensity[.data$qc_type == "TQC"])),
-        n_spl = sum(!is.na(.data$feature_intensity[.data$qc_type == "SPL"])),
-        intensity_min_spl = safe_min(
-          .data$feature_intensity[.data$qc_type == "SPL"],
+      c(
+        qc_stat_exprs("n", int, qcs$count, n_present),
+        qc_stat_exprs("intensity_min", int, "SPL", safe_min, na.rm = TRUE),
+        qc_stat_exprs("intensity_max", int, "SPL", safe_max, na.rm = TRUE),
+        qc_stat_exprs("intensity_min", int, qcs$range, safe_min, na.rm = TRUE),
+        qc_stat_exprs("intensity_max", int, qcs$range, safe_max, na.rm = TRUE),
+        qc_stat_exprs("intensity_median", int, qcs$blank, median_blank),
+        qc_stat_exprs(
+          "intensity_median",
+          int,
+          qcs$median,
+          median,
           na.rm = TRUE
         ),
-        intensity_max_spl = safe_max(
-          .data$feature_intensity[.data$qc_type == "SPL"],
-          na.rm = TRUE
-        ),
-        intensity_min_bqc = safe_min(
-          .data$feature_intensity[.data$qc_type == "BQC"],
-          na.rm = TRUE
-        ),
-        intensity_min_tqc = safe_min(
-          .data$feature_intensity[.data$qc_type == "TQC"],
-          na.rm = TRUE
-        ),
-        intensity_max_bqc = safe_max(
-          .data$feature_intensity[.data$qc_type == "BQC"],
-          na.rm = TRUE
-        ),
-        intensity_max_tqc = safe_max(
-          .data$feature_intensity[.data$qc_type == "TQC"],
-          na.rm = TRUE
-        ),
-        intensity_median_pblk = median(
-          replace_na(.data$feature_intensity[.data$qc_type == "PBLK"], 0)
-        ),
-        intensity_median_ublk = median(
-          replace_na(.data$feature_intensity[.data$qc_type == "UBLK"], 0)
-        ),
-        intensity_median_sblk = median(
-          replace_na(.data$feature_intensity[.data$qc_type == "SBLK"], 0)
-        ),
-        intensity_median_spl = median(
-          .data$feature_intensity[.data$qc_type == "SPL"],
-          na.rm = TRUE
-        ),
-        intensity_median_bqc = median(
-          .data$feature_intensity[.data$qc_type == "BQC"],
-          na.rm = TRUE
-        ),
-        intensity_median_tqc = median(
-          .data$feature_intensity[.data$qc_type == "TQC"],
-          na.rm = TRUE
-        ),
-        intensity_median_nist = median(
-          .data$feature_intensity[.data$qc_type == "NIST"],
-          na.rm = TRUE
-        ),
-        intensity_median_ltr = median(
-          .data$feature_intensity[.data$qc_type == "LTR"],
-          na.rm = TRUE
-        ),
-        intensity_cv_tqc = cv(
-          .data$feature_intensity[.data$qc_type == "TQC"],
+        qc_stat_exprs(
+          "intensity_cv",
+          int,
+          qcs$cv,
+          cv,
           na.rm = TRUE,
           use_robust_cv,
           min_n = min_cv_replicates
         ),
-        intensity_cv_bqc = cv(
-          .data$feature_intensity[.data$qc_type == "BQC"],
-          na.rm = TRUE,
-          use_robust_cv,
-          min_n = min_cv_replicates
-        ),
-        intensity_cv_spl = cv(
-          .data$feature_intensity[.data$qc_type == "SPL"],
-          na.rm = TRUE,
-          use_robust_cv,
-          min_n = min_cv_replicates
-        ),
-        intensity_cv_ltr = cv(
-          .data$feature_intensity[.data$qc_type == "LTR"],
-          na.rm = TRUE,
-          use_robust_cv,
-          min_n = min_cv_replicates
-        ),
-        intensity_cv_nist = cv(
-          .data$feature_intensity[.data$qc_type == "NIST"],
-          na.rm = TRUE,
-          use_robust_cv,
-          min_n = min_cv_replicates
-        ),
-        intensity_q10_spl = quantile(
-          .data$feature_intensity[.data$qc_type == "SPL"],
-          probs = 0.1,
-          na.rm = TRUE,
-          names = FALSE
+        rlang::exprs(
+          intensity_q10_spl = quantile(
+            .data$feature_intensity[.data$qc_type == "SPL"],
+            probs = 0.1,
+            na.rm = TRUE,
+            names = FALSE
+          )
         )
       )
     },
     if (do_norm) {
-      rlang::exprs(
-        norm_intensity_cv_tqc = cv(
-          .data$feature_norm_intensity[.data$qc_type == "TQC"],
+      c(
+        qc_stat_exprs(
+          "norm_intensity_cv",
+          norm,
+          qcs$cv,
+          cv,
           na.rm = TRUE,
           use_robust_cv,
           min_n = min_cv_replicates
         ),
-        norm_intensity_cv_bqc = cv(
-          .data$feature_norm_intensity[.data$qc_type == "BQC"],
-          na.rm = TRUE,
-          use_robust_cv,
-          min_n = min_cv_replicates
-        ),
-        norm_intensity_cv_spl = cv(
-          .data$feature_norm_intensity[.data$qc_type == "SPL"],
-          na.rm = TRUE,
-          use_robust_cv,
-          min_n = min_cv_replicates
-        ),
-        norm_intensity_cv_ltr = cv(
-          .data$feature_norm_intensity[.data$qc_type == "LTR"],
-          na.rm = TRUE,
-          use_robust_cv,
-          min_n = min_cv_replicates
-        ),
-        norm_intensity_cv_nist = cv(
-          .data$feature_norm_intensity[.data$qc_type == "NIST"],
-          na.rm = TRUE,
-          use_robust_cv,
-          min_n = min_cv_replicates
-        ),
-        normint_dratio_sd_bqc = dratio(
-          .data$feature_norm_intensity[.data$qc_type == "BQC"],
-          .data$feature_norm_intensity[.data$qc_type == "SPL"],
-          use_mad = FALSE,
-          min_n = min_cv_replicates
-        ),
-        normint_dratio_sd_tqc = dratio(
-          .data$feature_norm_intensity[.data$qc_type == "TQC"],
-          .data$feature_norm_intensity[.data$qc_type == "SPL"],
-          use_mad = FALSE,
-          min_n = min_cv_replicates
-        ),
-        normint_dratio_mad_bqc = dratio(
-          .data$feature_norm_intensity[.data$qc_type == "BQC"],
-          .data$feature_norm_intensity[.data$qc_type == "SPL"],
-          use_mad = TRUE,
-          min_n = min_cv_replicates
-        ),
-        normint_dratio_mad_tqc = dratio(
-          .data$feature_norm_intensity[.data$qc_type == "TQC"],
-          .data$feature_norm_intensity[.data$qc_type == "SPL"],
-          use_mad = TRUE,
-          min_n = min_cv_replicates
-        )
+        dratio_exprs("normint", norm, qcs$dratio)
       )
     },
     if (do_conc) {
-      rlang::exprs(
-        conc_median_tqc = median(
-          .data$feature_conc[.data$qc_type == "TQC"],
+      c(
+        qc_stat_exprs(
+          "conc_median",
+          conc,
+          qcs$conc_median,
+          median,
           na.rm = TRUE
         ),
-        conc_median_bqc = median(
-          .data$feature_conc[.data$qc_type == "BQC"],
-          na.rm = TRUE
-        ),
-        conc_median_spl = median(
-          .data$feature_conc[.data$qc_type == "SPL"],
-          na.rm = TRUE
-        ),
-        conc_median_nist = median(
-          .data$feature_conc[.data$qc_type == "NIST"],
-          na.rm = TRUE
-        ),
-        conc_median_ltr = median(
-          .data$feature_conc[.data$qc_type == "LTR"],
-          na.rm = TRUE
-        ),
-        conc_cv_tqc = cv(
-          .data$feature_conc[.data$qc_type == "TQC"],
+        qc_stat_exprs(
+          "conc_cv",
+          conc,
+          qcs$conc_cv,
+          cv,
           na.rm = TRUE,
           use_robust_cv,
           min_n = min_cv_replicates
         ),
-        conc_cv_bqc = cv(
-          .data$feature_conc[.data$qc_type == "BQC"],
-          na.rm = TRUE,
-          use_robust_cv,
-          min_n = min_cv_replicates
-        ),
-        conc_cv_spl = cv(
-          .data$feature_conc[.data$qc_type == "SPL"],
-          na.rm = TRUE,
-          use_robust_cv,
-          min_n = min_cv_replicates
-        ),
-        conc_cv_nist = cv(
-          .data$feature_conc[.data$qc_type == "NIST"],
-          na.rm = TRUE,
-          use_robust_cv,
-          min_n = min_cv_replicates
-        ),
-        conc_cv_ltr = cv(
-          .data$feature_conc[.data$qc_type == "LTR"],
-          na.rm = TRUE,
-          use_robust_cv,
-          min_n = min_cv_replicates
-        ),
-        conc_dratio_sd_bqc = dratio(
-          .data$feature_conc[.data$qc_type == "BQC"],
-          .data$feature_conc[.data$qc_type == "SPL"],
-          use_mad = FALSE,
-          min_n = min_cv_replicates
-        ),
-        conc_dratio_sd_tqc = dratio(
-          .data$feature_conc[.data$qc_type == "TQC"],
-          .data$feature_conc[.data$qc_type == "SPL"],
-          use_mad = FALSE,
-          min_n = min_cv_replicates
-        ),
-        conc_dratio_mad_bqc = dratio(
-          .data$feature_conc[.data$qc_type == "BQC"],
-          .data$feature_conc[.data$qc_type == "SPL"],
-          use_mad = TRUE,
-          min_n = min_cv_replicates
-        ),
-        conc_dratio_mad_tqc = dratio(
-          .data$feature_conc[.data$qc_type == "TQC"],
-          .data$feature_conc[.data$qc_type == "SPL"],
-          use_mad = TRUE,
-          min_n = min_cv_replicates
-        )
+        dratio_exprs("conc", conc, qcs$dratio)
       )
     }
   )
@@ -818,6 +635,50 @@ calc_qc_metrics <- function(
   # Return the updated data object with the calculated QC metrics
   data
 }
+
+# Summary expressions `fn(<var>[qc_type == <qc>], ...)`, one per QC type in
+# `qcs`, named `<prefix>_<qc>`. `...` is kept unevaluated (e.g. `use_robust_cv`
+# is resolved in calc_qc_metrics() when the summarise runs).
+qc_stat_exprs <- function(prefix, var, qcs, fn, ...) {
+  fn <- rlang::enexpr(fn)
+  args <- rlang::enexprs(...)
+  exprs <- lapply(qcs, function(qc) {
+    rlang::call2(
+      fn,
+      rlang::expr(.data[[!!var]][.data$qc_type == !!qc]),
+      !!!args
+    )
+  })
+  rlang::set_names(exprs, paste0(prefix, "_", tolower(qcs)))
+}
+
+# D-ratios (SD, then MAD based) of each QC type in `qcs` against SPL
+dratio_exprs <- function(prefix, var, qcs) {
+  exprs <- list()
+  for (use_mad in c(FALSE, TRUE)) {
+    for (qc in qcs) {
+      name <- paste0(
+        prefix,
+        "_dratio_",
+        if (use_mad) "mad" else "sd",
+        "_",
+        tolower(qc)
+      )
+      exprs[[name]] <- rlang::expr(dratio(
+        .data[[!!var]][.data$qc_type == !!qc],
+        .data[[!!var]][.data$qc_type == "SPL"],
+        use_mad = !!use_mad,
+        min_n = min_cv_replicates
+      ))
+    }
+  }
+  exprs
+}
+
+n_present <- function(x) sum(!is.na(x))
+
+# A feature not detected in a blank counts as zero intensity there
+median_blank <- function(x) median(replace_na(x, 0))
 
 
 #' Feature filtering based on QC criteria
