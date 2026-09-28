@@ -1057,7 +1057,7 @@ exclude_analyses <- function(data = NULL, analyses, clear_existing) {
   if (all(is.na(analyses)) | length(analyses) == 0) {
     if (!clear_existing) {
       cli_abort(
-        "No `analysis_id` provided. To (re)include all analyses, use `analysis_ids_exlude = NA` and `clear_existing = TRUE`."
+        "No `analysis_id` provided. To (re)include all analyses, use `analyses = NA` and `clear_existing = TRUE`."
       )
     } else {
       mh_success(
@@ -1134,11 +1134,11 @@ exclude_features <- function(data = NULL, features, clear_existing) {
   if (all(is.na(features)) | length(features) == 0) {
     if (!clear_existing) {
       cli_abort(
-        "No `feature_id` provided. To (re)include all analyses, use `feature_ids_exlude = NA` and `clear_existing = TRUE`."
+        "No `feature_id` provided. To (re)include all features, use `features = NA` and `clear_existing = TRUE`."
       )
     } else {
       mh_success(
-        "All exlusions were removed, i.e. all features are included. Please reprocess data."
+        "All exclusions were removed, i.e. all features are included. Please reprocess data."
       )
       data@annot_features <- data@annot_features |> mutate(valid_feature = TRUE)
       data <- link_data_metadata(data)

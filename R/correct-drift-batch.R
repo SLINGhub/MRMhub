@@ -817,7 +817,7 @@ correct_drift <- function(
     txt <- if (use_original_if_fail) {
       "The original values were kept for these features"
     } else {
-      "NA will be be returned for all values of these faetures. Set `use_original_if_fail = FALSE to return orginal values."
+      "NA is returned for all values of these features. Set `use_original_if_fail = TRUE` to keep the original values"
     }
 
     mh_warn(

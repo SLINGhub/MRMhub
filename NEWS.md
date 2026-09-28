@@ -139,6 +139,13 @@
   a later intensity drift correction was applied on top of the earlier one and
   overwrote `feature_intensity_raw`.
 
+* Messages: `correct_drift_*()` now advises `use_original_if_fail = TRUE` (not
+  `FALSE`) to keep the original values of features that fail smoothing;
+  `exclude_analyses()` and `exclude_features()` name their actual arguments
+  (`analyses = NA`, `features = NA`); `correct_custom_interferences()` and
+  `correct_isotopic_interferences()` count negative values after correction
+  also in features with missing values.
+
 * `calc_average_molweight()` returns `NA` for a missing formula instead of
   failing. `quantify_by_istd()` therefore works when some features have a
   chemical formula and others only a molecular weight (mass concentrations, or

@@ -1088,7 +1088,7 @@ test_that("fits resulting in invalid values are handeled", {
       use_original_if_fail = FALSE,
       ignore_istd = TRUE
     ),
-    "4 features have invalid values after smoothing. NA will be be returned ",
+    "4 features have invalid values after smoothing. NA is returned for all values of these features. Set `use_original_if_fail = TRUE` to keep the original values.",
     fixed = TRUE
   )
 

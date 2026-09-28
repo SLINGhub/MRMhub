@@ -583,7 +583,9 @@ apply_interference_edges <- function(
   neg_zero_sum <- data@dataset |>
     filter(.data$interference_corrected) |>
     group_by(.data$feature_id, .data$qc_type) |>
-    summarise(negative_count = sum(.data$feature_intensity <= 0)) |>
+    summarise(
+      negative_count = sum(.data$feature_intensity <= 0, na.rm = TRUE)
+    ) |>
     filter(.data$negative_count > 0)
 
   n_neg_values <- sum(neg_zero_sum$negative_count)

@@ -651,7 +651,7 @@ test_that("exclude_analyses excludes analyses", {
         analyses = NA,
         clear_existing = FALSE
       ),
-    "No `analysis_id` provided. To \\(re\\)include"
+    "No `analysis_id` provided. To \\(re\\)include all analyses, use `analyses = NA`"
   )
 
   expect_message(
@@ -763,7 +763,7 @@ test_that("exclude_features excludes features", {
         features = NA,
         clear_existing = FALSE
       ),
-    "No `feature_id` provided. To \\(re\\)include"
+    "No `feature_id` provided. To \\(re\\)include all features, use `features = NA`"
   )
 
   expect_message(

@@ -409,6 +409,40 @@ test_that("correct_custom_interferences does not crash when a corrected value is
   )
 })
 
+test_that("negative values after correction are counted when a corrected value is NA", {
+  m <- mexp2
+  res <- suppressMessages(correct_custom_interferences(
+    m,
+    variable = "feature_intensity",
+    sequential_correction = TRUE
+  ))
+  target <- res@dataset |>
+    dplyr::filter(.data$interference_corrected, .data$feature_intensity <= 0) |>
+    dplyr::pull("feature_id") |>
+    unique()
+  row <- which(m@dataset$feature_id == target & m@dataset$qc_type == "SPL")[1]
+  m@dataset$feature_intensity[row] <- NA
+
+  res <- suppressMessages(correct_custom_interferences(
+    m,
+    variable = "feature_intensity",
+    sequential_correction = TRUE
+  ))
+  n_neg <- sum(
+    res@dataset$feature_intensity[res@dataset$interference_corrected] <= 0,
+    na.rm = TRUE
+  )
+  expect_message(
+    correct_custom_interferences(
+      m,
+      variable = "feature_intensity",
+      sequential_correction = TRUE
+    ),
+    paste("led to", n_neg, "negative or zero values"),
+    fixed = TRUE
+  )
+})
+
 test_that("correct_custom_interferences reports a friendly error on a circular interference chain", {
   # Close the d18:2 -> d18:1 -> d18:0 chain into a cycle (d18:2 -> d18:0).
   mexp_circ <- mexp
