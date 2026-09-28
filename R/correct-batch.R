@@ -685,6 +685,8 @@ fun_batch_serrf <- function(
   num_threads = 1L,
   show_progress = TRUE
 ) {
+  # A fixed order keeps the seeded forests independent of the row order
+  ds <- ds |> dplyr::arrange(.data$feature_id, .data$analysis_id)
   meta <- ds |>
     dplyr::distinct(.data$analysis_id, .data$qc_type, .data$batch_id)
   wide <- ds |>

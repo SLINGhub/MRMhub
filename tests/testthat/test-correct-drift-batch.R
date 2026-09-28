@@ -2612,3 +2612,20 @@ test_that("drift correction does not depend on the row order of the dataset", {
   shuffled@dataset <- shuffled@dataset[sample(nrow(shuffled@dataset)), ]
   expect_equal(drift(shuffled)$feature_conc, drift(mexp)$feature_conc)
 })
+
+test_that("correct_batch_serrf does not depend on the row order of the dataset", {
+  skip_if_not_installed("ranger")
+  serrf <- function(m) {
+    suppressWarnings(suppressMessages(correct_batch_serrf(
+      m,
+      variable = "conc",
+      ref_qc_types = "BQC",
+      seed = 1L
+    )))@dataset |>
+      dplyr::arrange(.data$feature_id, .data$analysis_id)
+  }
+  shuffled <- mexp
+  set.seed(1)
+  shuffled@dataset <- shuffled@dataset[sample(nrow(shuffled@dataset)), ]
+  expect_equal(serrf(shuffled)$feature_conc, serrf(mexp)$feature_conc)
+})
