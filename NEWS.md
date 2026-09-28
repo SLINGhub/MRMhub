@@ -187,6 +187,10 @@
   samples, with a warning, as `plot_pca()` does; they previously stopped the PCA
   with "cannot rescale a constant/zero column".
 
+* `detect_outlier_pca()` leaves out analyses without any value, as `plot_pca()`
+  does, instead of failing, and reports them and the features excluded for
+  missing or non-positive values.
+
 * `filter_features_qc()`: chained calls with `clear_existing = FALSE` can now
   add response-curve criteria in a later step (this aborted with "There are
   only 0 response curves"), and a linearity criterion from an earlier step is

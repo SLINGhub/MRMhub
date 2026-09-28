@@ -109,31 +109,8 @@ detect_outlier_pca <- function(
       {{ variable }}
     )
 
-  d_wide <- d_filt |>
-    tidyr::pivot_wider(
-      id_cols = "analysis_id",
-      names_from = "feature_id",
-      values_from = {{ variable }}
-    )
-
-  d_wide <- d_wide |>
-    filter(if_any(dplyr::where(is.numeric), ~ !is.na(.))) |>
-    dplyr::select(where(~ !any(is.na(.) | is.nan(.) | is.infinite(.) | . <= 0)))
-
-  m_raw <- d_wide |>
-    tibble::column_to_rownames("analysis_id") |>
-    as.matrix()
-
-  if (log_transform) {
-    m_raw <- log2(m_raw)
-  }
-  m_raw <- drop_constant_columns(m_raw)
-  pca_res <- prcomp(m_raw, scale = TRUE, center = TRUE)
-
-  d_metadata <- d_filt |>
-    dplyr::select("analysis_id", "qc_type", "batch_id") |>
-    dplyr::distinct()
-  pca_annot <- pca_augment(pca_res, d_metadata)
+  pca_fit <- pca_fit_long(d_filt, variable, log_transform)
+  pca_annot <- pca_augment(pca_fit$pca, pca_fit$metadata)
 
   if (outlier_detection == "sd") {
     d_outlier <- pca_annot |>
