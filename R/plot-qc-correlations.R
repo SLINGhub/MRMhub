@@ -294,109 +294,33 @@ plot_feature_correlations <- function(
   d_plot <- d_plot |>
     dplyr::arrange(.data$qc_type)
 
-  # Prepare PDF output
-  if (output_pdf && !is.na(path)) {
-    # nocov start
-    path <- ifelse(
-      stringr::str_detect(path, ".pdf"),
-      path,
-      paste0(path, ".pdf")
-    )
-    ensure_output_dir(path, create_dir)
-    pdf(
-      file = path,
-      onefile = TRUE,
-      paper = page_size$paper,
-      useDingbats = FALSE,
-      width = page_size$width,
-      height = page_size$height
-    )
-  } # nocov end
-
-  # Determine the range of pages to generate
-  if (!is.na(specific_page)) {
-    total_pages <- ceiling(
-      n_distinct(d_plot$pair) /
-        (cols_page * rows_page)
-    )
-    if (specific_page > total_pages) {
-      cli::cli_abort(
-        "Selected page exceeds the total number of pages. Please select a page number between {.strong 1} and {.strong {total_pages}}."
+  render_pages(
+    total_pages = ceiling(n_distinct(d_plot$pair) / (cols_page * rows_page)),
+    specific_page = specific_page,
+    page_fun = function(i) {
+      plot_feature_correlations_page(
+        d_plot = d_plot,
+        rows_page = rows_page,
+        cols_page = cols_page,
+        specific_page = i,
+        sort_by_corr = sort_by_corr,
+        log_scale = log_scale,
+        point_size = point_size,
+        point_alpha = point_alpha,
+        point_stroke = point_stroke,
+        line_width = line_width,
+        line_color = line_color,
+        line_alpha = line_alpha,
+        font_base_size = font_base_size
       )
-    }
-    page_range <- specific_page
-  } else {
-    page_range <- 1:ceiling(
-      n_distinct(d_plot$pair) /
-        (cols_page * rows_page)
-    )
-  }
-
-  # Action text for progress output
-  action_text <- if (output_pdf) "Saving plots to pdf" else "Generating plots"
-  page_suffix <- if (max(page_range) > 1) {
-    glue::glue("{max(page_range)} pages")
-  } else {
-    glue::glue("{max(page_range)} page")
-  }
-  # Progress feedback: a cli progress bar collapses to a single line and stays
-  # quiet in non-interactive (Quarto/knitr) renders, unlike txtProgressBar.
-  if (show_progress) {
-    cli::cli_progress_bar(
-      name = glue::glue("{action_text} ({page_suffix})"),
-      total = max(page_range)
-    )
-  } else {
-    mh_info(glue::glue("{action_text} ({page_suffix})..."))
-  }
-
-  p_list <- list() # List to store plots for each page
-  for (i in page_range) {
-    p <- plot_feature_correlations_page(
-      d_plot = d_plot,
-      output_pdf = output_pdf,
-      path = path,
-      rows_page = rows_page,
-      cols_page = cols_page,
-      specific_page = i,
-      sort_by_corr = sort_by_corr,
-      log_scale = log_scale,
-      point_size = point_size,
-      point_alpha = point_alpha,
-      point_stroke = point_stroke,
-      line_width = line_width,
-      line_color = line_color,
-      line_alpha = line_alpha,
-      font_base_size = font_base_size
-    )
-    if (output_pdf || !return_plots) {
-      plot(p)
-    }
-    dev.flush() # Flush the plot
-    flush.console() # Ensure plot is rendered
-    if (show_progress) {
-      cli::cli_progress_update(set = i)
-    }
-    p_list[[i]] <- p
-  }
-
-  if (output_pdf) {
-    dev.off()
-  } # Close PDF device
-  if (show_progress) {
-    cli::cli_progress_done()
-  }
-  if (output_pdf) {
-    mh_success("Done")
-  } # Completion message
-
-  # Return plot list or invisible
-
-  if (return_plots) {
-    return(p_list[page_range])
-  } else {
-    invisible()
-  }
+    },
+    output_pdf = output_pdf,
+    path = path,
+    page_size = page_size,
+    create_dir = create_dir,
+    return_plots = return_plots,
+    show_progress = show_progress
+  )
 }
 
 

@@ -568,44 +568,6 @@ plot_calibrationcurves <- function(
   }) |>
     bind_rows()
 
-  # Prepare PDF output
-  if (output_pdf && !is.na(path)) {
-    # nocov start
-    path <- ifelse(
-      stringr::str_detect(path, ".pdf"),
-      path,
-      paste0(path, ".pdf")
-    )
-    ensure_output_dir(path, create_dir)
-    pdf(
-      file = path,
-      onefile = TRUE,
-      paper = page_size$paper,
-      useDingbats = FALSE,
-      width = page_size$width,
-      height = page_size$height
-    )
-  } # nocov end
-
-  # Determine the range of pages to generate
-  if (!rlang::is_na(specific_page)) {
-    total_pages <- ceiling(
-      n_distinct(d_calib$feature_id) /
-        (cols_page * rows_page)
-    )
-    if (specific_page > total_pages) {
-      cli::cli_abort(
-        "Selected page exceeds the total number of pages. Please select a page number between {.strong 1} and {.strong {total_pages}}."
-      )
-    }
-    page_range <- specific_page
-  } else {
-    page_range <- 1:ceiling(
-      n_distinct(d_calib$feature_id) /
-        (cols_page * rows_page)
-    )
-  }
-
   a <- !all(is.na(d_pred$concentration))
   log_flag <- log_scale && a
 
@@ -645,77 +607,43 @@ plot_calibrationcurves <- function(
       ungroup() # nocov end
   }
 
-  # Action text for progress output
-  action_text <- if (output_pdf) {
-    "Saving plots to pdf"
-  } else {
-    "Generating plots"
-  }
-  page_suffix <- if (max(page_range) > 1) {
-    glue::glue("{max(page_range)} pages")
-  } else {
-    glue::glue("{max(page_range)} page")
-  }
-  # Progress feedback: a cli progress bar collapses to a single line and stays
-  # quiet in non-interactive (Quarto/knitr) renders, unlike txtProgressBar.
-  if (show_progress) {
-    cli::cli_progress_bar(
-      name = glue::glue("{action_text} ({page_suffix})"),
-      total = max(page_range)
-    )
-  } else if (rlang::is_interactive()) {
-    mh_info(glue::glue("{action_text} ({page_suffix})..."))
-  }
-
-  p_list <- list() # p_list <- vector("list", length(page_range))
-
-  for (i in page_range) {
-    p <- plot_calibcurves_page(
-      d_pred = d_pred,
-      d_calib = d_calib,
-      d_calib_stats = d_calib_stats,
-      d_calib_subset = d_calib_subset,
-      response_variable = variable,
-      zoom_n_points = zoom_n_points,
-      rows_page = rows_page,
-      cols_page = cols_page,
-      specific_page = i,
-      point_size = point_size,
-      line_width = line_width,
-      point_color = point_color,
-      point_fill = point_fill,
-      point_shape = point_shape,
-      line_color = line_color,
-      ribbon_fill = ribbon_fill,
-      font_base_size = font_base_size,
-      x_axis_title = x_axis_unit,
-      log_scale = log_scale,
-      ci_show = ci_show,
-      ci_clip = ci_clip
-    )
-    plot(p)
-    dev.flush()
-    flush.console()
-    if (show_progress) {
-      cli::cli_progress_update(set = i)
-    }
-    p_list[[i]] <- p
-  }
-
-  if (output_pdf) {
-    dev.off()
-  } # Close PDF device
-  if (show_progress) {
-    cli::cli_progress_done()
-  }
-  mh_success("Done")
-
-  # Return plot list or invisible
-  if (return_plots) {
-    return(p_list[page_range])
-  } else {
-    invisible()
-  }
+  render_pages(
+    total_pages = ceiling(
+      n_distinct(d_calib$feature_id) / (cols_page * rows_page)
+    ),
+    specific_page = specific_page,
+    page_fun = function(i) {
+      plot_calibcurves_page(
+        d_pred = d_pred,
+        d_calib = d_calib,
+        d_calib_stats = d_calib_stats,
+        d_calib_subset = d_calib_subset,
+        response_variable = variable,
+        zoom_n_points = zoom_n_points,
+        rows_page = rows_page,
+        cols_page = cols_page,
+        specific_page = i,
+        point_size = point_size,
+        line_width = line_width,
+        point_color = point_color,
+        point_fill = point_fill,
+        point_shape = point_shape,
+        line_color = line_color,
+        ribbon_fill = ribbon_fill,
+        font_base_size = font_base_size,
+        x_axis_title = x_axis_unit,
+        log_scale = log_scale,
+        ci_show = ci_show,
+        ci_clip = ci_clip
+      )
+    },
+    output_pdf = output_pdf,
+    path = path,
+    page_size = page_size,
+    create_dir = create_dir,
+    return_plots = return_plots,
+    show_progress = show_progress
+  )
 }
 
 # Define function to plot 1 page

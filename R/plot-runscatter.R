@@ -1399,6 +1399,7 @@ runscatter_plot_pages <- function(
       width = page_size$width,
       height = page_size$height
     )
+    on.exit(grDevices::dev.off(), add = TRUE)
   }
 
   p_list <- purrr::map(
@@ -1407,9 +1408,5 @@ runscatter_plot_pages <- function(
     .progress = show_progress
   )
 
-  if (output_pdf) {
-    dev.off()
-  }
-
-  return(p_list)
+  p_list
 }

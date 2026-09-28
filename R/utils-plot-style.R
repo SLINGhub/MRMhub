@@ -339,8 +339,101 @@ resolve_page_size <- function(
 
   page_units <- rlang::arg_match(page_units, c("mm", "cm", "in", "pt"))
   list(
-    width = convert_to_inches(page_width, page_units, dpi = NA, arg = "page_width"),
-    height = convert_to_inches(page_height, page_units, dpi = NA, arg = "page_height"),
+    width = convert_to_inches(
+      page_width,
+      page_units,
+      dpi = NA,
+      arg = "page_width"
+    ),
+    height = convert_to_inches(
+      page_height,
+      page_units,
+      dpi = NA,
+      arg = "page_height"
+    ),
     paper = "special"
   )
+}
+
+# Page loop of the paged plot_*() functions (response curves, correlations,
+# calibration curves). `page_fun(i)` returns the ggplot of page `i`. Checks
+# `specific_page`, opens the PDF (closed on exit, also on error), draws each
+# page when writing a PDF or not returning plots, and returns the pages.
+render_pages <- function(
+  total_pages,
+  specific_page,
+  page_fun,
+  output_pdf,
+  path,
+  page_size,
+  create_dir,
+  return_plots,
+  show_progress,
+  call = rlang::caller_env()
+) {
+  if (!is.na(specific_page)) {
+    if (specific_page > total_pages) {
+      cli::cli_abort(
+        "Selected page exceeds the total number of pages. Please select a page number between {.strong 1} and {.strong {total_pages}}.",
+        call = call
+      )
+    }
+    page_range <- specific_page
+  } else {
+    page_range <- seq_len(total_pages)
+  }
+
+  if (output_pdf) {
+    if (!grepl("\\.pdf$", path, ignore.case = TRUE)) {
+      path <- paste0(path, ".pdf")
+    }
+    ensure_output_dir(path, create_dir)
+    grDevices::pdf(
+      file = path,
+      onefile = TRUE,
+      paper = page_size$paper,
+      useDingbats = FALSE,
+      width = page_size$width,
+      height = page_size$height
+    )
+    on.exit(grDevices::dev.off(), add = TRUE)
+  }
+
+  # A cli progress bar collapses to one line and stays quiet in non-interactive
+  # (Quarto/knitr) renders.
+  action_text <- if (output_pdf) "Saving plots to pdf" else "Generating plots"
+  page_suffix <- if (max(page_range) > 1) {
+    glue::glue("{max(page_range)} pages")
+  } else {
+    glue::glue("{max(page_range)} page")
+  }
+  if (show_progress) {
+    cli::cli_progress_bar(
+      name = glue::glue("{action_text} ({page_suffix})"),
+      total = max(page_range)
+    )
+  } else {
+    mh_info(glue::glue("{action_text} ({page_suffix})..."))
+  }
+
+  p_list <- list()
+  for (i in page_range) {
+    p <- page_fun(i)
+    if (output_pdf || !return_plots) {
+      plot(p)
+    }
+    flush.console()
+    if (show_progress) {
+      cli::cli_progress_update(set = i)
+    }
+    p_list[[i]] <- p
+  }
+  if (show_progress) {
+    cli::cli_progress_done()
+  }
+  if (output_pdf) {
+    mh_success("Done")
+  }
+
+  if (return_plots) p_list[page_range] else invisible()
 }

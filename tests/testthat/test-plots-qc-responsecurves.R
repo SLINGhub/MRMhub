@@ -880,3 +880,51 @@ test_that("plot_responsecurves writes all pages to the PDF when also returning t
   expect_gt(length(p), 1)
   expect_equal(qpdf::pdf_length(f), length(p))
 })
+
+test_that("plot_responsecurves closes the PDF device when a page fails", {
+  f <- withr::local_tempfile(fileext = ".pdf")
+  devs <- grDevices::dev.list()
+  local_mocked_bindings(plot_responsecurves_page = function(...) stop("boom"))
+  expect_error(
+    suppressMessages(plot_responsecurves(
+      lipidomics_dataset,
+      variable = "intensity",
+      output_pdf = TRUE,
+      path = f,
+      show_progress = FALSE
+    )),
+    "boom"
+  )
+  expect_identical(grDevices::dev.list(), devs)
+})
+
+test_that("plot_responsecurves checks specific_page before creating the PDF", {
+  f <- withr::local_tempfile(fileext = ".pdf")
+  devs <- grDevices::dev.list()
+  expect_error(
+    plot_responsecurves(
+      lipidomics_dataset,
+      variable = "intensity",
+      output_pdf = TRUE,
+      path = f,
+      specific_page = 99,
+      show_progress = FALSE
+    ),
+    "exceeds the total number of pages"
+  )
+  expect_false(file.exists(f))
+  expect_identical(grDevices::dev.list(), devs)
+})
+
+test_that("plot_responsecurves adds .pdf to a path that only contains 'pdf'", {
+  dir <- withr::local_tempdir()
+  suppressMessages(plot_responsecurves(
+    lipidomics_dataset,
+    variable = "intensity",
+    output_pdf = TRUE,
+    path = file.path(dir, "qcpdf"),
+    specific_page = 1,
+    show_progress = FALSE
+  ))
+  expect_true(file.exists(file.path(dir, "qcpdf.pdf")))
+})

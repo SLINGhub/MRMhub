@@ -287,6 +287,14 @@
   for log axes and ratio plots; only the named metric columns are selected;
   with `y_shared = TRUE` and one `y_lim` bound missing, the x-axis is free.
 
+* `plot_responsecurves()`, `plot_feature_correlations()`,
+  `plot_calibrationcurves()` and `plot_runscatter()` close the PDF when an error
+  occurs while plotting; the file previously stayed open and captured later
+  plots. A `specific_page` beyond the last page is reported before a PDF is
+  created, and a `path` such as `"qcpdf"` gets the `.pdf` extension.
+  `plot_calibrationcurves(return_plots = TRUE)` no longer also draws the pages
+  (as the other paged plots), and "Done" is shown only after writing a PDF.
+
 * `plot_responsecurves()` and `plot_feature_correlations()` with
   `output_pdf = TRUE` and `return_plots = TRUE` write the pages to the PDF; the
   file was empty. `plot_feature_correlations(output_pdf = TRUE)` without a
