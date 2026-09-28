@@ -210,7 +210,7 @@ test_that("plot_runscatter with unknown qc_types", {
   # This fixture deliberately contains non-standard QC types (XYX, MyQC); the
   # expected "Unrecognized qc_type" import warning is asserted in
   # test-data-import.R. BLK is now a standard type, so it is predefined.
-  mexp_newqc <- suppressWarnings(import_data_csv(
+  mexp_newqc <- suppressWarnings(import_data_csv_wide(
     data = MRMhubExperiment(),
     path = test_path(
       "testdata/plain-wide/plain_wide_dataset2_22rows_unknownQC.csv"

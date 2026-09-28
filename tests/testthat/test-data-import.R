@@ -1024,7 +1024,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
 
   mexp <- MRMhubExperiment()
   expect_message(
-    mexp <- import_data_csv(
+    mexp <- import_data_csv_wide(
       data = mexp,
       path = path,
       variable_name = "conc",
@@ -1036,7 +1036,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
 
   mexp <- MRMhubExperiment()
   expect_message(
-    mexp <- import_data_csv(
+    mexp <- import_data_csv_wide(
       data = mexp,
       path = path,
       variable_name = "conc",
@@ -1063,7 +1063,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
   mexp <- MRMhubExperiment()
 
   expect_message(
-    mexp <- import_data_csv(
+    mexp <- import_data_csv_wide(
       data = mexp,
       path = path,
       variable_name = "conc",
@@ -1085,7 +1085,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
 
   mexp <- MRMhubExperiment()
   expect_message(
-    mexp <- import_data_csv(
+    mexp <- import_data_csv_wide(
       data = mexp,
       path = path,
       variable_name = "conc",
@@ -1098,7 +1098,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
 
   mexp <- MRMhubExperiment()
   expect_message(
-    mexp <- import_data_csv(
+    mexp <- import_data_csv_wide(
       data = mexp,
       path = test_path("testdata/plain-wide/plain_wide_dataset_no_order.csv"),
       variable_name = "conc",
@@ -1113,7 +1113,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
 
   mexp <- MRMhubExperiment()
   expect_message(
-    mexp <- import_data_csv(
+    mexp <- import_data_csv_wide(
       data = mexp,
       path = test_path("testdata/plain-wide/plain_wide_dataset.csv"),
       variable_name = "conc",
@@ -1133,7 +1133,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
 
   mexp <- MRMhubExperiment()
   expect_error(
-    mexp <- import_data_csv(
+    mexp <- import_data_csv_wide(
       data = mexp,
       path = test_path("testdata/plain-wide/plain_wide_dataset.csv"),
       variable_name = "conc",
@@ -1147,7 +1147,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
 
   mexp <- MRMhubExperiment()
   expect_error(
-    mexp <- import_data_csv(
+    mexp <- import_data_csv_wide(
       data = mexp,
       path = test_path("testdata/plain-wide/plain_wide_dataset.csv"),
       variable_name = "conc",
@@ -1161,7 +1161,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
 
   mexp <- MRMhubExperiment()
   expect_message(
-    mexp <- import_data_csv(
+    mexp <- import_data_csv_wide(
       data = mexp,
       path = test_path("testdata/plain-wide/plain_wide_dataset.csv"),
       variable_name = "conc",
@@ -1174,7 +1174,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
   )
   mexp <- MRMhubExperiment()
   expect_error(
-    mexp <- import_data_csv(
+    mexp <- import_data_csv_wide(
       data = mexp,
       path = test_path(
         "testdata/plain-wide/plain_wide_dataset_duplicate_analysisid.csv"
@@ -1189,7 +1189,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
   )
   mexp <- MRMhubExperiment()
   expect_error(
-    mexp <- import_data_csv(
+    mexp <- import_data_csv_wide(
       data = mexp,
       path = test_path("testdata/plain-wide/plain_wide_dataset_dup_featid.csv"),
       variable_name = "conc",
@@ -1201,7 +1201,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
   )
   mexp <- MRMhubExperiment()
   expect_error(
-    mexp <- import_data_csv(
+    mexp <- import_data_csv_wide(
       data = mexp,
       path = test_path("testdata/plain-wide/plain_wide_dataset_morecol.csv"),
       variable_name = "conc",
@@ -1213,7 +1213,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
   )
   mexp <- MRMhubExperiment()
   expect_error(
-    mexp <- import_data_csv(
+    mexp <- import_data_csv_wide(
       data = mexp,
       path = test_path("testdata/plain-wide/plain_wide_dataset_morecol.csv"),
       variable_name = "conc",
@@ -1225,7 +1225,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
   )
   mexp <- MRMhubExperiment()
   expect_message(
-    mexp <- import_data_csv(
+    mexp <- import_data_csv_wide(
       data = mexp,
       path = test_path("testdata/plain-wide/plain_wide_dataset_morecol.csv"),
       variable_name = "conc",
@@ -1238,7 +1238,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
   )
   mexp <- MRMhubExperiment()
   expect_error(
-    mexp <- import_data_csv(
+    mexp <- import_data_csv_wide(
       data = mexp,
       path = test_path(
         "testdata/plain-wide/plain_wide_dataset_duplicate_orderid.csv"
@@ -1252,7 +1252,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
   )
 
   expect_error(
-    mexp <- import_data_csv(
+    mexp <- import_data_csv_wide(
       data = mexp,
       path = test_path(
         "testdata/plain-wide/plain_wide_dataset_textorderid.csv"
@@ -1269,7 +1269,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
 
   mexp <- MRMhubExperiment()
   expect_message(
-    mexp <- import_data_csv(
+    mexp <- import_data_csv_wide(
       data = mexp,
       path = test_path("testdata/plain-wide/plain_wide_dataset2_22rows.csv"),
       variable_name = "area",
@@ -1295,7 +1295,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
   # CHeck order iD imported and batch id is string
   mexp2 <- MRMhubExperiment()
   expect_message(
-    mexp2 <- import_data_csv(
+    mexp2 <- import_data_csv_wide(
       data = mexp,
       path = test_path(
         "testdata/plain-wide/plain_wide_dataset2_10rows_orderid.csv"
@@ -1340,7 +1340,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
   expect_equal(dim(plot_data[[2]]), c(176, 10))
 
   expect_error(
-    mexp <- import_data_csv(
+    mexp <- import_data_csv_wide(
       data = mexp,
       path = test_path(
         "testdata/plain-wide/plain_wide_dataset2_10rows_orderidtext.csv"
@@ -1354,7 +1354,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
     fixed = TRUE
   )
 
-  mexp <- import_data_csv(
+  mexp <- import_data_csv_wide(
     data = mexp,
     path = test_path(
       "testdata/plain-wide/plain_wide_dataset2_10rows_analysisidnumber.csv"

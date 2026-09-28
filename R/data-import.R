@@ -232,59 +232,6 @@ import_data_mrmhub <- function(
   data
 }
 
-#' (Deprecated) Import wide CSV files
-#' @details
-#' This function is deprecated. Please use [import_data_csv_wide()] instead.
-
-#'
-#' @param data [`MRMhubExperiment`][MRMhubExperiment-class] object
-#' @param path One or more file names with path, or a folder path, which case all *.csv files in this folder will be read.
-#' @param variable_name Variable type representing the values in the table. Must be one of "intensity", "norm_intensity", "conc", "area", "height", "response".
-#' @param analysis_id_col Column to be used as analysis_id. `NA` (default) used 'analysis_id' if present, or the first column if it contains unique values.
-#' @param import_metadata Import additional metadata columns (e.g. batch ID, sample type) and add to the [`MRMhubExperiment`][MRMhubExperiment-class] object.
-#' Only following metadata column names are supported: `"qc_type"`, `"batch_id"`, `"is_quantifier"`, `"is_istd"`, `"analysis_order"`
-#' @param first_feature_column Column number of the first column representing the feature values
-#' @param na_strings A character vector of strings which are to be interpreted as NA values. Blank fields are also considered to be missing values.
-# #' @param silent Su ppress notifications
-#' @return [`MRMhubExperiment`][MRMhubExperiment-class] object
-#' @examples
-#' file_path <- system.file("extdata", "plain_wide_dataset.csv", package = "mrmhub")
-#'
-#' mexp <- MRMhubExperiment()
-#'
-#' mexp <- import_data_csv(
-#'   data = mexp,
-#'   path = file_path,
-#'  variable_name = "conc",
-#'  import_metadata = TRUE)
-#'
-#' print(mexp)
-#'
-#' @export
-
-import_data_csv <- function(
-  data = NULL,
-  path,
-  variable_name,
-  analysis_id_col = NA,
-  import_metadata = TRUE,
-  first_feature_column = NA,
-  na_strings = "NA"
-) {
-  mh_warn(
-    "The function import_data_csv is deprecated. Please use import_data_csv_wide instead."
-  )
-  import_data_csv_wide(
-    data = data,
-    path = path,
-    variable_name = variable_name,
-    analysis_id_col = analysis_id_col,
-    import_metadata = import_metadata,
-    first_feature_column = first_feature_column,
-    na_strings = na_strings
-  )
-}
-
 #' Import analysis results from plain wide-format CSV files
 #'
 #' @description

@@ -106,6 +106,10 @@
   such a column holds text and numbers in Excel; `save_feature_qc_metrics()`
   (CSV) keeps them numeric.
 
+* Removed `import_data_csv()`, deprecated in favour of `import_data_csv_wide()`,
+  which takes the same arguments, and the unused helper
+  `order_chained_columns_tbl()`.
+
 ## New features
 
 * `calc_qc_metrics()` reports the number of replicates behind the %CV and
