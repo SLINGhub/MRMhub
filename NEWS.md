@@ -39,10 +39,7 @@
   out of the blank median. A feature not detected in the study samples still
   fails. The blank medians (`intensity_median_pblk`, `_ublk`, `_sblk`) change
   accordingly. A signal-to-blank criterion for a blank type with no analyses in
-  the dataset raises a clearer error. With `use_batch_medians = TRUE`,
-  signal-to-blank ratios take the lower median over batches, so a single batch
-  with a ratio of `Inf` no longer makes it `Inf` (e.g. with blanks in 2
-  batches).
+  the dataset raises a clearer error.
 
 * `calc_qc_metrics()`: D-ratios are `NA` when the QC or the study samples have
   fewer than 3 non-missing values, or a spread that is zero or not finite,

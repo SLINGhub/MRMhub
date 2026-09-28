@@ -72,9 +72,8 @@ mentioned above. For these cases an error will be raised if the underlying
 data is missing.
 
 If \code{use_batch_medians = TRUE}, batch-specific QC statistics are computed
-first, and then the median of these values is returned for each feature;
-signal-to-blank ratios take the lower median, so that one batch with a ratio
-of \code{Inf} does not make the result \code{Inf}. However, response curve and calibration statistics are calculated per
+first, and then the median of these values is returned for each feature.
+However, response curve and calibration statistics are calculated per
 curve, irrespective of batches and \code{use_batch_medians} settings.
 
 The calculated metrics are stored in the \code{metrics_qc} table of the

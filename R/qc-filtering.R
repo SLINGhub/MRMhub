@@ -28,9 +28,8 @@
 #'  data is missing.
 #'
 #' If `use_batch_medians = TRUE`, batch-specific QC statistics are computed
-#' first, and then the median of these values is returned for each feature;
-#' signal-to-blank ratios take the lower median, so that one batch with a ratio
-#' of `Inf` does not make the result `Inf`. However, response curve and calibration statistics are calculated per
+#' first, and then the median of these values is returned for each feature.
+#' However, response curve and calibration statistics are calculated per
 #' curve, irrespective of batches and `use_batch_medians` settings.
 #'
 #' The calculated metrics are stored in the `metrics_qc` table of the
@@ -514,19 +513,11 @@ calc_qc_metrics <- function(
   }
 
   # If batch medians are requested, calculate the median of all columns (except
-  # ID columns) for each feature. S/B ratios take the lower median, as the
-  # median of a finite and an Inf ratio (2 batches) is Inf.
+  # ID columns) for each feature.
   if (use_batch_medians) {
     d_stats_var_final <- d_stats_var_final |>
       summarise(
-        across(
-          -ends_with("_id"),
-          ~ if (startsWith(dplyr::cur_column(), "sb_ratio")) {
-            unname(stats::quantile(.x, 0.5, type = 1, na.rm = TRUE))
-          } else {
-            median(.x, na.rm = TRUE)
-          }
-        ),
+        across(-ends_with("_id"), ~ median(.x, na.rm = TRUE)),
         .by = "feature_id"
       )
   }

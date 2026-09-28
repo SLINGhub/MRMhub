@@ -1762,7 +1762,7 @@ test_that("blank analyses without a row for a feature count as zero", {
   expect_equal(m$sb_ratio_pblk, Inf)
 })
 
-test_that("batch-median S/B is not Inf when only one of two blank batches is Inf", {
+test_that("batch-median S/B is the plain median over batches", {
   id <- mexp_proc@metrics_qc |>
     dplyr::filter(!.data$is_istd, .data$in_data) |>
     dplyr::pull(.data$feature_id) |>
@@ -1786,7 +1786,8 @@ test_that("batch-median S/B is not Inf when only one of two blank batches is Inf
     )
   mexp_blk <- calc_qc_metrics(mexp_blk, use_batch_medians = TRUE)
   sb <- mexp_blk@metrics_qc$sb_ratio_pblk[mexp_blk@metrics_qc$feature_id == id]
-  expect_true(is.finite(sb))
+  # Undetected in the blank of one of two batches: median of (finite, Inf)
+  expect_equal(sb, Inf)
 })
 
 test_that("missing response-curve results are not reported for filtered-out features", {
