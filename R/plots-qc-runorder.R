@@ -604,25 +604,16 @@ plot_rla_boxplot <- function(
   # Only real gaps (excluded/missing analyses) are collapsed.
   # When collapse_excluded = TRUE, build from filtered data (d_filt) so that
   # gaps from excluded QC types are also collapsed.
-  if (collapse_excluded) {
-    unique_orders <- sort(unique(d_filt$analysis_order))
-    unique_timestamps <- sort(
-      unique(d_filt$acquisition_time_stamp),
-      na.last = TRUE
-    )
-  } else {
-    unique_orders <- sort(unique(data@dataset$analysis_order))
-    unique_timestamps <- sort(
-      unique(data@dataset$acquisition_time_stamp),
-      na.last = TRUE
-    )
-  }
-
-  order_map <- tibble(
-    analysis_order = unique_orders,
-    time_stamp = unique_timestamps,
-    analysis_order_index = seq_along(unique_orders)
-  )
+  map_src <- if (collapse_excluded) d_filt else data@dataset
+  order_map <- map_src |>
+    ungroup() |>
+    dplyr::distinct(
+      .data$analysis_order,
+      time_stamp = as.POSIXct(.data$acquisition_time_stamp)
+    ) |>
+    arrange(.data$analysis_order) |>
+    mutate(analysis_order_index = dplyr::row_number())
+  unique_orders <- order_map$analysis_order
 
   d_filt <- d_filt |>
     left_join(order_map, by = "analysis_order")
@@ -820,7 +811,8 @@ plot_rla_boxplot <- function(
     if (x_axis_variable == "analysis_order") {
       labels <- breaks
     } else {
-      labels <- order_map$time_stamp[breaks]
+      breaks <- breaks[breaks %in% unique_orders]
+      labels <- order_map$time_stamp[match(breaks, order_map$analysis_order)]
     }
     # If collapse_excluded is FALSE, we use the analysis_order
     p <- ggplot(

@@ -247,6 +247,11 @@
   for log axes and ratio plots; only the named metric columns are selected;
   with `y_shared = TRUE` and one `y_lim` bound missing, the x-axis is free.
 
+* `plot_rla_boxplot(show_timestamp = TRUE)`: the time labels on the x-axis
+  belong to the analyses at their positions. They were shifted after excluding
+  analyses, wrong when the analysis order is not chronological, and duplicate
+  timestamps caused an error.
+
 * `save_report_xlsx()`: an explicit `normalized_variable` (e.g. `"conc"`)
   now exports the reference-normalized values instead of the unnormalized ones,
   and infinite QC metrics no longer appear as an Excel error.
