@@ -1,12 +1,3 @@
-test_that("some_na works", {
-  expect_true(some_na(c(NA, 1, 2)))
-  expect_false(some_na(c(NA, NA, NA)))
-  expect_false(some_na(c(1, 2, 3)))
-  expect_false(some_na(NA))
-  expect_false(some_na(1))
-  expect_false(some_na(NULL))
-})
-
 test_that("safe_min works", {
   expect_equal(safe_min(c(4, 3, 2, 1)), 1)
   expect_equal(safe_min(c(NA, NA, 3, 2, 1)), NA_real_)

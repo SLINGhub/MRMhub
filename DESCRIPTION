@@ -111,7 +111,6 @@ Collate:
     'datasets.R'
     'functions-chem.R'
     'functions-math.R'
-    'functions-plot.R'
     'helper.R'
     'isotope-derive.R'
     'isotope-licar.R'

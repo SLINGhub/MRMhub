@@ -1643,47 +1643,10 @@ filter_features_qc <- function(
       d_metrics_temp |>
         filter(.data$in_data, .data$is_quantifier, .data$qc_pass_before)
     )
-    n_filt_qual_before <- nrow(
-      d_metrics_temp |>
-        filter(.data$in_data, !.data$is_quantifier, .data$qc_pass_before)
-    )
-    qc_pass_prev <- sum(d_metrics_temp$qc_pass_before, na.rm = TRUE)
   }
 
   n_istd_quant <- get_feature_count(data, is_istd = TRUE, is_quantifier = TRUE)
   n_istd_qual <- get_feature_count(data, is_istd = TRUE, is_quantifier = FALSE)
-
-  if (!include_istd) {
-    n_filt_quant <- nrow(
-      d_filt |> filter(.data$in_data, !.data$is_istd, .data$is_quantifier)
-    )
-    n_filt_qual <- nrow(
-      d_filt |> filter(.data$in_data, !.data$is_istd, !.data$is_quantifier)
-    )
-
-    if (!clear_existing && all("all_filter_pass" %in% names(data@metrics_qc))) {
-      n_filt_quant_before <- nrow(
-        d_metrics_temp |>
-          filter(
-            .data$in_data,
-            !.data$is_istd,
-            .data$is_quantifier,
-            .data$qc_pass_before
-          )
-      )
-      n_filt_qual_before <- nrow(
-        d_metrics_temp |>
-          filter(
-            .data$in_data,
-            !.data$is_istd,
-            !.data$is_quantifier,
-            .data$qc_pass_before
-          )
-      )
-    }
-  }
-
-  qc_pass_now <- sum(metrics_qc_local$all_filter_pass, na.rm = TRUE)
 
   filter_cleared <- !any(str_detect(
     arg_names[!arg_names %in% c("include_istd", "include_qualifier")],
@@ -1723,10 +1686,6 @@ filter_features_qc <- function(
       }
     }
   }
-
-  # TODO: cleanup
-  #if (!include_qualifier) d_filt <- d_filt |> filter(.data$is_quantifier)
-  #if (!include_istd) d_filt <- d_filt |> filter(!.data$is_istd)
 
   data@is_filtered <- TRUE
   data@status_processing <- "Features filtered by QC"

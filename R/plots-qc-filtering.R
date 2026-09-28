@@ -307,7 +307,7 @@ plot_qc_summary_overall <- function(
       qc_summary_labels[keys]
     )
 
-    p_venn <- ggvenn_nowarning(
+    p_venn <- ggvenn::ggvenn(
       x2,
       names(x2),
       show_percentage = FALSE,

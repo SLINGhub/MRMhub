@@ -260,7 +260,7 @@ get_outlier_bounds <- function(
     mad_val <- mad(x)
     lower <- med - k * mad_val
     upper <- med + k * mad_val
-  } else if (method == "sd") {
+  } else if (method %in% c("sd", "z_normal")) {
     if (is.null(k)) {
       k <- 3
     }
@@ -274,14 +274,6 @@ get_outlier_bounds <- function(
     }
     lower <- quantile(x, k)
     upper <- quantile(x, 1 - k)
-  } else if (method == "z_normal") {
-    if (is.null(k)) {
-      k <- 3
-    }
-    mu <- mean(x)
-    sd_val <- sd(x)
-    lower <- mu - k * sd_val
-    upper <- mu + k * sd_val
   } else if (method == "z_robust") {
     if (is.null(k)) {
       k <- 3.5

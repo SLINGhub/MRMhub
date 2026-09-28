@@ -2014,25 +2014,6 @@ test_that("correct_batch_centering handels other errors", {
 })
 
 test_that("fun_batch.correction handles non log setting when batch scaling", {
-  expect_error(
-    fun_batch.correction(
-      tibble(
-        x = 1:10,
-        y = 1:10,
-        batch_id = 1,
-        y_fit_after = 1:10,
-        qc_type = "BQC"
-      ),
-      log_transform_internal = FALSE,
-      ref_qc_types = "BQC",
-      correct_scale = TRUE
-    ),
-    "Currently data must be log-transformed for batch scaling"
-  )
-})
-
-
-test_that("fun_batch.correction handles non log setting when batch scaling", {
   expect_message(
     mexp_batch1 <- correct_batch_centering(
       mexp,

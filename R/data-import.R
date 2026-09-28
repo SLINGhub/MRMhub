@@ -722,11 +722,6 @@ import_data_main <- function(
     d_raw
   )
 
-  # TODO: excl_unmatched_analyses below
-
-  #check_integrity_analyses(data, excl_unmatched_analyses = TRUE, silent = TRUE)
-  # stopifnot(methods::validObject(data))
-
   if (!silent) {
     n_analyses <- length(unique(data@dataset_orig$analysis_id))
     # Assign each feature to a single bucket: a feature counts as a qualifier if

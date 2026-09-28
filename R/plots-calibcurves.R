@@ -570,40 +570,6 @@ plot_calibrationcurves <- function(
   }) |>
     bind_rows()
 
-  # Get ISTD concentrations for ISTD reference line
-
-  d_istd <- d_calib |>
-    filter(.data$qc_type == "CAL") |>
-    left_join(
-      data@annot_analyses |>
-        select("analysis_id", "sample_amount", "istd_volume"),
-      by = c("analysis_id")
-    ) |>
-    left_join(
-      data@annot_features |>
-        select("feature_id", "quant_istd_feature_id", "response_factor"),
-      by = c("feature_id")
-    ) |>
-    left_join(
-      data@annot_istds,
-      by = c("quant_istd_feature_id" = "quant_istd_feature_id")
-    ) |>
-    mutate(
-      theo_norm_intensity = (.data$concentration *
-        .data$sample_amount *
-        .data$response_factor) /
-        (.data$istd_conc_nmolar * .data$istd_volume),
-      istd_conc_spiked = (.data$istd_conc_nmolar * .data$istd_volume) /
-        .data$sample_amount
-    ) |>
-    select(
-      "feature_id",
-      "concentration",
-      "theo_norm_intensity",
-      "istd_conc_spiked",
-      "concentration_unit"
-    )
-
   # Prepare PDF output
   if (output_pdf && !is.na(path)) {
     # nocov start
@@ -711,13 +677,8 @@ plot_calibrationcurves <- function(
       d_calib = d_calib,
       d_calib_stats = d_calib_stats,
       d_calib_subset = d_calib_subset,
-      d_istd = d_istd,
-      output_pdf = output_pdf,
       response_variable = variable,
       zoom_n_points = zoom_n_points,
-      #show_istd_reference = show_istd_reference,
-      include_qualifier = include_qualifier,
-      path = path,
       rows_page = rows_page,
       cols_page = cols_page,
       specific_page = i,
@@ -730,12 +691,9 @@ plot_calibrationcurves <- function(
       ribbon_fill = ribbon_fill,
       font_base_size = font_base_size,
       x_axis_title = x_axis_unit,
-      fit_model = fit_model,
-      fit_weighting = fit_weighting,
       log_scale = log_scale,
       ci_show = ci_show,
-      ci_clip = ci_clip,
-      fit_overwrite = fit_overwrite
+      ci_clip = ci_clip
     )
     plot(p)
     dev.flush()
@@ -768,13 +726,8 @@ plot_calibcurves_page <- function(
   d_calib,
   d_calib_stats,
   d_calib_subset,
-  d_istd,
-  output_pdf,
   response_variable,
   zoom_n_points,
-  #show_istd_reference,
-  include_qualifier,
-  path,
   rows_page,
   cols_page,
   specific_page,
@@ -787,12 +740,9 @@ plot_calibcurves_page <- function(
   ribbon_fill,
   font_base_size,
   x_axis_title,
-  fit_model,
-  fit_weighting,
   log_scale,
   ci_show,
-  ci_clip,
-  fit_overwrite
+  ci_clip
 ) {
   plot_var <- rlang::sym(response_variable)
   d_calib$curve_id <- as.character(d_calib$curve_id)
@@ -1055,32 +1005,6 @@ plot_calibcurves_page <- function(
       trim_blank = FALSE
     )
 
-  # TODO: NEEDS TO BE TESTED
-  # if(show_istd_reference){
-  #   p <- p +
-  #     geom_line(
-  #       data = d_istd |>  dplyr::semi_join(dat_subset, by = c("feature_id")) ,
-  #       aes(
-  #         x = .data$concentration,
-  #         y = .data$theo_norm_intensity
-  #       ),
-  #       inherit.aes = FALSE,
-  #       color = "green",
-  #       linewidth = line_width * 0.8,
-  #       na.rm = TRUE
-  #     ) +
-  #     geom_vline(
-  #       data = d_istd |>  dplyr::semi_join(dat_subset, by = c("feature_id")) |> select("feature_id", "istd_conc_spiked") |> distinct(),
-  #       aes(
-  #         xintercept = .data$istd_conc_spiked,
-  #       ),
-  #       color = "lightgreen",
-  #       linewidth = line_width * 0.8,
-  #       linetype = "dashed",
-  #       na.rm = TRUE
-  #     )
-  # }
-
   p <- p +
     geom_point(
       aes(
@@ -1112,10 +1036,6 @@ plot_calibcurves_page <- function(
         linetype = "dotted"
       ) # Lighter minor gridlines
     )
-
-  # if (!log_scale) {
-  #   p <- p + ggplot2::coord_cartesian(xlim = c(0, NA), ylim = c(0, NA))
-  # }
 
   if (zoom_n_points < Inf) {
     txt = glue::glue("Zoom on first {zoom_n_points} points")

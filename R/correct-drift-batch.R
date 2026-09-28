@@ -1785,32 +1785,26 @@ fun_batch.correction = function(
     for (b in seq_len(nbatch)) {
       id <- which(batch == ubatch[b])
       xloc <- loc.batch[b]
-      if (log_transform_internal) {
-        # Guard a zero/non-finite batch scale (MAD): division would yield Inf.
-        xsca <- if (is.finite(sca.batch[b]) && sca.batch[b] != 0) {
-          sca.batch[b]
-        } else {
-          NA_real_
-        }
-        if (is.finite(xloc) && is.finite(xsca)) {
-          val.clean[id] <- (tmp[id] - xloc) /
-            xsca *
-            sca.batch.mean +
-            loc.batch.mean
-          y_fit_after.clean[id] <- (tmp_fit_after[id] - xloc) /
-            xsca *
-            sca.batch.mean +
-            loc.batch.mean
-        } else {
-          # No usable ref-QC anchor/scale in this batch: keep originals, flag skipped.
-          val.clean[id] <- tmp[id]
-          y_fit_after.clean[id] <- tmp_fit_after[id]
-          row_corrected[id] <- FALSE
-        }
+      # Guard a zero/non-finite batch scale (MAD): division would yield Inf.
+      xsca <- if (is.finite(sca.batch[b]) && sca.batch[b] != 0) {
+        sca.batch[b]
       } else {
-        cli_abort(
-          "Currently data must be log-transformed for batch scaling. Please set `log_transform_internal = TRUE`"
-        )
+        NA_real_
+      }
+      if (is.finite(xloc) && is.finite(xsca)) {
+        val.clean[id] <- (tmp[id] - xloc) /
+          xsca *
+          sca.batch.mean +
+          loc.batch.mean
+        y_fit_after.clean[id] <- (tmp_fit_after[id] - xloc) /
+          xsca *
+          sca.batch.mean +
+          loc.batch.mean
+      } else {
+        # No usable ref-QC anchor/scale in this batch: keep originals, flag skipped.
+        val.clean[id] <- tmp[id]
+        y_fit_after.clean[id] <- tmp_fit_after[id]
+        row_corrected[id] <- FALSE
       }
     }
   }
