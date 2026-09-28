@@ -402,15 +402,16 @@ render_pages <- function(
   # A cli progress bar collapses to one line and stays quiet in non-interactive
   # (Quarto/knitr) renders.
   action_text <- if (output_pdf) "Saving plots to pdf" else "Generating plots"
-  page_suffix <- if (max(page_range) > 1) {
-    glue::glue("{max(page_range)} pages")
+  n_pages <- length(page_range)
+  page_suffix <- if (n_pages > 1) {
+    glue::glue("{n_pages} pages")
   } else {
-    glue::glue("{max(page_range)} page")
+    glue::glue("{n_pages} page")
   }
   if (show_progress) {
     cli::cli_progress_bar(
       name = glue::glue("{action_text} ({page_suffix})"),
-      total = max(page_range)
+      total = n_pages
     )
   } else {
     mh_info(glue::glue("{action_text} ({page_suffix})..."))
@@ -424,7 +425,7 @@ render_pages <- function(
     }
     flush.console()
     if (show_progress) {
-      cli::cli_progress_update(set = i)
+      cli::cli_progress_update()
     }
     p_list[[i]] <- p
   }

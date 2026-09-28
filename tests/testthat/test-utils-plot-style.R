@@ -142,3 +142,18 @@ test_that("gap_axis draws one band for several real gaps between two visible ord
   expect_equal(g$index, c(1, 5))
   expect_equal(g$d_gaps$gap_label, "2 | 8")
 })
+
+test_that("render_pages counts one page for a specific_page", {
+  expect_message(
+    render_pages(
+      total_pages = 5,
+      specific_page = 3,
+      page_fun = function(i) ggplot(),
+      output_pdf = FALSE,
+      return_plots = TRUE,
+      show_progress = FALSE
+    ),
+    "(1 page)",
+    fixed = TRUE
+  )
+})
