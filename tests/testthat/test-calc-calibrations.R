@@ -45,7 +45,9 @@ test_that("calc_calibration_results works", {
   res <- mexp_res@metrics_calibration
   expect_equal(unique(res$fit_model), c("quadratic", "linear"))
   expect_equal(unique(res$fit_weighting), "1/x")
-  expect_equal(mean(res$r2_cal_1), 0.97955745)
+  # Corticosterone: quadratic through its 3 included calibrators, no R2
+  expect_true(is.na(res$r2_cal_1[res$feature_id == "Corticosterone"]))
+  expect_equal(mean(res$r2_cal_1, na.rm = TRUE), 0.97663709)
   expect_equal(mean(res$lowest_cal_cal_1), 3.34825)
   expect_equal(mean(res$loq_cal_1, na.rm = T), 7.911120433)
 
@@ -462,7 +464,7 @@ test_that("quantifying by calibration twice gives the same concentrations as onc
 })
 
 test_that("ignore_failed_calibration = TRUE continues when every fit fails", {
-  # A single calibrator per curve: no fit can succeed.
+  # A single calibrator per curve cannot fit a quadratic: no fit can succeed.
   mexp_temp <- mexp_norm
   qc <- mexp_temp@annot_qcconcentrations
   mexp_temp@annot_qcconcentrations$include_in_analysis <- qc$sample_id ==
@@ -471,8 +473,8 @@ test_that("ignore_failed_calibration = TRUE continues when every fit fails", {
   suppressMessages(expect_message(
     res <- quantify_by_calibration(
       mexp_temp,
-      fit_overwrite = FALSE,
-      fit_model = "linear",
+      fit_overwrite = TRUE,
+      fit_model = "quadratic",
       fit_weighting = "1/x",
       ignore_failed_calibration = TRUE,
       ignore_missing_annotation = TRUE
@@ -879,4 +881,83 @@ test_that("quantify_by_calibration clears values derived from a previous calibra
   ))
   expect_false("feature_conc_ratio" %in% names(res@dataset))
   expect_false("feature_conc_beforecal" %in% names(res@dataset))
+})
+
+# Keep `n` of the 6 calibrators (CAL-D onwards) and ISTD-normalize
+few_cal <- function(n) {
+  cal <- unique(mexp@dataset$analysis_id[mexp@dataset$qc_type == "CAL"])
+  keep <- cal[3 + seq_len(n)]
+  suppressMessages(normalize_by_istd(exclude_analyses(
+    mexp,
+    analyses = setdiff(cal, keep),
+    clear_existing = TRUE
+  )))
+}
+fit_cal <- function(m, model = "linear") {
+  suppressMessages(calc_calibration_results(
+    m,
+    fit_overwrite = TRUE,
+    fit_model = model,
+    fit_weighting = "none"
+  ))@metrics_calibration
+}
+
+test_that("a 2-point calibration is fitted without statistics", {
+  res <- fit_cal(few_cal(2))
+  expect_false(any(res$reg_failed_cal_1))
+  expect_false(anyNA(res$coef_b_cal_1))
+  expect_true(all(is.na(res$r2_cal_1)))
+  expect_true(all(is.na(res$sigma_cal_1)))
+  expect_true(all(is.na(res$lod_cal_1)))
+  expect_true(all(is.na(res$loq_cal_1)))
+})
+
+test_that("a 1-point calibration is a line through the origin", {
+  m <- few_cal(1)
+  res <- fit_cal(m)
+  expect_false(any(res$reg_failed_cal_1))
+  expect_true(all(res$coef_a_cal_1 == 0))
+  expect_true(all(is.na(res$r2_cal_1)))
+
+  d <- m@dataset[
+    m@dataset$qc_type == "CAL" & m@dataset$feature_id == "Aldosterone",
+  ]
+  conc <- m@annot_qcconcentrations$concentration[
+    m@annot_qcconcentrations$sample_id == d$sample_id &
+      m@annot_qcconcentrations$analyte_id == "Aldosterone"
+  ]
+  expect_equal(
+    res$coef_b_cal_1[res$feature_id == "Aldosterone"],
+    d$feature_norm_intensity / conc
+  )
+})
+
+test_that("a 3-point quadratic calibration is fitted without statistics", {
+  # Corticosterone has only 2 included calibrators here
+  expect_message(
+    m <- calc_calibration_results(
+      few_cal(3),
+      fit_overwrite = TRUE,
+      fit_model = "quadratic",
+      fit_weighting = "none"
+    ),
+    "at least 3 calibrators"
+  )
+  res <- m@metrics_calibration
+  row <- res$feature_id == "Aldosterone"
+  expect_false(res$reg_failed_cal_1[row])
+  expect_true(is.na(res$r2_cal_1[row]))
+})
+
+test_that("a quadratic calibration with fewer than 3 points fails with a warning", {
+  expect_message(
+    calc_calibration_results(
+      few_cal(2),
+      fit_overwrite = TRUE,
+      fit_model = "quadratic",
+      fit_weighting = "none",
+      ignore_failed_calibration = TRUE
+    ),
+    "at least 3 calibrators"
+  )
 })

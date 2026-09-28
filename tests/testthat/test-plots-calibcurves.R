@@ -781,3 +781,22 @@ test_that("plot_calibrationcurves() errors writing a PDF into a missing dir when
   )
   expect_false(fs::file_exists(path))
 })
+
+test_that("plot_calibrationcurves draws 2-point calibrations without a CI band", {
+  cal <- unique(mexp@dataset$analysis_id[mexp@dataset$qc_type == "CAL"])
+  m <- suppressMessages(exclude_analyses(
+    mexp,
+    analyses = cal[-(4:5)],
+    clear_existing = TRUE
+  ))
+  m <- suppressMessages(normalize_by_istd(m))
+  p <- suppressMessages(plot_calibrationcurves(
+    data = m,
+    fit_overwrite = TRUE,
+    fit_model = "linear",
+    fit_weighting = "none",
+    return_plots = TRUE
+  ))
+  expect_s3_class(p[[1]], "gg")
+  expect_no_error(ggplot2::ggplot_build(p[[1]]))
+})

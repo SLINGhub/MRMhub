@@ -820,10 +820,12 @@ plot_calibcurves_page <- function(
 
   p <- ggplot(data = dat_subset, aes(x = .data$concentration, y = !!plot_var))
 
+  # Fits through all points (e.g. 2 calibrators) have no confidence band
   if (
     ci_show &&
       nrow(d_pred_filt |> filter(!is.na(.data$concentration))) > 0 &
-      !all(is.na(d_pred_filt$y_pred))
+      !all(is.na(d_pred_filt$y_pred)) &&
+      any(!is.na(d_pred_filt$lwr) & !is.na(d_pred_filt$upr))
   ) {
     d_pred_filt_ci <- d_pred_filt |>
       group_by(.data$feature_id) |>

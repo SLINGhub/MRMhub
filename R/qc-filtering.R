@@ -1297,7 +1297,7 @@ filter_features_qc <- function(
       no_lin <- metrics_qc_local$feature_id[lin_missing & reported %in% TRUE]
       if (length(no_lin) > 0) {
         mh_warn(
-          "{length(no_lin)} feature{?s} without response-curve results (fewer than 3 RQC points with a value) failed the linearity criterion: {.val {mh_vec(no_lin)}}."
+          "{length(no_lin)} feature{?s} without the response-curve results needed (R\u00b2 needs at least 3 RQC points with a value, slope and intercept 2) failed the linearity criterion: {.val {mh_vec(no_lin)}}."
         )
       }
       metrics_qc_local <- metrics_qc_local |>

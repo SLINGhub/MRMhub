@@ -82,6 +82,13 @@ these details are missing in the metadata, the default values provided via
 \code{fit_model} and \code{fit_weighting} will be used.
 }
 \details{
+A linear curve is also fitted with 2 calibrators, and a single calibrator
+gives a line through the origin (\code{coef_a = 0}). A quadratic curve needs at
+least 3 calibrators. A zero-concentration calibrator is dropped from
+weighted fits, so a blank plus one standard is then fitted through the
+origin. A curve that passes through all its calibrators (e.g. 2 points for a
+line, 3 for a quadratic) has no R², sigma, LoD or LoQ (\code{NA}).
+
 Additionally, the limit of detection (LoD) and limit of quantification (LoQ)
 are calculated for each feature based on the calibration curve, following the
 ICH Q2(R1/R2) approach (LoD = 3.3 sigma / S, LoQ = 10 sigma / S). Here S is

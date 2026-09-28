@@ -3,7 +3,8 @@
 #' This function calculates linear regression statistics (R², slope, and intercept)
 #' for each response curve in the provided `MRMhubExperiment` object. Each curve
 #' is fitted on its points with a non-missing intensity, with a warning when some
-#' are missing; a curve with fewer than 3 such points gives `NA`. Before fitting,
+#' are missing; a curve with 2 such points has a slope and intercept but no R²
+#' (`NA`), and a curve with fewer gives `NA` throughout. Before fitting,
 #' the analyzed sample amount (`x`) and feature intensity (`y`) of these points
 #' are each scaled to their maximum (set to 1), so the returned `slopenorm` and
 #' `y0norm` are on this normalized scale.
@@ -92,7 +93,7 @@ get_response_curve_stats <- function(
     dplyr::filter(.data$n_na > 0, .data$n_na < .data$n)
   if (nrow(partial) > 0) {
     cli::cli_warn(c(
-      "Response curves with missing points were fitted on the remaining points (fewer than 3 points give {.val {NA}}).",
+      "Response curves with missing points were fitted on the remaining points (R\u00b2 needs at least 3 points, slope and intercept 2).",
       "i" = "Affected feature{?s}: {.val {mh_vec(unique(partial$feature_id))}}."
     ))
   }
@@ -178,11 +179,12 @@ get_response_curve_stats <- function(
 
 # Straight-line fit of one response curve on the points with an intensity,
 # each scaled to its maximum (1 = max), by least squares as in lm(y ~ x). No fit
-# for fewer than 3 points or equal amounts; R2 is NA for a flat curve.
+# for fewer than 2 points or equal amounts; R2 is NA for fewer than 3 points or
+# a flat curve.
 fit_scaled_line <- function(amount, intensity) {
   no_fit <- c(r2 = NA_real_, slopenorm = NA_real_, y0norm = NA_real_)
   keep <- !is.na(intensity)
-  if (sum(keep) < 3) {
+  if (sum(keep) < 2) {
     return(no_fit)
   }
   x <- amount[keep] / safe_max(amount[keep], na.rm = TRUE)
@@ -196,7 +198,11 @@ fit_scaled_line <- function(amount, intensity) {
   fit <- stats::.lm.fit(cbind(1, x), y)
   tss <- sum((y - mean(y))^2)
   c(
-    r2 = if (tss > 0) 1 - sum(fit$residuals^2) / tss else NA_real_,
+    r2 = if (length(x) > 2 && tss > 0) {
+      1 - sum(fit$residuals^2) / tss
+    } else {
+      NA_real_
+    },
     slopenorm = fit$coefficients[[2]],
     y0norm = fit$coefficients[[1]]
   )

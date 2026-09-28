@@ -117,6 +117,13 @@
 
 * `plot_pca()` and `plot_pca_loading()` accept `variable = "fwhm"`.
 
+* External calibration works with 1 calibrator (a line through the origin) or
+  2 calibrators, and response curves with 2 points. Curves passing through all
+  their points report no R², sigma, LoD or LoQ (`NA`) instead of a perfect R²,
+  as do failed fits; a quadratic calibration with fewer than 3 calibrators
+  fails with a warning. `plot_calibrationcurves()` no longer fails for such
+  curves.
+
 * `plot_qc_summary_byclass()` and `plot_qc_summary_overall()` label the QC
   categories in words (e.g. "< min S/B", "> max CV", "passed") instead of
   internal codes such as `below_sb`.

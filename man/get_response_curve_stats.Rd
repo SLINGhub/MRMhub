@@ -30,7 +30,8 @@ or \code{NULL} if no data matches the criteria.
 This function calculates linear regression statistics (R², slope, and intercept)
 for each response curve in the provided \code{MRMhubExperiment} object. Each curve
 is fitted on its points with a non-missing intensity, with a warning when some
-are missing; a curve with fewer than 3 such points gives \code{NA}. Before fitting,
+are missing; a curve with 2 such points has a slope and intercept but no R²
+(\code{NA}), and a curve with fewer gives \code{NA} throughout. Before fitting,
 the analyzed sample amount (\code{x}) and feature intensity (\code{y}) of these points
 are each scaled to their maximum (set to 1), so the returned \code{slopenorm} and
 \code{y0norm} are on this normalized scale.

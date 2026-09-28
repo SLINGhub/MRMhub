@@ -99,7 +99,7 @@ test_that("a single missing curve point does not void the curve fit", {
   expect_gt(r2, 0.5)
 })
 
-test_that("a curve with fewer than 3 points present is not fitted", {
+test_that("a curve with 2 points present has a slope but no R2", {
   rqc <- mexp@annot_responsecurves
   pts <- rqc$analysis_id[rqc$curve_id == rqc$curve_id[1]]
   mexp_na <- mexp
@@ -109,8 +109,9 @@ test_that("a curve with fewer than 3 points present is not fitted", {
       mexp_na@dataset$feature_id == "PC 32:1"
   ] <- NA
   res <- suppressWarnings(get_response_curve_stats(mexp_na))
-  r2_col <- paste0("r2_rqc_", rqc$curve_id[1])
-  expect_true(is.na(res[[r2_col]][res$feature_id == "PC 32:1"]))
+  row <- res$feature_id == "PC 32:1"
+  expect_true(is.na(res[[paste0("r2_rqc_", rqc$curve_id[1])]][row]))
+  expect_false(is.na(res[[paste0("slopenorm_rqc_", rqc$curve_id[1])]][row]))
 })
 
 test_that("a curve missing its top point is scaled to the points present", {
@@ -187,4 +188,13 @@ test_that("an all-zero or all-missing response curve gives NA and keeps its row"
     expect_equal(nrow(res), 29)
     expect_true(is.na(res[[rqc_curve_col("r2")]][res$feature_id == "PC 32:1"]))
   }
+})
+
+test_that("a 2-point curve has a slope but no R2; 1 point is not fitted", {
+  # 3 intensities, one without an amount: 2 points, scaled (0.5, 1/3), (1, 2/3)
+  fit <- fit_scaled_line(c(1, 2, NA), c(10, 20, 30))
+  expect_true(is.na(fit[["r2"]]))
+  expect_equal(fit[["slopenorm"]], 2 / 3)
+  expect_equal(fit[["y0norm"]], 0)
+  expect_true(all(is.na(fit_scaled_line(c(1, NA, NA), c(10, 20, 30)))))
 })

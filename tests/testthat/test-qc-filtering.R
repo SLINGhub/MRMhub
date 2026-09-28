@@ -1816,7 +1816,7 @@ test_that("missing response-curve results are not reported for filtered-out feat
     )
   )
   lin_msg <- paste(
-    msgs[grepl("without response-curve results", msgs)],
+    msgs[grepl("without the response-curve results", msgs)],
     collapse = ""
   )
   expect_false(grepl(ids[1], lin_msg, fixed = TRUE))

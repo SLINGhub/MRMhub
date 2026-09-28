@@ -309,6 +309,13 @@ quantify_by_calibration <- function(
 #' these details are missing in the metadata, the default values provided via
 #' `fit_model` and `fit_weighting` will be used.
 #'
+#' A linear curve is also fitted with 2 calibrators, and a single calibrator
+#' gives a line through the origin (`coef_a = 0`). A quadratic curve needs at
+#' least 3 calibrators. A zero-concentration calibrator is dropped from
+#' weighted fits, so a blank plus one standard is then fitted through the
+#' origin. A curve that passes through all its calibrators (e.g. 2 points for a
+#' line, 3 for a quadratic) has no R², sigma, LoD or LoQ (`NA`).
+#'
 #' Additionally, the limit of detection (LoD) and limit of quantification (LoQ)
 #' are calculated for each feature based on the calibration curve, following the
 #' ICH Q2(R1/R2) approach (LoD = 3.3 sigma / S, LoQ = 10 sigma / S). Here S is
@@ -500,31 +507,36 @@ calc_calibration_results <- function(
       lowest_cal = sort(in_range)[1],
       highest_cal = sort(in_range, decreasing = TRUE)[1]
     )
+    dt <- dt |>
+      mutate(
+        weight = switch(
+          fit_weighting[1],
+          "none" = 1,
+          "1/x" = 1 / .data$concentration,
+          "1/x^2" = 1 / .data$concentration^2,
+          "1/sqrt(x)" = 1 / sqrt(.data$concentration),
+          NA_real_
+        )
+      ) |>
+      # A zero-concentration (blank) calibrator cannot be inverse-weighted
+      # (weight = 1/0 = Inf), which makes lm() fail. Drop non-finite-weight
+      # rows so the weighted fit succeeds over the real standards. Unweighted
+      # fits keep the blank (weight = 1). The exclusion is reported once,
+      # aggregated per feature, by the caller before the split.
+      filter(is.finite(.data$weight))
+    n_points <- sum(!is.na(dt[[variable]]) & !is.na(dt$concentration))
+    base_info$n_points <- n_points
+    # A single linear calibrator gives a line through the origin
+    through_origin <- base_info$fit_model == "linear" && n_points == 1
     tryCatch(
       {
-        dt <- dt |>
-          mutate(
-            weight = switch(
-              fit_weighting[1],
-              "none" = 1,
-              "1/x" = 1 / .data$concentration,
-              "1/x^2" = 1 / .data$concentration^2,
-              "1/sqrt(x)" = 1 / sqrt(.data$concentration),
-              NA_real_
-            )
-          ) |>
-          # A zero-concentration (blank) calibrator cannot be inverse-weighted
-          # (weight = 1/0 = Inf), which makes lm() fail. Drop non-finite-weight
-          # rows so the weighted fit succeeds over the real standards. Unweighted
-          # fits keep the blank (weight = 1). The exclusion is reported once,
-          # aggregated per feature, by the caller before the split.
-          filter(is.finite(.data$weight))
-
-        formula <- ifelse(
-          dt$fit_model[1] == "linear",
-          paste0(variable, " ~ concentration"),
+        formula <- if (through_origin) {
+          paste0(variable, " ~ 0 + concentration")
+        } else if (base_info$fit_model == "linear") {
+          paste0(variable, " ~ concentration")
+        } else {
           paste0(variable, " ~ poly(concentration, 2, raw = TRUE)")
-        )
+        }
 
         # Warnings (e.g. rank-deficient fit) are intentionally suppressed: a
         # failed fit yields NA coefficients, which `reg_failed` below detects
@@ -549,22 +561,24 @@ calc_calibration_results <- function(
           NA_real_
         }
 
-        if (dt$fit_model[1] == "quadratic") {
-          reg_failed <- is.na(res$coefficients[[3]]) |
-            is.na(res$coefficients[[2]]) |
-            is.na(res$coefficients[[1]])
-          coef_c <- res$coefficients[[3]]
-        } else {
-          reg_failed <- is.na(res$coefficients[[2]]) |
-            is.na(res$coefficients[[1]])
-          coef_c <- NA_real_
+        coefs <- res$coefficients
+        if (through_origin) {
+          coefs <- c(0, coefs)
+        }
+        coef_c <- if (base_info$fit_model == "quadratic") coefs[[3]] else
+          NA_real_
+        reg_failed <- anyNA(coefs)
+        # A fit through all points (no residual df, e.g. 2 points for a line)
+        # has no meaningful R2, sigma or LoD/LoQ, nor has a failed fit
+        if (reg_failed || res$df.residual == 0) {
+          r.squared <- sigma <- sigma_intercept <- NA_real_
         }
         return(c(
           base_info,
           list(
             r.squared = r.squared,
-            coef_a = res$coefficients[[1]],
-            coef_b = res$coefficients[[2]],
+            coef_a = coefs[[1]],
+            coef_b = coefs[[2]],
             coef_c = coef_c,
             sigma = sigma,
             sigma_intercept = sigma_intercept,
@@ -717,6 +731,14 @@ calc_calibration_results <- function(
     dplyr::group_split(.data$feature_id, .data$curve_id)
 
   d_stats <- map(d_calib, function(x) calc_lm(x)) |> bind_rows()
+  quad_few <- d_stats$feature_id[
+    d_stats$fit_model == "quadratic" & d_stats$n_points < 3
+  ]
+  if (length(quad_few) > 0) {
+    mh_warn(
+      "A quadratic calibration needs at least 3 calibrators; not calibrated: {.val {mh_vec(quad_few)}}."
+    )
+  }
   d_stats <- add_quantlimits(d_stats, lod_sigma)
 
   d_stats <- d_stats |>
