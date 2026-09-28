@@ -137,6 +137,11 @@
   row order of the analysis metadata, and are updated by
   `set_analysis_order()`. Processed values were not affected.
 
+* `plot_runscatter()` and `plot_rla_boxplot()` with `remove_gaps = TRUE` and
+  `collapse_excluded = TRUE` draw one gap band and label between two shown
+  analyses, instead of one per underlying gap (a double-width band with
+  stacked labels).
+
 * `correct_drift_*()` with `replace_previous = TRUE` no longer clears the drift
   and batch correction state of the other variables. Re-correcting e.g.
   `feature_norm_intensity` marked drift-corrected intensities as uncorrected, so

@@ -469,6 +469,8 @@ gap_axis <- function(unique_orders, all_orders, remove_gaps, gap_scale) {
       gap_idx <- c(gap_idx, pos_left)
     }
   }
+  # Several real gaps between the same visible pair share one band
+  gap_idx <- unique(gap_idx)
   if (length(gap_idx) == 0) {
     return(list(index = index, d_gaps = NULL))
   }

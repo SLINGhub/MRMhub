@@ -135,3 +135,10 @@ test_that("resolve_page_size rejects unsupported units and sizes", {
 test_that("resolve_page_size defaults to mm", {
   expect_equal(resolve_page_size(180, 240), resolve_page_size(180, 240, "mm"))
 })
+
+test_that("gap_axis draws one band for several real gaps between two visible orders", {
+  # Gaps 2->4 and 5->7 both fall between visible orders 2 and 8; band width 3
+  g <- gap_axis(c(2L, 8L), c(1L, 2L, 4L, 5L, 7L, 8L), TRUE, 1)
+  expect_equal(g$index, c(1, 5))
+  expect_equal(g$d_gaps$gap_label, "2 | 8")
+})
