@@ -136,7 +136,6 @@ plot_rt_vs_chain <- function(
     group_by(.data$feature_id) |>
     summarise(
       rt_median = median(.data$feature_rt, na.rm = TRUE),
-      #lipid_class = dplyr::first(.data$feature_class),
       is_istd = dplyr::first(.data$is_istd),
       is_quantifier = dplyr::first(.data$is_quantifier),
       .groups = "drop"
@@ -253,7 +252,6 @@ plot_rt_vs_chain <- function(
     arrange(.data$lipid_class_lcb) |> # Sort by lipid_class to ensure proper order
     group_by(.data$lipid_class_lcb, !!sym(group_var)) |> # Regroup to access the current group
     mutate(
-      #prev_avg_rt = dplyr::lag(avg_rt, default = 0),
       next_avg_rt = if (x_var == "total_db")
         dplyr::lead(.data$avg_rt, default = 0) else
         dplyr::lead(.data$avg_rt, default = Inf)
@@ -303,13 +301,11 @@ plot_rt_vs_chain <- function(
     mutate(
       # Shape 21 is circle (can be open or filled by fill aesthetic)
       point_shape = 21,
-      #point_shape = ifelse(!is_outlier, 24, 21),
       point_fill = ifelse(
         .data$is_outlier,
         as.character(!!sym(col_var)),
         NA_character_
       ),
-      #stroke =  ifelse(is_outlier, 0.7, 0.5)
     )
 
   # If you want a legend for outliers, add a variable:

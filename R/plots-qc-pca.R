@@ -336,12 +336,10 @@ plot_pca <- function(
         color = if (ellipse_fill) {
           ggplot2::guide_legend(
             title = ellipse_legend_title
-            #override.aes = list(size = 1, alpha = ellipse_alpha)
           )
         } else {
           ggplot2::guide_legend(
             title = ellipse_legend_title
-            #override.aes = list(size = 1, alpha = 0.0)
           )
         }
       )

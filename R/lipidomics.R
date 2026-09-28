@@ -224,7 +224,6 @@ parse_lipid_feature_names <- function(
   }
 
   d_goslin <- d_goslin |>
-    #filter(Grammar != "NOT_PARSEABLE") |>
     mutate(lipid_class_lcb = .data$Extended.Species.Name) |>
     mutate(
       Normalized.Name = if_else(

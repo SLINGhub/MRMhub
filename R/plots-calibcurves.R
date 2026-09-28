@@ -281,7 +281,6 @@ plot_calibrationcurves <- function(
     mutate(
       feature_id = forcats::fct_inorder(.data$feature_id)
     ) |>
-    # REMOVE filter(str_detect(.data$qc_type, "CAL|[MLH]QC|^QC|EQA")) |>
     # Only measured analyses can be plotted; blank IDs never match.
     dplyr::inner_join(
       data@annot_qcconcentrations,
@@ -407,7 +406,6 @@ plot_calibrationcurves <- function(
   # Used for zoom in
   d_calib$curve_id <- as.character(d_calib$curve_id)
   d_calib_subset <- d_calib |>
-    #filter(.data$qc_type == "CAL") |>
     group_by(.data$feature_id, .data$curve_id) |>
     # Get first N unique x values per group
     mutate(x_rank = dplyr::dense_rank(.data$concentration)) |>
@@ -992,7 +990,6 @@ plot_calibcurves_page <- function(
       )
   }
 
-  # color = ifelse(after_stat(r.squared) < 0.80, "red", "darkgreen")), size = 1.4) +
   p <- p +
     scale_color_manual(values = point_color) +
     scale_fill_manual(values = point_fill) +
@@ -1073,8 +1070,6 @@ plot_calibcurves_page <- function(
         hjust = 0,
         vjust = 1.5,
         nudge_x = 0,
-        #vjust = 0,
-        #hjust = 0,
         size = 2,
         color = "grey36",
         fontface = "italic",

@@ -124,7 +124,6 @@ fun_gauss.kernel.smooth = function(
       list(y_fit = y_fit, y_predicted = y_predicted, has_error = fit_degenerate)
     },
     error = function(e) {
-      # print(e$message) # will be shown for each feature/batch...
       return(list(y_fit = NA_real_, y_predicted = NA_real_, has_error = TRUE))
     }
   )
@@ -208,8 +207,6 @@ fun_loess <- function(tbl, ref_qc_types, log_transform_internal, ...) {
       list(y_fit = y_fit, y_predicted = y_predicted, has_error = FALSE)
     },
     error = function(e) {
-      # print(e$message) # will be shown for each feature/batch...
-
       return(list(y_fit = NA_real_, y_predicted = NA_real_, has_error = TRUE))
     }
   )
@@ -679,7 +676,6 @@ correct_drift <- function(
 
     d_smooth_recalc <- d_smooth_recalc |>
       select("analysis_id", "qc_type", "feature_id", "batch_id", "x", "y") |>
-      #group_by(across(all_of(adj_groups))) |>
       group_split(!!!syms(adj_groups))
 
     d_smooth_recalc <- d_smooth_recalc |>
@@ -737,7 +733,6 @@ correct_drift <- function(
   d_smooth_summary_bybatch <- d_smooth_res |>
     group_by(!!!syms(adj_groups)) |>
     summarise(
-      #.by = !!!syms(adj_groups),
       any_fit_error = as.logical(any(.data$fit_error, na.rm = TRUE)),
       any_fit_warning = as.logical(any(.data$fit_warning, na.rm = TRUE)),
       cv_raw_spl = cv(.data$y_original[.data$qc_type == "SPL"], na.rm = TRUE),
@@ -886,7 +881,6 @@ correct_drift <- function(
     ) |>
     group_by(!!!syms(adj_groups)) |>
     mutate(
-      #.by = !!!syms(adj_groups),
       y_final = case_when(
         is.na(.data$y_adj) ~ NA_real_,
         !.data$cv_change_valid & !use_original_if_fail ~ NA_real_,
@@ -916,7 +910,6 @@ correct_drift <- function(
   d_stats <- d_smooth_final |>
     group_by(!!!syms(adj_groups)) |>
     summarise(
-      #  .by = !!!syms(adj_groups),
       cv_raw_spl = cv(.data$y_original[.data$qc_type == "SPL"], na.rm = TRUE),
       cv_adj_spl = cv(.data$var_adj[.data$qc_type == "SPL"], na.rm = TRUE)
     ) |>
@@ -1644,7 +1637,6 @@ correct_batch_centering <- function(
   data = NULL,
   variable,
   ref_qc_types,
-  #correct_location = TRUE,
   correct_scale = FALSE,
   replace_previous = TRUE,
   log_transform_internal = TRUE,

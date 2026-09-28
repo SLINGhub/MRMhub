@@ -363,7 +363,6 @@ get_assert_summary_table <- function(
     mutate(
       Field = if_else(.data$Field == "NA", .data$TargetField, .data$Field)
     ) |>
-    #mutate(num.violations = if_else(.data$verb == "verify", "", .data$num.violations)) |>
     select(
       "Type",
       "Table",
@@ -820,8 +819,6 @@ assert_metadata <- function(
         description = "W;Invalid values (0 or negative);Features;molecular_weight"
       )
 
-    #assertr::assert(\(x){any(xor(is.na(x), is.na(metadata$annot_features$interference_feature_id)))}, "interference_feature_id", obligatory=FALSE, description = "E;Missing interference proportion(s);Features;interference_contribution") |>
-
     if (!is.null(data)) {
       metadata$annot_features <- metadata$annot_features |>
         assertr::verify(
@@ -877,7 +874,6 @@ assert_metadata <- function(
         obligatory = TRUE,
         description = "E;Missing value(s);ISTDs; "
       ) |>
-      #assertr::assert(\(x) {unique(x) %in% metadata$annot_istds$quant_istd_feature_id},quant_istd_feature_id, obligatory=TRUE, description = "W;Internal standard(s) not defined;ISTDs;quant_istd_feature_id") |>
       assertr::verify(
         all(assertr::is_uniq(.data$quant_istd_feature_id)),
         obligatory = TRUE,
@@ -949,7 +945,6 @@ assert_metadata <- function(
         obligatory = FALSE,
         description = "W;Units not identical in at least one group;Response Curves;analyzed_amount_unit"
       ) |>
-      #assertr::verify((data@annot_analyses |> filter(qc_type == "RQC") |> pull(analysis_id) %in% analysis_id), description = "W;Analyses of QC type 'RQC' not defined;Response Curves;analysis_id") |>
       assertr::assert(
         \(x) {
           not_na(x)

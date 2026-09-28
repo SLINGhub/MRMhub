@@ -173,8 +173,6 @@ plot_normalization_qc <- function(
   middle_string <- "_cv_"
   end_regex <- paste(qc_types, collapse = "|")
 
-  #col_pattern <- paste0("^(", start_regex, ")", middle_string, "(", end_regex, ")$")
-
   # Generate variable names for CV metrics
   x_variable <- stringr::str_c(before_norm_var, "_cv")
   y_variable <- stringr::str_c(after_norm_var, "_cv")

@@ -808,11 +808,6 @@ runscatter_plot_pages <- function(
   label_wrap_width
 ) {
   runscatter_one_page <- function(d_subset) {
-    # For debugging
-    # p <- ggplot(data = data.frame(speed = 1:4, dist = cumsum(runif(4, 0, 22))), aes(x = speed, y = dist)) + geom_point()
-    # plot(p)
-    # return(p)
-
     point_size <- ifelse(is.na(point_size), 2, point_size)
 
     if (is.na(point_border_width)) {
@@ -924,7 +919,6 @@ runscatter_plot_pages <- function(
 
     p <- ggplot2::ggplot(d_subset, aes(x = !!sym(x_var)))
 
-    # browser()
     if (show_batches) {
       if (!batch_zebra_stripe) {
         d_batches_temp <- d_batch_data |> filter(.data$id_batch_start != 1)
@@ -1096,7 +1090,6 @@ runscatter_plot_pages <- function(
       )
 
     if (show_trend) {
-      #browser()
       y_var_trend <- if_else(
         str_detect(y_var, "\\_before|\\_raw"),
         paste0(y_var, "_fit"),
@@ -1393,17 +1386,12 @@ runscatter_plot_pages <- function(
   }
 
   # Split into list of page groups for parallel processing if multithreading is enabled otherwise include all pages in one group
-  #tick <- Sys.time()
   page_list <- split(d_subset, d_subset$page_id)
-  #tock <- Sys.time()
-
-  ##rint("Start PDF FILE")
 
   if (output_pdf) {
     pdf(
       file = file,
       onefile = !multithreading,
-      #paper = "A4r",
       useDingbats = use_dingbats,
       useKerning = TRUE,
       # `paper` is deliberately left at its "special" default here, so the
@@ -1413,18 +1401,8 @@ runscatter_plot_pages <- function(
     )
   }
 
-  # # add a ggplot test plot with penguins
-  #p_list <- ggplot(data = data.frame(speed = 1:4, dist = cumsum(runif(4, 0, 22))), aes(x = speed, y = dist)) + geom_point()
-  #plot(p_list)
-  # return(p)
-
-  #p_list <- runscatter_one_page(d_subset = d_subset)
-
   p_list <- purrr::map(
     page_list,
-    #function(pg) {
-    # Combine page-specific arguments with arglist
-    #args <- c(list())
     ~ runscatter_one_page(d_subset = .x),
     .progress = show_progress
   )

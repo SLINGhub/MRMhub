@@ -64,20 +64,6 @@ plot_qc_summary_byclass <- function(
       }
     )
 
-  # TODO: clean up or re-add
-  # if(!exclude_qualifier){
-  #   d_qc <- d_qc |> filter(.data$is_quantifier)
-  # }
-  #
-  # if(!exclude_istd){
-  #   d_qc <- d_qc |> filter(!.data$is_istd)
-  # }
-
-  # TODO: cleanup feature/lipidclasses
-  # if(!all(is.na(d_qc$feature_class)) & any(is.na(d_qc$lipid_class))) d_qc$feature_class <- d_qc$lipid_class
-
-  # d_qc$feature_class <- forcats::fct(d_qc$feature_class)
-
   # Each feature counts once, in the first QC criterion it fails
   d_qc_in <- d_qc |>
     filter(.data$pass_istd, .data$pass_qualifier) |>
@@ -271,7 +257,6 @@ plot_qc_summary_overall <- function(
     theme_bw(base_size = font_base_size) +
     theme(
       legend.position = "none",
-      #axis.text.x = element_blank(),
       panel.grid.major.y = element_blank(), #element_line(color = "grey80", linewidth = .1),
       panel.grid.major.x = element_line(
         color = "grey80",

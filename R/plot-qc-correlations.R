@@ -519,7 +519,6 @@ plot_feature_correlations_page <- function(d_plot, ...) {
         fill = "#00283d"
       ),
       strip.text.x = ggplot2::element_text(color = "white"),
-      #strip.switch.pad.wrap = ggplot2::unit(1, "mm"),
       panel.border = element_rect(linewidth = 0.5, color = "grey40"),
       legend.position = "right"
     ) +

@@ -52,7 +52,6 @@ import_data_masshunter <- function(
 ) {
   check_data(data)
   rlang::arg_match(conc_column, c("conc_calc", "conc_final"))
-  #if (fs::path_ext(path) == "csv") {
   data <- import_data_main(
     data,
     path,
@@ -777,10 +776,6 @@ parse_masshunter_csv <- function(
   silent = FALSE,
   conc_column = "conc_final"
 ) {
-  # if(!silent) print(glue::glue("Reading [{basename(path)}] ..."))
-  # if (shiny::isRunning())
-  #   incProgress(1 / length(n_datafiles), detail = paste0(", basename(file)))
-  #
   # Read Agilent MassHunter Quant Export file (CSV).
   # The suppress*() wrap silences only readr's cosmetic chatter here (the auto
   # `X1..Xn` naming from `col_names = FALSE`, column-spec output). Genuine parse
@@ -1667,10 +1662,6 @@ parse_plain_long_csv <- function(
       "integration_qualifier"
     )))
 
-  # if (!use_normalized_data) {
-  #   #d_mrmhub_data <- d_mrmhub_data |> mutate(feature_norm_intensity = NA_real_)
-  #   d_mrmhub_data <- d_mrmhub_data |> select(-feature_norm_intensity)
-  # }
   d_raw_final
 }
 

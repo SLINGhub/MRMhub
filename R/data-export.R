@@ -162,7 +162,6 @@ save_report_xlsx <- function(
 
   if (nrow(data@dataset) > 0) {
     d_intensity_wide <- data@dataset |>
-      #dplyr::filter(.data$qc_type %in% c("SPL", "TQC", "BQC", "NIST", "LTR", "PBLK", "SBLK", "UBLK", "MBLK")) |>
       dplyr::select(dplyr::any_of(c(
         "analysis_id",
         "qc_type",
@@ -184,7 +183,6 @@ save_report_xlsx <- function(
 
   if (data@is_istd_normalized) {
     d_norm_intensity_wide <- data@dataset |>
-      #dplyr::filter(.data$qc_type %in% c("SPL", "TQC", "BQC", "NIST", "LTR", "PBLK", "SBLK", "UBLK", "MBLK")) |>
       dplyr::select(dplyr::any_of(c(
         "analysis_id",
         "qc_type",
@@ -206,7 +204,6 @@ save_report_xlsx <- function(
 
   if (data@is_quantitated) {
     d_conc_wide <- data@dataset |>
-      #dplyr::filter(!.data$qc_type %in% c("PBLK", "SBLK", "UBLK", "NIST", "LTR")) |>
       dplyr::filter(!.data$is_istd) |>
       dplyr::select(dplyr::any_of(c(
         "analysis_id",
@@ -259,8 +256,6 @@ save_report_xlsx <- function(
       tibble::add_row()
     d_conc_wide_QC_all <- tibble("No qc-filtered data available." = NA) |>
       tibble::add_row()
-    #d_wide_QC_SPL_normalized <- tibble("No qc-filtered normalized data available." = NA) |> tibble::add_row()
-    #d_wide_QC_all_normalized <- tibble("No qc-filtered normalized data available." = NA) |> tibble::add_row()
   }
 
   if (length(normalized_variable) > 0) {
@@ -394,8 +389,6 @@ save_report_xlsx <- function(
   }
   name_filt_spl <- paste0("QCfilt", name_filt, "_StudySamples")
   name_filt_all <- paste0("QCfilt", name_filt, "_AllSamples")
-  #name_filt_spl_normalized <- paste0("QCfilt",name_filt,"_RefNorm_StudySpl")
-  #name_filt_all_normalized <- paste0("QCfilt",name_filt,"_RefNorm_AllSpl")
   name_all_normalized <- paste0(
     c(
       feature_conc_normalized = "Conc",
@@ -411,8 +404,6 @@ save_report_xlsx <- function(
     "Calibration_metrics" = metrics_calibration,
     name_filt_spl = d_conc_wide_QC_SPL,
     name_filt_all = d_conc_wide_QC_all,
-    #name_filt_spl_normalized = d_wide_QC_SPL_normalized,
-    #name_filt_all_normalized = d_wide_QC_all_normalized,
     "Raw_Intensity_FullDataset" = d_intensity_wide,
     "Norm_Intensity_FullDataset" = d_norm_intensity_wide,
     "Conc_FullDataset" = d_conc_wide,
@@ -484,7 +475,6 @@ save_report_xlsx <- function(
   }
   wb <- openxlsx2::write_xlsx(
     x = table_list,
-    #file = path,
     na.strings = "",
     # Length-based so adding a sheet needs no parallel-vector bookkeeping: every
     # sheet is a table; only the "Info" sheet (first) omits the first row/col
@@ -497,10 +487,6 @@ save_report_xlsx <- function(
     first_row = c(FALSE, rep(TRUE, length(table_list) - 1)),
     tab_color = tab_color
   )
-
-  # if(length(normalized_variable) == 0){
-  #   wb <- openxlsx2::wb_remove_worksheet(wb, 9)
-  # }
 
   for (col in names(qc_inf)) {
     rows <- qc_inf[[col]]

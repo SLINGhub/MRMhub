@@ -197,10 +197,6 @@ plot_interference_correction <- function(
       color = "grey80",
       linetype = "dashed"
     ) +
-    # ggplot2::labs(
-    #   x = NULL,
-    #   y = ""
-    # ) +
     ggplot2::scale_color_manual(
       name = NULL,
       values = pkg.env$qc_type_annotation$qc_type_col,

@@ -88,8 +88,6 @@ plot_runsequence <- function(
   }
 
   # Convert qc_type to factor and create sample_category
-  # d_filt$qc_type <- factor(d_filt$qc_type,
-  #                          levels = pkg.env$qc_type_annotation$qc_type_levels) |>
   d_filt$qc_type <- factor(d_filt$qc_type) |>
     forcats::fct_drop()
   d_filt$sample_category <- as.character(d_filt$qc_type)
@@ -830,11 +828,6 @@ plot_rla_boxplot <- function(
     scale_x_continuous(
       breaks = breaks,
       labels = labels,
-      # limits = if (use_index_axis) {
-      #   range(d_filt$analysis_order_index)
-      # } else {
-      #   range(d_filt$analysis_order)
-      # },
       expand = c(0.02, 0.02),
       guide = ggplot2::guide_axis(minor.ticks = TRUE)
     )
@@ -1094,9 +1087,7 @@ plot_rla_boxplot <- function(
     }
   }
 
-  ##if(!rla_limit_to_range){
   p <- p + ggplot2::coord_cartesian(xlim = xlim, ylim = ylim, expand = TRUE)
-  ##}
 
   p <- p +
     mrmhub_style_layer(

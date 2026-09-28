@@ -630,7 +630,6 @@ plot_abundanceprofile <- function(
           },
           yend = 1 + 0.3,
         ),
-        #fill = "black",
         color = "#226ca1",
         alpha = 0.90,
         linewidth = 0.25,

@@ -128,20 +128,6 @@ comp_lgl_vec <- function(lgl_list, .operator) {
 }
 
 
-# comp_lgl_vec <- function(lgl_list, .operator){
-#   browser()
-#   if (.operator == "AND") {
-#     return(Reduce("&", lgl_list))
-#   } else if (.operator == "OR") {
-#     return(Reduce("|", lgl_list))
-#   } else if (.operator == "XOR") {
-#     return(Reduce(function(x, y) xor(x, y), lgl_list))
-#   } else {
-#     # Return NULL for unsupported operators
-#     return(NULL)
-#   }
-# }
-
 # Custom assertr function to test if at least one of provided columns exists
 has_any_name = function(...) {
   check_this <- list(...)
@@ -645,43 +631,3 @@ desaturate_colors <- function(colors, amount = 0.5) {
   })
   if (all(is.null(names(colors)))) unname(x) else x
 }
-
-#
-# # https://dewey.dunnington.ca/post/2018/modifying-facet-scales-in-ggplot2/
-#
-# FacetEqualWrap <- ggplot2::ggproto(
-#   "FacetEqualWrap", FacetWrap,
-#   train_scales = function(self, x_scales, y_scales, layout, data, params) {
-#     # doesn't make sense if there is not an x *and* y scale
-#     if (is.null(x_scales) || is.null(x_scales)) {
-#       cli::cli_abort("X and Y scales required for facet_equal_wrap")
-#     }
-#
-#     # regular training of scales
-#     ggproto_parent(FacetWrap, self)$train_scales(x_scales, y_scales, layout, data, params)
-#
-#     # switched training of scales (x and y and y on x)
-#     for (layer_data in data) {
-#       match_id <- match(layer_data$PANEL, layout$PANEL)
-#
-#       x_vars <- intersect(x_scales[[1]]$aesthetics, names(layer_data))
-#       y_vars <- intersect(y_scales[[1]]$aesthetics, names(layer_data))
-#
-#       SCALE_X <- layout$SCALE_X[match_id]
-#       ggplot2:::scale_apply(layer_data, y_vars, "train", SCALE_X, x_scales)
-#
-#       SCALE_Y <- layout$SCALE_Y[match_id]
-#       ggplot2:::scale_apply(layer_data, x_vars, "train", SCALE_Y, y_scales)
-#     }
-#   }
-# )
-#
-# facet_wrap_equal <- function(...) {
-#   # take advantage of the sanitizing that happens in facet_wrap
-#   facet_super <- facet_wrap(...)
-#
-#   ggplot2::ggproto(NULL, FacetEqualWrap,
-#     shrink = facet_super$shrink,
-#     params = facet_super$params
-#   )
-# }
