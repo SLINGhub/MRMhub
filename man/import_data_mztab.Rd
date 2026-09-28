@@ -12,7 +12,7 @@ import_data_mztab(data = NULL, path, import_metadata = TRUE, silent = FALSE)
 \item{path}{Path to a \code{.mzTab} file, or a directory of them.}
 
 \item{import_metadata}{If \code{TRUE} (default), derive analysis/feature metadata
-(incl. \code{batch_id}, formula, neutral mass) from the imported data via
+(incl. formula, neutral mass) from the imported data via
 \code{\link[=import_metadata_from_data]{import_metadata_from_data()}}.}
 
 \item{silent}{Suppress messages.}
@@ -34,8 +34,7 @@ and feature identities (name, formula, neutral mass, m/z, retention time)
 are taken from the \code{SMF}/\code{SML} sections where available. Internal-standard
 relationships, QC-type assignments and calibration metadata are \strong{not}
 part of mzTab-M and must be supplied afterwards with \code{\link[=add_metadata]{add_metadata()}}.
-\code{study_variable} group membership is imported best-effort as \code{batch_id}
-(mzTab-M has no analytical-batch concept).
+\code{study_variable} groups are not imported; all analyses are in one batch.
 }
 \section{Identifier normalization}{
 

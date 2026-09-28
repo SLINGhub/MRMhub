@@ -167,11 +167,8 @@ test_that("import_data_mztab reads a Lipid Data Analyzer file", {
     dplyr::arrange(.data$analysis_id)
   expect_equal(lps$feature_intensity, c(12345.6, 23456.7, NA))
 
-  # study_variable membership imported as batch_id (best effort)
-  expect_setequal(
-    unique(mexp@annot_analyses$batch_id),
-    c("mouse liver 1", "mouse liver 2")
-  )
+  # study_variable groups are not batches: default batch
+  expect_equal(unique(mexp@annot_analyses$batch_id), "1")
 
   # feature metadata carried through to annot_features
   expect_true(any(!is.na(mexp@annot_features$molecular_weight)))
@@ -198,6 +195,8 @@ test_that("export -> import round-trips feature and analysis counts", {
     length(unique(mexp_quant@dataset$feature_id))
   )
   expect_true(any(!is.na(back@dataset_orig$feature_intensity)))
+  # the exported qc_type groups (study_variable) do not become batches
+  expect_equal(unique(back@annot_analyses$batch_id), "1")
 })
 
 test_that("output parses with the rmzTabM reference reader (oracle)", {

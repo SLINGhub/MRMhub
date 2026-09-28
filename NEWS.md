@@ -15,6 +15,11 @@
   `pass_linearity` and `filter_linearity`. Code selecting columns by position
   needs updating.
 
+* `import_data_mztab()` no longer imports `study_variable` groups as `batch_id`;
+  all analyses are in one batch. Since `save_dataset_mztab()` writes the QC
+  types as study variables, a round trip turned QC types into batches. Supply
+  batches with `add_metadata()`.
+
 * `calc_qc_metrics()`: the column `sb_ratio_q10_pbk` is renamed to
   `sb_ratio_q10_pblk`.
 
