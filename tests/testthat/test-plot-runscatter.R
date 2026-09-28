@@ -430,7 +430,7 @@ test_that("plot_runscatter show reference lines works", {
   plot_data <- ggplot2::ggplot_build(p[[1]])$data
   expect_equal(length(plot_data), 5)
   expect_equal(unique(plot_data[[2]]$alpha), 0.15)
-  expect_equal(mean(plot_data[[2]]$ymax), 2408485.4)
+  expect_equal(mean(plot_data[[2]]$ymax), 2474728.2)
   expect_doppelganger_cond("extrunscatterref", p)
 
   p <- plot_runscatter(
@@ -1310,8 +1310,13 @@ test_that("plot_runscatter reference band SD uses uncapped values", {
   )))
   d <- p[[1]]$data
   # Independently recompute the band per feature (mirrors the summarise): mean/SD
-  # on raw `value`, clamped for drawing to [0, max(value_mod)] as the code does.
+  # on raw `value`, clamped for drawing to [0, panel max of value_mod] (all QC
+  # types, not only the reference QC).
   stats <- d |>
+    dplyr::mutate(
+      vmax = max(.data$value_mod, na.rm = TRUE),
+      .by = "feature_id"
+    ) |>
     dplyr::filter(.data$qc_type == "BQC") |>
     dplyr::group_by(.data$feature_id) |>
     dplyr::summarise(
@@ -1319,7 +1324,7 @@ test_that("plot_runscatter reference band SD uses uncapped values", {
       s_raw = 2 * sd(.data$value, na.rm = TRUE),
       m_cap = mean(.data$value_mod, na.rm = TRUE),
       s_cap = 2 * sd(.data$value_mod, na.rm = TRUE),
-      vmax = max(.data$value_mod, na.rm = TRUE),
+      vmax = dplyr::first(.data$vmax),
       .groups = "drop"
     ) |>
     dplyr::mutate(
@@ -1348,6 +1353,36 @@ test_that("plot_runscatter reference band SD uses uncapped values", {
     sort(round(stats$h_raw, 2)),
     sort(round(stats$h_cap, 2))
   )))
+})
+
+test_that("plot_runscatter upper reference line is mean + k*SD without capping", {
+  # The upper line was clamped to the highest reference-QC point, i.e. drawn too
+  # low whenever mean + k*SD exceeded it (most batches with batch-wise lines).
+  p <- suppressMessages(plot_runscatter(
+    data = mexp,
+    variable = "intensity",
+    show_reference_lines = TRUE,
+    ref_qc_types = "BQC",
+    reference_k_sd = 2,
+    reference_batchwise = TRUE,
+    rows_page = 3,
+    cols_page = 4,
+    return_plots = TRUE
+  ))
+  d <- p[[1]]$data
+  expected <- d |>
+    dplyr::filter(.data$qc_type == "BQC") |>
+    dplyr::summarise(
+      up = mean(.data$value, na.rm = TRUE) + 2 * sd(.data$value, na.rm = TRUE),
+      .by = c("feature_id", "batch_id")
+    )
+  is_seg <- vapply(
+    p[[1]]$layers,
+    \(l) inherits(l$geom, "GeomSegment"),
+    logical(1)
+  )
+  upper <- ggplot2::ggplot_build(p[[1]])$data[[max(which(is_seg))]]
+  expect_equal(sort(upper$yend), sort(expected$up))
 })
 
 # Helper: run plot_runscatter with capping and return all plotted rows.

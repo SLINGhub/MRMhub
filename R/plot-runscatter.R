@@ -1019,8 +1019,6 @@ runscatter_plot_pages <- function(
           # The reference mean/SD describe the true variability of the reference
           # QC type, so they use the uncapped `value` -- computing them on the
           # MAD-capped `value_mod` would understate the SD and narrow the band.
-          # (The y_max_cap clamp below still uses `value_mod`: it only bounds the
-          # drawn rectangle to the visible, capped y-range.)
           mean = mean(.data$value, na.rm = TRUE),
           sd = if (!is.na(reference_k_sd)) {
             reference_k_sd * sd(.data$value, na.rm = TRUE)
@@ -1030,11 +1028,7 @@ runscatter_plot_pages <- function(
           y_min = .data$mean - .data$sd,
           y_max = .data$mean + .data$sd,
           y_min_cap = if_else(.data$y_min < 0, 0, .data$y_min),
-          y_max_cap = if_else(
-            .data$y_max > safe_max(.data$value_mod, na.rm = TRUE),
-            safe_max(.data$value_mod, na.rm = TRUE),
-            .data$y_max
-          ),
+          y_max_cap = .data$y_max,
           batch_start = if (use_index_axis) {
             min(.data$id_batch_start_index)
           } else {
@@ -1048,6 +1042,16 @@ runscatter_plot_pages <- function(
           batch_id = min(.data$batch_id),
           .groups = 'drop'
         )
+
+      # With capping, keep an outlier-inflated SD from stretching the y-axis
+      if (cap_outliers) {
+        d_subset_stats <- d_subset_stats |>
+          left_join(
+            dplyr::select(dMax, "feature_id", panel_max = "y_max"),
+            by = "feature_id"
+          ) |>
+          mutate(y_max_cap = pmin(.data$y_max, .data$panel_max))
+      }
 
       if (reference_sd_shade) {
         if (is.na(reference_fill_color)) {
