@@ -121,10 +121,19 @@ test_that("Aesthetic parameters are applied correctly", {
 })
 
 test_that("Plot works with NA qc_types to auto-detect", {
-  # This tests the initial `if (all(is.na(qc_types)))` block.
-  # The result should be identical to the default plot in this case.
+  # NA auto-selects the non-blank QC types present in the data.
   p <- plot_interference_correction(mexp_corrected, qc_types = NA)
+  expect_setequal(
+    as.character(unique(p$data$qc_type)),
+    c("SPL", "TQC", "BQC", "NIST", "LTR")
+  )
   expect_doppelganger_cond("qc-interferences-na-qcs", p)
+})
+
+test_that("plot_interference_correction keeps QC types outside the former fixed list", {
+  p <- plot_interference_correction(mexp_corrected, qc_types = c("SPL", "SBLK"))
+  expect_false(anyNA(p$data$qc_type))
+  expect_setequal(as.character(unique(p$data$qc_type)), c("SPL", "SBLK"))
 })
 
 
@@ -180,7 +189,10 @@ test_that("plot_qc_interference_impact renders a visible fill for SPL", {
 
 test_that("min_correction_pct filters features in the interference plots", {
   n_all <- length(unique(
-    plot_interference_correction(mexp_corrected, qc_types = "SPL")$data$feature_id
+    plot_interference_correction(
+      mexp_corrected,
+      qc_types = "SPL"
+    )$data$feature_id
   ))
   n_thr <- length(unique(
     suppressWarnings(suppressMessages(
@@ -224,7 +236,10 @@ test_that("top_n keeps the highest-effect features", {
 test_that("sort_by_effect orders the x-axis by correction effect", {
   ranked <- effect_ranking(plot_interference_correction(mexp_corrected))
 
-  p_desc <- plot_interference_correction(mexp_corrected, sort_by_effect = "desc")
+  p_desc <- plot_interference_correction(
+    mexp_corrected,
+    sort_by_effect = "desc"
+  )
   expect_equal(levels(p_desc$data$feature_id), ranked)
 
   p_asc <- plot_interference_correction(mexp_corrected, sort_by_effect = "asc")

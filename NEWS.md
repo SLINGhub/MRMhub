@@ -247,6 +247,10 @@
   for log axes and ratio plots; only the named metric columns are selected;
   with `y_shared = TRUE` and one `y_lim` bound missing, the x-axis is free.
 
+* `plot_interference_correction()` labels all QC types correctly; types such as
+  SBLK, RQC or UBLK were shown as `NA`. `qc_types = NA` selects the non-blank QC
+  types, as documented; it previously also included PBLK and SBLK.
+
 * `plot_runscatter(show_reference_lines = TRUE)`: the upper reference line and
   the top of the SD band are drawn at mean + k × SD. They were cut off at the
   highest reference-QC value, which lowered most batch-wise lines. With
