@@ -26,6 +26,18 @@ check_single_pivot_value <- function(x) {
   x
 }
 
+# Long feature data -> one row per analysis (`id_cols`) and one column per
+# feature, holding `value_col`
+to_wide <- function(d, id_cols, value_col) {
+  d |>
+    dplyr::select(dplyr::any_of(c(id_cols, "feature_id", value_col))) |>
+    tidyr::pivot_wider(
+      names_from = "feature_id",
+      values_from = dplyr::all_of(value_col),
+      values_fn = check_single_pivot_value
+    )
+}
+
 #' Coerce a column to numeric/integer, warning on silent parse failures
 #'
 #' Wraps [as.numeric()] / [as.integer()] so that a non-blank source value that

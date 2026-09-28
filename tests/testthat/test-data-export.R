@@ -63,9 +63,9 @@ test_that("save_report_xlsx creates the correct sheets", {
     "Calibration_metrics",
     "QCfilt_StudySamples",
     "QCfilt_AllSamples",
-    "Conc_FullDataset",
     "Raw_Intensity_FullDataset",
     "Norm_Intensity_FullDataset",
+    "Conc_FullDataset",
     "SampleMetadata",
     "FeatureMetadata",
     "InternalStandards",
@@ -73,7 +73,16 @@ test_that("save_report_xlsx creates the correct sheets", {
     "Interferences"
   )
 
-  expect_setequal(w_xlm$sheet_names, expected_sheets)
+  expect_equal(unname(w_xlm$sheet_names), expected_sheets)
+  tab_colors <- vapply(
+    w_xlm$worksheets,
+    \(ws) sub('.*rgb="([^"]+)".*', "\\1", ws$sheetPr),
+    ""
+  )
+  expect_equal(
+    tab_colors[c(1, 4, 6, 9)],
+    c("FFD7FC5D", "FFFF170F", "FF0A83AD", "FFC9C9C9")
+  )
   on.exit(unlink(temp_file)) # Clean up
 })
 

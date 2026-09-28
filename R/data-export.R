@@ -160,96 +160,38 @@ save_report_xlsx <- function(
     }
   }
 
-  if (nrow(data@dataset) > 0) {
-    d_intensity_wide <- data@dataset |>
-      dplyr::select(dplyr::any_of(c(
-        "analysis_id",
-        "qc_type",
-        "acquisition_time_stamp",
-        "feature_id",
-        "feature_intensity"
-      ))) |>
-      tidyr::pivot_wider(
-        names_from = "feature_id",
-        values_from = "feature_intensity",
-        values_fn = check_single_pivot_value
-      )
+  full_ids <- c("analysis_id", "qc_type", "acquisition_time_stamp")
+  d_intensity_wide <- if (nrow(data@dataset) > 0) {
+    to_wide(data@dataset, full_ids, "feature_intensity")
   } else {
-    d_intensity_wide <- tibble(
-      "No intensities available." = NA
-    ) |>
+    tibble("No intensities available." = NA) |> tibble::add_row()
+  }
+  d_norm_intensity_wide <- if (data@is_istd_normalized) {
+    to_wide(data@dataset, full_ids, "feature_norm_intensity")
+  } else {
+    tibble("No ISTD-normalized intensities available." = NA) |>
       tibble::add_row()
   }
-
-  if (data@is_istd_normalized) {
-    d_norm_intensity_wide <- data@dataset |>
-      dplyr::select(dplyr::any_of(c(
-        "analysis_id",
-        "qc_type",
-        "acquisition_time_stamp",
-        "feature_id",
-        "feature_norm_intensity"
-      ))) |>
-      tidyr::pivot_wider(
-        names_from = "feature_id",
-        values_from = "feature_norm_intensity",
-        values_fn = check_single_pivot_value
-      )
+  d_conc_wide <- if (data@is_quantitated) {
+    to_wide(
+      dplyr::filter(data@dataset, !.data$is_istd),
+      full_ids,
+      "feature_conc"
+    )
   } else {
-    d_norm_intensity_wide <- tibble(
-      "No ISTD-normalized intensities available." = NA
-    ) |>
-      tibble::add_row()
-  }
-
-  if (data@is_quantitated) {
-    d_conc_wide <- data@dataset |>
-      dplyr::filter(!.data$is_istd) |>
-      dplyr::select(dplyr::any_of(c(
-        "analysis_id",
-        "qc_type",
-        "acquisition_time_stamp",
-        "feature_id",
-        "feature_conc"
-      ))) |>
-      tidyr::pivot_wider(
-        names_from = "feature_id",
-        values_from = "feature_conc",
-        values_fn = check_single_pivot_value
-      )
-  } else {
-    d_conc_wide <- tibble("No concentration data available." = NA) |>
-      tibble::add_row()
+    tibble("No concentration data available." = NA) |> tibble::add_row()
   }
 
   if (data@is_filtered) {
-    d_conc_wide_QC_SPL <- data@dataset_filtered |>
-      dplyr::filter(.data$qc_type %in% c("SPL")) |>
-      dplyr::filter(!.data$is_istd) |>
-      dplyr::select(dplyr::any_of(c(
-        "analysis_id",
-        "feature_id",
-        filtered_variable
-      ))) |>
-      tidyr::pivot_wider(
-        names_from = "feature_id",
-        values_from = any_of(filtered_variable),
-        values_fn = check_single_pivot_value
-      )
-
-    d_conc_wide_QC_all <- data@dataset_filtered |>
-      dplyr::filter(!.data$is_istd) |>
-      dplyr::select(dplyr::any_of(c(
-        "analysis_id",
-        "qc_type",
-        "feature_id",
-        filtered_variable
-      ))) |>
-      tidyr::pivot_wider(
-        names_from = "feature_id",
-        values_from = any_of(filtered_variable),
-        values_fn = check_single_pivot_value
-      )
+    d_filt_analytes <- dplyr::filter(data@dataset_filtered, !.data$is_istd)
+    d_conc_wide_QC_SPL <- d_filt_analytes |>
+      dplyr::filter(.data$qc_type == "SPL") |>
+      to_wide("analysis_id", filtered_variable)
+    d_conc_wide_QC_all <- to_wide(
+      d_filt_analytes,
+      c("analysis_id", "qc_type"),
+      filtered_variable
+    )
   } else {
     filtered_variable_strip <- ""
     d_conc_wide_QC_SPL <- tibble("No qc-filtered data available." = NA) |>
@@ -258,25 +200,11 @@ save_report_xlsx <- function(
       tibble::add_row()
   }
 
-  if (length(normalized_variable) > 0) {
-    d_wide_all_normalized <- data@dataset |>
-      dplyr::filter(.data$qc_type %in% c("SPL")) |>
-      dplyr::filter(!.data$is_istd) |>
-      dplyr::select(dplyr::any_of(c(
-        "analysis_id",
-        "feature_id",
-        normalized_variable
-      ))) |>
-      tidyr::pivot_wider(
-        names_from = "feature_id",
-        values_from = any_of(normalized_variable),
-        values_fn = check_single_pivot_value
-      )
-  } else {
-    d_wide_all_normalized <- tibble(
-      "No reference sample normalized data available." = NA
-    ) |>
-      tibble::add_row()
+  # Only with a reference-normalized variable (NULL drops the sheet)
+  d_wide_all_normalized <- if (length(normalized_variable) > 0) {
+    data@dataset |>
+      dplyr::filter(.data$qc_type == "SPL", !.data$is_istd) |>
+      to_wide("analysis_id", normalized_variable)
   }
   # Interference relationships (derived + declared), with per-feature impact when
   # the correction has been applied -- documents the correction in the report.
@@ -398,77 +326,56 @@ save_report_xlsx <- function(
     "_NormalizedByRef_Full"
   )
 
-  table_list <- list(
-    "Info" = d_info,
-    "Feature_QC_metrics" = qc_metrics,
-    "Calibration_metrics" = metrics_calibration,
-    name_filt_spl = d_conc_wide_QC_SPL,
-    name_filt_all = d_conc_wide_QC_all,
-    "Raw_Intensity_FullDataset" = d_intensity_wide,
-    "Norm_Intensity_FullDataset" = d_norm_intensity_wide,
-    "Conc_FullDataset" = d_conc_wide,
-    name_all_normalized = d_wide_all_normalized,
-    "SampleMetadata" = if (nrow(data@annot_analyses) == 0) {
+  table_list <- rlang::list2(
+    Info = d_info,
+    Feature_QC_metrics = qc_metrics,
+    Calibration_metrics = metrics_calibration,
+    !!name_filt_spl := d_conc_wide_QC_SPL,
+    !!name_filt_all := d_conc_wide_QC_all,
+    Raw_Intensity_FullDataset = d_intensity_wide,
+    Norm_Intensity_FullDataset = d_norm_intensity_wide,
+    Conc_FullDataset = d_conc_wide,
+    !!name_all_normalized := d_wide_all_normalized,
+    SampleMetadata = if (nrow(data@annot_analyses) == 0) {
       data@annot_analyses |> tibble::add_row()
     } else {
       data@annot_analyses
     },
-    "FeatureMetadata" = if (nrow(data@annot_features) == 0) {
+    FeatureMetadata = if (nrow(data@annot_features) == 0) {
       data@annot_features |> tibble::add_row()
     } else {
       data@annot_features
     },
-    "InternalStandards" = if (nrow(data@annot_istds) == 0) {
+    InternalStandards = if (nrow(data@annot_istds) == 0) {
       data@annot_istds |> tibble::add_row()
     } else {
       data@annot_istds
     },
-    "BatchInfo" = if (nrow(data@annot_batches) == 0) {
+    BatchInfo = if (nrow(data@annot_batches) == 0) {
       tibble("No batches defined" = NA) |> tibble::add_row()
     } else {
       data@annot_batches
     },
-    "Interferences" = d_interferences
+    Interferences = d_interferences
+  ) |>
+    purrr::discard(is.null)
+
+  # Tab colours by sheet name; metadata sheets grey
+  tab_color <- c(
+    Info = "#d7fc5d",
+    Feature_QC_metrics = "#34fac5",
+    Calibration_metrics = "#34fac5",
+    Raw_Intensity_FullDataset = "#0A83ad",
+    Norm_Intensity_FullDataset = "#0313ad",
+    Conc_FullDataset = "#7113ad"
   )
-
-  if (length(normalized_variable) == 0) {
-    table_list$name_all_normalized <- NULL
-    tab_color = c(
-      "#d7fc5d",
-      "#34fac5",
-      "#34fac5",
-      "#ff170f",
-      "#9e0233",
-      "#0A83ad",
-      "#0313ad",
-      "#7113ad",
-      "#c9c9c9",
-      "#c9c9c9",
-      "#c9c9c9",
-      "#c9c9c9",
-      "#c9c9c9"
-    )
-  } else {
-    names(table_list)[9] <- c(name_all_normalized)
-    tab_color = c(
-      "#d7fc5d",
-      "#34fac5",
-      "#34fac5",
-      "#ff170f",
-      "#9e0233",
-      "#0A83ad",
-      "#0313ad",
-      "#7113ad",
-      "#f7b37c",
-      "#c9c9c9",
-      "#c9c9c9",
-      "#c9c9c9",
-      "#c9c9c9",
-      "#c9c9c9"
-    )
-  }
-
-  names(table_list)[4:5] <- c(name_filt_spl, name_filt_all)
+  tab_color[c(name_filt_spl, name_filt_all, name_all_normalized)] <- c(
+    "#ff170f",
+    "#9e0233",
+    "#f7b37c"
+  )
+  tab_color <- unname(tab_color[names(table_list)])
+  tab_color[is.na(tab_color)] <- "#c9c9c9"
 
   if (rlang::is_interactive()) {
     message("Saving report to disk - please wait...")
@@ -597,7 +504,6 @@ save_dataset_csv <- function(
   )
   variable <- stringr::str_c("feature_", variable)
   check_var_in_dataset(data@dataset, variable)
-  variable_sym = rlang::sym(variable)
 
   # Auto-choose some arg values if user does not define
 
@@ -644,19 +550,9 @@ save_dataset_csv <- function(
   if (is.na(add_qctype)) {
     add_qctype <- dplyr::n_distinct(d_filt$qc_type) > 1
   }
-  if (add_qctype) {
-    flds <- c("analysis_id", "qc_type", "feature_id")
-  } else {
-    flds <- c("analysis_id", "feature_id")
-  }
+  id_cols <- if (add_qctype) c("analysis_id", "qc_type") else "analysis_id"
 
-  ds <- d_filt |>
-    dplyr::select(all_of(c(flds, variable))) |>
-    tidyr::pivot_wider(
-      names_from = "feature_id",
-      values_from = !!variable_sym,
-      values_fn = check_single_pivot_value
-    )
+  ds <- to_wide(d_filt, id_cols, variable)
 
   ensure_output_dir(path, create_dir)
   readr::write_csv(ds, file = path, col_names = TRUE)
