@@ -513,3 +513,21 @@ test_that("data_sum_features errors name the user-facing function", {
   )
   expect_equal(rlang::call_name(err$call), "exclude_analyses")
 })
+
+test_that("a transition without any value is left out of its sum", {
+  m <- mexp
+  b <- m@dataset$feature_id == "LPC 18:1 (b)"
+  m@dataset <- m@dataset |>
+    dplyr::mutate(dplyr::across(
+      dplyr::any_of(c("feature_intensity", "feature_area", "feature_height")),
+      \(x) dplyr::if_else(b, NA_real_, x)
+    ))
+  ded <- suppressMessages(data_sum_features(m))
+  a <- m@dataset[m@dataset$feature_id == "LPC 18:1 (a)", ]
+  s <- ded@dataset[ded@dataset$feature_id == "LPC 18:1", ]
+  expect_equal(
+    s$feature_intensity[match(a$analysis_id, s$analysis_id)],
+    a$feature_intensity
+  )
+  expect_false("LPC 18:1 (b)" %in% ded@dataset$feature_id)
+})

@@ -57,7 +57,8 @@
   analysis IDs as row names and are matched to analyses by name.
 
 * `data_sum_features()`: a sum is `NA` in analyses where one of the summed
-  transitions is missing (with a warning), instead of a partial sum. Summing
+  transitions is missing (with a warning), instead of a partial sum; a
+  transition without any value is left out of the sum. Summing
   internal standards together with analytes, or transitions with different
   ISTDs, response factors or interference features, is an error, as is a summed
   id that equals the `feature_id` of another feature. With

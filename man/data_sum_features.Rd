@@ -36,7 +36,8 @@ Only raw signal variables are aggregated across the transitions of an analyte:
 \code{feature_intensity}, \code{feature_height} and \code{feature_area} are summed, and
 \code{feature_rt} is averaged. A sum is \code{NA} in an analysis where a constituent is
 missing, since a partial sum would look like a valid value; a warning reports
-these analyses. \code{feature_fwhm}, \code{feature_width}, \code{feature_int_start} and
+these analyses. A transition without a value in any analysis is left out of
+its sum. \code{feature_fwhm}, \code{feature_width}, \code{feature_int_start} and
 \code{feature_int_end} are set to \code{NA} for merged analytes: the constituents are
 separate chromatographic peaks, so no aggregate of their peak widths or
 borders describes the merged quantity.

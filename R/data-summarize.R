@@ -31,7 +31,8 @@
 #' `feature_intensity`, `feature_height` and `feature_area` are summed, and
 #' `feature_rt` is averaged. A sum is `NA` in an analysis where a constituent is
 #' missing, since a partial sum would look like a valid value; a warning reports
-#' these analyses. `feature_fwhm`, `feature_width`, `feature_int_start` and
+#' these analyses. A transition without a value in any analysis is left out of
+#' its sum. `feature_fwhm`, `feature_width`, `feature_int_start` and
 #' `feature_int_end` are set to `NA` for merged analytes: the constituents are
 #' separate chromatographic peaks, so no aggregate of their peak widths or
 #' borders describes the merged quantity.
@@ -136,7 +137,13 @@ data_sum_features <- function(
       af |> select("feature_id", "new_id", "n_members"),
       by = "feature_id"
     )
-  merged <- ds |> filter(.data$n_members > 1)
+  # A transition without any value is left out of its sum (unless all are)
+  merged <- ds |>
+    filter(.data$n_members > 1) |>
+    mutate(.empty = all(is.na(.data$feature_intensity)), .by = "feature_id") |>
+    filter(!.data$.empty | all(.data$.empty), .by = "new_id") |>
+    mutate(n_members = dplyr::n_distinct(.data$feature_id), .by = "new_id") |>
+    select(-".empty")
   ds_merged <- merged |>
     summarise(
       .n_obs = sum(!is.na(.data$feature_intensity)),
