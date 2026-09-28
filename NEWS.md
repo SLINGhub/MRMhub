@@ -130,6 +130,16 @@
   a later intensity drift correction was applied on top of the earlier one and
   overwrote `feature_intensity_raw`.
 
+* `import_data_csv_long()` without `column_mapping` now imports `intensity`,
+  `response` and `conc` columns (also with the `feature_` prefix), as
+  documented; they were dropped, and a file with only one of them failed. The
+  default intensity variable is chosen from area, height, intensity, response
+  and conc, in that order.
+
+* Imported concentrations (e.g. `import_data_csv_wide(variable_name = "conc")`)
+  are now marked as quantitated; the flag was reset at the end of the import, so
+  e.g. the report treated the data as having no concentrations.
+
 * Metadata import now detects mixed units within a response curve (the check
   always passed) and reports them for QC concentrations under
   `concentration_unit` instead of `analyzed_amount_unit`. Features with an

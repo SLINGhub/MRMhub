@@ -758,20 +758,6 @@ set_analysis_order <- function(
   mh_success(
     "Analysis order set to {.val {order_by}}"
   )
-
-  if (
-    data@is_isotope_corr |
-      data@is_filtered |
-      data@is_istd_normalized |
-      data@is_quantitated |
-      any(data@var_batch_corrected) |
-      any(data@var_drift_corrected)
-  ) {
-    mh_warn(c(
-      "All data processing has been reset. ",
-      "i" = "Please rerun processing steps"
-    ))
-  }
   data
 }
 
@@ -921,10 +907,11 @@ link_data_metadata <- function(data = NULL, minimal_info = TRUE) {
   }
 
   # @dataset is rebuilt from @dataset_orig (raw) above, so the derived
-  # feature_norm_intensity/feature_conc columns are gone; reset the flags to match.
+  # feature_norm_intensity/feature_conc columns are gone; reset the flags to
+  # match. Imported concentrations count as quantitated.
   data@is_isotope_corr <- FALSE
   data@is_istd_normalized <- FALSE
-  data@is_quantitated <- FALSE
+  data@is_quantitated <- data@feature_intensity_var == "feature_conc"
   data@var_drift_corrected <- c(
     feature_intensity = FALSE,
     feature_norm_intensity = FALSE,
@@ -1043,10 +1030,6 @@ set_intensity_var <- function(
       )
     }
     data <- link_data_metadata(data)
-  }
-
-  if (variable_name == "feature_conc") {
-    data@is_quantitated <- TRUE
   }
   data
 }

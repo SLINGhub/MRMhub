@@ -58,16 +58,16 @@ names:\tabular{lll}{
    \code{analysis_id} \tab \code{analysis_id} \tab Yes \cr
    \code{feature_id} \tab \code{feature_id} \tab Yes \cr
    \code{qc_type} \tab \code{qc_type} \tab No \cr
-   \code{sample_id} \tab \code{sample_id} \tab No \cr
    \code{batch_id} \tab \code{batch_id} \tab No \cr
    \code{istd_feature_id} \tab \code{istd_feature_id} \tab No \cr
    \code{feature_class} \tab \code{feature_class} \tab No \cr
-   \code{analyte_id} \tab \code{analyte_id} \tab No \cr
    \code{precursor_mz} \tab \code{method_precursor_mz} \tab No \cr
    \code{product_mz} \tab \code{method_product_mz} \tab No \cr
    \code{area} \tab \code{feature_area} \tab No \cr
    \code{height} \tab \code{feature_height} \tab No \cr
    \code{intensity} \tab \code{feature_intensity} \tab No \cr
+   \code{response} \tab \code{feature_response} \tab No \cr
+   \code{conc} \tab \code{feature_conc} \tab No \cr
    \code{rt} \tab \code{feature_rt} \tab No \cr
    \code{fwhm} \tab \code{feature_fwhm} \tab No \cr
    \code{width} \tab \code{feature_width} \tab No \cr

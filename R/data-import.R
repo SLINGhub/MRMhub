@@ -416,16 +416,16 @@ import_data_csv_wide <- function(
 #' | `analysis_id`        | `analysis_id`         | Yes       |
 #' | `feature_id`         | `feature_id`          | Yes       |
 #' | `qc_type`            | `qc_type`             | No        |
-#' | `sample_id`          | `sample_id`           | No        |
 #' | `batch_id`           | `batch_id`            | No        |
 #' | `istd_feature_id`    | `istd_feature_id`     | No        |
 #' | `feature_class`      | `feature_class`       | No        |
-#' | `analyte_id`         | `analyte_id`          | No        |
 #' | `precursor_mz`       | `method_precursor_mz` | No        |
 #' | `product_mz`         | `method_product_mz`   | No        |
 #' | `area`               | `feature_area`        | No        |
 #' | `height`             | `feature_height`      | No        |
 #' | `intensity`          | `feature_intensity`   | No        |
+#' | `response`           | `feature_response`    | No        |
+#' | `conc`               | `feature_conc`        | No        |
 #' | `rt`                 | `feature_rt`          | No        |
 #' | `fwhm`               | `feature_fwhm`        | No        |
 #' | `width`              | `feature_width`       | No        |
@@ -530,6 +530,8 @@ import_data_csv_long <- function(
     warnings = FALSE,
     "feature_area",
     "feature_height",
+    "feature_intensity",
+    "feature_response",
     "feature_conc"
   )
 
@@ -1464,6 +1466,9 @@ parse_plain_long_csv <- function(
       "feature_rt" = "rt",
       "feature_area" = "area",
       "feature_height" = "height",
+      "feature_intensity" = "intensity",
+      "feature_response" = "response",
+      "feature_conc" = "conc",
       "feature_norm_intensity" = "norm_area",
       "feature_fwhm" = "fwhm",
       "feature_width" = "width",

@@ -1434,6 +1434,44 @@ test_that("import_data_csv_long works", {
   expect_equal(mexp@dataset[[81, "feature_id"]], "TG 48:1 d7 (ISTD) [SIM]")
 })
 
+test_that("import_data_csv_long imports conc and intensity columns by default", {
+  f <- withr::local_tempfile(fileext = ".csv")
+  writeLines(
+    c(
+      "analysis_id,qc_type,feature_id,feature_conc",
+      "A1,SPL,F1,1.5",
+      "A1,SPL,F2,2.5",
+      "A2,SPL,F1,3.5",
+      "A2,SPL,F2,4.5"
+    ),
+    f
+  )
+  mexp <- suppressMessages(import_data_csv_long(MRMhubExperiment(), path = f))
+  expect_equal(mexp@feature_intensity_var, "feature_conc")
+  expect_true(mexp@is_quantitated)
+  expect_equal(sort(mexp@dataset$feature_conc), c(1.5, 2.5, 3.5, 4.5))
+
+  writeLines(
+    c("analysis_id,feature_id,intensity", "A1,F1,10", "A2,F1,20"),
+    f
+  )
+  mexp <- suppressMessages(import_data_csv_long(MRMhubExperiment(), path = f))
+  expect_equal(mexp@feature_intensity_var, "feature_intensity")
+  expect_false(mexp@is_quantitated)
+})
+
+test_that("import_data_csv_wide with concentrations marks data as quantitated", {
+  f <- withr::local_tempfile(fileext = ".csv")
+  writeLines(c("analysis_id,F1,F2", "A1,1,2", "A2,3,4"), f)
+  mexp <- suppressMessages(import_data_csv_wide(
+    MRMhubExperiment(),
+    path = f,
+    variable_name = "conc"
+  ))
+  expect_equal(mexp@feature_intensity_var, "feature_conc")
+  expect_true(mexp@is_quantitated)
+})
+
 
 test_that("Skyline long-format handles errors", {
   path <- test_path("testdata/skyline/Skyline_MoleculeTransitionResults_1.csv")
