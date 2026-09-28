@@ -10,7 +10,8 @@
 #'
 #' @param formula A character vector of one or more chemical formulas to process.
 #'
-#' @return A numeric vector of average molecular weights, one for each formula.
+#' @return A numeric vector of average molecular weights, one for each formula;
+#'   `NA` for a missing formula.
 #'
 #' @details
 #' The function uses the \pkg{enviPat} package to validate and parse chemical formulas, calculate isotopic patterns,
@@ -33,6 +34,13 @@ calc_average_molweight <- function(formula) {
     cli_abort(
       "No chemical formula provided. Please provide on or more valid chemical formula."
     )
+
+  mw <- rep(NA_real_, length(formula))
+  has_formula <- !is.na(formula)
+  if (!any(has_formula)) {
+    return(mw)
+  }
+  formula <- formula[has_formula]
 
   rlang::check_installed("enviPat")
   # isotopes was obtained via data(isotopes, package = "enviPat") and saved as internal dataset
@@ -64,7 +72,8 @@ calc_average_molweight <- function(formula) {
     stats::weighted.mean(df[[1]], df[[2]])
   })
 
-  unname(weighted_means)
+  mw[has_formula] <- unname(weighted_means)
+  mw
 }
 
 
@@ -91,7 +100,10 @@ mN_rel_abundance <- function(formula, n = 2L) {
     return(out)
   }
 
-  checked <- enviPat::check_chemform(isotopes = isotopes, chemforms = formula[ok])
+  checked <- enviPat::check_chemform(
+    isotopes = isotopes,
+    chemforms = formula[ok]
+  )
   # Guard the primitive against invalid formulas (which would abort isopattern
   # obscurely): warn and leave them NA rather than failing the whole derivation.
   if (any(checked$warning)) {

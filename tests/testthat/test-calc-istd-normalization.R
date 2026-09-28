@@ -398,6 +398,61 @@ test_that("quantify_by_istd with mass concentration", {
   )
 })
 
+test_that("quantify_by_istd handles features with formula or only molecular weight", {
+  mexp <- mrmhub::MRMhubExperiment()
+  mexp <- mrmhub::import_data_masshunter(
+    mexp,
+    path = testthat::test_path(
+      "testdata/masshunter/23_MHQuant_notInSeq_notimestamp.csv"
+    ),
+    import_metadata = FALSE
+  )
+  mexp <- mrmhub::import_metadata_msorganiser(
+    mexp,
+    path = testthat::test_path(
+      "testdata/metadata/Metadata_Template_210_MHQuant_S1P_with-ngml-MW.xlsx"
+    ),
+    excl_unmatched_analyses = FALSE
+  )
+  mexp <- mrmhub::normalize_by_istd(mexp)
+  mexp@annot_istds$istd_conc_nmolar <- NA_real_
+  get_conc <- function(m) {
+    m@dataset$feature_conc[
+      m@dataset$analysis_id == "012_TQCd-40_TQC-40percent" &
+        m@dataset$feature_id == "S1P d18:1 [M>60]"
+    ]
+  }
+  conc_ref <- get_conc(mrmhub::quantify_by_istd(mexp))
+
+  # ISTD in ng/mL: one ISTD with formula only, the other with MW only
+  mexp_temp <- mexp
+  mexp_temp@annot_features$chem_formula[5] <- "[13]C2C16H36D2NO5P"
+  mexp_temp@annot_features$molecular_weight[5] <- NA_real_
+  mexp_temp <- mrmhub::quantify_by_istd(mexp_temp)
+  # fixture MW is the formula MW rounded to 383.47
+  expect_equal(get_conc(mexp_temp), conc_ref, tolerance = 1e-6)
+
+  # ... and one ISTD with neither
+  mexp_temp <- mexp
+  mexp_temp@annot_features$chem_formula[5] <- "[13]C2C16H36D2NO5P"
+  mexp_temp@annot_features$molecular_weight[13] <- NA_real_
+  expect_error(
+    mrmhub::quantify_by_istd(mexp_temp),
+    "missing both chemical formula and molecular weight"
+  )
+
+  # mass concentrations: analytes with formula, ISTDs with MW only
+  mexp_temp <- mexp
+  analytes <- !mexp_temp@annot_features$is_istd
+  mexp_temp@annot_features$chem_formula[analytes] <- "C18H38NO5P"
+  mexp_temp <- mrmhub::quantify_by_istd(
+    mexp_temp,
+    concentration_unit = "mass"
+  )
+  istd_conc <- mexp_temp@dataset$feature_conc[mexp_temp@dataset$is_istd]
+  expect_false(all(is.na(istd_conc)))
+})
+
 test_that("quantify_by_istd/normalize_by_istd fail if 1 istd not defined", {
   mexp <- mexp_orig
   mexp@annot_istds <- mexp@annot_istds[-1, ]

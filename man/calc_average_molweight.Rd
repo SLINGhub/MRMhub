@@ -10,7 +10,8 @@ calc_average_molweight(formula)
 \item{formula}{A character vector of one or more chemical formulas to process.}
 }
 \value{
-A numeric vector of average molecular weights, one for each formula.
+A numeric vector of average molecular weights, one for each formula;
+\code{NA} for a missing formula.
 }
 \description{
 Calculates the average molecular weight of one or more chemical formulas, based on the natural isotopic distribution of elements.

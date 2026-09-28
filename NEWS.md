@@ -135,6 +135,12 @@
   a later intensity drift correction was applied on top of the earlier one and
   overwrote `feature_intensity_raw`.
 
+* `calc_average_molweight()` returns `NA` for a missing formula instead of
+  failing. `quantify_by_istd()` therefore works when some features have a
+  chemical formula and others only a molecular weight (mass concentrations, or
+  ISTD concentrations in ng/mL); the formula takes precedence. An ISTD with
+  neither now always raises an error unless `ignore_missing_annotation = TRUE`.
+
 * `import_data_csv_long()` without `column_mapping` now imports `intensity`,
   `response` and `conc` columns (also with the `feature_` prefix), as
   documented; they were dropped, and a file with only one of them failed. The

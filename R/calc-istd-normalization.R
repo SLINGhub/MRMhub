@@ -313,7 +313,12 @@ quantify_by_istd <- function(
       }
 
       d_features <- d_features |>
-        mutate(molecular_weight = calc_average_molweight(.data$chem_formula))
+        mutate(
+          molecular_weight = dplyr::coalesce(
+            calc_average_molweight(.data$chem_formula),
+            .data$molecular_weight
+          )
+        )
     }
   }
 
@@ -366,12 +371,14 @@ quantify_by_istd <- function(
         "Chemical formula or molecular weight is missing for all ISTDs. Please provide one in feature metadata or use molar concentrations."
       )
     }
-    if (any(!is.na(d_istd_mw$chem_formula))) {
-      d_istd_mw <- d_istd_mw |>
-        mutate(molecular_weight = calc_average_molweight(.data$chem_formula))
-    } else if (
-      !ignore_missing_annotation && any(is.na(d_istd_mw$molecular_weight))
-    ) {
+    d_istd_mw <- d_istd_mw |>
+      mutate(
+        molecular_weight = dplyr::coalesce(
+          calc_average_molweight(.data$chem_formula),
+          .data$molecular_weight
+        )
+      )
+    if (!ignore_missing_annotation && anyNA(d_istd_mw$molecular_weight)) {
       cli::cli_abort(
         "One or more ISTDs are missing both chemical formula and molecular weight. Ensure that at least one is defined in the feature metadata."
       )
