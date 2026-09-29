@@ -1,7 +1,7 @@
 # MRMhub <a href="https://slinghub.github.io/MRMhub/"><img src="man/figures/logo.png" alt="MRMhub logo" align="right" height="139"/></a>
 
 <!-- badges: start -->
-[![Version](https://img.shields.io/badge/version-0.9.11-blue.svg)](https://github.com/SLINGhub/MRMhub/releases) [![R-universe version](https://slinghub.r-universe.dev/mrmhub/badges/version)](https://slinghub.r-universe.dev/mrmhub) [![License: AGPL v3](https://img.shields.io/badge/License-AGPLv3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0) [![bioRxiv](https://img.shields.io/badge/bioRxiv-preprint-b31b1b.svg)](https://doi.org/10.64898/2025.12.20.695370) [![R-CMD-check](https://github.com/SLINGhub/MRMhub/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/SLINGhub/MRMhub/actions/workflows/R-CMD-check.yml) [![Codecov test coverage](https://codecov.io/gh/SLINGhub/MRMhub/graph/badge.svg)](https://app.codecov.io/gh/SLINGhub/MRMhub)
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/SLINGhub/MRMhub/releases) [![R-universe version](https://slinghub.r-universe.dev/mrmhub/badges/version)](https://slinghub.r-universe.dev/mrmhub) [![Nature Metabolism](https://img.shields.io/badge/Nature%20Metabolism-2026-b31b1b.svg)](https://doi.org/10.1038/s42255-026-01629-2) [![R-CMD-check](https://github.com/SLINGhub/MRMhub/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/SLINGhub/MRMhub/actions/workflows/R-CMD-check.yml) [![Codecov test coverage](https://codecov.io/gh/SLINGhub/MRMhub/graph/badge.svg)](https://app.codecov.io/gh/SLINGhub/MRMhub)
 <!-- badges: end -->
 
 [**MRMhub**](https://slinghub.github.io/MRMhub/) is an open-source, one-stop framework for reproducible, automated processing of targeted metabolomics and lipidomics data acquired by liquid chromatography–mass spectrometry (LC–MS) in Multiple Reaction Monitoring (MRM) mode. Addressing well-known gaps in the robustness and scalability of existing software, it takes an experiment from raw instrument data to quality-controlled quantitative results, processing population-scale studies within minutes on standard hardware while recording a full digital footprint of every step for reproducibility and traceability. Built for both analytical and bioinformatics scientists, MRMhub provides modular functions and defined data structures that adapt to diverse study designs and data formats, supporting customizable, fully documented end-to-end workflows across two complementary modules:
@@ -79,7 +79,9 @@ Bug reports and feature requests are welcome via [GitHub issues](https://github.
 
 ## Citation
 
-Burla B. *et al.* (2025). *MRMhub: one-stop solution for automated processing of large-scale targeted metabolomics data.* bioRxiv. [doi:10.64898/2025.12.20.695370](https://doi.org/10.64898/2025.12.20.695370)
+Burla B., Teo G. *et al.* (2026). MRMhub: a scalable data-processing framework for large-scale targeted metabolomics. *Nature Metabolism*. [doi:10.1038/s42255-026-01629-2](https://doi.org/10.1038/s42255-026-01629-2)
+
+The analyses in the paper used MRMhub [v0.9.9](https://github.com/SLINGhub/MRMhub/releases/tag/v0.9.9).
 
 ## License
 

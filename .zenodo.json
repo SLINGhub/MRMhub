@@ -1,0 +1,15 @@
+{
+  "title": "MRMhub",
+  "upload_type": "software",
+  "description": "MRMhub is an open-source framework for processing targeted LC-MS data acquired in multiple reaction monitoring (MRM) mode. It comprises INTEGRATOR, a standalone application for peak integration, and QUANT, the mrmhub R package for quantitation, quality control and reporting.",
+  "license": "AGPL-3.0-only",
+  "creators": [
+    {"name": "Burla, Bo", "affiliation": "National University of Singapore", "orcid": "0000-0002-5918-3249"},
+    {"name": "Teo, Guo Shou", "affiliation": "National University of Singapore", "orcid": "0000-0003-3891-1494"},
+    {"name": "Choi, Hyungwon", "affiliation": "National University of Singapore", "orcid": "0000-0002-6687-3088"}
+  ],
+  "related_identifiers": [
+    {"identifier": "10.1038/s42255-026-01629-2", "relation": "isSupplementTo", "scheme": "doi", "resource_type": "publication-article"}
+  ],
+  "keywords": ["mass spectrometry", "targeted metabolomics", "lipidomics", "multiple reaction monitoring", "LC-MS", "R"]
+}

@@ -97,7 +97,7 @@ reporting. See the [QUANT manual ↗](https://slinghub.github.io/MRMhub/quant/) 
 
 ### Citation
 
-- [Citing MRMhub](https://doi.org/10.64898/2025.12.20.695370)
+- [Citing MRMhub](https://doi.org/10.1038/s42255-026-01629-2)
 
 <!--
 ### Funding & Acknowledgements

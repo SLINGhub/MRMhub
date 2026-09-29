@@ -132,9 +132,9 @@ Both are customizable and can be used together or independently:
 ---
 
 <small>
-**Citation:** Burla B. *et al.* (2025). *MRMhub: one-stop solution for automated processing of
-large-scale targeted metabolomics data.* bioRxiv.
-[doi:10.64898/2025.12.20.695370](https://doi.org/10.64898/2025.12.20.695370) &nbsp;|&nbsp;
+**Citation:** Burla B., Teo G. *et al.* (2026). MRMhub: a scalable data-processing framework for
+large-scale targeted metabolomics. *Nature Metabolism*.
+[doi:10.1038/s42255-026-01629-2](https://doi.org/10.1038/s42255-026-01629-2) &nbsp;|&nbsp;
 **Source:** [github.com/SLINGhub/MRMhub](https://github.com/SLINGhub/MRMhub)
 </small>
 
@@ -154,7 +154,7 @@ large-scale targeted metabolomics data.* bioRxiv.
 
 ### Citation
 
-- [Citing MRMhub](https://doi.org/10.64898/2025.12.20.695370)
+- [Citing MRMhub](https://doi.org/10.1038/s42255-026-01629-2)
 
 ### Authors
 
