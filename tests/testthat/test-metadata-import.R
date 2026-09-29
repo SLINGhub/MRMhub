@@ -260,8 +260,8 @@ test_that("Stale assertr warnings on pre-existing tables are not carried into a 
     ),
     import_metadata = FALSE
   )
-  # First import leaves a real "Analyses without metadata" note as an
-  # assertr_errors attribute on annot_analyses.
+  # First import reports a real "Analyses without metadata" note, but no longer
+  # keeps it as an assertr_errors attribute on the stored annot_analyses.
   mexp <- mrmhub::import_metadata_msorganiser(
     mexp,
     path = testthat::test_path(
@@ -269,7 +269,7 @@ test_that("Stale assertr warnings on pre-existing tables are not carried into a 
     ),
     excl_unmatched_analyses = TRUE
   )
-  expect_false(is.null(attr(mexp@annot_analyses, "assertr_errors")))
+  expect_null(attr(mexp@annot_analyses, "assertr_errors"))
 
   # A later validation that does NOT re-provide annot_analyses must not restore
   # (and re-report) its stale attribute.
@@ -1076,4 +1076,29 @@ test_that("clean_feature_metadata rejects unrecognized is_quantifier / valid_fea
 
   tbl <- dplyr::tibble(feature_id = c("A", "B"), valid_feature = c("Y", "N"))
   expect_error(clean_feature_metadata(tbl), "Unrecognized value.*valid_feature")
+})
+
+test_that("importing the same metadata twice gives an identical object", {
+  # assertr results carry a random per-run id; left on the annot tables, they
+  # made the content fingerprint (rlang::hash()) of identical runs differ.
+  import_once <- function() {
+    mexp <- mrmhub::import_data_masshunter(
+      mrmhub::MRMhubExperiment(),
+      path = testthat::test_path(
+        "testdata/masshunter/23_MHQuant_notInSeq_notimestamp.csv"
+      ),
+      import_metadata = FALSE
+    )
+    mrmhub::import_metadata_msorganiser(
+      mexp,
+      path = testthat::test_path(
+        "testdata/metadata/MRMhub_Metadata_Template_191_20240226_MHQuant_S1P_V1.xlsx"
+      ),
+      excl_unmatched_analyses = FALSE
+    )
+  }
+  m1 <- import_once()
+  m2 <- import_once()
+  expect_null(attr(m1@annot_qcconcentrations, "assertr_errors"))
+  expect_identical(rlang::hash(m1), rlang::hash(m2))
 })

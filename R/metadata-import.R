@@ -1158,6 +1158,15 @@ add_metadata <- function(
       "i" = "Expected named elements such as {.field annot_analyses} or {.field annot_features}."
     ))
   }
+  # Validation results (incl. a random per-run assertr id) are only needed for the
+  # import summary; kept on the tables, they make the object's content
+  # fingerprint differ between identical runs.
+  metadata <- lapply(metadata, function(x) {
+    if (is.data.frame(x)) {
+      attr(x, "assertr_errors") <- NULL
+    }
+    x
+  })
   # ANALYSES METADATA ====================
   if (!is.null(metadata$annot_analyses) && nrow(metadata$annot_analyses) > 0) {
     data@annot_analyses <- metadata$annot_analyses
