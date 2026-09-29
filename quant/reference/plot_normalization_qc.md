@@ -30,6 +30,7 @@ plot_normalization_qc(
   y_shared = FALSE,
   filter_data = FALSE,
   include_qualifier = FALSE,
+  include_istd = FALSE,
   cv_threshold_value = 25,
   x_lim = c(NA_real_, NA_real_),
   y_lim = c(NA_real_, NA_real_),
@@ -78,7 +79,9 @@ plot_normalization_qc(
   A character vector specifying the QC types to plot. It must contain at
   least one element. The default `NA` plots any of the non-blank QC
   types ("SPL", "TQC", "BQC", "HQC", "MQC", "LQC", "NIST", "LTR")
-  present in the dataset.
+  present in the dataset. A single value that is a QC type is matched
+  exactly; any other single value is a regular expression, e.g. `"QC$"`
+  for all QC types ending in "QC".
 
 - facet_by_class:
 
@@ -98,7 +101,11 @@ plot_normalization_qc(
 
 - include_qualifier:
 
-  Whether to include qualifier features (default is `TRUE`).
+  Whether to include qualifier features (default is `FALSE`).
+
+- include_istd:
+
+  Whether to include internal standards (ISTDs) (default is `FALSE`).
 
 - cv_threshold_value:
 

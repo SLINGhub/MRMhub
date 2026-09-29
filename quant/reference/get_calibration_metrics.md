@@ -75,9 +75,10 @@ See its documentation for details.
 
 - `fit_weighting`: Weighting method used in fitting.
 
-- `lowest_cal`: Lowest nonzero calibration concentration.
+- `lowest_cal`: Lowest non-zero calibrator concentration with a
+  response.
 
-- `highest_cal`: Highest calibration concentration.
+- `highest_cal`: Highest calibrator concentration with a response.
 
 - `r2`: R² value, indicating goodness of fit. For a **weighted** fit
   this is the weighted coefficient of determination (computed from

@@ -240,6 +240,19 @@ warnings.”* Fix the flagged issues, or re-import with
 report above.”* (duplicate IDs, missing mandatory values) cannot be
 bypassed and must be corrected.
 
+**Q: *“Unrecognized value(s) in `is_quantifier`”* — or in
+`valid_feature`, `valid_analysis` or `include_in_analysis`**
+
+**A:** These yes/no columns accept `yes`, `no`, `true` or `false`
+(case-insensitive, surrounding whitespace ignored), or a blank cell
+meaning “not specified”. Other codings such as `1`/`0` or `Y`/`N` are
+rejected rather than guessed at: a column of unrecognized values would
+otherwise map entirely to blanks and then take the default, silently
+marking every analysis valid, every qualifier a quantifier, or every
+excluded calibrator included. Recode the column, or clear it to take the
+default. Note that the `Quantifier` column of the Features sheet is
+reported under its internal name, `is_quantifier`.
+
 ## Processing
 
 **Q: Normalised intensities come back `NA`.**
@@ -323,6 +336,27 @@ plot_runscatter(
 )
 ```
 
+**Q:
+[`exclude_analyses()`](https://slinghub.github.io/MRMhub/quant/reference/exclude_analyses.md),
+[`set_analysis_order()`](https://slinghub.github.io/MRMhub/quant/reference/set_analysis_order.md)
+or a metadata import fails after
+[`data_sum_features()`](https://slinghub.github.io/MRMhub/quant/reference/data_sum_features.md).**
+
+**A:** Summed features exist only in the processed dataset, while these
+steps rebuild it from the imported data. Run them before
+[`data_sum_features()`](https://slinghub.github.io/MRMhub/quant/reference/data_sum_features.md),
+or re-import the data and repeat the steps.
+
+**Q:
+[`data_sum_features()`](https://slinghub.github.io/MRMhub/quant/reference/data_sum_features.md)
+stops because the summed features combine internal standards and
+analytes, or differ in `istd_feature_id` or `response_factor`.**
+
+**A:** Only transitions of one compound, measured and quantified alike,
+can be summed. Give internal standards their own `analyte_id`, and
+harmonise the ISTD and response-factor columns of the summed features in
+the feature metadata.
+
 ## Quantitation and calibration
 
 **Q:
@@ -335,12 +369,21 @@ concentrations in nmol/L or ng/mL, and make sure `sample_amount` and
 `istd_volume` are present in the analysis metadata. Missing amounts can
 be tolerated with `ignore_missing_annotation = TRUE`.
 
-**Q: *“Calibration curve data missing…”***
+**Q: *“No calibration analyses found”* or *“No QC-concentration metadata
+found”***
 
-**A:** No calibrator samples and no concentrations are annotated. Flag
-the calibrator analyses with `qc_type = "CAL"` in the analysis metadata,
-and supply their known concentrations in the QC-concentration metadata
-(`annot_qcconcentrations`).
+**A:** Calibration needs both halves: the calibrator analyses flagged
+with `qc_type = "CAL"` in the analysis metadata, and their known
+concentrations in the QC-concentration metadata
+(`annot_qcconcentrations`). Each message names which half is missing.
+
+**Q: *“No CAL analysis matched an included QC-concentration entry.”***
+
+**A:** Calibrators and concentrations are both present but do not join.
+The join is keyed on `sample_id` and `analyte_id`, so check that both
+agree between the analysis/feature metadata and the QC-concentration
+metadata, and that `include_in_analysis` is not `FALSE` for every
+calibrator.
 
 **Q: *“Calibration curve annotations for N features are missing.”***
 
@@ -353,9 +396,9 @@ and supply their known concentrations in the QC-concentration metadata
 
 **A:** Inspect the fits, then try removing outlier calibration points,
 switching `fit_model` (`"linear"`/`"quadratic"`) or `fit_weighting`
-(`"none"`, `"1/x"`, `"1/x^2"`) — globally or per feature via the
-`curve_fit_model` / `curve_fit_weighting` metadata columns — and check
-for saturation at high concentrations.
+(`"none"`, `"1/x"`, `"1/x^2"`, `"1/sqrt(x)"`) — globally or per feature
+via the `curve_fit_model` / `curve_fit_weighting` metadata columns — and
+check for saturation at high concentrations.
 
 ``` r
 
@@ -367,11 +410,13 @@ get_calibration_metrics(mexp) |>
 
 **Q: What do the QC metrics mean?**
 
-| Metric     | Meaning                                  | Typical threshold |
-|------------|------------------------------------------|-------------------|
-| CV (%)     | Coefficient of variation in QC samples   | \< 20–30%         |
-| Bias (%)   | Systematic deviation from expected value | \< 20%            |
-| n_detected | Number of QC samples with signal         | ≥ 50–67% of QCs   |
+| Metric | Meaning | Typical threshold |
+|----|----|----|
+| CV (%) | Coefficient of variation in QC samples | \< 20–30% |
+| Bias (%) | Systematic deviation from expected value | \< 20% |
+| D-ratio | Spread in QC samples over spread in study samples | \< 0.5 |
+| S/B ratio | Median study-sample signal over median blank signal; `Inf` when the feature is not detected in the blank (passes) | method-specific |
+| `n_bqc`, `n_tqc`, `n_spl` | Replicates with a value per QC type; %CV and D-ratio need at least 3 | ≥ 3 |
 
 **Q: All my features are filtered out.**
 

@@ -69,7 +69,9 @@ plot_pca(
   A character vector specifying the QC types to plot. It must contain at
   least one element. The default `NA` plots any of the non-blank QC
   types ("SPL", "TQC", "BQC", "HQC", "MQC", "LQC", "NIST", "LTR")
-  present in the dataset.
+  present in the dataset. A single value that is a QC type is matched
+  exactly; any other single value is a regular expression, e.g. `"QC$"`
+  for all QC types ending in "QC".
 
 - ellipse_variable:
 
@@ -143,8 +145,9 @@ plot_pca(
 - labels_threshold_mad:
 
   A numeric value determining the threshold for showing labels based on
-  the median absolute deviation (MAD). Default is 3. Set to `NULL` to
-  suppress labels.
+  the median absolute deviation (MAD): samples whose score on either
+  shown PC lies more than this many MADs from the median are labelled.
+  Default is 3. Set to `NULL` to suppress labels.
 
 - shared_labeltext_hide:
 

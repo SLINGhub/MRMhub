@@ -3,14 +3,14 @@
 Calibration curves are calculated for each feature using ISTD-normalized
 intensities and the corresponding concentrations of calibration samples,
 as defined in the `qc_concentrations` metadata. The regression fit model
-(linear or quadratic) and the weighting method (either "none", "1/x", or
-"1/x^2") can be defined globally via the arguments `fit_model` and
-`fit_weighting` for all features, if `fit_overwrite` is `TRUE`.
-Alternatively, the model and weighting can be defined individually for
-each feature in the `feature` metadata (columns `curve_fit_model` and
-`curve_fit_weighting`). If these details are missing in the metadata,
-the default values provided via `fit_model` and `fit_weighting` will be
-used.
+(linear or quadratic) and the weighting method (either "none", "1/x",
+"1/x^2", or "1/sqrt(x)") can be defined globally via the arguments
+`fit_model` and `fit_weighting` for all features, if `fit_overwrite` is
+`TRUE`. Alternatively, the model and weighting can be defined
+individually for each feature in the `feature` metadata (columns
+`curve_fit_model` and `curve_fit_weighting`). If these details are
+missing in the metadata, the default values provided via `fit_model` and
+`fit_weighting` will be used.
 
 ## Usage
 
@@ -24,7 +24,8 @@ calc_calibration_results(
   fit_weighting,
   ignore_missing_annotation = FALSE,
   include_fit_object = FALSE,
-  lod_sigma = c("residual", "intercept")
+  lod_sigma = c("residual", "intercept"),
+  ignore_failed_calibration = FALSE
 )
 ```
 
@@ -65,9 +66,9 @@ calc_calibration_results(
 
   A character string specifying the default weighting method for the
   regression points in the calibration curve. Must be one of `"none"`,
-  `"1/x"`, or `"1/x^2"`. This method will be applied if no specific
-  weighting method is defined for a feature in the metadata, or when
-  `fit_overwrite = TRUE`.
+  `"1/x"`, `"1/x^2"`, or `"1/sqrt(x)"`. This method will be applied if
+  no specific weighting method is defined for a feature in the metadata,
+  or when `fit_overwrite = TRUE`.
 
 - ignore_missing_annotation:
 
@@ -87,6 +88,12 @@ calc_calibration_results(
   `"intercept"` (the standard error of the intercept). No averaging of
   the two is performed.
 
+- ignore_failed_calibration:
+
+  If `FALSE`, an error is raised if all quantifier calibration curve
+  fits fail. If `TRUE`, a warning is shown instead and the failed fits
+  are returned, so resulting concentrations are `NA`.
+
 ## Value
 
 A modified
@@ -96,6 +103,14 @@ calibration curve results, including concentrations, LoD, and LoQ values
 for each feature.
 
 ## Details
+
+A linear curve is also fitted with 2 calibrators, and a single
+calibrator gives a line through the origin (`coef_a = 0`). A quadratic
+curve needs at least 3 calibrators. A zero-concentration calibrator is
+dropped from weighted fits, so a blank plus one standard is then fitted
+through the origin. A curve that passes through all its calibrators
+(e.g. 2 points for a line, 3 for a quadratic) has no R², sigma, LoD or
+LoQ (`NA`).
 
 Additionally, the limit of detection (LoD) and limit of quantification
 (LoQ) are calculated for each feature based on the calibration curve,

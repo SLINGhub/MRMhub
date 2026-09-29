@@ -40,8 +40,11 @@ save_dataset_summarizedexperiment(
 - variable:
 
   Feature variables to export as assays, e.g. `"conc"` or
-  `c("intensity", "conc")`. `NULL` (default) exports every `feature_*`
-  variable present in the data.
+  `c("intensity", "conc")`. `NULL` (default) exports the numeric
+  `feature_*` variables present in the data, except the backup snapshots
+  (`_orig`, `_before`, `_beforecal`) and drift-model fit points
+  (`_fit`), which are internal bookkeeping rather than measurements.
+  Name one of those explicitly to export it.
 
 - as:
 

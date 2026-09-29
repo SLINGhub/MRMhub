@@ -88,7 +88,6 @@
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/get_qc_bias_variability.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/get_response_curve_stats.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/get_runtime_median.html</loc></url>
-<url><loc>https://slinghub.github.io/MRMhub/quant/reference/import_data_csv.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/import_data_csv_long.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/import_data_csv_wide.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/import_data_masshunter.html</loc></url>
@@ -112,7 +111,6 @@
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/mrmhub_set_plot_defaults.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/mrmhub_status.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/normalize_by_istd.html</loc></url>
-<url><loc>https://slinghub.github.io/MRMhub/quant/reference/order_chained_columns_tbl.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/parse_lipid_feature_names.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/parse_masshunter_csv.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/parse_mrmhub_result.html</loc></url>
@@ -158,6 +156,7 @@
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/scale_pretty_x.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/set_analysis_order.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/set_intensity_var.html</loc></url>
+<url><loc>https://slinghub.github.io/MRMhub/quant/reference/set_lipid_class.html</loc></url>
 <url><loc>https://slinghub.github.io/MRMhub/quant/reference/summarize_interferences.html</loc></url>
 </urlset>
 

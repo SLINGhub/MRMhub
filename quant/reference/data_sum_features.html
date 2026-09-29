@@ -13,7 +13,7 @@ value, such as LPC sn1 and sn2 species."><meta property="og:image" content="http
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -88,7 +88,7 @@ value, such as LPC sn1 and sn2 species."><meta property="og:image" content="http
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Sum up feature intensities per analyte</h1>
-      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/v0.9.9/R/data-summarize.R" class="external-link"><code>R/data-summarize.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/main/R/data-summarize.R" class="external-link"><code>R/data-summarize.R</code></a></small>
       <div class="d-none name"><code>data_sum_features.Rd</code></div>
     </div>
 
@@ -123,25 +123,40 @@ to include them in the sum if quantifier select "include", to not sum them up se
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Only raw signal variables are aggregated across the transitions of an analyte:
+    <p>Features are summed when they share an <code>analyte_id</code> (an empty one counts as
+missing): with <code>qualifier_action = "include"</code> all of them, with <code>"separate"</code>
+quantifiers and qualifiers each into their own feature (the qualifier sum is
+named <code>&lt;analyte_id&gt;_qual</code>), and with <code>"exclude"</code> only the quantifiers, while
+qualifiers are kept as they are. An analyte with a single feature in its group
+keeps its <code>feature_id</code>. Only features present in the dataset are summed:
+excluded features and features listed only in the metadata keep their
+<code>feature_id</code> and do not affect the sum.</p>
+<p>Only raw signal variables are aggregated across the transitions of an analyte:
 <code>feature_intensity</code>, <code>feature_height</code> and <code>feature_area</code> are summed, and
-<code>feature_rt</code> is averaged. <code>feature_fwhm</code> and <code>feature_width</code> are set to <code>NA</code>
-for merged analytes: the constituents are separate chromatographic peaks, so
-no aggregate of their peak widths describes the merged quantity.</p>
+<code>feature_rt</code> is averaged. A sum is <code>NA</code> in an analysis where a constituent is
+missing, since a partial sum would look like a valid value; a warning reports
+these analyses. A transition without a value in any analysis is left out of
+its sum. <code>feature_fwhm</code>, <code>feature_width</code>, <code>feature_int_start</code> and
+<code>feature_int_end</code> are set to <code>NA</code> for merged analytes: the constituents are
+separate chromatographic peaks, so no aggregate of their peak widths or
+borders describes the merged quantity.</p>
 <p>Summing transitions redefines <code>feature_intensity</code>, so all values <em>derived</em>
 from the pre-merge intensities are invalidated and removed: normalized
 intensities, concentrations, drift/batch correction results and QC metrics.
 Re-run <code><a href="normalize_by_istd.html">normalize_by_istd()</a></code> and the quantitation/correction steps after
 merging. A message reports this when such values were present.</p>
-<p>A merged analyte inherits the feature metadata (<code>feature_class</code>,
-<code>feature_label</code>, <code>istd_feature_id</code>) of its <em>first</em> constituent transition. A
-warning is issued when the constituents disagree, since the value that wins is
-then arbitrary – for <code>istd_feature_id</code> it silently decides which internal
-standard the merged analyte is normalized against.</p>
+<p>The summed features must be measured and quantified alike: an error is raised
+when they combine internal standards with analytes, or differ in
+<code>istd_feature_id</code>, <code>quant_istd_feature_id</code>, <code>response_factor</code> or
+<code>interference_feature_id</code>. An error is also raised when a summed id equals
+the <code>feature_id</code> of another feature. Transitions of one internal standard can
+be summed; references to summed features in the feature, ISTD and
+interference metadata are updated, and interferences between transitions
+summed into one feature are removed. Other metadata (<code>feature_class</code>,
+<code>feature_label</code>) comes from the first constituent, with a warning when the
+constituents disagree.</p>
 <p><code>is_quantifier</code> is not inherited but determined by the merge: the merged
-analyte is a quantifier if any of its constituents is one. A quantifier
-combined with either a qualifier or another quantifier therefore yields a
-quantifier, whereas qualifiers merged among themselves remain a qualifier.</p>
+analyte is a quantifier if any of its constituents is one.</p>
     </div>
     <div class="section level2">
     <h2 id="experimental">Experimental<a class="anchor" aria-label="anchor" href="#experimental"></a></h2>
@@ -149,10 +164,12 @@ quantifier, whereas qualifiers merged among themselves remain a qualifier.</p>
 
 <p>This function is <strong>experimental</strong> and its behaviour may change. It overwrites the
 <code>feature_id</code> of features sharing an <code>analyte_id</code> in both the dataset and the
-analysis metadata, and the original <code>feature_id</code> is not backed up anywhere. It is
-intended to run early (before normalization/quantitation); running it on a
-processed object drops the derived variables (see Details). Use with caution and
-check the results carefully.</p>
+feature metadata, and the original <code>feature_id</code> is not backed up anywhere. Run
+it after importing metadata and after any exclusions, <code><a href="set_analysis_order.html">set_analysis_order()</a></code>
+or <code><a href="set_intensity_var.html">set_intensity_var()</a></code>, and before normalization/quantitation: these steps
+rebuild the dataset from the imported data and stop with an error once
+features were summed. Running it on a processed object drops the derived
+variables (see Details).</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

@@ -103,19 +103,10 @@ The calculated metrics are stored in the `metrics_qc` table of the
   feature metadata table, such as feature class, associated ISTD,
   quantifier status.
 
-- **Feature MS Method Information** (if method variables are available
-  in the analysis data). Extracts and summarizes method-related
-  variables for each feature. If multiple values exist for the same
-  feature, these will be concatenated into a string. The latter would
-  indicate inconsistent analysis conditions.
-
-  - `precursor_mz`: The m/z value of the precursor ion(s),
-
-  - `product_mz`: The m/z value of the product ion(s), concatenated if
-    multiple values exist for the same feature.
-
-  - `collision_energy`: The collision energy used for fragmentation,
-    concatenated if multiple values exist for the same feature.
+- **Feature MS method information** (if available in the imported data):
+  `precursor_mz`, `product_mz` and `collision_energy` per feature. A
+  value that differs between analyses indicates inconsistent acquisition
+  conditions; it is set to `NA` with a warning naming the features.
 
 - **Missing Value Metrics**:
 
@@ -144,6 +135,12 @@ The calculated metrics are stored in the `metrics_qc` table of the
 
 - **Intensity Metrics**:
 
+  - `n_bqc`, `n_tqc`, `n_spl`: Number of analyses with a non-missing
+    intensity per QC type, i.e. the replicates behind the %CV and
+    D-ratio (the median of the per-batch counts with
+    `use_batch_medians = TRUE`). %CV and D-ratio are `NA` below 3
+    replicates.
+
   - `intensity_min_*`: Minimum intensity value for features across
     different QC sample types such as SPL, TQC, BQC, etc.
 
@@ -155,7 +152,9 @@ The calculated metrics are stored in the `metrics_qc` table of the
     for specific QC types.
 
   - `sb_ratio_*`: Signal-to-blank ratios such as the ratio of intensity
-    values for SPL vs PBLK, UBLK, or SBLK.
+    values for SPL vs PBLK, UBLK, or SBLK. Blank medians count a blank
+    analysis without detected signal (a missing value or no row for the
+    feature) as zero, giving a ratio of `Inf`.
 
   - `intensity_q10_*`: The 10th percentile of intensity values for the
     SPL sample type.

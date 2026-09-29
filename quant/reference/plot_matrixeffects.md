@@ -1,9 +1,13 @@
 # Plot standardized feature intensities grouped by QC type
 
 This function creates a grouped beeswarm plot of standardized feature
-intensities, where the y-axis represents intensity standardized such
-that the mean across all features is 100%. Points are grouped by
-`qc_type` and spread using quasirandom jitter.
+intensities, where each value is shown as a percentage of the feature's
+median over the plotted non-blank analyses (per batch with
+`batchwise_normalization = TRUE`). Points are grouped by `qc_type` and
+spread using quasirandom jitter. An ISTD signal higher in process blanks
+(ISTD without matrix) than in the samples may indicate ion suppression
+by the sample matrix. The spread between study samples and pooled QCs
+can reflect sample-to-sample differences in matrix effects.
 
 ## Usage
 
@@ -50,7 +54,9 @@ plot_matrixeffects(
   A character vector specifying the QC types to plot. It must contain at
   least one element. The default `NA` plots any of the non-blank QC
   types ("SPL", "TQC", "BQC", "HQC", "MQC", "LQC", "NIST", "LTR")
-  present in the dataset.
+  present in the dataset. A single value that is a QC type is matched
+  exactly; any other single value is a regular expression, e.g. `"QC$"`
+  for all QC types ending in "QC".
 
 - batchwise_normalization:
 
@@ -60,7 +66,7 @@ plot_matrixeffects(
 - include_qualifier:
 
   A logical value indicating whether to include qualifier features.
-  Default is `TRUE`.
+  Default is `FALSE`.
 
 - only_istd:
 
@@ -160,6 +166,13 @@ plot_matrixeffects(
 ## Value
 
 A `ggplot` object showing the grouped standardized beeswarm plot.
+
+## Details
+
+Include at least one QC type besides the study samples: the reference is
+computed from the plotted analyses, so with study samples only they
+centre on 100% by construction. The plot compares ISTD signals between
+samples; it does not measure the matrix effect itself.
 
 ## See also
 

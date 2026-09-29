@@ -33,7 +33,7 @@ with the canonical argument forms and customisation guidance.
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -125,7 +125,7 @@ with the canonical argument forms and customisation guidance.
       <img src="../logo.svg" class="logo" alt=""><h1>Visualisation functions</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/v0.9.9/vignettes/articles/manual-08-visualization.Rmd" class="external-link"><code>vignettes/articles/manual-08-visualization.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/main/vignettes/articles/manual-08-visualization.Rmd" class="external-link"><code>vignettes/articles/manual-08-visualization.Rmd</code></a></small>
       <div class="d-none name"><code>manual-08-visualization.Rmd</code></div>
     </div>
 
@@ -403,7 +403,9 @@ scatter<a class="anchor" aria-label="anchor" href="#plot_qcmetrics_comparison-pa
 variable names follow the pattern <code>{variable}_cv_{qctype}</code>
 (e.g. <code>intensity_cv_bqc</code>, <code>norm_intensity_cv_tqc</code>)
 and live in <code>mexp@metrics_qc</code> after
-<code><a href="../reference/calc_qc_metrics.html">calc_qc_metrics()</a></code> is run.</p>
+<code><a href="../reference/calc_qc_metrics.html">calc_qc_metrics()</a></code> is run. When the metrics were calculated
+as robust %CV (<code>use_robust_cv = TRUE</code>) or from within-batch
+values (<code>use_batch_medians = TRUE</code>), a caption says so.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mexp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_qc_metrics.html">calc_qc_metrics</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span></span>
 <span></span>
@@ -426,7 +428,9 @@ typically a misassigned ISTD.</p>
 <p>After <code><a href="../reference/filter_features_qc.html">filter_features_qc()</a></code>, these two functions
 summarise how many features passed each filter rule, broken down by
 feature class (<code>_byclass</code>) or aggregated
-(<code>_overall</code>).</p>
+(<code>_overall</code>). Each feature is counted once, under the first
+criterion it fails; features retained via <code>features.to.keep</code>
+despite failing are shown as “QC failed, kept”.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_qc_summary_overall.html">plot_qc_summary_overall</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plot_qc_summary_byclass.html">plot_qc_summary_byclass</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span></span></code></pre></div>
@@ -446,9 +450,12 @@ and points excluded from the fit. Returns a paged grid of features.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_calibrationcurves.html">plot_calibrationcurves</a></span><span class="op">(</span><span class="va">mexp</span>,</span>
 <span>                       variable <span class="op">=</span> <span class="st">"norm_intensity"</span>,</span>
 <span>                       qc_types <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></span></code></pre></div>
-<p>The fit model is taken from the calibration setup unless overridden
-with <code>fit_overwrite = "linear"</code> or
-<code>"quadratic"</code>.</p>
+<p>Without <code>fit_overwrite</code>, the plot shows the fit model and
+weighting used by <code><a href="../reference/quantify_by_calibration.html">quantify_by_calibration()</a></code>. A different
+fit is plotted with <code>fit_overwrite = TRUE</code> together with
+<code>fit_model</code> and <code>fit_weighting</code>; a message then
+lists the features whose plotted fit differs from the stored
+calibration.</p>
 </div>
 <div class="section level3">
 <h3 id="plot_responsecurves-rqc-linearity">
@@ -481,8 +488,15 @@ linear relationship within a class point to mis-identified features.</p>
 <h3 id="plot_matrixeffects-matrix-effect-overview">
 <code>plot_matrixeffects()</code>: matrix-effect overview<a class="anchor" aria-label="anchor" href="#plot_matrixeffects-matrix-effect-overview"></a>
 </h3>
-<p>Compares ISTD response in matrix-containing QCs against solvent-only
-injections to flag matrix-effect outliers.</p>
+<p>Shows each ISTD’s signal per analysis as a percentage of its median
+over the plotted non-blank analyses (per batch by default), grouped by
+QC type. Blanks are plotted but not part of this reference. Include at
+least one QC type besides the study samples: with study samples only,
+they centre on 100% by construction. An ISTD signal higher in process
+blanks (ISTD without matrix) than in the samples may indicate ion
+suppression by the sample matrix. The spread between study samples and
+pooled QCs can reflect sample-to-sample differences in matrix
+effects.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_matrixeffects.html">plot_matrixeffects</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span></span></code></pre></div>
 </div>

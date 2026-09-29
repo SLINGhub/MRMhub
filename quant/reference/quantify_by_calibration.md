@@ -5,9 +5,9 @@ ISTD-normalized intensities and corresponding external calibration
 curves. Calibration curves are calculated for each feature based on
 calibration sample concentrations defined in the `qc_concentrations`
 metadata. The regression fit model (linear or quadratic) and the
-weighting method (either "none", "1/x", or "1/x^2") can be defined
-globally via the arguments `fit_model` and `fit_weighting` for all
-features, if `fit_overwrite` is `TRUE`. Alternatively, the model and
+weighting method (either "none", "1/x", "1/x^2", or "1/sqrt(x)") can be
+defined globally via the arguments `fit_model` and `fit_weighting` for
+all features, if `fit_overwrite` is `TRUE`. Alternatively, the model and
 weighting can be defined individually for each feature in the `feature`
 metadata (columns `curve_fit_model` and `curve_fit_weighting`). If these
 details are missing in the metadata, the default values provided via
@@ -21,7 +21,7 @@ quantify_by_calibration(
   include_qualifier = TRUE,
   fit_overwrite,
   fit_model = c("linear", "quadratic"),
-  fit_weighting = c("none", "1/x", "1/x^2"),
+  fit_weighting = c("none", "1/x", "1/x^2", "1/sqrt(x)"),
   ignore_failed_calibration = FALSE,
   ignore_missing_annotation = FALSE,
   lod_sigma = c("residual", "intercept")
@@ -58,9 +58,9 @@ quantify_by_calibration(
 
   A character string specifying the default weighting method for the
   regression points in the calibration curve. Must be one of `"none"`,
-  `"1/x"`, or `"1/x^2"`. This method will be applied if no specific
-  weighting method is defined for a feature in the metadata, or when
-  `fit_overwrite = TRUE`.
+  `"1/x"`, `"1/x^2"`, or `"1/sqrt(x)"`. This method will be applied if
+  no specific weighting method is defined for a feature in the metadata,
+  or when `fit_overwrite = TRUE`.
 
 - ignore_failed_calibration:
 

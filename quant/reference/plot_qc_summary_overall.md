@@ -2,13 +2,15 @@
 
 This function generates a summary of the feature QC filtering process,
 visualizing the number of features that passed or failed the various QC
-criteria. It includes a Venn diagram showing the features excluded due
-to different filtering criteria such as signal-to-blank ratios, CV
-thresholds, and linearity. The criteria are applied hierarchically,
-meaning a feature must pass all lower-tier filters before being
-considered for failure on higher-tier filters. See
+criteria. The bars apply the criteria hierarchically: a feature is
+counted once, under the first criterion it fails, and features retained
+via `features.to.keep` despite failing are shown as "QC failed, kept".
+See
 [`plot_qc_summary_byclass()`](https://slinghub.github.io/MRMhub/quant/reference/plot_qc_summary_byclass.md)
-for more information.
+for more information. The optional Venn diagram shows, for the features
+passing the missing-value and minimum-intensity criteria, the overlap of
+features failing the signal-to-blank, CV and linearity criteria; unlike
+the bars, it is not hierarchical.
 
 ## Usage
 
@@ -46,13 +48,13 @@ without a Venn diagram.
 
 The QC filtering process follows a hierarchical structure, where
 features are first evaluated against lower-level filters such as
-signal-to-blank ratios and limit of detection (LOD). Only features that
-pass these basic criteria are then subjected to higher-level filters
-like the coefficient of variation (CV) or linear regression results. A
-feature will only fail a higher-level filter (such as `CV` or `R²`) if
-it has passed all previous lower-level filters. This ensures that
-features are evaluated progressively, starting from fundamental quality
-checks up to more stringent filtering criteria.
+signal-to-blank ratios and minimum intensity. Only features that pass
+these basic criteria are then subjected to higher-level filters like the
+coefficient of variation (CV) or linear regression results. A feature
+will only fail a higher-level filter (such as `CV` or `R²`) if it has
+passed all previous lower-level filters. This ensures that features are
+evaluated progressively, starting from fundamental quality checks up to
+more stringent filtering criteria.
 
 Note: The function currently shows a warning
 `Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.`

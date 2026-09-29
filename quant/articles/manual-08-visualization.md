@@ -189,7 +189,9 @@ variable names follow the pattern `{variable}_cv_{qctype}`
 (e.g. `intensity_cv_bqc`, `norm_intensity_cv_tqc`) and live in
 `mexp@metrics_qc` after
 [`calc_qc_metrics()`](https://slinghub.github.io/MRMhub/quant/reference/calc_qc_metrics.md)
-is run.
+is run. When the metrics were calculated as robust %CV
+(`use_robust_cv = TRUE`) or from within-batch values
+(`use_batch_medians = TRUE`), a caption says so.
 
 ``` r
 
@@ -214,6 +216,9 @@ After
 [`filter_features_qc()`](https://slinghub.github.io/MRMhub/quant/reference/filter_features_qc.md),
 these two functions summarise how many features passed each filter rule,
 broken down by feature class (`_byclass`) or aggregated (`_overall`).
+Each feature is counted once, under the first criterion it fails;
+features retained via `features.to.keep` despite failing are shown as
+“QC failed, kept”.
 
 ``` r
 
@@ -238,8 +243,12 @@ plot_calibrationcurves(mexp,
                        qc_types = NA)
 ```
 
-The fit model is taken from the calibration setup unless overridden with
-`fit_overwrite = "linear"` or `"quadratic"`.
+Without `fit_overwrite`, the plot shows the fit model and weighting used
+by
+[`quantify_by_calibration()`](https://slinghub.github.io/MRMhub/quant/reference/quantify_by_calibration.md).
+A different fit is plotted with `fit_overwrite = TRUE` together with
+`fit_model` and `fit_weighting`; a message then lists the features whose
+plotted fit differs from the stored calibration.
 
 ### `plot_responsecurves()`: RQC linearity
 
@@ -270,8 +279,14 @@ plot_rt_vs_chain(mexp)
 
 ### `plot_matrixeffects()`: matrix-effect overview
 
-Compares ISTD response in matrix-containing QCs against solvent-only
-injections to flag matrix-effect outliers.
+Shows each ISTD’s signal per analysis as a percentage of its median over
+the plotted non-blank analyses (per batch by default), grouped by QC
+type. Blanks are plotted but not part of this reference. Include at
+least one QC type besides the study samples: with study samples only,
+they centre on 100% by construction. An ISTD signal higher in process
+blanks (ISTD without matrix) than in the samples may indicate ion
+suppression by the sample matrix. The spread between study samples and
+pooled QCs can reflect sample-to-sample differences in matrix effects.
 
 ``` r
 

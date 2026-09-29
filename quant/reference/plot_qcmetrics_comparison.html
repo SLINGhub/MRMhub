@@ -11,7 +11,7 @@ calc_qc_metrics() documentation."><meta property="og:image" content="https://sli
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -86,7 +86,7 @@ calc_qc_metrics() documentation."><meta property="og:image" content="https://sli
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Comparison of two feature QC metrics variables</h1>
-      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/v0.9.9/R/plots-qc-cv.R" class="external-link"><code>R/plots-qc-cv.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/main/R/plots-qc-cv.R" class="external-link"><code>R/plots-qc-cv.R</code></a></small>
       <div class="d-none name"><code>plot_qcmetrics_comparison.Rd</code></div>
     </div>
 
@@ -108,6 +108,7 @@ across feature classes. A list of available QC metrics is available from the
 <span>  y_shared <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  filter_data <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  include_qualifier <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  include_istd <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  equality_line <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  threshold_values <span class="op">=</span> <span class="cn">NA_real_</span>,</span>
 <span>  log_scale <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -177,7 +178,13 @@ QC-filtered data (filtered via <code><a href="filter_features_qc.html">filter_fe
 
 <dt id="arg-include-qualifier">include_qualifier<a class="anchor" aria-label="anchor" href="#arg-include-qualifier"></a></dt>
 <dd><p>Logical; whether to include qualifier features
-(default is <code>TRUE</code>).</p></dd>
+(default is <code>FALSE</code>).</p></dd>
+
+
+<dt id="arg-include-istd">include_istd<a class="anchor" aria-label="anchor" href="#arg-include-istd"></a></dt>
+<dd><p>Logical; whether to include internal standards (ISTDs)
+(default is <code>FALSE</code>). An ISTD normalized by itself has a CV of 0 for
+normalized intensities and concentrations.</p></dd>
 
 
 <dt id="arg-equality-line">equality_line<a class="anchor" aria-label="anchor" href="#arg-equality-line"></a></dt>

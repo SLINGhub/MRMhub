@@ -33,7 +33,7 @@ parameters, and when to use each.
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -125,7 +125,7 @@ parameters, and when to use each.
       <img src="../logo.svg" class="logo" alt=""><h1>Drift and batch correction</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/v0.9.9/vignettes/articles/manual-07-corrections.Rmd" class="external-link"><code>vignettes/articles/manual-07-corrections.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/main/vignettes/articles/manual-07-corrections.Rmd" class="external-link"><code>vignettes/articles/manual-07-corrections.Rmd</code></a></small>
       <div class="d-none name"><code>manual-07-corrections.Rmd</code></div>
     </div>
 
@@ -240,9 +240,11 @@ This is the default, most robust choice.</li>
 <strong>ComBat</strong> (<code><a href="../reference/correct_batch_combat.html">correct_batch_combat()</a></code>)
 applies the empirical-Bayes location and scale model of <span class="citation">Johnson et al. (2007)</span>, shrinking the batch
 estimates across features. Unlike the other two methods, ComBat
-estimates batch effects from all samples rather than from the reference
-QCs; supply <code>covariates</code> to protect biological signal on
-unbalanced designs.</li>
+estimates batch effects from all study samples and routine QCs rather
+than from the reference QCs only; supply <code>covariates</code> to
+protect biological signal on unbalanced designs. Blanks, response curves
+and calibrants are not used by ComBat or SERRF and keep their
+uncorrected values.</li>
 <li>
 <strong>SERRF</strong> (<code><a href="../reference/correct_batch_serrf.html">correct_batch_serrf()</a></code>) removes
 systematic error with per-feature random forests trained on the

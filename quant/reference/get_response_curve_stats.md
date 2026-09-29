@@ -2,8 +2,11 @@
 
 This function calculates linear regression statistics (R², slope, and
 intercept) for each response curve in the provided `MRMhubExperiment`
-object. Before fitting, the analyzed sample amount (`x`) and feature
-intensity (`y`) of each curve are each scaled to their maximum (set to
+object. Each curve is fitted on its points with a non-missing intensity,
+with a warning when some are missing; a curve with 2 such points has a
+slope and intercept but no R² (`NA`), and a curve with fewer gives `NA`
+throughout. Before fitting, the analyzed sample amount (`x`) and feature
+intensity (`y`) of these points are each scaled to their maximum (set to
 1), so the returned `slopenorm` and `y0norm` are on this normalized
 scale. Optionally, it can include additional statistics from the
 `lancer` package (if installed) when `with_saturation_stats` is set to

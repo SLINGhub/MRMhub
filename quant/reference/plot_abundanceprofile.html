@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -82,7 +82,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Plot abundance profile</h1>
-      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/v0.9.9/R/plot-featureprofile.R" class="external-link"><code>R/plot-featureprofile.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/main/R/plot-featureprofile.R" class="external-link"><code>R/plot-featureprofile.R</code></a></small>
       <div class="d-none name"><code>plot_abundanceprofile.Rd</code></div>
     </div>
 
@@ -133,12 +133,12 @@
 <dt id="arg-variable">variable<a class="anchor" aria-label="anchor" href="#arg-variable"></a></dt>
 <dd><p>A character string indicating the variable to plot. For <code>use_qc_metrics = FALSE</code>,
 this must be a base name like "area" or "conc". For <code>use_qc_metrics = TRUE</code>, this is the
-base name of a metric in the <code>metrics_qc</code> table (e.g., "rt" for "rt_mean_SPL").</p></dd>
+name of a column in the <code>metrics_qc</code> table (e.g., "conc_median_spl").</p></dd>
 
 
 <dt id="arg-qc-types">qc_types<a class="anchor" aria-label="anchor" href="#arg-qc-types"></a></dt>
 <dd><p>A character vector specifying the QC types to be averaged and plotted.
-If <code>use_qc_metrics</code> is <code>TRUE</code>, this must be a single character string (e.g., "SPL").</p></dd>
+Ignored if <code>use_qc_metrics</code> is <code>TRUE</code>, where the QC type is part of <code>variable</code>.</p></dd>
 
 
 <dt id="arg-log-scale">log_scale<a class="anchor" aria-label="anchor" href="#arg-log-scale"></a></dt>
@@ -147,8 +147,7 @@ If <code>use_qc_metrics</code> is <code>TRUE</code>, this must be a single chara
 
 <dt id="arg-use-qc-metrics">use_qc_metrics<a class="anchor" aria-label="anchor" href="#arg-use-qc-metrics"></a></dt>
 <dd><p>A logical value. If <code>FALSE</code> (default), data is summarized on the fly from the main dataset.
-If <code>TRUE</code>, pre-calculated summary data is used from the <code>metrics_qc</code> table, which is much faster.
-When <code>TRUE</code>, <code>qc_types</code> must specify only one QC type.</p></dd>
+If <code>TRUE</code>, pre-calculated summary data is used from the <code>metrics_qc</code> table, which is much faster.</p></dd>
 
 
 <dt id="arg-feature-map">feature_map<a class="anchor" aria-label="anchor" href="#arg-feature-map"></a></dt>
@@ -170,7 +169,7 @@ abundance-related variables and <code>FALSE</code> for others (e.g., "rt", "fwhm
 
 <dt id="arg-filter-data">filter_data<a class="anchor" aria-label="anchor" href="#arg-filter-data"></a></dt>
 <dd><p>A logical value indicating whether to use all data (<code>FALSE</code>, default)
-or only QC-filtered data (<code>TRUE</code>, via <code><a href="filter_features_qc.html">filter_features_qc()</a></code>). This is ignored if <code>use_qc_metrics</code> is <code>TRUE</code>.</p></dd>
+or only QC-filtered data (<code>TRUE</code>, via <code><a href="filter_features_qc.html">filter_features_qc()</a></code>).</p></dd>
 
 
 <dt id="arg-include-qualifier">include_qualifier<a class="anchor" aria-label="anchor" href="#arg-include-qualifier"></a></dt>

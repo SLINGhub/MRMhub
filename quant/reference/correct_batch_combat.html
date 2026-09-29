@@ -6,8 +6,10 @@ models a location and scale batch effect per feature and shrinks those
 estimates across features, which can stabilise many small batches better than
 simple median centering.
 Unlike correct_batch_centering() and correct_batch_serrf(), ComBat
-estimates batch effects from all samples (optionally protecting biology
-via covariates), not from the reference QCs. On strongly unbalanced designs
+estimates batch effects from all study samples and routine QCs (optionally
+protecting biology via covariates), not only from the reference QCs.
+Blanks, response curves, calibrants and other analysis types are left out of
+the fit and keep their uncorrected values. On strongly unbalanced designs
 this can remove genuine biological signal, so supply covariates when the
 biological grouping is not balanced across batches. ref_qc_types is used
 only for the before/after QC-CV report and the plotting trend curves.
@@ -20,8 +22,10 @@ models a location and scale batch effect per feature and shrinks those
 estimates across features, which can stabilise many small batches better than
 simple median centering.
 Unlike correct_batch_centering() and correct_batch_serrf(), ComBat
-estimates batch effects from all samples (optionally protecting biology
-via covariates), not from the reference QCs. On strongly unbalanced designs
+estimates batch effects from all study samples and routine QCs (optionally
+protecting biology via covariates), not only from the reference QCs.
+Blanks, response curves, calibrants and other analysis types are left out of
+the fit and keep their uncorrected values. On strongly unbalanced designs
 this can remove genuine biological signal, so supply covariates when the
 biological grouping is not balanced across batches. ref_qc_types is used
 only for the before/after QC-CV report and the plotting trend curves.
@@ -35,7 +39,7 @@ the selected variable are left uncorrected (ComBat requires complete data).'><me
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -110,7 +114,7 @@ the selected variable are left uncorrected (ComBat requires complete data).'><me
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>ComBat batch correction</h1>
-      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/v0.9.9/R/correct-batch.R" class="external-link"><code>R/correct-batch.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/main/R/correct-batch.R" class="external-link"><code>R/correct-batch.R</code></a></small>
       <div class="d-none name"><code>correct_batch_combat.Rd</code></div>
     </div>
 
@@ -122,8 +126,10 @@ models a location and scale batch effect per feature and shrinks those
 estimates across features, which can stabilise many small batches better than
 simple median centering.</p>
 <p>Unlike <code><a href="correct_batch_centering.html">correct_batch_centering()</a></code> and <code><a href="correct_batch_serrf.html">correct_batch_serrf()</a></code>, ComBat
-estimates batch effects from <strong>all</strong> samples (optionally protecting biology
-via <code>covariates</code>), not from the reference QCs. On strongly unbalanced designs
+estimates batch effects from all study samples and routine QCs (optionally
+protecting biology via <code>covariates</code>), not only from the reference QCs.
+Blanks, response curves, calibrants and other analysis types are left out of
+the fit and keep their uncorrected values. On strongly unbalanced designs
 this can remove genuine biological signal, so supply <code>covariates</code> when the
 biological grouping is not balanced across batches. <code>ref_qc_types</code> is used
 only for the before/after QC-CV report and the plotting trend curves.</p>
@@ -169,7 +175,9 @@ trend curves (not for the ComBat fit itself).</p></dd>
 
 <dt id="arg-covariates">covariates<a class="anchor" aria-label="anchor" href="#arg-covariates"></a></dt>
 <dd><p>Optional model matrix of biological covariates to preserve
-(passed to <code><a href="https://rdrr.io/pkg/sva/man/ComBat.html" class="external-link">sva::ComBat()</a></code> as <code>mod</code>). Defaults to <code>NULL</code> (no covariates).</p></dd>
+(passed to <code><a href="https://rdrr.io/pkg/sva/man/ComBat.html" class="external-link">sva::ComBat()</a></code> as <code>mod</code>), with the analysis IDs as row names.
+Rows are matched to analyses by name; rows of analyses not used in the fit
+are ignored. Defaults to <code>NULL</code> (no covariates).</p></dd>
 
 
 <dt id="arg-ref-batch">ref_batch<a class="anchor" aria-label="anchor" href="#arg-ref-batch"></a></dt>

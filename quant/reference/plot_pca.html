@@ -17,7 +17,7 @@ This function returns a ggplot object. Identified outliers can be printed to the
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -92,7 +92,7 @@ This function returns a ggplot object. Identified outliers can be printed to the
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>PCA plot for quality control</h1>
-      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/v0.9.9/R/plots-qc-pca.R" class="external-link"><code>R/plots-qc-pca.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/main/R/plots-qc-pca.R" class="external-link"><code>R/plots-qc-pca.R</code></a></small>
       <div class="d-none name"><code>plot_pca.Rd</code></div>
     </div>
 
@@ -163,7 +163,9 @@ analysis. Must be one of: "area", "height", "intensity", "norm_intensity", "resp
 <dd><p>A character vector specifying the QC types to plot. It must
 contain at least one element. The default <code>NA</code> plots any of the non-blank
 QC types ("SPL", "TQC", "BQC", "HQC", "MQC", "LQC", "NIST", "LTR") present
-in the dataset.</p></dd>
+in the dataset. A single value that is a QC type is matched exactly; any
+other single value is a regular expression, e.g. <code>"QC$"</code> for all QC types
+ending in "QC".</p></dd>
 
 
 <dt id="arg-ellipse-variable">ellipse_variable<a class="anchor" aria-label="anchor" href="#arg-ellipse-variable"></a></dt>
@@ -235,8 +237,9 @@ Default is "analysis_id".</p></dd>
 
 <dt id="arg-labels-threshold-mad">labels_threshold_mad<a class="anchor" aria-label="anchor" href="#arg-labels-threshold-mad"></a></dt>
 <dd><p>A numeric value determining the threshold
-for showing labels based on the median absolute deviation (MAD). Default
-is 3. Set to <code>NULL</code> to suppress labels.</p></dd>
+for showing labels based on the median absolute deviation (MAD): samples
+whose score on either shown PC lies more than this many MADs from the
+median are labelled. Default is 3. Set to <code>NULL</code> to suppress labels.</p></dd>
 
 
 <dt id="arg-shared-labeltext-hide">shared_labeltext_hide<a class="anchor" aria-label="anchor" href="#arg-shared-labeltext-hide"></a></dt>

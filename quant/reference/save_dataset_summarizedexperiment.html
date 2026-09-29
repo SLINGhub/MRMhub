@@ -19,7 +19,7 @@ for preprocessing."><meta property="og:image" content="https://slinghub.github.i
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -94,7 +94,7 @@ for preprocessing."><meta property="og:image" content="https://slinghub.github.i
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Export an experiment to a Bioconductor SummarizedExperiment</h1>
-      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/v0.9.9/R/data-summarizedexperiment.R" class="external-link"><code>R/data-summarizedexperiment.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/main/R/data-summarizedexperiment.R" class="external-link"><code>R/data-summarizedexperiment.R</code></a></small>
       <div class="d-none name"><code>save_dataset_summarizedexperiment.Rd</code></div>
     </div>
 
@@ -136,8 +136,11 @@ missing. When <code>NULL</code> (default) the object is returned.</p></dd>
 
 <dt id="arg-variable">variable<a class="anchor" aria-label="anchor" href="#arg-variable"></a></dt>
 <dd><p>Feature variables to export as assays, e.g. <code>"conc"</code> or
-<code>c("intensity", "conc")</code>. <code>NULL</code> (default) exports every <code>feature_*</code>
-variable present in the data.</p></dd>
+<code>c("intensity", "conc")</code>. <code>NULL</code> (default) exports the numeric <code>feature_*</code>
+variables present in the data, except the backup snapshots (<code>_orig</code>,
+<code>_before</code>, <code>_beforecal</code>) and drift-model fit points (<code>_fit</code>), which are
+internal bookkeeping rather than measurements. Name one of those
+explicitly to export it.</p></dd>
 
 
 <dt id="arg-as">as<a class="anchor" aria-label="anchor" href="#arg-as"></a></dt>

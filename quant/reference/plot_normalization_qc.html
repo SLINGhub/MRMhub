@@ -27,7 +27,7 @@ precision across different features and sample/QC types."><meta property="og:ima
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -102,7 +102,7 @@ precision across different features and sample/QC types."><meta property="og:ima
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Compare feature variability before and after normalization</h1>
-      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/v0.9.9/R/plots-qc-cv.R" class="external-link"><code>R/plots-qc-cv.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/main/R/plots-qc-cv.R" class="external-link"><code>R/plots-qc-cv.R</code></a></small>
       <div class="d-none name"><code>plot_normalization_qc.Rd</code></div>
     </div>
 
@@ -129,6 +129,7 @@ precision across different features and sample/QC types.</p>
 <span>  y_shared <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  filter_data <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  include_qualifier <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  include_istd <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  cv_threshold_value <span class="op">=</span> <span class="fl">25</span>,</span>
 <span>  x_lim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">NA_real_</span>, <span class="cn">NA_real_</span><span class="op">)</span>,</span>
 <span>  y_lim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">NA_real_</span>, <span class="cn">NA_real_</span><span class="op">)</span>,</span>
@@ -175,7 +176,9 @@ as a scatter plot, "diff" plots the difference between the two CV values against
 <dd><p>A character vector specifying the QC types to plot. It must
 contain at least one element. The default <code>NA</code> plots any of the non-blank
 QC types ("SPL", "TQC", "BQC", "HQC", "MQC", "LQC", "NIST", "LTR") present
-in the dataset.</p></dd>
+in the dataset. A single value that is a QC type is matched exactly; any
+other single value is a regular expression, e.g. <code>"QC$"</code> for all QC types
+ending in "QC".</p></dd>
 
 
 <dt id="arg-facet-by-class">facet_by_class<a class="anchor" aria-label="anchor" href="#arg-facet-by-class"></a></dt>
@@ -195,7 +198,12 @@ QC-filtered data (filtered via <code><a href="filter_features_qc.html">filter_fe
 
 <dt id="arg-include-qualifier">include_qualifier<a class="anchor" aria-label="anchor" href="#arg-include-qualifier"></a></dt>
 <dd><p>Whether to include qualifier features
-(default is <code>TRUE</code>).</p></dd>
+(default is <code>FALSE</code>).</p></dd>
+
+
+<dt id="arg-include-istd">include_istd<a class="anchor" aria-label="anchor" href="#arg-include-istd"></a></dt>
+<dd><p>Whether to include internal standards (ISTDs) (default
+is <code>FALSE</code>).</p></dd>
 
 
 <dt id="arg-cv-threshold-value">cv_threshold_value<a class="anchor" aria-label="anchor" href="#arg-cv-threshold-value"></a></dt>

@@ -564,7 +564,7 @@ mexp <- correct_drift_gaussiankernel(
 
     ! 1 features showed no variation in the study sample's original values across analyses. 
 
-    ! 1 features have invalid values after smoothing. NA will be be returned for all values of these faetures. Set `use_original_if_fail = FALSE to return orginal values..
+    ! 1 features have invalid values after smoothing. NA is returned for all values of these features. Set `use_original_if_fail = TRUE` to keep the original values.
 
     ! Smoothing failed for 1 feature(s) in all batches. Please check data, metadata, and fit parameters.
 
@@ -710,10 +710,11 @@ The final curation step removes features that fail defined QC criteria.
 [`filter_features_qc()`](https://slinghub.github.io/MRMhub/quant/reference/filter_features_qc.md)
 combines several: the quality of the response curves (minimum r², slope,
 and maximum y-intercept), the signal-to-blank ratio against process
-blanks, the absolute signal level as a proxy for the limit of detection,
-and the precision in the batch QCs (`max.cv.conc.bqc`). The criteria are
-applied *hierarchically* (a feature counts as failing CV only once it
-has passed the S/B and signal filters) and `features.to.keep` retains
+blanks, a minimum signal level, and the precision in the batch QCs
+(`max.cv.conc.bqc`). A feature not detected in the process blanks has an
+infinite signal-to-blank ratio and passes that criterion. The criteria
+are applied *hierarchically* (a feature counts as failing CV only once
+it has passed the S/B and signal filters) and `features.to.keep` retains
 named species regardless. The filter can be run repeatedly, overwriting
 or, with `clear_existing = FALSE`, amending the previous set.
 
@@ -739,7 +740,7 @@ mexp <- filter_features_qc(
 )
 ```
 
-    ! %CV not computed for 4440 feature×QC-type×variable combinations with fewer than 3 replicates (LTR: 4440).
+    ! %CV and D-ratio not computed for 4440 feature×QC-type×variable combinations with fewer than 3 replicates (LTR: 4440).
 
     ✔ QC metrics calculated for 502 features across 7 sample types, including normalized-intensity, concentration, and response-curve statistics.
 
@@ -748,6 +749,8 @@ mexp <- filter_features_qc(
     ! The QC parameter min.signalblank.median.spl.pblk contains NAs for the following features: LPC O-22:1, PC 34:5, PC 35:1, PG 36:2, SM 35:1|PC P_32:1 M+1, and SM 35:1|PC .... These features failed QC.
 
     ! The QC parameter max.cv.conc.bqc contains NAs for the following features: Cer d18:1/12:0 (ISTD) [M-H20>264], Cer d18:1/25:0 (ISTD) [M-H20>264], Hex2Cer.... These features failed QC.
+
+    ! 1 feature without the response-curve results needed (R² needs at least 3 RQC points with a value, slope and intercept 2) failed the linearity criterion: "PG 36:2".
 
     ! The following features were forced to be retained despite not meeting filtering criteria: CE 16:0, CE 20:4, CE 22:5, and CE 22:6
 
@@ -759,8 +762,10 @@ The plot below summarises the filtering per lipid class. Green segments
 count the species that passed every criterion; the remaining segments
 count those that failed each one. Because the criteria are hierarchical,
 a species is attributed to the *first* filter it fails (for example
-`CV`), having already cleared the lower ones (`S/B`, `LOD`), so the
-counts partition the features rather than double-counting them.
+`CV`), having already cleared the lower ones (`S/B`, minimum intensity),
+so the counts partition the features rather than double-counting them.
+Species retained via `features.to.keep` despite failing a criterion form
+their own segment (“QC failed, kept”).
 
 ``` r
 
@@ -776,6 +781,8 @@ species passing all criteria.
 The next plot gives the same picture across all features, with the total
 retained, and adds a Venn diagram showing how many features each
 individual criterion excluded, and where those exclusions overlap.
+Unlike the bars, the Venn diagram is not hierarchical, so its counts can
+differ from the bar counts.
 
 ``` r
 
@@ -828,7 +835,7 @@ produced.
 save_report_xlsx(mexp, path = tempfile(fileext = ".xlsx"))
 ```
 
-    ✔ The data processing report of experiment 'sPerfect' has been saved to /tmp/RtmpRUcQMn/file42d15b24ce1.xlsx.
+    ✔ The data processing report of experiment 'sPerfect' has been saved to /tmp/RtmpVgYbC9/file4388255d8ae3.xlsx.
 
 For downstream statistics it is often easier to export a single flat,
 wide CSV of a chosen data subset. This is the format used to share the

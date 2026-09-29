@@ -31,7 +31,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -123,7 +123,7 @@
       <img src="../logo.svg" class="logo" alt=""><h1>Calibration by a reference sample</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/v0.9.9/vignettes/articles/tutorial-07-calibration-reference.Rmd" class="external-link"><code>vignettes/articles/tutorial-07-calibration-reference.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/main/vignettes/articles/tutorial-07-calibration-reference.Rmd" class="external-link"><code>vignettes/articles/tutorial-07-calibration-reference.Rmd</code></a></small>
       <div class="d-none name"><code>tutorial-07-calibration-reference.Rmd</code></div>
     </div>
 
@@ -254,21 +254,21 @@ appear as concentrations in the MRMhub XLSX report.</p>
 <code class="sourceCode R"><span><span class="co"># Export absolute-calibrated concentrations</span></span>
 <span><span class="fu"><a href="../reference/save_dataset_csv.html">save_dataset_csv</a></span><span class="op">(</span><span class="va">mexp_res</span>, <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span>, variable <span class="op">=</span> <span class="st">"conc"</span><span class="op">)</span></span></code></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Concentration values for 65 analyses and 7 features have been exported to '/tmp/Rtmp6jZ4se/file48786df6ab62.csv'.</span></code></pre>
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Concentration values for 65 analyses and 7 features have been exported to '/tmp/Rtmpz3mpYM/file493240dcb7bf.csv'.</span></code></pre>
 </div>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># Export non-calibrated concentrations</span></span>
 <span><span class="fu"><a href="../reference/save_dataset_csv.html">save_dataset_csv</a></span><span class="op">(</span><span class="va">mexp_res</span>, <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span>, variable <span class="op">=</span> <span class="st">"conc_beforecal"</span><span class="op">)</span></span></code></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Conc_beforecal values for 65 analyses and 16 features have been exported to '/tmp/Rtmp6jZ4se/file4878686aa333.csv'.</span></code></pre>
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Conc_beforecal values for 65 analyses and 16 features have been exported to '/tmp/Rtmpz3mpYM/file493213661b68.csv'.</span></code></pre>
 </div>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># Create XLSX report with calibrated concentrations as filtered dataset</span></span>
 <span><span class="fu"><a href="../reference/save_report_xlsx.html">save_report_xlsx</a></span><span class="op">(</span><span class="va">mexp_res</span>, <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".xlsx"</span><span class="op">)</span>, filtered_variable <span class="op">=</span> <span class="st">"conc"</span><span class="op">)</span></span></code></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The data processing report has been saved to /tmp/Rtmp6jZ4se/file48782e941a4b.xlsx.</span></code></pre>
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The data processing report has been saved to /tmp/Rtmpz3mpYM/file493273b74e3d.xlsx.</span></code></pre>
 </div>
 </div>
 <div class="section level2">
@@ -299,9 +299,12 @@ input variable, e.g. <code>conc_normalized</code> or
 <p>The normalized values can be exported as
 <code>[VARIABLE]_normalized</code> with <code><a href="../reference/save_dataset_csv.html">save_dataset_csv()</a></code>.
 In the MRMhub XLSX report from <code><a href="../reference/save_report_xlsx.html">save_report_xlsx()</a></code>, the
-unfiltered dataset with normalized concentrations is included by
-default; to include them as the filtered dataset, set
-<code>filtered_variable = "[VARIABLE]_normalized"</code>.</p>
+unfiltered dataset with normalized concentrations is included by default
+(sheet <code>Conc_NormalizedByRef_Full</code>); to include them as the
+filtered dataset, set
+<code>filtered_variable = "[VARIABLE]_normalized"</code> (sheets
+<code>QCfilt_ConcRef_StudySamples</code> and
+<code>QCfilt_ConcRef_AllSamples</code>).</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Export NIST SRM1950-normalized concentrations</span></span>
 <span><span class="fu"><a href="../reference/save_dataset_csv.html">save_dataset_csv</a></span><span class="op">(</span><span class="va">mexp_res</span>, <span class="st">"norm.csv"</span>, variable <span class="op">=</span> <span class="st">"conc_normalized"</span><span class="op">)</span></span></code></pre></div>
@@ -316,7 +319,7 @@ default; to include them as the filtered dataset, set
 <span>  path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".xlsx"</span><span class="op">)</span>,</span>
 <span>  filtered_variable <span class="op">=</span> <span class="st">"conc_normalized"</span><span class="op">)</span></span></code></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The data processing report has been saved to /tmp/Rtmp6jZ4se/file487871d1f621.xlsx.</span></code></pre>
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">The data processing report has been saved to /tmp/Rtmpz3mpYM/file4932551df9cb.xlsx.</span></code></pre>
 </div>
 </div>
 <div class="section level2">
@@ -349,7 +352,7 @@ using a reference material shared across them.</p>
 <code class="sourceCode R"><span></span>
 <span><span class="fu"><a href="../reference/save_dataset_csv.html">save_dataset_csv</a></span><span class="op">(</span><span class="va">mexp_res</span>, <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span>, variable <span class="op">=</span> <span class="st">"conc_beforecal"</span><span class="op">)</span></span></code></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Conc_beforecal values for 65 analyses and 16 features have been exported to '/tmp/Rtmp6jZ4se/file48783dd04a.csv'.</span></code></pre>
+<pre><code><span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Conc_beforecal values for 65 analyses and 16 features have been exported to '/tmp/Rtmpz3mpYM/file49325d03016a.csv'.</span></code></pre>
 </div>
 </div>
 <div class="section level2">
@@ -1889,6 +1892,7 @@ applied.</p>
       <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="cv_intra">cv_intra</th>
       <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="bias">bias</th>
       <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="conc_ratio">conc_ratio</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="conc_ratio_sd">conc_ratio_sd</th>
     </tr></thead>
 <tbody class="gt_table_body">
 <tr>
@@ -1902,6 +1906,7 @@ applied.</p>
 <td headers="cv_intra" class="gt_row gt_right">14.771</td>
 <td headers="bias" class="gt_row gt_right">−56.760</td>
 <td headers="conc_ratio" class="gt_row gt_right">0.432</td>
+<td headers="conc_ratio_sd" class="gt_row gt_right">0.064</td>
 </tr>
 <tr>
 <td headers="feature_id" class="gt_row gt_left">S1P d17:1 [M&gt;60]</td>
@@ -1914,6 +1919,7 @@ applied.</p>
 <td headers="cv_intra" class="gt_row gt_right">3.550</td>
 <td headers="bias" class="gt_row gt_right">−65.473</td>
 <td headers="conc_ratio" class="gt_row gt_right">0.345</td>
+<td headers="conc_ratio_sd" class="gt_row gt_right">0.012</td>
 </tr>
 <tr>
 <td headers="feature_id" class="gt_row gt_left">S1P d18:0 [M&gt;60]</td>
@@ -1926,6 +1932,7 @@ applied.</p>
 <td headers="cv_intra" class="gt_row gt_right">0.995</td>
 <td headers="bias" class="gt_row gt_right">−70.827</td>
 <td headers="conc_ratio" class="gt_row gt_right">0.292</td>
+<td headers="conc_ratio_sd" class="gt_row gt_right">0.003</td>
 </tr>
 <tr>
 <td headers="feature_id" class="gt_row gt_left">S1P d18:1 [M&gt;60]</td>
@@ -1938,6 +1945,7 @@ applied.</p>
 <td headers="cv_intra" class="gt_row gt_right">0.040</td>
 <td headers="bias" class="gt_row gt_right">−65.469</td>
 <td headers="conc_ratio" class="gt_row gt_right">0.345</td>
+<td headers="conc_ratio_sd" class="gt_row gt_right">0.000</td>
 </tr>
 <tr>
 <td headers="feature_id" class="gt_row gt_left">S1P d18:2 [M&gt;60]</td>
@@ -1950,6 +1958,7 @@ applied.</p>
 <td headers="cv_intra" class="gt_row gt_right">1.460</td>
 <td headers="bias" class="gt_row gt_right">−64.456</td>
 <td headers="conc_ratio" class="gt_row gt_right">0.355</td>
+<td headers="conc_ratio_sd" class="gt_row gt_right">0.005</td>
 </tr>
 <tr>
 <td headers="feature_id" class="gt_row gt_left">S1P d19:1 [M&gt;60]</td>
@@ -1962,6 +1971,7 @@ applied.</p>
 <td headers="cv_intra" class="gt_row gt_right">9.713</td>
 <td headers="bias" class="gt_row gt_right">−69.189</td>
 <td headers="conc_ratio" class="gt_row gt_right">0.308</td>
+<td headers="conc_ratio_sd" class="gt_row gt_right">0.030</td>
 </tr>
 </tbody>
 </table>

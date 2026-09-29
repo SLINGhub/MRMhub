@@ -12,8 +12,10 @@ Unlike
 [`correct_batch_centering()`](https://slinghub.github.io/MRMhub/quant/reference/correct_batch_centering.md)
 and
 [`correct_batch_serrf()`](https://slinghub.github.io/MRMhub/quant/reference/correct_batch_serrf.md),
-ComBat estimates batch effects from **all** samples (optionally
-protecting biology via `covariates`), not from the reference QCs. On
+ComBat estimates batch effects from all study samples and routine QCs
+(optionally protecting biology via `covariates`), not only from the
+reference QCs. Blanks, response curves, calibrants and other analysis
+types are left out of the fit and keep their uncorrected values. On
 strongly unbalanced designs this can remove genuine biological signal,
 so supply `covariates` when the biological grouping is not balanced
 across batches. `ref_qc_types` is used only for the before/after QC-CV
@@ -63,8 +65,10 @@ correct_batch_combat(
 - covariates:
 
   Optional model matrix of biological covariates to preserve (passed to
-  [`sva::ComBat()`](https://rdrr.io/pkg/sva/man/ComBat.html) as `mod`).
-  Defaults to `NULL` (no covariates).
+  [`sva::ComBat()`](https://rdrr.io/pkg/sva/man/ComBat.html) as `mod`),
+  with the analysis IDs as row names. Rows are matched to analyses by
+  name; rows of analyses not used in the fit are ignored. Defaults to
+  `NULL` (no covariates).
 
 - ref_batch:
 

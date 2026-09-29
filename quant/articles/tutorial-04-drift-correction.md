@@ -289,8 +289,8 @@ are experimental and require an optional package.
 **ComBat** (Johnson et al. 2007) applies an empirical-Bayes location and
 scale adjustment, shrinking the batch estimates across features
 (requires the `sva` package). Unlike centering and SERRF, it estimates
-batch effects from all samples; pass `covariates` to protect biology on
-unbalanced designs.
+batch effects from all study samples and routine QCs; pass `covariates`
+to protect biology on unbalanced designs.
 
 ``` r
 

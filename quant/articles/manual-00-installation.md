@@ -108,7 +108,7 @@ When such a function is called and its package is not yet installed,
 | [`correct_drift_gam()`](https://slinghub.github.io/MRMhub/quant/reference/correct_drift_gam.md) | mgcv | GAM-based drift correction |
 | [`build_workflow()`](https://slinghub.github.io/MRMhub/quant/reference/build_workflow.md) | shiny, bslib | interactive workflow-builder app |
 | [`save_dataset_summarizedexperiment()`](https://slinghub.github.io/MRMhub/quant/reference/save_dataset_summarizedexperiment.md) | SummarizedExperiment, S4Vectors, lipidr *(Bioconductor)* | export to a `SummarizedExperiment` |
-| Lipid-name parsing (isotope correction, lipid plots) | rgoslin *(Bioconductor)* | parse and normalise lipid shorthand |
+| [`set_lipid_class()`](https://slinghub.github.io/MRMhub/quant/reference/set_lipid_class.md), lipid-name parsing (isotope correction, lipid plots) | rgoslin *(Bioconductor)* | parse and normalise lipid shorthand |
 | [`get_response_curve_stats()`](https://slinghub.github.io/MRMhub/quant/reference/get_response_curve_stats.md) | lancer *(GitHub)* | only for specific response-curve metrics |
 
 To install all of them upfront, run the following in a fresh R session

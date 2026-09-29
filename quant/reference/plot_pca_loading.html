@@ -11,7 +11,7 @@ investigate which feature (groups) are contributing to the variance seen in the 
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -86,7 +86,7 @@ investigate which feature (groups) are contributing to the variance seen in the 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Plot PCA loadings</h1>
-      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/v0.9.9/R/plots-qc-pca.R" class="external-link"><code>R/plots-qc-pca.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/main/R/plots-qc-pca.R" class="external-link"><code>R/plots-qc-pca.R</code></a></small>
       <div class="d-none name"><code>plot_pca_loading.Rd</code></div>
     </div>
 
@@ -142,7 +142,9 @@ analysis. Must be one of: "area", "height", "intensity", "norm_intensity", "resp
 <dd><p>A character vector specifying the QC types to plot. It must
 contain at least one element. The default <code>NA</code> plots any of the non-blank
 QC types ("SPL", "TQC", "BQC", "HQC", "MQC", "LQC", "NIST", "LTR") present
-in the dataset.</p></dd>
+in the dataset. A single value that is a QC type is matched exactly; any
+other single value is a regular expression, e.g. <code>"QC$"</code> for all QC types
+ending in "QC".</p></dd>
 
 
 <dt id="arg-pca-dims">pca_dims<a class="anchor" aria-label="anchor" href="#arg-pca-dims"></a></dt>
@@ -174,12 +176,12 @@ the data before the PCA. Default is <code>TRUE</code>.</p></dd>
 
 <dt id="arg-include-qualifier">include_qualifier<a class="anchor" aria-label="anchor" href="#arg-include-qualifier"></a></dt>
 <dd><p>A logical value indicating whether to include
-qualifier features. Default is <code>TRUE</code>.</p></dd>
+qualifier features. Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-include-istd">include_istd<a class="anchor" aria-label="anchor" href="#arg-include-istd"></a></dt>
 <dd><p>A logical value indicating whether to include internal
-standard (ISTD) features. Default is <code>TRUE</code>.</p></dd>
+standard (ISTD) features. Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-include-feature-filter">include_feature_filter<a class="anchor" aria-label="anchor" href="#arg-include-feature-filter"></a></dt>

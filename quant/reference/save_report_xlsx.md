@@ -3,7 +3,8 @@
 Generates a data processing report from a `MRMhubExperiment` object and
 writes it to an Excel file. The report includes information on the data
 processing steps, quality control metrics, feature concentrations, and
-metadata. Following tables will be created as sheets in the EXCEL file:
+metadata. Following tables will be created as sheets in the EXCEL file,
+in this order:
 
 ## Usage
 
@@ -63,10 +64,13 @@ specified Excel file.
 
 ## Details
 
-- Info: General information including date, author, and MRMhub version,
-  processing status and feature concentration unit.
+- Info: Report date, author, MRMhub version and the concentration unit.
 
-- Feature_QC_metrics: Quality control metrics of all features.
+- Feature_QC_metrics: Quality control metrics of all features. An
+  infinite signal-to-blank ratio (feature not detected in the blank) is
+  written as the text `Inf`.
+
+- Calibration_metrics: External calibration results per feature.
 
 - QCfilt_x_StudySamples: Feature (QC)-filtered data (variable defined
   via `filtered_variable`) in study samples ('SPL'). Filter have to be
@@ -79,14 +83,19 @@ specified Excel file.
   [`filter_features_qc()`](https://slinghub.github.io/MRMhub/quant/reference/filter_features_qc.md).
   The *x* corresponds to the `filtered_variable` argument.
 
-- Conc_FullDataset: Final feature concentrations from the full,
-  non-filtered dataset.
-
 - Raw_Intensity_FullDataset: Raw feature intensities from the full,
   non-filtered dataset.
 
 - Norm_Intensity_FullDataset: Normalized feature intensities from the
   full, non-filtered dataset.
+
+- Conc_FullDataset: Final feature concentrations from the full,
+  non-filtered dataset.
+
+- x_NormalizedByRef_Full: Study-sample values normalized by a reference
+  sample (see
+  [`calibrate_by_reference()`](https://slinghub.github.io/MRMhub/quant/reference/calibrate_by_reference.md)),
+  if available.
 
 - SampleMetadata: Analysis metadata that was imported and used for
   processing steps
@@ -103,6 +112,11 @@ specified Excel file.
   (interfering feature, contribution factor, overlap type, source) with
   the per-feature correction impact when the correction has been
   applied.
+
+Internal standards are not included in the concentration and QC-filtered
+sheets. For reference-normalized variables, sheet names use short labels
+to stay within Excel's 31 characters, with "Ref" marking values
+normalized by a reference sample (e.g. `QCfilt_ConcRef_StudySamples`).
 
 If certain data sets are not available, the function includes empty
 tables for the corresponding dataset.

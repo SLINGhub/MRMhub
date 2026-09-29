@@ -77,12 +77,14 @@ filter_features_qc(
 - use_batch_medians:
 
   Logical. If `TRUE`, uses batch-wise median QC values for filtering.
-  Default is `FALSE`.
+  Default is `FALSE`, or the setting of existing QC metrics; a different
+  explicit value recalculates them.
 
 - use_robust_cv:
 
   Logical. If `TRUE`, uses robust coefficient of variation (MAD/median)
-  instead of standard CV (SD/mean). Default is `FALSE`.
+  instead of standard CV (SD/mean). Default is `FALSE`, or the setting
+  of existing QC metrics; a different explicit value recalculates them.
 
 - include_qualifier:
 
@@ -156,7 +158,11 @@ filter_features_qc(
 - min.signalblank.median.spl.sblk:
 
   Minimum signal-to-blank ratio for SPL samples and SBLK. Default is
-  `NA`.
+  `NA`. For all signal-to-blank criteria, a feature not detected in a
+  blank (missing or zero intensity) has a blank median of zero, i.e. a
+  ratio of `Inf`, and passes; a feature not detected in the study
+  samples fails. A criterion for a blank type without analyses in the
+  dataset raises an error.
 
 - max.cv.intensity.bqc:
 
@@ -251,7 +257,12 @@ filter_features_qc(
 
 The input
 [`MRMhubExperiment`](https://slinghub.github.io/MRMhub/quant/reference/MRMhubExperiment-class.md)
-object with the feature filtering criteria applied.
+object with the feature filtering criteria applied. Per-criterion
+verdicts are stored in `metrics_qc`: `pass_minint` (the
+`min.intensity.*` criteria), `pass_sb`, `pass_cva`, `pass_dratio`,
+`pass_linearity` and `pass_missingval`, combined in `all_filter_pass`.
+With a response-curve criterion, a feature without response-curve
+results fails `pass_linearity`; ISTDs without results are not failed.
 
 ## Details
 

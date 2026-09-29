@@ -133,7 +133,7 @@ report.
 save_dataset_csv(mexp_res, tempfile(fileext = ".csv"), variable = "conc")
 ```
 
-    ✔ Concentration values for 65 analyses and 7 features have been exported to '/tmp/Rtmp6jZ4se/file48786df6ab62.csv'.
+    ✔ Concentration values for 65 analyses and 7 features have been exported to '/tmp/Rtmpz3mpYM/file493240dcb7bf.csv'.
 
 ``` r
 
@@ -142,7 +142,7 @@ save_dataset_csv(mexp_res, tempfile(fileext = ".csv"), variable = "conc")
 save_dataset_csv(mexp_res, tempfile(fileext = ".csv"), variable = "conc_beforecal")
 ```
 
-    ✔ Conc_beforecal values for 65 analyses and 16 features have been exported to '/tmp/Rtmp6jZ4se/file4878686aa333.csv'.
+    ✔ Conc_beforecal values for 65 analyses and 16 features have been exported to '/tmp/Rtmpz3mpYM/file493213661b68.csv'.
 
 ``` r
 
@@ -151,7 +151,7 @@ save_dataset_csv(mexp_res, tempfile(fileext = ".csv"), variable = "conc_beforeca
 save_report_xlsx(mexp_res, tempfile(fileext = ".xlsx"), filtered_variable = "conc")
 ```
 
-    ✔ The data processing report has been saved to /tmp/Rtmp6jZ4se/file48782e941a4b.xlsx.
+    ✔ The data processing report has been saved to /tmp/Rtmpz3mpYM/file493273b74e3d.xlsx.
 
 ## 5. Normalization (relative calibration)
 
@@ -184,8 +184,9 @@ The normalized values can be exported as `[VARIABLE]_normalized` with
 In the MRMhub XLSX report from
 [`save_report_xlsx()`](https://slinghub.github.io/MRMhub/quant/reference/save_report_xlsx.md),
 the unfiltered dataset with normalized concentrations is included by
-default; to include them as the filtered dataset, set
-`filtered_variable = "[VARIABLE]_normalized"`.
+default (sheet `Conc_NormalizedByRef_Full`); to include them as the
+filtered dataset, set `filtered_variable = "[VARIABLE]_normalized"`
+(sheets `QCfilt_ConcRef_StudySamples` and `QCfilt_ConcRef_AllSamples`).
 
 ``` r
 
@@ -205,7 +206,7 @@ save_report_xlsx(
   filtered_variable = "conc_normalized")
 ```
 
-    ✔ The data processing report has been saved to /tmp/Rtmp6jZ4se/file487871d1f621.xlsx.
+    ✔ The data processing report has been saved to /tmp/Rtmpz3mpYM/file4932551df9cb.xlsx.
 
 ## 6. Batch-wise calibration
 
@@ -239,7 +240,7 @@ mexp_res <- calibrate_by_reference(
 save_dataset_csv(mexp_res, tempfile(fileext = ".csv"), variable = "conc_beforecal")
 ```
 
-    ✔ Conc_beforecal values for 65 analyses and 16 features have been exported to '/tmp/Rtmp6jZ4se/file48783dd04a.csv'.
+    ✔ Conc_beforecal values for 65 analyses and 16 features have been exported to '/tmp/Rtmpz3mpYM/file49325d03016a.csv'.
 
 ## 7. Concentration ratio and bias
 
@@ -328,14 +329,14 @@ tbl <- get_qc_bias_variability(mexp, qc_types = "NIST", with_conc_ratio = TRUE)
 gt::gt(tbl) |> gt::fmt_number(decimals = 3)
 ```
 
-| feature_id | sample_id | qc_type | n | conc_target | conc_mean | conc_sd | cv_intra | bias | conc_ratio |
-|----|----|----|----|----|----|----|----|----|----|
-| S1P d16:1 \[M\>60\] | SRM1950 | NIST | 2.000 | 0.107 | 0.046 | 0.007 | 14.771 | −56.760 | 0.432 |
-| S1P d17:1 \[M\>60\] | SRM1950 | NIST | 2.000 | 0.028 | 0.010 | 0.000 | 3.550 | −65.473 | 0.345 |
-| S1P d18:0 \[M\>60\] | SRM1950 | NIST | 2.000 | 0.149 | 0.043 | 0.000 | 0.995 | −70.827 | 0.292 |
-| S1P d18:1 \[M\>60\] | SRM1950 | NIST | 2.000 | 0.985 | 0.340 | 0.000 | 0.040 | −65.469 | 0.345 |
-| S1P d18:2 \[M\>60\] | SRM1950 | NIST | 2.000 | 0.290 | 0.103 | 0.002 | 1.460 | −64.456 | 0.355 |
-| S1P d19:1 \[M\>60\] | SRM1950 | NIST | 2.000 | 0.025 | 0.008 | 0.001 | 9.713 | −69.189 | 0.308 |
+| feature_id | sample_id | qc_type | n | conc_target | conc_mean | conc_sd | cv_intra | bias | conc_ratio | conc_ratio_sd |
+|----|----|----|----|----|----|----|----|----|----|----|
+| S1P d16:1 \[M\>60\] | SRM1950 | NIST | 2.000 | 0.107 | 0.046 | 0.007 | 14.771 | −56.760 | 0.432 | 0.064 |
+| S1P d17:1 \[M\>60\] | SRM1950 | NIST | 2.000 | 0.028 | 0.010 | 0.000 | 3.550 | −65.473 | 0.345 | 0.012 |
+| S1P d18:0 \[M\>60\] | SRM1950 | NIST | 2.000 | 0.149 | 0.043 | 0.000 | 0.995 | −70.827 | 0.292 | 0.003 |
+| S1P d18:1 \[M\>60\] | SRM1950 | NIST | 2.000 | 0.985 | 0.340 | 0.000 | 0.040 | −65.469 | 0.345 | 0.000 |
+| S1P d18:2 \[M\>60\] | SRM1950 | NIST | 2.000 | 0.290 | 0.103 | 0.002 | 1.460 | −64.456 | 0.355 | 0.005 |
+| S1P d19:1 \[M\>60\] | SRM1950 | NIST | 2.000 | 0.025 | 0.008 | 0.001 | 9.713 | −69.189 | 0.308 | 0.030 |
 
 ## Next steps
 

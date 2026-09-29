@@ -19,6 +19,7 @@ plot_qcmetrics_comparison(
   y_shared = FALSE,
   filter_data = FALSE,
   include_qualifier = FALSE,
+  include_istd = FALSE,
   equality_line = FALSE,
   threshold_values = NA_real_,
   log_scale = FALSE,
@@ -88,7 +89,13 @@ plot_qcmetrics_comparison(
 
 - include_qualifier:
 
-  Logical; whether to include qualifier features (default is `TRUE`).
+  Logical; whether to include qualifier features (default is `FALSE`).
+
+- include_istd:
+
+  Logical; whether to include internal standards (ISTDs) (default is
+  `FALSE`). An ISTD normalized by itself has a CV of 0 for normalized
+  intensities and concentrations.
 
 - equality_line:
 

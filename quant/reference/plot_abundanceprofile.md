@@ -46,14 +46,14 @@ plot_abundanceprofile(
 
   A character string indicating the variable to plot. For
   `use_qc_metrics = FALSE`, this must be a base name like "area" or
-  "conc". For `use_qc_metrics = TRUE`, this is the base name of a metric
-  in the `metrics_qc` table (e.g., "rt" for "rt_mean_SPL").
+  "conc". For `use_qc_metrics = TRUE`, this is the name of a column in
+  the `metrics_qc` table (e.g., "conc_median_spl").
 
 - qc_types:
 
   A character vector specifying the QC types to be averaged and plotted.
-  If `use_qc_metrics` is `TRUE`, this must be a single character string
-  (e.g., "SPL").
+  Ignored if `use_qc_metrics` is `TRUE`, where the QC type is part of
+  `variable`.
 
 - log_scale:
 
@@ -64,8 +64,7 @@ plot_abundanceprofile(
 
   A logical value. If `FALSE` (default), data is summarized on the fly
   from the main dataset. If `TRUE`, pre-calculated summary data is used
-  from the `metrics_qc` table, which is much faster. When `TRUE`,
-  `qc_types` must specify only one QC type.
+  from the `metrics_qc` table, which is much faster.
 
 - feature_map:
 
@@ -93,7 +92,6 @@ plot_abundanceprofile(
   A logical value indicating whether to use all data (`FALSE`, default)
   or only QC-filtered data (`TRUE`, via
   [`filter_features_qc()`](https://slinghub.github.io/MRMhub/quant/reference/filter_features_qc.md)).
-  This is ignored if `use_qc_metrics` is `TRUE`.
 
 - include_qualifier:
 

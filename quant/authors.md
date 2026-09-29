@@ -12,21 +12,20 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/SLINGhub/MRMhub/blob/v0.9.9/inst/CITATION)
+[`inst/CITATION`](https://github.com/SLINGhub/MRMhub/blob/main/inst/CITATION)
 
 Burla B, Teo G, Benke P, Lu Z, Tan S, Ji S, Oh J, Lim P, Vaitheeswari,
-Cazenave Gassiot A, Venkataraman K, Tai E, Torta F, Wenk M, Chan M, Choi
-H (2025). “MRMhub: one-stop solution for automated processing of
-large-scale targeted metabolomics data.” *bioRxiv*.
-[doi:10.64898/2025.12.20.695370](https://doi.org/10.64898/2025.12.20.695370).
-Preprint, <https://github.com/SLINGhub/MRMhub>.
+Gao L, Cazenave-Gassiot A, Venkataraman K, Tai E, Torta F, Wenk M, Chan
+M, Choi H (2026). “MRMhub: a scalable data-processing framework for
+large-scale targeted metabolomics.” *Nature Metabolism*.
+[doi:10.1038/s42255-026-01629-2](https://doi.org/10.1038/s42255-026-01629-2).
+<https://github.com/SLINGhub/MRMhub>.
 
     @Article{,
-      title = {MRMhub: one-stop solution for automated processing of large-scale targeted metabolomics data},
-      author = {Bo Burla and Guoshou Teo and Peter I. Benke and Zinan Lu and Sock Hwee Tan and Shanshan Ji and Jeongah Oh and Pei Yen Lim and {Vaitheeswari} and Amaury {Cazenave Gassiot} and Kavita Venkataraman and E Shyong Tai and Federico Torta and Markus R. Wenk and Mark Y.Y. Chan and Hyungwon Choi},
-      journal = {bioRxiv},
-      year = {2025},
-      doi = {10.64898/2025.12.20.695370},
+      title = {MRMhub: a scalable data-processing framework for large-scale targeted metabolomics},
+      author = {Bo Burla and Guoshou Teo and Peter I. Benke and Zinan Lu and Sock Hwee Tan and Shanshan Ji and Jeongah Oh and Pei Yen Lim and {Vaitheeswari} and Liang Gao and Amaury Cazenave-Gassiot and Kavita Venkataraman and E Shyong Tai and Federico Torta and Markus R. Wenk and Mark Y.Y. Chan and Hyungwon Choi},
+      journal = {Nature Metabolism},
+      year = {2026},
+      doi = {10.1038/s42255-026-01629-2},
       url = {https://github.com/SLINGhub/MRMhub},
-      note = {Preprint},
     }

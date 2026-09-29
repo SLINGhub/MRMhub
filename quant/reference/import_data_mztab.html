@@ -15,7 +15,7 @@ analysis; the per-assay abundances are imported as feature_intensity."><meta pro
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -90,7 +90,7 @@ analysis; the per-assay abundances are imported as feature_intensity."><meta pro
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Import data from an mzTab-M file</h1>
-      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/v0.9.9/R/data-mztab.R" class="external-link"><code>R/data-mztab.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/main/R/data-mztab.R" class="external-link"><code>R/data-mztab.R</code></a></small>
       <div class="d-none name"><code>import_data_mztab.Rd</code></div>
     </div>
 
@@ -121,7 +121,7 @@ analysis; the per-assay abundances are imported as <code>feature_intensity</code
 
 <dt id="arg-import-metadata">import_metadata<a class="anchor" aria-label="anchor" href="#arg-import-metadata"></a></dt>
 <dd><p>If <code>TRUE</code> (default), derive analysis/feature metadata
-(incl. <code>batch_id</code>, formula, neutral mass) from the imported data via
+(incl. formula, neutral mass) from the imported data via
 <code><a href="import_metadata_from_data.html">import_metadata_from_data()</a></code>.</p></dd>
 
 
@@ -141,8 +141,7 @@ and feature identities (name, formula, neutral mass, m/z, retention time)
 are taken from the <code>SMF</code>/<code>SML</code> sections where available. Internal-standard
 relationships, QC-type assignments and calibration metadata are <strong>not</strong>
 part of mzTab-M and must be supplied afterwards with <code><a href="add_metadata.html">add_metadata()</a></code>.
-<code>study_variable</code> group membership is imported best-effort as <code>batch_id</code>
-(mzTab-M has no analytical-batch concept).</p>
+<code>study_variable</code> groups are not imported; all analyses are in one batch.</p>
     </div>
     <div class="section level2">
     <h2 id="identifier-normalization">Identifier normalization<a class="anchor" aria-label="anchor" href="#identifier-normalization"></a></h2>

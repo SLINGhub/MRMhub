@@ -31,7 +31,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -123,7 +123,7 @@
       <img src="../logo.svg" class="logo" alt=""><h1>Troubleshooting and FAQ</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/v0.9.9/vignettes/articles/manual-10-troubleshooting.Rmd" class="external-link"><code>vignettes/articles/manual-10-troubleshooting.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/main/vignettes/articles/manual-10-troubleshooting.Rmd" class="external-link"><code>vignettes/articles/manual-10-troubleshooting.Rmd</code></a></small>
       <div class="d-none name"><code>manual-10-troubleshooting.Rmd</code></div>
     </div>
 
@@ -318,6 +318,22 @@ flagged issues, or re-import with <code>ignore_warnings = TRUE</code>. A
 hard <em>“Metadata validation failed — see the report above.”</em>
 (duplicate IDs, missing mandatory values) cannot be bypassed and must be
 corrected.</p>
+<p><strong>Q: <em>“Unrecognized value(s) in
+<code>is_quantifier</code>”</em> — or in <code>valid_feature</code>,
+<code>valid_analysis</code> or
+<code>include_in_analysis</code></strong></p>
+<p><strong>A:</strong> These yes/no columns accept <code>yes</code>,
+<code>no</code>, <code>true</code> or <code>false</code>
+(case-insensitive, surrounding whitespace ignored), or a blank cell
+meaning “not specified”. Other codings such as
+<code>1</code>/<code>0</code> or <code>Y</code>/<code>N</code> are
+rejected rather than guessed at: a column of unrecognized values would
+otherwise map entirely to blanks and then take the default, silently
+marking every analysis valid, every qualifier a quantifier, or every
+excluded calibrator included. Recode the column, or clear it to take the
+default. Note that the <code>Quantifier</code> column of the Features
+sheet is reported under its internal name,
+<code>is_quantifier</code>.</p>
 </div>
 <div class="section level2">
 <h2 id="processing">Processing<a class="anchor" aria-label="anchor" href="#processing"></a>
@@ -382,6 +398,21 @@ correcting, and skip drift correction for batches where it is flat.</p>
 <span>  qc_types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BQC"</span>, <span class="st">"SPL"</span><span class="op">)</span>,</span>
 <span>  include_feature_filter <span class="op">=</span> <span class="st">"your_feature"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
+<p><strong>Q: <code><a href="../reference/exclude_analyses.html">exclude_analyses()</a></code>,
+<code><a href="../reference/set_analysis_order.html">set_analysis_order()</a></code> or a metadata import fails after
+<code><a href="../reference/data_sum_features.html">data_sum_features()</a></code>.</strong></p>
+<p><strong>A:</strong> Summed features exist only in the processed
+dataset, while these steps rebuild it from the imported data. Run them
+before <code><a href="../reference/data_sum_features.html">data_sum_features()</a></code>, or re-import the data and
+repeat the steps.</p>
+<p><strong>Q: <code><a href="../reference/data_sum_features.html">data_sum_features()</a></code> stops because the summed
+features combine internal standards and analytes, or differ in
+<code>istd_feature_id</code> or
+<code>response_factor</code>.</strong></p>
+<p><strong>A:</strong> Only transitions of one compound, measured and
+quantified alike, can be summed. Give internal standards their own
+<code>analyte_id</code>, and harmonise the ISTD and response-factor
+columns of the summed features in the feature metadata.</p>
 </div>
 <div class="section level2">
 <h2 id="quantitation-and-calibration">Quantitation and calibration<a class="anchor" aria-label="anchor" href="#quantitation-and-calibration"></a>
@@ -394,12 +425,21 @@ concentrations plus per-analysis amounts. Import ISTD metadata
 make sure <code>sample_amount</code> and <code>istd_volume</code> are
 present in the analysis metadata. Missing amounts can be tolerated with
 <code>ignore_missing_annotation = TRUE</code>.</p>
-<p><strong>Q: <em>“Calibration curve data missing…”</em></strong></p>
-<p><strong>A:</strong> No calibrator samples and no concentrations are
-annotated. Flag the calibrator analyses with
-<code>qc_type = "CAL"</code> in the analysis metadata, and supply their
-known concentrations in the QC-concentration metadata
-(<code>annot_qcconcentrations</code>).</p>
+<p><strong>Q: <em>“No calibration analyses found”</em> or <em>“No
+QC-concentration metadata found”</em></strong></p>
+<p><strong>A:</strong> Calibration needs both halves: the calibrator
+analyses flagged with <code>qc_type = "CAL"</code> in the analysis
+metadata, and their known concentrations in the QC-concentration
+metadata (<code>annot_qcconcentrations</code>). Each message names which
+half is missing.</p>
+<p><strong>Q: <em>“No CAL analysis matched an included QC-concentration
+entry.”</em></strong></p>
+<p><strong>A:</strong> Calibrators and concentrations are both present
+but do not join. The join is keyed on <code>sample_id</code> and
+<code>analyte_id</code>, so check that both agree between the
+analysis/feature metadata and the QC-concentration metadata, and that
+<code>include_in_analysis</code> is not <code>FALSE</code> for every
+calibrator.</p>
 <p><strong>Q: <em>“Calibration curve annotations for N features are
 missing.”</em></strong></p>
 <p><strong>A:</strong> Those features have no concentrations in
@@ -412,9 +452,10 @@ entries, or skip those features with
 calibration points, switching <code>fit_model</code>
 (<code>"linear"</code>/<code>"quadratic"</code>) or
 <code>fit_weighting</code> (<code>"none"</code>, <code>"1/x"</code>,
-<code>"1/x^2"</code>) — globally or per feature via the
-<code>curve_fit_model</code> / <code>curve_fit_weighting</code> metadata
-columns — and check for saturation at high concentrations.</p>
+<code>"1/x^2"</code>, <code>"1/sqrt(x)"</code>) — globally or per
+feature via the <code>curve_fit_model</code> /
+<code>curve_fit_weighting</code> metadata columns — and check for
+saturation at high concentrations.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/get_calibration_metrics.html">get_calibration_metrics</a></span><span class="op">(</span><span class="va">mexp</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">r2</span> <span class="op">&lt;</span> <span class="fl">0.9</span><span class="op">)</span></span></code></pre></div>
@@ -424,6 +465,11 @@ columns — and check for saturation at high concentrations.</p>
 </h2>
 <p><strong>Q: What do the QC metrics mean?</strong></p>
 <table class="table">
+<colgroup>
+<col width="22%">
+<col width="25%">
+<col width="52%">
+</colgroup>
 <thead><tr class="header">
 <th>Metric</th>
 <th>Meaning</th>
@@ -441,9 +487,24 @@ columns — and check for saturation at high concentrations.</p>
 <td>&lt; 20%</td>
 </tr>
 <tr class="odd">
-<td>n_detected</td>
-<td>Number of QC samples with signal</td>
-<td>≥ 50–67% of QCs</td>
+<td>D-ratio</td>
+<td>Spread in QC samples over spread in study samples</td>
+<td>&lt; 0.5</td>
+</tr>
+<tr class="even">
+<td>S/B ratio</td>
+<td>Median study-sample signal over median blank signal;
+<code>Inf</code> when the feature is not detected in the blank
+(passes)</td>
+<td>method-specific</td>
+</tr>
+<tr class="odd">
+<td>
+<code>n_bqc</code>, <code>n_tqc</code>, <code>n_spl</code>
+</td>
+<td>Replicates with a value per QC type; %CV and D-ratio need at least
+3</td>
+<td>≥ 3</td>
 </tr>
 </tbody>
 </table>

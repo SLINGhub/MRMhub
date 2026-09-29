@@ -121,8 +121,8 @@ keep `feature_id` unique (`Cer d18:1/16:0 | [M-H]-`).
 Import is partial by nature: mzTab-M carries a single abundance per
 feature, so internal-standard relationships, QC-type assignments, and
 calibration metadata are absent and must be supplied with
-[`add_metadata()`](https://slinghub.github.io/MRMhub/quant/reference/add_metadata.md).
-`study_variable` groups are imported best-effort as `batch_id`.
+[`add_metadata()`](https://slinghub.github.io/MRMhub/quant/reference/add_metadata.md),
+as are analytical batches; `study_variable` groups are not imported.
 
 ## 2. SummarizedExperiment
 

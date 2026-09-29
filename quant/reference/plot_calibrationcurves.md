@@ -3,8 +3,8 @@
 This function plots calibration curves of each feature where defined and
 displays QC samples with defined concentrations within the plot. Users
 can select a regression model (`linear` or `quadratic`) and apply
-weighting (`none`, `"1/x"`, or `"1/x^2"`), either through function
-arguments or feature metadata.
+weighting (`none`, `"1/x"`, `"1/x^2"`, or `"1/sqrt(x)"`), either through
+function arguments or feature metadata.
 
 ## Usage
 
@@ -15,7 +15,7 @@ plot_calibrationcurves(
   qc_types = NA,
   fit_overwrite,
   fit_model = c("linear", "quadratic"),
-  fit_weighting = c(NA, "none", "1/x", "1/x^2"),
+  fit_weighting = c(NA, "none", "1/x", "1/x^2", "1/sqrt(x)"),
   ci_show = NA,
   ci_clip = TRUE,
   zoom_n_points = NA,
@@ -73,7 +73,11 @@ plot_calibrationcurves(
 
   If `TRUE`, the function will use the provided `fit_model` and
   `fit_weighting` values for all analytes and ignore any fit method and
-  weighting settings defined in the metadata.
+  weighting settings defined in the metadata. If omitted, the fit model
+  and weighting stored in `metrics_calibration` (i.e. those used by
+  [`quantify_by_calibration()`](https://slinghub.github.io/MRMhub/quant/reference/quantify_by_calibration.md))
+  are plotted; this requires calibration results. When given, a warning
+  is shown if the plotted fit differs from the stored one.
 
 - fit_model:
 
@@ -86,9 +90,9 @@ plot_calibrationcurves(
 
   A character string specifying the default weighting method for the
   regression points in the calibration curve. Must be one of `"none"`,
-  `"1/x"`, or `"1/x^2"`. This method will be applied if no specific
-  weighting method is defined for a feature in the metadata, or when
-  `fit_overwrite = TRUE`.
+  `"1/x"`, `"1/x^2"`, or `"1/sqrt(x)"`. This method will be applied if
+  no specific weighting method is defined for a feature in the metadata,
+  or when `fit_overwrite = TRUE`.
 
 - ci_show:
 

@@ -4,11 +4,13 @@ This function provides a summary of feature QC filtering based on
 feature class, showing the number of features that passed or failed
 various quality control criteria. It visualizes the filtering in a
 hierarchical sequence. Features are first evaluated against lower-level
-filters such as signal-to-blank (S/B) ratios and limit of detection
-(LOD), followed by higher-level filters like the coefficient of
-variation (CV) or linear regression results. This means that a feature
-is classified as failing a given criterion (e.g., `CV`) only if it has
-passed all hierarchically lower filters (e.g., `S/B` ratio and `LOD`).
+filters such as signal-to-blank (S/B) ratios and minimum intensity,
+followed by higher-level filters like the coefficient of variation (CV)
+or linear regression results. This means that a feature is classified as
+failing a given criterion (e.g., `CV`) only if it has passed all
+hierarchically lower filters (e.g., `S/B` ratio and minimum intensity).
+Each feature is counted once; features retained via `features.to.keep`
+despite failing are shown as "QC failed, kept".
 
 ## Usage
 

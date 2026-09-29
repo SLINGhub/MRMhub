@@ -19,7 +19,8 @@ calc_average_molweight(formula)
 
 ## Value
 
-A numeric vector of average molecular weights, one for each formula.
+A numeric vector of average molecular weights, one for each formula;
+`NA` for a missing formula.
 
 ## Details
 

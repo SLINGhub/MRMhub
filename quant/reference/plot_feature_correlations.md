@@ -7,6 +7,10 @@ with its correlation coefficient.
 This plot can be used to visually inspect highly correlated features,
 that may represent duplicate identifications or represent isomers.
 
+Correlations are Pearson's r over the analyses where both features have
+values; pairs sharing values in fewer than half of the analyses are
+skipped.
+
 ## Usage
 
 ``` r
@@ -63,7 +67,9 @@ plot_feature_correlations(
   A character vector specifying the QC types to plot. It must contain at
   least one element. The default `NA` plots any of the non-blank QC
   types ("SPL", "TQC", "BQC", "HQC", "MQC", "LQC", "NIST", "LTR")
-  present in the dataset.
+  present in the dataset. A single value that is a QC type is matched
+  exactly; any other single value is a regular expression, e.g. `"QC$"`
+  for all QC types ending in "QC".
 
 - cor_min:
 
@@ -96,12 +102,12 @@ plot_feature_correlations(
 - include_qualifier:
 
   A logical value indicating whether to include qualifier features.
-  Default is `TRUE`.
+  Default is `FALSE`.
 
 - include_istd:
 
   A logical value indicating whether to include internal standard (ISTD)
-  features. Default is `TRUE`.
+  features. Default is `FALSE`.
 
 - include_feature_filter:
 

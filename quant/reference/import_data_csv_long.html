@@ -13,7 +13,7 @@ metadata. See "Details" below for more information on using this function.'><met
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -88,7 +88,7 @@ metadata. See "Details" below for more information on using this function.'><met
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Import analysis results from long-format CSV files</h1>
-      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/v0.9.9/R/data-import.R" class="external-link"><code>R/data-import.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/main/R/data-import.R" class="external-link"><code>R/data-import.R</code></a></small>
       <div class="d-none name"><code>import_data_csv_long.Rd</code></div>
     </div>
 
@@ -164,7 +164,7 @@ messages.</p></dd>
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>When no column mapping is provided via the <code>column_mapping</code> argument, the
 function will automatically detect and import columns with the following
-names:</p><table class="table table"><tr><td>CSV Column Name</td><td>MRMhub Internal Name</td><td>Required</td></tr><tr><td><code>analysis_id</code></td><td><code>analysis_id</code></td><td>Yes</td></tr><tr><td><code>feature_id</code></td><td><code>feature_id</code></td><td>Yes</td></tr><tr><td><code>qc_type</code></td><td><code>qc_type</code></td><td>No</td></tr><tr><td><code>sample_id</code></td><td><code>sample_id</code></td><td>No</td></tr><tr><td><code>batch_id</code></td><td><code>batch_id</code></td><td>No</td></tr><tr><td><code>istd_feature_id</code></td><td><code>istd_feature_id</code></td><td>No</td></tr><tr><td><code>feature_class</code></td><td><code>feature_class</code></td><td>No</td></tr><tr><td><code>analyte_id</code></td><td><code>analyte_id</code></td><td>No</td></tr><tr><td><code>precursor_mz</code></td><td><code>method_precursor_mz</code></td><td>No</td></tr><tr><td><code>product_mz</code></td><td><code>method_product_mz</code></td><td>No</td></tr><tr><td><code>area</code></td><td><code>feature_area</code></td><td>No</td></tr><tr><td><code>height</code></td><td><code>feature_height</code></td><td>No</td></tr><tr><td><code>intensity</code></td><td><code>feature_intensity</code></td><td>No</td></tr><tr><td><code>rt</code></td><td><code>feature_rt</code></td><td>No</td></tr><tr><td><code>fwhm</code></td><td><code>feature_fwhm</code></td><td>No</td></tr><tr><td><code>width</code></td><td><code>feature_width</code></td><td>No</td></tr></table><p>Detection of these columns is case-insensitive. Additionally, if feature
+names:</p><table class="table table"><tr><td>CSV Column Name</td><td>MRMhub Internal Name</td><td>Required</td></tr><tr><td><code>analysis_id</code></td><td><code>analysis_id</code></td><td>Yes</td></tr><tr><td><code>feature_id</code></td><td><code>feature_id</code></td><td>Yes</td></tr><tr><td><code>qc_type</code></td><td><code>qc_type</code></td><td>No</td></tr><tr><td><code>batch_id</code></td><td><code>batch_id</code></td><td>No</td></tr><tr><td><code>istd_feature_id</code></td><td><code>istd_feature_id</code></td><td>No</td></tr><tr><td><code>feature_class</code></td><td><code>feature_class</code></td><td>No</td></tr><tr><td><code>precursor_mz</code></td><td><code>method_precursor_mz</code></td><td>No</td></tr><tr><td><code>product_mz</code></td><td><code>method_product_mz</code></td><td>No</td></tr><tr><td><code>area</code></td><td><code>feature_area</code></td><td>No</td></tr><tr><td><code>height</code></td><td><code>feature_height</code></td><td>No</td></tr><tr><td><code>intensity</code></td><td><code>feature_intensity</code></td><td>No</td></tr><tr><td><code>response</code></td><td><code>feature_response</code></td><td>No</td></tr><tr><td><code>conc</code></td><td><code>feature_conc</code></td><td>No</td></tr><tr><td><code>rt</code></td><td><code>feature_rt</code></td><td>No</td></tr><tr><td><code>fwhm</code></td><td><code>feature_fwhm</code></td><td>No</td></tr><tr><td><code>width</code></td><td><code>feature_width</code></td><td>No</td></tr></table><p>Detection of these columns is case-insensitive. Additionally, if feature
 variable columns use the internal naming convention with prefixes
 "feature_" or "method_" (e.g. <code>feature_area</code> instead of <code>area</code>), the
 function will detect and import them automatically.</p>

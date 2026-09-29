@@ -82,9 +82,11 @@ applied after normalization and, where used, drift correction.
   ([`correct_batch_combat()`](https://slinghub.github.io/MRMhub/quant/reference/correct_batch_combat.md))
   applies the empirical-Bayes location and scale model of Johnson et al.
   (2007), shrinking the batch estimates across features. Unlike the
-  other two methods, ComBat estimates batch effects from all samples
-  rather than from the reference QCs; supply `covariates` to protect
-  biological signal on unbalanced designs.
+  other two methods, ComBat estimates batch effects from all study
+  samples and routine QCs rather than from the reference QCs only;
+  supply `covariates` to protect biological signal on unbalanced
+  designs. Blanks, response curves and calibrants are not used by ComBat
+  or SERRF and keep their uncorrected values.
 - **SERRF**
   ([`correct_batch_serrf()`](https://slinghub.github.io/MRMhub/quant/reference/correct_batch_serrf.md))
   removes systematic error with per-feature random forests trained on

@@ -17,8 +17,8 @@ get_analyticaldata(data = NULL, annotated)
 
 - annotated:
 
-  Boolean indicating whether to return the annotated data (`FALSE`) or
-  the original imported data (`TRUE`)
+  Boolean indicating whether to return the annotated data (`TRUE`) or
+  the original imported data (`FALSE`)
 
 ## Value
 

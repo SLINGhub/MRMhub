@@ -28,8 +28,8 @@ import_data_mztab(data = NULL, path, import_metadata = TRUE, silent = FALSE)
 
 - import_metadata:
 
-  If `TRUE` (default), derive analysis/feature metadata (incl.
-  `batch_id`, formula, neutral mass) from the imported data via
+  If `TRUE` (default), derive analysis/feature metadata (incl. formula,
+  neutral mass) from the imported data via
   [`import_metadata_from_data()`](https://slinghub.github.io/MRMhub/quant/reference/import_metadata_from_data.md).
 
 - silent:
@@ -51,8 +51,7 @@ available. Internal-standard relationships, QC-type assignments and
 calibration metadata are **not** part of mzTab-M and must be supplied
 afterwards with
 [`add_metadata()`](https://slinghub.github.io/MRMhub/quant/reference/add_metadata.md).
-`study_variable` group membership is imported best-effort as `batch_id`
-(mzTab-M has no analytical-batch concept).
+`study_variable` groups are not imported; all analyses are in one batch.
 
 ## Identifier normalization
 

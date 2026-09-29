@@ -109,8 +109,6 @@ i.e. to import different analytical data into data frames.
   : Parses a plain wide CSV file
 - [`parse_plain_long_csv()`](https://slinghub.github.io/MRMhub/quant/reference/parse_plain_long_csv.md)
   : Parses a plain long CSV file
-- [`import_data_csv()`](https://slinghub.github.io/MRMhub/quant/reference/import_data_csv.md)
-  : (Deprecated) Import wide CSV files
 
 ## Metadata import
 
@@ -320,6 +318,8 @@ in different formats.
 
 Functions specific to lipidomics data processing and analysis.
 
+- [`set_lipid_class()`](https://slinghub.github.io/MRMhub/quant/reference/set_lipid_class.md)
+  : Set feature classes from lipid names
 - [`parse_lipid_feature_names()`](https://slinghub.github.io/MRMhub/quant/reference/parse_lipid_feature_names.md)
   : Get lipid class, species and transition names
 
@@ -369,8 +369,5 @@ spectrometry is also available.
   : Get Tukey's IQR fences
 - [`get_outlier_bounds()`](https://slinghub.github.io/MRMhub/quant/reference/get_outlier_bounds.md)
   : Get outlier bounds via different methods
-- [`order_chained_columns_tbl()`](https://slinghub.github.io/MRMhub/quant/reference/order_chained_columns_tbl.md)
-  : Reorder a data frame based on a chain of linked values in two
-  columns
 - [`mrmhub_enable_cli_color()`](https://slinghub.github.io/MRMhub/quant/reference/mrmhub_enable_cli_color.md)
   : Enable coloured mrmhub console output in notebooks

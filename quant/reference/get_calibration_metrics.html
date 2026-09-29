@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -82,7 +82,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Get calibration metrics</h1>
-      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/v0.9.9/R/calc-calibrations.R" class="external-link"><code>R/calc-calibrations.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/main/R/calc-calibrations.R" class="external-link"><code>R/calc-calibrations.R</code></a></small>
       <div class="d-none name"><code>get_calibration_metrics.Rd</code></div>
     </div>
 
@@ -156,8 +156,8 @@ See its documentation for details.</p><div class="section">
 <li><p><code>is_quantifier</code>: Logical, indicates if the feature is a quantifier.</p></li>
 <li><p><code>fit_model</code>: Regression model used for fitting.</p></li>
 <li><p><code>fit_weighting</code>: Weighting method used in fitting.</p></li>
-<li><p><code>lowest_cal</code>: Lowest nonzero calibration concentration.</p></li>
-<li><p><code>highest_cal</code>: Highest calibration concentration.</p></li>
+<li><p><code>lowest_cal</code>: Lowest non-zero calibrator concentration with a response.</p></li>
+<li><p><code>highest_cal</code>: Highest calibrator concentration with a response.</p></li>
 <li><p><code>r2</code>: R² value, indicating goodness of fit. For a <strong>weighted</strong>
 fit this is the weighted coefficient of determination (computed from weighted
 sums of squares), matching the value reported by vendor software such as
