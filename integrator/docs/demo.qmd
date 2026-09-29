@@ -7,7 +7,8 @@ toc: false
 sidebar: false
 ---
 
-A complete demonstration project is bundled with every INTEGRATOR release. It contains example
+A complete demonstration project is provided with every INTEGRATOR release as a separate demo
+download (`MRMhub-demo-<version>-<platform>.zip`). It contains example
 converted mzML files together with prepared input files (`param.txt`, `run_order.csv`, and a
 transition list), so peak integration can be run immediately — no input-file preparation is
 required. The demonstration is therefore the fastest way to verify the installation and to observe
@@ -17,10 +18,25 @@ For a new analysis with user-supplied data, see the [Quick Start](quickstart.htm
 
 ## 1. Download the release
 
-The latest release is downloaded and unzipped from the
-[Releases](https://github.com/SLINGhub/MRMhub/releases) page. The demonstration project is included
-in the archive; its contents and layout are documented in the accompanying `readme.txt`, which
-serves as the authoritative reference.
+The demo package for the platform (macOS, Windows or Linux) is downloaded from the
+[Releases](https://github.com/SLINGhub/MRMhub/releases) page and unzipped. Its contents and layout
+are documented in the accompanying `README.txt`:
+
+::: {.filetree}
+```
+MRMhub-demo-<version>-<platform>/
+├── MRMhub                 ← peak-integration executable
+├── mrmhub-viz             ← results visualiser
+├── MRMhub_plot.r          ← R script for chromatogram PDFs (step 4)
+├── param.txt          ┐
+├── run_order.csv      ├  input files for the demo dataset
+├── feature_list.csv   ┘
+├── mzML/                  ← 499 analyses in mzML format
+├── QUANT/                 ← QUANT notebook, metadata, bundled long.csv
+├── Get-started.html       ← step-by-step instructions
+└── README.txt
+```
+:::
 
 ## 2. Clear the first-launch security prompt
 

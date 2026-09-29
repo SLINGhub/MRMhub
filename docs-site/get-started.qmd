@@ -3,18 +3,26 @@ title: "Run the demo"
 subtitle: "Run the complete MRMhub pipeline on bundled demo data"
 ---
 
-The MRMhub release ships with a self-contained demonstration project — example raw data,
+Each MRMhub release includes a demo download with a self-contained demonstration project — example raw data,
 INTEGRATOR parameters, and a ready-to-run QUANT R script, so the full pipeline can be run
 end-to-end without preparing any data. The two modules run in sequence:
 **MRMhub-INTEGRATOR** produces integrated peaks, and **MRMhub-QUANT** turns them into a
-quality-controlled, quantified report.
+quality-controlled, quantified report. This page is also included in the demo folder as
+`Get-started.html`.
+
+The demo dataset comprises 499 targeted lipidomics analyses (LC-MS, MRM) in 6 batches with 482
+transitions, about 0.9 GB unzipped.
 
 ## Before you start
 
-1. **Download** the latest release from the
-   [MRMhub releases page ↗](https://github.com/SLINGhub/MRMhub/releases) and unzip it.
+1. **Download** the demo package `MRMhub-demo-1.0.0-<platform>.zip` for macOS (Apple silicon),
+   Windows or Linux from the [MRMhub 1.0.0 release ↗](https://github.com/SLINGhub/MRMhub/releases/tag/v1.0.0) and unzip it; the plain
+   `MRMhub-1.0.0-<platform>.zip` omits the demo data. On Windows, unzip to a short local path
+   (e.g. `C:\MRMhub-demo`), not into OneDrive or the zip preview. If you are reading this
+   inside the unzipped demo folder, skip this step.
 2. **Clear the first-launch security prompt.** MRMhub-INTEGRATOR is distributed as a portable
-   executable, so on first launch macOS Gatekeeper or Windows SmartScreen may block it. This
+   executable, so on first launch macOS Gatekeeper or Windows SmartScreen may block it (and
+   MRMhub-viz). This
    is a one-time step — follow the *First launch* instructions in
    [MRMhub-INTEGRATOR — Download & Project Setup ↗](https://slinghub.github.io/MRMhub/integrator/setup.html);
    afterwards the application opens normally.
@@ -22,6 +30,7 @@ quality-controlled, quantified report.
    Install R and an IDE that runs Quarto — RStudio or Positron — then the `mrmhub` package,
    as described in
    [MRMhub-QUANT installation ↗](https://slinghub.github.io/MRMhub/quant/articles/manual-00-installation.html).
+   R is also used by INTEGRATOR step 4 to write the chromatogram PDFs; steps 1–3 run without R.
 
 ::: {.callout-note}
 The steps below use only the bundled demo project. To run your own data afterwards, see the
@@ -32,21 +41,27 @@ and the [MRMhub-QUANT tutorials ↗](https://slinghub.github.io/MRMhub/quant/art
 ## Step 1 — Peak integration (MRMhub-INTEGRATOR)
 
 Double-click **MRMhub** in the unzipped demo folder and run **steps 1 to 4** in order. When
-they complete, open the `transitions` folder and inspect the per-transition PDFs to review
+they complete, open the `by_transition` folder and inspect the per-transition PDFs to review
 the integrated peaks. The integrated results are written for the QUANT step that follows.
+Steps 1–4 take less than a minute on a recent laptop. The results can also be reviewed
+interactively with **MRMhub-viz** in the same folder
+([MRMhub-viz ↗](https://slinghub.github.io/MRMhub/integrator/viz.html)).
 
 For a description of each stage, see the
 [MRMhub-INTEGRATOR Quick Start ↗](https://slinghub.github.io/MRMhub/integrator/quickstart.html).
 
 ## Step 2 — Quantitation & quality control (MRMhub-QUANT)
 
-Open **`quant.qmd`** in the `QUANT` folder in RStudio or Positron and render it. The script
-imports the integrated peaks, normalises to internal standards, applies drift and batch
-correction, quantifies, computes QC metrics, filters features, and writes a QC report — the
-complete post-acquisition workflow in a single document.
+Open **`quant.qmd`** in the `QUANT` folder in RStudio or Positron and render it. Its first
+chunk shows how to install `mrmhub` 1.0.0, which is needed once. The script imports the
+integrated peaks, corrects isotopic interferences, normalises to internal standards,
+quantifies, applies drift and batch correction, computes QC metrics, filters features, and
+writes a report (`output/report.xlsx`) — the complete post-acquisition workflow in a single
+document. It uses the `long.csv` written by step 1, and otherwise a bundled copy, so it also
+runs on its own.
 
-The same analysis is walked through, step by step, in
-[Getting started with MRMhub ↗](https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-getting-started-mrmhub.html).
+A comparable analysis is explained step by step in
+[Lipidomics data processing ↗](https://slinghub.github.io/MRMhub/quant/articles/tutorial-03-lipidomics-workflow.html).
 
 ## Next steps
 

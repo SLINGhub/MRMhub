@@ -9,7 +9,7 @@ downloaded, unzipped, and run from a folder, with one copy kept per analysis pro
 
 ## System requirements
 
-Pre-compiled binaries are provided for **macOS** (Apple silicon) and **Windows 11** (x86-64).
+Pre-compiled binaries are provided for **macOS** (Apple silicon), **Windows 11** (x86-64) and **Linux** (x86-64).
 A multi-core CPU is recommended, as the integration is parallelised. Memory
 requirements are **8 GB minimum, 16 GB recommended** for large projects. The application itself
 occupies minimal disk space, but the integration outputs — internal files (the `misc/` folder),
@@ -24,8 +24,8 @@ INTEGRATOR itself has no runtime dependencies. The following external tools may 
 
 ## Download
 
-Pre-compiled executables for macOS and Windows are available from the
-[GitHub releases page](https://github.com/SLINGhub/MRMhub/releases). The archive contains the executables — **MRMhub** (MRMhub-INTEGRATOR) and **MRMhub-viz** (integration viewer app), the `MRMhub_plot.r` R script, template input files (`param.txt`, `run_order.csv`, `feature_list.csv`), and a complete test dataset.
+Pre-compiled executables for macOS, Windows and Linux are available from the
+[GitHub releases page](https://github.com/SLINGhub/MRMhub/releases). Each release offers two downloads per platform: `MRMhub-<version>-<platform>.zip` contains the executables — **MRMhub** (MRMhub-INTEGRATOR) and **MRMhub-viz** (integration viewer app) — the `MRMhub_plot.r` R script and template input files (`param.txt`, `run_order.csv`, `feature_list.csv`); `MRMhub-demo-<version>-<platform>.zip` additionally contains the complete demo dataset.
 
 ![](images/paste-3.png){fig-align="center" width="420" fig-alt="Screenshot of a macOS Finder window for the MRMhub-INTEGRATOR project folder. It contains the _testdata and mzML folders, the MRMhub (1.4 MB) and MRMhub-viz (9.3 MB) executables, the MRMhub_plot.r plotting script, param.txt, README.txt, manual.pdf, and two input CSV files, feature_list.csv and run_order.csv."}
 
@@ -53,7 +53,7 @@ To clear the security block, the following must be done for each downloaded exec
 
 ## Verify the installation
 
-Every release bundles a demonstration dataset with input files that runs end-to-end without further
+Every release offers a demo download with a dataset and input files that runs end-to-end without further
 preparation — the quickest confirmation that the installation works. See **[Demo](demo.qmd)**.
 
 

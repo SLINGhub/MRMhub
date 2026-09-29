@@ -10,7 +10,7 @@ This short tutorial presents the steps to create a basic **peak integration proj
 ::: {.callout-tip}
 ## Test data
 
-Every INTEGRATOR release bundles a complete demonstration dataset, raw data (`.mzML`) together with
+Every INTEGRATOR release offers a demo download with a complete demonstration dataset, raw data (`.mzML`) together with
 all required input files (see the [Demo](demo.html)). It is the quickest way to obtain working
 files: run it directly as ready-made **test data** to follow the steps below, or copy its input
 files as **templates** when setting up a new analysis.

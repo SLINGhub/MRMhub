@@ -51,15 +51,15 @@ INTEGRATOR is the stand-alone peak-integration module of the
 
 ## Download and setup
 
-INTEGRATOR is distributed as a self-contained executable for macOS and Windows via the
+INTEGRATOR is distributed as a self-contained executable for macOS, Windows and Linux via the
 [GitHub releases page](https://github.com/SLINGhub/MRMhub/releases); no installation and no separate
 runtimes are required. A copy of the executable is kept with each analysis project, which ensures reproducibility. On first launch, typically a one-time OS security prompt must be cleared. Detailed instructions are given in [Installing MRMhub-INTEGRATOR](setup.html). Alternatively, INTEGRATOR and the MRMhub-viz visualiser are also available bundled as a single stand-alone application with a graphical user interface, which can be downloaded from the [MRMhub Integrator GUI release page](https://github.com/SLINGhub/MRMhub/releases/tag/mrmhub-gui-v1.2).
 
 ## Getting started
 
 ::: {.arrow-list}
-- **[Run the demo](demo.html)** — the bundled dataset with all required files can be processed end-to-end with INTEGRATOR. It ships within the
-  [latest release](https://github.com/SLINGhub/MRMhub/releases) and is documented in `readme.txt`.
+- **[Run the demo](demo.html)** — the demo dataset with all required files can be processed end-to-end with INTEGRATOR. It is the demo download of each
+  [release](https://github.com/SLINGhub/MRMhub/releases) and is documented in `README.txt`.
 - **[Quick Start](quickstart.html)** — a short tutorial for running a new peak integration project.
 - **[Browse real analyses](https://slinghub.github.io/MRMhub-workflows/)** — Read details on peak integration
   of two large-scale lipidomics studies.
