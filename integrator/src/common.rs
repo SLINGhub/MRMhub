@@ -156,10 +156,10 @@ pub fn get_mzml() -> io::Result<Vec<FileA>> {
         .into_records()
         .map(|rec| {
             rec.map(|x| FileA {
-                mzml_f: x[0].to_string(),
-                ftype: x[1].to_string(),
-                ts: x[2].to_string(),
-                batchno: x[3].to_string(),
+                mzml_f: x[0].to_owned(),
+                ftype: x[1].to_owned(),
+                ts: x[2].to_owned(),
+                batchno: x[3].to_owned(),
                 is_ref: &x[4] == "1",
                 is_learn: &x[5] == "1",
             })

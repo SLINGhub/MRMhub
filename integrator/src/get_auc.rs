@@ -97,9 +97,7 @@ fn write_trans(
                         let bl = p_bl(&rt_i_l);
                         Some((bl, bl))
                     }
-                    Bl::VDrop => {
-                        v_drop_bl(&rt_i_l[rt_pos[0].0..rt_pos[rt_pos.len() - 1].1]).map(|x| (x, x))
-                    }
+                    Bl::VDrop => v_drop_bl(&rt_i_l, &rt_pos).map(|x| (x, x)),
                     Bl::V2v => v2v_bl(&rt_i_l[pos0..pos1]).map(|(x, y)| (x.1, y.1)),
                 }
                 .unwrap_or((0., 0.));
@@ -139,7 +137,7 @@ fn write_long(
         "rt_int_end",
     ])?;
     let blkstr = String::new();
-    let (pos_string, neg_string) = ("+".to_string(), "-".to_string());
+    let (pos_string, neg_string) = ("+".to_owned(), "-".to_owned());
     for ((t, t_name), area_t) in s_trans.iter().zip(area_all) {
         let k: &crate::common::ValidT = t_to_istd
             .binary_search_by_key(&t, |x| &x.cqq)
@@ -261,8 +259,12 @@ fn p_bl(rt_i_l: &[(f32, f32)]) -> f32 {
     i_l.select_nth_unstable_by(i, |a, b| a.partial_cmp(b).unwrap());
     i_l[i]
 }
-fn v_drop_bl(rt_i_l: &[(f32, f32)]) -> Option<f32> {
-    rt_i_l.iter().map(|x| x.1).reduce(f32::min)
+fn v_drop_bl(rt_i_l: &[(f32, f32)], rt_pos: &[(usize, usize)]) -> Option<f32> {
+    rt_i_l[rt_pos.iter().map(|x| x.0).reduce(usize::min).unwrap()
+        ..rt_pos.iter().map(|x| x.1).reduce(usize::max).unwrap()]
+        .iter()
+        .map(|x| x.1)
+        .reduce(f32::min)
 }
 fn v2v_bl(rt_i_l: &[(f32, f32)]) -> Option<((f32, f32), (f32, f32))> {
     rt_i_l.first().map(|ep0| (*ep0, rt_i_l[rt_i_l.len() - 1]))
@@ -303,8 +305,7 @@ fn feat_data(
                 let rt_i = &rt_i_l[pos0..pos1];
                 match k.baseline {
                     Bl::P => auc_flat(rt_i, p_bl(rt_i_l)),
-                    Bl::VDrop => v_drop_bl(&rt_i_l[rt_pos[0].0..rt_pos[rt_pos.len() - 1].1])
-                        .map_or(0., |bl| auc_flat(rt_i, bl)),
+                    Bl::VDrop => v_drop_bl(rt_i_l, rt_pos).map_or(0., |bl| auc_flat(rt_i, bl)),
                     Bl::V2v => v2v_auc(rt_i),
                 }
             };
@@ -373,7 +374,7 @@ fn read_rtmat() -> Result<RtMat, Box<dyn Error>> {
             *index = ii;
             continue;
         }
-        trans_col.push((name_rt.0.to_string(), name_rt.1.to_string(), ii, 0));
+        trans_col.push((name_rt.0.to_owned(), name_rt.1.to_owned(), ii, 0));
     }
     if let Some((.., col_no, _)) = trans_col.iter().find(|(.., y)| *y == 0) {
         return Err([trans_str[*col_no], " less than 2 columns"].concat().into());

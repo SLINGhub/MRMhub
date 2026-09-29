@@ -26,9 +26,8 @@ struct Param {
 fn main() -> Result<(), Box<dyn Error>> {
     let mut args = std::env::args();
     args.next();
-    let arg1 = args.next();
-    // Report the version without needing a param.txt / working directory.
-    if matches!(arg1.as_deref(), Some("--version" | "-V")) {
+    let arg_1 = args.next();
+    if matches!(arg_1.as_deref(), Some("--version" | "-V")) {
         println!("MRMhub INTEGRATOR {VERSION}");
         return Ok(());
     }
@@ -37,21 +36,13 @@ fn main() -> Result<(), Box<dyn Error>> {
     rayon::ThreadPoolBuilder::new()
         .num_threads(param_t.num_t)
         .build_global()?;
-    match arg1.as_deref() {
-        Some("1") => read_mzml::read(&param_t)?,
-        Some("2") => feat::detect(&param_t)?,
-        Some("3") => get_auc::calc_auc()?,
-        Some("4") => gen_plots()?,
+    match arg_1.as_deref() {
+        Some("1") => read_mzml::read(&param_t),
+        Some("2") => feat::detect(&param_t),
+        Some("3") => get_auc::calc_auc(),
+        Some("4") => gen_plots(),
         _ => {
-            println!(
-                r"
-███    ███ ██████  ███    ███ ██   ██ ██    ██ ██████
-████  ████ ██   ██ ████  ████ ██   ██ ██    ██ ██   ██
-██ ████ ██ ██████  ██ ████ ██ ███████ ██    ██ ██████
-██  ██  ██ ██   ██ ██  ██  ██ ██   ██ ██    ██ ██   ██
-██      ██ ██   ██ ██      ██ ██   ██  ██████  ██████  "
-            );
-            println!("  targeted MRM peak integration  v{VERSION}");
+            println!("\ntargeted MRM peak integration  v{VERSION}");
             loop {
                 if let Err(x) = handle_input() {
                     use yansi::Paint;
@@ -60,7 +51,6 @@ fn main() -> Result<(), Box<dyn Error>> {
             }
         }
     }
-    Ok(())
 }
 
 fn handle_input() -> Result<(), Box<dyn Error>> {
@@ -88,9 +78,17 @@ Enter number.
 }
 fn gen_plots() -> Result<(), Box<dyn Error>> {
     use std::process::{Command, Stdio};
-    Command::new("Rscript")
-        .arg("MRMhub_plot.r")
-        .stdout(Stdio::inherit())
-        .output()?;
+    if cfg!(target_os = "windows") {
+        let r_path = glob::glob(r"C:\Program Files\R\R-*\bin\Rscript.exe")?.filter_map(Result::ok);
+        let Some(r_path) = r_path.last() else {
+            return Err("R not found!".into());
+        };
+        Command::new(r_path)
+    } else {
+        Command::new("Rscript")
+    }
+    .arg("MRMhub_plot.r")
+    .stdout(Stdio::inherit())
+    .output()?;
     Ok(())
 }

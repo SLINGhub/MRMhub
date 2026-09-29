@@ -17,12 +17,12 @@ pub fn detect(param_t: &crate::Param) -> Result<(), Box<dyn Error>> {
     let start_end_d: Vec<Fff32> = t_to_istd
         .par_iter()
         .map(|t_i| {
-            print!("\r{: <50.40}", t_i.cpd);
-            io::stdout().flush()?;
+            eprint!("\r{: <50.40}", t_i.cpd);
+            let _ = io::stderr().flush();
             write_trans(t_i, param_t, &mzml_fs, &wave_scs, &wave_sqrt)
         })
         .collect::<Result<_, _>>()?;
-    println!("\r{: <50.40}", "");
+    eprintln!("\r{: <50.40}", "");
     crate::common::write_by_sample(&t_to_istd, &mzml_fs)?;
     write_rtmat(&t_to_istd, &start_end_d, &mzml_fs)?;
     Ok(())
@@ -531,6 +531,37 @@ fn final_shift(
         })
         .collect()
 }
+fn select_scale_maxima(coef_xx: &mut [f32], eic_rt: &[f32], wave_s: f32) -> Vec<(usize, f32)> {
+    debug_assert_eq!(coef_xx.len(), eic_rt.len());
+
+    let mut candidates = Vec::with_capacity(coef_xx.len());
+    for (index, &coef) in coef_xx.iter().enumerate() {
+        if coef > 0.0 {
+            candidates.push(index);
+        }
+    }
+    candidates.sort_unstable_by(|&a, &b| coef_xx[b].partial_cmp(&coef_xx[a]).unwrap());
+
+    let mut local_maxima = Vec::new();
+    for max_i in candidates {
+        let max_coef = coef_xx[max_i];
+        if max_coef <= 0.0 {
+            continue;
+        }
+        if coef_xx[max_i - 1] <= 0.0 || coef_xx[max_i + 1] <= 0.0 {
+            coef_xx[max_i] = 0.0;
+            continue;
+        }
+
+        local_maxima.push((max_i, max_coef));
+        let lo_rt = eic_rt[max_i] - wave_s;
+        let up_rt = eic_rt[max_i] + wave_s;
+        let lo = eic_rt[..max_i].partition_point(|&rt| rt <= lo_rt);
+        let up = max_i + eic_rt[max_i..].partition_point(|&rt| rt < up_rt);
+        coef_xx[lo..up].fill(0.0);
+    }
+    local_maxima
+}
 fn findridge(
     rt_i_l: &[(f32, f32)],
     first_dec: f32,
@@ -606,29 +637,7 @@ fn findridge(
     }
     let mut local_max = Vec::new();
     for coef_xx in coefs.chunks_exact_mut(eic_rt.len()) {
-        let mut l_max = Vec::new();
-        loop {
-            let (max_i, max_coef) = coef_xx
-                .iter()
-                .copied()
-                .enumerate()
-                .max_by(|a, b| a.1.partial_cmp(&b.1).unwrap())
-                .unwrap();
-            if max_coef <= 0. {
-                break;
-            }
-            if coef_xx[max_i - 1] <= 0. || coef_xx[max_i + 1] <= 0. {
-                coef_xx[max_i] = 0.;
-                continue;
-            }
-            l_max.push((max_i, max_coef));
-            let lo = eic_rt[max_i] - rerunw;
-            let up = eic_rt[max_i] + rerunw;
-            let lo = eic_rt[..max_i].partition_point(|x| *x <= lo);
-            let up = max_i + eic_rt[max_i..].partition_point(|x| *x < up);
-            coef_xx[lo..up].fill(0.);
-        }
-        local_max.push(l_max);
+        local_max.push(select_scale_maxima(coef_xx, &eic_rt, rerunw));
     }
     let mut ridgels: Vec<Vec<RtScC>> = local_max[0]
         .iter()
