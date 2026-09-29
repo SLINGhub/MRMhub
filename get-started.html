@@ -47,9 +47,9 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-e900d4a1dcdf1cff8df0e40cde180137.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-22ba73dde7d440343642ab9ea4ed8d6e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-e900d4a1dcdf1cff8df0e40cde180137.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-f9bd11d711983ba3b065921ea48e8d45.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-6ced0d887156817679f3f476a038d335.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-f9bd11d711983ba3b065921ea48e8d45.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -172,13 +172,14 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>The MRMhub release ships with a self-contained demonstration project — example raw data, INTEGRATOR parameters, and a ready-to-run QUANT R script, so the full pipeline can be run end-to-end without preparing any data. The two modules run in sequence: <strong>MRMhub-INTEGRATOR</strong> produces integrated peaks, and <strong>MRMhub-QUANT</strong> turns them into a quality-controlled, quantified report.</p>
+<p>Each MRMhub release includes a demo download with a self-contained demonstration project — example raw data, INTEGRATOR parameters, and a ready-to-run QUANT R script, so the full pipeline can be run end-to-end without preparing any data. The two modules run in sequence: <strong>MRMhub-INTEGRATOR</strong> produces integrated peaks, and <strong>MRMhub-QUANT</strong> turns them into a quality-controlled, quantified report. This page is also included in the demo folder as <code>Get-started.html</code>.</p>
+<p>The demo dataset comprises 499 targeted lipidomics analyses (LC-MS, MRM) in 6 batches with 482 transitions, about 0.9 GB unzipped.</p>
 <section id="before-you-start" class="level2">
 <h2 class="anchored" data-anchor-id="before-you-start">Before you start</h2>
 <ol type="1">
-<li><strong>Download</strong> the latest release from the <a href="https://github.com/SLINGhub/MRMhub/releases">MRMhub releases page ↗</a> and unzip it.</li>
-<li><strong>Clear the first-launch security prompt.</strong> MRMhub-INTEGRATOR is distributed as a portable executable, so on first launch macOS Gatekeeper or Windows SmartScreen may block it. This is a one-time step — follow the <em>First launch</em> instructions in <a href="https://slinghub.github.io/MRMhub/integrator/setup.html">MRMhub-INTEGRATOR — Download &amp; Project Setup ↗</a>; afterwards the application opens normally.</li>
-<li><strong>Set up an IDE for the QUANT step.</strong> The QUANT script is a Quarto document run in R. Install R and an IDE that runs Quarto — RStudio or Positron — then the <code>mrmhub</code> package, as described in <a href="https://slinghub.github.io/MRMhub/quant/articles/manual-00-installation.html">MRMhub-QUANT installation ↗</a>.</li>
+<li><strong>Download</strong> the demo package <code>MRMhub-demo-1.0.0-&lt;platform&gt;.zip</code> for macOS (Apple silicon), Windows or Linux from the <a href="https://github.com/SLINGhub/MRMhub/releases/tag/v1.0.0">MRMhub 1.0.0 release ↗</a> and unzip it; the plain <code>MRMhub-1.0.0-&lt;platform&gt;.zip</code> omits the demo data. On Windows, unzip to a short local path (e.g.&nbsp;<code>C:\MRMhub-demo</code>), not into OneDrive or the zip preview. If you are reading this inside the unzipped demo folder, skip this step.</li>
+<li><strong>Clear the first-launch security prompt.</strong> MRMhub-INTEGRATOR is distributed as a portable executable, so on first launch macOS Gatekeeper or Windows SmartScreen may block it (and MRMhub-viz). This is a one-time step — follow the <em>First launch</em> instructions in <a href="https://slinghub.github.io/MRMhub/integrator/setup.html">MRMhub-INTEGRATOR — Download &amp; Project Setup ↗</a>; afterwards the application opens normally.</li>
+<li><strong>Set up an IDE for the QUANT step.</strong> The QUANT script is a Quarto document run in R. Install R and an IDE that runs Quarto — RStudio or Positron — then the <code>mrmhub</code> package, as described in <a href="https://slinghub.github.io/MRMhub/quant/articles/manual-00-installation.html">MRMhub-QUANT installation ↗</a>. R is also used by INTEGRATOR step 4 to write the chromatogram PDFs; steps 1–3 run without R.</li>
 </ol>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -196,13 +197,13 @@ Note
 </section>
 <section id="step-1-peak-integration-mrmhub-integrator" class="level2">
 <h2 class="anchored" data-anchor-id="step-1-peak-integration-mrmhub-integrator">Step 1 — Peak integration (MRMhub-INTEGRATOR)</h2>
-<p>Double-click <strong>MRMhub</strong> in the unzipped demo folder and run <strong>steps 1 to 4</strong> in order. When they complete, open the <code>transitions</code> folder and inspect the per-transition PDFs to review the integrated peaks. The integrated results are written for the QUANT step that follows.</p>
+<p>Double-click <strong>MRMhub</strong> in the unzipped demo folder and run <strong>steps 1 to 4</strong> in order. When they complete, open the <code>by_transition</code> folder and inspect the per-transition PDFs to review the integrated peaks. The integrated results are written for the QUANT step that follows. Steps 1–4 take less than a minute on a recent laptop. The results can also be reviewed interactively with <strong>MRMhub-viz</strong> in the same folder (<a href="https://slinghub.github.io/MRMhub/integrator/viz.html">MRMhub-viz ↗</a>).</p>
 <p>For a description of each stage, see the <a href="https://slinghub.github.io/MRMhub/integrator/quickstart.html">MRMhub-INTEGRATOR Quick Start ↗</a>.</p>
 </section>
 <section id="step-2-quantitation-quality-control-mrmhub-quant" class="level2">
 <h2 class="anchored" data-anchor-id="step-2-quantitation-quality-control-mrmhub-quant">Step 2 — Quantitation &amp; quality control (MRMhub-QUANT)</h2>
-<p>Open <strong><code>quant.qmd</code></strong> in the <code>QUANT</code> folder in RStudio or Positron and render it. The script imports the integrated peaks, normalises to internal standards, applies drift and batch correction, quantifies, computes QC metrics, filters features, and writes a QC report — the complete post-acquisition workflow in a single document.</p>
-<p>The same analysis is walked through, step by step, in <a href="https://slinghub.github.io/MRMhub/quant/articles/tutorial-02-getting-started-mrmhub.html">Getting started with MRMhub ↗</a>.</p>
+<p>Open <strong><code>quant.qmd</code></strong> in the <code>QUANT</code> folder in RStudio or Positron and render it. Its first chunk shows how to install <code>mrmhub</code> 1.0.0, which is needed once. The script imports the integrated peaks, corrects isotopic interferences, normalises to internal standards, quantifies, applies drift and batch correction, computes QC metrics, filters features, and writes a report (<code>output/report.xlsx</code>) — the complete post-acquisition workflow in a single document. It uses the <code>long.csv</code> written by step 1, and otherwise a bundled copy, so it also runs on its own.</p>
+<p>A comparable analysis is explained step by step in <a href="https://slinghub.github.io/MRMhub/quant/articles/tutorial-03-lipidomics-workflow.html">Lipidomics data processing ↗</a>.</p>
 </section>
 <section id="next-steps" class="level2">
 <h2 class="anchored" data-anchor-id="next-steps">Next steps</h2>
