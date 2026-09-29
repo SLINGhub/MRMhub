@@ -1,18 +1,45 @@
-# INTEGRATOR parameter file (param.txt) — TEMPLATE
+# INTEGRATOR parameter file (param.txt)
 # Must sit in the same folder as the MRMhub executable; paths are relative to it.
-# Edit the values for your data. Keys and types below match the parser exactly.
+# The values are set for the bundled demo dataset; adjust them for your own data.
+# Manual: https://slinghub.github.io/MRMhub/integrator/
 
-mzML_files      = "mzML/*.mzML"       # glob for the converted mzML chromatograms
-transition_list = "feature_list.csv"  # transition / assay definition file
-batch_info      = "run_order.csv"     # acquisition order + sample roles
 
-num_threads = 4                       # parallel worker threads (integer)
+### location of .mzML files
+mzML_files = 'mzML/*.mzML'
 
-mz_tol = 0.5                          # m/z matching tolerance
-RT_tol = 0.2                          # retention-time matching tolerance
 
-peak_width     = [0.03, 0.05, 0.20, 0.50]  # expected peak-width bounds (4 values)
-RT_shift       = [-0.30, 0.30]             # RT-shift search window (2 values)
-RT_shift_bound = 0.50                      # maximum allowed RT shift
+### Table indicating file name, batch, analysis type and reference analysis
+batch_info = 'run_order.csv'
 
-# crop_window = [0.5, 0.5]            # optional: crop EIC to RT ± window (2 values)
+
+### If "peak_width = [w, x, y, z]", the left integration bound will be between w and x minutes left of the estimated apex, while the right integration bound will be between y and z minutes right of the estimated apex. To fix integration bounds between samples, set w=x and y=z.
+peak_width = [0.17, 0.05, 0.1, 0.35]
+
+
+### Table with transition information
+transition_list = 'feature_list.csv'
+
+
+num_threads = 3
+
+
+### m/z tolerance - max difference between transition list and mzML
+mz_tol = 0.06
+
+
+### RT tolerance - max difference between indicated and detected RT (minutes)
+RT_tol = 0.1
+
+
+### Allowed RT shift range [left, right] in minutes
+#RT_shift = [-0.2, 0.2]
+RT_shift = [-0.02, 0.02] # if no significant RT shift occurs in the samples
+
+
+### Maximum RT shift between adjacent analyses (minutes)
+RT_shift_bound = 0.1
+
+
+### If "crop_window = [y, z]", chromatogram window will be crop on the left at y minutes to the left of indicated RT and on the right at z minutes to right of indicated RT
+### comment out this option out if no cropping of window required
+#crop_window = [1.5, 2.0]

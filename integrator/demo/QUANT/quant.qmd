@@ -1,0 +1,177 @@
+---
+title: "MRMhub QUANT Demo"
+subtitle: "mrmhub R package"
+author:
+  - name: "Bo Burla, Guo Shou Teo, Hyungwon Choi"
+    affiliation: "National University of Singapore"
+editor: visual
+format:
+  html:
+    toc: true
+    fig-align: center
+---
+
+# Data Postprocessing and QC
+
+In this MRMhub-QUANT demo, **post-processing** and **quality** control checks will be performed using the dataset obtained from peak integration with MRMhub-INTEGRATOR (located in the parent folder). If INTEGRATOR has not been run, the bundled copy of its result in the folder "data" is used.
+
+Run each of these R code chunks sequentially. The output files will be located in the folder "output".
+
+## 1. Installation of the {mrmhub} package
+
+To install the {mrmhub} R package (version 1.0.0) uncomment and run the following code in the R console. No other R packages must be installed.
+
+```{r installpkg, include = TRUE, eval = FALSE}
+#if (!require("pak")) install.packages("pak")
+#pak::pak("SLINGhub/MRMhub@v1.0.0")
+```
+
+## 2. Load {mrmhub} and initialize an MRMhubExperiment object
+
+```{r initialize, include = TRUE}
+# Load mrmhub R package
+library(mrmhub)
+
+# Define a data object to store and process data
+mexp <- mrmhub::MRMhubExperiment(title = "sPerfect")
+```
+
+## Load data and analysis metadata files
+
+```{r load-data}
+
+# Load peak area data (from INTEGRATOR; otherwise the bundled copy)
+data_path <- if (file.exists("../long.csv")) "../long.csv" else "data/long.csv"
+mexp <- import_data_mrmhub(mexp, data_path, import_metadata = TRUE)
+
+# Load analysis metadata (mrmhub template format)
+metadata_path <- "data/metadata-template.xlsx"
+mexp <- import_metadata_msorganiser(mexp, metadata_path, ignore_warnings = TRUE)
+
+# Exclude a known technical outlier (pipetting error)
+mexp <- exclude_analyses( mexp, analyses = "Longit_batch6_51", clear_existing = FALSE)
+```
+
+## Plot analysis design
+
+Plot an overview of the analytical sequence, with batch structure, and the quality control (QC) samples included with their respective positions, and additional information regarding the date, duration, and run time of the analysis.
+
+```{r runsequence}
+plot_runsequence(
+  mexp,
+  qc_types = NA,
+  show_batches = TRUE,
+  batch_zebra_stripe = TRUE,
+  batch_fill_color = "#fffbdb",
+  segment_linewidth = 0.5,
+  show_timestamp = FALSE)
+```
+
+## Plotting analysis time trends of raw peak areas
+
+Analysis of one sample took about 11 min, and of all 499 analyses took 4 days. Samples were prepared in different batches, which can result in batch effects and drifts can be caused by changes in instrument performance. We therefore plot the raw peak areas of each feature in each sample ordered by analysis order to check for batch and drift effects, outliers and other artifacts. The corresponding PDF will be saved under the name "runscatter_raw_areas.pdf" in the `output` folder. To simplify we only plot the measured phosphatidylcholines (PC).
+
+```{r}
+plot_runscatter(
+  data = mexp,
+  variable = "area",
+  qc_types = c("BQC", "TQC", "SPL", "PBLK"),
+  include_feature_filter = "^PC" , # Remove line to plot all features
+  cap_outliers = TRUE,
+  log_scale = FALSE,
+  output_pdf = TRUE,
+  path = "output/runscatter_raw_areas.pdf",
+  cols_page = 2,
+  rows_page = 2,
+  point_size = 2, point_border_width = 1,
+  show_progress = FALSE
+)
+```
+
+## Interference correction
+
+Isotopic (M+2) interferences declared in the feature metadata are subtracted from the raw intensities before normalization.
+
+```{r interferences}
+mexp <- correct_custom_interferences(mexp)
+```
+
+## Normalization and quantification
+
+```{r norm-quant}
+mexp <- normalize_by_istd(mexp)
+mexp <- quantify_by_istd(mexp)
+```
+
+## Drift and batch correction
+
+Instrument drift within each batch is corrected with a Gaussian kernel smoother fitted to the study samples (SPL). Remaining differences between batches are then removed by median-centering each batch on its study samples. Features whose drift fit fails keep their original values.
+
+```{r drift-batch}
+mexp <- correct_drift_gaussiankernel(
+  mexp,
+  variable = "conc",
+  ref_qc_types = "SPL",
+  batch_wise = TRUE,
+  kernel_size = 10,
+  use_original_if_fail = TRUE,
+  show_progress = FALSE
+)
+mexp <- correct_batch_centering(
+  mexp,
+  variable = "conc",
+  ref_qc_types = "SPL"
+)
+```
+
+## QC metrics
+
+Calculate per-feature QC metrics, such as the %CV in the BQC samples and the signal-to-blank ratio, which the feature filtering below is based on.
+
+```{r qc-metrics}
+mexp <- calc_qc_metrics(mexp, use_batch_medians = TRUE)
+```
+
+## Feature Filtering
+
+
+```{r feature-filt}
+mexp <- filter_features_qc(
+  data = mexp,
+  clear_existing = TRUE,
+  include_qualifier = FALSE,
+  use_batch_medians = TRUE,
+  include_istd = TRUE,
+  min.signalblank.median.spl.pblk = 10,
+  min.intensity.median.spl = 100,
+  max.cv.conc.bqc = 25,
+)
+
+#plot summary of filtering
+plot_qc_summary_byclass(mexp)
+```
+
+## PCA plot
+
+And as a last step we use a PCA to understand how our QCs performed and if we have any outliers that need to be investigated.
+
+```{r pca-qc}
+plot_pca(
+  data = mexp,
+  variable = "conc",
+  filter_data = FALSE,
+  pca_dims = c(1,2),
+  labels_threshold_mad = 3,
+  qc_types = c("SPL", "BQC", "TQC"),
+  log_transform = TRUE,
+  point_size = 2, point_alpha = 0.7, font_base_size = 8, ellipse_alpha = 0.3,
+  include_istd = FALSE)
+```
+
+## Report
+
+The processed data, QC metrics and filtering results are saved as an Excel report in the `output` folder.
+
+```{r report}
+save_report_xlsx(mexp, path = "output/report.xlsx")
+```

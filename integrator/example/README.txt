@@ -1,21 +1,21 @@
-INTEGRATOR — example input files
-================================
+MRMhub INTEGRATOR - input files
+===============================
 
-The files in this folder are bundled into every INTEGRATOR release archive
-(next to the MRMhub executable). They are the version-matched input templates:
-their format can change together with the executable, so they ship with it.
+The MRMhub executable reads these files from its own folder. They are set up
+for the MRMhub demo dataset and serve as templates for your own data. Their
+format matches this version of INTEGRATOR.
 
-To run INTEGRATOR, place these (edited for your data) and your mzML files next
-to the executable, then run it. See the manual:
-https://slinghub.github.io/MRMhub/integrator/
+  param.txt         Processing parameters: location of the mzML files,
+                    m/z and RT tolerances, integration settings, threads.
+  run_order.csv     One row per mzML file in acquisition order: file name,
+                    batch, sample type, and reference samples for RT
+                    alignment.
+  feature_list.csv  Transitions to integrate: feature ID, ISTD, precursor
+                    and product m/z, expected RT, integration options.
+  MRMhub_plot.r     R script used by step 4 to write chromatogram PDFs
+                    (requires R).
 
-Files
------
-  param.txt         Processing parameters (this folder ships a template).
-  run_order.csv     Acquisition order + sample roles (MAINTAINER: add the
-                    version-matched template from the test dataset).
-  feature_list.csv  Transition / assay list (MAINTAINER: add the
-                    version-matched template from the test dataset).
+Run the steps from a terminal in this folder with ./MRMhub 1 to 4
+(Windows: MRMhub.exe 1 to 4), or start MRMhub and choose a step.
 
-The large demonstration mzML dataset is NOT stored in the repository; it is
-downloaded from Zenodo and bundled into the separate "MRMhub-demo-*" archive.
+Manual: https://slinghub.github.io/MRMhub/integrator/
