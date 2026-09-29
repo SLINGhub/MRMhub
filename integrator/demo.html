@@ -83,9 +83,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-e900d4a1dcdf1cff8df0e40cde180137.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-22ba73dde7d440343642ab9ea4ed8d6e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-e900d4a1dcdf1cff8df0e40cde180137.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-f9bd11d711983ba3b065921ea48e8d45.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-6ced0d887156817679f3f476a038d335.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-f9bd11d711983ba3b065921ea48e8d45.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -255,11 +255,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>A complete demonstration project is bundled with every INTEGRATOR release. It contains example converted mzML files together with prepared input files (<code>param.txt</code>, <code>run_order.csv</code>, and a transition list), so peak integration can be run immediately — no input-file preparation is required. The demonstration is therefore the fastest way to verify the installation and to observe the outputs INTEGRATOR produces.</p>
+<p>A complete demonstration project is provided with every INTEGRATOR release as a separate demo download (<code>MRMhub-demo-&lt;version&gt;-&lt;platform&gt;.zip</code>). It contains example converted mzML files together with prepared input files (<code>param.txt</code>, <code>run_order.csv</code>, and a transition list), so peak integration can be run immediately — no input-file preparation is required. The demonstration is therefore the fastest way to verify the installation and to observe the outputs INTEGRATOR produces.</p>
 <p>For a new analysis with user-supplied data, see the <a href="quickstart.html">Quick Start</a>.</p>
 <section id="download-the-release" class="level2">
 <h2 class="anchored" data-anchor-id="download-the-release">1. Download the release</h2>
-<p>The latest release is downloaded and unzipped from the <a href="https://github.com/SLINGhub/MRMhub/releases">Releases</a> page. The demonstration project is included in the archive; its contents and layout are documented in the accompanying <code>readme.txt</code>, which serves as the authoritative reference.</p>
+<p>The demo package for the platform (macOS, Windows or Linux) is downloaded from the <a href="https://github.com/SLINGhub/MRMhub/releases">Releases</a> page and unzipped. Its contents and layout are documented in the accompanying <code>README.txt</code>:</p>
+<div class="filetree">
+<pre><code>MRMhub-demo-&lt;version&gt;-&lt;platform&gt;/
+├── MRMhub                 ← peak-integration executable
+├── mrmhub-viz             ← results visualiser
+├── MRMhub_plot.r          ← R script for chromatogram PDFs (step 4)
+├── param.txt          ┐
+├── run_order.csv      ├  input files for the demo dataset
+├── feature_list.csv   ┘
+├── mzML/                  ← 499 analyses in mzML format
+├── QUANT/                 ← QUANT notebook, metadata, bundled long.csv
+├── Get-started.html       ← step-by-step instructions
+└── README.txt</code></pre>
+</div>
 </section>
 <section id="clear-the-first-launch-security-prompt" class="level2">
 <h2 class="anchored" data-anchor-id="clear-the-first-launch-security-prompt">2. Clear the first-launch security prompt</h2>
@@ -312,7 +325,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="next-step-in-the-pipeline" class="level2">
 <h2 class="anchored" data-anchor-id="next-step-in-the-pipeline">Next step in the pipeline</h2>
 <p>The exported <code>long.csv</code> can be post-processed with the separate <strong>MRMhub-QUANT</strong> module for ISTD normalisation, drift/batch correction, calibration, quality control, and reporting:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">import_data_mrmhub</span>(<span class="at">path =</span> <span class="st">"path/to/long.csv"</span>, <span class="at">import_metadata =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">import_data_mrmhub</span>(<span class="at">path =</span> <span class="st">"path/to/long.csv"</span>, <span class="at">import_metadata =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>→ <a href="https://slinghub.github.io/MRMhub/quant/">QUANT documentation ↗</a></p>
 
 
