@@ -1,29 +1,59 @@
 name: integrator-release
 
-# Build the Rust INTEGRATOR executable for macOS / Windows / Linux, package it
-# (binary + MRMhub_plot.r + example inputs), and attach the archives to a GitHub
-# Release. macOS builds are code-signed + notarized when the signing secrets are
-# present, and fall back to an ad-hoc signature otherwise.
+# Build the Rust INTEGRATOR executable and the mrmhub-viz viewer for macOS /
+# Windows / Linux, package them (binaries + MRMhub_plot.r + example inputs), and
+# attach the archives to a GitHub Release: a plain package and, when
+# vars.DEMO_DATA_URL is set, a demo package (plus demo raw data, the QUANT demo
+# and Get-started.html). A release also gets the mrmhub R source package. macOS
+# builds are code-signed + notarized when the signing secrets are present, and
+# fall back to an ad-hoc signature otherwise.
 
 on:
   release:
     types: [published]
   workflow_dispatch:
   push:
+    branches: ['**']   # branch pushes only; tag pushes are covered by the release event
     paths:
       - 'integrator/Cargo.toml'
       - 'integrator/Cargo.lock'
       - 'integrator/src/**'
       - 'integrator/build.rs'
       - 'integrator/example/**'
+      - 'integrator/demo/**'
       - 'integrator/MRMhub_plot.r'
+      - 'integrator_viz/**'
+      - 'docs-site/get-started.qmd'
       - '.github/workflows/integrator-release.yml'
 
 permissions:
   contents: write
 
 jobs:
+  # Instructions bundled with the demo, rendered from the web page's source so the
+  # two cannot drift. Rendered outside the website project (no navbar chrome).
+  get-started:
+    if: github.event_name != 'release' || startsWith(github.event.release.tag_name, 'v')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: quarto-dev/quarto-actions/setup@v2
+      - name: Render Get-started.html
+        shell: bash
+        run: |
+          set -euo pipefail
+          tmp="$RUNNER_TEMP/get-started"; mkdir -p "$tmp"
+          cp docs-site/get-started.qmd docs-site/_brand.yml "$tmp/"
+          cd "$tmp"
+          quarto render get-started.qmd --to html -M embed-resources:true -M toc:true -o Get-started.html
+      - uses: actions/upload-artifact@v6
+        with:
+          name: get-started
+          path: ${{ runner.temp }}/get-started/Get-started.html
+
   build:
+    needs: get-started
+    if: github.event_name != 'release' || startsWith(github.event.release.tag_name, 'v')
     strategy:
       fail-fast: false
       matrix:
@@ -42,9 +72,28 @@ jobs:
         with:
           targets: ${{ matrix.target }}
 
-      - name: Build
+      - name: Build INTEGRATOR
         working-directory: integrator
         run: cargo build --release --locked --target ${{ matrix.target }}
+
+      # --- mrmhub-viz (Tauri; static frontend, no installer bundle) ------------
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Install Tauri system dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libgtk-3-dev librsvg2-dev libayatana-appindicator3-dev libxdo-dev libssl-dev build-essential
+
+      - name: Build mrmhub-viz
+        working-directory: integrator_viz
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-package-lock --no-audit --no-fund
+          npx tauri build --no-bundle --target ${{ matrix.target }}
 
       - name: Resolve version and names
         id: vars
@@ -66,9 +115,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          pkg="${{ steps.vars.outputs.pkg }}"
+          pkg="${{ steps.vars.outputs.pkg }}"; ext="${{ steps.vars.outputs.ext }}"
           mkdir -p "dist/$pkg" out
-          cp "integrator/target/${{ matrix.target }}/release/MRMhub${{ steps.vars.outputs.ext }}" "dist/$pkg/"
+          cp "integrator/target/${{ matrix.target }}/release/MRMhub$ext" "dist/$pkg/"
+          cp "integrator_viz/src-tauri/target/${{ matrix.target }}/release/mrmhub-viz$ext" "dist/$pkg/"
           cp integrator/MRMhub_plot.r "dist/$pkg/"
           cp -R integrator/example/. "dist/$pkg/"
 
@@ -106,20 +156,21 @@ jobs:
           security list-keychains -d user -s "$kc" login.keychain-db
           rm -f "$cert"
 
-      - name: Codesign binary
+      - name: Codesign binaries
         if: runner.os == 'macOS'
         shell: bash
         env:
           SIGN_IDENTITY: ${{ secrets.MACOS_SIGN_IDENTITY }}
         run: |
           set -euo pipefail
-          bin="dist/${{ steps.vars.outputs.pkg }}/MRMhub"
-          if [ "${{ steps.sign.outputs.have_signing }}" = "true" ]; then
-            codesign --force --options runtime --timestamp --sign "$SIGN_IDENTITY" "$bin"
-            codesign --verify --strict --verbose=2 "$bin"
-          else
-            codesign --force --sign - "$bin"
-          fi
+          for bin in "dist/${{ steps.vars.outputs.pkg }}/MRMhub" "dist/${{ steps.vars.outputs.pkg }}/mrmhub-viz"; do
+            if [ "${{ steps.sign.outputs.have_signing }}" = "true" ]; then
+              codesign --force --options runtime --timestamp --sign "$SIGN_IDENTITY" "$bin"
+              codesign --verify --strict --verbose=2 "$bin"
+            else
+              codesign --force --sign - "$bin"
+            fi
+          done
 
       - name: Notarize
         if: runner.os == 'macOS' && steps.sign.outputs.have_signing == 'true'
@@ -137,7 +188,14 @@ jobs:
           rm -f "$p8"
           # A bare Mach-O in a .zip cannot be stapled; Gatekeeper checks notarization online at first launch.
 
-      # --- demo package (binary package + Zenodo mzML) --------------------------
+      # --- demo package (binary package + demo files + raw data) ----------------
+      - name: Download Get-started.html
+        if: env.DEMO_DATA_URL != ''
+        uses: actions/download-artifact@v5
+        with:
+          name: get-started
+          path: ${{ runner.temp }}/get-started
+
       - name: Stage demo package
         if: env.DEMO_DATA_URL != ''
         shell: bash
@@ -145,8 +203,11 @@ jobs:
           set -euo pipefail
           pkg="${{ steps.vars.outputs.pkg }}"; demo="${{ steps.vars.outputs.demo }}"
           cp -R "dist/$pkg" "dist/$demo"
-          curl -fSL "$DEMO_DATA_URL" -o "$RUNNER_TEMP/mzML.zip"
-          unzip -q "$RUNNER_TEMP/mzML.zip" -d "dist/$demo"
+          cp -R integrator/demo/. "dist/$demo/"
+          cp "$RUNNER_TEMP/get-started/Get-started.html" "dist/$demo/"
+          curl -fSL "$DEMO_DATA_URL" -o "$RUNNER_TEMP/demo-data.zip"
+          unzip -q "$RUNNER_TEMP/demo-data.zip" -d "dist/$demo"
+          test -d "dist/$demo/mzML" && test -f "dist/$demo/QUANT/data/long.csv"
 
       # --- zip (ditto on unix, Compress-Archive on Windows) ---------------------
       - name: Zip packages (unix)
@@ -181,4 +242,41 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: out/*.zip
+          fail_on_unmatched_files: true
+
+  # mrmhub R source package, attached to the same release.
+  r-tarball:
+    if: github.event_name == 'release' && startsWith(github.event.release.tag_name, 'v')
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Check DESCRIPTION version matches the tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          v="$(grep -m1 '^Version:' DESCRIPTION | sed -E 's/^Version: *//')"
+          tag="${{ github.event.release.tag_name }}"
+          if [ "$v" != "${tag#v}" ]; then
+            echo "::error::DESCRIPTION Version $v does not match release tag $tag"
+            exit 1
+          fi
+
+      - uses: r-lib/actions/setup-pandoc@v2
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::carrier
+
+      - name: Build source package
+        run: R CMD build .
+
+      - name: Attach to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: mrmhub_*.tar.gz
           fail_on_unmatched_files: true
