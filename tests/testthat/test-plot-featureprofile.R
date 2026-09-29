@@ -421,3 +421,102 @@ test_that("plot_abundanceprofile lipid automap", {
     p$plot
   )
 })
+
+test_that("features without a class in the map are shown as Other", {
+  mexp_cls <- mexp
+  cls <- mexp_cls@dataset$feature_class
+  mexp_cls@dataset$feature_class <- dplyr::case_when(
+    cls == "CE" ~ NA_character_,
+    cls == "PI" ~ "Foo",
+    .default = cls
+  )
+  expect_message(
+    p <- plot_abundanceprofile(
+      mexp_cls,
+      variable = "conc",
+      qc_types = "SPL",
+      log_scale = TRUE
+    ),
+    "shown as"
+  )
+  expect_equal(nrow(p$data), 19)
+  expect_true("Other" %in% p$data$feature_class)
+})
+
+test_that("automatic limits include negative values on a linear scale", {
+  mexp_neg <- mexp
+  mexp_neg@dataset$feature_intensity <- mexp_neg@dataset$feature_intensity -
+    2e6
+  p <- plot_abundanceprofile(
+    mexp_neg,
+    variable = "intensity",
+    qc_types = "SPL",
+    log_scale = FALSE
+  )
+  rects <- ggplot2::ggplot_build(p)$data[[1]]
+  vals <- p$data |>
+    dplyr::summarise(
+      lo = min(.data$abundance_mean),
+      hi = max(.data$abundance_mean),
+      .by = "feature_class"
+    )
+  expect_true(all(rects$xmin <= rects$xmax))
+  expect_lte(min(rects$xmin), min(vals$lo))
+})
+
+test_that("non-positive values are dropped with a message on a log scale", {
+  mexp_neg <- mexp
+  mexp_neg@dataset$feature_intensity[
+    mexp_neg@dataset$feature_id == "PC 32:1"
+  ] <- -1
+  expect_message(
+    p <- plot_abundanceprofile(
+      mexp_neg,
+      variable = "intensity",
+      qc_types = "SPL",
+      log_scale = TRUE,
+      density_strip = TRUE
+    ),
+    "non-positive"
+  )
+  expect_no_warning(print(p))
+})
+
+test_that("use_qc_metrics applies the feature filters", {
+  p <- plot_abundanceprofile(
+    mexp,
+    variable = "conc_median_spl",
+    qc_types = "SPL",
+    log_scale = TRUE,
+    use_qc_metrics = TRUE,
+    include_feature_filter = "^PC"
+  )
+  expect_true(all(startsWith(as.character(p$data$feature_id), "PC")))
+  expect_warning(
+    plot_abundanceprofile(
+      mexp,
+      variable = "conc_median_spl",
+      qc_types = "SPL",
+      log_scale = TRUE,
+      use_qc_metrics = TRUE,
+      analysis_range = c(1, 50)
+    ),
+    "analysis_range"
+  )
+})
+
+test_that("an Other class in the feature map is not duplicated", {
+  mexp_cls <- mexp
+  cls <- mexp_cls@dataset$feature_class
+  mexp_cls@dataset$feature_class[cls == "CE"] <- NA_character_
+  map <- c(PC = "blue", TG = "orange", Other = "red")
+  p <- suppressMessages(plot_abundanceprofile(
+    mexp_cls,
+    variable = "conc",
+    qc_types = "SPL",
+    feature_map = map,
+    log_scale = TRUE
+  ))
+  expect_s3_class(p, "ggplot")
+  expect_true("Other" %in% p$data$feature_class)
+})

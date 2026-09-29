@@ -210,7 +210,7 @@ test_that("plot_runscatter with unknown qc_types", {
   # This fixture deliberately contains non-standard QC types (XYX, MyQC); the
   # expected "Unrecognized qc_type" import warning is asserted in
   # test-data-import.R. BLK is now a standard type, so it is predefined.
-  mexp_newqc <- suppressWarnings(import_data_csv(
+  mexp_newqc <- suppressWarnings(import_data_csv_wide(
     data = MRMhubExperiment(),
     path = test_path(
       "testdata/plain-wide/plain_wide_dataset2_22rows_unknownQC.csv"
@@ -430,7 +430,7 @@ test_that("plot_runscatter show reference lines works", {
   plot_data <- ggplot2::ggplot_build(p[[1]])$data
   expect_equal(length(plot_data), 5)
   expect_equal(unique(plot_data[[2]]$alpha), 0.15)
-  expect_equal(mean(plot_data[[2]]$ymax), 2408485.4)
+  expect_equal(mean(plot_data[[2]]$ymax), 2474728.2)
   expect_doppelganger_cond("extrunscatterref", p)
 
   p <- plot_runscatter(
@@ -1310,8 +1310,13 @@ test_that("plot_runscatter reference band SD uses uncapped values", {
   )))
   d <- p[[1]]$data
   # Independently recompute the band per feature (mirrors the summarise): mean/SD
-  # on raw `value`, clamped for drawing to [0, max(value_mod)] as the code does.
+  # on raw `value`, clamped for drawing to [0, panel max of value_mod] (all QC
+  # types, not only the reference QC).
   stats <- d |>
+    dplyr::mutate(
+      vmax = max(.data$value_mod, na.rm = TRUE),
+      .by = "feature_id"
+    ) |>
     dplyr::filter(.data$qc_type == "BQC") |>
     dplyr::group_by(.data$feature_id) |>
     dplyr::summarise(
@@ -1319,7 +1324,7 @@ test_that("plot_runscatter reference band SD uses uncapped values", {
       s_raw = 2 * sd(.data$value, na.rm = TRUE),
       m_cap = mean(.data$value_mod, na.rm = TRUE),
       s_cap = 2 * sd(.data$value_mod, na.rm = TRUE),
-      vmax = max(.data$value_mod, na.rm = TRUE),
+      vmax = dplyr::first(.data$vmax),
       .groups = "drop"
     ) |>
     dplyr::mutate(
@@ -1348,6 +1353,137 @@ test_that("plot_runscatter reference band SD uses uncapped values", {
     sort(round(stats$h_raw, 2)),
     sort(round(stats$h_cap, 2))
   )))
+})
+
+test_that("plot_runscatter upper reference line is mean + k*SD without capping", {
+  # The upper line was clamped to the highest reference-QC point, i.e. drawn too
+  # low whenever mean + k*SD exceeded it (most batches with batch-wise lines).
+  p <- suppressMessages(plot_runscatter(
+    data = mexp,
+    variable = "intensity",
+    show_reference_lines = TRUE,
+    ref_qc_types = "BQC",
+    reference_k_sd = 2,
+    reference_batchwise = TRUE,
+    rows_page = 3,
+    cols_page = 4,
+    return_plots = TRUE
+  ))
+  d <- p[[1]]$data
+  expected <- d |>
+    dplyr::filter(.data$qc_type == "BQC") |>
+    dplyr::summarise(
+      up = mean(.data$value, na.rm = TRUE) + 2 * sd(.data$value, na.rm = TRUE),
+      .by = c("feature_id", "batch_id")
+    )
+  is_seg <- vapply(
+    p[[1]]$layers,
+    \(l) inherits(l$geom, "GeomSegment"),
+    logical(1)
+  )
+  upper <- ggplot2::ggplot_build(p[[1]])$data[[max(which(is_seg))]]
+  expect_equal(sort(upper$yend), sort(expected$up))
+})
+
+test_that("plot_runscatter paginates by feature when features have missing analyses", {
+  m <- mexp
+  feats <- sort(unique(m@dataset$feature_id))
+  drop <- m@dataset$feature_id %in%
+    feats[c(2, 5, 11, 20)] &
+    m@dataset$analysis_order <= 60
+  m@dataset <- m@dataset[!drop, ]
+  p <- suppressMessages(plot_runscatter(
+    m,
+    variable = "intensity",
+    rows_page = 3,
+    cols_page = 3,
+    return_plots = TRUE
+  ))
+  per_page <- lapply(p, \(x) unique(as.character(x$data$feature_id)))
+  expect_length(p, ceiling(length(feats) / 9))
+  expect_equal(unname(unlist(per_page)), feats)
+  expect_true(all(lengths(per_page) <= 9))
+})
+
+test_that("plot_runscatter builds and saves only the specific_page", {
+  skip_if_not_installed("qpdf")
+  f <- withr::local_tempfile(fileext = ".pdf")
+  p <- suppressMessages(plot_runscatter(
+    mexp,
+    variable = "intensity",
+    rows_page = 3,
+    cols_page = 3,
+    specific_page = 2,
+    output_pdf = TRUE,
+    path = f,
+    return_plots = TRUE
+  ))
+  feats <- sort(unique(mexp@dataset$feature_id))
+  expect_length(p, 1)
+  expect_equal(unique(as.character(p[[1]]$data$feature_id)), feats[10:18])
+  expect_equal(qpdf::pdf_length(f), 1)
+})
+
+test_that("plot_runscatter rejects a specific_page beyond the last page", {
+  expect_error(
+    plot_runscatter(
+      mexp,
+      variable = "intensity",
+      rows_page = 3,
+      cols_page = 3,
+      specific_page = 5,
+      return_plots = TRUE
+    ),
+    "between 1 and 4"
+  )
+})
+
+runscatter_one_feature <- function(data, ...) {
+  suppressMessages(suppressWarnings(plot_runscatter(
+    data,
+    variable = "intensity",
+    include_feature_filter = "^PC 32:1$",
+    rows_page = 1,
+    cols_page = 1,
+    return_plots = TRUE,
+    ...
+  )))[[1]]
+}
+
+test_that("plot_runscatter log_scale handles missing values", {
+  m <- mexp
+  rows <- which(m@dataset$feature_id == "PC 32:1")
+  m@dataset$feature_intensity[rows[1]] <- NA
+  expect_no_error(runscatter_one_feature(m, log_scale = TRUE))
+
+  # A zero next to a missing value is floored at min positive / 5, not dropped
+  m@dataset$feature_intensity[rows[2]] <- 0
+  d <- runscatter_one_feature(m, log_scale = TRUE)$data
+  floor_val <- min(d$value[d$value > 0], na.rm = TRUE) / 5
+  expect_equal(
+    d$value_mod[d$analysis_id == m@dataset$analysis_id[rows[2]]],
+    floor_val
+  )
+})
+
+test_that("plot_runscatter treats infinite values as missing", {
+  m <- mexp
+  rows <- which(m@dataset$feature_id == "PC 32:1")
+  m@dataset$feature_intensity[rows[1:3]] <- Inf
+  d <- runscatter_one_feature(m)$data
+  expect_false(any(is.infinite(d$value_mod)))
+  expect_equal(sum(is.na(d$value_mod)), 3)
+})
+
+test_that("plot_runscatter uses y_label_text with and without capping", {
+  p <- runscatter_one_feature(mexp, y_label_text = "My label")
+  expect_equal(p$labels$y, "My label")
+  p <- runscatter_one_feature(
+    mexp,
+    y_label_text = "My label",
+    cap_outliers = TRUE
+  )
+  expect_equal(p$labels$y, "My label (capped by MAD outlier filter) ")
 })
 
 # Helper: run plot_runscatter with capping and return all plotted rows.

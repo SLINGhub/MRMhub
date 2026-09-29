@@ -105,9 +105,15 @@ get_dataset_subset <- function(
       all(qc_types != "")
   ) {
     if (length(qc_types) == 1) {
-      # Single QC type: check if it exists in the dataset
-      if (any(str_detect(d_filt$qc_type, qc_types), na.rm = TRUE)) {
-        d_filt <- d_filt |> dplyr::filter(str_detect(.data$qc_type, qc_types))
+      # A single value is a regular expression, unless it is a QC type itself
+      # ("QC" would otherwise also match "BQC", "TQC", ...)
+      in_types <- if (qc_types %in% pkg.env$qc_type_annotation$qc_type_levels) {
+        d_filt$qc_type == qc_types
+      } else {
+        str_detect(d_filt$qc_type, qc_types)
+      }
+      if (any(in_types, na.rm = TRUE)) {
+        d_filt <- d_filt |> dplyr::filter(in_types)
       } else {
         cli::cli_abort(
           "The defined `qc_type` filter criteria resulted in no analyses to plot. Please verify the criteria set in the arguments."
@@ -180,7 +186,7 @@ get_dataset_subset <- function(
 #' Get the annotated or the originally imported analytical data
 #' @param data [`MRMhubExperiment`][MRMhubExperiment-class] object
 #' @param annotated Boolean indicating whether to return the annotated data
-#' (`FALSE`) or the original imported data (`TRUE`)
+#' (`TRUE`) or the original imported data (`FALSE`)
 #' @return A tibble with the analytical data in the long format
 #' @export
 
@@ -335,7 +341,7 @@ get_analyis_end <- function(data, estimate_sequence_end) {
 get_runtime_median <- function(data) {
   if (check_data_present(data)) {
     median(as.numeric(
-      diff(unique(data@dataset$acquisition_time_stamp)),
+      diff(sort(unique(data@dataset$acquisition_time_stamp))),
       units = "secs"
     )) |>
       lubridate::seconds_to_period()
@@ -399,7 +405,7 @@ get_analysis_breaks <- function(data, break_duration_minutes) {
     }
     as.integer(sum(
       as.numeric(
-        diff(unique(data@dataset$acquisition_time_stamp)),
+        diff(sort(unique(data@dataset$acquisition_time_stamp))),
         units = "secs"
       ) >
         break_duration_minutes * 60
@@ -453,8 +459,8 @@ update_after_quantitation <- function(
         -any_of(c(
           "feature_pmol_total",
           "feature_conc",
-          "feature_raw_conc",
           "feature_conc_ratio",
+          "feature_conc_beforecal",
           "feature_conc_out_of_range"
         ))
       )
@@ -746,25 +752,12 @@ set_analysis_order <- function(
     multiple = FALSE
   )
   data <- set_analysis_order_analysismetadata(data, order_by)
+  data@annot_batches <- get_metadata_batches(data@annot_analyses)
   data <- link_data_metadata(data)
 
   mh_success(
     "Analysis order set to {.val {order_by}}"
   )
-
-  if (
-    data@is_isotope_corr |
-      data@is_filtered |
-      data@is_istd_normalized |
-      data@is_quantitated |
-      any(data@var_batch_corrected) |
-      any(data@var_drift_corrected)
-  ) {
-    mh_warn(c(
-      "All data processing has been reset. ",
-      "i" = "Please rerun processing steps"
-    ))
-  }
   data
 }
 
@@ -774,6 +767,19 @@ set_analysis_order <- function(
 ## - Only key information will be added
 link_data_metadata <- function(data = NULL, minimal_info = TRUE) {
   check_data(data)
+  # Summed features exist only in `@dataset`; rebuilding it from the original
+  # data would silently drop them. A new data import replaces `@dataset_orig`,
+  # and with it the marker set by data_sum_features().
+  if (isTRUE(attr(data@dataset_orig, "summed_features"))) {
+    summed <- setdiff(data@dataset$feature_id, data@dataset_orig$feature_id)
+    cli::cli_abort(
+      c(
+        "x" = "This step rebuilds the dataset from the imported data and would drop the features summed by {.fn data_sum_features}: {.val {mh_vec(summed)}}.",
+        "i" = "Exclude analyses or features, set the analysis order or intensity variable, and import metadata before {.fn data_sum_features}; or re-import the data and repeat the steps."
+      ),
+      call = rlang::caller_env()
+    )
+  }
   data@dataset <- data@dataset_orig |>
     select(
       "analysis_order",
@@ -901,10 +907,11 @@ link_data_metadata <- function(data = NULL, minimal_info = TRUE) {
   }
 
   # @dataset is rebuilt from @dataset_orig (raw) above, so the derived
-  # feature_norm_intensity/feature_conc columns are gone; reset the flags to match.
+  # feature_norm_intensity/feature_conc columns are gone; reset the flags to
+  # match. Imported concentrations count as quantitated.
   data@is_isotope_corr <- FALSE
   data@is_istd_normalized <- FALSE
-  data@is_quantitated <- FALSE
+  data@is_quantitated <- data@feature_intensity_var == "feature_conc"
   data@var_drift_corrected <- c(
     feature_intensity = FALSE,
     feature_norm_intensity = FALSE,
@@ -1010,8 +1017,6 @@ set_intensity_var <- function(
     calc_cols <- c(
       "feature_norm_intensity",
       "feature_conc",
-      "feature_amount",
-      "feature_raw_conc",
       "feature_conc_out_of_range"
     )
     if (any(calc_cols %in% names(data@dataset))) {
@@ -1025,10 +1030,6 @@ set_intensity_var <- function(
       )
     }
     data <- link_data_metadata(data)
-  }
-
-  if (variable_name == "feature_conc") {
-    data@is_quantitated <- TRUE
   }
   data
 }
@@ -1056,7 +1057,7 @@ exclude_analyses <- function(data = NULL, analyses, clear_existing) {
   if (all(is.na(analyses)) | length(analyses) == 0) {
     if (!clear_existing) {
       cli_abort(
-        "No `analysis_id` provided. To (re)include all analyses, use `analysis_ids_exlude = NA` and `clear_existing = TRUE`."
+        "No `analysis_id` provided. To (re)include all analyses, use `analyses = NA` and `clear_existing = TRUE`."
       )
     } else {
       mh_success(
@@ -1133,11 +1134,11 @@ exclude_features <- function(data = NULL, features, clear_existing) {
   if (all(is.na(features)) | length(features) == 0) {
     if (!clear_existing) {
       cli_abort(
-        "No `feature_id` provided. To (re)include all analyses, use `feature_ids_exlude = NA` and `clear_existing = TRUE`."
+        "No `feature_id` provided. To (re)include all features, use `features = NA` and `clear_existing = TRUE`."
       )
     } else {
       mh_success(
-        "All exlusions were removed, i.e. all features are included. Please reprocess data."
+        "All exclusions were removed, i.e. all features are included. Please reprocess data."
       )
       data@annot_features <- data@annot_features |> mutate(valid_feature = TRUE)
       data <- link_data_metadata(data)

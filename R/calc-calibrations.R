@@ -2,7 +2,7 @@
 #'
 #' Concentrations of all features in all analyses are determined using ISTD-normalized intensities and corresponding external calibration curves.
 #' Calibration curves are calculated for each feature based on calibration sample concentrations defined in the `qc_concentrations` metadata.
-#' The regression fit model (linear or quadratic) and the weighting method (either "none", "1/x", or "1/x^2") can be defined globally via
+#' The regression fit model (linear or quadratic) and the weighting method (either "none", "1/x", "1/x^2", or "1/sqrt(x)") can be defined globally via
 #' the arguments `fit_model` and `fit_weighting` for all features, if `fit_overwrite` is `TRUE`.
 #' Alternatively, the model and weighting can be defined individually for each feature in the `feature` metadata (columns `curve_fit_model` and `curve_fit_weighting`).
 #' If these details are missing in the metadata, the default values provided via `fit_model` and `fit_weighting` will be used.
@@ -22,7 +22,7 @@
 #'   when `fit_overwrite = TRUE`.
 #' @param fit_weighting A character string specifying the default weighting
 #'   method for the regression points in the calibration curve. Must be one of
-#'   `"none"`, `"1/x"`, or `"1/x^2"`. This method will be applied if no
+#'   `"none"`, `"1/x"`, `"1/x^2"`, or `"1/sqrt(x)"`. This method will be applied if no
 #'   specific weighting method is defined for a feature in the metadata, or
 #'   when `fit_overwrite = TRUE`.
 #'@param ignore_failed_calibration If `FALSE`, raises error if calibration curve fit fails for any feature. If `TRUE`, failed fits will be ignored, and resulting feature concentration will be `NA`.
@@ -43,7 +43,7 @@ quantify_by_calibration <- function(
   include_qualifier = TRUE,
   fit_overwrite,
   fit_model = c("linear", "quadratic"),
-  fit_weighting = c("none", "1/x", "1/x^2"),
+  fit_weighting = c("none", "1/x", "1/x^2", "1/sqrt(x)"),
   ignore_failed_calibration = FALSE,
   ignore_missing_annotation = FALSE,
   lod_sigma = c("residual", "intercept")
@@ -62,7 +62,8 @@ quantify_by_calibration <- function(
     fit_model = fit_model,
     fit_weighting = fit_weighting,
     ignore_missing_annotation = ignore_missing_annotation,
-    lod_sigma = lod_sigma
+    lod_sigma = lod_sigma,
+    ignore_failed_calibration = ignore_failed_calibration
   )
   d_calib <- data@metrics_calibration
 
@@ -112,7 +113,18 @@ quantify_by_calibration <- function(
       "highest_cal_cal_1"
     )
 
+  # Drop `fit_model` left by earlier versions, or the join makes `.x`/`.y`.
+  # feature_conc is re-derived below, so values derived from the concentrations
+  # of a previous calibrate_by_reference() run go too, as quantify_by_istd()
+  # does.
   d_conc <- data@dataset |>
+    select(
+      -any_of(c(
+        "fit_model",
+        "feature_conc_ratio",
+        "feature_conc_beforecal"
+      ))
+    ) |>
     left_join(
       d_stats_calc,
       by = c("feature_id" = "feature_id")
@@ -233,6 +245,7 @@ quantify_by_calibration <- function(
   data@dataset <- data@dataset |>
     select(
       -c(
+        "fit_model",
         "coef_a_cal_1",
         "coef_b_cal_1",
         "coef_c_cal_1",
@@ -287,13 +300,21 @@ quantify_by_calibration <- function(
 #' Calibration curves are calculated for each feature using ISTD-normalized
 #' intensities and the corresponding concentrations of calibration samples, as
 #' defined in the `qc_concentrations` metadata. The regression fit model (linear
-#' or quadratic) and the weighting method (either "none", "1/x", or "1/x^2")
+#' or quadratic) and the weighting method (either "none", "1/x", "1/x^2", or
+#' "1/sqrt(x)")
 #' can be defined globally via the arguments `fit_model` and `fit_weighting`
 #' for all features, if `fit_overwrite` is `TRUE`. Alternatively, the
 #' model and weighting can be defined individually for each feature in the
 #' `feature` metadata (columns `curve_fit_model` and `curve_fit_weighting`). If
 #' these details are missing in the metadata, the default values provided via
 #' `fit_model` and `fit_weighting` will be used.
+#'
+#' A linear curve is also fitted with 2 calibrators, and a single calibrator
+#' gives a line through the origin (`coef_a = 0`). A quadratic curve needs at
+#' least 3 calibrators. A zero-concentration calibrator is dropped from
+#' weighted fits, so a blank plus one standard is then fitted through the
+#' origin. A curve that passes through all its calibrators (e.g. 2 points for a
+#' line, 3 for a quadratic) has no R², sigma, LoD or LoQ (`NA`).
 #'
 #' Additionally, the limit of detection (LoD) and limit of quantification (LoQ)
 #' are calculated for each feature based on the calibration curve, following the
@@ -354,7 +375,7 @@ quantify_by_calibration <- function(
 #'   when `fit_overwrite = TRUE`.
 #' @param fit_weighting A character string specifying the default weighting
 #'   method for the regression points in the calibration curve. Must be one of
-#'   `"none"`, `"1/x"`, or `"1/x^2"`. This method will be applied if no
+#'   `"none"`, `"1/x"`, `"1/x^2"`, or `"1/sqrt(x)"`. This method will be applied if no
 #'   specific weighting method is defined for a feature in the metadata, or
 #'   when `fit_overwrite = TRUE`.
 #' @param ignore_missing_annotation If `FALSE`, an error will be raised if
@@ -366,6 +387,10 @@ quantify_by_calibration <- function(
 #'   (the residual standard error of the regression, Sy/x; the default) or
 #'   `"intercept"` (the standard error of the intercept). No averaging of the two
 #'   is performed.
+#' @param ignore_failed_calibration If `FALSE`, an error is raised if all
+#'   quantifier calibration curve fits fail. If `TRUE`, a warning is shown
+#'   instead and the failed fits are returned, so resulting concentrations are
+#'   `NA`.
 #'
 #' @return A modified [`MRMhubExperiment`][MRMhubExperiment-class] object with an updated
 #'   `metrics_calibration` table containing the calibration curve results,
@@ -390,7 +415,8 @@ calc_calibration_results <- function(
   fit_weighting,
   ignore_missing_annotation = FALSE,
   include_fit_object = FALSE,
-  lod_sigma = c("residual", "intercept")
+  lod_sigma = c("residual", "intercept"),
+  ignore_failed_calibration = FALSE
 ) {
   check_data(data)
 
@@ -400,8 +426,10 @@ calc_calibration_results <- function(
     )
   }
 
-  rlang::arg_match(fit_model, c("linear", "quadratic"))
-  rlang::arg_match(fit_weighting, c("none", "1/x", "1/x^2"))
+  fit_models <- c("linear", "quadratic")
+  fit_weightings <- c("none", "1/x", "1/x^2", "1/sqrt(x)")
+  rlang::arg_match(fit_model, fit_models)
+  rlang::arg_match(fit_weighting, fit_weightings)
   rlang::arg_match(variable, c("feature_intensity", "feature_norm_intensity"))
   lod_sigma <- rlang::arg_match(lod_sigma)
 
@@ -414,13 +442,17 @@ calc_calibration_results <- function(
     )
   }
 
-  if (
-    !any("CAL" %in% data@dataset$qc_type) &
-      nrow(data@annot_qcconcentrations) == 0
-  ) {
-    cli::cli_abort(
-      "Calibration curve data missing...Please verify data and correct annotation om `analyis` and `qc_concentration` metadata. See this function's documentation."
-    )
+  if (!"CAL" %in% data@dataset$qc_type) {
+    cli::cli_abort(c(
+      "No calibration analyses found: no analysis has {.field qc_type} {.val CAL}.",
+      "i" = "Annotate the calibration standards as {.val CAL} in the analysis metadata."
+    ))
+  }
+  if (nrow(data@annot_qcconcentrations) == 0) {
+    cli::cli_abort(c(
+      "No QC-concentration metadata found, so calibrator concentrations are unknown.",
+      "i" = "Import it with {.fn import_metadata_qcconcentrations} or {.fn import_metadata_msorganiser}."
+    ))
   }
 
   # Pre-flight validation of the QC-concentration table before the calibration
@@ -462,43 +494,49 @@ calc_calibration_results <- function(
   calc_lm <- function(dt) {
     # Descriptor fields are identical across all four result shapes below
     # (linear/quadratic x success/error), so build them once here.
+    # The calibrated range spans the non-zero calibrators that have a response.
+    in_range <- dt$concentration[
+      dt$concentration != 0 & !is.na(dt[[variable]])
+    ]
     base_info <- list(
       feature_id = dt$feature_id[1],
       is_quantifier = dt$is_quantifier[1],
       curve_id = dt$curve_id[1],
       fit_model = dt$fit_model[1],
       fit_weighting = dt$fit_weighting[1],
-      lowest_cal = sort(dt$concentration[dt$concentration != 0])[1],
-      highest_cal = sort(
-        dt$concentration[dt$concentration != 0],
-        decreasing = TRUE
-      )[1]
+      lowest_cal = sort(in_range)[1],
+      highest_cal = sort(in_range, decreasing = TRUE)[1]
     )
+    dt <- dt |>
+      mutate(
+        weight = switch(
+          fit_weighting[1],
+          "none" = 1,
+          "1/x" = 1 / .data$concentration,
+          "1/x^2" = 1 / .data$concentration^2,
+          "1/sqrt(x)" = 1 / sqrt(.data$concentration),
+          NA_real_
+        )
+      ) |>
+      # A zero-concentration (blank) calibrator cannot be inverse-weighted
+      # (weight = 1/0 = Inf), which makes lm() fail. Drop non-finite-weight
+      # rows so the weighted fit succeeds over the real standards. Unweighted
+      # fits keep the blank (weight = 1). The exclusion is reported once,
+      # aggregated per feature, by the caller before the split.
+      filter(is.finite(.data$weight))
+    n_points <- sum(!is.na(dt[[variable]]) & !is.na(dt$concentration))
+    base_info$n_points <- n_points
+    # A single linear calibrator gives a line through the origin
+    through_origin <- base_info$fit_model == "linear" && n_points == 1
     tryCatch(
       {
-        dt <- dt |>
-          mutate(
-            weight = switch(
-              fit_weighting[1],
-              "none" = 1,
-              "1/x" = 1 / .data$concentration,
-              "1/x^2" = 1 / .data$concentration^2,
-              "1/sqrt(x)" = 1 / sqrt(.data$concentration),
-              NA_real_
-            )
-          ) |>
-          # A zero-concentration (blank) calibrator cannot be inverse-weighted
-          # (weight = 1/0 = Inf), which makes lm() fail. Drop non-finite-weight
-          # rows so the weighted fit succeeds over the real standards. Unweighted
-          # fits keep the blank (weight = 1). The exclusion is reported once,
-          # aggregated per feature, by the caller before the split.
-          filter(is.finite(.data$weight))
-
-        formula <- ifelse(
-          dt$fit_model[1] == "linear",
-          paste0(variable, " ~ concentration"),
+        formula <- if (through_origin) {
+          paste0(variable, " ~ 0 + concentration")
+        } else if (base_info$fit_model == "linear") {
+          paste0(variable, " ~ concentration")
+        } else {
           paste0(variable, " ~ poly(concentration, 2, raw = TRUE)")
-        )
+        }
 
         # Warnings (e.g. rank-deficient fit) are intentionally suppressed: a
         # failed fit yields NA coefficients, which `reg_failed` below detects
@@ -523,22 +561,24 @@ calc_calibration_results <- function(
           NA_real_
         }
 
-        if (dt$fit_model[1] == "quadratic") {
-          reg_failed <- is.na(res$coefficients[[3]]) |
-            is.na(res$coefficients[[2]]) |
-            is.na(res$coefficients[[1]])
-          coef_c <- res$coefficients[[3]]
-        } else {
-          reg_failed <- is.na(res$coefficients[[2]]) |
-            is.na(res$coefficients[[1]])
-          coef_c <- NA_real_
+        coefs <- res$coefficients
+        if (through_origin) {
+          coefs <- c(0, coefs)
+        }
+        coef_c <- if (base_info$fit_model == "quadratic") coefs[[3]] else
+          NA_real_
+        reg_failed <- anyNA(coefs)
+        # A fit through all points (no residual df, e.g. 2 points for a line)
+        # has no meaningful R2, sigma or LoD/LoQ, nor has a failed fit
+        if (reg_failed || res$df.residual == 0) {
+          r.squared <- sigma <- sigma_intercept <- NA_real_
         }
         return(c(
           base_info,
           list(
             r.squared = r.squared,
-            coef_a = res$coefficients[[1]],
-            coef_b = res$coefficients[[2]],
+            coef_a = coefs[[1]],
+            coef_b = coefs[[2]],
             coef_c = coef_c,
             sigma = sigma,
             sigma_intercept = sigma_intercept,
@@ -612,10 +652,18 @@ calc_calibration_results <- function(
     dplyr::inner_join(
       data@annot_qcconcentrations,
       by = c("sample_id" = "sample_id", "analyte_id" = "analyte_id"),
-      relationship = "many-to-one"
+      relationship = "many-to-one",
+      na_matches = "never"
     ) |>
     filter(.data$include_in_analysis) |>
     mutate(curve_id = "1")
+
+  if (nrow(d_calib) == 0) {
+    cli::cli_abort(c(
+      "No CAL analysis matched an included QC-concentration entry.",
+      "i" = "Check that {.field sample_id} and {.field analyte_id} agree between the analysis/feature and QC-concentration metadata, and that {.field include_in_analysis} is not FALSE for all calibrators."
+    ))
+  }
 
   if (!fit_overwrite) {
     d_calib <- d_calib |>
@@ -642,6 +690,30 @@ calc_calibration_results <- function(
       mutate(fit_model = fit_model, fit_weighting = fit_weighting)
   }
 
+  # Per-feature values from `annot_features` bypass `arg_match()`; an unknown
+  # string would be fitted and back-calculated with inconsistent models.
+  bad_fit <- d_calib |>
+    dplyr::distinct(.data$feature_id, .data$fit_model, .data$fit_weighting) |>
+    filter(
+      !.data$fit_model %in% fit_models |
+        !.data$fit_weighting %in% fit_weightings
+    )
+  if (nrow(bad_fit) > 0) {
+    bad_desc <- paste0(
+      bad_fit$feature_id,
+      " (",
+      bad_fit$fit_model,
+      ", ",
+      bad_fit$fit_weighting,
+      ")"
+    )
+    cli::cli_abort(c(
+      "Unknown calibration fit model or weighting for {length(bad_desc)} feature{?s}: {.val {mh_vec(bad_desc)}}.",
+      "i" = "Allowed models are {.val {fit_models}}; allowed weightings are {.val {fit_weightings}}.",
+      "i" = "Check the {.field curve_fit_model} and {.field curve_fit_weighting} columns of the feature metadata."
+    ))
+  }
+
   # A zero-concentration (blank) calibrator cannot be inverse-weighted
   # (weight = 1/0 = Inf) and is dropped from the weighted fit in `calc_lm`.
   # Surface which features are affected so the exclusion is attributable rather
@@ -659,6 +731,14 @@ calc_calibration_results <- function(
     dplyr::group_split(.data$feature_id, .data$curve_id)
 
   d_stats <- map(d_calib, function(x) calc_lm(x)) |> bind_rows()
+  quad_few <- d_stats$feature_id[
+    d_stats$fit_model == "quadratic" & d_stats$n_points < 3
+  ]
+  if (length(quad_few) > 0) {
+    mh_warn(
+      "A quadratic calibration needs at least 3 calibrators; not calibrated: {.val {mh_vec(quad_few)}}."
+    )
+  }
   d_stats <- add_quantlimits(d_stats, lod_sigma)
 
   d_stats <- d_stats |>
@@ -737,20 +817,29 @@ calc_calibration_results <- function(
     paste0(count_qual_pass, " (of ", count_qual_all, ")")
   )
 
+  # No quantifier fit succeeded: abort, or warn and return the failed fits.
+  all_failed <- function(msg) {
+    if (!ignore_failed_calibration) {
+      cli::cli_abort(c(
+        msg,
+        "i" = "Please check data, and feature/qc-concentration metadata, or ignore by setting {.code ignore_failed_calibration = TRUE}."
+      ))
+    }
+    mh_warn("{msg} Resulting concentrations will be `NA`.")
+  }
+
   if (include_qualifier && any(!d_stats$is_quantifier)) {
     if (count_quant_pass == 0) {
-      cli::cli_abort(
-        "All calibration curve fits for quantifier features failed. Please check data, and feature/qc-concentration metadata."
-      )
+      all_failed("All calibration curve fits for quantifier features failed.")
+      return(data)
     }
     mh_success(
       "Calibration curve fits calculated for {text_total_quant} quantifier and {text_total_qual} qualifier features. Average r\u00B2: {sprintf('%.4f', mean(d_stats$r2_cal_1[d_stats$is_quantifier], na.rm = TRUE))} and {sprintf('%.4f', mean(d_stats$r2_cal_1[!d_stats$is_quantifier], na.rm = TRUE))}."
     )
   } else {
     if (count_quant_pass == 0) {
-      cli::cli_abort(
-        "All calibration curve fits failed. Please check data, and feature/qc-concentration metadata."
-      )
+      all_failed("All calibration curve fits failed.")
+      return(data)
     }
     mh_success(
       "Calibration curve fits calculated for {text_total_quant} quantifier features. Average r\u00B2: {sprintf('%.4f', mean(d_stats$r2_cal_1[d_stats$is_quantifier], na.rm = TRUE))}."
@@ -846,7 +935,8 @@ get_qc_bias_variability <- function(
           target_concentration = "concentration"
         ),
       by = c("sample_id", "analyte_id"),
-      relationship = "many-to-one"
+      relationship = "many-to-one",
+      na_matches = "never"
     )
 
   if (all(is.na(qc_types))) {
@@ -862,21 +952,15 @@ get_qc_bias_variability <- function(
   d_qc_summary <- d_qc_summary |> filter(.data$qc_type %in% qc_types)
 
   if (!all(is.na(sample_ids))) {
-    if (length(setdiff(sample_ids, unique(d_qc_summary$qc_type))) > 0) {
-      cli::cli_abort(paste(
-        "One or more selected `sample_id` are not present in the data or have no defined analyte concentrations. Please verify the analyses, feature and QC-concentration metadata, or select other `qc_types`."
-      ))
+    # Checked against the qc_type-filtered table, so an id excluded by qc_types
+    # is reported here too and the filter below always keeps a row.
+    missing_ids <- setdiff(sample_ids, unique(d_qc_summary$sample_id))
+    if (length(missing_ids) > 0) {
+      cli::cli_abort(
+        "Selected {.arg sample_ids} {.val {missing_ids}} {?is/are} not present in the data or {?has/have} no defined analyte concentrations. Please verify the analyses, feature and QC-concentration metadata, or select other {.arg sample_ids}."
+      )
     }
-  }
-
-  # Check if qc type and sample id are not paired resulting in no selected analyses
-  if (!all(is.na(sample_ids))) {
     d_qc_summary <- d_qc_summary |> filter(.data$sample_id %in% sample_ids)
-    if (nrow(d_qc_summary) == 0) {
-      cli::cli_abort(paste(
-        "No analyses with the selected `sample_id` and `qc_types` were found. Please verify the argument values, and corresponding feature metadata."
-      ))
-    }
   }
 
   if (!include_qualifier) {
@@ -902,8 +986,9 @@ get_qc_bias_variability <- function(
       cv_intra = .data$conc_sd / .data$conc_mean * 100,
       bias = mean(.data$bias_val, na.rm = TRUE),
       bias_abs = mean(.data$bias_abs_val, na.rm = TRUE),
-      conc_ratio = mean(.data$conc_ratio, na.rm = TRUE),
+      # Before `conc_ratio`: later expressions see the summarised column.
       conc_ratio_sd = sd(.data$conc_ratio, na.rm = TRUE),
+      conc_ratio = mean(.data$conc_ratio, na.rm = TRUE),
       frac_conc_out_of_range = if (has_conc_out_of_range) {
         mean(.data$feature_conc_out_of_range, na.rm = TRUE)
       } else {
@@ -1000,8 +1085,8 @@ get_qc_bias_variability <- function(
 #' - `is_quantifier`: Logical, indicates if the feature is a quantifier.
 #' - `fit_model`: Regression model used for fitting.
 #' - `fit_weighting`: Weighting method used in fitting.
-#' - `lowest_cal`: Lowest nonzero calibration concentration.
-#' - `highest_cal`: Highest calibration concentration.
+#' - `lowest_cal`: Lowest non-zero calibrator concentration with a response.
+#' - `highest_cal`: Highest calibrator concentration with a response.
 #' - `r2`: R² value, indicating goodness of fit. For a **weighted**
 #'   fit this is the weighted coefficient of determination (computed from weighted
 #'   sums of squares), matching the value reported by vendor software such as

@@ -267,26 +267,6 @@ plot_responsecurves <- function(
     }
   }
 
-  # Prepare PDF output
-  if (output_pdf && !is.na(path)) {
-    # nocov start
-    path <- ifelse(
-      stringr::str_detect(path, ".pdf"),
-      path,
-      paste0(path, ".pdf")
-    )
-    ensure_output_dir(path, create_dir)
-    pdf(
-      file = path,
-      onefile = TRUE,
-      paper = page_size$paper,
-      useDingbats = FALSE,
-      width = page_size$width,
-      height = page_size$height
-    )
-  } # nocov end
-
-  # Determine the range of pages to generate
   total_pages <- switch(
     curve_layout,
     "overlay" = ceiling(n_distinct(d_rqc$feature_id) / (cols_page * rows_page)),
@@ -294,101 +274,53 @@ plot_responsecurves <- function(
     "rows" = ceiling(n_distinct(d_rqc$feature_id) / cols_page)
   )
 
-  if (!is.na(specific_page)) {
-    if (specific_page > total_pages) {
-      cli::cli_abort(
-        "Selected page exceeds the total number of pages. Please select a page number between {.strong 1} and {.strong {total_pages}}."
-      )
-    }
-    page_range <- specific_page
-  } else {
-    page_range <- 1:total_pages
-  }
-
-  # Action text for progress output
-  action_text <- if (output_pdf) "Saving plots to pdf" else "Generating plots"
-  page_suffix <- if (max(page_range) > 1) {
-    glue::glue("{max(page_range)} pages")
-  } else {
-    glue::glue("{max(page_range)} page")
-  }
-  # Progress feedback: a cli progress bar collapses to a single line and stays
-  # quiet in non-interactive (Quarto/knitr) renders, unlike txtProgressBar.
-  if (show_progress) {
-    cli::cli_progress_bar(
-      name = glue::glue("{action_text} ({page_suffix})"),
-      total = max(page_range)
-    )
-  } else {
-    mh_info(glue::glue("{action_text} ({page_suffix})..."))
-  }
-
-  p_list <- list() # List to store plots for each page
-  for (i in page_range) {
-    p <- plot_responsecurves_page(
-      dataset = d_rqc,
-      output_pdf = output_pdf,
-      response_variable = variable,
-      max_regression_value = max_regression_value,
-      path = path,
-      rows_page = rows_page,
-      cols_page = cols_page,
-      specific_page = i,
-      point_size = point_size,
-      line_width = line_width,
-      font_base_size = font_base_size,
-      style_layer = mrmhub_style_layer(
+  render_pages(
+    total_pages = total_pages,
+    specific_page = specific_page,
+    page_fun = function(i) {
+      plot_responsecurves_page(
+        dataset = d_rqc,
+        response_variable = variable,
+        max_regression_value = max_regression_value,
+        rows_page = rows_page,
+        cols_page = cols_page,
+        specific_page = i,
+        point_size = point_size,
+        line_width = line_width,
         font_base_size = font_base_size,
-        legend_position = legend_position,
-        legend_size = legend_size,
-        show_legend_title = show_legend_title,
-        title = title,
-        strip_text_size = strip_text_size,
-        strip_bg_color = strip_bg_color
-      ),
-      x_axis_title = x_axis_unit,
-      color_curves = color_curves,
-      fill_curves = fill_curves,
-      curve_layout = curve_layout,
-      fixed_scale_curves = fixed_scale_curves,
-      label_wrap = label_wrap,
-      label_wrap_width = label_wrap_width,
-      r2_vstep = r2_vstep
-    )
-    if (!return_plots) {
-      plot(p)
-    }
-    dev.flush() # Flush the plot
-    flush.console() # Ensure plot is rendered
-    if (show_progress) {
-      cli::cli_progress_update(set = i)
-    }
-    p_list[[i]] <- p
-  }
-
-  if (output_pdf) {
-    dev.off()
-  } # Close PDF device
-  if (show_progress) {
-    cli::cli_progress_done()
-  }
-  mh_success("Done")
-
-  # Return plot list or invisible
-  if (return_plots) {
-    return(p_list[page_range])
-  } else {
-    invisible()
-  }
+        style_layer = mrmhub_style_layer(
+          font_base_size = font_base_size,
+          legend_position = legend_position,
+          legend_size = legend_size,
+          show_legend_title = show_legend_title,
+          title = title,
+          strip_text_size = strip_text_size,
+          strip_bg_color = strip_bg_color
+        ),
+        x_axis_title = x_axis_unit,
+        color_curves = color_curves,
+        fill_curves = fill_curves,
+        curve_layout = curve_layout,
+        fixed_scale_curves = fixed_scale_curves,
+        label_wrap = label_wrap,
+        label_wrap_width = label_wrap_width,
+        r2_vstep = r2_vstep
+      )
+    },
+    output_pdf = output_pdf,
+    path = path,
+    page_size = page_size,
+    create_dir = create_dir,
+    return_plots = return_plots,
+    show_progress = show_progress
+  )
 }
 
 # Plot Response Curves for one page
 plot_responsecurves_page <- function(
   dataset,
-  output_pdf,
   response_variable,
   max_regression_value,
-  path,
   rows_page,
   cols_page,
   specific_page,

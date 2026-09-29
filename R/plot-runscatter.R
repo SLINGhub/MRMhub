@@ -357,105 +357,23 @@ plot_runscatter <- function(
     # Only real gaps (excluded/missing analyses) are collapsed.
     # When collapse_excluded = TRUE, build from filtered data (d_filt) so that
     # gaps from excluded QC types are also collapsed.
-    if (collapse_excluded) {
-      unique_orders <- sort(unique(d_filt$analysis_order))
-    } else {
-      unique_orders <- sort(unique(data@dataset$analysis_order))
-    }
+    unique_orders <- sort(unique(
+      if (collapse_excluded) d_filt$analysis_order else
+        data@dataset$analysis_order
+    ))
+    gaps <- gap_axis(
+      unique_orders,
+      all_orders = sort(unique(data@dataset$analysis_order)),
+      remove_gaps = remove_gaps,
+      gap_scale = gap_scale
+    )
     order_map <- dplyr::tibble(
-      "analysis_order" := unique_orders,
-      "analysis_order_index" := seq_along(unique_orders)
+      analysis_order = unique_orders,
+      analysis_order_index = gaps$index
     )
     d_filt <- d_filt |>
       dplyr::left_join(order_map, by = "analysis_order")
-
-    # Detect real gaps: gaps that exist in the FULL unfiltered @dataset
-    # (excluded/missing analyses), NOT gaps caused by qc_types filtering.
-    d_gaps <- NULL
-    if (remove_gaps) {
-      all_orders <- sort(unique(data@dataset$analysis_order))
-      all_diffs <- diff(all_orders)
-      all_gap_positions <- which(all_diffs > 1)
-      # Map real gaps onto unique_orders: for each gap in the full dataset,
-      # find the last visible order <= the left boundary and the first
-      # visible order >= the right boundary. They must be adjacent in
-      # unique_orders so the gap marker sits between them.
-      gap_idx <- integer(0)
-      for (gi in all_gap_positions) {
-        ord_left <- all_orders[gi]
-        ord_right <- all_orders[gi + 1L]
-        # Last visible order at or before the gap
-        cand_left <- which(unique_orders <= ord_left)
-        pos_left <- if (length(cand_left) > 0) max(cand_left) else 0L
-        # First visible order at or after the gap
-        cand_right <- which(unique_orders >= ord_right)
-        pos_right <- if (length(cand_right) > 0) {
-          min(cand_right)
-        } else {
-          length(unique_orders) + 1L
-        }
-        if (
-          pos_left >= 1L &&
-            pos_right <= length(unique_orders) &&
-            pos_right == pos_left + 1L
-        ) {
-          gap_idx <- c(gap_idx, pos_left)
-        }
-      }
-      if (length(gap_idx) > 0) {
-        # Gap width in index units: use a fixed 2 % of n_analyses so the band
-        # is always clearly visible regardless of panel size or point_size.
-        # At default point_size = 1.5 this is ≈ one marker diameter for typical
-        # run lengths (200–600 analyses). Minimum 3 to handle small datasets.
-        n_analyses <- length(unique_orders)
-        gap_width <- max(3L, round(n_analyses * 0.02 * gap_scale))
-
-        # Shift all post-gap indices by gap_width per gap.
-        for (i in seq_along(gap_idx)) {
-          shifted_idx <- gap_idx[i] + (i - 1L) * gap_width
-          order_map <- order_map |>
-            dplyr::mutate(
-              analysis_order_index = dplyr::if_else(
-                .data$analysis_order_index > shifted_idx,
-                .data$analysis_order_index + gap_width,
-                .data$analysis_order_index
-              )
-            )
-        }
-        # Re-join updated indices onto d_filt
-        d_filt <- d_filt |>
-          dplyr::select(-"analysis_order_index") |>
-          dplyr::left_join(order_map, by = "analysis_order")
-
-        # Recompute gap positions using the updated order_map
-        updated_orders <- order_map$analysis_order_index[
-          match(unique_orders, order_map$analysis_order)
-        ]
-        gap_positions <- vapply(
-          gap_idx,
-          function(g) {
-            # midpoint between last pre-gap index and first post-gap index
-            left_idx <- updated_orders[g]
-            right_idx <- updated_orders[g + 1L]
-            (left_idx + right_idx) / 2
-          },
-          numeric(1)
-        )
-
-        d_gaps <- dplyr::tibble(
-          gap_x = gap_positions,
-          gap_x_left = updated_orders[gap_idx],
-          gap_x_right = updated_orders[gap_idx + 1L],
-          id_before = unique_orders[gap_idx],
-          id_after = unique_orders[gap_idx + 1L],
-          gap_label = paste0(
-            unique_orders[gap_idx],
-            " | ",
-            unique_orders[gap_idx + 1L]
-          )
-        )
-      }
-    }
+    d_gaps <- gaps$d_gaps
   }
 
   # Cleanup the data
@@ -465,27 +383,20 @@ plot_runscatter <- function(
     mutate(value = ifelse(is.infinite(!!variable_sym), NA, !!variable_sym))
 
   # Set the y-axis label text
-  y_label <- dplyr::if_else(
-    cap_outliers,
-    paste0(
-      ifelse(
-        is.na(y_label_text),
-        stringr::str_remove(variable, "feature\\_"),
-        y_label_text
-      ),
-      " (capped by MAD outlier filter) "
-    ),
+  y_label <- if (is.na(y_label_text)) {
     stringr::str_remove(variable, "feature\\_")
-  )
+  } else {
+    y_label_text
+  }
+  if (cap_outliers) {
+    y_label <- paste0(y_label, " (capped by MAD outlier filter) ")
+  }
 
   # Reorder QC types and assign values
   d_filt$qc_type <- d_filt$qc_type |>
     factor() |>
     forcats::fct_expand(pkg.env$qc_type_annotation$qc_type_levels) |>
     forcats::fct_relevel(pkg.env$qc_type_annotation$qc_type_levels)
-
-  d_filt <- d_filt |>
-    dplyr::mutate(value = !!variable_sym)
 
   # Cap outliers if the option is selected
   if (cap_outliers) {
@@ -573,7 +484,7 @@ plot_runscatter <- function(
   }
   if (log_scale) {
     # check if value_mod contains any negative or zero
-    if (any(d_filt$value_mod <= 0)) {
+    if (any(d_filt$value_mod <= 0, na.rm = TRUE)) {
       mh_warn(
         "Zero or negative values were replaced with the minimum positive value divided by 5 to avoid log(0) errors."
       )
@@ -582,7 +493,7 @@ plot_runscatter <- function(
         dplyr::mutate(
           value_mod = if_else(
             .data$value_mod <= 0,
-            min(.data$value_mod[.data$value_mod > 0]) / 5,
+            min(.data$value_mod[.data$value_mod > 0], na.rm = TRUE) / 5,
             .data$value_mod
           )
         )
@@ -590,12 +501,17 @@ plot_runscatter <- function(
   }
 
   # Determine page range for the plots
+  n_pages <- ceiling(
+    dplyr::n_distinct(d_filt$feature_id) / (cols_page * rows_page)
+  )
   if (!is.numeric(specific_page)) {
-    page_range <- 1:ceiling(
-      dplyr::n_distinct(d_filt$feature_id) /
-        (cols_page * rows_page)
-    )
+    page_range <- seq_len(n_pages)
   } else {
+    if (any(specific_page > n_pages)) {
+      cli::cli_abort(
+        "Selected page exceeds the total number of pages. Please select a page number between {.strong 1} and {.strong {n_pages}}."
+      )
+    }
     page_range <- specific_page
   }
 
@@ -658,34 +574,25 @@ plot_runscatter <- function(
     label_wrap = label_wrap,
     label_wrap_width = label_wrap_width
   )
-  # subset the dataset with only the rows used for plotting the facets of the selected page
-  n_samples <- length(unique(d_filt$analysis_id))
-
-  # Arrange the data first. The second step sets the point draw order within each
-  # feature (SPL at the back, blanks on top). It has to run here, in the main
-  # process: the parallel workers below resolve internals against the *installed*
-  # namespace, not this one.
+  # Assign features to pages and keep only the pages to plot. The second arrange
+  # step sets the point draw order within each feature (SPL at the back, blanks
+  # on top). It has to run here, in the main process: the parallel workers below
+  # resolve internals against the *installed* namespace, not this one.
   d_arranged <- d_filt |>
     arrange(.data$feature_id, .data$analysis_order) |>
     arrange_qc_type_draw_order(within = "feature_id")
-
-  # Calculate page size
-  n_samples <- length(unique(d_arranged$analysis_id))
-  page_size <- n_samples * cols_page * rows_page
-
-  if (multithreading) {
-    page_group_size <- page_size * pages_per_core
-  } else {
-    page_group_size <- ceiling(nrow(d_arranged))
-    pages_per_core = ceiling(nrow(d_arranged) / page_size)
+  feature_ids <- unique(d_arranged$feature_id)
+  if (!multithreading) {
+    pages_per_core <- n_pages
   }
-
-  # Add page_id
   d_with_page <- d_arranged |>
     mutate(
-      page_id = ceiling(row_number() / page_size),
+      page_id = ceiling(
+        match(.data$feature_id, feature_ids) / (cols_page * rows_page)
+      ),
       page_group = ceiling(.data$page_id / pages_per_core)
-    )
+    ) |>
+    filter(.data$page_id %in% page_range)
 
   # Split into list of page groups for parallel processing if multithreading is enabled otherwise include all pages in one group
   page_group_list <- split(d_with_page, d_with_page$page_group)
@@ -717,7 +624,7 @@ plot_runscatter <- function(
   if (rlang::is_interactive()) {
     message(
       cli::col_green(glue::glue(
-        "{action_text} ({max(page_range)} {ifelse(max(page_range) > 1, 'pages', 'page')}){ifelse(show_progress, '...', '')}"
+        "{action_text} ({length(page_range)} {ifelse(length(page_range) > 1, 'pages', 'page')}){ifelse(show_progress, '...', '')}"
       )),
       appendLF = FALSE
     )
@@ -765,7 +672,7 @@ plot_runscatter <- function(
   }
 
   if (return_plots) {
-    return(p_list[page_range])
+    return(p_list)
   } else {
     invisible()
   }
@@ -823,11 +730,6 @@ runscatter_plot_pages <- function(
   label_wrap_width
 ) {
   runscatter_one_page <- function(d_subset) {
-    # For debugging
-    # p <- ggplot(data = data.frame(speed = 1:4, dist = cumsum(runif(4, 0, 22))), aes(x = speed, y = dist)) + geom_point()
-    # plot(p)
-    # return(p)
-
     point_size <- ifelse(is.na(point_size), 2, point_size)
 
     if (is.na(point_border_width)) {
@@ -904,24 +806,7 @@ runscatter_plot_pages <- function(
 
     # Remap batch boundaries to index space when use_index_axis is TRUE
     if (use_index_axis && !is.null(order_map)) {
-      d_batches <- d_batches |>
-        dplyr::mutate(
-          mapped_start = purrr::map_dbl(
-            .data$id_batch_start,
-            ~ find_closest(.x, order_map$analysis_order, method = "higher")
-          ),
-          mapped_end = purrr::map_dbl(
-            .data$id_batch_end,
-            ~ find_closest(.x, order_map$analysis_order, method = "lower")
-          )
-        ) |>
-        dplyr::left_join(
-          order_map,
-          by = c("mapped_start" = "analysis_order")
-        ) |>
-        dplyr::rename(id_batch_start_index = "analysis_order_index") |>
-        dplyr::left_join(order_map, by = c("mapped_end" = "analysis_order")) |>
-        dplyr::rename(id_batch_end_index = "analysis_order_index")
+      d_batches <- batches_to_index(d_batches, order_map)
     }
 
     d_batch_data <- d_batches |>
@@ -934,7 +819,6 @@ runscatter_plot_pages <- function(
 
     p <- ggplot2::ggplot(d_subset, aes(x = !!sym(x_var)))
 
-    # browser()
     if (show_batches) {
       if (!batch_zebra_stripe) {
         d_batches_temp <- d_batch_data |> filter(.data$id_batch_start != 1)
@@ -1018,8 +902,6 @@ runscatter_plot_pages <- function(
           # The reference mean/SD describe the true variability of the reference
           # QC type, so they use the uncapped `value` -- computing them on the
           # MAD-capped `value_mod` would understate the SD and narrow the band.
-          # (The y_max_cap clamp below still uses `value_mod`: it only bounds the
-          # drawn rectangle to the visible, capped y-range.)
           mean = mean(.data$value, na.rm = TRUE),
           sd = if (!is.na(reference_k_sd)) {
             reference_k_sd * sd(.data$value, na.rm = TRUE)
@@ -1029,11 +911,7 @@ runscatter_plot_pages <- function(
           y_min = .data$mean - .data$sd,
           y_max = .data$mean + .data$sd,
           y_min_cap = if_else(.data$y_min < 0, 0, .data$y_min),
-          y_max_cap = if_else(
-            .data$y_max > safe_max(.data$value_mod, na.rm = TRUE),
-            safe_max(.data$value_mod, na.rm = TRUE),
-            .data$y_max
-          ),
+          y_max_cap = .data$y_max,
           batch_start = if (use_index_axis) {
             min(.data$id_batch_start_index)
           } else {
@@ -1047,6 +925,16 @@ runscatter_plot_pages <- function(
           batch_id = min(.data$batch_id),
           .groups = 'drop'
         )
+
+      # With capping, keep an outlier-inflated SD from stretching the y-axis
+      if (cap_outliers) {
+        d_subset_stats <- d_subset_stats |>
+          left_join(
+            dplyr::select(dMax, "feature_id", panel_max = "y_max"),
+            by = "feature_id"
+          ) |>
+          mutate(y_max_cap = pmin(.data$y_max, .data$panel_max))
+      }
 
       if (reference_sd_shade) {
         if (is.na(reference_fill_color)) {
@@ -1102,7 +990,6 @@ runscatter_plot_pages <- function(
       )
 
     if (show_trend) {
-      #browser()
       y_var_trend <- if_else(
         str_detect(y_var, "\\_before|\\_raw"),
         paste0(y_var, "_fit"),
@@ -1283,52 +1170,11 @@ runscatter_plot_pages <- function(
     # border vlines + label. Drawn last so it renders on top of everything.
     if (remove_gaps && !is.null(d_gaps) && nrow(d_gaps) > 0) {
       p <- p +
-        # Transparent shaded rect to highlight the gap region
-        ggplot2::geom_rect(
-          data = d_gaps,
-          ggplot2::aes(
-            xmin = .data$gap_x_left + 0.5,
-            xmax = .data$gap_x_right - 0.5,
-            ymin = -Inf,
-            ymax = Inf
-          ),
-          inherit.aes = FALSE,
-          fill = gap_line_color,
-          color = NA,
-          alpha = 0.08,
-          na.rm = TRUE
-        ) +
-        # Left border vline
-        ggplot2::geom_vline(
-          data = d_gaps,
-          ggplot2::aes(xintercept = .data$gap_x_left + 0.5),
-          colour = gap_line_color,
-          linewidth = gap_line_width,
-          na.rm = TRUE
-        ) +
-        # Right border vline
-        ggplot2::geom_vline(
-          data = d_gaps,
-          ggplot2::aes(xintercept = .data$gap_x_right - 0.5),
-          colour = gap_line_color,
-          linewidth = gap_line_width,
-          na.rm = TRUE
-        ) +
-        ggplot2::geom_label(
-          data = d_gaps,
-          ggplot2::aes(
-            x = .data$gap_x,
-            y = Inf,
-            label = .data$gap_label
-          ),
-          inherit.aes = FALSE,
-          size = gap_label_size,
-          color = gap_line_color,
-          fill = "white",
-          linewidth = 0.15,
-          vjust = 1.2,
-          hjust = 0.5,
-          na.rm = TRUE
+        gap_marker_layers(
+          d_gaps,
+          gap_line_color,
+          gap_line_width,
+          gap_label_size
         )
     }
 
@@ -1399,17 +1245,12 @@ runscatter_plot_pages <- function(
   }
 
   # Split into list of page groups for parallel processing if multithreading is enabled otherwise include all pages in one group
-  #tick <- Sys.time()
   page_list <- split(d_subset, d_subset$page_id)
-  #tock <- Sys.time()
-
-  ##rint("Start PDF FILE")
 
   if (output_pdf) {
     pdf(
       file = file,
       onefile = !multithreading,
-      #paper = "A4r",
       useDingbats = use_dingbats,
       useKerning = TRUE,
       # `paper` is deliberately left at its "special" default here, so the
@@ -1417,27 +1258,14 @@ runscatter_plot_pages <- function(
       width = page_size$width,
       height = page_size$height
     )
+    on.exit(grDevices::dev.off(), add = TRUE)
   }
-
-  # # add a ggplot test plot with penguins
-  #p_list <- ggplot(data = data.frame(speed = 1:4, dist = cumsum(runif(4, 0, 22))), aes(x = speed, y = dist)) + geom_point()
-  #plot(p_list)
-  # return(p)
-
-  #p_list <- runscatter_one_page(d_subset = d_subset)
 
   p_list <- purrr::map(
     page_list,
-    #function(pg) {
-    # Combine page-specific arguments with arglist
-    #args <- c(list())
     ~ runscatter_one_page(d_subset = .x),
     .progress = show_progress
   )
 
-  if (output_pdf) {
-    dev.off()
-  }
-
-  return(p_list)
+  p_list
 }

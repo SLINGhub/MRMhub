@@ -487,15 +487,37 @@ test_that("clean_response_metadata strips analysis_id extensions consistently (b
   expect_equal(meta$analysis_id, c("Study.data_01", "sample"))
 })
 
-test_that("clean_qcconc_metadata strips sample_id extensions consistently (bug 2.1)", {
+test_that("clean_qcconc_metadata normalizes sample_id like the analysis metadata", {
+  ids <- c(" CAL1.d ", "Study.data_01.d", "sample.wiff2")
+  meta <- clean_qcconc_metadata(data.frame(
+    sample_id = ids,
+    analyte_id = "a1",
+    concentration = c(0.1, 0.2, 0.3),
+    concentration_unit = "uM"
+  ))
+  analyses <- clean_analysis_metadata(data.frame(
+    analysis_id = paste0("A", 1:3),
+    sample_id = ids
+  ))
+  expect_equal(meta$sample_id, analyses$sample_id)
+  expect_equal(meta$sample_id, c("CAL1.d", "Study.data_01.d", "sample.wiff2"))
+})
+
+test_that("clean_qcconc_metadata rejects an unrecognized include_in_analysis value", {
   tbl <- data.frame(
-    sample_id = c("Study.data_01.d", "sample.wiff2"),
-    analyte_id = c("a1", "a2"),
-    concentration = c(0.1, 0.2),
-    concentration_unit = c("uM", "uM")
+    sample_id = c("CAL1", "CAL2", "CAL3"),
+    analyte_id = "a1",
+    concentration = c(0.1, 0.2, 0.3),
+    concentration_unit = "uM",
+    include_in_analysis = c(NA, "no", "Yes")
   )
-  meta <- clean_qcconc_metadata(tbl)
-  expect_equal(meta$sample_id, c("Study.data_01", "sample"))
+  expect_equal(
+    clean_qcconc_metadata(tbl)$include_in_analysis,
+    c(TRUE, FALSE, TRUE)
+  )
+
+  tbl$include_in_analysis <- c("yes", "0", "no")
+  expect_error(clean_qcconc_metadata(tbl), "include_in_analysis.*0")
 })
 
 test_that("Add indidual metadata types to data, first analyses then features", {
@@ -537,6 +559,28 @@ test_that("Add indidual metadata types to data, first analyses then features", {
   )
 })
 
+test_that("feature metadata accepts every supported curve_fit_weighting", {
+  mexp <- suppressMessages(mrmhub::import_data_masshunter(
+    mrmhub::MRMhubExperiment(),
+    path = testthat::test_path("testdata/masshunter/MRMhub_MHQuant_S1P.csv"),
+    import_metadata = FALSE
+  ))
+  tbl <- openxlsx2::wb_to_df(
+    testthat::test_path(
+      "testdata/metadata/MRMhub_TestData_MHQuant_S1P_metadata_tables.xlsx"
+    ),
+    sheet = "Features"
+  )
+  weightings <- c(NA, "none", "1/x", "1/x^2", "1/sqrt(x)")
+  tbl$curve_fit_weighting <- rep_len(weightings, nrow(tbl))
+
+  mexp <- suppressMessages(mrmhub:::import_metadata_features(
+    mexp,
+    table = tbl,
+    ignore_warnings = TRUE
+  ))
+  expect_setequal(unique(mexp@annot_features$curve_fit_weighting), weightings)
+})
 
 test_that("Add indidual metadata types to data, first features then analyses", {
   mexp <- mrmhub::MRMhubExperiment()
@@ -658,18 +702,21 @@ test_that("Replacing specific undefined metadata", {
   )
   expect_true(all(mexp@annot_analyses$valid_analysis))
 
+  # these sheets use the old column name `interference_proportion`
+  get_features <- function(sheet) {
+    get_metadata_table(path = path, sheet = sheet) |>
+      dplyr::rename(interference_contribution = "interference_proportion")
+  }
   mexp2 <- mrmhub:::import_metadata_features(
     mexp,
-    path = path,
-    sheet = "Features_missing_val",
+    table = get_features("Features_missing_val"),
     ignore_warnings = TRUE
   )
   expect_true(all(mexp@annot_features$valid_feature))
 
   mexp2 <- mrmhub:::import_metadata_features(
     mexp,
-    path = path,
-    sheet = "Features_missing_quan",
+    table = get_features("Features_missing_quan"),
     ignore_warnings = TRUE
   )
   expect_true(all(mexp@annot_features$is_quantifier))
@@ -752,6 +799,51 @@ test_that("assert_metadata rejects duplicated (sample_id, analyte_id) in QC conc
       mexp,
       metadata = list(annot_qcconcentrations = qc_dup),
       ignore_warnings = FALSE,
+      excl_unmatched_analyses = FALSE
+    ),
+    "Metadata validation failed"
+  )
+})
+
+test_that("assert_metadata flags mixed units within a response curve or QC sample", {
+  mexp <- lipidomics_dataset
+  rc <- mexp@annot_responsecurves
+  rc$analyzed_amount_unit[1] <- "nL"
+  expect_error(
+    mrmhub:::assert_metadata(
+      mexp,
+      metadata = list(annot_responsecurves = rc),
+      ignore_warnings = FALSE,
+      excl_unmatched_analyses = FALSE
+    ),
+    "verify warnings"
+  )
+
+  mexp <- quant_lcms_dataset
+  qc <- mexp@annot_qcconcentrations
+  qc$concentration_unit[1] <- "nM"
+  out <- testthat::capture_output(expect_error(
+    mrmhub:::assert_metadata(
+      mexp,
+      metadata = list(annot_qcconcentrations = qc),
+      ignore_warnings = FALSE,
+      excl_unmatched_analyses = FALSE
+    ),
+    "verify warnings"
+  ))
+  expect_match(out, "concentration_unit")
+})
+
+test_that("assert_metadata rejects incomplete interference info", {
+  mexp <- lipidomics_dataset
+  feat <- mexp@annot_features
+  i <- which(!is.na(feat$interference_feature_id))[1]
+  feat$interference_contribution[i] <- NA
+  expect_error(
+    mrmhub:::assert_metadata(
+      mexp,
+      metadata = list(annot_features = feat),
+      ignore_warnings = TRUE,
       excl_unmatched_analyses = FALSE
     ),
     "Metadata validation failed"
@@ -941,4 +1033,47 @@ test_that("metadata validation warns (overridably) on <=0 divisors, notes on mis
   expect_no_error(
     suppressMessages(mrmhub::import_metadata_analyses(mexp, table = df_na))
   )
+})
+
+test_that("clean_qcconc_metadata normalizes whitespace in include_in_analysis", {
+  # Regression (fa6fe763): the validator squished the value but the lookup did
+  # not, so a padded " no " fell through to the NA -> TRUE default and an
+  # excluded calibrator silently rejoined the curve.
+  tbl <- data.frame(
+    sample_id = paste0("CAL", 1:4),
+    analyte_id = "a1",
+    concentration = c(0.1, 0.2, 0.3, 0.4),
+    concentration_unit = "uM",
+    include_in_analysis = c(" no ", "false ", " FALSE", " yes ")
+  )
+  metadata <- clean_qcconc_metadata(tbl)
+  metadata <- metadata[!is.na(metadata$sample_id), ]
+  expect_equal(metadata$include_in_analysis, c(FALSE, FALSE, FALSE, TRUE))
+})
+
+test_that("clean_feature_metadata normalizes whitespace in is_quantifier / valid_feature", {
+  tbl <- dplyr::tibble(
+    feature_id = c("A", "B"),
+    is_quantifier = c(" no ", "yes"),
+    valid_feature = c("false ", " TRUE")
+  )
+  metadata <- clean_feature_metadata(tbl)
+  metadata <- metadata[!is.na(metadata$feature_id), ]
+  expect_equal(metadata$is_quantifier, c(FALSE, TRUE))
+  expect_equal(metadata$valid_feature, c(FALSE, TRUE))
+
+  # All rows padded: every value maps to NA, which the "non-mandatory field"
+  # fallback then turns into all-TRUE -- a silent flip, not an error.
+  tbl$is_quantifier <- c(" no ", " no ")
+  metadata <- clean_feature_metadata(tbl)
+  metadata <- metadata[!is.na(metadata$feature_id), ]
+  expect_equal(metadata$is_quantifier, c(FALSE, FALSE))
+})
+
+test_that("clean_feature_metadata rejects unrecognized is_quantifier / valid_feature values", {
+  tbl <- dplyr::tibble(feature_id = c("A", "B"), is_quantifier = c(1, 0))
+  expect_error(clean_feature_metadata(tbl), "Unrecognized value.*is_quantifier")
+
+  tbl <- dplyr::tibble(feature_id = c("A", "B"), valid_feature = c("Y", "N"))
+  expect_error(clean_feature_metadata(tbl), "Unrecognized value.*valid_feature")
 })

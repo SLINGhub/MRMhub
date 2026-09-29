@@ -190,7 +190,7 @@ test_that("plot_pca filter work", {
       log_transform = FALSE,
       filter_data = FALSE
     ),
-    "2 features contained missing or non-numeric values and were exluded"
+    "2 features with missing or non-positive values were excluded from the PCA"
   )
 
   expect_message(
@@ -203,7 +203,7 @@ test_that("plot_pca filter work", {
       log_transform = FALSE,
       filter_data = FALSE
     ),
-    "values of 13 features"
+    "values of 11 features"
   )
 })
 
@@ -534,4 +534,86 @@ test_that("plot_pca keeps QC types outside the legacy hard-coded level set", {
   qc <- as.character(p$data$qc_type)
   expect_true(all(c("HQC", "LQC") %in% qc))
   expect_false(any(is.na(p$data$qc_type)))
+})
+
+test_that("plot_pca_loading drops a zero-variance feature with a warning", {
+  mexp_const <- mexp
+  mexp_const@dataset <- mexp_const@dataset |>
+    dplyr::mutate(
+      feature_intensity = dplyr::if_else(
+        .data$feature_id == "CE 18:1",
+        1000,
+        .data$feature_intensity
+      )
+    )
+  expect_message(
+    p <- plot_pca_loading(mexp_const, variable = "intensity", top_n = 100),
+    "zero variance"
+  )
+  expect_false("CE 18:1" %in% p$data$feature_name)
+})
+
+test_that("plot_pca_loading puts the axis titles on the right axes", {
+  p <- plot_pca_loading(mexp, variable = "intensity")
+  b <- ggplot2::ggplot_build(p)
+  expect_equal(
+    b$layout$resolve_label(b$layout$panel_scales_x[[1]], p$labels)$primary,
+    "Feature"
+  )
+})
+
+test_that("plot_pca labels outliers by their distance from the median", {
+  set.seed(123)
+  p <- plot_pca(mexp, variable = "intensity", labels_threshold_mad = 3)
+  d <- p$data
+  pc <- function(x) abs(x - median(x)) > 3 * mad(x)
+  expected <- d$analysis_id[pc(d$.fittedPC1) | pc(d$.fittedPC2)]
+  labelled <- d$analysis_id[!is.na(d$label_outlier)]
+  expect_setequal(labelled, expected)
+})
+
+test_that("plot_pca and plot_pca_loading accept fwhm as variable", {
+  mexp_fwhm <- mexp
+  set.seed(1)
+  mexp_fwhm@dataset$feature_fwhm <- stats::runif(
+    nrow(mexp_fwhm@dataset),
+    0.02,
+    0.05
+  )
+  expect_s3_class(
+    plot_pca(mexp_fwhm, variable = "fwhm", labels_threshold_mad = NA),
+    "ggplot"
+  )
+  expect_s3_class(plot_pca_loading(mexp_fwhm, variable = "fwhm"), "ggplot")
+})
+
+test_that("plot_pca includes QC-type samples by default", {
+  mexp_qc <- mexp
+  spl <- unique(mexp_qc@dataset$analysis_id[mexp_qc@dataset$qc_type == "SPL"])
+  mexp_qc@dataset$qc_type[mexp_qc@dataset$analysis_id %in% spl[1:5]] <- "QC"
+  p <- suppressMessages(plot_pca(
+    mexp_qc,
+    variable = "conc",
+    filter_data = FALSE
+  ))
+  expect_true("QC" %in% p$data$qc_type)
+})
+
+test_that("plot_pca and plot_pca_loading drop analyses without values alike", {
+  m <- mexp
+  spl <- m@dataset$analysis_id[m@dataset$qc_type == "SPL"][1]
+  m@dataset$feature_intensity[m@dataset$analysis_id == spl] <- NA
+
+  expect_message(
+    p <- plot_pca(m, variable = "intensity"),
+    "1 analysis with no values was excluded from the PCA"
+  )
+  expect_false(spl %in% p$data$analysis_id)
+
+  expect_message(
+    l <- plot_pca_loading(m, variable = "intensity"),
+    "1 analysis with no values was excluded from the PCA"
+  )
+  l_ref <- plot_pca_loading(mexp, variable = "intensity")
+  expect_setequal(unique(l$data$feature_name), unique(l_ref$data$feature_name))
 })

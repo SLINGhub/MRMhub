@@ -29,7 +29,9 @@
 #' @param filter_data Whether to use all data (default) or only
 #'   QC-filtered data (filtered via [filter_features_qc()]).
 #' @param include_qualifier Whether to include qualifier features
-#'   (default is `TRUE`).
+#'   (default is `FALSE`).
+#' @param include_istd Whether to include internal standards (ISTDs) (default
+#'   is `FALSE`).
 #' @param cv_threshold_value Numerical threshold value to be shown as dashed
 #'   lines in the plot (default is `25`).
 #' @param x_lim Numeric vector of length 2 for x-axis limits. Use `NA` for
@@ -94,6 +96,7 @@ plot_normalization_qc <- function(
   y_shared = FALSE,
   filter_data = FALSE,
   include_qualifier = FALSE,
+  include_istd = FALSE,
   cv_threshold_value = 25,
   x_lim = c(NA_real_, NA_real_),
   y_lim = c(NA_real_, NA_real_),
@@ -170,8 +173,6 @@ plot_normalization_qc <- function(
   middle_string <- "_cv_"
   end_regex <- paste(qc_types, collapse = "|")
 
-  #col_pattern <- paste0("^(", start_regex, ")", middle_string, "(", end_regex, ")$")
-
   # Generate variable names for CV metrics
   x_variable <- stringr::str_c(before_norm_var, "_cv")
   y_variable <- stringr::str_c(after_norm_var, "_cv")
@@ -214,6 +215,7 @@ plot_normalization_qc <- function(
     threshold_values = c(cv_threshold_value, cv_threshold_value),
     equality_line = TRUE,
     include_qualifier = include_qualifier,
+    include_istd = include_istd,
     x_lim = x_lim,
     y_lim = y_lim,
     cols_page = cols_page,
@@ -260,7 +262,10 @@ plot_normalization_qc <- function(
 #' @param filter_data Logical; whether to use all data (default) or only
 #'   QC-filtered data (filtered via [filter_features_qc()]).
 #' @param include_qualifier Logical; whether to include qualifier features
-#'   (default is `TRUE`).
+#'   (default is `FALSE`).
+#' @param include_istd Logical; whether to include internal standards (ISTDs)
+#'   (default is `FALSE`). An ISTD normalized by itself has a CV of 0 for
+#'   normalized intensities and concentrations.
 #' @param equality_line Logical; whether to show a line indicating
 #'   identical values in both compared variables (default is `FALSE`).
 #' @param threshold_values Numeric single value or vector with 2 elements; threshold valus to be shown as dashed lines
@@ -318,6 +323,7 @@ plot_qcmetrics_comparison <- function(
   y_shared = FALSE,
   filter_data = FALSE,
   include_qualifier = FALSE,
+  include_istd = FALSE,
   equality_line = FALSE,
   threshold_values = NA_real_,
   log_scale = FALSE,
@@ -426,7 +432,10 @@ plot_qcmetrics_comparison <- function(
   if (!include_qualifier) {
     d_qc <- d_qc |> filter(.data$is_quantifier, .data$valid_feature)
   }
-  col_pattern <- paste0(x_variable, "|", y_variable)
+  if (!include_istd) {
+    d_qc <- d_qc |> filter(!.data$is_istd)
+  }
+  col_pattern <- paste0("^(", x_variable, "|", y_variable, ")(_[^_]+)?$")
   # Filter data based on valid features
 
   d_qc <- d_qc |>
@@ -473,8 +482,14 @@ plot_qcmetrics_comparison <- function(
         toupper(x_qc) %in% pkg.env$qc_type_annotation$qc_type_levels
       d_qc$qc_type <- if (single_qc_type) x_qc else "none"
       if (all(!is.na(qc_types))) {
-        d_qc <- d_qc |>
-          filter(.data$qc_type %in% tolower(qc_types))
+        if (single_qc_type) {
+          d_qc <- d_qc |>
+            filter(.data$qc_type %in% tolower(qc_types))
+        } else {
+          cli::cli_warn(
+            "{.arg qc_types} is ignored when {.arg x_variable} and {.arg y_variable} refer to different QC types."
+          )
+        }
       }
     }
   } else {
@@ -483,8 +498,12 @@ plot_qcmetrics_comparison <- function(
 
   d_qc$qc_type <- toupper(d_qc$qc_type)
 
+  # Zeros cannot be shown on a log axis or in a ratio
+  if (log_scale || plot_type == "ratio") {
+    d_qc <- d_qc |>
+      mutate(across(c(!!x_variable, !!y_variable), ~ ifelse(.x == 0, NA, .x)))
+  }
   d_qc <- d_qc |>
-    mutate(across(c(!!x_variable, !!y_variable), ~ ifelse(.x == 0, NA, .x))) |>
     tidyr::drop_na(dplyr::all_of(c(x_variable, y_variable)))
 
   if (plot_type == "diff") {
@@ -548,7 +567,7 @@ plot_qcmetrics_comparison <- function(
   # Apply faceting if requested
   if (facet_by_class) {
     if (y_shared) {
-      if (is.na(y_lim[2]) | is.na(y_lim[2])) {
+      if (is.na(y_lim[1]) | is.na(y_lim[2])) {
         scalemode <- "free_x"
       } else {
         scalemode <- "fixed"
@@ -577,18 +596,6 @@ plot_qcmetrics_comparison <- function(
 
   # Plot equality line if specified
   if (equality_line && plot_type == "scatter") {
-    # Create a new column to hold the maximum x and y values per feature_class
-    # used for hidden points that ensure both axis have the same scale
-    d_qc <- d_qc |>
-      group_by(.data$feature_class) |>
-      mutate(
-        xy_max = max(
-          !!rlang::sym(x_variable),
-          !!rlang::sym(y_variable),
-          na.rm = TRUE
-        )
-      ) |>
-      ungroup()
     g <- g +
       geom_abline(intercept = 0, slope = 1, linewidth = 0.3, color = "orange")
   }
@@ -698,6 +705,20 @@ plot_qcmetrics_comparison <- function(
       title = title,
       legend_bg_alpha = legend_bg_alpha
     )
+
+  # Name non-default metric settings, which change what a %CV means
+  settings <- attr(data@metrics_qc, "qc_metrics_settings")
+  metric_notes <- c(
+    "robust %CV (1.4826\u00b7MAD/median)"[
+      isTRUE(settings$use_robust_cv) &&
+        any(str_detect(c(x_variable, y_variable), "_cv"))
+    ],
+    "median of within-batch values"[isTRUE(settings$use_batch_medians)]
+  )
+  if (length(metric_notes) > 0) {
+    g <- g +
+      ggplot2::labs(caption = paste0(paste(metric_notes, collapse = "; "), "."))
+  }
 
   return(g)
 }

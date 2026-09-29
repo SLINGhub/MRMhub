@@ -409,6 +409,40 @@ test_that("correct_custom_interferences does not crash when a corrected value is
   )
 })
 
+test_that("negative values after correction are counted when a corrected value is NA", {
+  m <- mexp2
+  res <- suppressMessages(correct_custom_interferences(
+    m,
+    variable = "feature_intensity",
+    sequential_correction = TRUE
+  ))
+  target <- res@dataset |>
+    dplyr::filter(.data$interference_corrected, .data$feature_intensity <= 0) |>
+    dplyr::pull("feature_id") |>
+    unique()
+  row <- which(m@dataset$feature_id == target & m@dataset$qc_type == "SPL")[1]
+  m@dataset$feature_intensity[row] <- NA
+
+  res <- suppressMessages(correct_custom_interferences(
+    m,
+    variable = "feature_intensity",
+    sequential_correction = TRUE
+  ))
+  n_neg <- sum(
+    res@dataset$feature_intensity[res@dataset$interference_corrected] <= 0,
+    na.rm = TRUE
+  )
+  expect_message(
+    correct_custom_interferences(
+      m,
+      variable = "feature_intensity",
+      sequential_correction = TRUE
+    ),
+    paste("led to", n_neg, "negative or zero values"),
+    fixed = TRUE
+  )
+})
+
 test_that("correct_custom_interferences reports a friendly error on a circular interference chain", {
   # Close the d18:2 -> d18:1 -> d18:0 chain into a cycle (d18:2 -> d18:0).
   mexp_circ <- mexp
@@ -564,4 +598,58 @@ test_that("correction tolerates a feature absent from some analyses (ragged data
     ],
     40
   )
+})
+
+test_that("manual interference correction clears calibration metrics", {
+  # The fits were made on the pre-correction intensities.
+  mexp_cal <- calibrated_experiment()
+  expect_gt(nrow(mexp_cal@metrics_calibration), 0)
+
+  non_istd <- mexp_cal@annot_features$feature_id[
+    !mexp_cal@annot_features$is_istd
+  ]
+  res <- suppressMessages(correct_interference_manual(
+    mexp_cal,
+    variable = "feature_intensity",
+    feature = non_istd[1],
+    interfering_feature = non_istd[2],
+    interference_contribution = 0.1
+  ))
+  expect_equal(nrow(res@metrics_calibration), 0)
+})
+
+test_that("custom interference correction clears calibration metrics", {
+  mexp_cal <- calibrated_experiment()
+  expect_gt(nrow(mexp_cal@metrics_calibration), 0)
+
+  non_istd <- mexp_cal@annot_features$feature_id[
+    !mexp_cal@annot_features$is_istd
+  ]
+  i <- which(mexp_cal@annot_features$feature_id == non_istd[1])
+  mexp_cal@annot_features$interference_feature_id[i] <- non_istd[2]
+  mexp_cal@annot_features$interference_contribution[i] <- 0.05
+
+  res <- suppressMessages(suppressWarnings(
+    correct_custom_interferences(mexp_cal)
+  ))
+  expect_equal(nrow(res@metrics_calibration), 0)
+})
+
+test_that("correct_interference_manual returns an ungrouped dataset and tolerates ragged data", {
+  m <- MRMhubExperiment()
+  m@dataset <- dplyr::tibble(
+    analysis_id = c("a1", "a1", "a2"),
+    feature_id = c("F0", "F1", "F1"), # a2 lacks the interferer F0
+    qc_type = factor("SPL"),
+    feature_intensity = c(100, 50, 40)
+  )
+  m@annot_features <- dplyr::tibble(
+    feature_id = c("F0", "F1"),
+    is_istd = FALSE
+  )
+  res <- suppressMessages(
+    correct_interference_manual(m, "feature_intensity", "F1", "F0", 0.1)
+  )
+  expect_false(dplyr::is_grouped_df(res@dataset))
+  expect_equal(res@dataset$feature_intensity, c(100, 40, NA))
 })

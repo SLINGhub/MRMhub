@@ -35,10 +35,12 @@ plot_interference_correction(
 \item{qc_types}{A character vector specifying the QC types to plot. It must
 contain at least one element. The default \code{NA} plots any of the non-blank
 QC types ("SPL", "TQC", "BQC", "HQC", "MQC", "LQC", "NIST", "LTR") present
-in the dataset.}
+in the dataset. A single value that is a QC type is matched exactly; any
+other single value is a regular expression, e.g. \code{"QC$"} for all QC types
+ending in "QC".}
 
 \item{include_qualifier}{A logical value indicating whether to include
-qualifier features. Default is \code{TRUE}.}
+qualifier features. Default is \code{FALSE}.}
 
 \item{include_istd}{A logical value indicating whether to include internal
 standards (ISTD) features.  Default is \code{TRUE}.}

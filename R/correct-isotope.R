@@ -122,21 +122,24 @@ correct_interference_manual <- function(
   }
 
   # Correction
+  # first(): NA, not a size error, when the interferer is absent in an analysis
   data@dataset <- data@dataset |>
-    group_by(.data$analysis_id) |>
     mutate(
       !!variable_var := if_else(
         .data$feature_id == feature,
-        (!!variable_var)[.data$feature_id == feature] -
+        !!variable_var -
           interference_contribution *
-            (!!variable_var)[.data$feature_id == interfering_feature],
+            dplyr::first((!!variable_var)[
+              .data$feature_id == interfering_feature
+            ]),
         !!variable_var
       ),
       interference_corrected = if_else(
         .data$feature_id == feature,
         TRUE,
         .data$interference_corrected
-      )
+      ),
+      .by = "analysis_id"
     )
 
   neg_zero_sum <- data@dataset |>
@@ -212,6 +215,8 @@ correct_interference_manual <- function(
   )
   data@is_filtered <- FALSE
   data@metrics_qc <- data@metrics_qc[FALSE, ]
+  # Calibration fits were made on the uncorrected intensities.
+  data@metrics_calibration <- data@metrics_calibration[FALSE, ]
 
   mh_success(
     "Interference-correction was manually applied to feature `{feature}` (interferer `{interfering_feature}`, factor {interference_contribution})."
@@ -578,7 +583,9 @@ apply_interference_edges <- function(
   neg_zero_sum <- data@dataset |>
     filter(.data$interference_corrected) |>
     group_by(.data$feature_id, .data$qc_type) |>
-    summarise(negative_count = sum(.data$feature_intensity <= 0)) |>
+    summarise(
+      negative_count = sum(.data$feature_intensity <= 0, na.rm = TRUE)
+    ) |>
     filter(.data$negative_count > 0)
 
   n_neg_values <- sum(neg_zero_sum$negative_count)
@@ -654,6 +661,8 @@ apply_interference_edges <- function(
   )
   data@is_filtered <- FALSE
   data@metrics_qc <- data@metrics_qc[FALSE, ]
+  # Calibration fits were made on the uncorrected intensities.
+  data@metrics_calibration <- data@metrics_calibration[FALSE, ]
 
   n_corr <- length(unique(features_to_correct$feature_id))
   n_auto <- sum(features_to_correct$source == "auto")

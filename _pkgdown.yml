@@ -206,7 +206,6 @@ reference:
   - parse_skyline_result
   - parse_plain_wide_csv
   - parse_plain_long_csv
-  - import_data_csv
 - title: Metadata import
   description: |
     Functions to import metadata describing the analyses (samples), features (analytes), internal standards
@@ -319,7 +318,9 @@ reference:
 - title: Lipidomics
   description: |
     Functions specific to lipidomics data processing and analysis.
-  contents: parse_lipid_feature_names
+  contents:
+  - set_lipid_class
+  - parse_lipid_feature_names
 - title: Datasets
   description: |
     Example datasets for testing and demonstration.
@@ -344,5 +345,4 @@ reference:
   - get_mad_tails
   - get_iqr_tails
   - get_outlier_bounds
-  - order_chained_columns_tbl
   - mrmhub_enable_cli_color

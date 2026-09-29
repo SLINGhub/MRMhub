@@ -384,6 +384,46 @@ test_that("plot_runsequence timestamp works", {
   expect_doppelganger_cond("plot_rla_boxplot with timestamp", p$plot)
 })
 
+rla_time_axis <- function(data) {
+  p <- suppressMessages(plot_rla_boxplot(
+    data,
+    rla_type_batch = "within",
+    variable = "intensity",
+    show_timestamp = TRUE,
+    outlier_detection = FALSE,
+    show_plot = FALSE
+  ))
+  x <- ggplot2::ggplot_build(p$plot)$layout$panel_params[[1]]$x
+  keep <- !is.na(x$breaks)
+  list(breaks = x$breaks[keep], labels = x$get_labels()[keep])
+}
+
+test_that("plot_rla_boxplot timestamp labels match their analysis_order after exclusions", {
+  ids <- unique(mexp@dataset$analysis_id[mexp@dataset$analysis_order <= 20])
+  m <- suppressMessages(exclude_analyses(
+    mexp,
+    analyses = ids,
+    clear_existing = TRUE
+  ))
+  ax <- rla_time_axis(m)
+  am <- dplyr::distinct(m@dataset, analysis_order, acquisition_time_stamp)
+  expected <- am$acquisition_time_stamp[match(ax$breaks, am$analysis_order)]
+  expect_false(anyNA(expected)) # no tick on an excluded order
+  expect_equal(ax$labels, expected)
+})
+
+test_that("plot_rla_boxplot timestamp labels are paired by analysis, not by sort order", {
+  m <- mexp
+  ts <- m@dataset$acquisition_time_stamp
+  # Timestamps running backwards in analysis order, with duplicates
+  m@dataset$acquisition_time_stamp <- max(ts) - (ts - min(ts))
+  m@dataset$acquisition_time_stamp[m@dataset$analysis_order <= 5] <- max(ts)
+  ax <- rla_time_axis(m)
+  am <- dplyr::distinct(m@dataset, analysis_order, acquisition_time_stamp)
+  expected <- am$acquisition_time_stamp[match(ax$breaks, am$analysis_order)]
+  expect_equal(ax$labels, expected)
+})
+
 test_that("plot_rla_boxplot within correct", {
   p <- plot_rla_boxplot(
     mexp,
@@ -733,4 +773,11 @@ test_that("plot_rla_boxplot min_feature_intensity thresholds on intensity, not t
   expect_gt(length(got), 0)
   expect_lt(length(got), full_n)
   expect_false(setequal(got, variable_based))
+})
+
+test_that("plot_runsequence matches a single known QC type exactly", {
+  # "BLK" must not select PBLK, SBLK or UBLK
+  expect_error(plot_runsequence(mexp, qc_types = "BLK"), "qc_types")
+  p <- plot_runsequence(mexp, qc_types = "PBLK")
+  expect_setequal(unique(as.character(p$data$qc_type)), "PBLK")
 })

@@ -38,16 +38,15 @@ plot_abundanceprofile(
 
 \item{variable}{A character string indicating the variable to plot. For \code{use_qc_metrics = FALSE},
 this must be a base name like "area" or "conc". For \code{use_qc_metrics = TRUE}, this is the
-base name of a metric in the \code{metrics_qc} table (e.g., "rt" for "rt_mean_SPL").}
+name of a column in the \code{metrics_qc} table (e.g., "conc_median_spl").}
 
 \item{qc_types}{A character vector specifying the QC types to be averaged and plotted.
-If \code{use_qc_metrics} is \code{TRUE}, this must be a single character string (e.g., "SPL").}
+Ignored if \code{use_qc_metrics} is \code{TRUE}, where the QC type is part of \code{variable}.}
 
 \item{log_scale}{A logical value indicating whether to use a log10 scale for the x-axis.}
 
 \item{use_qc_metrics}{A logical value. If \code{FALSE} (default), data is summarized on the fly from the main dataset.
-If \code{TRUE}, pre-calculated summary data is used from the \code{metrics_qc} table, which is much faster.
-When \code{TRUE}, \code{qc_types} must specify only one QC type.}
+If \code{TRUE}, pre-calculated summary data is used from the \code{metrics_qc} table, which is much faster.}
 
 \item{feature_map}{A named character vector specifying feature classes, their order, and color. The order of the vector determines the y-axis order.
 Alternatively, can be a single string: \code{lipidomics} to use a default theme comprising a mapping for lipid classes frequently measured in lipidomics methods. When using
@@ -61,7 +60,7 @@ abundance-related variables and \code{FALSE} for others (e.g., "rt", "fwhm").}
 \item{exclude_classes}{A character vector of feature classes to be excluded from the plot.}
 
 \item{filter_data}{A logical value indicating whether to use all data (\code{FALSE}, default)
-or only QC-filtered data (\code{TRUE}, via \code{\link[=filter_features_qc]{filter_features_qc()}}). This is ignored if \code{use_qc_metrics} is \code{TRUE}.}
+or only QC-filtered data (\code{TRUE}, via \code{\link[=filter_features_qc]{filter_features_qc()}}).}
 
 \item{include_qualifier}{A logical value indicating whether to include qualifier features. Default is \code{FALSE}.}
 

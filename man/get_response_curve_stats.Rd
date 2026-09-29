@@ -28,9 +28,13 @@ or \code{NULL} if no data matches the criteria.
 }
 \description{
 This function calculates linear regression statistics (R², slope, and intercept)
-for each response curve in the provided \code{MRMhubExperiment} object. Before fitting, the
-analyzed sample amount (\code{x}) and feature intensity (\code{y}) of each curve are each scaled to their
-maximum (set to 1), so the returned \code{slopenorm} and \code{y0norm} are on this normalized scale.
+for each response curve in the provided \code{MRMhubExperiment} object. Each curve
+is fitted on its points with a non-missing intensity, with a warning when some
+are missing; a curve with 2 such points has a slope and intercept but no R²
+(\code{NA}), and a curve with fewer gives \code{NA} throughout. Before fitting,
+the analyzed sample amount (\code{x}) and feature intensity (\code{y}) of these points
+are each scaled to their maximum (set to 1), so the returned \code{slopenorm} and
+\code{y0norm} are on this normalized scale.
 Optionally, it can include
 additional statistics from the \code{lancer} package (if installed) when \code{with_saturation_stats} is set to \code{TRUE}.
 }

@@ -12,11 +12,18 @@ mexp <- quantify_by_istd(mexp)
 mexp_proc <- calc_qc_metrics(mexp, use_batch_medians = FALSE)
 
 
+test_that("calc_qc_metrics column names and order are stable", {
+  expect_snapshot(names(mexp_proc@metrics_qc))
+  expect_snapshot(names(
+    suppressMessages(calc_qc_metrics(mexp, use_batch_medians = TRUE))@metrics_qc
+  ))
+})
+
 test_that("calc_qc_metrics works for all qc groups", {
   mexp_res <- calc_qc_metrics(mexp, use_batch_medians = FALSE)
 
   expect_s4_class(mexp_res, "MRMhubExperiment")
-  expect_equal(dim(mexp_res@metrics_qc), c(29, 79))
+  expect_equal(dim(mexp_res@metrics_qc), c(29, 82))
 
   expect_equal(max(mexp_res@metrics_qc$product_mz), 829.4)
   expect_equal(min(mexp_res@metrics_qc$missing_intensity_prop_spl), 0)
@@ -110,7 +117,7 @@ test_that("calc_qc_metrics floors QC %CV below 3 replicates and surfaces it", {
 
   expect_message(
     mexp_res <- calc_qc_metrics(mexp_low, use_batch_medians = FALSE),
-    "%CV not computed"
+    "%CV and D-ratio not computed"
   )
   # the floored QC type -> all NA
   expect_true(all(is.na(mexp_res@metrics_qc$intensity_cv_tqc)))
@@ -124,7 +131,7 @@ test_that("calc_qc_metrics batch-wise works for all qc groups", {
   mexp_res <- calc_qc_metrics(mexp, use_batch_medians = TRUE)
 
   expect_s4_class(mexp_res, "MRMhubExperiment")
-  expect_equal(dim(mexp_res@metrics_qc), c(29, 79))
+  expect_equal(dim(mexp_res@metrics_qc), c(29, 82))
 
   expect_equal(max(mexp_res@metrics_qc$product_mz), 829.4)
   expect_equal(min(mexp_res@metrics_qc$missing_intensity_prop_spl), 0)
@@ -206,7 +213,7 @@ test_that("calc_qc_metrics batch-wise works for all with all incl FALSE ", {
   )
 
   expect_s4_class(mexp_res, "MRMhubExperiment")
-  expect_equal(dim(mexp_res@metrics_qc), c(29, 50))
+  expect_equal(dim(mexp_res@metrics_qc), c(29, 53))
 
   expect_false("norm_intensity_cv_spl" %in% colnames(mexp_res@metrics_qc))
   expect_false("conc_cv_spl" %in% colnames(mexp_res@metrics_qc))
@@ -224,7 +231,7 @@ test_that("calc_qc_metrics batch-wise works for all with all incl FALSE across b
     include_calibration_results = FALSE
   )
 
-  expect_equal(dim(mexp_res@metrics_qc), c(29, 50))
+  expect_equal(dim(mexp_res@metrics_qc), c(29, 53))
 
   expect_false("norm_intensity_cv_spl" %in% colnames(mexp_res@metrics_qc))
   expect_false("conc_cv_spl" %in% colnames(mexp_res@metrics_qc))
@@ -241,7 +248,7 @@ test_that("calc_qc_metrics batch-wise works for some incl FALSE ", {
     include_response_stats = TRUE,
     include_calibration_results = FALSE
   )
-  expect_equal(dim(mexp_res@metrics_qc), c(29, 65))
+  expect_equal(dim(mexp_res@metrics_qc), c(29, 68))
 
   expect_true("norm_intensity_cv_spl" %in% colnames(mexp_res@metrics_qc))
   expect_false("conc_cv_spl" %in% colnames(mexp_res@metrics_qc))
@@ -258,7 +265,7 @@ test_that("calc_qc_metrics batch-wise works for some other incl FALSE ", {
     include_response_stats = TRUE,
     include_calibration_results = FALSE
   )
-  expect_equal(dim(mexp_res@metrics_qc), c(29, 70))
+  expect_equal(dim(mexp_res@metrics_qc), c(29, 73))
 
   expect_false("norm_intensity_cv_spl" %in% colnames(mexp_res@metrics_qc))
   expect_true("conc_cv_spl" %in% colnames(mexp_res@metrics_qc))
@@ -275,7 +282,7 @@ test_that("calc_qc_metrics batch-wise works at different processing status ", {
 
   #mexp_temp@annot_responsecurves <- mexp_temp@annot_responsecurves[0,]
   mexp_res <- calc_qc_metrics(mexp_temp, use_batch_medians = TRUE)
-  expect_equal(dim(mexp_res@metrics_qc), c(29, 56))
+  expect_equal(dim(mexp_res@metrics_qc), c(29, 59))
   expect_false("norm_intensity_cv_spl" %in% colnames(mexp_res@metrics_qc))
   expect_false("conc_cv_spl" %in% colnames(mexp_res@metrics_qc))
 })
@@ -289,6 +296,27 @@ test_that("calc_qc_metrics no method data works", {
   #mexp_temp@annot_responsecurves <- mexp_temp@annot_responsecurves[0,]
   mexp_res <- calc_qc_metrics(mexp_temp, use_batch_medians = TRUE)
   expect_true(all(is.na(mexp_res@metrics_qc$precursor_mz)))
+  expect_type(mexp_res@metrics_qc$precursor_mz, "double")
+})
+
+test_that("calc_qc_metrics warns on inconsistent method values, ignores NA", {
+  mexp_temp <- mexp
+  ids <- unique(mexp_temp@dataset_orig$feature_id)[1:2]
+  i <- which(mexp_temp@dataset_orig$feature_id == ids[1])[1]
+  j <- which(mexp_temp@dataset_orig$feature_id == ids[2])[1]
+  mz_ok <- mexp_temp@dataset_orig$method_precursor_mz[j]
+  mexp_temp@dataset_orig$method_product_mz[i] <-
+    mexp_temp@dataset_orig$method_product_mz[i] + 1
+  mexp_temp@dataset_orig$method_precursor_mz[j] <- NA
+
+  expect_warning(
+    mexp_res <- calc_qc_metrics(mexp_temp, use_batch_medians = FALSE),
+    "differ between analyses"
+  )
+  m <- mexp_res@metrics_qc
+  expect_true(is.na(m$product_mz[m$feature_id == ids[1]]))
+  expect_equal(m$precursor_mz[m$feature_id == ids[2]], mz_ok)
+  expect_equal(nrow(m), 29)
 })
 
 test_that("calc_qc_metrics batch-wise raise error correctly when data missing ", {
@@ -434,6 +462,20 @@ test_that("calc_qc_metrics handles missing/missmatching info for response curve 
   )
   expect_s4_class(mexp_resp, "MRMhubExperiment")
   expect_true("r2_rqc_B" %in% names(mexp_resp@metrics_qc))
+})
+
+test_that("filter_features_qc adds no rows for metadata-only features", {
+  mexp_temp <- mexp
+  extra <- mexp_temp@annot_features[1, ]
+  extra$feature_id <- "Metadata only"
+  mexp_temp@annot_features <- dplyr::bind_rows(mexp_temp@annot_features, extra)
+  mexp_temp <- calc_qc_metrics(mexp_temp, use_batch_medians = FALSE)
+  mexp_res <- suppressMessages(
+    filter_features_qc(mexp_temp, include_qualifier = TRUE, include_istd = TRUE)
+  )
+  expect_false("Metadata only" %in% mexp_res@dataset_filtered$feature_id)
+  expect_false(anyNA(mexp_res@dataset_filtered$analysis_id))
+  expect_equal(nrow(mexp_res@dataset_filtered), nrow(mexp_res@dataset))
 })
 
 test_that("filter_features_qc works with istd and qualifier subsetting", {
@@ -790,10 +832,10 @@ test_that("an invalid response.curves.summary is rejected for one curve too", {
 })
 
 
-# Regression: a min-intensity (LOD) filter enabled on a clear_existing = FALSE
+# Regression: a min-intensity filter enabled on a clear_existing = FALSE
 # re-run, when it was not enabled in the previous run, used to be silently
 # discarded (the previous, disabled state was restored). It must now apply.
-test_that("LOD filter applies on clear_existing = FALSE re-run (regression)", {
+test_that("Min-intensity filter applies on clear_existing = FALSE re-run (regression)", {
   thr <- 5e5
   fresh <- filter_features_qc(
     mexp_proc,
@@ -816,14 +858,220 @@ test_that("LOD filter applies on clear_existing = FALSE re-run (regression)", {
     min.intensity.median.spl = thr
   )
 
-  # the LOD filter must fail some features in a fresh run ...
-  expect_gt(sum(!fresh@metrics_qc$pass_lod, na.rm = TRUE), 0)
+  # the min-intensity filter must fail some features in a fresh run ...
+  expect_gt(sum(!fresh@metrics_qc$pass_minint, na.rm = TRUE), 0)
   # ... and the reconciled re-run must apply it identically (not revert it)
-  expect_true(all(reconciled@metrics_qc$filter_lod))
+  expect_true(all(reconciled@metrics_qc$filter_minint))
   expect_equal(
-    sort(reconciled@metrics_qc$pass_lod),
-    sort(fresh@metrics_qc$pass_lod)
+    sort(reconciled@metrics_qc$pass_minint),
+    sort(fresh@metrics_qc$pass_minint)
   )
+})
+
+
+test_that("ISTDs get no S/B verdict when no S/B criterion is set", {
+  mexp_res <- filter_features_qc(
+    mexp_proc,
+    include_qualifier = FALSE,
+    include_istd = TRUE,
+    max.cv.conc.bqc = 20
+  )
+  expect_equal(unique(mexp_res@metrics_qc$pass_sb), NA)
+})
+
+
+test_that("a feature without response-curve results fails linearity, ISTDs excepted", {
+  m <- mexp_proc@metrics_qc
+  ids <- c(m$feature_id[!m$is_istd][1], m$feature_id[m$is_istd][1])
+  mexp_na <- mexp_proc
+  mexp_na@metrics_qc <- m |>
+    dplyr::mutate(dplyr::across(
+      dplyr::contains("_rqc_"),
+      \(x) dplyr::if_else(.data$feature_id %in% ids, NA, x)
+    ))
+
+  expect_message(
+    mexp_res <- filter_features_qc(
+      mexp_na,
+      include_qualifier = FALSE,
+      include_istd = TRUE,
+      response.curves.selection = 1,
+      min.rsquare.response = 0.5
+    ),
+    ids[1],
+    fixed = TRUE
+  )
+  pass <- rlang::set_names(
+    mexp_res@metrics_qc$pass_linearity,
+    mexp_res@metrics_qc$feature_id
+  )
+  expect_identical(pass[[ids[1]]], FALSE)
+  expect_identical(pass[[ids[2]]], NA)
+})
+
+
+test_that("chained filter steps accumulate CV, linearity and S/B criteria", {
+  step1 <- filter_features_qc(
+    mexp,
+    max.cv.conc.bqc = 20,
+    include_qualifier = FALSE,
+    include_istd = FALSE
+  )
+  step2 <- filter_features_qc(
+    step1,
+    clear_existing = FALSE,
+    include_qualifier = FALSE,
+    include_istd = FALSE,
+    response.curves.selection = 1,
+    min.rsquare.response = 0.95
+  )
+  step3 <- filter_features_qc(
+    step2,
+    clear_existing = FALSE,
+    include_qualifier = FALSE,
+    include_istd = FALSE,
+    min.signalblank.median.spl.pblk = 10
+  )
+
+  m <- step3@metrics_qc
+  expect_equal(unique(m$filter_cva), TRUE)
+  expect_equal(unique(m$filter_linearity), TRUE)
+  expect_equal(unique(m$filter_sb), TRUE)
+  expect_equal(m$pass_cva, step1@metrics_qc$pass_cva)
+  expect_equal(m$pass_linearity, step2@metrics_qc$pass_linearity)
+  expect_lt(sum(m$all_filter_pass), sum(step1@metrics_qc$all_filter_pass))
+})
+
+
+test_that("filter_features_qc keeps the CV settings of stored metrics unless asked", {
+  robust <- calc_qc_metrics(mexp, use_robust_cv = TRUE)
+  mexp_res <- filter_features_qc(
+    robust,
+    max.cv.conc.bqc = 20,
+    include_qualifier = FALSE,
+    include_istd = FALSE
+  )
+  expect_equal(mexp_res@metrics_qc$conc_cv_bqc, robust@metrics_qc$conc_cv_bqc)
+
+  expect_message(
+    mexp_res <- filter_features_qc(
+      mexp_proc,
+      use_robust_cv = TRUE,
+      include_qualifier = FALSE,
+      include_istd = FALSE,
+      max.cv.conc.bqc = 20
+    ),
+    "recalculated"
+  )
+  expect_equal(mexp_res@metrics_qc$conc_cv_bqc, robust@metrics_qc$conc_cv_bqc)
+})
+
+
+test_that("calc_qc_metrics leaves the feature classes unchanged", {
+  mexp_res <- calc_qc_metrics(mexp)
+  expect_equal(mexp_res@dataset, mexp@dataset)
+})
+
+
+test_that("S/B treats an undetected blank as zero and passes the feature", {
+  ids <- mexp_proc@metrics_qc |>
+    dplyr::filter(!.data$is_istd) |>
+    dplyr::pull(.data$feature_id)
+  pblk_ids <- mexp@dataset |>
+    dplyr::filter(.data$qc_type == "PBLK") |>
+    dplyr::distinct(.data$analysis_id) |>
+    dplyr::pull()
+  mexp_blk <- mexp
+  mexp_blk@dataset <- mexp_blk@dataset |>
+    dplyr::mutate(
+      feature_intensity = dplyr::case_when(
+        # not detected in any PBLK
+        .data$feature_id == ids[1] & .data$qc_type == "PBLK" ~ NA,
+        # detected in only one of the three PBLKs
+        .data$feature_id == ids[2] &
+          .data$analysis_id %in% pblk_ids[-1] ~
+          NA,
+        # blank reported as zero
+        .data$feature_id == ids[3] & .data$qc_type == "PBLK" ~ 0,
+        # not detected in the study samples either
+        .data$feature_id == ids[4] &
+          .data$qc_type %in% c("PBLK", "SPL") ~
+          NA,
+        .default = .data$feature_intensity
+      )
+    )
+  mexp_blk <- calc_qc_metrics(mexp_blk)
+  sb <- rlang::set_names(
+    mexp_blk@metrics_qc$sb_ratio_pblk,
+    mexp_blk@metrics_qc$feature_id
+  )
+  expect_equal(unname(sb[ids[1:3]]), rep(Inf, 3))
+  expect_identical(sb[[ids[4]]], NA_real_)
+
+  mexp_res <- filter_features_qc(
+    mexp_blk,
+    include_qualifier = FALSE,
+    include_istd = FALSE,
+    min.signalblank.median.spl.pblk = 10
+  )
+  pass <- rlang::set_names(
+    mexp_res@metrics_qc$pass_sb,
+    mexp_res@metrics_qc$feature_id
+  )
+  expect_equal(unname(pass[ids[1:4]]), c(TRUE, TRUE, TRUE, FALSE))
+})
+
+
+test_that("an S/B criterion for a blank type absent from the data aborts", {
+  ublk_ids <- mexp@annot_analyses$analysis_id[
+    mexp@annot_analyses$qc_type == "UBLK"
+  ]
+  mexp_noublk <- exclude_analyses(mexp, ublk_ids, clear_existing = TRUE)
+  expect_error(
+    filter_features_qc(
+      mexp_noublk,
+      include_qualifier = FALSE,
+      include_istd = FALSE,
+      min.signalblank.median.spl.ublk = 10
+    ),
+    "No UBLK analyses"
+  )
+})
+
+
+test_that("D-ratios need 3 replicates and a non-zero spread", {
+  ids <- mexp_proc@metrics_qc |>
+    dplyr::filter(!.data$is_istd) |>
+    dplyr::pull(.data$feature_id)
+  bqc_ids <- mexp@dataset |>
+    dplyr::filter(.data$qc_type == "BQC") |>
+    dplyr::distinct(.data$analysis_id) |>
+    dplyr::pull()
+  mexp_dr <- mexp
+  mexp_dr@dataset <- mexp_dr@dataset |>
+    dplyr::mutate(
+      feature_conc = dplyr::case_when(
+        # only two BQC replicates
+        .data$feature_id == ids[1] & .data$analysis_id %in% bqc_ids[-(1:2)] ~
+          NA,
+        # identical BQC values: zero spread
+        .data$feature_id == ids[2] & .data$qc_type == "BQC" ~ 1,
+        .default = .data$feature_conc
+      ),
+      feature_intensity = dplyr::if_else(
+        .data$feature_id == ids[1] & .data$analysis_id %in% bqc_ids[-(1:2)],
+        NA,
+        .data$feature_intensity
+      )
+    )
+  expect_message(
+    mexp_dr <- calc_qc_metrics(mexp_dr),
+    "D-ratio not computed"
+  )
+  m <- mexp_dr@metrics_qc |> dplyr::filter(.data$feature_id %in% ids[1:3])
+  expect_equal(m$n_bqc, c(2, length(bqc_ids), length(bqc_ids)))
+  expect_equal(is.na(m$conc_dratio_sd_bqc), c(TRUE, TRUE, FALSE))
+  expect_equal(is.na(m$conc_dratio_mad_bqc), c(TRUE, TRUE, FALSE))
 })
 
 
@@ -1492,4 +1740,128 @@ test_that("calc_qc_metrics handles empty / zero-row inputs without crashing", {
     mexp_res <- suppressMessages(calc_qc_metrics(mexp_zero))
   )
   expect_s4_class(mexp_res, "MRMhubExperiment")
+})
+
+test_that("blank analyses without a row for a feature count as zero", {
+  id <- mexp_proc@metrics_qc |>
+    dplyr::filter(!.data$is_istd, .data$in_data) |>
+    dplyr::pull(.data$feature_id) |>
+    dplyr::nth(5)
+  pblk_ids <- mexp@dataset |>
+    dplyr::filter(.data$qc_type == "PBLK") |>
+    dplyr::distinct(.data$analysis_id) |>
+    dplyr::pull()
+  mexp_blk <- mexp
+  mexp_blk@dataset <- mexp_blk@dataset |>
+    dplyr::filter(
+      !(.data$feature_id == id & .data$analysis_id %in% pblk_ids[-1])
+    )
+  mexp_blk <- calc_qc_metrics(mexp_blk)
+  m <- mexp_blk@metrics_qc[mexp_blk@metrics_qc$feature_id == id, ]
+  expect_equal(m$intensity_median_pblk, 0)
+  expect_equal(m$sb_ratio_pblk, Inf)
+})
+
+test_that("batch-median S/B is the plain median over batches", {
+  id <- mexp_proc@metrics_qc |>
+    dplyr::filter(!.data$is_istd, .data$in_data) |>
+    dplyr::pull(.data$feature_id) |>
+    dplyr::nth(5)
+  pblk <- mexp@dataset |>
+    dplyr::filter(.data$qc_type == "PBLK") |>
+    dplyr::distinct(.data$analysis_id, .data$batch_id)
+  expect_equal(dplyr::n_distinct(pblk$batch_id), 2)
+  mexp_blk <- mexp
+  mexp_blk@dataset <- mexp_blk@dataset |>
+    dplyr::mutate(
+      feature_intensity = dplyr::if_else(
+        .data$feature_id == id &
+          .data$analysis_id %in%
+            pblk$analysis_id[
+              pblk$batch_id == pblk$batch_id[1]
+            ],
+        NA,
+        .data$feature_intensity
+      )
+    )
+  mexp_blk <- calc_qc_metrics(mexp_blk, use_batch_medians = TRUE)
+  sb <- mexp_blk@metrics_qc$sb_ratio_pblk[mexp_blk@metrics_qc$feature_id == id]
+  # Undetected in the blank of one of two batches: median of (finite, Inf)
+  expect_equal(sb, Inf)
+})
+
+test_that("missing response-curve results are not reported for filtered-out features", {
+  m <- mexp_proc@metrics_qc
+  ids <- m$feature_id[!m$is_istd][1:3]
+  mexp_na <- mexp_proc
+  mexp_na@metrics_qc <- m |>
+    dplyr::mutate(
+      dplyr::across(
+        dplyr::contains("_rqc_"),
+        \(x) dplyr::if_else(.data$feature_id %in% ids, NA, x)
+      ),
+      is_quantifier = dplyr::if_else(
+        .data$feature_id == ids[1],
+        FALSE,
+        .data$is_quantifier
+      ),
+      in_data = .data$in_data & .data$feature_id != ids[2]
+    )
+  msgs <- testthat::capture_messages(
+    filter_features_qc(
+      mexp_na,
+      include_qualifier = FALSE,
+      include_istd = TRUE,
+      response.curves.selection = 1,
+      min.rsquare.response = 0.5
+    )
+  )
+  lin_msg <- paste(
+    msgs[grepl("without the response-curve results", msgs)],
+    collapse = ""
+  )
+  expect_false(grepl(ids[1], lin_msg, fixed = TRUE))
+  expect_false(grepl(ids[2], lin_msg, fixed = TRUE))
+  expect_true(grepl(ids[3], lin_msg, fixed = TRUE))
+})
+
+test_that("qc_stat_exprs summarises any QC type, including new or absent ones", {
+  d <- mexp@dataset
+  ex <- qc_stat_exprs(
+    "intensity_median",
+    "feature_intensity",
+    c("SPL", "HQC", "EQA"),
+    median,
+    na.rm = TRUE
+  )
+  expect_named(
+    ex,
+    c("intensity_median_spl", "intensity_median_hqc", "intensity_median_eqa")
+  )
+
+  d$qc_type[d$qc_type == "TQC"] <- "HQC" # stand-in for a new QC type
+  res <- dplyr::summarise(d, .by = "feature_id", !!!ex)
+  ref <- d |>
+    dplyr::filter(.data$qc_type == "HQC") |>
+    dplyr::summarise(
+      .by = "feature_id",
+      m = median(.data$feature_intensity, na.rm = TRUE)
+    )
+  expect_equal(
+    res$intensity_median_hqc[match(ref$feature_id, res$feature_id)],
+    ref$m
+  )
+  expect_true(all(is.na(res$intensity_median_eqa))) # QC type not in the data
+})
+
+test_that("dratio_exprs names the SD then MAD D-ratios per QC type", {
+  expect_named(
+    dratio_exprs("conc", "feature_conc", c("BQC", "TQC"), 3L),
+    c(
+      "conc_dratio_sd_bqc",
+      "conc_dratio_sd_tqc",
+      "conc_dratio_mad_bqc",
+      "conc_dratio_mad_tqc"
+    )
+  )
 })

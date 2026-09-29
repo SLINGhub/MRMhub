@@ -1,6 +1,8 @@
 mexp <- mrmhub::MRMhubExperiment(title = "")
 
-data_path <- test_path("testdata/mrmhub/FullPanelFewSamples_MRMkit_interror.csv")
+data_path <- test_path(
+  "testdata/mrmhub/FullPanelFewSamples_MRMkit_interror.csv"
+)
 mexp <- import_data_mrmhub(
   data = mexp,
   path = data_path,
@@ -59,4 +61,52 @@ test_that("parse_lipid_feature_names works", {
   expect_false(any(
     c("transition_name", "transition_group_id") %in% colnames(mexp_temp@dataset)
   ))
+})
+
+test_that("set_lipid_class() fills missing classes and keeps the processing", {
+  mexp <- normalize_by_istd(lipidomics_dataset)
+  mexp@annot_features$feature_class[
+    mexp@annot_features$feature_id == "SM 32:1"
+  ] <- NA
+  mexp <- calc_qc_metrics(mexp)
+
+  mexp_res <- set_lipid_class(mexp)
+  cls <- function(tbl, id) unique(tbl$feature_class[tbl$feature_id == id])
+  # only the missing class is filled; defined ones stay
+  expect_equal(cls(mexp_res@annot_features, "SM 32:1"), "SM;O2")
+  expect_equal(cls(mexp_res@annot_features, "SM 34:1"), "SM")
+  expect_equal(cls(mexp_res@dataset, "SM 32:1"), "SM;O2")
+  expect_equal(cls(mexp_res@metrics_qc, "SM 32:1"), "SM;O2")
+  # normalized data and metrics are kept
+  expect_equal(
+    mexp_res@dataset$feature_norm_intensity,
+    mexp@dataset$feature_norm_intensity
+  )
+  expect_true(mexp_res@is_istd_normalized)
+
+  mexp_res <- set_lipid_class(mexp, overwrite = TRUE)
+  expect_equal(cls(mexp_res@annot_features, "SM 34:1"), "SM;O2")
+  expect_equal(cls(mexp_res@annot_features, "PE P-16:0/18:1 [-FA]"), "PE P")
+})
+
+test_that("get_analyte_id brackets isomer suffixes a, b, c, ab and bc", {
+  expect_equal(
+    get_analyte_id(
+      c("PC 34:1 a", "PC 34:1 b", "TG 50:1 c", "PC 34:1 ab", "PC 34:1 bc"),
+      remove_nl_transitions = FALSE
+    ),
+    c(
+      "PC 34:1 (a)",
+      "PC 34:1 (b)",
+      "TG 50:1 (c)",
+      "PC 34:1 (ab)",
+      "PC 34:1 (bc)"
+    )
+  )
+})
+
+test_that("lipid class colour keys use the letter O for oxygen counts", {
+  keys <- names(pkg.env$lipid_class_annotations$lipid_class_map)
+  expect_false(any(grepl(";0", keys, fixed = TRUE)))
+  expect_true("HexCer;O2" %in% keys)
 })

@@ -577,6 +577,132 @@ test_that("plot_calibrationcurves rejects an invalid page_orientation", {
   )
 })
 
+test_that("plot_calibrationcurves draws the solid fit over the calibrated range only", {
+  # A zero calibrator stays in an unweighted fit, but the calibrated range (and
+  # the out-of-range flag) starts at the lowest non-zero calibrator.
+  mexp_zero <- mexp
+  qc <- mexp_zero@annot_qcconcentrations
+  is_zero <- qc$sample_id == "CAL-A" & qc$analyte_id == "Cortisol"
+  mexp_zero@annot_qcconcentrations$concentration[is_zero] <- 0
+  lowest_cal <- min(qc$concentration[qc$analyte_id == "Cortisol" & !is_zero])
+
+  p <- suppressMessages(plot_calibrationcurves(
+    mexp_zero,
+    fit_overwrite = TRUE,
+    fit_model = "linear",
+    fit_weighting = "none",
+    include_qualifier = FALSE,
+    return_plots = TRUE
+  ))
+  is_solid <- vapply(
+    p[[1]]$layers,
+    function(l) identical(rlang::as_label(l$mapping$y), "y_pred_fit"),
+    logical(1)
+  )
+  solid <- p[[1]]$layers[[which(is_solid)]]$data
+  solid <- solid[solid$feature_id == "Cortisol" & !is.na(solid$y_pred_fit), ]
+  expect_gt(nrow(solid), 0)
+  expect_gte(min(solid$concentration), lowest_cal)
+})
+
+test_that("plot_calibrationcurves skips QC concentrations without a measured analysis", {
+  plot <- function(m, ...) {
+    suppressMessages(plot_calibrationcurves(
+      m,
+      fit_overwrite = TRUE,
+      fit_model = "linear",
+      fit_weighting = "1/x",
+      return_plots = TRUE,
+      ...
+    ))
+  }
+  # A feature filter leaves the other analytes' concentrations unmatched.
+  expect_s3_class(plot(mexp, include_feature_filter = "Cortisol")[[1]], "gg")
+
+  # Targets for an unmeasured sample and for a blank sample ID, with a blank-ID
+  # CAL analysis, must neither abort nor add a point.
+  mexp_extra <- mexp
+  mexp_extra@dataset$sample_id[mexp_extra@dataset$analysis_id == "CalA"] <- NA
+  mexp_extra@annot_qcconcentrations <- dplyr::bind_rows(
+    mexp_extra@annot_qcconcentrations,
+    dplyr::tibble(
+      sample_id = c("CAL-Z", NA),
+      analyte_id = "Cortisol",
+      concentration = 50,
+      concentration_unit = "nmol/L",
+      include_in_analysis = TRUE
+    )
+  )
+  p <- plot(mexp_extra)
+  expect_false(any(p[[1]]$data$concentration == 50, na.rm = TRUE))
+})
+
+plotted_fits <- function(p) {
+  is_label <- vapply(
+    p[[1]]$layers,
+    function(l) "label" %in% names(l$mapping),
+    logical(1)
+  )
+  p[[1]]$layers[[which(is_label)[1]]]$data
+}
+
+test_that("plot_calibrationcurves plots the stored calibration when fit_overwrite is omitted", {
+  quant <- suppressMessages(quantify_by_calibration(
+    mexp,
+    fit_overwrite = TRUE,
+    fit_model = "linear",
+    fit_weighting = "none"
+  ))
+  fits <- plotted_fits(suppressMessages(plot_calibrationcurves(
+    quant,
+    return_plots = TRUE
+  )))
+  expect_equal(unique(fits$fit_model), "linear")
+  expect_equal(unique(fits$fit_weighting), "none")
+
+  no_results <- mexp
+  no_results@metrics_calibration <- no_results@metrics_calibration[0, ]
+  expect_error(
+    plot_calibrationcurves(no_results),
+    "fit_overwrite.*calibration results"
+  )
+})
+
+test_that("plot_calibrationcurves warns when the plotted fit differs from the stored one", {
+  # The stored calibration of `mexp` is quadratic, 1/x for all features.
+  suppressMessages(expect_message(
+    plot_calibrationcurves(
+      mexp,
+      fit_overwrite = TRUE,
+      fit_model = "linear",
+      fit_weighting = "none",
+      return_plots = TRUE
+    ),
+    "differs from the stored calibration"
+  ))
+  suppressMessages(expect_no_message(
+    plot_calibrationcurves(
+      mexp,
+      fit_overwrite = TRUE,
+      fit_model = "quadratic",
+      fit_weighting = "1/x",
+      return_plots = TRUE
+    ),
+    message = "differs from the stored calibration"
+  ))
+})
+
+test_that("plot_calibrationcurves accepts the 1/sqrt(x) weighting", {
+  p <- suppressMessages(plot_calibrationcurves(
+    mexp,
+    fit_overwrite = TRUE,
+    fit_model = "linear",
+    fit_weighting = "1/sqrt(x)",
+    return_plots = TRUE
+  ))
+  expect_s3_class(p[[1]], "gg")
+})
+
 # Branch 5: shared pretty-axis helper -> >=3 non-empty labels per facet axis.
 test_that("plot_calibrationcurves axes render >=3 non-empty labels", {
   axis_labels <- function(p, axis) {
@@ -654,4 +780,23 @@ test_that("plot_calibrationcurves() errors writing a PDF into a missing dir when
     )
   )
   expect_false(fs::file_exists(path))
+})
+
+test_that("plot_calibrationcurves draws 2-point calibrations without a CI band", {
+  cal <- unique(mexp@dataset$analysis_id[mexp@dataset$qc_type == "CAL"])
+  m <- suppressMessages(exclude_analyses(
+    mexp,
+    analyses = cal[-(4:5)],
+    clear_existing = TRUE
+  ))
+  m <- suppressMessages(normalize_by_istd(m))
+  p <- suppressMessages(plot_calibrationcurves(
+    data = m,
+    fit_overwrite = TRUE,
+    fit_model = "linear",
+    fit_weighting = "none",
+    return_plots = TRUE
+  ))
+  expect_s3_class(p[[1]], "gg")
+  expect_no_error(ggplot2::ggplot_build(p[[1]]))
 })

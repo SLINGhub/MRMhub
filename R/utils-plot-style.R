@@ -339,8 +339,18 @@ resolve_page_size <- function(
 
   page_units <- rlang::arg_match(page_units, c("mm", "cm", "in", "pt"))
   list(
-    width = convert_to_inches(page_width, page_units, dpi = NA, arg = "page_width"),
-    height = convert_to_inches(page_height, page_units, dpi = NA, arg = "page_height"),
+    width = convert_to_inches(
+      page_width,
+      page_units,
+      dpi = NA,
+      arg = "page_width"
+    ),
+    height = convert_to_inches(
+      page_height,
+      page_units,
+      dpi = NA,
+      arg = "page_height"
+    ),
     paper = "special"
   )
 }
@@ -377,4 +387,217 @@ arrange_qc_type_draw_order <- function(data, within = NULL) {
     order(match(grp, unique(grp)), ord, na.last = TRUE)
   }
   data[idx, , drop = FALSE]
+}
+
+# Page loop of the paged plot_*() functions (response curves, correlations,
+# calibration curves). `page_fun(i)` returns the ggplot of page `i`. Checks
+# `specific_page`, opens the PDF (closed on exit, also on error), draws each
+# page when writing a PDF or not returning plots, and returns the pages.
+render_pages <- function(
+  total_pages,
+  specific_page,
+  page_fun,
+  output_pdf,
+  path,
+  page_size,
+  create_dir,
+  return_plots,
+  show_progress,
+  call = rlang::caller_env()
+) {
+  if (!is.na(specific_page)) {
+    if (specific_page > total_pages) {
+      cli::cli_abort(
+        "Selected page exceeds the total number of pages. Please select a page number between {.strong 1} and {.strong {total_pages}}.",
+        call = call
+      )
+    }
+    page_range <- specific_page
+  } else {
+    page_range <- seq_len(total_pages)
+  }
+
+  if (output_pdf) {
+    if (!grepl("\\.pdf$", path, ignore.case = TRUE)) {
+      path <- paste0(path, ".pdf")
+    }
+    ensure_output_dir(path, create_dir)
+    grDevices::pdf(
+      file = path,
+      onefile = TRUE,
+      paper = page_size$paper,
+      useDingbats = FALSE,
+      width = page_size$width,
+      height = page_size$height
+    )
+    on.exit(grDevices::dev.off(), add = TRUE)
+  }
+
+  # A cli progress bar collapses to one line and stays quiet in non-interactive
+  # (Quarto/knitr) renders.
+  action_text <- if (output_pdf) "Saving plots to pdf" else "Generating plots"
+  n_pages <- length(page_range)
+  page_suffix <- if (n_pages > 1) {
+    glue::glue("{n_pages} pages")
+  } else {
+    glue::glue("{n_pages} page")
+  }
+  if (show_progress) {
+    cli::cli_progress_bar(
+      name = glue::glue("{action_text} ({page_suffix})"),
+      total = n_pages
+    )
+  } else {
+    mh_info(glue::glue("{action_text} ({page_suffix})..."))
+  }
+
+  p_list <- list()
+  for (i in page_range) {
+    p <- page_fun(i)
+    if (output_pdf || !return_plots) {
+      plot(p)
+    }
+    flush.console()
+    if (show_progress) {
+      cli::cli_progress_update()
+    }
+    p_list[[i]] <- p
+  }
+  if (show_progress) {
+    cli::cli_progress_done()
+  }
+  if (output_pdf) {
+    mh_success("Done")
+  }
+
+  if (return_plots) p_list[page_range] else invisible()
+}
+
+# Index-axis positions of the visible analysis orders (`unique_orders`, sorted)
+# for plots with `remove_gaps` / `collapse_excluded`. With `remove_gaps`, each
+# real gap -- orders missing from `all_orders` (the full dataset) between two
+# adjacent visible orders -- widens the axis by a band of 2 % of the analyses
+# (min 3). Returns the positions and the gap-marker table (NULL without gaps).
+gap_axis <- function(unique_orders, all_orders, remove_gaps, gap_scale) {
+  index <- seq_along(unique_orders)
+  if (!remove_gaps) {
+    return(list(index = index, d_gaps = NULL))
+  }
+  # For each gap in the full dataset, the last visible order before it and the
+  # first after it must be adjacent in `unique_orders` for a marker between them
+  all_gap_positions <- which(diff(all_orders) > 1)
+  gap_idx <- integer(0)
+  for (gi in all_gap_positions) {
+    cand_left <- which(unique_orders <= all_orders[gi])
+    pos_left <- if (length(cand_left) > 0) max(cand_left) else 0L
+    cand_right <- which(unique_orders >= all_orders[gi + 1L])
+    pos_right <- if (length(cand_right) > 0) {
+      min(cand_right)
+    } else {
+      length(unique_orders) + 1L
+    }
+    if (
+      pos_left >= 1L &&
+        pos_right <= length(unique_orders) &&
+        pos_right == pos_left + 1L
+    ) {
+      gap_idx <- c(gap_idx, pos_left)
+    }
+  }
+  # Several real gaps between the same visible pair share one band
+  gap_idx <- unique(gap_idx)
+  if (length(gap_idx) == 0) {
+    return(list(index = index, d_gaps = NULL))
+  }
+
+  # Shift each position by one band per gap before it
+  gap_width <- max(3L, round(length(unique_orders) * 0.02 * gap_scale))
+  index <- index + gap_width * findInterval(index - 1L, gap_idx)
+  d_gaps <- dplyr::tibble(
+    gap_x = (index[gap_idx] + index[gap_idx + 1L]) / 2,
+    gap_x_left = index[gap_idx],
+    gap_x_right = index[gap_idx + 1L],
+    gap_label = paste0(
+      unique_orders[gap_idx],
+      " | ",
+      unique_orders[gap_idx + 1L]
+    )
+  )
+  list(index = index, d_gaps = d_gaps)
+}
+
+# Gap marker layers: shaded band, border lines and a label with the orders on
+# either side of the gap
+gap_marker_layers <- function(d_gaps, colour, linewidth, label_size) {
+  list(
+    ggplot2::geom_rect(
+      data = d_gaps,
+      ggplot2::aes(
+        xmin = .data$gap_x_left + 0.5,
+        xmax = .data$gap_x_right - 0.5,
+        ymin = -Inf,
+        ymax = Inf
+      ),
+      inherit.aes = FALSE,
+      fill = colour,
+      color = NA,
+      alpha = 0.08,
+      na.rm = TRUE
+    ),
+    ggplot2::geom_vline(
+      data = d_gaps,
+      ggplot2::aes(xintercept = .data$gap_x_left + 0.5),
+      colour = colour,
+      linewidth = linewidth,
+      na.rm = TRUE
+    ),
+    ggplot2::geom_vline(
+      data = d_gaps,
+      ggplot2::aes(xintercept = .data$gap_x_right - 0.5),
+      colour = colour,
+      linewidth = linewidth,
+      na.rm = TRUE
+    ),
+    ggplot2::geom_label(
+      data = d_gaps,
+      ggplot2::aes(
+        x = .data$gap_x,
+        y = Inf,
+        label = .data$gap_label
+      ),
+      inherit.aes = FALSE,
+      size = label_size,
+      color = colour,
+      fill = "white",
+      linewidth = 0.15,
+      vjust = 1.2,
+      hjust = 0.5,
+      na.rm = TRUE
+    )
+  )
+}
+
+# Index-axis positions of batch boundaries: the first visible analysis at or
+# after each batch start and the last one at or before each batch end
+batches_to_index <- function(d_batches, order_map) {
+  idx <- order_map[c("analysis_order", "analysis_order_index")]
+  d_batches |>
+    dplyr::mutate(
+      mapped_start = purrr::map_dbl(
+        .data$id_batch_start,
+        ~ find_closest(.x, order_map$analysis_order, method = "higher")
+      ),
+      mapped_end = purrr::map_dbl(
+        .data$id_batch_end,
+        ~ find_closest(.x, order_map$analysis_order, method = "lower")
+      )
+    ) |>
+    dplyr::left_join(
+      dplyr::rename(idx, id_batch_start_index = "analysis_order_index"),
+      by = c("mapped_start" = "analysis_order")
+    ) |>
+    dplyr::left_join(
+      dplyr::rename(idx, id_batch_end_index = "analysis_order_index"),
+      by = c("mapped_end" = "analysis_order")
+    )
 }

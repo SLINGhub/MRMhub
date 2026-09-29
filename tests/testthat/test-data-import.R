@@ -1024,7 +1024,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
 
   mexp <- MRMhubExperiment()
   expect_message(
-    mexp <- import_data_csv(
+    mexp <- import_data_csv_wide(
       data = mexp,
       path = path,
       variable_name = "conc",
@@ -1036,7 +1036,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
 
   mexp <- MRMhubExperiment()
   expect_message(
-    mexp <- import_data_csv(
+    mexp <- import_data_csv_wide(
       data = mexp,
       path = path,
       variable_name = "conc",
@@ -1063,7 +1063,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
   mexp <- MRMhubExperiment()
 
   expect_message(
-    mexp <- import_data_csv(
+    mexp <- import_data_csv_wide(
       data = mexp,
       path = path,
       variable_name = "conc",
@@ -1085,7 +1085,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
 
   mexp <- MRMhubExperiment()
   expect_message(
-    mexp <- import_data_csv(
+    mexp <- import_data_csv_wide(
       data = mexp,
       path = path,
       variable_name = "conc",
@@ -1098,7 +1098,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
 
   mexp <- MRMhubExperiment()
   expect_message(
-    mexp <- import_data_csv(
+    mexp <- import_data_csv_wide(
       data = mexp,
       path = test_path("testdata/plain-wide/plain_wide_dataset_no_order.csv"),
       variable_name = "conc",
@@ -1113,7 +1113,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
 
   mexp <- MRMhubExperiment()
   expect_message(
-    mexp <- import_data_csv(
+    mexp <- import_data_csv_wide(
       data = mexp,
       path = test_path("testdata/plain-wide/plain_wide_dataset.csv"),
       variable_name = "conc",
@@ -1133,7 +1133,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
 
   mexp <- MRMhubExperiment()
   expect_error(
-    mexp <- import_data_csv(
+    mexp <- import_data_csv_wide(
       data = mexp,
       path = test_path("testdata/plain-wide/plain_wide_dataset.csv"),
       variable_name = "conc",
@@ -1147,7 +1147,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
 
   mexp <- MRMhubExperiment()
   expect_error(
-    mexp <- import_data_csv(
+    mexp <- import_data_csv_wide(
       data = mexp,
       path = test_path("testdata/plain-wide/plain_wide_dataset.csv"),
       variable_name = "conc",
@@ -1161,7 +1161,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
 
   mexp <- MRMhubExperiment()
   expect_message(
-    mexp <- import_data_csv(
+    mexp <- import_data_csv_wide(
       data = mexp,
       path = test_path("testdata/plain-wide/plain_wide_dataset.csv"),
       variable_name = "conc",
@@ -1174,7 +1174,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
   )
   mexp <- MRMhubExperiment()
   expect_error(
-    mexp <- import_data_csv(
+    mexp <- import_data_csv_wide(
       data = mexp,
       path = test_path(
         "testdata/plain-wide/plain_wide_dataset_duplicate_analysisid.csv"
@@ -1189,7 +1189,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
   )
   mexp <- MRMhubExperiment()
   expect_error(
-    mexp <- import_data_csv(
+    mexp <- import_data_csv_wide(
       data = mexp,
       path = test_path("testdata/plain-wide/plain_wide_dataset_dup_featid.csv"),
       variable_name = "conc",
@@ -1201,7 +1201,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
   )
   mexp <- MRMhubExperiment()
   expect_error(
-    mexp <- import_data_csv(
+    mexp <- import_data_csv_wide(
       data = mexp,
       path = test_path("testdata/plain-wide/plain_wide_dataset_morecol.csv"),
       variable_name = "conc",
@@ -1213,7 +1213,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
   )
   mexp <- MRMhubExperiment()
   expect_error(
-    mexp <- import_data_csv(
+    mexp <- import_data_csv_wide(
       data = mexp,
       path = test_path("testdata/plain-wide/plain_wide_dataset_morecol.csv"),
       variable_name = "conc",
@@ -1225,7 +1225,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
   )
   mexp <- MRMhubExperiment()
   expect_message(
-    mexp <- import_data_csv(
+    mexp <- import_data_csv_wide(
       data = mexp,
       path = test_path("testdata/plain-wide/plain_wide_dataset_morecol.csv"),
       variable_name = "conc",
@@ -1238,7 +1238,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
   )
   mexp <- MRMhubExperiment()
   expect_error(
-    mexp <- import_data_csv(
+    mexp <- import_data_csv_wide(
       data = mexp,
       path = test_path(
         "testdata/plain-wide/plain_wide_dataset_duplicate_orderid.csv"
@@ -1252,7 +1252,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
   )
 
   expect_error(
-    mexp <- import_data_csv(
+    mexp <- import_data_csv_wide(
       data = mexp,
       path = test_path(
         "testdata/plain-wide/plain_wide_dataset_textorderid.csv"
@@ -1269,7 +1269,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
 
   mexp <- MRMhubExperiment()
   expect_message(
-    mexp <- import_data_csv(
+    mexp <- import_data_csv_wide(
       data = mexp,
       path = test_path("testdata/plain-wide/plain_wide_dataset2_22rows.csv"),
       variable_name = "area",
@@ -1295,7 +1295,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
   # CHeck order iD imported and batch id is string
   mexp2 <- MRMhubExperiment()
   expect_message(
-    mexp2 <- import_data_csv(
+    mexp2 <- import_data_csv_wide(
       data = mexp,
       path = test_path(
         "testdata/plain-wide/plain_wide_dataset2_10rows_orderid.csv"
@@ -1340,7 +1340,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
   expect_equal(dim(plot_data[[2]]), c(176, 10))
 
   expect_error(
-    mexp <- import_data_csv(
+    mexp <- import_data_csv_wide(
       data = mexp,
       path = test_path(
         "testdata/plain-wide/plain_wide_dataset2_10rows_orderidtext.csv"
@@ -1354,7 +1354,7 @@ test_that("Imports plain csv file with metadata parsing the numbers to 'analysis
     fixed = TRUE
   )
 
-  mexp <- import_data_csv(
+  mexp <- import_data_csv_wide(
     data = mexp,
     path = test_path(
       "testdata/plain-wide/plain_wide_dataset2_10rows_analysisidnumber.csv"
@@ -1432,6 +1432,44 @@ test_that("import_data_csv_long works", {
   expect_equal(mexp@dataset[[81, "feature_area"]], 3387892.3)
   expect_equal(mexp@dataset[[81, "feature_class"]], NA_character_)
   expect_equal(mexp@dataset[[81, "feature_id"]], "TG 48:1 d7 (ISTD) [SIM]")
+})
+
+test_that("import_data_csv_long imports conc and intensity columns by default", {
+  f <- withr::local_tempfile(fileext = ".csv")
+  writeLines(
+    c(
+      "analysis_id,qc_type,feature_id,feature_conc",
+      "A1,SPL,F1,1.5",
+      "A1,SPL,F2,2.5",
+      "A2,SPL,F1,3.5",
+      "A2,SPL,F2,4.5"
+    ),
+    f
+  )
+  mexp <- suppressMessages(import_data_csv_long(MRMhubExperiment(), path = f))
+  expect_equal(mexp@feature_intensity_var, "feature_conc")
+  expect_true(mexp@is_quantitated)
+  expect_equal(sort(mexp@dataset$feature_conc), c(1.5, 2.5, 3.5, 4.5))
+
+  writeLines(
+    c("analysis_id,feature_id,intensity", "A1,F1,10", "A2,F1,20"),
+    f
+  )
+  mexp <- suppressMessages(import_data_csv_long(MRMhubExperiment(), path = f))
+  expect_equal(mexp@feature_intensity_var, "feature_intensity")
+  expect_false(mexp@is_quantitated)
+})
+
+test_that("import_data_csv_wide with concentrations marks data as quantitated", {
+  f <- withr::local_tempfile(fileext = ".csv")
+  writeLines(c("analysis_id,F1,F2", "A1,1,2", "A2,3,4"), f)
+  mexp <- suppressMessages(import_data_csv_wide(
+    MRMhubExperiment(),
+    path = f,
+    variable_name = "conc"
+  ))
+  expect_equal(mexp@feature_intensity_var, "feature_conc")
+  expect_true(mexp@is_quantitated)
 })
 
 
@@ -1559,6 +1597,15 @@ test_that("import_data_skyline works", {
   expect_equal(mexp@dataset[[81, "feature_area"]], 151509)
   expect_equal(mexp@dataset[[81, "feature_class"]], "Steroids")
   expect_equal(mexp@dataset[[81, "feature_id"]], "Aldosterone D4_365_319")
+})
+
+test_that("folder import picks only files ending in the expected extension", {
+  dir <- withr::local_tempdir()
+  fs::file_copy(test_path("testdata/mrmhub/MRMhub_demo.tsv"), dir)
+  writeLines("not a result file", file.path(dir, "old.tsv.bak"))
+  expect_no_error(suppressMessages(
+    import_data_mrmhub(MRMhubExperiment(), path = dir, import_metadata = FALSE)
+  ))
 })
 
 test_that("importing from a folder with no matching files gives a clear error", {

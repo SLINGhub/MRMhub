@@ -22,11 +22,17 @@ A \code{ggplot} object showing the feature QC filtering summary with or without 
 }
 \description{
 This function generates a summary of the feature QC filtering process, visualizing the number of features that passed or failed the various QC criteria.
-It includes a Venn diagram showing the features excluded due to different filtering criteria such as signal-to-blank ratios, CV thresholds, and linearity.
-The criteria are applied hierarchically, meaning a feature must pass all lower-tier filters before being considered for failure on higher-tier filters. See \code{\link[=plot_qc_summary_byclass]{plot_qc_summary_byclass()}} for more information.
+The bars apply the criteria hierarchically: a feature is counted once, under
+the first criterion it fails, and features retained via \code{features.to.keep}
+despite failing are shown as "QC failed, kept". See \code{\link[=plot_qc_summary_byclass]{plot_qc_summary_byclass()}}
+for more information.
+The optional Venn diagram shows, for the features passing the missing-value
+and minimum-intensity criteria, the overlap of features failing the
+signal-to-blank, CV and linearity criteria; unlike the bars, it is not
+hierarchical.
 }
 \details{
-The QC filtering process follows a hierarchical structure, where features are first evaluated against lower-level filters such as signal-to-blank ratios and limit of detection (LOD).
+The QC filtering process follows a hierarchical structure, where features are first evaluated against lower-level filters such as signal-to-blank ratios and minimum intensity.
 Only features that pass these basic criteria are then subjected to higher-level filters like the coefficient of variation (CV) or linear regression results.
 A feature will only fail a higher-level filter (such as \code{CV} or \verb{R²}) if it has passed all previous lower-level filters.
 This ensures that features are evaluated progressively, starting from fundamental quality checks up to more stringent filtering criteria.

@@ -18,7 +18,20 @@ get_feature_correlations <- function(tbl, cor_min_neg, cor_min) {
     dplyr::select(where(is.numeric)) |>
     as.matrix()
 
-  stats::cor(mat, method = "pearson") |>
+  # Pairwise-complete correlations, only for pairs with values in at least half
+  # of the analyses
+  n_with_na <- sum(colSums(is.na(mat)) > 0)
+  if (n_with_na > 0) {
+    mh_info(
+      "{n_with_na} feature{?s} {?has/have} missing values; correlations use the analyses where both features have values (at least 50% of all)."
+    )
+  }
+  r <- suppressWarnings(
+    stats::cor(mat, method = "pearson", use = "pairwise.complete.obs")
+  )
+  r[crossprod(!is.na(mat)) < nrow(mat) / 2] <- NA
+
+  r |>
     as.data.frame() |>
     tibble::rownames_to_column("var1") |>
     tidyr::pivot_longer(
@@ -37,6 +50,9 @@ get_feature_correlations <- function(tbl, cor_min_neg, cor_min) {
 #' Each pair is displayed in a separate facet with its correlation coefficient.
 #'
 #' This plot can be used to visually inspect highly correlated features, that may represent duplicate identifications or represent isomers.
+#'
+#' Correlations are Pearson's r over the analyses where both features have
+#' values; pairs sharing values in fewer than half of the analyses are skipped.
 #'
 #' @template data_mexp
 #' @param variable A character string indicating the signal variable to plot.
@@ -59,9 +75,9 @@ get_feature_correlations <- function(tbl, cor_min_neg, cor_min) {
 #' @param filter_data A logical value indicating whether to use all data
 #' (default) or only QC-filtered data (filtered via [filter_features_qc()]).
 #' @param include_qualifier A logical value indicating whether to include
-#' qualifier features. Default is `TRUE`.
+#' qualifier features. Default is `FALSE`.
 #' @param include_istd A logical value indicating whether to include internal
-#' standard (ISTD) features. Default is `TRUE`.
+#' standard (ISTD) features. Default is `FALSE`.
 #' @template feature_filters
 #' @param output_pdf If `TRUE`, saves the generated plots as a PDF
 #'   file. When `FALSE`, plots are directly plotted.
@@ -135,6 +151,11 @@ plot_feature_correlations <- function(
   show_progress = TRUE
 ) {
   check_data(data)
+  if (output_pdf && (is.na(path) || path == "")) {
+    cli::cli_abort(
+      "The argument {.strong `path`} must be defined when {.strong output_pdf} is {.strong TRUE}."
+    )
+  }
   font_base_size <- resolve_plot_opt(font_base_size, "font_base_size", 8)
   point_size <- resolve_plot_opt(point_size, "point_size", 1)
   rlang::arg_match(page_orientation, c("LANDSCAPE", "PORTRAIT"))
@@ -262,111 +283,43 @@ plot_feature_correlations <- function(
     d_plot$qc_type,
     levels = pkg.env$qc_type_annotation$qc_type_levels
   ))
-  d_plot <- arrange_qc_type_draw_order(d_plot)
-
-  # Prepare PDF output
-  if (output_pdf && !is.na(path)) {
-    # nocov start
-    path <- ifelse(
-      stringr::str_detect(path, ".pdf"),
-      path,
-      paste0(path, ".pdf")
-    )
-    ensure_output_dir(path, create_dir)
-    pdf(
-      file = path,
-      onefile = TRUE,
-      paper = page_size$paper,
-      useDingbats = FALSE,
-      width = page_size$width,
-      height = page_size$height
-    )
-  } # nocov end
-
-  # Determine the range of pages to generate
-  if (!is.na(specific_page)) {
-    total_pages <- ceiling(
-      n_distinct(d_plot$pair) /
-        (cols_page * rows_page)
-    )
-    if (specific_page > total_pages) {
-      cli::cli_abort(
-        "Selected page exceeds the total number of pages. Please select a page number between {.strong 1} and {.strong {total_pages}}."
+  if (log_scale) {
+    n_nonpos <- sum(d_plot$x <= 0 | d_plot$y <= 0, na.rm = TRUE)
+    if (n_nonpos > 0) {
+      mh_info(
+        "{n_nonpos} point{?s} with non-positive values {?is/are} not shown on the log scale but {?is/are} included in the correlations."
       )
     }
-    page_range <- specific_page
-  } else {
-    page_range <- 1:ceiling(
-      n_distinct(d_plot$pair) /
-        (cols_page * rows_page)
-    )
   }
+  d_plot <- arrange_qc_type_draw_order(d_plot)
 
-  # Action text for progress output
-  action_text <- if (output_pdf) "Saving plots to pdf" else "Generating plots"
-  page_suffix <- if (max(page_range) > 1) {
-    glue::glue("{max(page_range)} pages")
-  } else {
-    glue::glue("{max(page_range)} page")
-  }
-  # Progress feedback: a cli progress bar collapses to a single line and stays
-  # quiet in non-interactive (Quarto/knitr) renders, unlike txtProgressBar.
-  if (show_progress) {
-    cli::cli_progress_bar(
-      name = glue::glue("{action_text} ({page_suffix})"),
-      total = max(page_range)
-    )
-  } else {
-    mh_info(glue::glue("{action_text} ({page_suffix})..."))
-  }
-
-  p_list <- list() # List to store plots for each page
-  for (i in page_range) {
-    p <- plot_feature_correlations_page(
-      d_plot = d_plot,
-      output_pdf = output_pdf,
-      path = path,
-      rows_page = rows_page,
-      cols_page = cols_page,
-      specific_page = i,
-      sort_by_corr = sort_by_corr,
-      log_scale = log_scale,
-      point_size = point_size,
-      point_alpha = point_alpha,
-      point_stroke = point_stroke,
-      line_width = line_width,
-      line_color = line_color,
-      line_alpha = line_alpha,
-      font_base_size = font_base_size
-    )
-    if (!return_plots) {
-      plot(p)
-    }
-    dev.flush() # Flush the plot
-    flush.console() # Ensure plot is rendered
-    if (show_progress) {
-      cli::cli_progress_update(set = i)
-    }
-    p_list[[i]] <- p
-  }
-
-  if (output_pdf) {
-    dev.off()
-  } # Close PDF device
-  if (show_progress) {
-    cli::cli_progress_done()
-  }
-  if (output_pdf) {
-    mh_success("Done")
-  } # Completion message
-
-  # Return plot list or invisible
-
-  if (return_plots) {
-    return(p_list[page_range])
-  } else {
-    invisible()
-  }
+  render_pages(
+    total_pages = ceiling(n_distinct(d_plot$pair) / (cols_page * rows_page)),
+    specific_page = specific_page,
+    page_fun = function(i) {
+      plot_feature_correlations_page(
+        d_plot = d_plot,
+        rows_page = rows_page,
+        cols_page = cols_page,
+        specific_page = i,
+        sort_by_corr = sort_by_corr,
+        log_scale = log_scale,
+        point_size = point_size,
+        point_alpha = point_alpha,
+        point_stroke = point_stroke,
+        line_width = line_width,
+        line_color = line_color,
+        line_alpha = line_alpha,
+        font_base_size = font_base_size
+      )
+    },
+    output_pdf = output_pdf,
+    path = path,
+    page_size = page_size,
+    create_dir = create_dir,
+    return_plots = return_plots,
+    show_progress = show_progress
+  )
 }
 
 
@@ -383,7 +336,7 @@ plot_feature_correlations_page <- function(d_plot, ...) {
 
   if (args$sort_by_corr) {
     d_plot <- d_plot |>
-      arrange(desc(.data$abs_cor), .data$analysis_id) |>
+      arrange(desc(.data$abs_cor), .data$pair, .data$analysis_id) |>
       dplyr::mutate(pair = factor(.data$pair, levels = unique(.data$pair)))
   } else {
     d_plot <- d_plot |>
@@ -393,8 +346,10 @@ plot_feature_correlations_page <- function(d_plot, ...) {
 
   d_plot <- d_plot |>
     slice(row_start:row_end) |>
-    mutate(y = ifelse(.data$y <= 0, NA_real_, .data$y)) |>
     tidyr::drop_na("x", "y")
+  if (args$log_scale) {
+    d_plot <- d_plot |> filter(.data$x > 0, .data$y > 0)
+  }
 
   # Create plot
   p <- d_plot |>
@@ -430,12 +385,12 @@ plot_feature_correlations_page <- function(d_plot, ...) {
     p <- p +
       scale_pretty_x(
         n = n_breaks,
-        limits = function(x) c(0, max(x)),
+        limits = function(x) c(min(0, x[1]), x[2]),
         expand = axis_expand
       ) +
       scale_pretty_y(
         n = n_breaks,
-        limits = function(x) c(0, max(x)),
+        limits = function(x) c(min(0, x[1]), x[2]),
         expand = axis_expand
       )
   }
@@ -487,7 +442,6 @@ plot_feature_correlations_page <- function(d_plot, ...) {
         fill = "#00283d"
       ),
       strip.text.x = ggplot2::element_text(color = "white"),
-      #strip.switch.pad.wrap = ggplot2::unit(1, "mm"),
       panel.border = element_rect(linewidth = 0.5, color = "grey40"),
       legend.position = "right"
     ) +

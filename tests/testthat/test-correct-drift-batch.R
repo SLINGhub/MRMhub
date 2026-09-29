@@ -1088,7 +1088,7 @@ test_that("fits resulting in invalid values are handeled", {
       use_original_if_fail = FALSE,
       ignore_istd = TRUE
     ),
-    "4 features have invalid values after smoothing. NA will be be returned ",
+    "4 features have invalid values after smoothing. NA is returned for all values of these features. Set `use_original_if_fail = TRUE` to keep the original values.",
     fixed = TRUE
   )
 
@@ -1124,7 +1124,9 @@ test_that("fits resulting in invalid values are handeled", {
     fixed = TRUE
   )
 
-  expect_message(
+  # The upper bound (~6.985) sits on a rounding boundary, so its printed value
+  # flips with numeric noise across platforms; compare with a tolerance.
+  msgs <- capture_messages(
     mexp_drift1 <- correct_drift_cubicspline(
       mexp,
       cv = FALSE,
@@ -1137,10 +1139,13 @@ test_that("fits resulting in invalid values are handeled", {
       recalc_trend_after = TRUE,
       use_original_if_fail = TRUE,
       ignore_istd = TRUE
-    ),
-    "-0.31% to 6.99%",
-    fixed = TRUE
+    )
   )
+  cv_range <- stringr::str_match(
+    paste(msgs, collapse = " "),
+    "range: (-?[0-9.]+)% to (-?[0-9.]+)%"
+  )[, 2:3]
+  expect_lt(max(abs(as.numeric(cv_range) - c(-0.31, 6.99))), 0.02)
 
   expect_message(
     mexp_drift1 <- correct_drift_cubicspline(
@@ -2038,25 +2043,6 @@ test_that("correct_batch_centering handels other errors", {
 })
 
 test_that("fun_batch.correction handles non log setting when batch scaling", {
-  expect_error(
-    fun_batch.correction(
-      tibble(
-        x = 1:10,
-        y = 1:10,
-        batch_id = 1,
-        y_fit_after = 1:10,
-        qc_type = "BQC"
-      ),
-      log_transform_internal = FALSE,
-      ref_qc_types = "BQC",
-      correct_scale = TRUE
-    ),
-    "Currently data must be log-transformed for batch scaling"
-  )
-})
-
-
-test_that("fun_batch.correction handles non log setting when batch scaling", {
   expect_message(
     mexp_batch1 <- correct_batch_centering(
       mexp,
@@ -2563,4 +2549,120 @@ test_that("model-based batch methods abort on a single batch", {
     "only one batch",
     fixed = TRUE
   )
+})
+
+test_that("ComBat and SERRF ignore blanks, RQCs and other non-sample analyses", {
+  skip_if_not_installed("sva")
+  skip_if_not_installed("ranger")
+  ana <- dplyr::distinct(mexp@dataset, .data$analysis_id, .data$qc_type)
+  other <- ana$analysis_id[
+    !ana$qc_type %in%
+      mrmhub:::pkg.env$qc_type_annotation$qc_type_levels_nonblank
+  ]
+  mexp_sub <- mexp_raw |>
+    exclude_analyses(analyses = other, clear_existing = FALSE) |>
+    normalize_by_istd() |>
+    quantify_by_istd() |>
+    suppressMessages()
+  spl <- function(m) {
+    m@dataset |>
+      dplyr::filter(.data$qc_type == "SPL") |>
+      dplyr::arrange(.data$analysis_id, .data$feature_id) |>
+      dplyr::pull("feature_conc")
+  }
+  run <- function(f, m, ...) {
+    suppressWarnings(suppressMessages(
+      f(m, variable = "conc", ref_qc_types = "BQC", ...)
+    ))
+  }
+  combat_all <- run(correct_batch_combat, mexp)
+  expect_equal(spl(combat_all), spl(run(correct_batch_combat, mexp_sub)))
+  expect_equal(
+    spl(run(correct_batch_serrf, mexp, num_trees = 50, show_progress = FALSE)),
+    spl(run(
+      correct_batch_serrf,
+      mexp_sub,
+      num_trees = 50,
+      show_progress = FALSE
+    ))
+  )
+  d_other <- combat_all@dataset |>
+    dplyr::filter(.data$analysis_id %in% other)
+  expect_equal(
+    d_other$feature_conc,
+    mexp@dataset$feature_conc[mexp@dataset$analysis_id %in% other]
+  )
+  expect_equal(d_other$feature_conc_before, d_other$feature_conc)
+})
+
+test_that("ComBat matches covariates to analyses by row name", {
+  skip_if_not_installed("sva")
+  ids <- unique(mexp@dataset$analysis_id)
+  qct <- mexp@dataset$qc_type[match(ids, mexp@dataset$analysis_id)]
+  covs <- model.matrix(~spl, data.frame(spl = qct == "SPL", row.names = ids))
+  run <- function(cv) {
+    suppressWarnings(suppressMessages(correct_batch_combat(
+      mexp,
+      variable = "conc",
+      ref_qc_types = "BQC",
+      covariates = cv
+    )))
+  }
+  expect_equal(
+    run(covs)@dataset$feature_conc,
+    run(covs[rev(ids), ])@dataset$feature_conc
+  )
+  expect_error(run(unname(covs)), "row names")
+})
+
+test_that("replacing a drift correction keeps other variables' correction state", {
+  m <- suppressMessages(suppressWarnings(
+    correct_drift_loess(mexp_raw, "intensity", "BQC", show_progress = FALSE)
+  ))
+  raw <- m@dataset$feature_intensity_raw
+  m <- suppressMessages(suppressWarnings(normalize_by_istd(m)))
+  for (i in 1:2) {
+    m <- suppressMessages(suppressWarnings(
+      correct_drift_loess(m, "norm_intensity", "BQC", show_progress = FALSE)
+    ))
+  }
+  expect_true(m@var_drift_corrected[["feature_intensity"]])
+  m <- suppressMessages(suppressWarnings(
+    correct_drift_loess(m, "intensity", "BQC", show_progress = FALSE)
+  ))
+  expect_equal(m@dataset$feature_intensity_raw, raw)
+})
+
+test_that("drift correction does not depend on the row order of the dataset", {
+  drift <- function(m) {
+    suppressMessages(correct_drift_gaussiankernel(
+      m,
+      variable = "conc",
+      kernel_size = 10,
+      batch_wise = TRUE,
+      ref_qc_types = "SPL"
+    ))@dataset |>
+      dplyr::arrange(.data$feature_id, .data$analysis_id)
+  }
+  shuffled <- mexp
+  set.seed(1)
+  shuffled@dataset <- shuffled@dataset[sample(nrow(shuffled@dataset)), ]
+  expect_equal(drift(shuffled)$feature_conc, drift(mexp)$feature_conc)
+})
+
+test_that("correct_batch_serrf does not depend on the row order of the dataset", {
+  skip_if_not_installed("ranger")
+  serrf <- function(m) {
+    suppressWarnings(suppressMessages(correct_batch_serrf(
+      m,
+      variable = "conc",
+      ref_qc_types = "BQC",
+      seed = 1L
+    )))@dataset |>
+      dplyr::arrange(.data$feature_id, .data$analysis_id)
+  }
+  shuffled <- mexp
+  set.seed(1)
+  shuffled@dataset <- shuffled@dataset[sample(nrow(shuffled@dataset)), ]
+  expect_equal(serrf(shuffled)$feature_conc, serrf(mexp)$feature_conc)
 })

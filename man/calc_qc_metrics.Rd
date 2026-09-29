@@ -82,15 +82,10 @@ The calculated metrics are stored in the \code{metrics_qc} table of the
 \item \strong{Feature details}:
 Specific feature information extracted from the feature metadata table,
 such as feature class, associated ISTD, quantifier status.
-\item \strong{Feature MS Method Information} (if method variables are available in the analysis data).
-Extracts and summarizes method-related variables for each feature. If multiple
-values exist for the same feature, these will be concatenated into a string.
-The latter would indicate inconsistent analysis conditions.
-\itemize{
-\item \code{precursor_mz}: The m/z value of the precursor ion(s),
-\item \code{product_mz}: The m/z value of the product ion(s), concatenated if multiple values exist for the same feature.
-\item \code{collision_energy}: The collision energy used for fragmentation, concatenated if multiple values exist for the same feature.
-}
+\item \strong{Feature MS method information} (if available in the imported data):
+\code{precursor_mz}, \code{product_mz} and \code{collision_energy} per feature. A value
+that differs between analyses indicates inconsistent acquisition
+conditions; it is set to \code{NA} with a warning naming the features.
 \item \strong{Missing Value Metrics}:
 \itemize{
 \item \code{missing_intensity_prop_spl}: Proportion of missing intensities for the SPL sample type.
@@ -106,11 +101,17 @@ The latter would indicate inconsistent analysis conditions.
 }
 \item \strong{Intensity Metrics}:
 \itemize{
+\item \code{n_bqc}, \code{n_tqc}, \code{n_spl}: Number of analyses with a non-missing intensity
+per QC type, i.e. the replicates behind the \%CV and D-ratio (the median
+of the per-batch counts with \code{use_batch_medians = TRUE}). \%CV and D-ratio
+are \code{NA} below 3 replicates.
 \item \verb{intensity_min_*}: Minimum intensity value for features across different QC sample types such as SPL, TQC, BQC, etc.
 \item \verb{intensity_max_*}: Maximum intensity values across sample types.
 \item \verb{intensity_median_*}: Median intensity for various QC sample types.
 \item \verb{intensity_cv_*}: Coefficient of variation (CV) of intensity values for specific QC types.
 \item \verb{sb_ratio_*}: Signal-to-blank ratios such as the ratio of intensity values for SPL vs PBLK, UBLK, or SBLK.
+Blank medians count a blank analysis without detected signal (a missing
+value or no row for the feature) as zero, giving a ratio of \code{Inf}.
 \item \verb{intensity_q10_*}: The 10th percentile of intensity values for the SPL sample type.
 }
 \item \strong{Normalized Intensity Metrics} (only if \code{include_norm_intensity_stats = TRUE}):

@@ -61,13 +61,6 @@ mh_warn <- function(text, .envir = parent.frame()) {
   cli::cli_alert_warning(mh_paint(text, cli::col_yellow, .envir))
 }
 
-#' @rdname mh_success
-#' @keywords internal
-#' @noRd
-mh_danger <- function(text, .envir = parent.frame()) {
-  cli::cli_alert_danger(mh_paint(text, cli::col_red, .envir))
-}
-
 #' Truncate a reported vector at a settable maximum
 #'
 #' Wraps a vector in [cli::cli_vec()] with a `vec-trunc` style so cli collapses

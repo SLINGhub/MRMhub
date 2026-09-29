@@ -1,12 +1,3 @@
-test_that("some_na works", {
-  expect_true(some_na(c(NA, 1, 2)))
-  expect_false(some_na(c(NA, NA, NA)))
-  expect_false(some_na(c(1, 2, 3)))
-  expect_false(some_na(NA))
-  expect_false(some_na(1))
-  expect_false(some_na(NULL))
-})
-
 test_that("safe_min works", {
   expect_equal(safe_min(c(4, 3, 2, 1)), 1)
   expect_equal(safe_min(c(NA, NA, 3, 2, 1)), NA_real_)
@@ -40,8 +31,8 @@ test_that("check_groupwise_identical_ids works", {
   )
   expect_true(check_groupwise_identical_ids(
     df_identical,
-    group_col = group,
-    id_col = id
+    group_col = "group",
+    id_col = "id"
   ))
 
   df_non_identical <- dplyr::tibble(
@@ -50,8 +41,8 @@ test_that("check_groupwise_identical_ids works", {
   )
   expect_false(check_groupwise_identical_ids(
     df_non_identical,
-    group_col = group,
-    id_col = id
+    group_col = "group",
+    id_col = "id"
   ))
 
   df_missing <- dplyr::tibble(
@@ -60,15 +51,15 @@ test_that("check_groupwise_identical_ids works", {
   )
   expect_false(check_groupwise_identical_ids(
     df_missing,
-    group_col = group,
-    id_col = id
+    group_col = "group",
+    id_col = "id"
   ))
 
   df_single <- dplyr::tibble(group = "A", id = 1)
   expect_true(check_groupwise_identical_ids(
     df_single,
-    group_col = group,
-    id_col = id
+    group_col = "group",
+    id_col = "id"
   ))
 
   df_empty <- dplyr::tibble(
@@ -76,7 +67,7 @@ test_that("check_groupwise_identical_ids works", {
     id = integer(0)
   )
   expect_error(
-    check_groupwise_identical_ids(df_empty, group_col = group, id_col = id),
+    check_groupwise_identical_ids(df_empty, group_col = "group", id_col = "id"),
     "data has no rows"
   )
 })
@@ -214,17 +205,19 @@ test_that("has_any_name works in assertr::verify as it should", {
   expect_equal(dim(res), c(5, 3))
 })
 
-test_that("add_missing_column works", {
-  # Create a sample data frame without the target column
-  dt <- tibble(A = 1:5, B = 6:10)
-
-  result <- add_missing_column(dt, "c", 99, make_lowercase = FALSE)
-  expect_equal(result$c, rep(99, 5))
-
-  result <- add_missing_column(dt, "A", 99, make_lowercase = TRUE)
-  expect_equal(result$a, 1:5)
-  result <- add_missing_column(dt, "A", 99, make_lowercase = FALSE)
-  expect_equal(result$A, 1:5)
+test_that("add_missing_columns adds missing columns and fills all-NA ones", {
+  dt <- tibble(A = 1:5, b = NA, d = c(NA, 2, NA, NA, NA))
+  res <- add_missing_columns(
+    dt,
+    list(c = 99, a = 0L, b = "x", d = 0),
+    replace_all_na = c("b", "d")
+  )
+  expect_equal(names(res), c("A", "b", "d", "c")) # `a` exists as `A`
+  expect_equal(res$c, rep(99, 5))
+  expect_equal(res$A, 1:5)
+  expect_equal(res$b, rep("x", 5)) # all NA: replaced, type follows default
+  expect_equal(res$d, c(NA, 2, NA, NA, NA)) # not all NA: kept
+  expect_equal(nrow(add_missing_columns(dt[0, ], list(c = 99))), 0)
 })
 
 
@@ -242,153 +235,6 @@ test_that("get_conc_unit works as expected", {
   expect_equal(get_conc_unit("mL", "ng"), "ng/mL")
 })
 
-
-# Test: Handling when there are no disconnected rows
-test_that("order_chained_columns_tbl no disconnected rows", {
-  df_no_disconnected <- data.frame(
-    ColA = c("INSPECT", "VERIFY", "NULL", "NEW", "CREATE"),
-    ColB = c("VERIFY", "PUBLISH", "NEW", "CREATE", "INSPECT"),
-    colC = c("1", "11", "111", "1111", "11111"),
-    stringsAsFactors = FALSE
-  )
-  result <- order_chained_columns_tbl(
-    df_no_disconnected,
-    "ColA",
-    "ColB",
-    include_chain_id = TRUE
-  )
-
-  # No disconnected rows, so the result should just be the connected chain
-  expect_equal(nrow(result), 5) # 5 rows should be returned (no disconnected rows)
-  expect_equal(names(result), c("ColA", "ColB", "chain_id", "colC")) # 5 rows should be returned (no disconnected rows)
-})
-
-test_that("order_chained_columns_tbl no disconnected rows", {
-  df_no_disconnected <- data.frame(
-    From = c("INSPECT", "VERIFY", "NULL", "NEW", "CREATE"),
-    To = c("VERIFY", "PUBLISH", "NEW", "CREATE", "INSPECT"),
-    colC = c("1", "11", "111", "1111", "11111"),
-    stringsAsFactors = FALSE
-  )
-  result <- order_chained_columns_tbl(
-    df_no_disconnected,
-    "From",
-    "To",
-    FALSE,
-    "exclude"
-  )
-
-  # No disconnected rows, so the result should just be the connected chain
-  expect_equal(nrow(result), 5) # 5 rows should be returned (no disconnected rows)
-  expect_equal(names(result), c("From", "To", "colC")) # 5 rows should be returned (no disconnected rows)
-})
-
-
-# Unordered sample data frame for testing
-df_unordered <- data.frame(
-  From = c(
-    "INSPECT",
-    "VERIFY",
-    "START",
-    "NULL",
-    "NEW",
-    "CREATE",
-    "MID",
-    "DIFFERENT",
-    "OUTLIER"
-  ),
-  To = c(
-    "VERIFY",
-    "PUBLISH",
-    "MID",
-    "NEW",
-    "CREATE",
-    "INSPECT",
-    "END",
-    "NOTSAME",
-    "INSIDER"
-  ),
-  stringsAsFactors = FALSE
-)
-
-
-# Test: Include disconnected rows
-test_that("order_chained_columns_tbl remove disconnected rows", {
-  result <- order_chained_columns_tbl(df_unordered, "From", "To", FALSE, "keep")
-  # Check the expected structure of the result
-  expect_equal(nrow(result), 9)
-  expect_false("ISOLATED" %in% result$From)
-  expect_false("LONELY" %in% result$To)
-})
-
-# Test: Remove disconnected rows
-test_that("order_chained_columns_tbl remove disconnected rows", {
-  result <- order_chained_columns_tbl(
-    df_unordered,
-    "From",
-    "To",
-    FALSE,
-    "exclude"
-  )
-  # Check the expected structure of the result
-  expect_equal(nrow(result), 7) # 7 rows should be returned after removing disconnected ones
-  expect_false("ISOLATED" %in% result$From)
-  expect_false("LONELY" %in% result$To)
-})
-
-
-# Test: Circular dependency detection
-test_that("order_chained_columns_tbl fail circular dependency", {
-  df_circular <- data.frame(
-    From = c("A", "B", "C"),
-    To = c("B", "C", "A"),
-    stringsAsFactors = FALSE
-  )
-  expect_error(
-    order_chained_columns_tbl(df_circular, "From", "To", "exclude"),
-    "Circular dependency detected"
-  )
-})
-
-
-# Test: Circular dependency detection
-test_that("order_chained_columns_tbl fail circular dependency", {
-  df_circular <- data.frame(
-    From = c("A", "B", "C", "D"),
-    To = c("B", "A", "D", "E"),
-    stringsAsFactors = FALSE
-  )
-  expect_error(
-    order_chained_columns_tbl(df_circular, "From", "To", FALSE, "exclude"),
-    "Circular dependency detected"
-  )
-})
-
-
-# Test: Check if chain_id is correctly assigned
-test_that("order_chained_columns_tbl chain_id assignment", {
-  result <- order_chained_columns_tbl(df_unordered, "From", "To", TRUE, "keep")
-  # Check that chain_id is assigned properly to connected and disconnected rows
-  expect_true(all(!is.na(result$chain_id)))
-  expect_true(any(result$chain_id == 1)) # At least one connected chain
-  expect_true(any(result$chain_id == 3)) # Disconnected chain at the end
-})
-
-
-# Test: duplicate from-key is rejected (would silently drop mappings otherwise)
-test_that("order_chained_columns_tbl fails on duplicate from-key", {
-  df_dup <- data.frame(
-    From = c("A", "A", "B"),
-    To = c("B", "C", "C"),
-    stringsAsFactors = FALSE
-  )
-  expect_error(
-    order_chained_columns_tbl(df_dup, "From", "To", FALSE, "keep"),
-    "Duplicate keys"
-  )
-})
-
-# ---- pretty-axis helper (Branch 5) ---------------------------------------
 
 test_that("pretty_n_breaks scales tick count down as panels grow", {
   expect_equal(pretty_n_breaks(1), 6L)

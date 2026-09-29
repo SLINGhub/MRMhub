@@ -1,6 +1,6 @@
 Package: mrmhub
 Title: Small Molecule Mass Spectrometry Data Processing, Quality Control, and Reporting
-Version: 0.9.9
+Version: 0.9.11
 Authors@R: c(person(given = "Bo", family = "Burla", role = c("aut", "cre"),
     email = "bo.burla@nus.edu.sg", comment = c(ORCID = "0000-0002-5918-3249")),
     person(given = "Guo Shou", family = "Teo", role = "aut",
@@ -45,8 +45,6 @@ Suggests:
     ggvenn,
     patchwork,
     ggbeeswarm,
-    ggsignif,
-    ggforce,
     ggpmisc,
     covr,
     ragg,
@@ -102,7 +100,6 @@ Collate:
     'correct-batch.R'
     'correct-drift-batch.R'
     'correct-isotope.R'
-    'data-combine-datasets.R'
     'data-example.R'
     'data-export.R'
     'data-import.R'
@@ -114,7 +111,6 @@ Collate:
     'datasets.R'
     'functions-chem.R'
     'functions-math.R'
-    'functions-plot.R'
     'helper.R'
     'isotope-derive.R'
     'isotope-licar.R'
@@ -129,7 +125,6 @@ Collate:
     'plot-runscatter.R'
     'plot-save.R'
     'plots-calibcurves.R'
-    'plots-eda.R'
     'plots-qc-cv.R'
     'plots-qc-filtering.R'
     'plots-qc-identification.R'
@@ -141,4 +136,4 @@ Collate:
     'tibble-classes.R'
     'utils-plot-style.R'
     'utils.R'
-Config/roxygen2/version: 8.0.0
+Config/roxygen2/version: 8.1.0

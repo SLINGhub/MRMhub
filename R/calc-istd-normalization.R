@@ -206,8 +206,15 @@ normalize_by_istd <- function(data = NULL, ignore_missing_annotation = FALSE) {
   data@status_processing <- "ISTD-normalized data"
   data <- update_after_normalization(data, TRUE)
   data <- update_after_quantitation(data, FALSE)
+  # Normalized intensities and concentrations are recomputed, so earlier drift
+  # and batch corrections of them no longer apply. Leaving the flags set made the
+  # next correction restore the stale `_raw`/`_before` snapshot.
+  data@var_drift_corrected[c("feature_norm_intensity", "feature_conc")] <- FALSE
+  data@var_batch_corrected[c("feature_norm_intensity", "feature_conc")] <- FALSE
   data@is_filtered <- FALSE
   data@metrics_qc <- data@metrics_qc[FALSE, ]
+  # Calibration fits were made on the previous normalized intensities.
+  data@metrics_calibration <- data@metrics_calibration[FALSE, ]
   data
 }
 
@@ -306,7 +313,12 @@ quantify_by_istd <- function(
       }
 
       d_features <- d_features |>
-        mutate(molecular_weight = calc_average_molweight(.data$chem_formula))
+        mutate(
+          molecular_weight = dplyr::coalesce(
+            calc_average_molweight(.data$chem_formula),
+            .data$molecular_weight
+          )
+        )
     }
   }
 
@@ -359,12 +371,14 @@ quantify_by_istd <- function(
         "Chemical formula or molecular weight is missing for all ISTDs. Please provide one in feature metadata or use molar concentrations."
       )
     }
-    if (any(!is.na(d_istd_mw$chem_formula))) {
-      d_istd_mw <- d_istd_mw |>
-        mutate(molecular_weight = calc_average_molweight(.data$chem_formula))
-    } else if (
-      !ignore_missing_annotation && any(is.na(d_istd_mw$molecular_weight))
-    ) {
+    d_istd_mw <- d_istd_mw |>
+      mutate(
+        molecular_weight = dplyr::coalesce(
+          calc_average_molweight(.data$chem_formula),
+          .data$molecular_weight
+        )
+      )
+    if (!ignore_missing_annotation && anyNA(d_istd_mw$molecular_weight)) {
       cli::cli_abort(
         "One or more ISTDs are missing both chemical formula and molecular weight. Ensure that at least one is defined in the feature metadata."
       )
@@ -486,7 +500,15 @@ quantify_by_istd <- function(
 
   if ("feature_conc" %in% names(data@dataset)) {
     data@dataset <- data@dataset |>
-      select(-dplyr::any_of(c("feature_pmol_total", "feature_conc")))
+      select(
+        -dplyr::any_of(c(
+          "feature_pmol_total",
+          "feature_conc",
+          "feature_conc_ratio",
+          "feature_conc_beforecal",
+          "feature_conc_out_of_range"
+        ))
+      )
     mh_warn(
       "Replacing previously calculated concentrations."
     )
@@ -540,6 +562,8 @@ quantify_by_istd <- function(
   data <- update_after_quantitation(data, TRUE)
   data@is_filtered <- FALSE
   data@metrics_qc <- data@metrics_qc[FALSE, ]
+  # Calibration results no longer describe these concentrations.
+  data@metrics_calibration <- data@metrics_calibration[FALSE, ]
 
   data
 }

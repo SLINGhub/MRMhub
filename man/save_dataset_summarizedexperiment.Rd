@@ -21,8 +21,11 @@ save_dataset_summarizedexperiment(
 missing. When \code{NULL} (default) the object is returned.}
 
 \item{variable}{Feature variables to export as assays, e.g. \code{"conc"} or
-\code{c("intensity", "conc")}. \code{NULL} (default) exports every \verb{feature_*}
-variable present in the data.}
+\code{c("intensity", "conc")}. \code{NULL} (default) exports the numeric \verb{feature_*}
+variables present in the data, except the backup snapshots (\verb{_orig},
+\verb{_before}, \verb{_beforecal}) and drift-model fit points (\verb{_fit}), which are
+internal bookkeeping rather than measurements. Name one of those
+explicitly to export it.}
 
 \item{as}{Class to produce. \code{"SummarizedExperiment"} (default) or
 \code{"LipidomicsExperiment"}, which additionally requires the \code{lipidr} package

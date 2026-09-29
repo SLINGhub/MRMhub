@@ -402,8 +402,10 @@ finalize_batch_correction <- function(
 #' simple median centering.
 #'
 #' Unlike [correct_batch_centering()] and [correct_batch_serrf()], ComBat
-#' estimates batch effects from **all** samples (optionally protecting biology
-#' via `covariates`), not from the reference QCs. On strongly unbalanced designs
+#' estimates batch effects from all study samples and routine QCs (optionally
+#' protecting biology via `covariates`), not only from the reference QCs.
+#' Blanks, response curves, calibrants and other analysis types are left out of
+#' the fit and keep their uncorrected values. On strongly unbalanced designs
 #' this can remove genuine biological signal, so supply `covariates` when the
 #' biological grouping is not balanced across batches. `ref_qc_types` is used
 #' only for the before/after QC-CV report and the plotting trend curves.
@@ -418,7 +420,9 @@ finalize_batch_correction <- function(
 #' @param ref_qc_types Character vector of QC types used for the QC-CV report and
 #'   trend curves (not for the ComBat fit itself).
 #' @param covariates Optional model matrix of biological covariates to preserve
-#'   (passed to [sva::ComBat()] as `mod`). Defaults to `NULL` (no covariates).
+#'   (passed to [sva::ComBat()] as `mod`), with the analysis IDs as row names.
+#'   Rows are matched to analyses by name; rows of analyses not used in the fit
+#'   are ignored. Defaults to `NULL` (no covariates).
 #' @param ref_batch Optional reference batch to adjust the others towards
 #'   (passed to [sva::ComBat()] as `ref.batch`). Defaults to `NULL`.
 #' @param parametric Use the parametric empirical-Bayes prior (`TRUE`, default)
@@ -475,8 +479,14 @@ correct_batch_combat <- function(
     replace_previous = replace_previous,
     replace_exisiting_trendcurves = replace_exisiting_trendcurves
   )
+  # Fit on study samples and routine QCs only; blanks, RQCs, calibrants etc.
+  # would distort the batch estimates and keep their original values.
+  fit_types <- c(
+    pkg.env$qc_type_annotation$qc_type_levels_nonblank,
+    ref_qc_types
+  )
   d_res <- fun_batch_combat(
-    ctx$ds,
+    dplyr::filter(ctx$ds, .data$qc_type %in% fit_types),
     ref_qc_types = ref_qc_types,
     covariates = covariates,
     ref_batch = ref_batch,
@@ -511,6 +521,14 @@ fun_batch_combat <- function(
   rownames(mat) <- feat
   meta <- meta[match(colnames(mat), meta$analysis_id), ]
   batch <- meta$batch_id
+  if (!is.null(covariates)) {
+    if (!all(colnames(mat) %in% rownames(covariates))) {
+      cli_abort(
+        "{.arg covariates} must have one row per analysis, with the analysis IDs as row names."
+      )
+    }
+    covariates <- covariates[colnames(mat), , drop = FALSE]
+  }
 
   if (any(table(batch) < 2)) {
     cli_abort(
@@ -568,8 +586,9 @@ fun_batch_combat <- function(
 #' Normalises systematic error with SERRF (Systematic Error Removal using Random
 #' Forest; Fan et al. 2019). For each feature and batch a random forest is
 #' trained on the reference QC samples, using the batch's most-correlated
-#' features as predictors, and the learned systematic error is removed from all
-#' samples. Unlike ComBat, SERRF captures non-linear drift and batch effects
+#' features as predictors, and the learned systematic error is removed from the
+#' study samples and routine QCs; blanks, response curves, calibrants and other
+#' analysis types keep their uncorrected values. Unlike ComBat, SERRF captures non-linear drift and batch effects
 #' jointly and is anchored on the QC samples, matching the QC-based design of the
 #' package; it is best suited to larger panels with dense QC coverage.
 #'
@@ -656,8 +675,12 @@ correct_batch_serrf <- function(
     replace_previous = replace_previous,
     replace_exisiting_trendcurves = replace_exisiting_trendcurves
   )
+  fit_types <- c(
+    pkg.env$qc_type_annotation$qc_type_levels_nonblank,
+    ref_qc_types
+  )
   d_res <- fun_batch_serrf(
-    ctx$ds,
+    dplyr::filter(ctx$ds, .data$qc_type %in% fit_types),
     ref_qc_types = ref_qc_types,
     n_correlated = n_correlated,
     num_trees = num_trees,
@@ -686,6 +709,8 @@ fun_batch_serrf <- function(
   num_threads = 1L,
   show_progress = TRUE
 ) {
+  # A fixed order keeps the seeded forests independent of the row order
+  ds <- ds |> dplyr::arrange(.data$feature_id, .data$analysis_id)
   meta <- ds |>
     dplyr::distinct(.data$analysis_id, .data$qc_type, .data$batch_id)
   wide <- ds |>

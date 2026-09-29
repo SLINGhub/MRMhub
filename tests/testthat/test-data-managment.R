@@ -651,7 +651,7 @@ test_that("exclude_analyses excludes analyses", {
         analyses = NA,
         clear_existing = FALSE
       ),
-    "No `analysis_id` provided. To \\(re\\)include"
+    "No `analysis_id` provided. To \\(re\\)include all analyses, use `analyses = NA`"
   )
 
   expect_message(
@@ -763,7 +763,7 @@ test_that("exclude_features excludes features", {
         features = NA,
         clear_existing = FALSE
       ),
-    "No `feature_id` provided. To \\(re\\)include"
+    "No `feature_id` provided. To \\(re\\)include all features, use `features = NA`"
   )
 
   expect_message(
@@ -854,4 +854,62 @@ test_that("check_var_in_dataset catches an absent, non-special-cased variable", 
   )
   # a present variable still passes
   expect_no_error(check_var_in_dataset(tbl, "feature_rt"))
+})
+
+test_that("get_dataset_subset matches a single known QC type exactly", {
+  result <- get_dataset_subset(mexp, qc_types = "BQC")
+  expect_equal(as.character(unique(result$qc_type)), "BQC")
+  # "QC" is a QC type of its own, not a pattern for BQC, TQC, ...
+  expect_error(
+    get_dataset_subset(mexp, qc_types = "QC"),
+    "no analyses"
+  )
+  # a pattern that is not a QC type still works as a regular expression
+  result <- get_dataset_subset(mexp, qc_types = "BQC|TQC")
+  expect_setequal(as.character(unique(result$qc_type)), c("BQC", "TQC"))
+})
+
+test_that("batch boundaries do not depend on the row order of the metadata", {
+  ref <- mrmhub:::get_metadata_batches(mexp@annot_analyses)
+  set.seed(1)
+  shuffled <- mexp@annot_analyses[sample(nrow(mexp@annot_analyses)), ]
+  expect_equal(mrmhub:::get_metadata_batches(shuffled), ref)
+  expect_true(all(ref$id_batch_start <= ref$id_batch_end))
+  expect_equal(ref$batch_no, seq_len(nrow(ref)))
+  expect_equal(
+    ref$id_batch_start,
+    tapply(
+      mexp@annot_analyses$analysis_order,
+      mexp@annot_analyses$batch_id,
+      min
+    )[
+      ref$batch_id
+    ],
+    ignore_attr = TRUE
+  )
+})
+
+test_that("set_analysis_order updates the batch boundaries", {
+  mexp_meta <- mexp
+  mexp_meta@annot_analyses$annot_order_num <- rev(
+    seq_len(nrow(mexp_meta@annot_analyses))
+  )
+  mexp_meta <- suppressMessages(set_analysis_order(mexp_meta, "metadata"))
+  expect_equal(
+    mexp_meta@annot_batches,
+    mrmhub:::get_metadata_batches(mexp_meta@annot_analyses)
+  )
+})
+
+test_that("run time and break counts do not depend on the dataset row order", {
+  m <- lipidomics_dataset
+  m_shuffled <- m
+  withr::with_seed(1, {
+    m_shuffled@dataset <- m@dataset[sample(nrow(m@dataset)), ]
+  })
+  expect_equal(get_runtime_median(m_shuffled), get_runtime_median(m))
+  expect_equal(
+    get_analysis_breaks(m_shuffled, 10),
+    get_analysis_breaks(m, 10)
+  )
 })

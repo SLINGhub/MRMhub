@@ -39,7 +39,9 @@ analysis. Must be one of: "area", "height", "intensity", "norm_intensity", "resp
 \item{qc_types}{A character vector specifying the QC types to plot. It must
 contain at least one element. The default \code{NA} plots any of the non-blank
 QC types ("SPL", "TQC", "BQC", "HQC", "MQC", "LQC", "NIST", "LTR") present
-in the dataset.}
+in the dataset. A single value that is a QC type is matched exactly; any
+other single value is a regular expression, e.g. \code{"QC$"} for all QC types
+ending in "QC".}
 
 \item{pca_dims}{A numeric vector indicating for which PCA dimensions
 the loadings should be shown. Default is c(1, 2, 3, 4).}
@@ -57,10 +59,10 @@ the data before the PCA. Default is \code{TRUE}.}
 (default) or only QC-filtered data (filtered via \code{\link[=filter_features_qc]{filter_features_qc()}}).}
 
 \item{include_qualifier}{A logical value indicating whether to include
-qualifier features. Default is \code{TRUE}.}
+qualifier features. Default is \code{FALSE}.}
 
 \item{include_istd}{A logical value indicating whether to include internal
-standard (ISTD) features. Default is \code{TRUE}.}
+standard (ISTD) features. Default is \code{FALSE}.}
 
 \item{include_feature_filter}{Feature(s) to include by \code{feature_id}, as a
 character vector. Each element is matched exactly when it names an existing

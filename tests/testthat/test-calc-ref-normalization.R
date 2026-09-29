@@ -616,7 +616,7 @@ test_that("calibrate_by_reference results are exportable", {
       path = temp_file,
       normalized_variable = "conc"
     ),
-    "Normalized feature variable 'feature_conc' not found in dataset",
+    "Normalized feature variable 'feature_conc_normalized' not found in dataset",
     fixed = TRUE
   )
 
@@ -631,11 +631,15 @@ test_that("calibrate_by_reference results are exportable", {
 
 
 test_that("calibrate_by_reference with filtered data", {
-  mexp_temp <- mrmhub::filter_features_qc(
-    mexp,
-    include_qualifier = FALSE,
-    include_istd = FALSE,
-    max.cv.conc.bqc = 20
+  # the S1P response curves have missing points
+  expect_warning(
+    mexp_temp <- mrmhub::filter_features_qc(
+      mexp,
+      include_qualifier = FALSE,
+      include_istd = FALSE,
+      max.cv.conc.bqc = 20
+    ),
+    "missing points"
   )
 
   expect_message(
@@ -849,4 +853,149 @@ test_that("calibrate_by_reference aborts on conflicting reference concentrations
     ),
     "Conflicting reference concentrations"
   )
+})
+
+test_that("calibrate_by_reference does not match a blank analyte_id to a reference concentration", {
+  # A blank `analyte_id` means "not specified" on both sides of the join, so
+  # dplyr's default `na_matches = "na"` paired every feature lacking an analyte
+  # with a stray QC-concentration row that also lacked one, silently
+  # calibrating it against an unrelated concentration.
+  mexp_na <- mexp
+  victim <- mexp_na@annot_features$feature_id[
+    !mexp_na@annot_features$is_istd &
+      !is.na(mexp_na@annot_features$analyte_id)
+  ][1]
+  mexp_na@annot_features$analyte_id[
+    mexp_na@annot_features$feature_id == victim
+  ] <- NA_character_
+  mexp_na@dataset$analyte_id[
+    mexp_na@dataset$feature_id == victim
+  ] <- NA_character_
+
+  # A sheet row with a sample_id but a blank analyte_id survives the stray-cell
+  # trimmer, which drops a row only when every key column is NA.
+  mexp_na@annot_qcconcentrations <- dplyr::bind_rows(
+    mexp_na@annot_qcconcentrations,
+    dplyr::tibble(
+      sample_id = "NIST_SRM1950",
+      analyte_id = NA_character_,
+      concentration = 999,
+      concentration_unit = "umol/L",
+      include_in_analysis = TRUE
+    )
+  )
+
+  mexp_res <- suppressMessages(calibrate_by_reference(
+    data = mexp_na,
+    variable = "feature_conc",
+    reference_sample_id = "NIST_SRM1950",
+    absolute_calibration = TRUE,
+    undefined_conc_action = "na"
+  ))
+
+  expect_true(all(is.na(
+    mexp_res@dataset$feature_conc[mexp_res@dataset$feature_id == victim]
+  )))
+})
+
+test_that("quantify_by_istd clears a stale feature_conc_ratio", {
+  # feature_conc_ratio is derived from feature_conc, so re-quantifying must drop
+  # it. Otherwise it is carried over unchanged and no longer corresponds to the
+  # concentration it was computed from. Tested here because the column is owned
+  # by calibrate_by_reference().
+  mexp_cal <- suppressMessages(calibrate_by_reference(
+    data = mexp,
+    variable = "feature_conc",
+    reference_sample_id = "NIST_SRM1950",
+    absolute_calibration = TRUE,
+    store_conc_ratio = TRUE,
+    undefined_conc_action = "na"
+  ))
+  expect_true("feature_conc_ratio" %in% names(mexp_cal@dataset))
+
+  mexp_requant <- suppressMessages(quantify_by_istd(mexp_cal))
+  expect_false("feature_conc_ratio" %in% names(mexp_requant@dataset))
+})
+
+test_that("calibrate_by_reference backs up feature_conc when calibrating from another variable", {
+  # Absolute calibration always writes feature_conc, whatever the input
+  # variable, so existing concentrations must be backed up in every case -- not
+  # only when the input is conc itself.
+  mexp_res <- suppressMessages(calibrate_by_reference(
+    data = mexp,
+    variable = "feature_norm_intensity",
+    reference_sample_id = "NIST_SRM1950",
+    absolute_calibration = TRUE,
+    undefined_conc_action = "na"
+  ))
+
+  expect_true("feature_conc_beforecal" %in% names(mexp_res@dataset))
+  expect_equal(
+    mexp_res@dataset$feature_conc_beforecal,
+    mexp@dataset$feature_conc
+  )
+})
+
+test_that("calibrate_by_reference clears calibration metrics", {
+  # Concentrations are re-derived from the reference sample, so the external
+  # calibration fits no longer describe them.
+  mexp_cal <- calibrated_experiment()
+  expect_gt(nrow(mexp_cal@metrics_calibration), 0)
+
+  res <- suppressMessages(suppressWarnings(calibrate_by_reference(
+    mexp_cal,
+    variable = "feature_conc",
+    reference_sample_id = "HQC",
+    absolute_calibration = TRUE,
+    undefined_conc_action = "na"
+  )))
+  expect_equal(nrow(res@metrics_calibration), 0)
+})
+
+test_that("the conc backup does not outlive the concentrations it backs up", {
+  # Re-normalizing invalidates the quantitation and drops feature_conc, so the
+  # pre-calibration snapshot must go too. Otherwise it stays exportable via
+  # save_dataset_csv(variable = "conc_beforecal") from a run the package has
+  # already marked not quantitated.
+  mexp_cal <- suppressMessages(calibrate_by_reference(
+    data = mexp,
+    variable = "feature_conc",
+    reference_sample_id = "NIST_SRM1950",
+    absolute_calibration = TRUE,
+    undefined_conc_action = "na"
+  ))
+  expect_true("feature_conc_beforecal" %in% names(mexp_cal@dataset))
+
+  mexp_renorm <- suppressMessages(normalize_by_istd(mexp_cal))
+  expect_false("feature_conc" %in% names(mexp_renorm@dataset))
+  expect_false("feature_conc_beforecal" %in% names(mexp_renorm@dataset))
+
+  # Same for re-quantification, which recomputes feature_conc from scratch.
+  mexp_requant <- suppressMessages(quantify_by_istd(mexp_cal))
+  expect_false("feature_conc_beforecal" %in% names(mexp_requant@dataset))
+})
+
+test_that("calibrate_by_reference records the reference sample's concentration unit", {
+  # Absolute calibration rewrites feature_conc into the reference sample's
+  # unit, so the recorded unit must follow or every consumer mislabels.
+  expect_equal(mexp@conc_analyte_unit, "pmol")
+
+  mexp_abs <- suppressMessages(calibrate_by_reference(
+    data = mexp,
+    variable = "feature_conc",
+    reference_sample_id = "NIST_SRM1950",
+    absolute_calibration = TRUE,
+    undefined_conc_action = "na"
+  ))
+  expect_equal(mexp_abs@conc_analyte_unit, "umol/L")
+
+  # Relative calibration writes feature_conc_normalized and leaves feature_conc
+  # untouched, so the recorded unit must stay as it was.
+  mexp_rel <- suppressMessages(calibrate_by_reference(
+    data = mexp,
+    variable = "feature_conc",
+    reference_sample_id = "NIST_SRM1950",
+    absolute_calibration = FALSE
+  ))
+  expect_equal(mexp_rel@conc_analyte_unit, mexp@conc_analyte_unit)
 })

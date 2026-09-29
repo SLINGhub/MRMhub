@@ -211,3 +211,45 @@ test_that("detect_outlier_pca() rejects non-positive pca_component / fence_multi
     "fence_multiplicator"
   )
 })
+
+test_that("detect_outlier_pca drops zero-variance features", {
+  mexp_const <- mexp_proc
+  f <- mexp_const@dataset$feature_id[1]
+  sel <- mexp_const@dataset$feature_id == f &
+    mexp_const@dataset$qc_type == "BQC"
+  mexp_const@dataset$feature_intensity[sel] <- 1000
+  expect_message(
+    outliers <- detect_outlier_pca(
+      mexp_const,
+      variable = "intensity",
+      filter_data = FALSE,
+      qc_types = "BQC",
+      outlier_detection = "mad",
+      pca_component = 1,
+      fence_multiplicator = 2,
+      log_transform = TRUE
+    ),
+    "zero variance"
+  )
+  expect_type(outliers, "character")
+})
+
+test_that("detect_outlier_pca drops analyses without values", {
+  m <- mexp_proc
+  bqc <- unique(m@dataset$analysis_id[m@dataset$qc_type == "BQC"])[1]
+  m@dataset$feature_intensity[m@dataset$analysis_id == bqc] <- NA
+  expect_message(
+    outliers <- detect_outlier_pca(
+      m,
+      variable = "intensity",
+      filter_data = FALSE,
+      qc_types = "BQC",
+      outlier_detection = "mad",
+      pca_component = 1,
+      fence_multiplicator = 2,
+      log_transform = TRUE
+    ),
+    "1 analysis with no values was excluded from the PCA"
+  )
+  expect_false(bqc %in% outliers)
+})

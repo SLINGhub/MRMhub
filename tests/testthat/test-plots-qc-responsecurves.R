@@ -841,12 +841,16 @@ test_that("plot_responsecurves axes render >=3 non-empty labels", {
   axis_labels <- function(p, axis) {
     b <- ggplot2::ggplot_build(p)
     lbl <- b$layout$panel_params[[1]][[axis]]$get_labels()
-    lbl[!vapply(
-      lbl,
-      function(x) is.null(x) || (length(x) == 1 && is.na(x)) ||
-        (is.character(x) && !nzchar(x)),
-      logical(1)
-    )]
+    lbl[
+      !vapply(
+        lbl,
+        function(x)
+          is.null(x) ||
+            (length(x) == 1 && is.na(x)) ||
+            (is.character(x) && !nzchar(x)),
+        logical(1)
+      )
+    ]
   }
 
   p <- plot_responsecurves(
@@ -858,4 +862,69 @@ test_that("plot_responsecurves axes render >=3 non-empty labels", {
   )
   expect_gte(length(axis_labels(p[[1]], "x")), 3)
   expect_gte(length(axis_labels(p[[1]], "y")), 3)
+})
+
+test_that("plot_responsecurves writes all pages to the PDF when also returning them", {
+  skip_if_not_installed("qpdf")
+  f <- withr::local_tempfile(fileext = ".pdf")
+  p <- suppressMessages(plot_responsecurves(
+    lipidomics_dataset,
+    variable = "intensity",
+    rows_page = 3,
+    cols_page = 4,
+    output_pdf = TRUE,
+    path = f,
+    return_plots = TRUE,
+    show_progress = FALSE
+  ))
+  expect_gt(length(p), 1)
+  expect_equal(qpdf::pdf_length(f), length(p))
+})
+
+test_that("plot_responsecurves closes the PDF device when a page fails", {
+  f <- withr::local_tempfile(fileext = ".pdf")
+  devs <- grDevices::dev.list()
+  local_mocked_bindings(plot_responsecurves_page = function(...) stop("boom"))
+  expect_error(
+    suppressMessages(plot_responsecurves(
+      lipidomics_dataset,
+      variable = "intensity",
+      output_pdf = TRUE,
+      path = f,
+      show_progress = FALSE
+    )),
+    "boom"
+  )
+  expect_identical(grDevices::dev.list(), devs)
+})
+
+test_that("plot_responsecurves checks specific_page before creating the PDF", {
+  f <- withr::local_tempfile(fileext = ".pdf")
+  devs <- grDevices::dev.list()
+  expect_error(
+    plot_responsecurves(
+      lipidomics_dataset,
+      variable = "intensity",
+      output_pdf = TRUE,
+      path = f,
+      specific_page = 99,
+      show_progress = FALSE
+    ),
+    "exceeds the total number of pages"
+  )
+  expect_false(file.exists(f))
+  expect_identical(grDevices::dev.list(), devs)
+})
+
+test_that("plot_responsecurves adds .pdf to a path that only contains 'pdf'", {
+  dir <- withr::local_tempdir()
+  suppressMessages(plot_responsecurves(
+    lipidomics_dataset,
+    variable = "intensity",
+    output_pdf = TRUE,
+    path = file.path(dir, "qcpdf"),
+    specific_page = 1,
+    show_progress = FALSE
+  ))
+  expect_true(file.exists(file.path(dir, "qcpdf.pdf")))
 })

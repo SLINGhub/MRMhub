@@ -22,15 +22,20 @@ ensure_output_dir <- function(path, create_dir = TRUE) {
 #'
 #' Generates a data processing report from a `MRMhubExperiment` object and writes it to an Excel file.
 #' The report includes information on the data processing steps, quality control metrics, feature concentrations, and metadata.
-#' Following tables will be created as sheets in the EXCEL file:
+#' Following tables will be created as sheets in the EXCEL file, in this order:
 #'
-#' - Info: General  information including date, author, and MRMhub version, processing status and feature concentration unit.
-#' - Feature_QC_metrics: Quality control metrics of all features.
+#' - Info: Report date, author, MRMhub version and the concentration unit.
+#' - Feature_QC_metrics: Quality control metrics of all features. An infinite
+#' signal-to-blank ratio (feature not detected in the blank) is written as the
+#' text `Inf`.
+#' - Calibration_metrics: External calibration results per feature.
 #' - QCfilt_x_StudySamples: Feature (QC)-filtered data (variable defined via `filtered_variable`) in study samples ('SPL'). Filter have to be set via [filter_features_qc()]. The _x_ corresponds to the `filtered_variable` argument.
 #' - QCfilt_x_AllSamples: Feature (QC)-filtered data (variable defined via `filtered_variable`) in all samples. Filter have to be set via [filter_features_qc()]. The _x_ corresponds to the `filtered_variable` argument.
-#' - Conc_FullDataset: Final feature concentrations from the full, non-filtered dataset.
 #' - Raw_Intensity_FullDataset: Raw feature intensities from the full, non-filtered dataset.
 #' - Norm_Intensity_FullDataset: Normalized feature intensities from the full, non-filtered dataset.
+#' - Conc_FullDataset: Final feature concentrations from the full, non-filtered dataset.
+#' - x_NormalizedByRef_Full: Study-sample values normalized by a reference
+#' sample (see [calibrate_by_reference()]), if available.
 #' - SampleMetadata:  Analysis metadata that was imported and used for processing steps
 #' - FeatureMetadata: Feature metadata that was imported and used for processing steps
 #' - InternalStandards: Internal standards metadata with concentrations
@@ -39,6 +44,11 @@ ensure_output_dir <- function(path, create_dir = TRUE) {
 #' - Interferences: Derived and declared interference relationships (interfering
 #' feature, contribution factor, overlap type, source) with the per-feature
 #' correction impact when the correction has been applied.
+#'
+#' Internal standards are not included in the concentration and QC-filtered
+#' sheets. For reference-normalized variables, sheet names use short labels
+#' to stay within Excel's 31 characters, with "Ref" marking values normalized
+#' by a reference sample (e.g. `QCfilt_ConcRef_StudySamples`).
 #'
 #'
 #' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] object containing original and processed data and metadata.
@@ -139,135 +149,62 @@ save_report_xlsx <- function(
       )
     }
   } else {
-    if (!paste0(normalized_variable, "_normalized") %in% names(data@dataset)) {
+    normalized_variable <- paste0(
+      str_remove(normalized_variable, "_normalized$"),
+      "_normalized"
+    )
+    if (!normalized_variable %in% names(data@dataset)) {
       cli_abort(
         "Normalized feature variable '{normalized_variable}' not found in dataset. Please check the name or modify `normalized_variable`."
       )
     }
   }
 
-  if (nrow(data@dataset) > 0) {
-    d_intensity_wide <- data@dataset |>
-      #dplyr::filter(.data$qc_type %in% c("SPL", "TQC", "BQC", "NIST", "LTR", "PBLK", "SBLK", "UBLK", "MBLK")) |>
-      dplyr::select(dplyr::any_of(c(
-        "analysis_id",
-        "qc_type",
-        "acquisition_time_stamp",
-        "feature_id",
-        "feature_intensity"
-      ))) |>
-      tidyr::pivot_wider(
-        names_from = "feature_id",
-        values_from = "feature_intensity",
-        values_fn = check_single_pivot_value
-      )
+  full_ids <- c("analysis_id", "qc_type", "acquisition_time_stamp")
+  d_intensity_wide <- if (nrow(data@dataset) > 0) {
+    to_wide(data@dataset, full_ids, "feature_intensity")
   } else {
-    d_intensity_wide <- tibble(
-      "No ISTD-normalized intensities available." = NA
-    ) |>
+    tibble("No intensities available." = NA) |> tibble::add_row()
+  }
+  d_norm_intensity_wide <- if (data@is_istd_normalized) {
+    to_wide(data@dataset, full_ids, "feature_norm_intensity")
+  } else {
+    tibble("No ISTD-normalized intensities available." = NA) |>
       tibble::add_row()
   }
-
-  if (data@is_istd_normalized) {
-    d_norm_intensity_wide <- data@dataset |>
-      #dplyr::filter(.data$qc_type %in% c("SPL", "TQC", "BQC", "NIST", "LTR", "PBLK", "SBLK", "UBLK", "MBLK")) |>
-      dplyr::select(dplyr::any_of(c(
-        "analysis_id",
-        "qc_type",
-        "acquisition_time_stamp",
-        "feature_id",
-        "feature_norm_intensity"
-      ))) |>
-      tidyr::pivot_wider(
-        names_from = "feature_id",
-        values_from = "feature_norm_intensity",
-        values_fn = check_single_pivot_value
-      )
+  d_conc_wide <- if (data@is_quantitated) {
+    to_wide(
+      dplyr::filter(data@dataset, !.data$is_istd),
+      full_ids,
+      "feature_conc"
+    )
   } else {
-    d_norm_intensity_wide <- tibble(
-      "No ISTD-normalized intensities available." = NA
-    ) |>
-      tibble::add_row()
-  }
-
-  if (data@is_quantitated) {
-    d_conc_wide <- data@dataset |>
-      #dplyr::filter(!.data$qc_type %in% c("PBLK", "SBLK", "UBLK", "NIST", "LTR")) |>
-      dplyr::filter(!str_detect(.data$feature_id, "\\(IS")) |>
-      dplyr::select(dplyr::any_of(c(
-        "analysis_id",
-        "qc_type",
-        "acquisition_time_stamp",
-        "feature_id",
-        "feature_conc"
-      ))) |>
-      tidyr::pivot_wider(
-        names_from = "feature_id",
-        values_from = "feature_conc",
-        values_fn = check_single_pivot_value
-      )
-  } else {
-    d_conc_wide <- tibble("No concentration data available." = NA) |>
-      tibble::add_row()
+    tibble("No concentration data available." = NA) |> tibble::add_row()
   }
 
   if (data@is_filtered) {
-    d_conc_wide_QC_SPL <- data@dataset_filtered |>
-      dplyr::filter(.data$qc_type %in% c("SPL")) |>
-      dplyr::select(dplyr::any_of(c(
-        "analysis_id",
-        "feature_id",
-        filtered_variable
-      ))) |>
-      dplyr::filter(!str_detect(.data$feature_id, "\\(IS")) |>
-      tidyr::pivot_wider(
-        names_from = "feature_id",
-        values_from = any_of(filtered_variable),
-        values_fn = check_single_pivot_value
-      )
-
-    d_conc_wide_QC_all <- data@dataset_filtered |>
-      dplyr::select(dplyr::any_of(c(
-        "analysis_id",
-        "qc_type",
-        "feature_id",
-        filtered_variable
-      ))) |>
-      dplyr::filter(!str_detect(.data$feature_id, "\\(IS")) |>
-      tidyr::pivot_wider(
-        names_from = "feature_id",
-        values_from = any_of(filtered_variable),
-        values_fn = check_single_pivot_value
-      )
+    d_filt_analytes <- dplyr::filter(data@dataset_filtered, !.data$is_istd)
+    d_conc_wide_QC_SPL <- d_filt_analytes |>
+      dplyr::filter(.data$qc_type == "SPL") |>
+      to_wide("analysis_id", filtered_variable)
+    d_conc_wide_QC_all <- to_wide(
+      d_filt_analytes,
+      c("analysis_id", "qc_type"),
+      filtered_variable
+    )
   } else {
     filtered_variable_strip <- ""
     d_conc_wide_QC_SPL <- tibble("No qc-filtered data available." = NA) |>
       tibble::add_row()
     d_conc_wide_QC_all <- tibble("No qc-filtered data available." = NA) |>
       tibble::add_row()
-    #d_wide_QC_SPL_normalized <- tibble("No qc-filtered normalized data available." = NA) |> tibble::add_row()
-    #d_wide_QC_all_normalized <- tibble("No qc-filtered normalized data available." = NA) |> tibble::add_row()
   }
 
-  if (length(normalized_variable) > 0) {
-    d_wide_all_normalized <- data@dataset |>
-      dplyr::filter(.data$qc_type %in% c("SPL")) |>
-      dplyr::select(dplyr::any_of(c(
-        "analysis_id",
-        "feature_id",
-        normalized_variable
-      ))) |>
-      dplyr::filter(!str_detect(.data$feature_id, "\\(IS")) |>
-      tidyr::pivot_wider(
-        names_from = "feature_id",
-        values_from = any_of(normalized_variable),
-        values_fn = check_single_pivot_value
-      )
-  } else {
-    d_wide_all_normalized <- tibble(
-      "No reference sample normalized data available." = NA
-    ) |>
-      tibble::add_row()
+  # Only with a reference-normalized variable (NULL drops the sheet)
+  d_wide_all_normalized <- if (length(normalized_variable) > 0) {
+    data@dataset |>
+      dplyr::filter(.data$qc_type == "SPL", !.data$is_istd) |>
+      to_wide("analysis_id", normalized_variable)
   }
   # Interference relationships (derived + declared), with per-feature impact when
   # the correction has been applied -- documents the correction in the report.
@@ -325,6 +262,19 @@ save_report_xlsx <- function(
     )
   )
 
+  # Excel has no infinity: such cells are written as the text "Inf"/"-Inf" below
+  qc_inf <- purrr::keep(
+    purrr::map(data@metrics_qc, \(x) if (is.numeric(x)) which(is.infinite(x))),
+    \(rows) length(rows) > 0
+  )
+  if (length(qc_inf) > 0) {
+    d_info <- d_info |>
+      tibble::add_row(
+        Info = "Inf in Feature_QC_metrics",
+        Value = "Signal-to-blank ratio of a feature not detected in the blank"
+      )
+  }
+
   if (nrow(data@metrics_qc) == 0) {
     qc_metrics <- tibble(tibble(
       "Feature qc metrics has not been calculated." = NA
@@ -343,8 +293,16 @@ save_report_xlsx <- function(
     metrics_calibration <- data@metrics_calibration
   }
 
-  if (filtered_variable_strip == "norm_intensity") {
-    filtered_variable_strip <- "normInt"
+  # Short labels keep sheet names within Excel's 31 characters; "Ref" marks
+  # values normalized by a reference sample
+  short_labels <- c(
+    norm_intensity = "NormInt",
+    conc_normalized = "ConcRef",
+    intensity_normalized = "IntRef",
+    norm_intensity_normalized = "NormIntRef"
+  )
+  if (filtered_variable_strip %in% names(short_labels)) {
+    filtered_variable_strip <- short_labels[[filtered_variable_strip]]
   }
   if (filtered_variable_strip != "") {
     name_filt <- paste0(
@@ -359,99 +317,71 @@ save_report_xlsx <- function(
   }
   name_filt_spl <- paste0("QCfilt", name_filt, "_StudySamples")
   name_filt_all <- paste0("QCfilt", name_filt, "_AllSamples")
-  #name_filt_spl_normalized <- paste0("QCfilt",name_filt,"_RefNorm_StudySpl")
-  #name_filt_all_normalized <- paste0("QCfilt",name_filt,"_RefNorm_AllSpl")
-  name_all_normalized <- stringr::str_replace(
-    str_remove(normalized_variable, "feature_"),
-    "_",
-    " "
-  )
   name_all_normalized <- paste0(
-    stringr::str_to_title(name_all_normalized),
+    c(
+      feature_conc_normalized = "Conc",
+      feature_intensity_normalized = "Intensity",
+      feature_norm_intensity_normalized = "NormInt"
+    )[normalized_variable],
     "_NormalizedByRef_Full"
   )
-  name_all_normalized <- stringr::str_remove(name_all_normalized, " Normalized")
 
-  table_list <- list(
-    "Info" = d_info,
-    "Feature_QC_metrics" = qc_metrics,
-    "Calibration_metrics" = metrics_calibration,
-    name_filt_spl = d_conc_wide_QC_SPL,
-    name_filt_all = d_conc_wide_QC_all,
-    #name_filt_spl_normalized = d_wide_QC_SPL_normalized,
-    #name_filt_all_normalized = d_wide_QC_all_normalized,
-    "Raw_Intensity_FullDataset" = d_intensity_wide,
-    "Norm_Intensity_FullDataset" = d_norm_intensity_wide,
-    "Conc_FullDataset" = d_conc_wide,
-    name_all_normalized = d_wide_all_normalized,
-    "SampleMetadata" = if (nrow(data@annot_analyses) == 0) {
+  table_list <- rlang::list2(
+    Info = d_info,
+    Feature_QC_metrics = qc_metrics,
+    Calibration_metrics = metrics_calibration,
+    !!name_filt_spl := d_conc_wide_QC_SPL,
+    !!name_filt_all := d_conc_wide_QC_all,
+    Raw_Intensity_FullDataset = d_intensity_wide,
+    Norm_Intensity_FullDataset = d_norm_intensity_wide,
+    Conc_FullDataset = d_conc_wide,
+    !!name_all_normalized := d_wide_all_normalized,
+    SampleMetadata = if (nrow(data@annot_analyses) == 0) {
       data@annot_analyses |> tibble::add_row()
     } else {
       data@annot_analyses
     },
-    "FeatureMetadata" = if (nrow(data@annot_features) == 0) {
+    FeatureMetadata = if (nrow(data@annot_features) == 0) {
       data@annot_features |> tibble::add_row()
     } else {
       data@annot_features
     },
-    "InternalStandards" = if (nrow(data@annot_istds) == 0) {
+    InternalStandards = if (nrow(data@annot_istds) == 0) {
       data@annot_istds |> tibble::add_row()
     } else {
       data@annot_istds
     },
-    "BatchInfo" = if (nrow(data@annot_batches) == 0) {
+    BatchInfo = if (nrow(data@annot_batches) == 0) {
       tibble("No batches defined" = NA) |> tibble::add_row()
     } else {
       data@annot_batches
     },
-    "Interferences" = d_interferences
+    Interferences = d_interferences
+  ) |>
+    purrr::discard(is.null)
+
+  # Tab colours by sheet name; metadata sheets grey
+  tab_color <- c(
+    Info = "#d7fc5d",
+    Feature_QC_metrics = "#34fac5",
+    Calibration_metrics = "#34fac5",
+    Raw_Intensity_FullDataset = "#0A83ad",
+    Norm_Intensity_FullDataset = "#0313ad",
+    Conc_FullDataset = "#7113ad"
   )
-
-  if (length(normalized_variable) == 0) {
-    table_list$name_all_normalized <- NULL
-    tab_color = c(
-      "#d7fc5d",
-      "#34fac5",
-      "#34fac5",
-      "#ff170f",
-      "#9e0233",
-      "#0A83ad",
-      "#0313ad",
-      "#7113ad",
-      "#c9c9c9",
-      "#c9c9c9",
-      "#c9c9c9",
-      "#c9c9c9",
-      "#c9c9c9"
-    )
-  } else {
-    names(table_list)[9] <- c(name_all_normalized)
-    tab_color = c(
-      "#d7fc5d",
-      "#34fac5",
-      "#34fac5",
-      "#ff170f",
-      "#9e0233",
-      "#0A83ad",
-      "#0313ad",
-      "#7113ad",
-      "#f7b37c",
-      "#c9c9c9",
-      "#c9c9c9",
-      "#c9c9c9",
-      "#c9c9c9",
-      "#c9c9c9"
-    )
-  }
-
-  names(table_list)[4:5] <- c(name_filt_spl, name_filt_all)
+  tab_color[c(name_filt_spl, name_filt_all, name_all_normalized)] <- c(
+    "#ff170f",
+    "#9e0233",
+    "#f7b37c"
+  )
+  tab_color <- unname(tab_color[names(table_list)])
+  tab_color[is.na(tab_color)] <- "#c9c9c9"
 
   if (rlang::is_interactive()) {
     message("Saving report to disk - please wait...")
   }
   wb <- openxlsx2::write_xlsx(
     x = table_list,
-    #file = path,
     na.strings = "",
     # Length-based so adding a sheet needs no parallel-vector bookkeeping: every
     # sheet is a table; only the "Info" sheet (first) omits the first row/col
@@ -465,9 +395,21 @@ save_report_xlsx <- function(
     tab_color = tab_color
   )
 
-  # if(length(normalized_variable) == 0){
-  #   wb <- openxlsx2::wb_remove_worksheet(wb, 9)
-  # }
+  for (col in names(qc_inf)) {
+    rows <- qc_inf[[col]]
+    wb <- wb |>
+      openxlsx2::wb_add_data(
+        sheet = "Feature_QC_metrics",
+        x = as.character(data@metrics_qc[[col]][rows]),
+        dims = paste0(
+          openxlsx2::int2col(match(col, names(data@metrics_qc))),
+          rows + 1,
+          collapse = ","
+        ),
+        col_names = FALSE,
+        enforce = TRUE
+      )
+  }
 
   ensure_output_dir(path, create_dir)
   openxlsx2::wb_save(
@@ -562,7 +504,6 @@ save_dataset_csv <- function(
   )
   variable <- stringr::str_c("feature_", variable)
   check_var_in_dataset(data@dataset, variable)
-  variable_sym = rlang::sym(variable)
 
   # Auto-choose some arg values if user does not define
 
@@ -583,10 +524,6 @@ save_dataset_csv <- function(
     } else {
       include_istd <- TRUE
     }
-  }
-
-  if (is.na(add_qctype)) {
-    add_qctype <- !(length(qc_types) == 1)
   }
 
   if (!(variable %in% names(data@dataset))) {
@@ -610,19 +547,12 @@ save_dataset_csv <- function(
     exclude_feature_filter = exclude_feature_filter
   )
 
-  if (add_qctype) {
-    flds <- c("analysis_id", "qc_type", "feature_id")
-  } else {
-    flds <- c("analysis_id", "feature_id")
+  if (is.na(add_qctype)) {
+    add_qctype <- dplyr::n_distinct(d_filt$qc_type) > 1
   }
+  id_cols <- if (add_qctype) c("analysis_id", "qc_type") else "analysis_id"
 
-  ds <- d_filt |>
-    dplyr::select(all_of(c(flds, variable))) |>
-    tidyr::pivot_wider(
-      names_from = "feature_id",
-      values_from = !!variable_sym,
-      values_fn = check_single_pivot_value
-    )
+  ds <- to_wide(d_filt, id_cols, variable)
 
   ensure_output_dir(path, create_dir)
   readr::write_csv(ds, file = path, col_names = TRUE)

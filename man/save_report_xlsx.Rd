@@ -37,17 +37,22 @@ The function does not return a value. It writes the report to the specified Exce
 \description{
 Generates a data processing report from a \code{MRMhubExperiment} object and writes it to an Excel file.
 The report includes information on the data processing steps, quality control metrics, feature concentrations, and metadata.
-Following tables will be created as sheets in the EXCEL file:
+Following tables will be created as sheets in the EXCEL file, in this order:
 }
 \details{
 \itemize{
-\item Info: General  information including date, author, and MRMhub version, processing status and feature concentration unit.
-\item Feature_QC_metrics: Quality control metrics of all features.
+\item Info: Report date, author, MRMhub version and the concentration unit.
+\item Feature_QC_metrics: Quality control metrics of all features. An infinite
+signal-to-blank ratio (feature not detected in the blank) is written as the
+text \code{Inf}.
+\item Calibration_metrics: External calibration results per feature.
 \item QCfilt_x_StudySamples: Feature (QC)-filtered data (variable defined via \code{filtered_variable}) in study samples ('SPL'). Filter have to be set via \code{\link[=filter_features_qc]{filter_features_qc()}}. The \emph{x} corresponds to the \code{filtered_variable} argument.
 \item QCfilt_x_AllSamples: Feature (QC)-filtered data (variable defined via \code{filtered_variable}) in all samples. Filter have to be set via \code{\link[=filter_features_qc]{filter_features_qc()}}. The \emph{x} corresponds to the \code{filtered_variable} argument.
-\item Conc_FullDataset: Final feature concentrations from the full, non-filtered dataset.
 \item Raw_Intensity_FullDataset: Raw feature intensities from the full, non-filtered dataset.
 \item Norm_Intensity_FullDataset: Normalized feature intensities from the full, non-filtered dataset.
+\item Conc_FullDataset: Final feature concentrations from the full, non-filtered dataset.
+\item x_NormalizedByRef_Full: Study-sample values normalized by a reference
+sample (see \code{\link[=calibrate_by_reference]{calibrate_by_reference()}}), if available.
 \item SampleMetadata:  Analysis metadata that was imported and used for processing steps
 \item FeatureMetadata: Feature metadata that was imported and used for processing steps
 \item InternalStandards: Internal standards metadata with concentrations
@@ -57,6 +62,11 @@ in each batch
 feature, contribution factor, overlap type, source) with the per-feature
 correction impact when the correction has been applied.
 }
+
+Internal standards are not included in the concentration and QC-filtered
+sheets. For reference-normalized variables, sheet names use short labels
+to stay within Excel's 31 characters, with "Ref" marking values normalized
+by a reference sample (e.g. \code{QCfilt_ConcRef_StudySamples}).
 
 If certain data sets are not available, the function includes empty tables for the corresponding dataset.
 

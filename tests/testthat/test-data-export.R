@@ -63,9 +63,9 @@ test_that("save_report_xlsx creates the correct sheets", {
     "Calibration_metrics",
     "QCfilt_StudySamples",
     "QCfilt_AllSamples",
-    "Conc_FullDataset",
     "Raw_Intensity_FullDataset",
     "Norm_Intensity_FullDataset",
+    "Conc_FullDataset",
     "SampleMetadata",
     "FeatureMetadata",
     "InternalStandards",
@@ -73,7 +73,16 @@ test_that("save_report_xlsx creates the correct sheets", {
     "Interferences"
   )
 
-  expect_setequal(w_xlm$sheet_names, expected_sheets)
+  expect_equal(unname(w_xlm$sheet_names), expected_sheets)
+  tab_colors <- vapply(
+    w_xlm$worksheets,
+    \(ws) sub('.*rgb="([^"]+)".*', "\\1", ws$sheetPr),
+    ""
+  )
+  expect_equal(
+    tab_colors[c(1, 4, 6, 9)],
+    c("FFD7FC5D", "FFFF170F", "FF0A83AD", "FFC9C9C9")
+  )
   on.exit(unlink(temp_file)) # Clean up
 })
 
@@ -166,6 +175,20 @@ test_that("Function exports correct variables", {
   expect_equal(mean(exported_data$`PC 40:6`), 0.082982104)
 })
 
+test_that("save_dataset_csv adds qc_type when more than one QC type is exported", {
+  f <- withr::local_tempfile(fileext = ".csv")
+  suppressMessages(save_dataset_csv(mexp, path = f, variable = "intensity"))
+  expect_true("qc_type" %in% names(readr::read_csv(f, show_col_types = FALSE)))
+
+  suppressMessages(save_dataset_csv(
+    mexp,
+    path = f,
+    variable = "intensity",
+    qc_types = "SPL"
+  ))
+  expect_false("qc_type" %in% names(readr::read_csv(f, show_col_types = FALSE)))
+})
+
 test_that("QC-filtered data is used when filter_data is TRUE", {
   temp_file <- tempfile(fileext = ".csv")
   expect_message(
@@ -179,7 +202,7 @@ test_that("QC-filtered data is used when filter_data is TRUE", {
   )
 
   exported_data <- readr::read_csv(temp_file)
-  expect_equal(dim(exported_data), c(499, 19))
+  expect_equal(dim(exported_data), c(499, 20)) # incl. qc_type
 })
 
 test_that("QC-filtered data is used when filter_data is TRUE", {
@@ -249,13 +272,13 @@ test_that("save_feature_qc_metrics exports QC metrics to CSV", {
     "Feature QC metrics table was saved"
   )
 
-  expect_equal(dim(dat), c(29, 92))
+  expect_equal(dim(dat), c(29, 102))
   # Check if the file was created
   expect_true(file.exists(temp_file))
 
   # Read the file and compare with original data
   written_data <- readr::read_csv(temp_file)
-  expect_equal(dim(written_data), c(29, 92))
+  expect_equal(dim(written_data), c(29, 102))
 })
 
 
@@ -514,4 +537,85 @@ test_that("save_report_xlsx() creates a missing output directory (create_dir = T
   expect_false(dir.exists(dirname(path)))
   suppressMessages(save_report_xlsx(mexp, path = path))
   expect_true(file.exists(path))
+})
+
+test_that("save_report_xlsx drops ISTDs by is_istd, not by name", {
+  mexp_ids <- mexp
+  ds <- mexp_ids@dataset
+  ds$feature_id[ds$feature_id == "PE 34:1"] <- "PE 34:1 (ISOMER)"
+  ds$feature_id[ds$feature_id == "PC 33:1 d7 (ISTD)"] <- "d7-PC 33:1"
+  mexp_ids@dataset <- ds
+  temp_file <- tempfile(fileext = ".xlsx")
+  on.exit(unlink(temp_file))
+  suppressMessages(save_report_xlsx(mexp_ids, temp_file))
+  conc <- openxlsx2::wb_to_df(temp_file, sheet = "Conc_FullDataset")
+  expect_true("PE 34:1 (ISOMER)" %in% names(conc))
+  expect_false("d7-PC 33:1" %in% names(conc))
+})
+
+test_that("save_report_xlsx exports the reference-normalized values", {
+  mexp_ref <- mexp
+  mexp_ref@dataset$feature_conc_normalized <- mexp_ref@dataset$feature_conc * 2
+  temp_file <- tempfile(fileext = ".xlsx")
+  on.exit(unlink(temp_file))
+  for (v in c("conc", "conc_normalized")) {
+    suppressMessages(save_report_xlsx(
+      mexp_ref,
+      temp_file,
+      normalized_variable = v
+    ))
+    ref <- openxlsx2::wb_to_df(temp_file, sheet = "Conc_NormalizedByRef_Full")
+    expected <- mexp_ref@dataset$feature_conc_normalized[
+      mexp_ref@dataset$analysis_id == ref$analysis_id[1] &
+        mexp_ref@dataset$feature_id == "PE 34:1"
+    ]
+    expect_equal(ref[["PE 34:1"]][1], expected)
+  }
+})
+
+test_that("save_report_xlsx keeps sheet names within Excel's 31 characters", {
+  mexp_n <- mexp_filt
+  mexp_n@dataset$feature_norm_intensity_normalized <- 1
+  mexp_n@dataset_filtered$feature_norm_intensity_normalized <- 1
+  temp_file <- tempfile(fileext = ".xlsx")
+  on.exit(unlink(temp_file))
+  suppressMessages(save_report_xlsx(
+    mexp_n,
+    temp_file,
+    filtered_variable = "norm_intensity_normalized"
+  ))
+  sheets <- openxlsx2::wb_load(temp_file)$sheet_names
+  expect_true(all(nchar(sheets) <= 31))
+  expect_true("NormInt_NormalizedByRef_Full" %in% sheets)
+  expect_equal(sum(startsWith(sheets, "QCfilt_NormIntRef_")), 2)
+})
+
+test_that("save_report_xlsx writes infinite QC metrics as the text Inf", {
+  mexp_inf <- mexp
+  mexp_inf@metrics_qc$sb_ratio_pblk[1] <- Inf
+  temp_file <- tempfile(fileext = ".xlsx")
+  on.exit(unlink(temp_file))
+  suppressMessages(save_report_xlsx(mexp_inf, temp_file))
+  qc <- openxlsx2::wb_to_df(temp_file, sheet = "Feature_QC_metrics")
+  expect_equal(as.character(qc$sb_ratio_pblk[1]), "Inf")
+  expect_equal(
+    as.numeric(qc$sb_ratio_pblk[2]),
+    mexp_inf@metrics_qc$sb_ratio_pblk[2]
+  )
+  info <- openxlsx2::wb_to_df(temp_file, sheet = "Info")
+  expect_true(any(grepl("signal-to-blank", unlist(info), ignore.case = TRUE)))
+})
+
+test_that("save_report_xlsx keeps the sign of infinite QC metrics", {
+  mexp_inf <- mexp
+  mexp_inf@metrics_qc$sb_ratio_pblk[1:2] <- c(Inf, -Inf)
+  temp_file <- tempfile(fileext = ".xlsx")
+  on.exit(unlink(temp_file))
+  suppressMessages(save_report_xlsx(mexp_inf, temp_file))
+  qc <- openxlsx2::wb_to_df(temp_file, sheet = "Feature_QC_metrics")
+  expect_equal(as.character(qc$sb_ratio_pblk[1:2]), c("Inf", "-Inf"))
+  expect_equal(
+    as.numeric(qc$sb_ratio_pblk[3]),
+    mexp_inf@metrics_qc$sb_ratio_pblk[3]
+  )
 })

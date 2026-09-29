@@ -52,12 +52,11 @@ import_data_masshunter <- function(
 ) {
   check_data(data)
   rlang::arg_match(conc_column, c("conc_calc", "conc_final"))
-  #if (fs::path_ext(path) == "csv") {
   data <- import_data_main(
     data,
     path,
     "parse_masshunter_csv",
-    "*.csv",
+    "[.]csv$",
     expand_qualifier_names = expand_qualifier_names,
     silent = silent,
     conc_column = conc_column
@@ -151,7 +150,7 @@ import_data_skyline <- function(
     data = data,
     path = path,
     import_function = "parse_skyline_result",
-    file_ext = "*.tsv|*.csv",
+    file_ext = "[.](tsv|csv)$",
     silent = silent,
     transition_id_columns = transition_id_columns
   )
@@ -215,7 +214,7 @@ import_data_mrmhub <- function(
     data = data,
     path = path,
     import_function = "parse_mrmhub_result",
-    file_ext = "*.tsv|*.csv",
+    file_ext = "[.](tsv|csv)$",
     silent = silent
   )
   data <- set_intensity_var(
@@ -231,59 +230,6 @@ import_data_mrmhub <- function(
     data <- import_metadata_from_data(data, qc_type_column_name = "qc_type")
   }
   data
-}
-
-#' (Deprecated) Import wide CSV files
-#' @details
-#' This function is deprecated. Please use [import_data_csv_wide()] instead.
-
-#'
-#' @param data [`MRMhubExperiment`][MRMhubExperiment-class] object
-#' @param path One or more file names with path, or a folder path, which case all *.csv files in this folder will be read.
-#' @param variable_name Variable type representing the values in the table. Must be one of "intensity", "norm_intensity", "conc", "area", "height", "response".
-#' @param analysis_id_col Column to be used as analysis_id. `NA` (default) used 'analysis_id' if present, or the first column if it contains unique values.
-#' @param import_metadata Import additional metadata columns (e.g. batch ID, sample type) and add to the [`MRMhubExperiment`][MRMhubExperiment-class] object.
-#' Only following metadata column names are supported: `"qc_type"`, `"batch_id"`, `"is_quantifier"`, `"is_istd"`, `"analysis_order"`
-#' @param first_feature_column Column number of the first column representing the feature values
-#' @param na_strings A character vector of strings which are to be interpreted as NA values. Blank fields are also considered to be missing values.
-# #' @param silent Su ppress notifications
-#' @return [`MRMhubExperiment`][MRMhubExperiment-class] object
-#' @examples
-#' file_path <- system.file("extdata", "plain_wide_dataset.csv", package = "mrmhub")
-#'
-#' mexp <- MRMhubExperiment()
-#'
-#' mexp <- import_data_csv(
-#'   data = mexp,
-#'   path = file_path,
-#'  variable_name = "conc",
-#'  import_metadata = TRUE)
-#'
-#' print(mexp)
-#'
-#' @export
-
-import_data_csv <- function(
-  data = NULL,
-  path,
-  variable_name,
-  analysis_id_col = NA,
-  import_metadata = TRUE,
-  first_feature_column = NA,
-  na_strings = "NA"
-) {
-  mh_warn(
-    "The function import_data_csv is deprecated. Please use import_data_csv_wide instead."
-  )
-  import_data_csv_wide(
-    data = data,
-    path = path,
-    variable_name = variable_name,
-    analysis_id_col = analysis_id_col,
-    import_metadata = import_metadata,
-    first_feature_column = first_feature_column,
-    na_strings = na_strings
-  )
 }
 
 #' Import analysis results from plain wide-format CSV files
@@ -370,7 +316,7 @@ import_data_csv_wide <- function(
     data = data,
     path = path,
     import_function = "parse_plain_wide_csv",
-    file_ext = "*.csv",
+    file_ext = "[.]csv$",
     silent = FALSE,
     variable_name = variable_name,
     analysis_id_col = analysis_id_col,
@@ -416,16 +362,16 @@ import_data_csv_wide <- function(
 #' | `analysis_id`        | `analysis_id`         | Yes       |
 #' | `feature_id`         | `feature_id`          | Yes       |
 #' | `qc_type`            | `qc_type`             | No        |
-#' | `sample_id`          | `sample_id`           | No        |
 #' | `batch_id`           | `batch_id`            | No        |
 #' | `istd_feature_id`    | `istd_feature_id`     | No        |
 #' | `feature_class`      | `feature_class`       | No        |
-#' | `analyte_id`         | `analyte_id`          | No        |
 #' | `precursor_mz`       | `method_precursor_mz` | No        |
 #' | `product_mz`         | `method_product_mz`   | No        |
 #' | `area`               | `feature_area`        | No        |
 #' | `height`             | `feature_height`      | No        |
 #' | `intensity`          | `feature_intensity`   | No        |
+#' | `response`           | `feature_response`    | No        |
+#' | `conc`               | `feature_conc`        | No        |
 #' | `rt`                 | `feature_rt`          | No        |
 #' | `fwhm`               | `feature_fwhm`        | No        |
 #' | `width`              | `feature_width`       | No        |
@@ -517,7 +463,7 @@ import_data_csv_long <- function(
     data = data,
     path = path,
     import_function = "parse_plain_long_csv",
-    file_ext = "*.csv",
+    file_ext = "[.]csv$",
     silent = silent,
     column_mapping = column_mapping,
     na_strings = na_strings,
@@ -530,6 +476,8 @@ import_data_csv_long <- function(
     warnings = FALSE,
     "feature_area",
     "feature_height",
+    "feature_intensity",
+    "feature_response",
     "feature_conc"
   )
 
@@ -556,7 +504,7 @@ import_data_main <- function(
   if (all(!fs::is_dir(path))) {
     file_paths <- fs::path_tidy(path)
   } else {
-    file_paths <- fs::dir_ls(path, glob = file_ext)
+    file_paths <- fs::dir_ls(path, regexp = file_ext)
   }
 
   # An empty match (wrong/empty folder, or no file of the expected type) would
@@ -720,11 +668,6 @@ import_data_main <- function(
     d_raw
   )
 
-  # TODO: excl_unmatched_analyses below
-
-  #check_integrity_analyses(data, excl_unmatched_analyses = TRUE, silent = TRUE)
-  # stopifnot(methods::validObject(data))
-
   if (!silent) {
     n_analyses <- length(unique(data@dataset_orig$analysis_id))
     # Assign each feature to a single bucket: a feature counts as a qualifier if
@@ -780,10 +723,6 @@ parse_masshunter_csv <- function(
   silent = FALSE,
   conc_column = "conc_final"
 ) {
-  # if(!silent) print(glue::glue("Reading [{basename(path)}] ..."))
-  # if (shiny::isRunning())
-  #   incProgress(1 / length(n_datafiles), detail = paste0(", basename(file)))
-  #
   # Read Agilent MassHunter Quant Export file (CSV).
   # The suppress*() wrap silences only readr's cosmetic chatter here (the auto
   # `X1..Xn` naming from `col_names = FALSE`, column-spec output). Genuine parse
@@ -1464,6 +1403,9 @@ parse_plain_long_csv <- function(
       "feature_rt" = "rt",
       "feature_area" = "area",
       "feature_height" = "height",
+      "feature_intensity" = "intensity",
+      "feature_response" = "response",
+      "feature_conc" = "conc",
       "feature_norm_intensity" = "norm_area",
       "feature_fwhm" = "fwhm",
       "feature_width" = "width",
@@ -1667,10 +1609,6 @@ parse_plain_long_csv <- function(
       "integration_qualifier"
     )))
 
-  # if (!use_normalized_data) {
-  #   #d_mrmhub_data <- d_mrmhub_data |> mutate(feature_norm_intensity = NA_real_)
-  #   d_mrmhub_data <- d_mrmhub_data |> select(-feature_norm_intensity)
-  # }
   d_raw_final
 }
 

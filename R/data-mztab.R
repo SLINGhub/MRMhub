@@ -692,32 +692,6 @@ parse_mztab <- function(path, silent = FALSE) {
       )
     )
 
-  # study_variable[k] membership -> best-effort batch_id
-  sv_name <- mtd |>
-    dplyr::filter(stringr::str_detect(
-      .data$key,
-      "^study_variable\\[\\d+\\]$"
-    )) |>
-    dplyr::transmute(sv_no = .mztab_index(.data$key), batch_id = .data$value)
-  sv_refs <- mtd |>
-    dplyr::filter(stringr::str_detect(
-      .data$key,
-      "^study_variable\\[\\d+\\]-assay_refs$"
-    )) |>
-    dplyr::transmute(
-      sv_no = .mztab_index(.data$key),
-      assay_no = stringr::str_split(.data$value, "\\s*\\|\\s*")
-    ) |>
-    tidyr::unnest("assay_no") |>
-    dplyr::mutate(assay_no = .mztab_index(.data$assay_no))
-  sv_map <- sv_refs |>
-    dplyr::left_join(sv_name, by = "sv_no") |>
-    dplyr::distinct(.data$assay_no, .keep_all = TRUE) |>
-    dplyr::select("assay_no", "batch_id")
-  if (nrow(sv_map) > 0) {
-    assays <- dplyr::left_join(assays, sv_map, by = "assay_no")
-  }
-
   # --- SMF (features) + SML (analyte names) ---------------------------------
   smf <- .mztab_read_section(parts, prefixes, "SFH", "SMF")
   if (is.null(smf)) {
@@ -824,7 +798,6 @@ parse_mztab <- function(path, silent = FALSE) {
       "feature_intensity",
       "integration_qualifier",
       dplyr::any_of(c(
-        "batch_id",
         "method_product_mz",
         "method_polarity",
         "feature_rt",
@@ -880,13 +853,12 @@ parse_mztab <- function(path, silent = FALSE) {
 #' are taken from the `SMF`/`SML` sections where available. Internal-standard
 #' relationships, QC-type assignments and calibration metadata are **not**
 #' part of mzTab-M and must be supplied afterwards with [add_metadata()].
-#' `study_variable` group membership is imported best-effort as `batch_id`
-#' (mzTab-M has no analytical-batch concept).
+#' `study_variable` groups are not imported; all analyses are in one batch.
 #'
 #' @param data An [`MRMhubExperiment`][MRMhubExperiment-class] object (e.g. from [MRMhubExperiment()]).
 #' @param path Path to a `.mzTab` file, or a directory of them.
 #' @param import_metadata If `TRUE` (default), derive analysis/feature metadata
-#'   (incl. `batch_id`, formula, neutral mass) from the imported data via
+#'   (incl. formula, neutral mass) from the imported data via
 #'   [import_metadata_from_data()].
 #' @param silent Suppress messages.
 #'
@@ -913,7 +885,7 @@ import_data_mztab <- function(
     data = data,
     path = path,
     import_function = "parse_mztab",
-    file_ext = "*.mzTab|*.mztab",
+    file_ext = "[.](mzTab|mztab)$",
     silent = silent
   )
   data <- set_intensity_var(

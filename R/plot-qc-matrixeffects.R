@@ -1,8 +1,18 @@
 #' Plot standardized feature intensities grouped by QC type
 #'
 #' This function creates a grouped beeswarm plot of standardized feature intensities,
-#' where the y-axis represents intensity standardized such that the mean across all
-#' features is 100%. Points are grouped by `qc_type` and spread using quasirandom jitter.
+#' where each value is shown as a percentage of the feature's median over the
+#' plotted non-blank analyses (per batch with `batchwise_normalization = TRUE`).
+#' Points are grouped by `qc_type` and spread using quasirandom jitter. An ISTD
+#' signal higher in process blanks (ISTD without matrix) than in the samples may
+#' indicate ion suppression by the sample matrix. The spread between study
+#' samples and pooled QCs can reflect sample-to-sample differences in matrix
+#' effects.
+#'
+#' Include at least one QC type besides the study samples: the reference is
+#' computed from the plotted analyses, so with study samples only they centre on
+#' 100% by construction. The plot compares ISTD signals between samples; it
+#' does not measure the matrix effect itself.
 #'
 #' @template data_mexp
 #' @param variable A character string indicating the signal variable to plot.
@@ -11,7 +21,7 @@
 #' @template qc_types
 #' @param batchwise_normalization A logical value indicating whether to normalize the signals by batch instead of globally.
 #' @param include_qualifier A logical value indicating whether to include
-#' qualifier features. Default is `TRUE`.
+#' qualifier features. Default is `FALSE`.
 #' @param only_istd A logical value indicating whether to show only internal
 #' standard (ISTD) features. Default is `TRUE`. Set to `FALSE` in combination with feature_filter parameters to show other features.
 #' @template feature_filters
@@ -80,23 +90,9 @@ plot_matrixeffects <- function(
   check_var_in_dataset(data@dataset, variable)
   variable_sym = rlang::sym(variable)
 
+  nonblank <- pkg.env$qc_type_annotation$qc_type_levels_nonblank
   if (all(is.na(qc_types))) {
-    qc_types <- intersect(
-      data$dataset$qc_type,
-      c(
-        "SPL",
-        "TQC",
-        "BQC",
-        "HQC",
-        "MQC",
-        "LQC",
-        "QC",
-        "NIST",
-        "LTR",
-        "PBLK",
-        "SBLK"
-      )
-    )
+    qc_types <- intersect(data$dataset$qc_type, c(nonblank, "PBLK", "SBLK"))
   }
 
   d_filt <- get_dataset_subset(
@@ -108,6 +104,14 @@ plot_matrixeffects <- function(
     include_feature_filter = include_feature_filter,
     exclude_feature_filter = exclude_feature_filter
   )
+  if (only_istd) {
+    d_filt <- d_filt |> filter(.data$is_istd)
+  }
+  if (!any(d_filt$qc_type %in% nonblank)) {
+    cli_abort(
+      "The selected QC types contain no non-blank analyses to use as reference. Include study samples or QC samples in {.arg qc_types}."
+    )
+  }
 
   if (!is.na(min_median_value)) {
     d_minsignal <- d_filt |>
@@ -137,14 +141,11 @@ plot_matrixeffects <- function(
       "is_istd",
       variable
     )))
-  if (only_istd) {
-    df <- df |> filter(.data$is_istd)
-  }
 
-  df$qc_type <- factor(
+  df$qc_type <- droplevels(factor(
     df$qc_type,
-    levels = c("PBLK", "TQC", "BQC", "LQC", "MQC", "HQC", "SPL", "NIST", "LTR")
-  )
+    levels = pkg.env$qc_type_annotation$qc_type_levels
+  ))
 
   grp <- if (batchwise_normalization) {
     c("feature_id", "batch_id")
@@ -155,7 +156,10 @@ plot_matrixeffects <- function(
     group_by(across(all_of(grp))) |>
     dplyr::mutate(
       scaled_intensity = !!variable_sym /
-        mean(!!variable_sym, na.rm = TRUE) *
+        median(
+          (!!variable_sym)[.data$qc_type %in% nonblank],
+          na.rm = TRUE
+        ) *
         100
     ) |>
     drop_na("scaled_intensity")
@@ -194,10 +198,6 @@ plot_matrixeffects <- function(
       color = "grey80",
       linetype = "dashed"
     ) +
-    # ggplot2::labs(
-    #   x = NULL,
-    #   y = ""
-    # ) +
     ggplot2::scale_color_manual(
       name = NULL,
       values = pkg.env$qc_type_annotation$qc_type_col,
@@ -210,8 +210,14 @@ plot_matrixeffects <- function(
     ) +
     ggplot2::coord_cartesian(ylim = y_lim, expand = TRUE) +
     ggplot2::theme_bw(base_size = font_base_size) +
-    ylab("Standardized Intensity (% of mean)") +
-    xlab("Internal Standard") +
+    ylab(
+      if (batchwise_normalization) {
+        "Standardized Intensity (% of batch median)"
+      } else {
+        "Standardized Intensity (% of median)"
+      }
+    ) +
+    xlab(if (only_istd) "Internal Standard" else "Feature") +
     theme(
       axis.text.x = ggplot2::element_text(angle = angle_x, hjust = 1),
       axis.title = element_text(size = font_base_size, face = "plain")

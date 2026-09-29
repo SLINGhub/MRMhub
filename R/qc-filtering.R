@@ -39,14 +39,11 @@
 #'  Specific feature information extracted from the feature metadata table,
 #'  such as feature class, associated ISTD, quantifier status.
 #'
-#' - **Feature MS Method Information** (if method variables are available in the analysis data).
-#'   Extracts and summarizes method-related variables for each feature. If multiple
-#'   values exist for the same feature, these will be concatenated into a string.
-#'   The latter would indicate inconsistent analysis conditions.
-#'   - `precursor_mz`: The m/z value of the precursor ion(s),
-#'   - `product_mz`: The m/z value of the product ion(s), concatenated if multiple values exist for the same feature.
-#'   - `collision_energy`: The collision energy used for fragmentation, concatenated if multiple values exist for the same feature.
-
+#' - **Feature MS method information** (if available in the imported data):
+#'   `precursor_mz`, `product_mz` and `collision_energy` per feature. A value
+#'   that differs between analyses indicates inconsistent acquisition
+#'   conditions; it is set to `NA` with a warning naming the features.
+#'
 #' - **Missing Value Metrics**:
 #'   - `missing_intensity_prop_spl`: Proportion of missing intensities for the SPL sample type.
 #'   - `missing_norm_intensity_prop_spl`: Proportion of missing normalized intensities for SPL samples.
@@ -59,11 +56,17 @@
 #'   - `rt_median_*`: Median retention time for specific QC sample types like PBLK, SPL, BQC, TQC, etc.
 #'
 #' - **Intensity Metrics**:
+#'   - `n_bqc`, `n_tqc`, `n_spl`: Number of analyses with a non-missing intensity
+#'     per QC type, i.e. the replicates behind the %CV and D-ratio (the median
+#'     of the per-batch counts with `use_batch_medians = TRUE`). %CV and D-ratio
+#'     are `NA` below 3 replicates.
 #'   - `intensity_min_*`: Minimum intensity value for features across different QC sample types such as SPL, TQC, BQC, etc.
 #'   - `intensity_max_*`: Maximum intensity values across sample types.
 #'   - `intensity_median_*`: Median intensity for various QC sample types.
 #'   - `intensity_cv_*`: Coefficient of variation (CV) of intensity values for specific QC types.
 #'   - `sb_ratio_*`: Signal-to-blank ratios such as the ratio of intensity values for SPL vs PBLK, UBLK, or SBLK.
+#'     Blank medians count a blank analysis without detected signal (a missing
+#'     value or no row for the feature) as zero, giving a ratio of `Inf`.
 #'   - `intensity_q10_*`: The 10th percentile of intensity values for the SPL sample type.
 #'
 #' - **Normalized Intensity Metrics** (only if `include_norm_intensity_stats = TRUE`):
@@ -147,27 +150,6 @@ calc_qc_metrics <- function(
   # Check if the input data is valid
   check_data(data)
 
-  # If the analysis type is lipidomics, (re)derive lipid-class names into the
-  # dataset so QC metrics/plots can group by `feature_class` (= lipid_class_lcb).
-  # STOPGAP: this parsing side-effects `data@dataset` from inside a metrics
-  # function; it really belongs upstream in the import / add_metadata pipeline.
-  # Relocating it there (and having QC + plots consume the already-parsed
-  # classes) would let this branch be removed. Safe to call repeatedly for now:
-  # parse_lipid_feature_names() drops any pre-existing lipid columns before
-  # re-joining, so it is idempotent.
-  if (
-    !is.na(data@analysis_type) &&
-      all(!is.na(data@annot_features$feature_class)) &&
-      tolower(data@analysis_type) == "lipidomics"
-  ) {
-    data@dataset <- parse_lipid_feature_names(
-      data@dataset,
-      add_chain_composition = FALSE,
-      use_as_feature_class = "lipid_class_lcb",
-      add_transition_names = FALSE
-    )
-  }
-
   # Select relevant feature information from the dataset
   d_feature_info <- data@annot_features |>
     select(
@@ -181,54 +163,52 @@ calc_qc_metrics <- function(
       "response_factor"
     )
 
-  # Define method variables and template
-  method_var <- c(
-    "method_precursor_mz",
-    "method_product_mz",
-    "method_collision_energy"
+  # MS method info per feature; values differing between analyses become NA
+  method_vars <- c(
+    precursor_mz = "method_precursor_mz",
+    product_mz = "method_product_mz",
+    collision_energy = "method_collision_energy"
   )
-  d_method_template <- tibble(
-    "precursor_mz" = NA_character_,
-    "product_mz" = NA_character_,
-    "collision_energy" = NA_character_
-  )
+  d_method <- data@dataset_orig |> select("feature_id", any_of(method_vars))
+  d_method[setdiff(names(method_vars), names(d_method))] <- NA_real_
+  d_method <- d_method |>
+    tidyr::pivot_longer(
+      -"feature_id",
+      names_to = "field",
+      values_drop_na = TRUE
+    ) |>
+    distinct() |>
+    mutate(n = n(), .by = c("feature_id", "field"))
 
-  # Check if the method variables exist in the dataset
-  if (any(c(method_var) %in% names(data@dataset_orig))) {
-    # Summarize method information for each feature
-    method_vars <- c(
-      "method_precursor_mz",
-      "method_product_mz",
-      "method_collision_energy"
+  d_inconsistent <- d_method |>
+    filter(.data$n > 1) |>
+    distinct(.data$feature_id, .data$field)
+  if (nrow(d_inconsistent) > 0) {
+    inconsistent <- paste0(
+      d_inconsistent$feature_id,
+      " (",
+      d_inconsistent$field,
+      ")"
     )
-
-    d_method_info <- data@dataset_orig |>
-      select("feature_id", any_of(method_vars)) |>
-      group_by(.data$feature_id) |>
-      summarise(
-        across(
-          .cols = any_of(method_vars),
-          .fns = ~ stringr::str_c(unique(.x), collapse = "; "),
-          .names = "{.col}"
-        ),
-        .groups = "drop"
-      ) |>
-      dplyr::rename_with(
-        ~ stringr::str_replace(.x, "^method_", ""),
-        starts_with("method_")
-      ) |>
-      ungroup() |>
-      bind_rows(d_method_template) |>
-      dplyr::mutate(across(
-        where(is.character) & !c("feature_id"),
-        ~ as.numeric(suppressWarnings(as.numeric(.)))
-      ))
-  } else {
-    d_method_info <- d_feature_info |>
-      select("feature_id") |>
-      distinct() |>
-      bind_rows(d_method_template)
+    cli::cli_warn(c(
+      "MS method values differ between analyses and are set to NA in {.code metrics_qc}.",
+      "i" = "Affected feature{?s}: {.val {mh_vec(inconsistent)}}."
+    ))
   }
+
+  d_method_info <- d_method |>
+    filter(.data$n == 1) |>
+    tidyr::pivot_wider(
+      id_cols = "feature_id",
+      names_from = "field",
+      values_from = "value"
+    ) |>
+    bind_rows(tibble(
+      feature_id = character(),
+      precursor_mz = numeric(),
+      product_mz = numeric(),
+      collision_energy = numeric()
+    ))
 
   # Summarize missing value statistics for different QC types. Scope to the
   # canonical sample types minus RQC (response-curve samples), matching the RQC
@@ -299,6 +279,7 @@ calc_qc_metrics <- function(
   # Select relevant variables needed for statistics
   d_stats_var <- data@dataset |>
     select(any_of(c(
+      "analysis_id",
       "batch_id",
       "feature_id",
       "qc_type",
@@ -309,6 +290,18 @@ calc_qc_metrics <- function(
     ))) |>
     filter(.data$qc_type != "RQC") |>
     mutate(qc_type = factor(.data$qc_type), batch_id = factor(.data$batch_id))
+
+  # A blank analysis without a row for a feature counts as not detected, so it
+  # enters the blank medians as zero, like a missing value
+  is_blank <- d_stats_var$qc_type %in% c("PBLK", "UBLK", "SBLK")
+  d_stats_var <- dplyr::bind_rows(
+    d_stats_var[!is_blank, ],
+    d_stats_var[is_blank, ] |>
+      tidyr::complete(
+        feature_id = unique(d_stats_var$feature_id),
+        tidyr::nesting(!!!syms(c("analysis_id", "qc_type", "batch_id")))
+      )
+  )
 
   # Minimum non-missing replicates for a QC %CV to be a meaningful precision
   # estimate (cf. FDA/EMA bioanalytical guidance, which expects >= 3). Below this
@@ -353,7 +346,7 @@ calc_qc_metrics <- function(
     if (nrow(low_rep) > 0) {
       by_qc <- dplyr::count(low_rep, .data$qc_type)
       mh_warn(
-        "%CV not computed for {nrow(low_rep)} feature\u00d7QC-type\u00d7variable combination{?s} with fewer than {min_cv_replicates} replicates ({paste0(by_qc$qc_type, ': ', by_qc$n, collapse = ', ')})."
+        "%CV and D-ratio not computed for {nrow(low_rep)} feature\u00d7QC-type\u00d7variable combination{?s} with fewer than {min_cv_replicates} replicates ({paste0(by_qc$qc_type, ': ', by_qc$n, collapse = ', ')})."
       )
     }
   }
@@ -388,289 +381,102 @@ calc_qc_metrics <- function(
   }
 
   # Compute every requested per-(feature[, batch]) metric in a SINGLE grouped
-  # pass over d_stats_var, rather than one pass per variable block joined
-  # together. The expression lists below are identical to the former per-block
-  # summaries; only the number of grouping passes changes. Signal-to-blank
-  # ratios (which derive from the intensity medians) are added afterwards.
+  # pass over d_stats_var. Signal-to-blank ratios (derived from the intensity
+  # medians) are added afterwards.
+  #
+  # QC types summarised by each statistic, in metrics_qc column order. To add a
+  # QC type, append it to the relevant sets; its columns follow the existing ones.
+  qcs <- list(
+    count = c("BQC", "TQC", "SPL"),
+    range = c("BQC", "TQC"),
+    blank = c("PBLK", "UBLK", "SBLK"),
+    rt_median = c("PBLK", "SPL", "BQC", "TQC", "NIST", "LTR"),
+    median = c("SPL", "BQC", "TQC", "NIST", "LTR"),
+    conc_median = c("TQC", "BQC", "SPL", "NIST", "LTR"),
+    cv = c("TQC", "BQC", "SPL", "LTR", "NIST"),
+    conc_cv = c("TQC", "BQC", "SPL", "NIST", "LTR"),
+    dratio = c("BQC", "TQC")
+  )
+  rt <- "feature_rt"
+  int <- "feature_intensity"
+  norm <- "feature_norm_intensity"
+  conc <- "feature_conc"
   stat_exprs <- c(
     if (do_rt) {
-      rlang::exprs(
-        rt_min_spl = safe_min(
-          .data$feature_rt[.data$qc_type == "SPL"],
-          na.rm = TRUE
-        ),
-        rt_max_spl = safe_max(
-          .data$feature_rt[.data$qc_type == "SPL"],
-          na.rm = TRUE
-        ),
-        rt_min_bqc = safe_min(
-          .data$feature_rt[.data$qc_type == "BQC"],
-          na.rm = TRUE
-        ),
-        rt_min_tqc = safe_min(
-          .data$feature_rt[.data$qc_type == "TQC"],
-          na.rm = TRUE
-        ),
-        rt_median_pblk = median(
-          .data$feature_rt[.data$qc_type == "PBLK"],
-          na.rm = TRUE
-        ),
-        rt_median_spl = median(
-          .data$feature_rt[.data$qc_type == "SPL"],
-          na.rm = TRUE
-        ),
-        rt_median_bqc = median(
-          .data$feature_rt[.data$qc_type == "BQC"],
-          na.rm = TRUE
-        ),
-        rt_median_tqc = median(
-          .data$feature_rt[.data$qc_type == "TQC"],
-          na.rm = TRUE
-        ),
-        rt_median_nist = median(
-          .data$feature_rt[.data$qc_type == "NIST"],
-          na.rm = TRUE
-        ),
-        rt_median_ltr = median(
-          .data$feature_rt[.data$qc_type == "LTR"],
-          na.rm = TRUE
-        )
+      c(
+        qc_stat_exprs("rt_min", rt, "SPL", safe_min, na.rm = TRUE),
+        qc_stat_exprs("rt_max", rt, "SPL", safe_max, na.rm = TRUE),
+        qc_stat_exprs("rt_min", rt, qcs$range, safe_min, na.rm = TRUE),
+        qc_stat_exprs("rt_median", rt, qcs$rt_median, median, na.rm = TRUE)
       )
     },
     if (do_int) {
-      rlang::exprs(
-        intensity_min_spl = safe_min(
-          .data$feature_intensity[.data$qc_type == "SPL"],
+      c(
+        qc_stat_exprs("n", int, qcs$count, n_present),
+        qc_stat_exprs("intensity_min", int, "SPL", safe_min, na.rm = TRUE),
+        qc_stat_exprs("intensity_max", int, "SPL", safe_max, na.rm = TRUE),
+        qc_stat_exprs("intensity_min", int, qcs$range, safe_min, na.rm = TRUE),
+        qc_stat_exprs("intensity_max", int, qcs$range, safe_max, na.rm = TRUE),
+        qc_stat_exprs("intensity_median", int, qcs$blank, median_blank),
+        qc_stat_exprs(
+          "intensity_median",
+          int,
+          qcs$median,
+          median,
           na.rm = TRUE
         ),
-        intensity_max_spl = safe_max(
-          .data$feature_intensity[.data$qc_type == "SPL"],
-          na.rm = TRUE
-        ),
-        intensity_min_bqc = safe_min(
-          .data$feature_intensity[.data$qc_type == "BQC"],
-          na.rm = TRUE
-        ),
-        intensity_min_tqc = safe_min(
-          .data$feature_intensity[.data$qc_type == "TQC"],
-          na.rm = TRUE
-        ),
-        intensity_max_bqc = safe_max(
-          .data$feature_intensity[.data$qc_type == "BQC"],
-          na.rm = TRUE
-        ),
-        intensity_max_tqc = safe_max(
-          .data$feature_intensity[.data$qc_type == "TQC"],
-          na.rm = TRUE
-        ),
-        intensity_median_pblk = median(
-          .data$feature_intensity[.data$qc_type == "PBLK"],
-          na.rm = TRUE
-        ),
-        intensity_median_ublk = median(
-          .data$feature_intensity[.data$qc_type == "UBLK"],
-          na.rm = TRUE
-        ),
-        intensity_median_sblk = median(
-          .data$feature_intensity[.data$qc_type == "SBLK"],
-          na.rm = TRUE
-        ),
-        intensity_median_spl = median(
-          .data$feature_intensity[.data$qc_type == "SPL"],
-          na.rm = TRUE
-        ),
-        intensity_median_bqc = median(
-          .data$feature_intensity[.data$qc_type == "BQC"],
-          na.rm = TRUE
-        ),
-        intensity_median_tqc = median(
-          .data$feature_intensity[.data$qc_type == "TQC"],
-          na.rm = TRUE
-        ),
-        intensity_median_nist = median(
-          .data$feature_intensity[.data$qc_type == "NIST"],
-          na.rm = TRUE
-        ),
-        intensity_median_ltr = median(
-          .data$feature_intensity[.data$qc_type == "LTR"],
-          na.rm = TRUE
-        ),
-        intensity_cv_tqc = cv(
-          .data$feature_intensity[.data$qc_type == "TQC"],
+        qc_stat_exprs(
+          "intensity_cv",
+          int,
+          qcs$cv,
+          cv,
           na.rm = TRUE,
           use_robust_cv,
           min_n = min_cv_replicates
         ),
-        intensity_cv_bqc = cv(
-          .data$feature_intensity[.data$qc_type == "BQC"],
-          na.rm = TRUE,
-          use_robust_cv,
-          min_n = min_cv_replicates
-        ),
-        intensity_cv_spl = cv(
-          .data$feature_intensity[.data$qc_type == "SPL"],
-          na.rm = TRUE,
-          use_robust_cv,
-          min_n = min_cv_replicates
-        ),
-        intensity_cv_ltr = cv(
-          .data$feature_intensity[.data$qc_type == "LTR"],
-          na.rm = TRUE,
-          use_robust_cv,
-          min_n = min_cv_replicates
-        ),
-        intensity_cv_nist = cv(
-          .data$feature_intensity[.data$qc_type == "NIST"],
-          na.rm = TRUE,
-          use_robust_cv,
-          min_n = min_cv_replicates
-        ),
-        intensity_q10_spl = quantile(
-          .data$feature_intensity[.data$qc_type == "SPL"],
-          probs = 0.1,
-          na.rm = TRUE,
-          names = FALSE
+        rlang::exprs(
+          intensity_q10_spl = quantile(
+            .data$feature_intensity[.data$qc_type == "SPL"],
+            probs = 0.1,
+            na.rm = TRUE,
+            names = FALSE
+          )
         )
       )
     },
     if (do_norm) {
-      rlang::exprs(
-        norm_intensity_cv_tqc = cv(
-          .data$feature_norm_intensity[.data$qc_type == "TQC"],
+      c(
+        qc_stat_exprs(
+          "norm_intensity_cv",
+          norm,
+          qcs$cv,
+          cv,
           na.rm = TRUE,
           use_robust_cv,
           min_n = min_cv_replicates
         ),
-        norm_intensity_cv_bqc = cv(
-          .data$feature_norm_intensity[.data$qc_type == "BQC"],
-          na.rm = TRUE,
-          use_robust_cv,
-          min_n = min_cv_replicates
-        ),
-        norm_intensity_cv_spl = cv(
-          .data$feature_norm_intensity[.data$qc_type == "SPL"],
-          na.rm = TRUE,
-          use_robust_cv,
-          min_n = min_cv_replicates
-        ),
-        norm_intensity_cv_ltr = cv(
-          .data$feature_norm_intensity[.data$qc_type == "LTR"],
-          na.rm = TRUE,
-          use_robust_cv,
-          min_n = min_cv_replicates
-        ),
-        norm_intensity_cv_nist = cv(
-          .data$feature_norm_intensity[.data$qc_type == "NIST"],
-          na.rm = TRUE,
-          use_robust_cv,
-          min_n = min_cv_replicates
-        ),
-        normint_dratio_sd_bqc = sd(
-          .data$feature_norm_intensity[.data$qc_type == "BQC"],
-          na.rm = TRUE
-        ) /
-          sd(
-            .data$feature_norm_intensity[.data$qc_type == "SPL"],
-            na.rm = TRUE
-          ),
-        normint_dratio_sd_tqc = sd(
-          .data$feature_norm_intensity[.data$qc_type == "TQC"],
-          na.rm = TRUE
-        ) /
-          sd(
-            .data$feature_norm_intensity[.data$qc_type == "SPL"],
-            na.rm = TRUE
-          ),
-        normint_dratio_mad_bqc = mad(
-          .data$feature_norm_intensity[.data$qc_type == "BQC"],
-          na.rm = TRUE
-        ) /
-          mad(
-            .data$feature_norm_intensity[.data$qc_type == "SPL"],
-            na.rm = TRUE
-          ),
-        normint_dratio_mad_tqc = mad(
-          .data$feature_norm_intensity[.data$qc_type == "TQC"],
-          na.rm = TRUE
-        ) /
-          mad(
-            .data$feature_norm_intensity[.data$qc_type == "SPL"],
-            na.rm = TRUE
-          )
+        dratio_exprs("normint", norm, qcs$dratio, min_cv_replicates)
       )
     },
     if (do_conc) {
-      rlang::exprs(
-        conc_median_tqc = median(
-          .data$feature_conc[.data$qc_type == "TQC"],
+      c(
+        qc_stat_exprs(
+          "conc_median",
+          conc,
+          qcs$conc_median,
+          median,
           na.rm = TRUE
         ),
-        conc_median_bqc = median(
-          .data$feature_conc[.data$qc_type == "BQC"],
-          na.rm = TRUE
-        ),
-        conc_median_spl = median(
-          .data$feature_conc[.data$qc_type == "SPL"],
-          na.rm = TRUE
-        ),
-        conc_median_nist = median(
-          .data$feature_conc[.data$qc_type == "NIST"],
-          na.rm = TRUE
-        ),
-        conc_median_ltr = median(
-          .data$feature_conc[.data$qc_type == "LTR"],
-          na.rm = TRUE
-        ),
-        conc_cv_tqc = cv(
-          .data$feature_conc[.data$qc_type == "TQC"],
+        qc_stat_exprs(
+          "conc_cv",
+          conc,
+          qcs$conc_cv,
+          cv,
           na.rm = TRUE,
           use_robust_cv,
           min_n = min_cv_replicates
         ),
-        conc_cv_bqc = cv(
-          .data$feature_conc[.data$qc_type == "BQC"],
-          na.rm = TRUE,
-          use_robust_cv,
-          min_n = min_cv_replicates
-        ),
-        conc_cv_spl = cv(
-          .data$feature_conc[.data$qc_type == "SPL"],
-          na.rm = TRUE,
-          use_robust_cv,
-          min_n = min_cv_replicates
-        ),
-        conc_cv_nist = cv(
-          .data$feature_conc[.data$qc_type == "NIST"],
-          na.rm = TRUE,
-          use_robust_cv,
-          min_n = min_cv_replicates
-        ),
-        conc_cv_ltr = cv(
-          .data$feature_conc[.data$qc_type == "LTR"],
-          na.rm = TRUE,
-          use_robust_cv,
-          min_n = min_cv_replicates
-        ),
-        conc_dratio_sd_bqc = sd(
-          .data$feature_conc[.data$qc_type == "BQC"],
-          na.rm = TRUE
-        ) /
-          sd(.data$feature_conc[.data$qc_type == "SPL"], na.rm = TRUE),
-        conc_dratio_sd_tqc = sd(
-          .data$feature_conc[.data$qc_type == "TQC"],
-          na.rm = TRUE
-        ) /
-          sd(.data$feature_conc[.data$qc_type == "SPL"], na.rm = TRUE),
-        conc_dratio_mad_bqc = mad(
-          .data$feature_conc[.data$qc_type == "BQC"],
-          na.rm = TRUE
-        ) /
-          mad(.data$feature_conc[.data$qc_type == "SPL"], na.rm = TRUE),
-        conc_dratio_mad_tqc = mad(
-          .data$feature_conc[.data$qc_type == "TQC"],
-          na.rm = TRUE
-        ) /
-          mad(.data$feature_conc[.data$qc_type == "SPL"], na.rm = TRUE)
+        dratio_exprs("conc", conc, qcs$dratio, min_cv_replicates)
       )
     }
   )
@@ -680,22 +486,34 @@ calc_qc_metrics <- function(
 
   # Signal-to-blank ratios derive from the intensity medians just computed.
   # Restore their original position (directly after the intensity block) so the
-  # metrics_qc column order is unchanged.
+  # metrics_qc column order is unchanged. A blank median of 0 (not detected)
+  # gives Inf; an undetected sample signal gives NA.
   if (do_int) {
+    sb_ratio <- function(spl, blk) if_else(spl > 0, spl / blk, NA_real_)
     d_stats_var_final <- d_stats_var_final |>
       mutate(
-        sb_ratio_q10_pbk = .data$intensity_q10_spl /
-          .data$intensity_median_pblk,
-        sb_ratio_pblk = .data$intensity_median_spl /
-          .data$intensity_median_pblk,
-        sb_ratio_ublk = .data$intensity_median_spl /
-          .data$intensity_median_ublk,
-        sb_ratio_sblk = .data$intensity_median_spl / .data$intensity_median_sblk
+        sb_ratio_q10_pblk = sb_ratio(
+          .data$intensity_q10_spl,
+          .data$intensity_median_pblk
+        ),
+        sb_ratio_pblk = sb_ratio(
+          .data$intensity_median_spl,
+          .data$intensity_median_pblk
+        ),
+        sb_ratio_ublk = sb_ratio(
+          .data$intensity_median_spl,
+          .data$intensity_median_ublk
+        ),
+        sb_ratio_sblk = sb_ratio(
+          .data$intensity_median_spl,
+          .data$intensity_median_sblk
+        )
       ) |>
       relocate(dplyr::starts_with("sb_ratio"), .after = "intensity_q10_spl")
   }
 
-  # If batch medians are requested, calculate the median of all columns (except ID columns) for each feature
+  # If batch medians are requested, calculate the median of all columns (except
+  # ID columns) for each feature.
   if (use_batch_medians) {
     d_stats_var_final <- d_stats_var_final |>
       summarise(
@@ -777,6 +595,12 @@ calc_qc_metrics <- function(
     }
   }
 
+  # Record the CV settings, so filter_features_qc() can reuse or recalculate
+  attr(data@metrics_qc, "qc_metrics_settings") <- list(
+    use_robust_cv = use_robust_cv,
+    use_batch_medians = use_batch_medians
+  )
+
   # Summarize what was computed. Metric-group membership is measured from the
   # output columns, so the report reflects what actually landed in metrics_qc.
   n_features <- length(features_in_dataset)
@@ -802,6 +626,50 @@ calc_qc_metrics <- function(
   # Return the updated data object with the calculated QC metrics
   data
 }
+
+# Summary expressions `fn(<var>[qc_type == <qc>], ...)`, one per QC type in
+# `qcs`, named `<prefix>_<qc>`. `...` is kept unevaluated (e.g. `use_robust_cv`
+# is resolved in calc_qc_metrics() when the summarise runs).
+qc_stat_exprs <- function(prefix, var, qcs, fn, ...) {
+  fn <- rlang::enexpr(fn)
+  args <- rlang::enexprs(...)
+  exprs <- lapply(qcs, function(qc) {
+    rlang::call2(
+      fn,
+      rlang::expr(.data[[!!var]][.data$qc_type == !!qc]),
+      !!!args
+    )
+  })
+  rlang::set_names(exprs, paste0(prefix, "_", tolower(qcs)))
+}
+
+# D-ratios (SD, then MAD based) of each QC type in `qcs` against SPL
+dratio_exprs <- function(prefix, var, qcs, min_n) {
+  exprs <- list()
+  for (use_mad in c(FALSE, TRUE)) {
+    for (qc in qcs) {
+      name <- paste0(
+        prefix,
+        "_dratio_",
+        if (use_mad) "mad" else "sd",
+        "_",
+        tolower(qc)
+      )
+      exprs[[name]] <- rlang::expr(dratio(
+        .data[[!!var]][.data$qc_type == !!qc],
+        .data[[!!var]][.data$qc_type == "SPL"],
+        use_mad = !!use_mad,
+        min_n = !!min_n
+      ))
+    }
+  }
+  exprs
+}
+
+n_present <- function(x) sum(!is.na(x))
+
+# A feature not detected in a blank counts as zero intensity there
+median_blank <- function(x) median(replace_na(x, 0))
 
 
 #' Feature filtering based on QC criteria
@@ -830,8 +698,12 @@ calc_qc_metrics <- function(
 #' @param data [`MRMhubExperiment`][MRMhubExperiment-class] object.
 #' @param clear_existing Logical. If `TRUE`, replaces any existing filters; if `FALSE`, adds new filters on top of existing ones. Default is `TRUE`.
 #' @param recalc_metrics Logical. If `TRUE`, recalculates QC metrics before filtering. Default is `FALSE`.
-#' @param use_batch_medians Logical. If `TRUE`, uses batch-wise median QC values for filtering. Default is `FALSE`.
-#' @param use_robust_cv Logical. If `TRUE`, uses robust coefficient of variation (MAD/median) instead of standard CV (SD/mean). Default is `FALSE`.
+#' @param use_batch_medians Logical. If `TRUE`, uses batch-wise median QC values for filtering.
+#'   Default is `FALSE`, or the setting of existing QC metrics; a different
+#'   explicit value recalculates them.
+#' @param use_robust_cv Logical. If `TRUE`, uses robust coefficient of variation (MAD/median) instead of standard CV (SD/mean).
+#'   Default is `FALSE`, or the setting of existing QC metrics; a different
+#'   explicit value recalculates them.
 #' @param include_qualifier Logical. If `TRUE`, includes qualifier features in the filtering process.
 #' @param include_istd Logical. If `TRUE`, includes internal standards (ISTDs) in the filtering process.
 #' @param features.to.keep A vector of feature identifiers to retain, even if they do not meet the filtering criteria.
@@ -848,6 +720,10 @@ calc_qc_metrics <- function(
 #' @param min.signalblank.median.spl.pblk Minimum signal-to-blank ratio for SPL samples and PBLK. Default is `NA`.
 #' @param min.signalblank.median.spl.ublk Minimum signal-to-blank ratio for SPL samples and UBLK. Default is `NA`.
 #' @param min.signalblank.median.spl.sblk Minimum signal-to-blank ratio for SPL samples and SBLK. Default is `NA`.
+#'   For all signal-to-blank criteria, a feature not detected in a blank
+#'   (missing or zero intensity) has a blank median of zero, i.e. a ratio of
+#'   `Inf`, and passes; a feature not detected in the study samples fails. A
+#'   criterion for a blank type without analyses in the dataset raises an error.
 #' @param max.cv.intensity.bqc Maximum CV for intensity in BQC samples. Default is `NA`.
 #' @param max.cv.intensity.tqc Maximum CV for intensity in TQC samples. Default is `NA`.
 #' @param max.cv.normintensity.bqc Maximum CV for normalized intensity in BQC samples. Default is `NA`.
@@ -870,6 +746,11 @@ calc_qc_metrics <- function(
 #' @param max.dratio.mad.normint.tqc Maximum allowed D-ratio (MAD of normalized intensity in TQC / MAD of SPL) using median absolute deviation. Default is `NA`.
 #'
 #' @return The input [`MRMhubExperiment`][MRMhubExperiment-class] object with the feature filtering criteria applied.
+#'   Per-criterion verdicts are stored in `metrics_qc`: `pass_minint` (the
+#'   `min.intensity.*` criteria), `pass_sb`, `pass_cva`, `pass_dratio`,
+#'   `pass_linearity` and `pass_missingval`, combined in `all_filter_pass`.
+#'   With a response-curve criterion, a feature without response-curve results
+#'   fails `pass_linearity`; ISTDs without results are not failed.
 
 #' @export
 filter_features_qc <- function(
@@ -987,19 +868,37 @@ filter_features_qc <- function(
 
   # Check which criteria categories were defined
   arg_names <- names(as.list(match.call()))
-  intensity_criteria_defined <- any(str_detect(
-    arg_names,
-    "[^\\.]intensity|signalblank"
-  ))
-  norm_intensity_criteria_defined <- any(str_detect(
-    arg_names,
-    "norm_intensity"
-  ))
-  conc_criteria_defined <- any(str_detect(arg_names, "conc"))
   resp_criteria_defined <- any(str_detect(arg_names, "response"))
 
-  if (recalc_metrics || nrow(data@metrics_qc) == 0) {
-    if (rlang::is_interactive()) {
+  # CV settings not given explicitly follow the stored metrics; metrics are
+  # recalculated when an explicit setting differs from the stored one.
+  settings <- attr(data@metrics_qc, "qc_metrics_settings")
+  has_metrics <- nrow(data@metrics_qc) > 0 && !is.null(settings)
+  if (has_metrics) {
+    if (missing(use_robust_cv)) {
+      use_robust_cv <- settings$use_robust_cv
+    }
+    if (missing(use_batch_medians)) {
+      use_batch_medians <- settings$use_batch_medians
+    }
+  }
+  settings_changed <- has_metrics &&
+    !identical(
+      settings,
+      list(use_robust_cv = use_robust_cv, use_batch_medians = use_batch_medians)
+    )
+
+  if (recalc_metrics || settings_changed || nrow(data@metrics_qc) == 0) {
+    if (settings_changed) {
+      mh_info(
+        "QC metrics recalculated with {.arg use_robust_cv} = {use_robust_cv} and {.arg use_batch_medians} = {use_batch_medians}."
+      )
+      if (!clear_existing && "all_filter_pass" %in% names(data@metrics_qc)) {
+        mh_warn(
+          "Previously applied QC filters were evaluated with the earlier CV settings and are kept as they were. Use {.code clear_existing = TRUE} to evaluate all filters with the new settings."
+        )
+      }
+    } else if (rlang::is_interactive()) {
       message("Calculating feature QC metrics - please wait...")
     }
     data_local <- calc_qc_metrics(
@@ -1008,10 +907,34 @@ filter_features_qc <- function(
       use_robust_cv = use_robust_cv,
       include_norm_intensity_stats = data@is_istd_normalized,
       include_conc_stats = data@is_quantitated,
-      include_response_stats = resp_criteria_defined
+      include_response_stats = if (resp_criteria_defined) TRUE else NA
     )
   } else {
     data_local <- data
+  }
+
+  sb_thresholds <- c(
+    PBLK = min.signalblank.median.spl.pblk,
+    UBLK = min.signalblank.median.spl.ublk,
+    SBLK = min.signalblank.median.spl.sblk
+  )
+  sb_types <- names(sb_thresholds)[!is.na(sb_thresholds)]
+  sb_absent <- setdiff(sb_types, unique(as.character(data@dataset$qc_type)))
+  if (length(sb_absent) > 0) {
+    cli::cli_abort(c(
+      "No {sb_absent} analyses in the dataset, so the signal-to-blank criterion cannot be applied.",
+      "i" = "Set {.arg {paste0('min.signalblank.median.spl.', tolower(sb_absent))}} to {.val {NA}}."
+    ))
+  }
+  for (blk in sb_types) {
+    n_undetected <- sum(is.infinite(
+      data_local@metrics_qc[[paste0("sb_ratio_", tolower(blk))]]
+    ))
+    if (n_undetected > 0) {
+      mh_info(
+        "{n_undetected} feature{?s} with a {blk} median of zero (not detected in at least half of the {blk} analyses): signal-to-blank ratio is {.val Inf} and passes."
+      )
+    }
   }
 
   # Check if feature_ids defind with features.to.keep are present in the dataset
@@ -1033,7 +956,7 @@ filter_features_qc <- function(
 
   metrics_qc_local <- metrics_qc_local |>
     mutate(
-      pass_lod = comp_lgl_vec(
+      pass_minint = comp_lgl_vec(
         list(
           compare_values(
             metrics_qc_local,
@@ -1080,7 +1003,7 @@ filter_features_qc <- function(
         ),
         .operator = "AND"
       ),
-      filter_lod = !(is.na(min.intensity.lowest.bqc) &
+      filter_minint = !(is.na(min.intensity.lowest.bqc) &
         is.na(min.intensity.lowest.tqc) &
         is.na(min.intensity.lowest.spl) &
         is.na(min.intensity.median.bqc) &
@@ -1088,31 +1011,31 @@ filter_features_qc <- function(
         is.na(min.intensity.median.spl) &
         is.na(min.intensity.highest.spl)),
 
-      pass_sb = comp_lgl_vec(
-        list(
-          compare_values(
-            metrics_qc_local,
-            "sb_ratio_pblk",
-            min.signalblank.median.spl.pblk,
-            ">"
-          ) |
-            .data$is_istd,
-          compare_values(
-            metrics_qc_local,
-            "sb_ratio_ublk",
-            min.signalblank.median.spl.ublk,
-            ">"
-          ) |
-            .data$is_istd,
-          compare_values(
-            metrics_qc_local,
-            "sb_ratio_sblk",
-            min.signalblank.median.spl.sblk,
-            ">"
-          ) |
-            .data$is_istd
+      pass_sb = exempt_istd(
+        comp_lgl_vec(
+          list(
+            compare_values(
+              metrics_qc_local,
+              "sb_ratio_pblk",
+              min.signalblank.median.spl.pblk,
+              ">"
+            ),
+            compare_values(
+              metrics_qc_local,
+              "sb_ratio_ublk",
+              min.signalblank.median.spl.ublk,
+              ">"
+            ),
+            compare_values(
+              metrics_qc_local,
+              "sb_ratio_sblk",
+              min.signalblank.median.spl.sblk,
+              ">"
+            )
+          ),
+          .operator = "AND"
         ),
-        .operator = "AND"
+        .data$is_istd
       ),
       filter_sb = !(is.na(min.signalblank.median.spl.pblk) &
         is.na(min.signalblank.median.spl.ublk) &
@@ -1248,7 +1171,8 @@ filter_features_qc <- function(
 
   ##tictoc::toc()
   # Check if linearity criteria are defined
-  metrics_qc_local <- metrics_qc_local |> mutate(pass_linearity = NA)
+  metrics_qc_local <- metrics_qc_local |>
+    mutate(pass_linearity = NA, filter_linearity = FALSE)
 
   if (resp_criteria_defined) {
     if (is.numeric(response.curves.selection)) {
@@ -1343,15 +1267,35 @@ filter_features_qc <- function(
         )
       )
 
-    # Check if columns exist before mutating pass_linearity
-    if (all(rqc_r2_col %in% names(metrics_qc_local))) {
+    filter_linearity <- !(is.na(min.rsquare.response) &
+      is.na(min.slope.response) &
+      is.na(max.slope.response) &
+      is.na(max.yintercept.response))
+    if (filter_linearity) {
+      # As for the other criteria, a feature whose response-curve results are
+      # missing fails; ISTDs without results are not failed. Only features that
+      # are otherwise kept are reported.
+      lin_cols <- c(
+        "rqc_r2__sum__"[!is.na(min.rsquare.response)],
+        "rqc_slope__sum__min__"[!is.na(min.slope.response)],
+        "rqc_slope__sum__max__"[!is.na(max.slope.response)],
+        "rqc_y0__sum__"[!is.na(max.yintercept.response)]
+      )
+      lin_missing <- rowSums(is.na(metrics_qc_local[lin_cols])) > 0
+      reported <- metrics_qc_local$in_data &
+        !metrics_qc_local$is_istd &
+        (metrics_qc_local$is_quantifier | include_qualifier)
+      no_lin <- metrics_qc_local$feature_id[lin_missing & reported %in% TRUE]
+      if (length(no_lin) > 0) {
+        mh_warn(
+          "{length(no_lin)} feature{?s} without the response-curve results needed (R\u00b2 needs at least 3 RQC points with a value, slope and intercept 2) failed the linearity criterion: {.val {mh_vec(no_lin)}}."
+        )
+      }
       metrics_qc_local <- metrics_qc_local |>
         mutate(
           pass_linearity = if_else(
-            !is.na(.data$rqc_r2__sum__) |
-              (!is.na(min.slope.response) &
-                !is.na(max.slope.response) &
-                !is.na(max.yintercept.response)),
+            lin_missing,
+            if_else(.data$is_istd, NA, FALSE),
             (.data$rqc_r2__sum__ > min.rsquare.response |
               is.na(min.rsquare.response)) &
               (.data$rqc_slope__sum__min__ > min.slope.response |
@@ -1359,13 +1303,9 @@ filter_features_qc <- function(
               (.data$rqc_slope__sum__max__ <= max.slope.response |
                 is.na(max.slope.response)) &
               (.data$rqc_y0__sum__ < max.yintercept.response |
-                is.na(max.yintercept.response)),
-            NA
+                is.na(max.yintercept.response))
           ),
-          filter_linearity = !(is.na(min.rsquare.response) &
-            is.na(min.slope.response) &
-            is.na(max.slope.response) &
-            is.na(max.yintercept.response))
+          filter_linearity = TRUE
         )
     }
   }
@@ -1391,7 +1331,7 @@ filter_features_qc <- function(
           "feature_id",
           "batch_id",
           qc_pass_before = "all_filter_pass",
-          pass_lod_before = "pass_lod",
+          pass_minint_before = "pass_minint",
           pass_sb_before = "pass_sb",
           pass_cva_before = "pass_cva",
           pass_linearity_before = "pass_linearity",
@@ -1400,7 +1340,7 @@ filter_features_qc <- function(
           pass_istd_before = "pass_istd",
           pass_qualifier_before = "pass_qualifier",
           pass_featureskeep_before = "pass_featureskeep",
-          filter_lod_before = "filter_lod",
+          filter_minint_before = "filter_minint",
           filter_sb_before = "filter_sb",
           filter_cva_before = "filter_cva",
           filter_dratio_before = "filter_dratio",
@@ -1428,10 +1368,19 @@ filter_features_qc <- function(
         pass = "pass_missingval",
         label = "Missing Values"
       ),
-      list(filter = "filter_lod", pass = "pass_lod", label = "Min-Intensity"),
+      list(
+        filter = "filter_minint",
+        pass = "pass_minint",
+        label = "Min-Intensity"
+      ),
       list(filter = "filter_sb", pass = "pass_sb", label = "Signal-to-Blank"),
       list(filter = "filter_cva", pass = "pass_cva", label = "%CV"),
-      list(filter = "filter_dratio", pass = "pass_dratio", label = "D-ratio")
+      list(filter = "filter_dratio", pass = "pass_dratio", label = "D-ratio"),
+      list(
+        filter = "filter_linearity",
+        pass = "pass_linearity",
+        label = "Linearity"
+      )
     )
     for (f in restore_filters) {
       filter_before <- paste0(f$filter, "_before")
@@ -1442,19 +1391,6 @@ filter_features_qc <- function(
         } else {
           metrics_qc_local[[f$pass]] <- metrics_qc_local[[pass_before]]
           metrics_qc_local[[f$filter]] <- metrics_qc_local[[filter_before]]
-        }
-      }
-    }
-
-    # Linearity is handled separately: unlike the filters above its columns are
-    # only present when linearity filtering is configured, so guard on presence.
-    if ("filter_linearity_before" %in% names(metrics_qc_local)) {
-      if (all(metrics_old$filter_linearity_before)) {
-        if (all(metrics_qc_local$filter_linearity)) {
-          prev_filters <- append(prev_filters, "Linearity")
-        } else {
-          metrics_qc_local$pass_linearity <- metrics_qc_local$pass_linearity_before
-          metrics_qc_local$filter_linearity <- metrics_qc_local$filter_linearity_before
         }
       }
     }
@@ -1494,7 +1430,7 @@ filter_features_qc <- function(
 
   metrics_qc_local <- metrics_qc_local |>
     mutate(
-      all_qc_filter_pass = ((is.na(.data$pass_lod) | .data$pass_lod) &
+      all_qc_filter_pass = ((is.na(.data$pass_minint) | .data$pass_minint) &
         (is.na(.data$pass_sb) | .data$pass_sb) &
         (is.na(.data$pass_cva) | .data$pass_cva) &
         (is.na(.data$pass_linearity) | .data$pass_linearity) &
@@ -1518,7 +1454,7 @@ filter_features_qc <- function(
   metrics_qc_local <- metrics_qc_local |>
     mutate(
       all_filter_pass = .data$all_qc_filter_pass |
-        (is.na(.data$pass_featureskeep) | .data$pass_featureskeep)
+        .data$pass_featureskeep
     )
 
   #TODO: deal with invalid integrations (as defined by user in metadata)
@@ -1559,47 +1495,10 @@ filter_features_qc <- function(
       d_metrics_temp |>
         filter(.data$in_data, .data$is_quantifier, .data$qc_pass_before)
     )
-    n_filt_qual_before <- nrow(
-      d_metrics_temp |>
-        filter(.data$in_data, !.data$is_quantifier, .data$qc_pass_before)
-    )
-    qc_pass_prev <- sum(d_metrics_temp$qc_pass_before, na.rm = TRUE)
   }
 
   n_istd_quant <- get_feature_count(data, is_istd = TRUE, is_quantifier = TRUE)
   n_istd_qual <- get_feature_count(data, is_istd = TRUE, is_quantifier = FALSE)
-
-  if (!include_istd) {
-    n_filt_quant <- nrow(
-      d_filt |> filter(.data$in_data, !.data$is_istd, .data$is_quantifier)
-    )
-    n_filt_qual <- nrow(
-      d_filt |> filter(.data$in_data, !.data$is_istd, !.data$is_quantifier)
-    )
-
-    if (!clear_existing && all("all_filter_pass" %in% names(data@metrics_qc))) {
-      n_filt_quant_before <- nrow(
-        d_metrics_temp |>
-          filter(
-            .data$in_data,
-            !.data$is_istd,
-            .data$is_quantifier,
-            .data$qc_pass_before
-          )
-      )
-      n_filt_qual_before <- nrow(
-        d_metrics_temp |>
-          filter(
-            .data$in_data,
-            !.data$is_istd,
-            !.data$is_quantifier,
-            .data$qc_pass_before
-          )
-      )
-    }
-  }
-
-  qc_pass_now <- sum(metrics_qc_local$all_filter_pass, na.rm = TRUE)
 
   filter_cleared <- !any(str_detect(
     arg_names[!arg_names %in% c("include_istd", "include_qualifier")],
@@ -1640,19 +1539,12 @@ filter_features_qc <- function(
     }
   }
 
-  # TODO: cleanup
-  #if (!include_qualifier) d_filt <- d_filt |> filter(.data$is_quantifier)
-  #if (!include_istd) d_filt <- d_filt |> filter(!.data$is_istd)
-
   data@is_filtered <- TRUE
   data@status_processing <- "Features filtered by QC"
   data@metrics_qc <- metrics_qc_local |> select(-dplyr::ends_with("before"))
 
   data@dataset_filtered <- data@dataset |>
-    dplyr::right_join(
-      d_filt |> filter(.data$all_filter_pass) |> dplyr::select("feature_id"),
-      by = "feature_id"
-    )
+    dplyr::semi_join(d_filt, by = "feature_id")
 
   data
 }

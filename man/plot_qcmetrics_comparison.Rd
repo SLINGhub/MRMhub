@@ -14,6 +14,7 @@ plot_qcmetrics_comparison(
   y_shared = FALSE,
   filter_data = FALSE,
   include_qualifier = FALSE,
+  include_istd = FALSE,
   equality_line = FALSE,
   threshold_values = NA_real_,
   log_scale = FALSE,
@@ -62,7 +63,11 @@ If \code{FALSE} (default), each facet has its own y-axis scale.}
 QC-filtered data (filtered via \code{\link[=filter_features_qc]{filter_features_qc()}}).}
 
 \item{include_qualifier}{Logical; whether to include qualifier features
-(default is \code{TRUE}).}
+(default is \code{FALSE}).}
+
+\item{include_istd}{Logical; whether to include internal standards (ISTDs)
+(default is \code{FALSE}). An ISTD normalized by itself has a CV of 0 for
+normalized intensities and concentrations.}
 
 \item{equality_line}{Logical; whether to show a line indicating
 identical values in both compared variables (default is \code{FALSE}).}

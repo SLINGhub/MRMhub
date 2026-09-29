@@ -124,7 +124,6 @@ fun_gauss.kernel.smooth = function(
       list(y_fit = y_fit, y_predicted = y_predicted, has_error = fit_degenerate)
     },
     error = function(e) {
-      # print(e$message) # will be shown for each feature/batch...
       return(list(y_fit = NA_real_, y_predicted = NA_real_, has_error = TRUE))
     }
   )
@@ -208,8 +207,6 @@ fun_loess <- function(tbl, ref_qc_types, log_transform_internal, ...) {
       list(y_fit = y_fit, y_predicted = y_predicted, has_error = FALSE)
     },
     error = function(e) {
-      # print(e$message) # will be shown for each feature/batch...
-
       return(list(y_fit = NA_real_, y_predicted = NA_real_, has_error = TRUE))
     }
   )
@@ -554,16 +551,8 @@ correct_drift <- function(
       mh_warn(
         "Replacing previous `{variable_strip}` {txt} corrections..."
       )
-      data@var_drift_corrected <- c(
-        feature_intensity = FALSE,
-        feature_norm_intensity = FALSE,
-        feature_conc = FALSE
-      )
-      data@var_batch_corrected <- c(
-        feature_intensity = FALSE,
-        feature_norm_intensity = FALSE,
-        feature_conc = FALSE
-      )
+      data@var_drift_corrected[[variable]] <- FALSE
+      data@var_batch_corrected[[variable]] <- FALSE
       data@dataset[[variable]] <- data@dataset[[variable_raw]]
     }
   } else {
@@ -585,6 +574,7 @@ correct_drift <- function(
       "batch_id",
       "feature_id",
       "is_istd",
+      "analysis_order",
       "y_original" = all_of(variable)
     )
 
@@ -612,7 +602,10 @@ correct_drift <- function(
     ds <- ds |> filter(!.data$is_istd)
   }
 
-  ds <- ds |> mutate(x = dplyr::row_number(), .by = "feature_id")
+  # The smoothers take the run position from the row order
+  ds <- ds |>
+    dplyr::arrange(.data$analysis_order) |>
+    mutate(x = dplyr::row_number(), .by = "feature_id")
   ds$y <- ds$y_original
 
   if (log_transform_internal) {
@@ -687,7 +680,6 @@ correct_drift <- function(
 
     d_smooth_recalc <- d_smooth_recalc |>
       select("analysis_id", "qc_type", "feature_id", "batch_id", "x", "y") |>
-      #group_by(across(all_of(adj_groups))) |>
       group_split(!!!syms(adj_groups))
 
     d_smooth_recalc <- d_smooth_recalc |>
@@ -745,7 +737,6 @@ correct_drift <- function(
   d_smooth_summary_bybatch <- d_smooth_res |>
     group_by(!!!syms(adj_groups)) |>
     summarise(
-      #.by = !!!syms(adj_groups),
       any_fit_error = as.logical(any(.data$fit_error, na.rm = TRUE)),
       any_fit_warning = as.logical(any(.data$fit_warning, na.rm = TRUE)),
       cv_raw_spl = cv(.data$y_original[.data$qc_type == "SPL"], na.rm = TRUE),
@@ -825,7 +816,7 @@ correct_drift <- function(
     txt <- if (use_original_if_fail) {
       "The original values were kept for these features"
     } else {
-      "NA will be be returned for all values of these faetures. Set `use_original_if_fail = FALSE to return orginal values."
+      "NA is returned for all values of these features. Set `use_original_if_fail = TRUE` to keep the original values"
     }
 
     mh_warn(
@@ -894,7 +885,6 @@ correct_drift <- function(
     ) |>
     group_by(!!!syms(adj_groups)) |>
     mutate(
-      #.by = !!!syms(adj_groups),
       y_final = case_when(
         is.na(.data$y_adj) ~ NA_real_,
         !.data$cv_change_valid & !use_original_if_fail ~ NA_real_,
@@ -924,7 +914,6 @@ correct_drift <- function(
   d_stats <- d_smooth_final |>
     group_by(!!!syms(adj_groups)) |>
     summarise(
-      #  .by = !!!syms(adj_groups),
       cv_raw_spl = cv(.data$y_original[.data$qc_type == "SPL"], na.rm = TRUE),
       cv_adj_spl = cv(.data$var_adj[.data$qc_type == "SPL"], na.rm = TRUE)
     ) |>
@@ -1654,7 +1643,6 @@ correct_batch_centering <- function(
   data = NULL,
   variable,
   ref_qc_types,
-  #correct_location = TRUE,
   correct_scale = FALSE,
   ignore_istd = TRUE,
   replace_previous = TRUE,
@@ -1797,32 +1785,26 @@ fun_batch.correction = function(
     for (b in seq_len(nbatch)) {
       id <- which(batch == ubatch[b])
       xloc <- loc.batch[b]
-      if (log_transform_internal) {
-        # Guard a zero/non-finite batch scale (MAD): division would yield Inf.
-        xsca <- if (is.finite(sca.batch[b]) && sca.batch[b] != 0) {
-          sca.batch[b]
-        } else {
-          NA_real_
-        }
-        if (is.finite(xloc) && is.finite(xsca)) {
-          val.clean[id] <- (tmp[id] - xloc) /
-            xsca *
-            sca.batch.mean +
-            loc.batch.mean
-          y_fit_after.clean[id] <- (tmp_fit_after[id] - xloc) /
-            xsca *
-            sca.batch.mean +
-            loc.batch.mean
-        } else {
-          # No usable ref-QC anchor/scale in this batch: keep originals, flag skipped.
-          val.clean[id] <- tmp[id]
-          y_fit_after.clean[id] <- tmp_fit_after[id]
-          row_corrected[id] <- FALSE
-        }
+      # Guard a zero/non-finite batch scale (MAD): division would yield Inf.
+      xsca <- if (is.finite(sca.batch[b]) && sca.batch[b] != 0) {
+        sca.batch[b]
       } else {
-        cli_abort(
-          "Currently data must be log-transformed for batch scaling. Please set `log_transform_internal = TRUE`"
-        )
+        NA_real_
+      }
+      if (is.finite(xloc) && is.finite(xsca)) {
+        val.clean[id] <- (tmp[id] - xloc) /
+          xsca *
+          sca.batch.mean +
+          loc.batch.mean
+        y_fit_after.clean[id] <- (tmp_fit_after[id] - xloc) /
+          xsca *
+          sca.batch.mean +
+          loc.batch.mean
+      } else {
+        # No usable ref-QC anchor/scale in this batch: keep originals, flag skipped.
+        val.clean[id] <- tmp[id]
+        y_fit_after.clean[id] <- tmp_fit_after[id]
+        row_corrected[id] <- FALSE
       }
     }
   }

@@ -182,3 +182,25 @@ test_that("arrange_qc_type_draw_order orders within a grouping column", {
   expect_equal(out$feature_id, c("B", "B", "A", "A"))
   expect_equal(out$qc_type, c("SPL", "BQC", "SPL", "SBLK"))
 })
+
+test_that("gap_axis draws one band for several real gaps between two visible orders", {
+  # Gaps 2->4 and 5->7 both fall between visible orders 2 and 8; band width 3
+  g <- gap_axis(c(2L, 8L), c(1L, 2L, 4L, 5L, 7L, 8L), TRUE, 1)
+  expect_equal(g$index, c(1, 5))
+  expect_equal(g$d_gaps$gap_label, "2 | 8")
+})
+
+test_that("render_pages counts one page for a specific_page", {
+  expect_message(
+    render_pages(
+      total_pages = 5,
+      specific_page = 3,
+      page_fun = function(i) ggplot(),
+      output_pdf = FALSE,
+      return_plots = TRUE,
+      show_progress = FALSE
+    ),
+    "(1 page)",
+    fixed = TRUE
+  )
+})

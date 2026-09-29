@@ -41,16 +41,72 @@ get_analyte_id <- function(transition_name, remove_nl_transitions) {
   analyte_id <- str_replace(analyte_id, "\\-OH", ";OH")
   analyte_id <- str_replace(analyte_id, "\\-Me", ";Me")
   analyte_id <- str_replace(analyte_id, "^COH", "Chol")
-  analyte_id <- str_replace(analyte_id, " a ", " (a) ")
-  analyte_id <- str_replace(analyte_id, " b", " (b) ")
-  analyte_id <- str_replace(analyte_id, " b", " (c) ")
-  analyte_id <- str_replace(analyte_id, " ab", " (ab) ")
-  analyte_id <- str_replace(analyte_id, " bc", " (bc) ")
+  analyte_id <- str_replace(analyte_id, " (a|b|c|ab|bc)(?= |$)", " (\\1)")
   analyte_id <- str_remove(analyte_id, "\\|.*$")
 
   analyte_id <- remove_leading_round_brackets(analyte_id)
 
   return(str_squish(analyte_id))
+}
+
+
+#' Set feature classes from lipid names
+#'
+#' Derives lipid classes from the `feature_id`s with the Goslin lipid name
+#' parser and writes them to `feature_class` in the feature metadata, the
+#' dataset and the QC metrics. For sphingolipids, the class includes the number
+#' of oxygens on the sphingoid base (e.g. `Cer;O2`, `SM;O2`). Requires the
+#' Bioconductor package `rgoslin` (`BiocManager::install("rgoslin")`).
+#'
+#' @template data_mexp
+#' @param overwrite Logical. If `FALSE` (default), only features without a
+#'   `feature_class` get one; if `TRUE`, all classes are replaced. Features
+#'   whose name cannot be parsed keep their class.
+#' @return [`MRMhubExperiment`][MRMhubExperiment-class] object with updated
+#'   `feature_class`.
+#' @seealso [parse_lipid_feature_names()]
+#' @export
+set_lipid_class <- function(data = NULL, overwrite = FALSE) {
+  check_data(data)
+  if (nrow(data@annot_features) == 0) {
+    cli::cli_abort(
+      "No feature metadata available. Import feature metadata first."
+    )
+  }
+  parsed <- parse_lipid_feature_names(
+    data@annot_features["feature_id"],
+    use_as_feature_class = "lipid_class_lcb",
+    add_chain_composition = FALSE
+  )
+  lipid_class <- parsed$feature_class[
+    match(data@annot_features$feature_id, parsed$feature_id)
+  ]
+  old_class <- data@annot_features$feature_class
+  new_class <- if (overwrite) {
+    dplyr::coalesce(lipid_class, old_class)
+  } else {
+    dplyr::coalesce(old_class, lipid_class)
+  }
+  n_set <- sum(!is.na(new_class) & (is.na(old_class) | new_class != old_class))
+  data@annot_features$feature_class <- new_class
+
+  # Only the class changes, so update it in place rather than relinking, which
+  # would discard normalization and quantification.
+  lookup <- rlang::set_names(
+    data@annot_features$feature_class,
+    data@annot_features$feature_id
+  )
+  data@dataset$feature_class <- unname(lookup[data@dataset$feature_id])
+  if (nrow(data@dataset_filtered) > 0) {
+    data@dataset_filtered$feature_class <- unname(
+      lookup[data@dataset_filtered$feature_id]
+    )
+  }
+  if (nrow(data@metrics_qc) > 0) {
+    data@metrics_qc$feature_class <- unname(lookup[data@metrics_qc$feature_id])
+  }
+  mh_success("Lipid classes set for {n_set} feature{?s}.")
+  data
 }
 
 
@@ -168,7 +224,6 @@ parse_lipid_feature_names <- function(
   }
 
   d_goslin <- d_goslin |>
-    #filter(Grammar != "NOT_PARSEABLE") |>
     mutate(lipid_class_lcb = .data$Extended.Species.Name) |>
     mutate(
       Normalized.Name = if_else(

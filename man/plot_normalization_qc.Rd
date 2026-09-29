@@ -14,6 +14,7 @@ plot_normalization_qc(
   y_shared = FALSE,
   filter_data = FALSE,
   include_qualifier = FALSE,
+  include_istd = FALSE,
   cv_threshold_value = 25,
   x_lim = c(NA_real_, NA_real_),
   y_lim = c(NA_real_, NA_real_),
@@ -47,7 +48,9 @@ as a scatter plot, "diff" plots the difference between the two CV values against
 \item{qc_types}{A character vector specifying the QC types to plot. It must
 contain at least one element. The default \code{NA} plots any of the non-blank
 QC types ("SPL", "TQC", "BQC", "HQC", "MQC", "LQC", "NIST", "LTR") present
-in the dataset.}
+in the dataset. A single value that is a QC type is matched exactly; any
+other single value is a regular expression, e.g. \code{"QC$"} for all QC types
+ending in "QC".}
 
 \item{facet_by_class}{If \code{TRUE}, facets the plot by \code{feature_class}, as defined
 in the feature metadata.}
@@ -59,7 +62,10 @@ If \code{FALSE} (default), each facet has its own y-axis scale.}
 QC-filtered data (filtered via \code{\link[=filter_features_qc]{filter_features_qc()}}).}
 
 \item{include_qualifier}{Whether to include qualifier features
-(default is \code{TRUE}).}
+(default is \code{FALSE}).}
+
+\item{include_istd}{Whether to include internal standards (ISTDs) (default
+is \code{FALSE}).}
 
 \item{cv_threshold_value}{Numerical threshold value to be shown as dashed
 lines in the plot (default is \code{25}).}

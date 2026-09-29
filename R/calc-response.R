@@ -1,9 +1,13 @@
 #' Linear regression statistics of response curves
 #'
 #' This function calculates linear regression statistics (R², slope, and intercept)
-#' for each response curve in the provided `MRMhubExperiment` object. Before fitting, the
-#' analyzed sample amount (`x`) and feature intensity (`y`) of each curve are each scaled to their
-#' maximum (set to 1), so the returned `slopenorm` and `y0norm` are on this normalized scale.
+#' for each response curve in the provided `MRMhubExperiment` object. Each curve
+#' is fitted on its points with a non-missing intensity, with a warning when some
+#' are missing; a curve with 2 such points has a slope and intercept but no R²
+#' (`NA`), and a curve with fewer gives `NA` throughout. Before fitting,
+#' the analyzed sample amount (`x`) and feature intensity (`y`) of these points
+#' are each scaled to their maximum (set to 1), so the returned `slopenorm` and
+#' `y0norm` are on this normalized scale.
 #' Optionally, it can include
 #' additional statistics from the `lancer` package (if installed) when `with_saturation_stats` is set to `TRUE`.
 #'
@@ -26,38 +30,6 @@ get_response_curve_stats <- function(
   silent_invalid_data = FALSE
 ) {
   check_data(data)
-  get_lm_results <- function(tbl) {
-    dt <- tbl
-
-    # Scale to max x and max y (1 = max)
-    dt$x_scaled <- (dt$analyzed_amount) / (max(dt$analyzed_amount))
-    dt$y_scaled <- (dt$feature_intensity) / (max(dt$feature_intensity))
-    tryCatch(
-      {
-        res <- lm(y_scaled ~ x_scaled, data = dt, na.action = na.exclude)
-        r.squared <- summary(res)$r.squared
-        slope <- res$coefficients[[2]]
-        intercept <- res$coefficients[1]
-        return(list(
-          feature_id = dt$feature_id[1],
-          curve_id = dt$curve_id[1],
-          r.squared = r.squared,
-          slope = slope,
-          intercept = intercept
-        ))
-      },
-      error = function(e) {
-        return(list(
-          feature_id = dt$feature_id[1],
-          curve_id = dt$curve_id[1],
-          r.squared = NA_real_,
-          slope = NA_real_,
-          intercept = NA_real_
-        ))
-      }
-    )
-  }
-
   d_stats <- data@dataset
 
   if (nrow(data@annot_responsecurves) == 0) {
@@ -110,22 +82,37 @@ get_response_curve_stats <- function(
     ))
   }
 
-  d_stats <- d_stats |>
-    dplyr::filter(!all(is.na(.data$feature_intensity))) |>
-    dplyr::group_split(.data$feature_id, .data$curve_id)
-
-  d_stats <- map(d_stats, function(x) get_lm_results(x))
-
-  d_stats <- d_stats |>
-    bind_rows() |>
-    dplyr::mutate(slopenorm = .data$slope, y0norm = .data$intercept) |>
-    dplyr::select(
-      "feature_id",
-      "curve_id",
-      r2 = "r.squared",
-      "slopenorm",
-      "y0norm"
+  # Curves with some (not all) points missing are fitted on the points present;
+  # reported also when `silent_invalid_data`, as the fit is on fewer points
+  partial <- d_stats |>
+    dplyr::summarise(
+      n_na = sum(is.na(.data$feature_intensity)),
+      n = dplyr::n(),
+      .by = c("feature_id", "curve_id")
     ) |>
+    dplyr::filter(.data$n_na > 0, .data$n_na < .data$n)
+  if (nrow(partial) > 0) {
+    cli::cli_warn(c(
+      "Response curves with missing points were fitted on the remaining points (R\u00b2 needs at least 3 points, slope and intercept 2).",
+      "i" = "Affected feature{?s}: {.val {mh_vec(unique(partial$feature_id))}}."
+    ))
+  }
+
+  d_stats <- d_stats |>
+    dplyr::summarise(
+      fit = list(fit_scaled_line(
+        .data$analyzed_amount,
+        .data$feature_intensity
+      )),
+      .by = c("feature_id", "curve_id")
+    ) |>
+    dplyr::mutate(
+      r2 = vapply(.data$fit, `[[`, numeric(1), "r2"),
+      slopenorm = vapply(.data$fit, `[[`, numeric(1), "slopenorm"),
+      y0norm = vapply(.data$fit, `[[`, numeric(1), "y0norm"),
+      fit = NULL
+    ) |>
+    dplyr::arrange(.data$feature_id, .data$curve_id) |>
     tidyr::pivot_wider(
       names_from = "curve_id",
       values_from = c("r2", "slopenorm", "y0norm"),
@@ -188,4 +175,35 @@ get_response_curve_stats <- function(
     d_stats <- d_stats |> left_join(d_stats_lancer, by = c("feature_id"))
   }
   d_stats
+}
+
+# Straight-line fit of one response curve on the points with an intensity,
+# each scaled to its maximum (1 = max), by least squares as in lm(y ~ x). No fit
+# for fewer than 2 points or equal amounts; R2 is NA for fewer than 3 points or
+# a flat curve.
+fit_scaled_line <- function(amount, intensity) {
+  no_fit <- c(r2 = NA_real_, slopenorm = NA_real_, y0norm = NA_real_)
+  keep <- !is.na(intensity)
+  if (sum(keep) < 2) {
+    return(no_fit)
+  }
+  x <- amount[keep] / safe_max(amount[keep], na.rm = TRUE)
+  y <- intensity[keep] / max(intensity[keep])
+  ok <- is.finite(x) & is.finite(y) # as lm's na.omit
+  x <- x[ok]
+  y <- y[ok]
+  if (length(x) < 2 || stats::var(x) == 0) {
+    return(no_fit)
+  }
+  fit <- stats::.lm.fit(cbind(1, x), y)
+  tss <- sum((y - mean(y))^2)
+  c(
+    r2 = if (length(x) > 2 && tss > 0) {
+      1 - sum(fit$residuals^2) / tss
+    } else {
+      NA_real_
+    },
+    slopenorm = fit$coefficients[[2]],
+    y0norm = fit$coefficients[[1]]
+  )
 }

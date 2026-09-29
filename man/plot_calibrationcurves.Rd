@@ -10,7 +10,7 @@ plot_calibrationcurves(
   qc_types = NA,
   fit_overwrite,
   fit_model = c("linear", "quadratic"),
-  fit_weighting = c(NA, "none", "1/x", "1/x^2"),
+  fit_weighting = c(NA, "none", "1/x", "1/x^2", "1/sqrt(x)"),
   ci_show = NA,
   ci_clip = TRUE,
   zoom_n_points = NA,
@@ -58,7 +58,10 @@ The default is \code{NA}, which means any of the QC types "CAL", "HQC", "MQC", "
 \item{fit_overwrite}{If \code{TRUE},
 the function will use the provided \code{fit_model} and \code{fit_weighting} values
 for all analytes and ignore any fit method and weighting settings defined in
-the metadata.}
+the metadata. If omitted, the fit model and weighting stored in
+\code{metrics_calibration} (i.e. those used by \code{\link[=quantify_by_calibration]{quantify_by_calibration()}}) are
+plotted; this requires calibration results. When given, a warning is shown
+if the plotted fit differs from the stored one.}
 
 \item{fit_model}{A character string specifying the default regression fit
 method to use for the calibration curve. Must be one of \code{"linear"} or
@@ -68,7 +71,7 @@ when \code{fit_overwrite = TRUE}.}
 
 \item{fit_weighting}{A character string specifying the default weighting
 method for the regression points in the calibration curve. Must be one of
-\code{"none"}, \code{"1/x"}, or \code{"1/x^2"}. This method will be applied if no
+\code{"none"}, \code{"1/x"}, \code{"1/x^2"}, or \code{"1/sqrt(x)"}. This method will be applied if no
 specific weighting method is defined for a feature in the metadata, or
 when \code{fit_overwrite = TRUE}.}
 
@@ -171,7 +174,7 @@ A list of \code{ggplot} objects if \code{return_plots = TRUE}, otherwise
 This function plots calibration curves of each feature where defined
 and displays QC samples with defined concentrations within the plot.
 Users can select a regression model (\code{linear} or \code{quadratic}) and apply
-weighting (\code{none}, \code{"1/x"}, or \code{"1/x^2"}), either through function arguments
+weighting (\code{none}, \code{"1/x"}, \code{"1/x^2"}, or \code{"1/sqrt(x)"}), either through function arguments
 or feature metadata.
 }
 \details{
