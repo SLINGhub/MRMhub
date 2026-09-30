@@ -58,6 +58,7 @@ check_setup()
 #> ✔ rgoslin (1.16.0)
 #> ✔ lancer (0.1.1)
 #> ✔ enviPat (2.8)
+#> Warning: replacing previous import ‘S4Arrays::makeNindexFromArrayViewport’ by ‘DelayedArray::makeNindexFromArrayViewport’ when loading ‘SummarizedExperiment’
 #> ✔ SummarizedExperiment (1.42.0)
 #> ✔ lipidr (2.26.0)
 #> 
