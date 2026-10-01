@@ -341,7 +341,7 @@ plot_responsecurves_page <- function(
   dataset$curve_id <- as.character(dataset$curve_id)
 
   # Shared pretty-axis settings: panel-aware tick count. Labels adapt to the
-  # data (plain numbers; superscript scientific only for extreme magnitudes).
+  # data (plain numbers; compact scientific only for extreme magnitudes).
   n_breaks <- pretty_n_breaks(rows_page * cols_page)
 
   # Subset dataset for current page

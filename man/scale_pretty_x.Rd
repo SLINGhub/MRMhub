@@ -35,7 +35,7 @@ scale_pretty_y(
 \description{
 Returns a ggplot2 scale (composable with \code{+} or \code{ggh4x::facetted_pos_scales})
 with panel-aware break counts, adaptive labels (\code{.pretty_labels()}: plain
-numbers, superscript scientific only for extreme magnitudes), and minor ticks.
+numbers, compact scientific \code{2.5E6} only for extreme magnitudes), and minor ticks.
 Log axes use decade breaks; add \code{pretty_logticks()} for the log tick marks.
 \code{expand} is passed straight through so callers keep their tuned axis expansion.
 }

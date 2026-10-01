@@ -270,11 +270,28 @@ test_that(".pretty_labels keys on the break VALUES, not a variable name", {
     .pretty_labels(c(1, 10, 100, 1000)),
     c("1", "10", "100", "1,000")
   )
-  # extreme magnitude -> superscript scientific expressions, not "e+05" strings
-  sci <- .pretty_labels(c(0, 5e5, 1e6))
-  expect_type(sci, "list")
-  expect_true(any(vapply(sci, is.call, logical(1))))
-  expect_false(any(grepl("e\\+", format(sci))))
+  # extreme magnitude -> compact scientific, not "5e+05" strings
+  expect_equal(.pretty_labels(c(0, 5e5, 1e6)), c("0", "5E5", "10E5"))
+})
+
+test_that(".pretty_labels shares one exponent across a linear axis", {
+  # one exponent, aligned decimals -- not 5E5 / 1E6 / 1.5E6 per label
+  expect_identical(
+    .pretty_labels(c(0, 5e5, 1e6, 1.5e6, 2e6)),
+    c("0", "0.5E6", "1.0E6", "1.5E6", "2.0E6")
+  )
+  # top mantissa < 2 -> a decade lower: 2.5E6 ... 12.5E6, not 0.25E7 ...
+  expect_identical(
+    .pretty_labels(c(0, 2.5e6, 5e6, 7.5e6, 1e7, 1.25e7)),
+    c("0", "2.5E6", "5.0E6", "7.5E6", "10.0E6", "12.5E6")
+  )
+  expect_identical(
+    .pretty_labels(c(NA, 0, 2e-5, 4e-5)),
+    c(NA, "0", "2E-5", "4E-5")
+  )
+  # log breaks keep a per-label exponent, so small ones don't round to 0
+  expect_identical(.pretty_labels(c(1e3, 1e4, 1e5)), c("1E3", "1E4", "1E5"))
+  expect_identical(.pretty_labels(c(3e4, 1e5, 3e5)), c("3E4", "1E5", "3E5"))
 })
 
 test_that("scale_pretty linear labels are plain numbers for small ranges", {
@@ -289,7 +306,7 @@ test_that("scale_pretty linear labels are plain numbers for small ranges", {
   expect_false(any(grepl("e\\+|e-", as.character(built_labels(p, "x")))))
 })
 
-test_that("scale_pretty linear labels go superscript for extreme magnitudes", {
+test_that("scale_pretty linear labels go scientific for extreme magnitudes", {
   d <- data.frame(x = c(0, 5e5), y = c(0, 8e5))
   p <- ggplot2::ggplot(d, ggplot2::aes(x, y)) +
     ggplot2::geom_point() +
@@ -297,8 +314,9 @@ test_that("scale_pretty linear labels go superscript for extreme magnitudes", {
     scale_pretty_y(n = 5)
   expect_gte(length(built_labels(p, "x")), 3)
   expect_gte(length(built_labels(p, "y")), 3)
-  # rendered as plotmath expressions (superscript), not "e+05" strings
-  expect_true(any(vapply(built_labels(p, "x"), is.call, logical(1))))
+  # compact "E" notation, not "e+05" strings
+  expect_true(all(grepl("^0$|E", built_labels(p, "x"))))
+  expect_false(any(grepl("e\\+", built_labels(p, "x"))))
 })
 
 test_that("scale_pretty_x/y give >=3 non-empty labels on a log range", {

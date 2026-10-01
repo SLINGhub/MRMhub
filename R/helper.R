@@ -232,15 +232,15 @@ pretty_n_breaks <- function(n_panels = 1L) {
 }
 
 # Adaptive axis labels: plain comma numbers, switching the *whole* axis to
-# superscript scientific (`10^n` / `m %*% 10^n`) only when a break reaches ~1e5
-# or ~1e-4. Keyed on the break VALUES, not the variable -- a CV/RT never trips
-# it, a raw intensity does -- so one formatter serves every plot and there is no
-# per-axis "is this scientific" bookkeeping to drift. Returns a list of plotmath
-# expressions in the scientific case so ggplot renders real superscripts.
+# compact scientific (`2.5E6`) only when a break reaches ~1e4 or ~1e-4. Keyed
+# on the break VALUES, not the variable -- a CV/RT never trips it, a raw
+# intensity does -- so one formatter serves every plot and there is no per-axis
+# "is this scientific" bookkeeping to drift. Plain text, not plotmath: ~30%
+# narrower than `m×10^n` on dense multi-panel pages.
 .pretty_labels <- function(x) {
-  # Switch the whole axis to superscript once a break reaches these magnitudes.
+  # Switch the whole axis to scientific once a break reaches these magnitudes.
   # 1e4 keeps CV / RT / concentration / run-order (all < 1e4) as plain numbers
-  # while high intensity/response axes (>= 1e4) read as 10^n. Tune here.
+  # while high intensity/response axes (>= 1e4) go scientific. Tune here.
   hi <- 1e4
   lo <- 1e-4
   ax <- abs(x[is.finite(x) & x != 0])
@@ -248,22 +248,30 @@ pretty_n_breaks <- function(n_panels = 1L) {
   if (!extreme) {
     return(scales::label_comma()(x))
   }
-  lapply(x, function(v) {
-    if (is.na(v)) {
-      return(NA)
+  # Linear (evenly spaced) axis: one exponent, aligned decimals (0.5E6 ...
+  # 2.0E6); a decade lower if the top mantissa is < 2 (2.5E6 ... 12.5E6, not
+  # 0.25E7 ... 1.25E7). Log breaks keep a per-label exponent (3E4, 1E5): a
+  # shared one would round them to 0.
+  b <- sort(x[is.finite(x)])
+  linear <- length(b) >= 3L &&
+    isTRUE(all.equal(diff(b), rep(b[2] - b[1], length(b) - 1L)))
+  if (linear) {
+    e <- floor(log10(max(ax)))
+    if (max(ax) / 10^e < 2) {
+      e <- e - 1
     }
-    if (v == 0) {
-      return(0)
+    d <- 0L
+    while (d < 3L && !isTRUE(all.equal(round(b / 10^e, d), b / 10^e))) {
+      d <- d + 1L
     }
-    e <- floor(log10(abs(v)))
-    m <- round(v / 10^e, 1)
-    if (isTRUE(all.equal(m, 1))) {
-      bquote(10^.(e))
-    } else {
-      # centered dot (%.%) is narrower than the times sign (%*%)
-      bquote(.(m) %.% 10^.(e))
-    }
-  })
+    out <- paste0(formatC(x / 10^e, format = "f", digits = d), "E", e)
+  } else {
+    e <- floor(log10(abs(x)))
+    out <- paste0(round(x / 10^e, 1), "E", e)
+  }
+  out[!is.na(x) & x == 0] <- "0"
+  out[is.na(x)] <- NA
+  out
 }
 
 # Decade exponent range covering the positive limits.
@@ -374,7 +382,7 @@ pretty_n_breaks <- function(n_panels = 1L) {
 #'
 #' Returns a ggplot2 scale (composable with `+` or `ggh4x::facetted_pos_scales`)
 #' with panel-aware break counts, adaptive labels (`.pretty_labels()`: plain
-#' numbers, superscript scientific only for extreme magnitudes), and minor ticks.
+#' numbers, compact scientific `2.5E6` only for extreme magnitudes), and minor ticks.
 #' Log axes use decade breaks; add `pretty_logticks()` for the log tick marks.
 #' `expand` is passed straight through so callers keep their tuned axis expansion.
 #'
