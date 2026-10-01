@@ -78,17 +78,62 @@ Enter number.
 }
 fn gen_plots() -> Result<(), Box<dyn Error>> {
     use std::process::{Command, Stdio};
-    if cfg!(target_os = "windows") {
-        let r_path = glob::glob(r"C:\Program Files\R\R-*\bin\Rscript.exe")?.filter_map(Result::ok);
-        let Some(r_path) = r_path.last() else {
-            return Err("R not found!".into());
-        };
-        Command::new(r_path)
-    } else {
-        Command::new("Rscript")
-    }
-    .arg("MRMhub_plot.r")
-    .stdout(Stdio::inherit())
-    .output()?;
+    let rscript = find_rscript().ok_or("R not found: install R or add it to PATH")?;
+    Command::new(rscript)
+        .arg("MRMhub_plot.r")
+        .stdout(Stdio::inherit())
+        .output()?;
     Ok(())
+}
+
+/// `Rscript` on PATH; on Windows otherwise the newest R installed for all users
+/// (Program Files) or for the current user (LOCALAPPDATA).
+fn find_rscript() -> Option<PathBuf> {
+    use std::process::Command;
+    if Command::new("Rscript").arg("--version").output().is_ok() {
+        return Some(PathBuf::from("Rscript"));
+    }
+    if !cfg!(target_os = "windows") {
+        return None;
+    }
+    let mut roots = vec![PathBuf::from(r"C:\Program Files\R")];
+    if let Some(local) = std::env::var_os("LOCALAPPDATA") {
+        roots.push(PathBuf::from(local).join("Programs").join("R"));
+    }
+    let found = roots
+        .iter()
+        .filter_map(|root| glob::glob(&root.join(r"R-*\bin\Rscript.exe").to_string_lossy()).ok())
+        .flat_map(|paths| paths.filter_map(Result::ok))
+        .collect();
+    newest_r(found)
+}
+
+/// Compares the `R-x.y.z` folder versions numerically (R-4.10 is newer than R-4.9).
+fn newest_r(paths: Vec<PathBuf>) -> Option<PathBuf> {
+    paths.into_iter().max_by_key(|p| {
+        p.iter()
+            .filter_map(|c| c.to_str()?.strip_prefix("R-"))
+            .next_back()
+            .map(|v| {
+                v.split('.')
+                    .filter_map(|n| n.parse::<u32>().ok())
+                    .collect::<Vec<_>>()
+            })
+            .unwrap_or_default()
+    })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn rscript(version: &str) -> PathBuf {
+        PathBuf::from(format!("C:/Program Files/R/R-{version}/bin/Rscript.exe"))
+    }
+
+    #[test]
+    fn newest_r_compares_versions_numerically() {
+        let found = vec![rscript("4.10.0"), rscript("4.5.1"), rscript("4.9.2")];
+        assert_eq!(newest_r(found), Some(rscript("4.10.0")));
+    }
 }
