@@ -26,7 +26,6 @@ pub fn read(param_t: &crate::Param) -> Result<(), Box<dyn Error>> {
     }
     let file_ord = read_file_ord(&param_t.batch_i)?;
     let mzml_fs = filter_mzml(param_t, &file_ord)?;
-    File::create("missing_details.txt")?;
     let _ = std::fs::remove_dir_all(crate::MISCDIR);
     std::fs::create_dir(crate::MISCDIR)?;
     let trans_f = create_t_files(&t_list)?;
@@ -35,7 +34,7 @@ pub fn read(param_t: &crate::Param) -> Result<(), Box<dyn Error>> {
     {
         let mut wtr = csv::WriterBuilder::new().from_path("ambiguous_assignment.csv")?;
         wtr.write_record(["Transition_Name", "chromatogram_index"])?;
-        let (_, qq) = parse::mzml(mzml_fs[0].0);
+        let (_, qq) = parse::mzml(mzml_fs[0].mzml_f);
         let &crate::Param { mz_tol, .. } = param_t;
         for trans in &t_list {
             let pos0 = trans.q1 - mz_tol;
@@ -63,10 +62,10 @@ pub fn read(param_t: &crate::Param) -> Result<(), Box<dyn Error>> {
     }
     for (i, mzml_fs_) in (1..).zip(mzml_fs.chunks(nfile)) {
         let (mut ts, q1q3eics): (Vec<String>, Vec<Vec<parse::Q1Q3RtI>>) =
-            mzml_fs_.par_iter().map(|(bn, ..)| parse::mzml(bn)).unzip();
+            mzml_fs_.par_iter().map(|x| parse::mzml(x.mzml_f)).unzip();
         time_stamp.append(&mut ts);
         trans_f.iter().zip(&t_list).for_each(|(trans_f_i, trans)| {
-            write_block(&q1q3eics, mzml_fs_, trans, trans_f_i, param_t).unwrap();
+            write_block(&q1q3eics, trans, trans_f_i, param_t).unwrap();
         });
         println!("{}/{}", i * nfile, mzml_fs.len());
     }
@@ -110,11 +109,11 @@ fn read_assay(assay_f: &Path) -> Result<Vec<QQ>, Box<dyn Error>> {
     let q1_c = get_col("Precursor_Ion")?;
     let q3_c = get_col("Product_Ion")?;
     let rt_c = get_col("RT")?;
-    let unif_c = get_col("uniform_width")?;
+    let unif_c = get_col("uniform_width").ok();
     let srt_c = get_col("start_RT")?;
     let ert_c = get_col("end_RT")?;
     let pw_c = get_col("peak_width")?;
-    let bl_c = get_col("baseline")?;
+    let bl_c = get_col("baseline").ok();
     let ci_c = get_col("chromatogram_index").ok();
 
     let mut records: Vec<csv::StringRecord> = rdr.into_records().collect::<Result<_, _>>()?;
@@ -147,7 +146,7 @@ fn read_assay(assay_f: &Path) -> Result<Vec<QQ>, Box<dyn Error>> {
                         .map(|rt| {
                             (
                                 rt,
-                                x[feat_id_c].to_string(),
+                                x[feat_id_c].to_owned(),
                                 x[srt_c].parse().unwrap_or(-90.),
                                 x[ert_c].parse().unwrap_or(990.),
                             )
@@ -165,18 +164,18 @@ fn read_assay(assay_f: &Path) -> Result<Vec<QQ>, Box<dyn Error>> {
                 return Err(["product m/z for ", name].concat().into());
             };
             Ok(QQ {
-                name: rec_p[t_name_c].to_string(),
+                name: rec_p[t_name_c].to_owned(),
                 istd: rec_p[if rec_p[istd_c].is_empty() {
                     t_name_c
                 } else {
                     istd_c
                 }]
-                .to_string(),
+                .to_owned(),
                 q1,
                 q3,
                 rt: rt_iso.iter().map(|x| x.0).sum::<f32>() / (rt_iso.len() as f32),
                 rt_iso,
-                u_rt: rec_p[unif_c].eq_ignore_ascii_case("y"),
+                u_rt: unif_c.is_some_and(|y| rec_p[y].eq_ignore_ascii_case("y")),
                 peak_w: {
                     let mut iter = rec_p[pw_c]
                         .trim()
@@ -193,13 +192,19 @@ fn read_assay(assay_f: &Path) -> Result<Vec<QQ>, Box<dyn Error>> {
                         ))
                     })()
                 },
-                baseline: rec_p[bl_c].to_string(),
+                baseline: bl_c.map_or(String::new(), |y| rec_p[y].to_owned()),
                 index: ci_c.and_then(|x| rec_p[x].parse().ok()),
             })
         })
-        .collect::<Result<_, Box<dyn Error>>>()
+        .collect()
 }
-type FileD<'a, 'b> = (&'a Path, &'b str, &'b str, bool, bool);
+struct FileD<'a, 'b> {
+    mzml_f: &'a Path,
+    batchno: &'b str,
+    ftype: &'b str,
+    is_ref: bool,
+    is_learn: bool,
+}
 fn write_miss_cpd(
     t_list: &[QQ],
     mzml_fs: &[FileD],
@@ -208,25 +213,40 @@ fn write_miss_cpd(
     let mut valid_trans = Vec::with_capacity(t_list.len());
     let mut remove_l = Vec::new();
     let mut bufw = BufWriter::new(File::create("missing_compounds.txt")?);
+    let mut bufw_d = BufWriter::new(File::create("missing_details.txt")?);
+    let mut missing_f = Vec::new();
     for (trans_f_i, trans) in trans_f.iter().zip(t_list) {
         let file_path = Path::new(crate::MISCDIR).join(trans_f_i);
         let bufre = &mut BufReader::new(File::open(file_path)?);
-        let cs: usize = (0..mzml_fs.len())
-            .take_while(|_| crate::common::get_eic(bufre).is_ok())
-            .count();
-        if cs < mzml_fs.len() {
+        missing_f.clear();
+        missing_f.extend(
+            mzml_fs
+                .iter()
+                .filter(|_| crate::common::get_eic(bufre).is_ok_and(|x| x.is_empty()))
+                .map(|x| x.mzml_f),
+        );
+        for mzml_f in &missing_f {
+            writeln!(
+                bufw_d,
+                "\"{}\" not in \"{}\"",
+                trans.name,
+                mzml_f.file_name().unwrap().display()
+            )?;
+        }
+        if missing_f.is_empty() {
+            valid_trans.push((trans, trans_f_i));
+        } else {
             writeln!(
                 bufw,
                 "removed \"{}\". Present in {}/{} samples",
                 trans.name,
-                cs,
+                mzml_fs.len() - missing_f.len(),
                 mzml_fs.len()
             )?;
             remove_l.push(trans_f_i);
-        } else {
-            valid_trans.push((trans, trans_f_i));
         }
     }
+
     let mut v_trans_w_is = Vec::<(&QQ, &str, usize)>::new();
     for (trans, trans_f_i) in &valid_trans {
         if let Ok(pos0) = valid_trans.binary_search_by_key(&&trans.istd, |x| &x.0.name) {
@@ -305,21 +325,20 @@ fn write_mzml_list(mzml_fs: &[FileD], time_stamp: &[String]) -> std::io::Result<
     let mut wtr = csv::WriterBuilder::new()
         .delimiter(b'\t')
         .from_path(file_path)?;
-    for ((mzml_f, batchno, ftype, is_ref, is_learn), ts) in mzml_fs.iter().zip(time_stamp) {
+    for (x, ts) in mzml_fs.iter().zip(time_stamp) {
         wtr.write_record([
-            mzml_f.file_name().unwrap().to_str().unwrap(),
-            &ftype.to_ascii_uppercase(),
+            x.mzml_f.file_name().unwrap().to_str().unwrap(),
+            &x.ftype.to_ascii_uppercase(),
             ts,
-            batchno,
-            if *is_ref { "1" } else { "0" },
-            if *is_learn { "1" } else { "0" },
+            x.batchno,
+            if x.is_ref { "1" } else { "0" },
+            if x.is_learn { "1" } else { "0" },
         ])?;
     }
     Ok(())
 }
 fn write_block(
     q1q3eics: &[Vec<parse::Q1Q3RtI>],
-    mzml_fs: &[FileD],
     trans: &QQ,
     trans_f_i: &str,
     param_t: &crate::Param,
@@ -331,8 +350,7 @@ fn write_block(
     } = param_t;
     let file_path = Path::new(crate::MISCDIR).join(trans_f_i);
     let mut bufw = BufWriter::new(File::options().append(true).open(file_path)?);
-    let mut missing_f = Vec::new();
-    for (qq, (mzml_f, ..)) in q1q3eics.iter().zip(mzml_fs) {
+    for qq in q1q3eics {
         let pos0 = trans.q1 - mz_tol;
         let pos0 = qq.partition_point(|x| x.q1 < pos0);
         let iter = qq[pos0..].iter().take_while(|x| x.q1 < trans.q1 + mz_tol);
@@ -372,17 +390,10 @@ fn write_block(
                 bufw.write_all(&y.to_le_bytes())?;
             }
         } else {
-            missing_f.push(mzml_f);
+            bufw.write_all(&f32::NAN.to_le_bytes())?;
+            bufw.write_all(&0u8.to_le_bytes())?;
+            bufw.write_all(&0u16.to_le_bytes())?;
         }
-    }
-    let mut bufw = BufWriter::new(File::options().append(true).open("missing_details.txt")?);
-    for mzml_f in missing_f {
-        writeln!(
-            bufw,
-            "\"{}\" not in \"{}\"",
-            trans.name,
-            mzml_f.file_name().unwrap().display()
-        )?;
     }
     Ok(())
 }
@@ -406,9 +417,18 @@ fn filter_mzml<'a, 'b>(
     let mut mzml_fs_ord = Vec::<(FileD, usize)>::new();
     for mzml_f in &param_t.mzml_fs {
         let base_n = mzml_f.file_name().unwrap().to_str().unwrap();
-        if let Ok(pos0) = file_ord.binary_search_by_key(&base_n, |x| &x.0) {
+        if let Ok(pos0) = file_ord.binary_search_by_key(&base_n, |x| &x.mzml_f) {
             let f = &file_ord[pos0];
-            mzml_fs_ord.push(((mzml_f.as_path(), &f.1, &f.2, f.3, f.4), f.5));
+            mzml_fs_ord.push((
+                FileD {
+                    mzml_f,
+                    batchno: &f.batchno,
+                    ftype: &f.ftype,
+                    is_ref: f.is_ref,
+                    is_learn: f.is_learn,
+                },
+                f.ord,
+            ));
         } else {
             miss_flag = true;
             writeln!(
@@ -426,27 +446,34 @@ fn filter_mzml<'a, 'b>(
         .map(|x| x.file_name().unwrap().to_str().unwrap())
         .collect();
     files_in_dir.sort_unstable();
-    for (f0, ..) in file_ord
+    for fo in file_ord
         .iter()
-        .filter(|x| files_in_dir.binary_search(&x.0.as_str()).is_err())
+        .filter(|x| files_in_dir.binary_search(&x.mzml_f.as_str()).is_err())
     {
         miss_flag = true;
-        writeln!(bufw, "{f0:?} not in directory")?;
+        writeln!(bufw, "{:?} not in directory", fo.mzml_f)?;
     }
     if miss_flag {
         use yansi::Paint;
         println!("Check {}.", "missing_files.txt".bold().underline());
     }
-    if !mzml_fs_ord.iter().any(|x| x.0.3) {
+    if !mzml_fs_ord.iter().any(|x| x.0.is_ref) {
         return Err("no reference sample!".into());
     }
-    if !mzml_fs_ord.iter().any(|x| x.0.4) {
+    if !mzml_fs_ord.iter().any(|x| x.0.is_learn) {
         return Err("no learning sample!".into());
     }
     mzml_fs_ord.sort_unstable_by_key(|x| x.1);
     Ok(mzml_fs_ord.into_iter().map(|x| x.0).collect())
 }
-type FileO = (String, String, String, bool, bool, usize);
+struct FileO {
+    mzml_f: String,
+    batchno: String,
+    ftype: String,
+    is_ref: bool,
+    is_learn: bool,
+    ord: usize,
+}
 fn read_file_ord(batch_i_file: &Path) -> Result<Vec<FileO>, Box<dyn Error>> {
     let mut rdr = csv::ReaderBuilder::new()
         .comment(Some(b'#'))
@@ -456,7 +483,7 @@ fn read_file_ord(batch_i_file: &Path) -> Result<Vec<FileO>, Box<dyn Error>> {
     let header = rdr.headers()?;
     let get_col = |name| get_col_i(name, header);
     let filename_c = get_col("file_name")?;
-    let batch_c = get_col("batch")?;
+    let batch_c = get_col("batch").ok();
     let st_c = get_col("sample_type")?;
     let ref_c = get_col("reference")?;
     let learn_c = get_col("learn").ok();
@@ -464,18 +491,16 @@ fn read_file_ord(batch_i_file: &Path) -> Result<Vec<FileO>, Box<dyn Error>> {
         .into_records()
         .enumerate()
         .map(|(i, rec)| {
-            rec.map(|x| {
-                (
-                    x[filename_c].to_string(),
-                    x[batch_c].to_string(),
-                    x[st_c].to_string(),
-                    !x[ref_c].trim().is_empty(),
-                    learn_c.is_none_or(|y| !x[y].trim().is_empty()),
-                    i,
-                )
+            rec.map(|x| FileO {
+                mzml_f: x[filename_c].to_owned(),
+                batchno: batch_c.map_or_else(String::new, |y| x[y].to_owned()),
+                ftype: x[st_c].to_owned(),
+                is_ref: !x[ref_c].is_empty(),
+                is_learn: learn_c.is_none_or(|y| !x[y].is_empty()),
+                ord: i,
             })
         })
         .collect::<Result<_, _>>()?;
-    file_ord.sort_unstable_by(|x, y| x.0.cmp(&y.0));
+    file_ord.sort_unstable_by(|x, y| x.mzml_f.cmp(&y.mzml_f));
     Ok(file_ord)
 }

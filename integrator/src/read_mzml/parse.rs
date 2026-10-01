@@ -130,7 +130,7 @@ pub fn mzml(mzml_f: &std::path::Path) -> (String, Vec<Q1Q3RtI>) {
                     &mut i_l
                 };
                 decode_bin(
-                    &e.decode().unwrap(),
+                    e.as_ref(),
                     zlibc.expect("zlib not set"),
                     pre64,
                     arr_l,
@@ -147,23 +147,21 @@ pub fn mzml(mzml_f: &std::path::Path) -> (String, Vec<Q1Q3RtI>) {
     (ts, q1q3eics)
 }
 fn decode_bin(
-    bin: &str,
+    bin: &[u8],
     zlibc: bool,
     pre64: bool,
     arr_l: &mut Vec<f32>,
     buf0: &mut Vec<u8>,
     buf1: &mut Vec<u8>,
 ) -> std::io::Result<()> {
-    let mut wrapped_reader = bin.as_bytes();
-    let mut decoder = base64::read::DecoderReader::new(
-        &mut wrapped_reader,
-        &base64::engine::general_purpose::STANDARD,
-    );
+    use base64::Engine as _;
     buf0.clear();
-    decoder.read_to_end(buf0)?;
+    base64::engine::general_purpose::STANDARD
+        .decode_vec(bin, buf0)
+        .map_err(|error| std::io::Error::new(std::io::ErrorKind::InvalidData, error))?;
     let buf2 = if zlibc {
         buf1.clear();
-        flate2::read::ZlibDecoder::new(buf0.as_slice()).read_to_end(buf1)?;
+        flate2::bufread::ZlibDecoder::new(buf0.as_slice()).read_to_end(buf1)?;
         buf1
     } else {
         buf0
@@ -171,13 +169,17 @@ fn decode_bin(
     arr_l.clear();
     if pre64 {
         arr_l.extend(
-            buf2.chunks_exact(std::mem::size_of::<f64>())
-                .map(|s| f64::from_le_bytes(s.try_into().unwrap()) as f32),
+            buf2.as_chunks::<{ std::mem::size_of::<f64>() }>()
+                .0
+                .iter()
+                .map(|&s| f64::from_le_bytes(s) as f32),
         );
     } else {
         arr_l.extend(
-            buf2.chunks_exact(std::mem::size_of::<f32>())
-                .map(|s| f32::from_le_bytes(s.try_into().unwrap())),
+            buf2.as_chunks::<{ std::mem::size_of::<f32>() }>()
+                .0
+                .iter()
+                .map(|&s| f32::from_le_bytes(s)),
         );
     }
     Ok(())
