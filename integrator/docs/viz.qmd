@@ -25,6 +25,14 @@ the entire analytical sequence at a glance. Moving the pointer over a chromatogr
 retention time at the cursor — the value used when defining fixed peak borders in the transition list
 (see [Input Files — Transition list](input-files.qmd)).
 
+The list also contains the reference samples (marked `REF`), each showing all transitions of that
+sample. For a transition, the displayed retention-time range and maximum intensity can be set, and the
+size of the chromatogram panels is adjustable; changes to these settings are applied immediately.
+Loaded data are cached, and chromatograms appear as they load and are drawn only as they scroll into
+view, so large projects remain responsive. A status line above the list reports loading progress and
+errors; selecting another entry cancels a load in progress. After INTEGRATOR has been re-run, the ↻
+button reloads the results from `misc/`.
+
 ![](images/paste-12.png){fig-alt="Screenshot of the MRMhub-viz window for transition LPC 22:5 (570.4 to 184.1 m/z), selected from the dropdown at the top left. A grid of per-sample chromatogram panels, one per injection (labelled Longit_batch1_6, _7, _8 and so on), each plots intensity against retention time from about 1.6 to 2.6 minutes, with the detected peak and its left (blue) and right (orange) integration borders shaded."}
 
 MRMhub-viz allows inspection of the integration results for an iterative review → refine loop. See

@@ -1,6 +1,8 @@
 # mrmhub 1.0.1
 
 - Drift correction and `correct_batch_serrf()` no longer require the optional packages mirai and carrier. They run sequentially unless parallel workers are set up with `mirai::daemons()`.
+- INTEGRATOR: reading mzML files and peak detection are faster. The `batch` column of the sample list and the `uniform_width` and `baseline` columns of the transition list are optional, and the valley-drop baseline is computed correctly when several features share one transition. Step 4 (chromatogram PDFs) finds R on the PATH and, on Windows, otherwise uses the newest installed R.
+- MRMhub-viz now caches loaded data and draws chromatograms only as they scroll into view, resulting in smoother scrolling and faster, automatic updates when plot settings are changed. A new status line reports progress and errors.
 
 # mrmhub 1.0.0
 

@@ -215,7 +215,9 @@ otherwise final, back up the file, and re-run **Step 3 alone**. See
 
 **A:** MRMhub-viz reads the `misc/` folder, so Step 3 (peak integration) must have run at least once
 and `misc/` must exist; the viz executable must also sit in the same folder as MRMhub. If `misc/` was
-deleted, re-run Step 3. See [MRMhub-viz](viz.qmd).
+deleted, re-run Step 3. The status line above the transition list states the cause of a loading error;
+if Step 3 was re-run while MRMhub-viz was open, press ↻ to reload the results. See
+[MRMhub-viz](viz.qmd).
 
 ### Q: PDF generation (Step 4) produces no plots, or plotting fails {#pdf-fail}
 
@@ -224,9 +226,10 @@ Check, in order:
 
 - **R is installed** — install it from [CRAN](https://cran.r-project.org/) (no additional R packages
   are required).
-- **R is on the system `PATH`** — the executable calls R from the command line, so `Rscript` must be
-  resolvable in a terminal (verify with `Rscript --version`). On Windows the installer does not add R
-  to the `PATH` automatically; add R's `bin` directory manually (see the CRAN R-for-Windows FAQ, §2.29
+- **R can be found** — the executable runs `Rscript` from the system `PATH` (verify with
+  `Rscript --version` in a terminal). On Windows, if R is not on the `PATH`, it uses the newest R
+  installed in `C:\Program Files\R` or in the user's `AppData\Local\Programs\R`. For R installed
+  elsewhere, add R's `bin` directory to the `PATH` (see the CRAN R-for-Windows FAQ, §2.29
   *"Rcmd is not found in my PATH!"*, at <https://cran.r-project.org/bin/windows/base/rw-FAQ.html>).
 - **The plotting script is present** — `MRMhub_plot.r` must be in the project folder; use the copy
   bundled in the release.
