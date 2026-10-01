@@ -100,6 +100,7 @@ When such a function is called and its package is not yet installed,
 | Function | Optional package | Enables |
 |----|----|----|
 | [`plot_runscatter()`](https://slinghub.github.io/MRMhub/quant/reference/plot_runscatter.md) | qpdf; mirai, carrier | only for multi-threaded PDF output |
+| `correct_drift_*()`, [`correct_batch_serrf()`](https://slinghub.github.io/MRMhub/quant/reference/correct_batch_serrf.md) | mirai, carrier | only for parallel processing, after [`mirai::daemons()`](https://mirai.r-lib.org/reference/daemons.html) |
 | `plot_qc_summary_overall(with_venn = TRUE)` | ggvenn, patchwork | Venn diagram of features excluded by QC criteria |
 | [`plot_matrixeffects()`](https://slinghub.github.io/MRMhub/quant/reference/plot_matrixeffects.md), [`plot_interference_correction()`](https://slinghub.github.io/MRMhub/quant/reference/plot_interference_correction.md) | ggbeeswarm | beeswarm/quasirandom point layers |
 | [`correct_isotopic_interferences()`](https://slinghub.github.io/MRMhub/quant/reference/correct_isotopic_interferences.md), [`calc_average_molweight()`](https://slinghub.github.io/MRMhub/quant/reference/calc_average_molweight.md) | enviPat | isotope-pattern and molecular-weight calculation |

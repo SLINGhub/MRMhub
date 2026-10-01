@@ -31,7 +31,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -236,11 +236,21 @@ not yet installed, <code>mrmhub</code> offers to install it.</p>
 <td>only for multi-threaded PDF output</td>
 </tr>
 <tr class="even">
+<td>
+<code>correct_drift_*()</code>,
+<code><a href="../reference/correct_batch_serrf.html">correct_batch_serrf()</a></code>
+</td>
+<td>mirai, carrier</td>
+<td>only for parallel processing, after
+<code><a href="https://mirai.r-lib.org/reference/daemons.html" class="external-link">mirai::daemons()</a></code>
+</td>
+</tr>
+<tr class="odd">
 <td><code>plot_qc_summary_overall(with_venn = TRUE)</code></td>
 <td>ggvenn, patchwork</td>
 <td>Venn diagram of features excluded by QC criteria</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>
 <code><a href="../reference/plot_matrixeffects.html">plot_matrixeffects()</a></code>,
 <code><a href="../reference/plot_interference_correction.html">plot_interference_correction()</a></code>
@@ -248,7 +258,7 @@ not yet installed, <code>mrmhub</code> offers to install it.</p>
 <td>ggbeeswarm</td>
 <td>beeswarm/quasirandom point layers</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>
 <code><a href="../reference/correct_isotopic_interferences.html">correct_isotopic_interferences()</a></code>,
 <code><a href="../reference/calc_average_molweight.html">calc_average_molweight()</a></code>
@@ -256,34 +266,34 @@ not yet installed, <code>mrmhub</code> offers to install it.</p>
 <td>enviPat</td>
 <td>isotope-pattern and molecular-weight calculation</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code><a href="../reference/correct_batch_combat.html">correct_batch_combat()</a></code></td>
 <td>sva</td>
 <td>ComBat batch correction</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code><a href="../reference/correct_batch_serrf.html">correct_batch_serrf()</a></code></td>
 <td>ranger</td>
 <td>SERRF batch correction</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code><a href="../reference/correct_drift_gam.html">correct_drift_gam()</a></code></td>
 <td>mgcv</td>
 <td>GAM-based drift correction</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code><a href="../reference/build_workflow.html">build_workflow()</a></code></td>
 <td>shiny, bslib</td>
 <td>interactive workflow-builder app</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code><a href="../reference/save_dataset_summarizedexperiment.html">save_dataset_summarizedexperiment()</a></code></td>
 <td>SummarizedExperiment, S4Vectors, lipidr <em>(Bioconductor)</em>
 </td>
 <td>export to a <code>SummarizedExperiment</code>
 </td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>
 <code><a href="../reference/set_lipid_class.html">set_lipid_class()</a></code>, lipid-name parsing (isotope
 correction, lipid plots)</td>
@@ -291,7 +301,7 @@ correction, lipid plots)</td>
 </td>
 <td>parse and normalise lipid shorthand</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code><a href="../reference/get_response_curve_stats.html">get_response_curve_stats()</a></code></td>
 <td>lancer <em>(GitHub)</em>
 </td>

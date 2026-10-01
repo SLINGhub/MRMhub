@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -85,6 +85,13 @@
       <small>Source: <a href="https://github.com/SLINGhub/MRMhub/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.0.1" id="mrmhub-101">mrmhub 1.0.1<a class="anchor" aria-label="anchor" href="#mrmhub-101"></a></h2>
+<ul><li>Drift correction and <code><a href="../reference/correct_batch_serrf.html">correct_batch_serrf()</a></code> no longer require the optional packages mirai and carrier. They run sequentially unless parallel workers are set up with <code><a href="https://mirai.r-lib.org/reference/daemons.html" class="external-link">mirai::daemons()</a></code>.</li>
+<li>Plot axes with large values, such as intensities, show compact scientific labels with one exponent per axis (e.g. <code>0.5E6</code>, <code>1.0E6</code>, <code>1.5E6</code>) instead of a superscript exponent on each label, leaving more room for the panels.</li>
+<li>INTEGRATOR: reading mzML files and peak detection are faster. The <code>batch</code> column of the sample list and the <code>uniform_width</code> and <code>baseline</code> columns of the transition list are optional, and the valley-drop baseline is computed correctly when several features share one transition. Step 4 (chromatogram PDFs) finds R on the PATH and, on Windows, otherwise uses the newest installed R.</li>
+<li>MRMhub-viz now caches loaded data and draws chromatograms only as they scroll into view, resulting in smoother scrolling and faster, automatic updates when plot settings are changed. A new status line reports progress and errors.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.0.0" id="mrmhub-100">mrmhub 1.0.0<a class="anchor" aria-label="anchor" href="#mrmhub-100"></a></h2>
 <p>First stable release of the MRMhub software framework.</p>

@@ -3,8 +3,8 @@
 Returns a ggplot2 scale (composable with `+` or
 [`ggh4x::facetted_pos_scales`](https://teunbrand.github.io/ggh4x/reference/facetted_pos_scales.html))
 with panel-aware break counts, adaptive labels (`.pretty_labels()`:
-plain numbers, superscript scientific only for extreme magnitudes), and
-minor ticks. Log axes use decade breaks; add
+plain numbers, compact scientific `2.5E6` only for extreme magnitudes),
+and minor ticks. Log axes use decade breaks; add
 [`pretty_logticks()`](https://slinghub.github.io/MRMhub/quant/reference/pretty_logticks.md)
 for the log tick marks. `expand` is passed straight through so callers
 keep their tuned axis expansion.
