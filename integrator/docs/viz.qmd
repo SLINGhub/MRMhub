@@ -18,7 +18,7 @@ shows a one-time security prompt — see
 
 ## Chromatogram and integration review
 
-The transition to inspect is selected from the dropdown menu in the top-left corner. For that
+The transition to inspect is selected from the list in the top-left corner. For that
 transition, the extracted ion chromatograms of the individual samples are shown together with the
 detected peak and its left and right integration borders, so the integration can be reviewed across
 the entire analytical sequence at a glance. Moving the pointer over a chromatogram reports the exact
@@ -33,7 +33,7 @@ view, so large projects remain responsive. A status line above the list reports 
 errors; selecting another entry cancels a load in progress. After INTEGRATOR has been re-run, the ↻
 button reloads the results from `misc/`.
 
-![](images/paste-12.png){fig-alt="Screenshot of the MRMhub-viz window for transition LPC 22:5 (570.4 to 184.1 m/z), selected from the dropdown at the top left. A grid of per-sample chromatogram panels, one per injection (labelled Longit_batch1_6, _7, _8 and so on), each plots intensity against retention time from about 1.6 to 2.6 minutes, with the detected peak and its left (blue) and right (orange) integration borders shaded."}
+![](images/paste-12.png){fig-alt="Screenshot of the MRMhub-viz window. The status line reports 266 loaded chromatograms; below it are the transition list with PC 34:3 (a|b|c) selected, the refresh button, the chart size fields (400 by 120 px), and the RT range and maximum intensity fields. A grid of per-sample chromatogram panels (for example LV1017832777_MS-2, TQC_045_MS-2 and BQC-06_5_MS-2) plots intensity against retention time from about 5.5 to 6.5 minutes; each panel shows the three isomer peaks of this transition shaded blue, orange and green, and the sample's retention-time shift at the top right."}
 
 MRMhub-viz allows inspection of the integration results for an iterative review → refine loop. See
 [Tuning Peak Integration](tuning.qmd#review-refine-loop).
