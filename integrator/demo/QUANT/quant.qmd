@@ -19,11 +19,11 @@ Run each of these R code chunks sequentially. The output files will be located i
 
 ## 1. Installation of the {mrmhub} package
 
-To install the {mrmhub} R package (version 1.0.0) uncomment and run the following code in the R console. No other R packages must be installed.
+To install the {mrmhub} R package (version 1.0.1) uncomment and run the following code in the R console. No other R packages must be installed.
 
 ```{r installpkg, include = TRUE, eval = FALSE}
 #if (!require("pak")) install.packages("pak")
-#pak::pak("SLINGhub/MRMhub@v1.0.0")
+#pak::pak("SLINGhub/MRMhub@v1.0.1")
 ```
 
 ## 2. Load {mrmhub} and initialize an MRMhubExperiment object

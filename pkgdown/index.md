@@ -1,7 +1,7 @@
 # MRMhub-QUANT <a href="https://slinghub.github.io/MRMhub/quant/"><img src="man/figures/logo.svg" align="right" height="139" alt="MRMhub-QUANT website" /></a>
 
 <!-- badges: start -->
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/SLINGhub/MRMhub/releases) [![Nature Metabolism](https://img.shields.io/badge/Nature%20Metabolism-2026-b31b1b.svg)](https://doi.org/10.1038/s42255-026-01629-2) [![R-CMD-check](https://github.com/SLINGhub/MRMhub/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/SLINGhub/MRMhub/actions/workflows/R-CMD-check.yml) [![Codecov test coverage](https://codecov.io/gh/SLINGhub/MRMhub/graph/badge.svg)](https://app.codecov.io/gh/SLINGhub/MRMhub)
+[![Version](https://img.shields.io/badge/version-1.0.1-blue.svg)](https://github.com/SLINGhub/MRMhub/releases) [![Nature Metabolism](https://img.shields.io/badge/Nature%20Metabolism-2026-b31b1b.svg)](https://doi.org/10.1038/s42255-026-01629-2) [![R-CMD-check](https://github.com/SLINGhub/MRMhub/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/SLINGhub/MRMhub/actions/workflows/R-CMD-check.yml) [![Codecov test coverage](https://codecov.io/gh/SLINGhub/MRMhub/graph/badge.svg)](https://app.codecov.io/gh/SLINGhub/MRMhub)
 <!-- badges: end -->
 
 **MRMhub-QUANT** is a programmatic library for tailored, reproducible post-processing and quality-control of targeted metabolomics and lipidomics analyses. It works with [MRMhub-INTEGRATOR](https://slinghub.github.io/MRMhub/integrator/) peak integration results, or feature intensity data from other sources (CSV, mzTab-M, Skyline). It is the post-processing module of [MRMhub](https://slinghub.github.io/MRMhub/) and distributed as the R package `mrmhub`. It features:
