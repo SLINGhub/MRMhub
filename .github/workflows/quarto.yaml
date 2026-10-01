@@ -7,7 +7,7 @@ name: quarto
 
 on:
   push:
-    branches: [main, master, development]
+    branches: [main, master, develop]
     paths:
       - 'docs-site/**'
       - 'integrator/docs/**'
@@ -48,7 +48,7 @@ jobs:
       # files, but clean-exclude protects the QUANT (pkgdown) and INTEGRATOR
       # (Quarto) subsites that live in their own subfolders.
       - name: Deploy landing page (root) 🚀
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && github.ref != 'refs/heads/develop'
         uses: JamesIves/github-pages-deploy-action@v4.5.0
         with:
           clean: true
@@ -61,7 +61,7 @@ jobs:
       # INTEGRATOR manual lives under /integrator/. target-folder scopes
       # clean to that subfolder, so this never touches the root or /quant/.
       - name: Deploy INTEGRATOR site (/integrator/) 🚀
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && github.ref != 'refs/heads/develop'
         uses: JamesIves/github-pages-deploy-action@v4.5.0
         with:
           clean: true

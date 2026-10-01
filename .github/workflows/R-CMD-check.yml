@@ -2,12 +2,12 @@ name: R-CMD-check
 
 on:
   push:
-    branches: [main, master, development]
+    branches: [main, master, develop]
     paths-ignore:
       - 'integrator/**'
       - 'docs-site/**'
   pull_request:
-    branches: [main, master, development]
+    branches: [main, master, develop]
     paths-ignore:
       - 'integrator/**'
       - 'docs-site/**'

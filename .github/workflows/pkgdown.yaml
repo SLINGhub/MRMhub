@@ -3,7 +3,7 @@ name: pkgdown
 
 on:
   push:
-    branches: [main, master, development]
+    branches: [main, master, develop]
     paths-ignore: ['integrator/**', 'docs-site/**']
   pull_request:
     paths-ignore: ['integrator/**', 'docs-site/**']
@@ -54,7 +54,7 @@ jobs:
         run: Rscript -e "pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)"
 
       - name: Deploy to GitHub Pages 🚀
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && github.ref != 'refs/heads/develop'
         uses: JamesIves/github-pages-deploy-action@v4.5.0
         with:
           # QUANT pkgdown site lives under the /quant/ subpath (matches
