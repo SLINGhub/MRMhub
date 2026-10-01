@@ -6,7 +6,8 @@ name: integrator-release
 # vars.DEMO_DATA_URL is set, a demo package (plus demo raw data, the QUANT demo
 # and Get-started.html). A release also gets the mrmhub R source package. macOS
 # builds are code-signed + notarized when the signing secrets are present, and
-# fall back to an ad-hoc signature otherwise.
+# fall back to an ad-hoc signature otherwise. Only the `publish` job, which runs
+# no build code, gets write access.
 
 on:
   release:
@@ -27,7 +28,7 @@ on:
       - '.github/workflows/integrator-release.yml'
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   # Instructions bundled with the demo, rendered from the web page's source so the
@@ -36,8 +37,10 @@ jobs:
     if: github.event_name != 'release' || startsWith(github.event.release.tag_name, 'v')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: quarto-dev/quarto-actions/setup@v2
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+      - uses: quarto-dev/quarto-actions/setup@8a96df13519ee81fd526f2dfca5962811136661b # v2.2.0
       - name: Render Get-started.html
         shell: bash
         run: |
@@ -46,7 +49,7 @@ jobs:
           cp docs-site/get-started.qmd docs-site/_brand.yml "$tmp/"
           cd "$tmp"
           quarto render get-started.qmd --to html -M embed-resources:true -M toc:true -o Get-started.html
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: get-started
           path: ${{ runner.temp }}/get-started/Get-started.html
@@ -66,10 +69,13 @@ jobs:
       DEMO_DATA_URL: ${{ vars.DEMO_DATA_URL }}
 
     steps:
-      - uses: actions/checkout@v5
-
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
+          persist-credentials: false
+
+      - uses: dtolnay/rust-toolchain@6bed0761d98439e5a578e2877258200ad565ba87 # stable
+        with:
+          toolchain: stable
           targets: ${{ matrix.target }}
 
       - name: Build INTEGRATOR
@@ -77,7 +83,7 @@ jobs:
         run: cargo build --release --locked --target ${{ matrix.target }}
 
       # --- mrmhub-viz (Tauri; static frontend, no installer bundle) ------------
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: lts/*
 
@@ -92,24 +98,32 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          npm install --no-package-lock --no-audit --no-fund
+          npm ci --no-audit --no-fund
           npx tauri build --no-bundle --target ${{ matrix.target }}
 
+      # The tag is passed via env, not ${{ }}, and the version is validated, so a
+      # crafted tag name cannot inject shell code into this or later steps.
       - name: Resolve version and names
         id: vars
         shell: bash
+        env:
+          EVENT: ${{ github.event_name }}
+          TAG: ${{ github.event.release.tag_name }}
         run: |
           set -euo pipefail
-          if [ "${{ github.event_name }}" = "release" ]; then
-            v="${{ github.event.release.tag_name }}"; v="${v#v}"
+          if [ "$EVENT" = "release" ]; then
+            v="${TAG#v}"
           else
             v="$(grep -m1 '^version' integrator/Cargo.toml | sed -E 's/.*"(.*)".*/\1/')"
           fi
+          [[ "$v" =~ ^[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.]+)?$ ]] || { echo "::error::Invalid version '$v'"; exit 1; }
           ext=""; [ "${{ runner.os }}" = "Windows" ] && ext=".exe"
-          echo "version=$v"                                >> "$GITHUB_OUTPUT"
-          echo "ext=$ext"                                  >> "$GITHUB_OUTPUT"
-          echo "pkg=MRMhub-$v-${{ matrix.target }}"        >> "$GITHUB_OUTPUT"
-          echo "demo=MRMhub-demo-$v-${{ matrix.target }}"  >> "$GITHUB_OUTPUT"
+          {
+            echo "version=$v"
+            echo "ext=$ext"
+            echo "pkg=MRMhub-$v-${{ matrix.target }}"
+            echo "demo=MRMhub-demo-$v-${{ matrix.target }}"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Stage binary package
         shell: bash
@@ -191,7 +205,7 @@ jobs:
       # --- demo package (binary package + demo files + raw data) ----------------
       - name: Download Get-started.html
         if: env.DEMO_DATA_URL != ''
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
         with:
           name: get-started
           path: ${{ runner.temp }}/get-started
@@ -232,17 +246,10 @@ jobs:
           }
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: ${{ steps.vars.outputs.pkg }}
           path: out/*.zip
-
-      - name: Attach to release
-        if: github.event_name == 'release'
-        uses: softprops/action-gh-release@v2
-        with:
-          files: out/*.zip
-          fail_on_unmatched_files: true
 
   # mrmhub R source package, attached to the same release.
   r-tarball:
@@ -251,32 +258,61 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
 
       - name: Check DESCRIPTION version matches the tag
         shell: bash
+        env:
+          TAG: ${{ github.event.release.tag_name }}
         run: |
           set -euo pipefail
           v="$(grep -m1 '^Version:' DESCRIPTION | sed -E 's/^Version: *//')"
-          tag="${{ github.event.release.tag_name }}"
-          if [ "$v" != "${tag#v}" ]; then
-            echo "::error::DESCRIPTION Version $v does not match release tag $tag"
+          if [ "$v" != "${TAG#v}" ]; then
+            echo "::error::DESCRIPTION Version $v does not match release tag $TAG"
             exit 1
           fi
 
-      - uses: r-lib/actions/setup-pandoc@v2
-      - uses: r-lib/actions/setup-r@v2
+      - uses: r-lib/actions/setup-pandoc@f9a764fea8d5c63df6ef9a5c7795bf7deb5d7e05 # v2.14.0
+      - uses: r-lib/actions/setup-r@f9a764fea8d5c63df6ef9a5c7795bf7deb5d7e05 # v2.14.0
         with:
           use-public-rspm: true
-      - uses: r-lib/actions/setup-r-dependencies@v2
+      - uses: r-lib/actions/setup-r-dependencies@f9a764fea8d5c63df6ef9a5c7795bf7deb5d7e05 # v2.14.0
         with:
           extra-packages: any::carrier
 
       - name: Build source package
         run: R CMD build .
 
-      - name: Attach to release
-        uses: softprops/action-gh-release@v2
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
-          files: mrmhub_*.tar.gz
-          fail_on_unmatched_files: true
+          name: mrmhub-source-package
+          path: mrmhub_*.tar.gz
+
+  # Attach all packages to the release. The only job with write access; it runs
+  # no build code, so a compromised dependency cannot reach the token.
+  publish:
+    if: github.event_name == 'release' && startsWith(github.event.release.tag_name, 'v')
+    needs: [build, r-tarball]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
+        with:
+          pattern: MRMhub-*
+          path: assets
+          merge-multiple: true
+      - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
+        with:
+          name: mrmhub-source-package
+          path: assets
+      - name: Attach to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          set -euo pipefail
+          ls -l assets
+          gh release upload "$TAG" assets/* --clobber --repo "$GITHUB_REPOSITORY"

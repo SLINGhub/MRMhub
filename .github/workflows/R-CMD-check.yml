@@ -36,24 +36,26 @@ jobs:
       # ----------------------------------------------------------------
       # Checkout the code
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
 
       # ----------------------------------------------------------------
       # Setup Pandoc (required for R Markdown / Quarto)
       - name: Setup Pandoc
-        uses: r-lib/actions/setup-pandoc@v2
+        uses: r-lib/actions/setup-pandoc@f9a764fea8d5c63df6ef9a5c7795bf7deb5d7e05 # v2.14.0
 
       # ----------------------------------------------------------------
       # Setup R
       - name: Setup R
-        uses: r-lib/actions/setup-r@v2
+        uses: r-lib/actions/setup-r@f9a764fea8d5c63df6ef9a5c7795bf7deb5d7e05 # v2.14.0
         with:
           r-version: ${{ matrix.config.r }}
 
       # ----------------------------------------------------------------
       # Install package dependencies
       - name: Install dependencies
-        uses: r-lib/actions/setup-r-dependencies@v2
+        uses: r-lib/actions/setup-r-dependencies@f9a764fea8d5c63df6ef9a5c7795bf7deb5d7e05 # v2.14.0
         with:
           extra-packages: |
             any::rcmdcheck
@@ -62,7 +64,7 @@ jobs:
       # ----------------------------------------------------------------
       # Run R CMD check
       - name: Run R CMD check
-        uses: r-lib/actions/check-r-package@v2
+        uses: r-lib/actions/check-r-package@f9a764fea8d5c63df6ef9a5c7795bf7deb5d7e05 # v2.14.0
         with:
           build_args: 'c("--no-manual")'
           upload-snapshots: ${{ env.RUN_VDIFFR }}
@@ -71,7 +73,7 @@ jobs:
       # Upload check results if failed
       - name: Upload check results
         if: failure()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: ${{ runner.os }}-r${{ matrix.config.r }}-results
           path: check
@@ -80,7 +82,7 @@ jobs:
       # Upload vdiffr snapshots (macOS only)
       - name: Upload vdiffr snapshots
         if: ${{ env.RUN_VDIFFR }}
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: ${{ runner.os }}-r${{ matrix.config.r }}-snapshots
           path: tests/figs

@@ -1,0 +1,12 @@
+# Keeps the commit-SHA pins of GitHub Actions current (one grouped PR per month).
+# npm/Cargo are not included: the Tauri npm packages must match integrator_viz's Cargo.lock.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: develop
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        patterns: ["*"]

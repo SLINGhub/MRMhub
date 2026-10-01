@@ -22,7 +22,9 @@ jobs:
     steps:
       - name: Download the Windows demo package
         shell: bash
-        run: gh release download "${{ inputs.tag }}" -R "${{ github.repository }}" -p "MRMhub-demo-*-x86_64-pc-windows-msvc.zip" -D dl
+        env:
+          TAG: ${{ inputs.tag }}
+        run: gh release download "$TAG" -R "$GITHUB_REPOSITORY" -p "MRMhub-demo-*-x86_64-pc-windows-msvc.zip" -D dl
 
       - name: Unzip
         shell: pwsh
@@ -45,7 +47,7 @@ jobs:
           echo "runs=$runs transitions=$transitions long.csv rows=$rows"
           [ "$rows" -eq $(( runs * transitions )) ]
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: long-windows-${{ inputs.tag }}
           path: demo/*/long.csv
