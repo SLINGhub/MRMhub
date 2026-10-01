@@ -111,7 +111,7 @@ const stepProgressMessages = {
 
 const mockProject = {
   name: "MRMhub-Dataset1",
-  path: "C:\\Users\\arthur\\Documents\\GitHub\\MRMhub\\MRMhub-Dataset1",
+  path: "C:\\MRMhub\\MRMhub-Dataset1",
   sampleCount: 937,
   transitionFile: "transition_list_20251009_withRTerrors.csv",
   workerName: "MRMhub-integrator-optimized.exe",
