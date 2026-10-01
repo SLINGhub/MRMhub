@@ -428,14 +428,14 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="results">Results: viewing and output files</h2>
 <section id="viz-empty" class="level3">
 <h3 class="anchored" data-anchor-id="viz-empty">Q: MRMhub-viz shows nothing, or will not load a dataset</h3>
-<p><strong>A:</strong> MRMhub-viz reads the <code>misc/</code> folder, so Step 3 (peak integration) must have run at least once and <code>misc/</code> must exist; the viz executable must also sit in the same folder as MRMhub. If <code>misc/</code> was deleted, re-run Step 3. See <a href="./viz.html">MRMhub-viz</a>.</p>
+<p><strong>A:</strong> MRMhub-viz reads the <code>misc/</code> folder, so Step 3 (peak integration) must have run at least once and <code>misc/</code> must exist; the viz executable must also sit in the same folder as MRMhub. If <code>misc/</code> was deleted, re-run Step 3. The status line above the transition list states the cause of a loading error; if Step 3 was re-run while MRMhub-viz was open, press ↻ to reload the results. See <a href="./viz.html">MRMhub-viz</a>.</p>
 </section>
 <section id="pdf-fail" class="level3">
 <h3 class="anchored" data-anchor-id="pdf-fail">Q: PDF generation (Step 4) produces no plots, or plotting fails</h3>
 <p><strong>A:</strong> PDF plotting is carried out by the bundled R script, so it needs a working <strong>R installation</strong>. Check, in order:</p>
 <ul>
 <li><strong>R is installed</strong> — install it from <a href="https://cran.r-project.org/">CRAN</a> (no additional R packages are required).</li>
-<li><strong>R is on the system <code>PATH</code></strong> — the executable calls R from the command line, so <code>Rscript</code> must be resolvable in a terminal (verify with <code>Rscript --version</code>). On Windows the installer does not add R to the <code>PATH</code> automatically; add R’s <code>bin</code> directory manually (see the CRAN R-for-Windows FAQ, §2.29 <em>“Rcmd is not found in my PATH!”</em>, at <a href="https://cran.r-project.org/bin/windows/base/rw-FAQ.html" class="uri">https://cran.r-project.org/bin/windows/base/rw-FAQ.html</a>).</li>
+<li><strong>R can be found</strong> — the executable runs <code>Rscript</code> from the system <code>PATH</code> (verify with <code>Rscript --version</code> in a terminal). On Windows, if R is not on the <code>PATH</code>, it uses the newest R installed in <code>C:\Program Files\R</code> or in the user’s <code>AppData\Local\Programs\R</code>. For R installed elsewhere, add R’s <code>bin</code> directory to the <code>PATH</code> (see the CRAN R-for-Windows FAQ, §2.29 <em>“Rcmd is not found in my PATH!”</em>, at <a href="https://cran.r-project.org/bin/windows/base/rw-FAQ.html" class="uri">https://cran.r-project.org/bin/windows/base/rw-FAQ.html</a>).</li>
 <li><strong>The plotting script is present</strong> — <code>MRMhub_plot.r</code> must be in the project folder; use the copy bundled in the release.</li>
 <li><strong>The <code>misc/</code> folder exists</strong> — it is produced by Step 3 and is required for plotting.</li>
 </ul>
