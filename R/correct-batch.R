@@ -734,8 +734,8 @@ fun_batch_serrf <- function(
   nq_median <- apply(mat[, !is_qc, drop = FALSE], 1, median, na.rm = TRUE)
 
   # One self-contained task per batch, holding only that batch's column slice.
-  # Workers are set up by the user with mirai::daemons(); without them
-  # purrr::in_parallel() runs the tasks sequentially.
+  # Workers are set up by the user with mirai::daemons(); without them the
+  # tasks run sequentially (maybe_in_parallel()).
   batch_data <- purrr::map(ubatch, function(b) {
     cols <- which(batch == b)
     list(cols = cols, mat_b = mat[, cols, drop = FALSE], is_qc_b = is_qc[cols])
@@ -743,7 +743,7 @@ fun_batch_serrf <- function(
 
   results <- batch_data |>
     purrr::map(
-      .f = purrr::in_parallel(
+      .f = maybe_in_parallel(
         ~ serrf_one_batch(
           .x,
           ok_feat = ok_feat,

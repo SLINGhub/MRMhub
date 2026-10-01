@@ -2666,3 +2666,51 @@ test_that("correct_batch_serrf does not depend on the row order of the dataset",
   shuffled@dataset <- shuffled@dataset[sample(nrow(shuffled@dataset)), ]
   expect_equal(serrf(shuffled)$feature_conc, serrf(mexp)$feature_conc)
 })
+
+# purrr::in_parallel() requires mirai + carrier even when no daemons are set
+test_that("drift correction runs without mirai/carrier when no daemons are set", {
+  local_mocked_bindings(
+    parallel_pkgs_installed = function()
+      cli::cli_abort("carrier and mirai required"),
+    .package = "purrr"
+  )
+  expect_no_error(suppressMessages(correct_drift_gaussiankernel(
+    mexp,
+    variable = "conc",
+    ref_qc_types = "SPL",
+    recalc_trend_after = TRUE,
+    show_progress = FALSE
+  )))
+})
+
+test_that("correct_batch_serrf runs without mirai/carrier when no daemons are set", {
+  skip_if_not_installed("ranger")
+  local_mocked_bindings(
+    parallel_pkgs_installed = function()
+      cli::cli_abort("carrier and mirai required"),
+    .package = "purrr"
+  )
+  expect_no_error(suppressWarnings(suppressMessages(correct_batch_serrf(
+    mexp,
+    variable = "conc",
+    ref_qc_types = "BQC",
+    seed = 1L,
+    show_progress = FALSE
+  ))))
+})
+
+test_that("drift correction gives the same result through the parallel mapper", {
+  drift <- function() {
+    suppressMessages(correct_drift_gaussiankernel(
+      mexp,
+      variable = "conc",
+      ref_qc_types = "SPL",
+      recalc_trend_after = TRUE,
+      show_progress = FALSE
+    ))@dataset
+  }
+  sequential <- drift()
+  # No daemons are running, so purrr runs the crated function in-process
+  local_mocked_bindings(use_parallel_map = function() TRUE)
+  expect_equal(drift(), sequential)
+})

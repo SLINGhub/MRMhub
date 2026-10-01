@@ -653,7 +653,7 @@ correct_drift <- function(
 
   d_smooth_res_mapped <- d_smooth_res |>
     purrr::map(
-      .f = purrr::in_parallel(
+      .f = maybe_in_parallel(
         ~ do.call(
           fun_smooth,
           c(
@@ -684,7 +684,7 @@ correct_drift <- function(
 
     d_smooth_recalc <- d_smooth_recalc |>
       purrr::map(
-        .f = purrr::in_parallel(
+        .f = maybe_in_parallel(
           ~ do.call(
             fun_smooth,
             c(

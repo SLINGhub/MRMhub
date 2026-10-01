@@ -225,3 +225,18 @@ check_pkg_installed <- function(pkg, reason = NULL, call = caller_env()) {
     call = call
   )
 }
+
+# purrr::in_parallel() requires mirai + carrier even without workers, so map
+# in parallel only once the user has set up mirai::daemons().
+use_parallel_map <- function() {
+  is_installed(c("mirai", "carrier")) && mirai::daemons_set()
+}
+
+# `.f` wrapped in purrr::in_parallel() when use_parallel_map(), else `.f` as is
+# (sequential). Write `.f` inline: in_parallel() only crates a fresh function.
+maybe_in_parallel <- function(.f, ...) {
+  if (!use_parallel_map()) {
+    return(.f)
+  }
+  inject(purrr::in_parallel(!!substitute(.f), ...))
+}

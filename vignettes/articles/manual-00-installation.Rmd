@@ -113,6 +113,7 @@ install it.
 | Function | Optional package | Enables |
 |----------|------------------|---------|
 | `plot_runscatter()` | qpdf; mirai, carrier | only for multi-threaded PDF output |
+| `correct_drift_*()`, `correct_batch_serrf()` | mirai, carrier | only for parallel processing, after `mirai::daemons()` |
 | `plot_qc_summary_overall(with_venn = TRUE)` | ggvenn, patchwork | Venn diagram of features excluded by QC criteria |
 | `plot_matrixeffects()`, `plot_interference_correction()` | ggbeeswarm | beeswarm/quasirandom point layers |
 | `correct_isotopic_interferences()`, `calc_average_molweight()` | enviPat | isotope-pattern and molecular-weight calculation |

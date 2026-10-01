@@ -1,3 +1,7 @@
+# mrmhub 1.0.1
+
+- Drift correction and `correct_batch_serrf()` no longer require the optional packages mirai and carrier. They run sequentially unless parallel workers are set up with `mirai::daemons()`.
+
 # mrmhub 1.0.0
 
 First stable release of the MRMhub software framework.
