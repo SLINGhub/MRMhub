@@ -479,7 +479,10 @@ test_that("non-positive values are dropped with a message on a log scale", {
     ),
     "non-positive"
   )
-  expect_no_warning(print(p))
+  # Build, not print: on R >= 4.7 annotation_logticks() warns at draw time
+  # (tidyverse/ggplot2#6906)
+  expect_no_warning(ggplot_build(p[[1]]))
+  expect_no_warning(ggplot_build(p[[2]]))
 })
 
 test_that("use_qc_metrics applies the feature filters", {
