@@ -1174,7 +1174,7 @@ async function showVisualizer() {
   elements.visualizerStatus.textContent = "Loading visualizer...";
   try {
     await loadD3();
-    visualizerModule ??= await import("./visualizer/visualizer.js?v=1.2.4-saved-fill");
+    visualizerModule ??= await import("./visualizer/visualizer.js?v=1.2.5-sequence-all");
     await visualizerModule.initializeVisualizer(project.path);
   } catch (error) {
     elements.visualizerStatus.textContent = "Visualizer could not be loaded.";
@@ -1557,7 +1557,7 @@ document.querySelector("#quant-tab").addEventListener("click", async () => {
   document.querySelector("#quant-tab").classList.add("active");
   document.querySelector("#quant-tab").setAttribute("aria-current", "page");
   try {
-    quantModule ??= await import("./quant/quant.js?v=1.2.4-console-theme");
+    quantModule ??= await import("./quant/quant.js?v=1.2.4-storage");
     await quantModule.initializeQuant(project?.path);
   } catch (error) { showToast(String(error), "error"); }
 });

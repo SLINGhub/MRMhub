@@ -7,6 +7,7 @@ import { initializeOutput } from "./log.js";
 import { createPlotViewer } from "./plot-viewer.js";
 import { savedGraphs, chooseGraph } from "./graphs.js";
 import { initializeProgress } from "./progress.js";
+import { formatStorageBytes } from "./storage.js";
 
 const native = window.__TAURI__;
 const invoke = (...args) => native.core.invoke(...args);
@@ -18,6 +19,7 @@ let resultView = "plots", loadedTableKey = "", selectedRows = new Set();
 const drafts = new Map();
 let mode = "guided", legacyStep = 0, legacyDrafts = {}, legacyTrusted = false;
 let legacyEditor, output, plotViewer, runProgress;
+let storageInfo, storageLoading = false, storageToken = 0, storageCheckedAt = 0;
 const $ = id => root.querySelector(`#q-${id}`);
 const make = (tag, text, className) => {
   const el = document.createElement(tag); if (text != null) el.textContent = text;
@@ -60,6 +62,7 @@ function updateRun() {
   $("delete-checkpoint").disabled = busy || !current;
   $("delete-checkpoints").disabled = busy || !allHistory.some(h => (h.action === "legacy") === (mode === "legacy"));
   $("compact").disabled = busy || !path;
+  $("storage-refresh").disabled = busy || storageLoading || !native || !path;
   $("exclude-rows").disabled = busy || !selectedRows.size;
   $("legacy-prev").disabled = busy || legacyStep === 0;
   $("legacy-next").disabled = busy || legacyStep === legacySteps.length - 1;
@@ -91,7 +94,7 @@ export async function initializeQuant(projectPath) {
             <section class="q-session" aria-label="Active analysis">
               <div class="q-session-bar"><label for="q-checkpoint" class="q-section-label">Current session</label><select id="q-checkpoint" aria-label="Analysis checkpoint"></select><span class="q-session-local">Local to this dataset</span></div>
               <p id="q-summary" class="q-help"></p>
-              <details class="q-disclosure q-session-tools"><summary>Manage session & storage</summary><div class="q-session-management"><p class="q-help">One latest saved session per workflow. Earlier graphs and exports stay available; old-version snapshots remain until you free their storage.</p><div class="q-actions"><button id="q-legacy-new" type="button" class="hidden">New R session</button><button id="q-compact" type="button">Free old session storage…</button><div class="q-action-group" aria-label="Checkpoint deletion">${trashButton("delete-checkpoint", "Delete selected checkpoint")}${trashButton("delete-checkpoints", "Delete all checkpoints in this mode", true)}</div></div></div></details>
+              <details class="q-disclosure q-session-tools"><summary>Manage session & storage<span id="q-storage-summary" class="q-storage-summary" aria-live="polite">Checking folder size…</span></summary><div class="q-session-management"><div class="q-storage-row" role="group" aria-label="QUANT folder storage"><div><span>QUANT folder</span><strong id="q-storage-total">—</strong></div><div><span>Cleanup estimate</span><strong id="q-storage-free">—</strong></div><div><span>In trash</span><strong id="q-storage-trash">—</strong></div><button id="q-storage-refresh" type="button" aria-label="Refresh QUANT folder size">Refresh size</button></div><p id="q-storage-path" class="q-help q-storage-path"></p><p id="q-storage-note" class="q-help q-storage-note">Sizes count saved sessions, graphs, exports and trash. Linked folders are not followed; shared hard-linked files count once.</p><p class="q-help">One latest saved session per workflow. Earlier graphs and exports stay available; old-version snapshots remain until you free their storage.</p><div class="q-actions"><button id="q-legacy-new" type="button" class="hidden">New R session</button><button id="q-compact" type="button">Free old session storage…</button><div class="q-action-group" aria-label="Checkpoint deletion">${trashButton("delete-checkpoint", "Delete selected checkpoint")}${trashButton("delete-checkpoints", "Delete all checkpoints in this mode", true)}</div></div></div></details>
             </section>
             <section id="q-guided-editor" role="tabpanel" aria-labelledby="q-guided-tab" class="q-panel q-editor">
               <div class="q-editor-heading"><div><p id="q-operation-stage" class="q-section-label"></p><h2 id="q-operation-title">Choose an operation</h2></div><span id="q-operation-kind" class="q-kind"></span></div>
@@ -224,6 +227,7 @@ export async function initializeQuant(projectPath) {
     $("delete-checkpoint").onclick = () => deleteHistory("checkpoints", false);
     $("delete-checkpoints").onclick = () => deleteHistory("checkpoints", true);
     $("compact").onclick = compactStorage;
+    $("storage-refresh").onclick = () => refreshStorage(true);
     $("save-plot").onclick = () => task("Saving graph…", async () => {
       const graph = graphs.find(g => g.key === $("plot-choice").value);
       if (!graph) return;
@@ -240,6 +244,10 @@ export async function initializeQuant(projectPath) {
   if (path !== projectPath) {
     if (!await discardWarning()) return;
     path = projectPath; current = undefined; history = []; allHistory = []; graphs = []; offset = 0; generation++;
+    storageInfo = undefined; storageLoading = false; storageCheckedAt = 0; storageToken++;
+    $("storage-summary").textContent = path ? "Checking folder size…" : "No dataset selected";
+    for (const id of ["storage-total", "storage-free", "storage-trash"]) $(id).textContent = "—";
+    $("storage-path").textContent = "";
     loadLegacyDrafts();
     drafts.clear(); selected = undefined;
     $("dataset").textContent = path?.split(/[\\/]/).pop() || "Select a dataset folder in Integrator to begin.";
@@ -254,9 +262,38 @@ export async function initializeQuant(projectPath) {
     });
     if (catalog.length) chooseOperation("import_data_mrmhub");
   }
-  if (!native) { $("engine-title").textContent = "Desktop app required"; $("engine-detail").textContent = "QUANT runs in the desktop app. This browser preview cannot execute R."; $("setup").disabled = true; return; }
+  if (!native) { $("engine-title").textContent = "Desktop app required"; $("engine-detail").textContent = "QUANT runs in the desktop app. This browser preview cannot execute R."; $("storage-summary").textContent = "Folder size available in desktop app"; $("setup").disabled = true; return; }
   if (!catalog.length) await task("Checking the R engine…", checkRuntime);
+  await refreshStorage();
   updateRun();
+}
+async function refreshStorage(force = false) {
+  if (!native || !path || storageLoading) return storageInfo;
+  if (!force && storageInfo && Date.now() - storageCheckedAt < 10_000) return storageInfo;
+  const project = path, token = ++storageToken;
+  storageLoading = true; updateRun();
+  try {
+    const info = await invoke("quant_storage", { project });
+    if (token !== storageToken || project !== path) return;
+    storageInfo = info; storageCheckedAt = Date.now();
+    const prefix = info.skippedEntries ? "≥ " : "";
+    $("storage-summary").textContent = `Folder: ${prefix}${formatStorageBytes(info.totalBytes)}`;
+    $("storage-summary").title = `Updated ${new Date(storageCheckedAt).toLocaleTimeString()} · ${info.folder}`;
+    $("storage-total").textContent = prefix + formatStorageBytes(info.totalBytes);
+    $("storage-free").textContent = formatStorageBytes(info.reclaimableBytes);
+    $("storage-trash").textContent = formatStorageBytes(info.trashBytes);
+    $("storage-path").textContent = info.folder;
+    $("storage-note").textContent = `${Number(info.files).toLocaleString()} files. Estimates count shared hard-linked files once and exclude data still linked elsewhere. Linked folders are not followed.${info.skippedEntries ? ` ${info.skippedEntries} linked or unreadable entries omitted; total is a lower bound.` : ""}`;
+    return info;
+  } catch (error) {
+    if (token !== storageToken || project !== path) return;
+    storageInfo = undefined;
+    $("storage-summary").textContent = "Folder size unavailable";
+    $("storage-note").textContent = `Could not read folder size: ${error}. You can retry with Refresh size.`;
+    for (const id of ["storage-total", "storage-free", "storage-trash"]) $(id).textContent = "—";
+  } finally {
+    if (token === storageToken) { storageLoading = false; updateRun(); }
+  }
 }
 async function deleteHistory(kind, all) {
   await task("Updating saved QUANT history…", async () => {
@@ -288,14 +325,18 @@ async function deleteHistory(kind, all) {
       current = oldId ? history.find(h => h.id === oldId) ?? history[0] : undefined;
       changes.clear(); offset = 0; generation++; remember();
       await renderResult();
+      await refreshStorage(true);
     }
   });
 }
 
 async function compactStorage() {
   await task("Freeing old QUANT session storage…", async () => {
-    if (!path || !await confirm("Permanently free old QUANT storage?",
-      "This keeps only the newest resumable session in EACH workflow (Guided and Legacy), permanently removes older automatic session/plot-object snapshots, and empties this dataset’s QUANT/.trash.\n\nEarlier graphs, PDFs, exports, R code and logs outside trash stay available. Input datasets and Integrator results are untouched. Older sessions can no longer be resumed, and trashed items cannot be recovered. Export any session you want to keep first.")) return;
+    if (!path) return;
+    const size = await refreshStorage(true);
+    const estimate = size ? `QUANT folder: ${size.skippedEntries ? "at least " : ""}${formatStorageBytes(size.totalBytes)}. Estimated space reclaimed: ${formatStorageBytes(size.reclaimableBytes)}. Trash contains ${formatStorageBytes(size.trashBytes)}.\n\n` : "";
+    if (!await confirm("Permanently free old QUANT storage?",
+      estimate + "This keeps only the newest resumable session in EACH workflow (Guided and Legacy), permanently removes older automatic session/plot-object snapshots, and empties this dataset’s QUANT/.trash.\n\nEarlier graphs, PDFs, exports, R code and logs outside trash stay available. Input datasets and Integrator results are untouched. Older sessions can no longer be resumed, and trashed items cannot be recovered. Export any session you want to keep first.")) return;
     if (!await discardWarning()) return;
     const oldId = current?.id;
     try {
@@ -305,6 +346,7 @@ async function compactStorage() {
       allHistory = await invoke("quant_history", {project:path}); history = historyForMode(allHistory, mode);
       current = history.find(h=>h.id===oldId) ?? history[0];
       changes.clear(); offset=0; generation++; remember(); await renderResult();
+      await refreshStorage(true);
     }
   });
 }
@@ -561,6 +603,7 @@ async function accept(result) {
   allHistory = await invoke("quant_history", {project:path}); history = historyForMode(allHistory, mode);
   remember(); changes.clear(); offset = 0;
   await renderResult();
+  await refreshStorage(true);
 }
 function renderHistory() {
   $("checkpoint").replaceChildren();

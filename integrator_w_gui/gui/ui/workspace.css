@@ -1470,3 +1470,66 @@ html[data-theme="dark"] .activity-header {
     padding: 10px;
   }
 }
+
+/* Acquisition-sequence integration shares the workspace's compact controls. */
+.visualizer-apply-mode,
+.integration-sequence-tools label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.visualizer-apply-mode select,
+.integration-sequence-tools select {
+  width: auto;
+  min-height: 32px;
+  padding: 5px 30px 5px 10px;
+  font-size: 12px;
+}
+.integration-sequence {
+  margin: 0 0 18px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--surface);
+}
+.integration-sequence summary {
+  padding: 12px 14px;
+  cursor: pointer;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+}
+.integration-sequence summary:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+.integration-sequence-body { padding: 0 14px 12px; }
+.integration-sequence-body p { margin: 0 0 10px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.integration-sequence-tools { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; }
+.integration-sequence-tools button { min-height: 32px; padding: 5px 12px; font-size: 12px; }
+.integration-sequence-tools button:disabled { opacity: .45; cursor: default; }
+#sequence-chart { width: 100%; min-height: 100px; margin: 12px 0 8px; overflow-x: auto; }
+#sequence-chart svg { display: block; width: 100%; min-width: 360px; color: var(--faint); }
+#sequence-chart text { font: 10px ui-monospace, monospace; fill: var(--muted); stroke: none; }
+#sequence-chart .domain, #sequence-chart .tick line { stroke: var(--line-strong); stroke-width: 1; }
+#sequence-chart:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+#sequence-chart svg { cursor: grab; touch-action: none; }
+#sequence-chart svg:active { cursor: grabbing; }
+.sequence-zoom-tools { display: flex; align-items: center; gap: 4px; margin-left: auto; }
+.sequence-zoom-tools button { min-width: 32px; }
+.sequence-batch-boundary { stroke: var(--line-strong); stroke-width: 1; stroke-dasharray: 3 4; pointer-events: none; }
+#sequence-batch-legend { margin: 0 0 8px; }
+.sequence-current { fill: none; stroke: var(--muted); stroke-width: 1.2; }
+.sequence-proposal { fill: none; stroke: var(--cyan); stroke-width: 2; stroke-dasharray: 5 3; }
+.sequence-sample { cursor: pointer; outline: none; }
+.sequence-sample line { stroke: var(--line-strong); stroke-width: 6; stroke-opacity: .4; }
+.sequence-sample circle { fill: var(--surface); stroke: var(--muted); stroke-width: 1.5; }
+.sequence-sample.is-anchor circle { fill: var(--cyan); stroke: var(--cyan); }
+.sequence-sample:hover line, .sequence-sample:focus line { stroke: var(--cyan); stroke-opacity: .8; }
+.sequence-sample:focus circle { stroke: var(--text); stroke-width: 2; }
+.sequence-legend { display: flex; flex-wrap: wrap; gap: 6px 18px; color: var(--faint); font-size: 10px; }
+.sequence-proposed { color: var(--cyan); }
+.integration-boundary { cursor: ew-resize; outline: none; }
+.integration-border { stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.integration-border-hit { fill: transparent; stroke: none; pointer-events: all; }
+.integration-boundary:hover .integration-border,
+.integration-boundary:focus .integration-border { stroke-width: 3; stroke: var(--cyan); }
+.sequence-trace-preview rect { fill: var(--cyan); fill-opacity: .06; stroke: var(--cyan); stroke-width: 1.5; stroke-dasharray: 5 3; }

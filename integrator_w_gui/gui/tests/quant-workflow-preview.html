@@ -38,6 +38,7 @@ window.__TAURI__ = {
   dialog:{save:async()=>null},
   core:{invoke:async(command,args)=>{
     if(command==="quant_history") return [...history];
+    if(command==="quant_storage") return {folder:`${args.project}/QUANT`,totalBytes:2450000000,reclaimableBytes:1200000000,trashBytes:340000000,files:142,skippedEntries:0};
     if(command==="quant_compact") {
       const kept=new Set();
       for(const entry of history) {

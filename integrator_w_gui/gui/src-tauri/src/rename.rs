@@ -29,19 +29,19 @@ fn safe_separate_install(path: &Path, executable: &Path) -> bool {
 }
 
 #[cfg(target_os = "macos")]
-fn old_installs(home: &Path, executable: &Path) -> Vec<PathBuf> {
+fn old_installs(home: &Path, executable: &Path, processes: &super::processes::ProcessState) -> Vec<PathBuf> {
     [PathBuf::from("/Applications"), home.join("Applications")].into_iter()
         .map(|base| base.join(format!("{OLD_NAME}.app")))
         .filter(|path| {
             if !safe_separate_install(path, executable) { return false; }
-            let output = std::process::Command::new("/usr/libexec/PlistBuddy")
-                .args(["-c", "Print :CFBundleIdentifier"]).arg(path.join("Contents/Info.plist")).output();
+            let output = processes.output(std::process::Command::new("/usr/libexec/PlistBuddy")
+                .args(["-c", "Print :CFBundleIdentifier"]).arg(path.join("Contents/Info.plist")));
             matches!(output, Ok(ref out) if out.status.success() && String::from_utf8_lossy(&out.stdout).trim() == "org.slinghub.mrmhub.integrator")
         }).collect()
 }
 
 #[cfg(target_os = "windows")]
-fn old_installs(_home: &Path, executable: &Path) -> Vec<PathBuf> {
+fn old_installs(_home: &Path, executable: &Path, processes: &super::processes::ProcessState) -> Vec<PathBuf> {
     use std::os::windows::process::CommandExt;
     let mut candidates = Vec::new();
     for name in ["LOCALAPPDATA", "ProgramFiles", "ProgramFiles(x86)"] {
@@ -71,9 +71,9 @@ foreach ($hive in @('CurrentUser', 'LocalMachine')) {
 ConvertTo-Json -InputObject @($paths) -Compress"#;
     if let Some(system) = std::env::var_os("SystemRoot") {
         let powershell = PathBuf::from(system).join(r"System32\WindowsPowerShell\v1.0\powershell.exe");
-        if let Ok(out) = std::process::Command::new(powershell)
+        if let Ok(out) = processes.output(std::process::Command::new(powershell)
             .args(["-NoLogo", "-NoProfile", "-NonInteractive", "-Command", script])
-            .creation_flags(0x08000000).output() {
+            .creation_flags(0x08000000)) {
             if out.status.success() {
                 if let Ok(paths) = serde_json::from_slice::<Vec<String>>(&out.stdout) { candidates.extend(paths.into_iter().map(PathBuf::from)); }
             }
@@ -84,12 +84,12 @@ ConvertTo-Json -InputObject @($paths) -Compress"#;
 }
 
 #[cfg(not(any(target_os = "macos", target_os = "windows")))]
-fn old_installs(_home: &Path, _executable: &Path) -> Vec<PathBuf> { Vec::new() }
+fn old_installs(_home: &Path, _executable: &Path, _processes: &super::processes::ProcessState) -> Vec<PathBuf> { Vec::new() }
 
 fn detect(app: &tauri::AppHandle) -> Result<Vec<PathBuf>, String> {
     let home = app.path().home_dir().map_err(|e| e.to_string())?;
     let executable = std::env::current_exe().map_err(|e| e.to_string())?;
-    Ok(old_installs(&home, &executable))
+    Ok(old_installs(&home, &executable, &app.state::<super::processes::ProcessState>()))
 }
 
 #[tauri::command]

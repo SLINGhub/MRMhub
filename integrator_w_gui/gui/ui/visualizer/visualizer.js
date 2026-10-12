@@ -1,5 +1,7 @@
 import { referenceBounds } from "./reference-bounds.js";
 import { savedIntegrationRegions } from "./integration-regions.js";
+import { acquisitionBatches, sequenceDisplay, sequencePlan } from "./sequence.js";
+import { clearSequenceChart, drawSequence, resetSequenceZoom, zoomSequence } from "./sequence-view.js";
 
 const { invoke, Channel } = window.__TAURI__.core;
 const dialog = window.__TAURI__.dialog;
@@ -10,6 +12,7 @@ const formatRt = d3.format(".2f");
 const formatIntensity = d3.format(",.0f");
 const sampleTypeColorPreference = "mrmhub-visualizer-color-sample-types";
 const sharedAlignmentPreference = "mrmhub-visualizer-align-shared";
+const applyModePreference = "mrmhub-visualizer-apply-mode";
 const sampleTypePalette = [
   "#1f77b4",
   "#e67e22",
@@ -34,6 +37,17 @@ const elements = {
   sampleTypeLegend: document.querySelector("#visualizer-sample-type-legend"),
   applyShared: document.querySelector("#visualizer-apply-shared"),
   alignShared: document.querySelector("#visualizer-align-shared"),
+  sequence: document.querySelector("#integration-sequence"),
+  sequenceBatch: document.querySelector("#sequence-batch"),
+  sequenceIsomer: document.querySelector("#sequence-isomer"),
+  sequencePreview: document.querySelector("#sequence-preview"),
+  sequenceReset: document.querySelector("#sequence-reset"),
+  sequenceChart: document.querySelector("#sequence-chart"),
+  sequenceLegend: document.querySelector("#sequence-batch-legend"),
+  sequenceZoomIn: document.querySelector("#sequence-zoom-in"),
+  sequenceZoomOut: document.querySelector("#sequence-zoom-out"),
+  sequenceZoomReset: document.querySelector("#sequence-zoom-reset"),
+  sequenceStatus: document.querySelector("#sequence-status"),
   refresh: document.querySelector("#visualizer-refresh"),
   save: document.querySelector("#visualizer-save"),
   overrideBackup: document.querySelector("#visualizer-override-backup"),
@@ -89,6 +103,10 @@ const state = {
   referenceChoices: new Map(),
   exportingPngs: false,
   renderComplete: false,
+  saving: false,
+  sequencePlan: null,
+  sequenceSignature: "",
+  sequenceWindows: new Map(),
 };
 
 const margins = {
@@ -188,7 +206,9 @@ applySampleTypeColorPreference(
   storedPreference(sampleTypeColorPreference) === "true",
   false,
 );
-elements.alignShared.checked = storedPreference(sharedAlignmentPreference) !== "false";
+elements.alignShared.value = storedPreference(applyModePreference) ??
+  (storedPreference(sharedAlignmentPreference) === "false" ? "exact" :
+    storedPreference(sharedAlignmentPreference) === "true" ? "shape" : "sequence");
 
 // updates the visible visualizer status text
 function setStatus(message, options = {}) {
@@ -263,6 +283,12 @@ function applyTransitionSearch() {
 
 // releases all per-graph arrays and dom nodes
 export function clearPlots() {
+  state.sequencePlan = null;
+  state.sequenceWindows.clear();
+  state.sequenceSignature = "";
+  elements.sequence.classList.add("hidden");
+  clearSequenceChart(elements.sequenceChart);
+  elements.sequenceLegend.replaceChildren();
   state.renderToken += 1;
   state.renderComplete = false;
   state.hoveredGraph = null;
@@ -998,9 +1024,10 @@ function syncGraphReferenceState(graph) {
 }
 
 function toggleGraphReference(graph) {
+  if (state.loading || state.saving) return;
   const key = referenceChoiceKey(graph);
-  state.referenceChoices.set(key, !graph.isReferenceChoice);
-  syncGraphReferenceState(graph);
+  state.referenceChoices.set(key, state.referenceChoices.get(key) !== true);
+  syncGraphReferenceState(graph.graph ?? graph);
   updateSaveButton();
   const count = state.traceRecords.filter(
     (record) => state.referenceChoices.get(referenceChoiceKey(record)) === true,
@@ -1161,8 +1188,8 @@ function renderTrace(
 
   // repositions one integration region's window box and baseline area for a
   // given x scale; shared by the initial draw, wheel zoom, and drag editing
-  const drawRegion = (region, scale, options = {}) => {
-    const maxPoints = options.dragPreview
+  const drawRegion = (region, scale, drawOptions = {}) => {
+    const maxPoints = drawOptions.dragPreview
       ? maxDragAreaPathPoints
       : maxAreaPathPoints;
     const beginX = clampPlotX(scale(points[region.begin * 2]));
@@ -1172,6 +1199,37 @@ function renderTrace(
       windowNode.setAttribute("x", String(Math.min(beginX, endX)));
       windowNode.setAttribute("width", String(Math.max(0, Math.abs(endX - beginX))));
     }
+    if (!region.boundaries) {
+      region.boundaries = ["start", "end"].map(edge => {
+        const handle = plotLayer.append("g").attr("class", "integration-boundary")
+          .attr("data-edge", edge).attr("data-isomer", region.isomerIndex)
+          .attr("tabindex", options.transient ? null : 0).attr("role", "slider")
+          .attr("aria-label", `${sample[0]}, peak ${region.isomerIndex + 1}, integration ${edge}`)
+          .attr("aria-orientation", "horizontal");
+        handle.append("line").attr("class", "integration-border").attr("stroke", region.color);
+        handle.append("rect").attr("class", "integration-border-hit");
+        handle.on("keydown", event => {
+          if (!["ArrowLeft", "ArrowRight"].includes(event.key)) return;
+          event.preventDefault(); event.stopPropagation();
+          if (state.loading || state.saving) return;
+          const delta = (event.key === "ArrowLeft" ? -1 : 1) * (event.shiftKey ? 5 : 1);
+          const begin = edge === "start" ? Math.max(0, Math.min(region.end - 2, region.begin + delta)) : region.begin;
+          const end = edge === "end" ? Math.max(region.begin + 2, Math.min(count, region.end + delta)) : region.end;
+          setRegionBand(region, points[begin * 2], points[(end - 1) * 2]);
+          updateSaveButton();
+        });
+        return handle;
+      });
+    }
+    region.boundaries.forEach((handle, i) => {
+      const rt = points[(i ? region.end - 1 : region.begin) * 2];
+      const px = scale(rt);
+      handle.attr("display", px < plotBounds.left || px > plotBounds.right ? "none" : null)
+        .attr("aria-valuemin", points[0]).attr("aria-valuemax", points[points.length - 2])
+        .attr("aria-valuenow", rt).attr("aria-valuetext", `${rt.toFixed(3)} minutes`);
+      handle.selectAll("line").attr("x1", px).attr("x2", px).attr("y1", plotBounds.top).attr("y2", plotBounds.bottom);
+      handle.select("rect").attr("x", px - 6).attr("y", plotBounds.top).attr("width", 12).attr("height", plotBounds.bottom - plotBounds.top);
+    });
     if (region.area) {
       const areaNode = region.areaNode ?? region.area.node();
       if (region.previewArea) {
@@ -1373,6 +1431,15 @@ function renderTrace(
     zoomTransform: d3.zoomIdentity,
   };
   if (!options.transient) state.traceGraphs.push(graph);
+  const previewLayer = plotLayer.append("g").attr("class", "sequence-trace-preview").attr("pointer-events", "none");
+  graph.drawSequencePreview = () => {
+    const windows = options.transient ? [] : state.sequenceWindows.get(`${editContext.cqq}:${editContext.sampleIndex}`) ?? [];
+    previewLayer.selectAll("rect").data(windows, edit => edit.isomerIndex).join("rect")
+      .attr("x", edit => graph.currentX(edit.rtStart))
+      .attr("width", edit => Math.max(0, graph.currentX(edit.rtEnd) - graph.currentX(edit.rtStart)))
+      .attr("y", plotBounds.top + 1).attr("height", plotBounds.bottom - plotBounds.top - 2);
+  };
+  graph.drawSequencePreview();
 
   const panSlider = document.createElement("input");
   panSlider.className = "chart-pan-slider";
@@ -1444,6 +1511,7 @@ function renderTrace(
     for (const integration of integrations) {
       drawRegion(integration, scale);
     }
+    graph.drawSequencePreview();
     tooltipNode.setAttribute("display", "none");
     guideNode.setAttribute("display", "none");
   };
@@ -1603,8 +1671,8 @@ function renderTrace(
   // moves the selected colored band to the dragged span and records the edit
   // for saving back into that isomer's RT_matrix columns.
   const setRegionBand = (region, rtLo, rtHi) => {
-    const begin = nearestPackedIndex(points, rtLo);
-    const end = Math.max(begin + 1, nearestPackedIndex(points, rtHi));
+    const begin = Math.min(count - 2, nearestPackedIndex(points, rtLo));
+    const end = Math.min(count - 1, Math.max(begin + 1, nearestPackedIndex(points, rtHi)));
     region.begin = begin;
     region.end = end + 1;
     region.previewArea = true;
@@ -1629,6 +1697,8 @@ function renderTrace(
   let dragStartRt = 0;
   let dragStartPx = 0;
   let dragRegion = null;
+  let dragEdge = null;
+  let fixedEdgeRt = 0;
   let preDrag = null;
   let pendingBand = null;
   let dragFrame = 0;
@@ -1740,15 +1810,26 @@ function renderTrace(
 
   svg
     .on("pointerdown", (event) => {
-      if (event.button !== 0) return;
+      if (event.button !== 0 || state.loading || state.saving) return;
       if (!pointerInsidePlot(event)) return;
       dragging = true;
       dragStartPx = clampPlotX(d3.pointer(event)[0]);
       dragStartRt = clampRt(graph.currentX.invert(dragStartPx));
-      dragRegion = dragRegionAt(dragStartPx);
+      const handle = event.target.closest?.(".integration-boundary");
+      // Hover guides/points can sit over a border, so also hit-test geometry.
+      const nearEdge = integrations.flatMap(region => [
+        { region, edge: "start", distance: Math.abs(graph.currentX(points[region.begin * 2]) - dragStartPx) },
+        { region, edge: "end", distance: Math.abs(graph.currentX(points[(region.end - 1) * 2]) - dragStartPx) },
+      ]).filter(hit => hit.distance <= 7).sort((a, b) => a.distance - b.distance ||
+        Number(b.region.isomerIndex === state.selectedIsomerIndex) - Number(a.region.isomerIndex === state.selectedIsomerIndex))[0];
+      dragEdge = handle?.getAttribute("data-edge") ?? nearEdge?.edge ?? null;
+      dragRegion = handle ? integrations.find(region => region.isomerIndex === Number(handle.getAttribute("data-isomer"))) : nearEdge?.region ?? dragRegionAt(dragStartPx);
+      if (!dragRegion) { dragging = false; return; }
+      state.selectedIsomerIndex = dragRegion.isomerIndex;
+      fixedEdgeRt = points[(dragEdge === "start" ? dragRegion.end - 1 : dragRegion.begin) * 2];
       preDrag = dragRegion
         ? {
-            existed: true,
+            existed: !dragRegion.created,
             region: dragRegion,
             begin: dragRegion.begin,
             end: dragRegion.end,
@@ -1775,8 +1856,8 @@ function renderTrace(
         const rt = clampRt(graph.currentX.invert(pointerX));
         scheduleRegionBand(
           dragRegion ?? ensurePrimaryRegion(),
-          Math.min(dragStartRt, rt),
-          Math.max(dragStartRt, rt),
+          dragEdge === "start" ? Math.min(rt, points[Math.max(0, dragRegion.end - 2) * 2]) : dragEdge === "end" ? fixedEdgeRt : Math.min(dragStartRt, rt),
+          dragEdge === "end" ? Math.max(rt, points[Math.min(count - 1, dragRegion.begin + 1) * 2]) : dragEdge === "start" ? fixedEdgeRt : Math.max(dragStartRt, rt),
         );
         renderDragTooltipAt(pointerX);
         return;
@@ -1793,7 +1874,7 @@ function renderTrace(
       } catch {}
       // a click (negligible drag) reverts to the pre-drag state instead of
       // collapsing the band to a single point
-      if (Math.abs(clampPlotX(d3.pointer(event)[0]) - dragStartPx) < 4) {
+      if (event.type === "pointercancel" || Math.abs(clampPlotX(d3.pointer(event)[0]) - dragStartPx) < 4) {
         if (preDrag?.existed) {
           const region = preDrag.region;
           region.begin = preDrag.begin;
@@ -1807,6 +1888,7 @@ function renderTrace(
         } else if (dragRegion?.created) {
           dragRegion.area?.remove();
           dragRegion.window.remove();
+          dragRegion.boundaries?.forEach(handle => handle.remove());
           const removeIndex = integrations.indexOf(dragRegion);
           if (removeIndex >= 0) integrations.splice(removeIndex, 1);
         }
@@ -1816,10 +1898,12 @@ function renderTrace(
         }
         graph.hasEdit = graph.editRts.size > 0;
       } else if (dragRegion) {
+        dragRegion.created = false;
         drawRegion(dragRegion, graph.currentX);
       }
       graph.editRt = graph.editRts.values().next().value ?? null;
       dragRegion = null;
+      dragEdge = null;
       preDrag = null;
       updateSaveButton();
     })
@@ -2087,6 +2171,7 @@ async function renderReference(reference, token) {
 // Enables Save for dragged edits and the shared action for any selected plot
 // that already contains a valid existing or edited integration window.
 function updateSaveButton() {
+  const busy = state.loading || state.saving;
   const hasEdits = state.traceRecords.some(
     (record) => record.editRts?.size > 0 && record.editContext?.cqq,
   );
@@ -2097,14 +2182,21 @@ function updateSaveButton() {
       record.editContext?.cqq &&
       referenceBounds(record).size > 0,
   );
-  elements.save.disabled = !hasEdits || state.loading;
-  elements.applyShared.disabled = selectedReferences.length === 0 || state.loading;
+  elements.save.disabled = !hasEdits || busy;
+  const sequence = elements.alignShared.value === "sequence";
+  elements.applyShared.disabled = selectedReferences.length === 0 || busy ||
+    (sequence && !elements.transition.value.startsWith("t:"));
   elements.applyShared.title = selectedReferences.length
-    ? elements.alignShared.checked
+    ? sequence
+      ? "interpolate selected reference boundaries along acquisition time, within each batch, and reintegrate"
+      : elements.alignShared.value === "shape"
       ? `average the current bounds from ${selectedReferences.length.toLocaleString()} selected reference plot(s), cosine-align qualifying samples, and reintegrate`
       : `average the current bounds from ${selectedReferences.length.toLocaleString()} selected reference plot(s), apply the exact same limits to every sample, and reintegrate`
     : "select at least one reference plot with usable integration bounds";
-  elements.alignShared.disabled = state.loading;
+  if (sequence && !elements.transition.value.startsWith("t:")) {
+    elements.applyShared.title = "Choose a transition for acquisition-sequence integration, or use peak-shape alignment / same bounds in reference view.";
+  }
+  elements.alignShared.disabled = busy;
   elements.toolbar.classList.toggle("has-unsaved", hasEdits);
   elements.toolbar.classList.toggle(
     "has-reference-selection",
@@ -2113,7 +2205,7 @@ function updateSaveButton() {
   const canExport =
     Boolean(selection) &&
     !hasEdits &&
-    !state.loading &&
+    !busy &&
     !state.exportingPngs &&
     state.renderComplete &&
     (state.qcGraphs.length > 0 || state.traceRecords.length > 0);
@@ -2124,13 +2216,77 @@ function updateSaveButton() {
   elements.exportPngs.title = exportTitle;
   elements.exportPngsWrap.title = exportTitle;
   updateDeleteButton();
+  refreshSequence();
+}
+
+function clearSequencePreview() {
+  state.sequencePlan = null;
+  state.sequenceWindows.clear();
+  for (const graph of state.traceGraphs) graph.drawSequencePreview?.();
+}
+
+function refreshSequence() {
+  const visible = elements.transition.value.startsWith("t:") && state.renderComplete;
+  elements.sequence.classList.toggle("hidden", !visible);
+  if (!visible) return;
+  const refs = selectedAlignmentReferences();
+  const signature = JSON.stringify(refs);
+  if (signature !== state.sequenceSignature) {
+    state.sequenceSignature = signature;
+    clearSequencePreview();
+  }
+  const batches = acquisitionBatches(state.samples);
+  const batchValue = elements.sequenceBatch.value;
+  elements.sequenceBatch.replaceChildren(new Option("All", ""), ...batches.map(batch => new Option(batch.name, batch.name)));
+  if (batches.some(batch => batch.name === batchValue)) elements.sequenceBatch.value = batchValue;
+  const isomers = [...new Set(state.traceRecords.flatMap(record => [...referenceBounds(record).keys()]))].sort((a, b) => a - b);
+  const isomerValue = Number(elements.sequenceIsomer.value || 0);
+  elements.sequenceIsomer.replaceChildren(...isomers.map(i => new Option(`Peak ${i + 1}`, String(i))));
+  if (isomers.includes(isomerValue)) elements.sequenceIsomer.value = String(isomerValue);
+  const batch = sequenceDisplay(batches, elements.sequenceBatch.value);
+  const plan = state.sequencePlan;
+  elements.sequencePreview.disabled = !refs.length || state.loading || state.saving;
+  elements.sequenceReset.disabled = !plan || state.loading || state.saving;
+  const summary = plan ? `${plan.edits.length.toLocaleString()} proposed window(s); ${plan.skipped.toLocaleString()} unchanged (no reference in batch or outside trace). ` : "";
+  const single = plan?.summaries.some(item => item.anchors === 1);
+  elements.sequenceStatus.textContent = summary +
+    (batch.timed ? "Ordered by mzML acquisition time. " : `Missing or duplicate timestamps: using Step 1 sample order ${batch.all ? "across batches" : "for this batch"}. `) +
+    (batch.all ? "Batch colors identify separate integration sequences. " : "") +
+    (single ? "A single reference gives constant bounds in its batch. " : "") +
+    "Use two or more references per peak/batch to follow RT drift. Outside the reference range, the nearest bounds are held." +
+    (batch.rows.length > 400 ? " Overview markers are sampled; zoom in to reveal individual samples. All samples contribute to the curves." : "");
+  if (batch && elements.sequence.open) drawSequence(elements.sequenceChart, batch, state.traceRecords, refs, plan, Number(elements.sequenceIsomer.value), record => {
+    const focusedSample = record.editContext.sampleIndex;
+    toggleGraphReference(record);
+    elements.sequenceChart.querySelector(`[data-sample="${focusedSample}"]`)?.focus({ preventScroll: true });
+  }, `${state.projectPath}:${elements.transition.value}`, elements.sequenceLegend);
+}
+
+function previewSequence() {
+  if (state.loading || state.saving || !state.renderComplete || !elements.transition.value.startsWith("t:")) return null;
+  const refs = selectedAlignmentReferences();
+  if (!refs.length) return null;
+  elements.alignShared.value = "sequence";
+  rememberPreference(applyModePreference, "sequence");
+  const plan = sequencePlan(state.samples, refs, state.traceRecords);
+  state.sequenceSignature = JSON.stringify(refs);
+  state.sequencePlan = plan;
+  state.sequenceWindows = new Map();
+  for (const edit of plan.edits) {
+    const key = `${edit.cqq}:${edit.sampleIndex}`;
+    if (!state.sequenceWindows.has(key)) state.sequenceWindows.set(key, []);
+    state.sequenceWindows.get(key).push(edit);
+  }
+  for (const graph of state.traceGraphs) graph.drawSequencePreview?.();
+  updateSaveButton();
+  return plan;
 }
 
 // enables deletion only for user-created snapshots, keeping the protected
 // original available as a safe baseline
 function updateDeleteButton() {
   const name = elements.backups.value;
-  const disabled = state.loading || !name || name === originalRtMatrix;
+  const disabled = state.loading || state.saving || !name || name === originalRtMatrix;
   const hasEdits = state.traceRecords.some(
     (record) => record.editRts?.size > 0 && record.editContext?.cqq,
   );
@@ -2139,7 +2295,7 @@ function updateDeleteButton() {
   elements.overrideBackup.disabled = disabled || !hasEdits;
   elements.deleteAllBackups.disabled =
     disabled || !state.backupNames.some((backup) => backup !== originalRtMatrix);
-  elements.importBackup.disabled = state.loading || !state.projectPath;
+  elements.importBackup.disabled = state.loading || state.saving || !state.projectPath;
 }
 
 // stops the current graph construction pass while keeping whatever has already
@@ -2221,12 +2377,14 @@ function pngSvgStyles() {
     .trace-guide { stroke: ${muted}; stroke-width: 1.5; }
     .integration-area { stroke: none; opacity: ${areaOpacity}; }
     .integration-window { stroke: none; opacity: ${windowOpacity}; }
+    .integration-border { stroke-width: 1.5; }
     .blank-label { fill: ${muted}; font-size: calc(54px * var(--graph-font-scale, 1)); opacity: 0.15; stroke: none; }
   `;
 }
 
 async function svgExportImage(svgNode) {
   const clone = svgNode.cloneNode(true);
+  clone.querySelectorAll(".sequence-trace-preview, .integration-border-hit").forEach(node => node.remove());
   clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
   const style = document.createElementNS("http://www.w3.org/2000/svg", "style");
   style.textContent = pngSvgStyles();
@@ -2837,8 +2995,11 @@ function selectedAlignmentReferences() {
 }
 
 async function writeAndReintegrate(edits, options = {}) {
-  if (state.loading || !edits.length) return;
+  if (state.loading || state.saving || !edits.length) return;
+  state.saving = true;
   const scrollY = window.scrollY;
+  const sequence = Boolean(options.sequence);
+  const projectPath = state.projectPath;
   const shared = Boolean(options.shared);
   const aligned = Boolean(options.aligned);
   const overrideName = options.overrideName ?? null;
@@ -2846,6 +3007,9 @@ async function writeAndReintegrate(edits, options = {}) {
   const sharedScope = `${sharedWindowCount.toLocaleString()} RT window(s) across ${state.samples.length.toLocaleString()} samples`;
 
   const bridge = shell();
+  elements.transition.disabled = true;
+  elements.refresh.disabled = true;
+  updateSaveButton();
   elements.save.disabled = true;
   elements.overrideBackup.disabled = true;
   elements.applyShared.disabled = true;
@@ -2863,17 +3027,22 @@ async function writeAndReintegrate(edits, options = {}) {
   );
   try {
     const response = await invoke(
-      aligned
+      sequence
+        ? "visualizer_save_bounds"
+        : aligned
         ? "visualizer_align_shared_bounds"
         : shared
         ? "visualizer_save_shared_bounds"
         : "visualizer_save_bounds",
       {
-        projectPath: state.projectPath,
+        projectPath,
         ...(aligned ? { references: edits } : { edits }),
       },
     );
     const written = typeof response === "number" ? response : response.written;
+    if (state.projectPath !== projectPath) {
+      throw new Error("The dataset changed while saving. Bounds were saved to the previous dataset; run Step 3 there to finish.");
+    }
     const incompleteProfiles =
       aligned && response.referenceProfiles < sharedWindowCount;
     const alignmentSummary = aligned
@@ -2931,10 +3100,12 @@ async function writeAndReintegrate(edits, options = {}) {
       // unselected/disabled state; failed Step 3 runs retain the selection for
       // an easy retry.
       if (shared) state.referenceChoices.clear();
-      await renderSelected({ preserveScroll: true, scrollY });
+      await renderSelected({ preserveScroll: true, scrollY, afterSave: true });
       setStatus(
         overrideName
           ? `Overrode ${backupLabel(overrideName)} and re-integrated.`
+          : sequence
+          ? `Applied acquisition-sequence bounds and re-integrated ${written.toLocaleString()} window(s); ${(options.skipped ?? 0).toLocaleString()} left unchanged.`
           : aligned
           ? `Uniform-aligned ${sharedScope}; ${alignmentSummary}.`
           : shared
@@ -2948,6 +3119,9 @@ async function writeAndReintegrate(edits, options = {}) {
   } catch (error) {
     setStatus(`${aligned ? "Alignment" : "Save"} failed: ${String(error)}`);
   } finally {
+    state.saving = false;
+    elements.transition.disabled = false;
+    elements.refresh.disabled = false;
     elements.backups.disabled = false;
     updateSaveButton();
     updateDeleteButton();
@@ -2987,7 +3161,16 @@ async function overrideSelectedBackup() {
 }
 
 async function applySharedRtLimits() {
-  const aligned = elements.alignShared.checked;
+  if (state.loading || state.saving) return;
+  if (elements.alignShared.value === "sequence") {
+    try {
+      const plan = previewSequence();
+      if (!plan?.edits.length) { setStatus("Choose a transition and select usable reference bounds in at least one batch."); return; }
+      await writeAndReintegrate(plan.edits, { shared: true, sequence: true, windowCount: plan.windowCount, skipped: plan.skipped });
+    } catch (error) { setStatus(`Sequence preview failed: ${String(error)}`); }
+    return;
+  }
+  const aligned = elements.alignShared.value === "shape";
   const references = selectedAlignmentReferences();
   const { edits: strictEdits, windowCount } = sharedReferenceBoundEdits();
   const edits = aligned ? references : strictEdits;
@@ -3001,7 +3184,7 @@ async function applySharedRtLimits() {
 // renders the current chooser value without allowing overlapping streams
 async function renderSelected(options = {}) {
   const value = elements.transition.value;
-  if (!value || state.loading) return;
+  if (!value || state.loading || (state.saving && !options.afterSave)) return;
   const scrollY =
     options.scrollY ?? (options.preserveScroll ? window.scrollY : null);
   clearPlots();
@@ -3125,10 +3308,27 @@ elements.save.addEventListener("click", saveBounds);
 elements.overrideBackup.addEventListener("click", overrideSelectedBackup);
 elements.applyShared.addEventListener("click", applySharedRtLimits);
 elements.alignShared.addEventListener("change", () => {
-  rememberPreference(sharedAlignmentPreference, elements.alignShared.checked);
+  rememberPreference(applyModePreference, elements.alignShared.value);
   updateSaveButton();
   elements.alignShared.blur();
 });
+elements.sequencePreview.addEventListener("click", () => {
+  try { previewSequence(); } catch (error) { setStatus(`Sequence preview failed: ${String(error)}`); }
+});
+elements.sequenceReset.addEventListener("click", () => { clearSequencePreview(); refreshSequence(); });
+elements.sequenceBatch.addEventListener("change", refreshSequence);
+elements.sequenceIsomer.addEventListener("change", refreshSequence);
+elements.sequenceZoomIn.addEventListener("click", () => zoomSequence(elements.sequenceChart, 1.5));
+elements.sequenceZoomOut.addEventListener("click", () => zoomSequence(elements.sequenceChart, 1 / 1.5));
+elements.sequenceZoomReset.addEventListener("click", () => resetSequenceZoom(elements.sequenceChart));
+elements.sequence.addEventListener("toggle", refreshSequence);
+let sequenceWidth = 0, sequenceFrame = 0;
+new ResizeObserver(([entry]) => {
+  if (!entry.contentRect.width || entry.contentRect.width === sequenceWidth) return;
+  sequenceWidth = entry.contentRect.width;
+  cancelAnimationFrame(sequenceFrame);
+  sequenceFrame = requestAnimationFrame(refreshSequence);
+}).observe(elements.sequenceChart);
 elements.deleteBackup.addEventListener("click", deleteSelectedBackup);
 elements.deleteAllBackups.addEventListener("click", deleteAllBackups);
 elements.renameBackup.addEventListener("click", renameSelectedBackup);
@@ -3158,6 +3358,7 @@ elements.selectorExpand.addEventListener("click", () => {
 });
 
 document.addEventListener("keydown", (event) => {
+  if (event.defaultPrevented || state.saving) return;
   const target = event.target;
   const visualizerOpen = !elements.view?.classList.contains("hidden");
   const collapsed = elements.toolbar.classList.contains("selector-collapsed");
@@ -3165,6 +3366,9 @@ document.addEventListener("keydown", (event) => {
   const isTypingTarget =
     (target instanceof HTMLInputElement && !shortcutToggleFocused) ||
     target instanceof HTMLTextAreaElement ||
+    (target instanceof HTMLSelectElement && target !== elements.transition) ||
+    target instanceof HTMLButtonElement ||
+    target?.closest?.(".integration-sequence, .integration-boundary") ||
     target?.isContentEditable;
   if (visualizerOpen && !isTypingTarget) {
     const shortcutsEnabled =

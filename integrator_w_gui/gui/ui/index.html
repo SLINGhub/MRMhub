@@ -16,11 +16,11 @@
       document.documentElement.dataset.theme = "light";
     }
     </script>
-    <link rel="stylesheet" href="styles.css?v=1.2.4-plot-theme" />
-    <link rel="stylesheet" href="workspace.css?v=1.2.4-plot-theme" />
-    <link rel="stylesheet" href="quant/quant.css?v=1.2.4-console-workspace" />
+    <link rel="stylesheet" href="styles.css?v=1.2.5" />
+    <link rel="stylesheet" href="workspace.css?v=1.2.5-sequence-all" />
+    <link rel="stylesheet" href="quant/quant.css?v=1.2.4-storage" />
     <link rel="stylesheet" href="quant/terminal.bundle.css" />
-    <script src="app.js?v=1.2.4-console-theme" defer></script>
+    <script src="app.js?v=1.2.5" defer></script>
   </head>
   <body>
     <div class="app-shell">
@@ -33,7 +33,7 @@
             </span>
             <span>
               <strong>MRMhub</strong>
-              <small><span class="brand-gui">GUI</span> <span class="brand-version">[v1.2.4]</span></small>
+              <small><span class="brand-gui">GUI</span> <span class="brand-version">[v1.2.5]</span></small>
             </span>
           </button>
           <label class="gui-scale-control" title="scale the entire application">
@@ -541,10 +541,36 @@
                 >
               Apply selected RTs to all samples
             </button>
-                <label class="visualizer-shortcut-toggle"
-                  title="after applying the averaged reference limits, cosine-match each sample and shift qualifying windows"><input id="visualizer-align-shared" type="checkbox" checked /><span>Auto-align shared RTs</span></label>
+                <label class="visualizer-apply-mode" for="visualizer-align-shared">Apply using
+                  <select id="visualizer-align-shared" aria-label="Apply using">
+                    <option value="sequence">Acquisition sequence</option>
+                    <option value="shape">Peak-shape alignment</option>
+                    <option value="exact">Same bounds for all</option>
+                  </select>
+                </label>
               </div>
             </section>
+            <details class="integration-sequence hidden" id="integration-sequence" open>
+              <summary>Peak integration · acquisition sequence</summary>
+              <div class="integration-sequence-body">
+                <p>Select reference samples on the chart or chromatograms, then drag their start/end borders. Preview interpolates the bounds between references within each batch; Apply saves them and runs Step 3.</p>
+                <div class="integration-sequence-tools">
+                  <label>Batch <select id="sequence-batch" aria-label="Sequence batch"></select></label>
+                  <label>Peak <select id="sequence-isomer" aria-label="Sequence peak"></select></label>
+                  <button type="button" class="secondary-button" id="sequence-preview" disabled>Preview windows</button>
+                  <button type="button" class="secondary-button" id="sequence-reset" disabled>Clear preview</button>
+                  <div class="sequence-zoom-tools" aria-label="Sequence chart zoom">
+                    <button type="button" class="secondary-button" id="sequence-zoom-out" aria-label="Zoom out of acquisition sequence" title="Zoom out (−)">−</button>
+                    <button type="button" class="secondary-button" id="sequence-zoom-in" aria-label="Zoom into acquisition sequence" title="Zoom in (+)">+</button>
+                    <button type="button" class="secondary-button" id="sequence-zoom-reset">Reset zoom</button>
+                  </div>
+                </div>
+                <div id="sequence-chart" tabindex="0" aria-label="Integration boundaries across the acquisition sequence. Scroll to zoom, drag to pan, or use plus and minus keys."></div>
+                <div id="sequence-batch-legend" class="sequence-legend hidden" aria-label="Batches shown in the sequence chart"></div>
+                <p id="sequence-status" role="status" aria-live="polite"></p>
+                <div class="sequence-legend"><span>Solid: current bounds</span><span class="sequence-proposed">Dashed: proposed bounds</span><span>● Selected reference · click a sample to toggle</span><span>Scroll to zoom · drag to pan · +/− keys</span></div>
+              </div>
+            </details>
             <section class="visualizer-empty" id="visualizer-empty">
               <div class="empty-plot-icon" aria-hidden="true">
                 <svg viewBox="0 0 64 48">
@@ -636,7 +662,7 @@
       </main>
 
       <footer>
-        <span>MRMhub GUI [v1.2.4]</span>
+        <span>MRMhub GUI [v1.2.5]</span>
         <a
           class="external-sling-link"
           href="https://sling.sg/"

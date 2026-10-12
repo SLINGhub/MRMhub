@@ -117,7 +117,7 @@ fn runtime(app: &AppHandle) -> Result<(PathBuf, String), String> {
         if !path.is_file() {
             continue;
         }
-        if let Ok(output) = command(&path).arg("--version").output() {
+        if let Ok(output) = app.state::<super::processes::ProcessState>().output(command(&path).arg("--version")) {
             if output.status.success() {
                 let version = format!(
                     "{}{}",
@@ -187,7 +187,8 @@ fn run_r(
     let log = std::sync::Arc::new(std::sync::Mutex::new(
         fs::File::create(work.join("run.log")).map_err(|e| e.to_string())?,
     ));
-    let mut child = command(r)
+    let mut r_command = command(r);
+    r_command
         .env("MRMHUB_QUANT_LIBRARIES", std::env::join_paths(reusable_libraries(engine, lib)).map_err(|e| e.to_string())?)
         .arg("--vanilla")
         .arg(engine.join("runner.R"))
@@ -200,9 +201,10 @@ fn run_r(
         .current_dir(work)
         .stdin(Stdio::null())
         .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
-        .spawn()
+        .stderr(Stdio::piped());
+    let mut managed = app.state::<super::processes::ProcessState>().spawn(&mut r_command)
         .map_err(|e| format!("Could not start R: {e}"))?;
+    let child = managed.child.as_mut().unwrap();
     fn forward(
         reader: impl std::io::Read + Send + 'static,
         app: AppHandle,
@@ -225,6 +227,7 @@ fn run_r(
     let stdout = forward(child.stdout.take().unwrap(), app.clone(), log.clone());
     let stderr = forward(child.stderr.take().unwrap(), app.clone(), log);
     let status = child.wait().map_err(|e| e.to_string())?;
+    managed.finish();
     let _ = stdout.join();
     let _ = stderr.join();
     if !status.success() {
@@ -239,7 +242,7 @@ fn run_r(
         read_json(&work.join("result.json"))
     }
 }
-fn dataset_root(project: &str) -> Result<PathBuf, String> {
+pub(super) fn dataset_root(project: &str) -> Result<PathBuf, String> {
     let path = Path::new(project)
         .canonicalize()
         .map_err(|_| "Choose an existing dataset folder.")?;
@@ -341,7 +344,10 @@ fn history_at(root: &Path) -> Result<Vec<Value>, String> {
             let id = entry.file_name().to_string_lossy().into_owned();
             if !id.starts_with("q-") || !valid_component(&id)
                 || !entry.file_type().map_err(|e| e.to_string())?.is_dir() { continue; }
-            if let Ok(mut value) = read_json(&entry.path().join("completed.json")) {
+            let manifest = entry.path().join("completed.json");
+            // A size/cleanup scan must not read manifests linked outside QUANT.
+            if !fs::symlink_metadata(&manifest).is_ok_and(|meta| meta.file_type().is_file()) { continue; }
+            if let Ok(mut value) = read_json(&manifest) {
                 if value["id"] != id { continue; }
                 value["resumable"] = json!(entry.path().join(snapshot_name(&value)).is_file());
                 // Manifests stay unchanged: restoring a trashed PNG to its original
@@ -381,13 +387,13 @@ fn remove_snapshots(job: &Path, names: &[&str]) -> Result<u64, String> {
     Ok(bytes)
 }
 
-fn compact_history(root: &Path, include_older_versions: bool) -> Result<u64, String> {
-    if !root.exists() { return Ok(0); }
+pub(super) fn snapshot_cleanup_plan(root: &Path, include_older_versions: bool) -> Result<Vec<(PathBuf, Vec<&'static str>)>, String> {
+    if !root.exists() { return Ok(Vec::new()); }
     if !fs::symlink_metadata(root).map_err(|e| e.to_string())?.file_type().is_dir() {
         return Err("Storage cleanup does not follow linked QUANT folders.".into());
     }
     let mut retained = [false; 2];
-    let mut bytes = 0;
+    let mut plan = Vec::new();
     for result in history_at(root)? {
         let legacy = result["action"] == "legacy";
         let slot = usize::from(legacy);
@@ -399,9 +405,15 @@ fn compact_history(root: &Path, include_older_versions: bool) -> Result<u64, Str
         let names: &[&str] = if legacy {
             if keep { &["experiment.rds"] } else { &["workspace.rds", "experiment.rds"] }
         } else if keep { &["plots.rds"] } else { &["experiment.rds", "plots.rds"] };
-        bytes += remove_snapshots(&job, names)?;
+        plan.push((job, names.to_vec()));
     }
-    Ok(bytes)
+    Ok(plan)
+}
+
+fn compact_history(root: &Path, include_older_versions: bool) -> Result<u64, String> {
+    snapshot_cleanup_plan(root, include_older_versions)?.into_iter().try_fold(0, |bytes, (job, names)| {
+        remove_snapshots(&job, &names).map(|removed| bytes + removed)
+    })
 }
 
 #[tauri::command]

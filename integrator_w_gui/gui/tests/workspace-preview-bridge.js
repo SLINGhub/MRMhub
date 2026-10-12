@@ -46,11 +46,14 @@
       "184.100",
     ]],
   };
-  const plot = (index) => ({
+  const editedWindows = new Map();
+  const plot = (index, cqq = "1") => ({
     sh: index / 100,
     // Mix old/detected-only traces with integrated traces to catch missing fills.
     bl: index % 2 ? [0, 0] : [null, null],
-    pos_l: [25, 65],
+    pos_l: editedWindows.has(`${cqq}:${index}`)
+      ? [Math.round(editedWindows.get(`${cqq}:${index}`).rtStart * 10) + 1, Math.round(editedWindows.get(`${cqq}:${index}`).rtEnd * 10) + 1]
+      : [25, 65],
     te: Array.from(
       { length: 101 },
       (_, i) => ({
@@ -107,9 +110,7 @@
               Array.from(
                 { length: 8 },
                 (_, i) =>
-                  `Sample_${i + 1}.mzML\t${i % 3 === 0 ? "QC" : "Sample"}\t1\t${
-                    i + 1
-                  }\t${i === 0 ? "1" : "0"}`,
+                  `Sample_${i + 1}.mzML\t${i % 3 === 0 ? "QC" : "Sample"}\t2026-10-11T00:${String(i * 5).padStart(2, "0")}:00Z\t${i < 4 ? "1" : "2"}\t${i === 0 ? "1" : "0"}`,
               ).join("\n"),
             );
           case "visualizer_get_sh":
@@ -129,7 +130,7 @@
           case "visualizer_get_r":
             for (let i = 0; i < (command.endsWith("_t") ? 8 : 2); i++) {
               args
-                .onEvent.onmessage(plot(i));
+                .onEvent.onmessage(plot(i, args.cqq));
             }
             return;
           case "list_rtmatrix_backups":
@@ -151,8 +152,10 @@
               averageScore: .97,
             };
           case "visualizer_save_shared_bounds":
-          case "visualizer_save_bounds":
             return 8;
+          case "visualizer_save_bounds":
+            for (const edit of args.edits) editedWindows.set(`${edit.cqq}:${edit.sampleIndex}`, edit);
+            return args.edits.length;
           case "delete_all_rtmatrix_backups":
             backups = [original];
             return 1;
@@ -177,6 +180,8 @@
             return;
           case "quant_history":
             return [];
+          case "quant_storage":
+            return { folder: `${project.path}/QUANT`, totalBytes: 2_450_000_000, reclaimableBytes: 1_200_000_000, trashBytes: 340_000_000, files: 142, skippedEntries: 0 };
           case "quant_compact":
             return { retiredSnapshotBytes: 0 };
           case "quant_status":

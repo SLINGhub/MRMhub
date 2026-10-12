@@ -229,6 +229,15 @@ html[data-theme="dark"] #quant-view .q-chrome .q-nav-group > button.active:hover
 #quant-view .q-chrome .q-disclosure > summary { color: var(--muted); font-size: 12px; font-weight: 500; padding: 5px 0; }
 .q-chrome .q-disclosure .q-help { font-size: 12px; }
 .q-session-management { padding-top: 2px; }
+.q-storage-summary { display: inline-block; margin-left: 12px; color: var(--muted); font-size: 11px; font-weight: 400; font-variant-numeric: tabular-nums; }
+.q-storage-row { display: flex; align-items: center; flex-wrap: wrap; gap: 18px 28px; margin-top: 10px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+.q-storage-row > div { display: grid; gap: 5px; min-width: 110px; }
+.q-storage-row > div > span { font-size: 10px; color: var(--muted); }
+.q-storage-row strong { font-size: 16px; font-weight: 550; font-variant-numeric: tabular-nums; }
+#q-storage-free { color: var(--teal); }
+.q-storage-row > button { margin-left: auto; }
+.q-chrome .q-storage-path, .q-chrome .q-storage-note { font-size: 11px; margin: 8px 0; }
+.q-storage-path { overflow-wrap: anywhere; }
 .q-action-group { display: flex; gap: 3px; padding-left: 12px; border-left: 1px solid var(--line); }
 .q-chrome .q-editor { padding: 28px 26px 0; }
 .q-editor-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 18px; }

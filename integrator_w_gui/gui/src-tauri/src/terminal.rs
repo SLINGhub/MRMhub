@@ -39,22 +39,18 @@ struct Session {
     stopped: Arc<AtomicBool>,
     running: Arc<AtomicBool>,
     ack: mpsc::SyncSender<()>,
+    tree: Arc<super::processes::ProcessTree>,
 }
 impl Drop for Session {
     fn drop(&mut self) {
         self.stopped.store(true, Ordering::Release);
         let _ = self.ack.try_send(());
+        self.tree.stop();
         if let Ok(mut child) = self.child.lock() {
             if matches!(child.try_wait(), Ok(None)) {
-                // Interrupt the foreground job too, not just its waiting shell.
-                #[cfg(unix)]
-                if let Some(group) = self.master.process_group_leader().filter(|pid| *pid > 0) {
-                    unsafe {
-                        libc::kill(-group, libc::SIGHUP);
-                    }
-                }
                 let _ = child.kill();
             }
+            let _ = child.wait();
         }
         // Dropping master/writer closes the PTY (ConPTY on Windows).
     }
@@ -110,6 +106,7 @@ fn shell_command() -> (CommandBuilder, String) {
 }
 
 fn spawn_session(
+    processes: &super::processes::ProcessState,
     home: &Path,
     mut command: CommandBuilder,
     shell: String,
@@ -147,10 +144,7 @@ fn spawn_session(
     let writer = Arc::new(Mutex::new(
         pair.master.take_writer().map_err(|e| e.to_string())?,
     ));
-    let child = pair
-        .slave
-        .spawn_command(command)
-        .map_err(|e| e.to_string())?;
+    let (child, tree) = processes.spawn_pty(|| pair.slave.spawn_command(command).map_err(|e| e.to_string()))?;
     drop(pair.slave);
     let id = NEXT_ID.fetch_add(1, Ordering::Relaxed);
     let child = Arc::new(Mutex::new(child));
@@ -161,6 +155,7 @@ fn spawn_session(
     let read_stop = stopped.clone();
     let read_send = send.clone();
     let read_child = child.clone();
+    let read_tree = tree.clone();
     std::thread::spawn(move || {
         let mut buffer = [0u8; 8192];
         while !read_stop.load(Ordering::Acquire) {
@@ -172,6 +167,7 @@ fn spawn_session(
                         data: buffer[..n].to_vec(),
                     }) {
                         read_stop.store(true, Ordering::Release);
+                        read_tree.stop();
                         if let Ok(mut child) = read_child.lock() {
                             if matches!(child.try_wait(), Ok(None)) {
                                 let _ = child.kill();
@@ -194,6 +190,7 @@ fn spawn_session(
     });
     let wait_child = child.clone();
     let wait_running = running.clone();
+    let wait_tree = tree.clone();
     std::thread::spawn(move || {
         loop {
             let status = wait_child.lock().unwrap().try_wait();
@@ -201,6 +198,7 @@ fn spawn_session(
                 Ok(None) => std::thread::sleep(Duration::from_millis(100)),
                 result => {
                     wait_running.store(false, Ordering::Release);
+                    wait_tree.stop();
                     let message = match result {
                         Ok(Some(s)) => format!("Shell exited ({})", s.exit_code()),
                         Err(e) => e.to_string(),
@@ -224,6 +222,7 @@ fn spawn_session(
         stopped,
         running,
         ack,
+        tree,
     })
 }
 
@@ -246,7 +245,7 @@ pub async fn terminal_start(
         active.take();
         let home = app.path().home_dir().map_err(|e| e.to_string())?;
         let (command, shell) = shell_command();
-        let session = spawn_session(&home, command, shell, size(cols, rows)?, move |event| {
+        let session = spawn_session(&app.state::<super::processes::ProcessState>(), &home, command, shell, size(cols, rows)?, move |event| {
             output.send(event).is_ok()
         })?;
         let info = SessionInfo {
@@ -340,11 +339,13 @@ mod tests {
     #[cfg(unix)]
     #[test]
     fn real_pty_cwd_input_unicode_resize_and_exit() {
+        let processes = super::super::processes::ProcessState::default();
         let (tx, rx) = mpsc::channel();
         let home = std::env::temp_dir().canonicalize().unwrap();
         let mut command = CommandBuilder::new("/bin/sh");
         command.arg("-i");
         let session = spawn_session(
+            &processes,
             &home,
             command,
             "sh".into(),
@@ -382,10 +383,12 @@ mod tests {
     #[cfg(unix)]
     #[test]
     fn ending_session_reaps_shell_even_when_output_is_backpressured() {
+        let processes = super::super::processes::ProcessState::default();
         let (tx, rx) = mpsc::channel();
         let mut command = CommandBuilder::new("/bin/sh");
         command.args(["-c", "while :; do printf 'test output\\n'; done"]);
         let session = spawn_session(
+            &processes,
             &std::env::temp_dir(),
             command,
             "sh".into(),
@@ -421,5 +424,32 @@ mod tests {
                 || args[0].to_string_lossy().ends_with("pwsh.exe")
         );
         assert!(!args.iter().any(|a| a == "-NonInteractive"));
+    }
+    #[cfg(unix)]
+    #[test]
+    fn app_shutdown_kills_terminal_background_jobs_in_other_job_control_groups() {
+        let processes = super::super::processes::ProcessState::default();
+        let pid_file = std::env::temp_dir().join(format!("mrmhub-pty-child-{}-{}", std::process::id(), NEXT_ID.fetch_add(1, Ordering::Relaxed)));
+        let mut command = CommandBuilder::new("/bin/sh");
+        command.args(["-c", &format!("set -m; trap '' HUP; sleep 120 & echo $! > '{}'; wait", pid_file.display())]);
+        let session = spawn_session(&processes, &std::env::temp_dir(), command, "sh".into(), size(80, 24).unwrap(), |_| true).unwrap();
+        let until = std::time::Instant::now() + Duration::from_secs(3);
+        let pid = loop {
+            if let Ok(text) = std::fs::read_to_string(&pid_file) {
+                if let Ok(pid) = text.trim().parse::<i32>() { break pid; }
+            }
+            assert!(std::time::Instant::now() < until, "Background job did not start");
+            std::thread::sleep(Duration::from_millis(10));
+        };
+        let _ = std::fs::remove_file(pid_file);
+        let root = session.child.lock().unwrap().process_id().unwrap() as i32;
+        assert_eq!(unsafe { libc::getsid(pid) }, root);
+        assert_ne!(unsafe { libc::getpgid(pid) }, unsafe { libc::getpgid(root) });
+        processes.shutdown(); drop(session);
+        let until = std::time::Instant::now() + Duration::from_secs(3);
+        while unsafe { libc::kill(pid, 0) } == 0 && std::time::Instant::now() < until {
+            std::thread::sleep(Duration::from_millis(10));
+        }
+        assert_ne!(unsafe { libc::kill(pid, 0) }, 0, "Background job survived app shutdown");
     }
 }
