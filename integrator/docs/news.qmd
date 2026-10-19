@@ -8,6 +8,13 @@ Binary releases are published on the
 
 ## Latest changes
 
+- **`height` and `FWHM` measured above the integration baseline**: `height` is
+  now the apex intensity minus the integration baseline (previously the raw
+  apex intensity), and `FWHM` is measured at half of that height. `FWHM` is left
+  empty when the peak is cut by the integration window, instead of reporting the
+  window width. Compared with MassHunter on Dataset 4, 93 % of `FWHM` values agree
+  within 10 % (previously 74 %). Workflows that quantify on `height` give different
+  values with this version.
 - **Transitions missing from some mzML files are retained**: such a transition
   is integrated in the files that contain it, provided it is present in all
   reference samples and in at least one learning sample; the other files receive

@@ -342,6 +342,54 @@ fn v2v_auc(rt_i_l: &[(f32, f32)]) -> f32 {
             * 30.
     })
 }
+/// Integration baseline at the apex, as used for the area of the feature's baseline mode.
+fn bl_at_apex(
+    rt_i_l: &[(f32, f32)],
+    rt_pos: &[(usize, usize)],
+    (pos0, pos1): (usize, usize),
+    apex_i: usize,
+    mode: &crate::common::Bl,
+) -> f32 {
+    use crate::common::Bl;
+    match mode {
+        Bl::P => p_bl(rt_i_l),
+        Bl::VDrop => v_drop_bl(rt_i_l, rt_pos).unwrap_or(0.),
+        Bl::V2v => v2v_bl(&rt_i_l[pos0..pos1]).map_or(0., |(ep0, ep1)| {
+            if ep1.0 == ep0.0 {
+                ep0.1
+            } else {
+                ep0.1 + (rt_i_l[apex_i].0 - ep0.0) * (ep1.1 - ep0.1) / (ep1.0 - ep0.0)
+            }
+        }),
+    }
+}
+/// Peak width at half height above the integration baseline `bl`, from the first half-height crossing on the left to
+/// the last on the right inside the window `pos0..pos1`, so a group of peaks above half height is spanned as a whole;
+/// linear interpolation between points. `None` if a window edge is at or above half height (the peak is cut, or the
+/// apex is on the edge) or the apex is not above `bl`.
+fn fwhm(
+    rt_i_l: &[(f32, f32)],
+    (pos0, pos1): (usize, usize),
+    apex_i: usize,
+    bl: f32,
+) -> Option<f32> {
+    let apex = rt_i_l[apex_i].1;
+    let hm = bl + (apex - bl) / 2.;
+    if apex <= bl || rt_i_l[pos0].1 >= hm || rt_i_l[pos1 - 1].1 >= hm {
+        return None;
+    }
+    // both edges are below hm, so the outermost crossing pairs have one point below hm: no 0/0
+    let at = |p: &[(f32, f32)]| p[0].0 + (hm - p[0].1) * (p[1].0 - p[0].0) / (p[1].1 - p[0].1);
+    let left = rt_i_l[pos0..=apex_i]
+        .windows(2)
+        .find(|p| p[0].1 <= hm && hm <= p[1].1)
+        .map(at)?;
+    let right = rt_i_l[apex_i..pos1]
+        .windows(2)
+        .rfind(|p| p[0].1 >= hm && hm >= p[1].1)
+        .map(at)?;
+    Some(right - left)
+}
 fn feat_data(
     i: usize,
     rt_i_all: &[EicPos],
@@ -350,9 +398,6 @@ fn feat_data(
     k: &crate::common::ValidT,
     cropped: bool,
 ) -> io::Result<Vec<RowDat>> {
-    fn pred_rt(rti: &[(f32, f32)], hm: f32) -> f32 {
-        rti[0].0 + (hm - rti[0].1) * (rti[1].0 - rti[0].0) / (rti[1].1 - rti[0].1)
-    }
     rt_i_all
         .iter()
         .zip(rt_vec_d.iter().step_by(tlen))
@@ -368,29 +413,16 @@ fn feat_data(
                     Bl::V2v => v2v_auc(rt_i),
                 }
             };
-            let (fwhm, rt, height) = if let Some((max_i, (rt, height))) = (pos0..)
+            let (fwhm, rt, height) = if let Some((max_i, &(rt, apex))) = (pos0..)
                 .zip(&rt_i_l[pos0..pos1])
                 .max_by(|x, y| x.1.1.partial_cmp(&y.1.1).unwrap())
             {
-                let hm = height / 2.;
-                let fwhm = rt_i_l[max_i..pos1]
-                    .windows(2)
-                    .rfind(|rti01| rti01[1].1 <= hm && hm <= rti01[0].1)
-                    .map_or_else(
-                        || rt_i_l[max_i..pos1].last().map(|x| x.0),
-                        |rti1| Some(pred_rt(rti1, hm)),
-                    )
-                    .and_then(|h1| {
-                        rt_i_l[pos0..=max_i]
-                            .windows(2)
-                            .find(|rti01| rti01[0].1 <= hm && hm <= rti01[1].1)
-                            .map_or_else(
-                                || rt_i_l[pos0..=max_i].first().map(|x| x.0),
-                                |rti0| Some(pred_rt(rti0, hm)),
-                            )
-                            .map(|x| h1 - x)
-                    });
-                (fwhm, *rt, *height)
+                let bl = bl_at_apex(rt_i_l, rt_pos, (pos0, pos1), max_i, &k.baseline);
+                (
+                    fwhm(rt_i_l, (pos0, pos1), max_i, bl),
+                    rt,
+                    0f32.max(apex - bl),
+                )
             } else {
                 (None, beg, 0.)
             };
@@ -474,7 +506,7 @@ fn read_rtmat() -> Result<RtMat, Box<dyn Error>> {
 
 #[cfg(test)]
 mod tests {
-    use super::trace_cut_pct;
+    use super::{bl_at_apex, fwhm, trace_cut_pct};
 
     // 40 points at baseline 0 with a peak `peak` placed at `at`; the 5th-percentile baseline is 0.
     fn trace(at: usize, peak: &[f32]) -> Vec<(f32, f32)> {
@@ -525,5 +557,46 @@ mod tests {
         assert_eq!(trace_cut_pct(&t, (0, 40)), Some(60.));
         t[0].1 = 80.;
         assert_eq!(trace_cut_pct(&t, (0, 40)), Some(-80.));
+    }
+
+    #[test]
+    fn fwhm_at_half_height_above_baseline() {
+        // half height 50 is reached at t = 11 and t = 13
+        let t = trace(10, &[25., 50., 100., 50., 25.]);
+        assert_eq!(fwhm(&t, (5, 20), 12, 0.), Some(2.));
+        // same peak on a baseline of 100: half height 150, same width (raw half height 100 would span the window)
+        let raised: Vec<(f32, f32)> = t.iter().map(|&(x, y)| (x, y + 100.)).collect();
+        assert_eq!(fwhm(&raised, (5, 20), 12, 100.), Some(2.));
+    }
+
+    #[test]
+    fn fwhm_interpolates_between_points() {
+        let t = trace(10, &[0., 100., 0.]);
+        assert_eq!(fwhm(&t, (5, 20), 11, 0.), Some(1.));
+    }
+
+    #[test]
+    fn fwhm_spans_a_group_of_peaks_above_half_height() {
+        let mut t = trace(10, &[50., 100., 50.]);
+        t[15].1 = 30.;
+        t[16..19].copy_from_slice(&[(16., 50.), (17., 80.), (18., 50.)]);
+        assert_eq!(fwhm(&t, (5, 25), 11, 0.), Some(8.));
+    }
+
+    #[test]
+    fn fwhm_empty_if_cut_by_the_window_or_not_above_baseline() {
+        let t = trace(10, &[25., 50., 100., 50., 25.]);
+        assert_eq!(fwhm(&t, (11, 20), 12, 0.), None); // left edge at half height
+        assert_eq!(fwhm(&t, (5, 13), 12, 0.), None); // apex on the right edge
+        assert_eq!(fwhm(&t, (5, 20), 12, 100.), None); // apex not above baseline
+    }
+
+    #[test]
+    fn v2v_baseline_at_apex_is_on_the_line() {
+        use crate::common::Bl;
+        let t: Vec<(f32, f32)> = (0u8..11)
+            .map(|x| (f32::from(x), f32::from(x) * 10.))
+            .collect();
+        assert_eq!(bl_at_apex(&t, &[(0, 11)], (0, 11), 5, &Bl::V2v), 50.);
     }
 }

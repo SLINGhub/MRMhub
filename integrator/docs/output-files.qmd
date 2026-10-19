@@ -41,14 +41,23 @@ file order:
 | `polarity` | Ionisation polarity (`+` / `−`). |
 | `rt_apex` | Retention time at the peak apex (min). |
 | `area` | Integrated peak area. |
-| `height` | Peak height. |
-| `FWHM` | Full width at half maximum (min). |
+| `height` | Peak height above the integration baseline at the apex (see below). |
+| `FWHM` | Full width at half maximum (min), above the integration baseline (see below); empty if it cannot be measured. |
 | `rt_int_start` | Left integration border (min). |
 | `rt_int_end` | Right integration border (min). |
 | `trace_cut_pct` | Peak truncated by the end of the acquired MRM trace (see below); empty otherwise. |
 
 Where no peak was found for a *sample × feature*, the measurement fields
 (`rt_apex`…`trace_cut_pct`) are left empty.
+
+`height` and `FWHM` are measured from the integration baseline at the apex, i.e. the baseline that
+the selected baseline mode uses for the area (the 5th-percentile level, the `v_drop` level, or the
+valley-to-valley line). `height` is the apex intensity minus that baseline. `FWHM` is the time
+between the first point on the left and the last point on the right at which the trace crosses
+half of that height, inside the integration window and interpolated linearly between data points;
+if the window contains several peaks above half height, the width spans all of them. `FWHM` is left
+empty when the trace does not fall below half height before a window edge, i.e. when the peak is
+cut by the integration window.
 
 `trace_cut_pct` flags peaks that are cut off by the end of the acquired trace, e.g. when a
 scheduled MRM window closes before the peak has returned to baseline. It is filled when the
