@@ -24,11 +24,17 @@ Each file is specified in detail below. See the [Algorithm](algorithm.qmd) for h
 `param.txt` (the name is fixed) holds the global parameters that direct INTEGRATOR to the input and data files and control
 peak detection and integration. It must reside in the same folder as the MRMhub executable.
 
+Every setting is optional. A setting that is missing, e.g. in a `param.txt` from an older version, takes the
+default given below, and INTEGRATOR lists the defaults it used at the start of each step; settings it does not
+know (e.g. ones removed in a newer version) are ignored and listed as well. Whole numbers may be written without a
+decimal point (`RT_tol = 1`, `RT_shift = [0, 0]`). A value of the wrong kind (e.g. text where a number is
+expected) stops the run with a message naming the setting.
+
 ![The `param.txt` file from [an example lipidomics dataset](https://slinghub.github.io/MRMhub-workflows/Dataset3.html)](images/param.txt.png){fig-align="center" width="70%" fig-alt="Screenshot of a param.txt file listing key = value parameter lines: mzML_files, batch_info, transition_list, peak_width, num_threads, mz_tol, RT_tol, RT_shift, RT_shift_bound, and crop_window, each with an assigned value."}
 
 | Parameter | Description |
 |---|---|
-| `mzML_files` | Folder containing the mzML files to integrate. Default: `mzML`. |
+| `mzML_files` | Path pattern of the mzML files to integrate (`*` matches any name). Default: `'mzML/*.mzML'`. |
 | `batch_info` | Sample-list file (see [Sample list](#sample-list-run_order.csv)). Default: `run_order.csv`. |
 | `transition_list` | Transition/feature-list file (see [Transition / Feature list](#transition-feature-list-feature_list.csv)). Default: `feature_list.csv`. |
 | `peak_width` | [`[w, x, y, z]`](tuning.qmd#peak-width-schematic) set the allowed integration bounds: the left border falls *w–x* min and the right border *y–z* min from the apex. The most influential setting for difficult chromatograms — see [Tuning Peak Integration](tuning.qmd). Default: `[0.17, 0.05, 0.1, 0.35]`. |
@@ -37,8 +43,8 @@ peak detection and integration. It must reside in the same folder as the MRMhub 
 | `RT_tol` | Allowed deviation between the listed and detected RT, in minutes; a key setting for complex chromatograms. Default: `0.1`. |
 | `RT_shift` | `[x, y]` bound the RT drift relative to the reference samples: at most *x* min earlier and *y* min later than expected. The lower bound is **negative** (earlier), the upper positive (later). **`[0.0, 0.0]` disables RT-shift correction** — but a small non-zero window is recommended even for stable methods, as it improves consistent border finding. Default: `[-0.2, 0.2]`. |
 | `RT_shift_bound` | Maximum RT drift allowed between adjacent samples, in minutes. Default: `0.1`. |
-| `crop_window` | `[y, z]` crops the chromatogram to a window from *y* min before to *z* min after the listed RT. Default: `[1.5, 2.0]`. |
-| `sn_noise` | Optional. Noise estimate for the signal-to-noise ratio (`sn_ratio`) in `long.csv`: `"robust"`, `"rms"` or `"p2p"` (see [Output Files](output-files.qmd#long.csv)). Default: `"robust"`. |
+| `crop_window` | `[y, z]` crops the chromatogram to a window from *y* min before to *z* min after the listed RT, e.g. `[1.5, 2.0]`. Default: not set (no cropping). |
+| `sn_noise` | Noise estimate for the signal-to-noise ratio (`sn_ratio`) in `long.csv`: `"robust"`, `"rms"` or `"p2p"` (see [Output Files](output-files.qmd#long.csv)). Default: `"robust"`. |
 
 ::: {.callout-tip}
 ## How to choose and adjust these settings

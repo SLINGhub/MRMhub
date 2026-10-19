@@ -5,58 +5,128 @@ use std::io::{BufRead, BufReader, BufWriter, Read, Write};
 use std::path::{Path, PathBuf};
 
 pub fn read_param() -> Result<crate::Param, Box<dyn Error>> {
-    let param = std::fs::read_to_string("param.txt")?;
-    let value = param.parse::<toml::Table>()?;
-    let mzml_fs: Vec<_> = glob::glob(value["mzML_files"].as_str().unwrap())?
-        .filter_map(Result::ok)
-        .collect();
-    if mzml_fs.is_empty() {
+    let (mut param, mzml_glob, notes) = parse_param(&std::fs::read_to_string("param.txt")?)?;
+    for note in notes {
+        println!("param.txt: {note}");
+    }
+    param.mzml_fs = glob::glob(&mzml_glob)?.filter_map(Result::ok).collect();
+    if param.mzml_fs.is_empty() {
         return Err("mzML files not found".into());
     }
-    let mut rt_shift = value["RT_shift"]
-        .as_array()
-        .unwrap()
-        .iter()
-        .map(|x| x.as_float().unwrap() as f32);
-    let mut peak_w = value["peak_width"]
-        .as_array()
-        .unwrap()
-        .iter()
-        .map(|x| x.as_float().unwrap() as f32);
-    Ok(crate::Param {
-        mzml_fs,
-        batch_i: PathBuf::from(value["batch_info"].as_str().unwrap()),
-        t_list: PathBuf::from(value["transition_list"].as_str().unwrap()),
-        num_t: usize::try_from(value["num_threads"].as_integer().unwrap())?,
-        mz_tol: value["mz_tol"].as_float().unwrap() as f32,
-        rt_tol: value["RT_tol"].as_float().unwrap() as f32,
-        crop_window: value.get("crop_window").map(|x| {
-            (
-                x[0].as_float().unwrap() as f32,
-                x[1].as_float().unwrap() as f32,
-            )
-        }),
-        peak_w: (
-            peak_w.next().unwrap(),
-            peak_w.next().unwrap(),
-            peak_w.next().unwrap(),
-            peak_w.next().unwrap(),
-        ),
-        rt_shift: (rt_shift.next().unwrap(), rt_shift.next().unwrap()),
-        rt_shift_bd: value["RT_shift_bound"].as_float().unwrap() as f32,
-        sn_noise: match value.get("sn_noise").map(|x| x.as_str()) {
-            None | Some(Some("robust")) => Noise::Robust,
-            Some(Some("rms")) => Noise::Rms,
-            Some(Some("p2p")) => Noise::P2p,
-            Some(x) => {
-                return Err(format!(
-                    "sn_noise in param.txt must be robust, rms or p2p (found: {})",
-                    x.unwrap_or("a non-text value")
-                )
-                .into());
+    Ok(param)
+}
+/// Parses param.txt. Settings that are missing (e.g. in a param.txt from an older version) take their documented
+/// defaults and unknown ones are ignored; both are listed in the returned notes. Whole numbers are accepted where a
+/// decimal is expected. Returns the parameters (without the mzML files), the mzML path pattern and the notes.
+fn parse_param(text: &str) -> Result<(crate::Param, String, Vec<String>), Box<dyn Error>> {
+    const KNOWN: [&str; 11] = [
+        "mzML_files",
+        "batch_info",
+        "transition_list",
+        "peak_width",
+        "num_threads",
+        "mz_tol",
+        "RT_tol",
+        "RT_shift",
+        "RT_shift_bound",
+        "crop_window",
+        "sn_noise",
+    ];
+    let table = text.parse::<toml::Table>()?;
+    let mut defaults = Vec::new();
+    let number = |key: &str, x: &toml::Value| match x {
+        toml::Value::Float(x) => Ok(*x as f32),
+        toml::Value::Integer(x) => Ok(*x as f32),
+        _ => Err(format!(
+            "{key} in param.txt must be a number or a list of numbers"
+        )),
+    };
+    let mut numbers = |key: &'static str, default: &[f32]| -> Result<Vec<f32>, String> {
+        let Some(x) = table.get(key) else {
+            defaults.push(match default {
+                [x] => format!("{key} = {x}"),
+                _ => format!("{key} = {default:?}"),
+            });
+            return Ok(default.to_vec());
+        };
+        let x: Vec<f32> = match x.as_array() {
+            Some(a) => a.iter().map(|x| number(key, x)).collect::<Result<_, _>>()?,
+            None => vec![number(key, x)?],
+        };
+        if x.len() == default.len() {
+            Ok(x)
+        } else {
+            Err(format!(
+                "{key} in param.txt must have {} value(s), e.g. {default:?}",
+                default.len()
+            ))
+        }
+    };
+    let peak_w = numbers("peak_width", &[0.17, 0.05, 0.1, 0.35])?;
+    let rt_shift = numbers("RT_shift", &[-0.2, 0.2])?;
+    let mz_tol = numbers("mz_tol", &[0.06])?[0];
+    let rt_tol = numbers("RT_tol", &[0.1])?[0];
+    let rt_shift_bd = numbers("RT_shift_bound", &[0.1])?[0];
+    let num_t = numbers("num_threads", &[2.])?[0];
+    let crop_window = match table.get("crop_window") {
+        None => None,
+        Some(_) => Some(numbers("crop_window", &[0., 0.])?),
+    };
+    let mut text = |key: &str, default: &str| -> Result<String, String> {
+        match table.get(key) {
+            None => {
+                defaults.push(format!("{key} = '{default}'"));
+                Ok(default.to_owned())
             }
-        },
-    })
+            Some(x) => x.as_str().map(str::to_owned).ok_or_else(|| {
+                format!("{key} in param.txt must be text in quotes, e.g. '{default}'")
+            }),
+        }
+    };
+    let mzml_glob = text("mzML_files", "mzML/*.mzML")?;
+    let batch_i = PathBuf::from(text("batch_info", "run_order.csv")?);
+    let t_list = PathBuf::from(text("transition_list", "feature_list.csv")?);
+    let sn_noise = match text("sn_noise", "robust")?.as_str() {
+        "robust" => Noise::Robust,
+        "rms" => Noise::Rms,
+        "p2p" => Noise::P2p,
+        x => {
+            return Err(format!(
+                "sn_noise in param.txt must be robust, rms or p2p (found: {x})"
+            )
+            .into());
+        }
+    };
+    let mut notes = Vec::new();
+    // sn_noise is new and optional: only report it when other settings were missing too
+    if defaults.iter().any(|x| !x.starts_with("sn_noise")) {
+        notes.push(format!("not set, using defaults: {}", defaults.join(", ")));
+    }
+    let unknown: Vec<&str> = table
+        .keys()
+        .map(String::as_str)
+        .filter(|x| !KNOWN.contains(x))
+        .collect();
+    if !unknown.is_empty() {
+        notes.push(format!(
+            "ignored (not used by this version): {}",
+            unknown.join(", ")
+        ));
+    }
+    let param = crate::Param {
+        mzml_fs: Vec::new(),
+        batch_i,
+        t_list,
+        num_t: num_t.max(1.) as usize,
+        mz_tol,
+        rt_tol,
+        crop_window: crop_window.map(|x| (x[0], x[1])),
+        peak_w: (peak_w[0], peak_w[1], peak_w[2], peak_w[3]),
+        rt_shift: (rt_shift[0], rt_shift[1]),
+        rt_shift_bd,
+        sn_noise,
+    };
+    Ok((param, mzml_glob, notes))
 }
 /// Noise estimate of the signal-to-noise ratio in long.csv (`sn_noise` in param.txt).
 #[derive(Clone, Copy)]
@@ -272,5 +342,58 @@ pub fn find_closest(vec: &[(f32, f32)], pt: f32, pos: usize) -> usize {
         pos - 1
     } else {
         pos
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::parse_param;
+
+    #[test]
+    fn empty_param_uses_defaults() {
+        let (p, mzml, notes) = parse_param("").unwrap();
+        assert_eq!(mzml, "mzML/*.mzML");
+        assert_eq!(p.batch_i.to_str(), Some("run_order.csv"));
+        assert_eq!(p.peak_w, (0.17, 0.05, 0.1, 0.35));
+        assert_eq!(
+            (p.num_t, p.mz_tol, p.rt_tol, p.rt_shift, p.rt_shift_bd),
+            (2, 0.06, 0.1, (-0.2, 0.2), 0.1)
+        );
+        assert!(p.crop_window.is_none());
+        assert!(
+            notes[0].starts_with("not set, using defaults: peak_width"),
+            "{notes:?}"
+        );
+    }
+
+    #[test]
+    fn older_param_works_and_obsolete_settings_are_noted() {
+        // complete settings of an older version, without sn_noise, with the removed fill_RT
+        let old = "mzML_files = 'mzML/*.mzML'\nbatch_info = 'run_order.csv'\npeak_width = [0.17, 0.05, 0.1, 0.35]\n\
+                   transition_list = 'feature_list.csv'\nnum_threads = 8\nmz_tol = 0.06\nRT_tol = 0.04\n\
+                   fill_RT = false\nRT_shift = [-0.1, 0.4]\nRT_shift_bound = 0.05\n";
+        let (p, _, notes) = parse_param(old).unwrap();
+        assert_eq!((p.num_t, p.rt_tol, p.rt_shift), (8, 0.04, (-0.1, 0.4)));
+        assert_eq!(p.sn_noise.name(), "robust");
+        assert_eq!(notes, ["ignored (not used by this version): fill_RT"]);
+    }
+
+    #[test]
+    fn whole_numbers_are_accepted() {
+        let (p, _, _) =
+            parse_param("RT_tol = 1\nRT_shift = [0, 0]\ncrop_window = [1, 2.5]").unwrap();
+        assert_eq!(
+            (p.rt_tol, p.rt_shift, p.crop_window),
+            (1., (0., 0.), Some((1., 2.5)))
+        );
+    }
+
+    #[test]
+    fn wrong_values_give_a_message() {
+        let msg = |t| parse_param(t).err().unwrap().to_string();
+        assert!(msg("RT_tol = 'x'").contains("RT_tol in param.txt must be a number"));
+        assert!(msg("RT_shift = [0.1]").contains("RT_shift in param.txt must have 2 value(s)"));
+        assert!(msg("batch_info = 3").contains("batch_info in param.txt must be text"));
+        assert!(msg("sn_noise = 'mad'").contains("must be robust, rms or p2p"));
     }
 }

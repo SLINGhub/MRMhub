@@ -8,6 +8,10 @@ Binary releases are published on the
 
 ## Latest changes
 
+- **`param.txt` from older versions keeps working**: missing settings take their
+  documented defaults and unknown ones are ignored; both are listed when a step
+  starts. Whole numbers are accepted where a decimal is expected, and a wrong
+  value stops the run with a message naming the setting instead of a crash.
 - **New `long.csv` columns `sn_ratio` and `noise_method`**: signal-to-noise ratio
   of each peak, with the noise estimated around the peak (robust by default;
   RMS or pharmacopoeia peak-to-peak via `sn_noise` in `param.txt`).
