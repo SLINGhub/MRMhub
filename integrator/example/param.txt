@@ -43,3 +43,7 @@ RT_shift_bound = 0.1
 ### If "crop_window = [y, z]", chromatogram window will be crop on the left at y minutes to the left of indicated RT and on the right at z minutes to right of indicated RT
 ### comment out this option out if no cropping of window required
 #crop_window = [1.5, 2.0]
+
+
+### Noise estimate for the signal-to-noise ratio (sn_ratio) in long.csv: "robust" (default), "rms" or "p2p"
+#sn_noise = "robust"

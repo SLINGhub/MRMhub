@@ -198,6 +198,18 @@ left there, as a percentage of the apex height above baseline; ±100 means the a
 end. Such areas are underestimated. Widen the scheduled MRM window in the acquisition method, or
 exclude affected values above a chosen threshold. See [Output Files](output-files.qmd#long.csv).
 
+### Q: How is the signal-to-noise ratio calculated, and why does it differ from vendor software? {#sn-ratio}
+
+**A:** `sn_ratio` in `long.csv` is the peak height above the integration baseline divided by the noise
+of the trace within 10 × FWHM on either side of the peak, excluding the integration windows of all
+features of the transition. By default the noise is a robust standard deviation (1.4826 × median
+absolute deviation) after other peaks in that region, such as isomers or isotopic interferences, have
+been removed; a known interference can also be excluded explicitly by adding it as a feature of the
+transition. `sn_noise` in `param.txt` selects the RMS noise (`rms`) or the pharmacopoeia
+peak-to-peak noise (`p2p`). Vendor software uses other noise regions, often smooths the data, and
+some multiply the noise by a factor, so its values differ, sometimes several-fold. Compare S/N
+values only within one method. See [Output Files](output-files.qmd#long.csv).
+
 ## Re-running after edits {#rerun}
 
 ### Q: A changed parameter has no effect on the integration {#no-effect}

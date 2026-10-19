@@ -14,6 +14,7 @@ struct Param {
     mzml_fs: Vec<PathBuf>,
     peak_w: (f32, f32, f32, f32),
     crop_window: Option<(f32, f32)>,
+    sn_noise: common::Noise,
     batch_i: PathBuf,
     t_list: PathBuf,
     num_t: usize,

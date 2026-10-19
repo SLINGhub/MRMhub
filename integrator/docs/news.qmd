@@ -8,6 +8,9 @@ Binary releases are published on the
 
 ## Latest changes
 
+- **New `long.csv` columns `sn_ratio` and `noise_method`**: signal-to-noise ratio
+  of each peak, with the noise estimated around the peak (robust by default;
+  RMS or pharmacopoeia peak-to-peak via `sn_noise` in `param.txt`).
 - **`height` and `FWHM` measured above the integration baseline**: `height` is
   now the apex intensity minus the integration baseline (previously the raw
   apex intensity), and `FWHM` is measured at half of that height. `FWHM` is left

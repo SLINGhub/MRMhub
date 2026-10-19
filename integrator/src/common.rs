@@ -44,7 +44,35 @@ pub fn read_param() -> Result<crate::Param, Box<dyn Error>> {
         ),
         rt_shift: (rt_shift.next().unwrap(), rt_shift.next().unwrap()),
         rt_shift_bd: value["RT_shift_bound"].as_float().unwrap() as f32,
+        sn_noise: match value.get("sn_noise").map(|x| x.as_str()) {
+            None | Some(Some("robust")) => Noise::Robust,
+            Some(Some("rms")) => Noise::Rms,
+            Some(Some("p2p")) => Noise::P2p,
+            Some(x) => {
+                return Err(format!(
+                    "sn_noise in param.txt must be robust, rms or p2p (found: {})",
+                    x.unwrap_or("a non-text value")
+                )
+                .into());
+            }
+        },
     })
+}
+/// Noise estimate of the signal-to-noise ratio in long.csv (`sn_noise` in param.txt).
+#[derive(Clone, Copy)]
+pub enum Noise {
+    Robust,
+    Rms,
+    P2p,
+}
+impl Noise {
+    pub fn name(self) -> &'static str {
+        match self {
+            Noise::Robust => "robust",
+            Noise::Rms => "rms",
+            Noise::P2p => "p2p",
+        }
+    }
 }
 fn unpack_string(file: &mut BufReader<File>) -> Result<String, Box<dyn Error>> {
     let mut str_buf = Vec::new();

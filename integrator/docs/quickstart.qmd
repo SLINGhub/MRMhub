@@ -138,8 +138,9 @@ INTEGRATOR writes the integration results as different tables to the project fol
 
 - **`quant_raw.csv`** (wide format) — a features × samples matrix of **peak areas** only, with the
   precursor and product *m/z* and the expected RT (from `feature_list.csv`) carried in the top rows.
-- **`long.csv`** (long format) — one row per *sample × feature*, with  **area, height, FWHM,
-  and apex RT** , and transition *m/z*, acquisition timestamp, and metadata from the input files.
+- **`long.csv`** (long format) — one row per *sample × feature*, with **area, height, FWHM,
+  apex RT**, peak-quality measures (truncation at the trace end, signal-to-noise ratio), transition
+  *m/z*, acquisition timestamp, and metadata from the input files.
 - **`RT_matrix.csv`** — the **peak boundaries** per feature and sample, produced in step 2. These can be edited to adjust individual peaks
 (see [Review the results](#review-the-results)).
 
