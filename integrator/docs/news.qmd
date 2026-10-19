@@ -13,8 +13,9 @@ Binary releases are published on the
   starts. Whole numbers are accepted where a decimal is expected, and a wrong
   value stops the run with a message naming the setting instead of a crash.
 - **New `long.csv` columns `sn_ratio` and `noise_method`**: signal-to-noise ratio
-  of each peak, with the noise estimated around the peak (robust by default;
-  RMS or pharmacopoeia peak-to-peak via `sn_noise` in `param.txt`).
+  of each peak. By default the noise is the pharmacopoeia peak-to-peak noise of
+  the baseline beside the peak, on the side without a neighbouring peak; other
+  estimates can be selected with `sn_noise` in `param.txt`.
 - **`height` and `FWHM` measured above the integration baseline**: `height` is
   now the apex intensity minus the integration baseline (previously the raw
   apex intensity), and `FWHM` is measured at half of that height. `FWHM` is left

@@ -86,13 +86,14 @@ fn parse_param(text: &str) -> Result<(crate::Param, String, Vec<String>), Box<dy
     let mzml_glob = text("mzML_files", "mzML/*.mzML")?;
     let batch_i = PathBuf::from(text("batch_info", "run_order.csv")?);
     let t_list = PathBuf::from(text("transition_list", "feature_list.csv")?);
-    let sn_noise = match text("sn_noise", "robust")?.as_str() {
+    let sn_noise = match text("sn_noise", "flank")?.as_str() {
+        "flank" => Noise::Flank,
         "robust" => Noise::Robust,
         "rms" => Noise::Rms,
         "p2p" => Noise::P2p,
         x => {
             return Err(format!(
-                "sn_noise in param.txt must be robust, rms or p2p (found: {x})"
+                "sn_noise in param.txt must be flank, robust, rms or p2p (found: {x})"
             )
             .into());
         }
@@ -131,6 +132,7 @@ fn parse_param(text: &str) -> Result<(crate::Param, String, Vec<String>), Box<dy
 /// Noise estimate of the signal-to-noise ratio in long.csv (`sn_noise` in param.txt).
 #[derive(Clone, Copy)]
 pub enum Noise {
+    Flank,
     Robust,
     Rms,
     P2p,
@@ -138,6 +140,7 @@ pub enum Noise {
 impl Noise {
     pub fn name(self) -> &'static str {
         match self {
+            Noise::Flank => "flank",
             Noise::Robust => "robust",
             Noise::Rms => "rms",
             Noise::P2p => "p2p",
@@ -374,7 +377,7 @@ mod tests {
                    fill_RT = false\nRT_shift = [-0.1, 0.4]\nRT_shift_bound = 0.05\n";
         let (p, _, notes) = parse_param(old).unwrap();
         assert_eq!((p.num_t, p.rt_tol, p.rt_shift), (8, 0.04, (-0.1, 0.4)));
-        assert_eq!(p.sn_noise.name(), "robust");
+        assert_eq!(p.sn_noise.name(), "flank");
         assert_eq!(notes, ["ignored (not used by this version): fill_RT"]);
     }
 
@@ -394,6 +397,6 @@ mod tests {
         assert!(msg("RT_tol = 'x'").contains("RT_tol in param.txt must be a number"));
         assert!(msg("RT_shift = [0.1]").contains("RT_shift in param.txt must have 2 value(s)"));
         assert!(msg("batch_info = 3").contains("batch_info in param.txt must be text"));
-        assert!(msg("sn_noise = 'mad'").contains("must be robust, rms or p2p"));
+        assert!(msg("sn_noise = 'mad'").contains("must be flank, robust, rms or p2p"));
     }
 }

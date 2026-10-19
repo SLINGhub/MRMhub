@@ -47,7 +47,7 @@ file order:
 | `rt_int_end` | Right integration border (min). |
 | `trace_cut_pct` | Peak truncated by the end of the acquired MRM trace (see below); empty otherwise. |
 | `sn_ratio` | Signal-to-noise ratio: `height` divided by the noise of the baseline around the peak (see below). |
-| `noise_method` | Noise estimate used for `sn_ratio`: `robust`, `rms` or `p2p` (set by `sn_noise` in `param.txt`). |
+| `noise_method` | Noise estimate used for `sn_ratio`: `flank`, `robust`, `rms` or `p2p` (set by `sn_noise` in `param.txt`; `robust` where `flank` had no free baseline). |
 
 Where no peak was found for a *sample × feature*, the measurement fields
 (`rt_apex`…`noise_method`) are left empty.
@@ -77,22 +77,21 @@ left empty when `crop_window` is set, because the stored trace then ends at the 
 than at the end of the acquired trace. It is recomputed in step 3, so it follows manual changes to
 the integration borders in `RT_matrix.csv`.
 
-`sn_ratio` is the peak `height` divided by the noise of the trace in a region around the peak. The
-region extends 10 × FWHM to each side of the apex (20 × FWHM in total) and excludes the integration
-windows of all features of the same transition; if `FWHM` is empty, the integration-window width
-divided by 3.5 is used in place of FWHM. The noise is estimated from the intensities in this region
-according to `sn_noise` in `param.txt`:
+`sn_ratio` is the peak `height` divided by the noise of the baseline, estimated according to
+`sn_noise` in `param.txt`. Baseline points inside the integration window of any feature of the same
+transition are never used. In the following, FWHM is the peak's `FWHM`, or the integration-window
+width divided by 3.5 where `FWHM` is empty.
 
 | `noise_method` | Noise | Notes |
 |---|---|---|
-| `robust` (default) | 1.4826 × median absolute deviation, after removing other peaks | Other peaks in the region (e.g. isomers or isotopic interferences that are not features of the transition) are removed first: points more than 3 × the noise above the median are discarded repeatedly, as in OpenMS, but at most half of the region. Insensitive to neighbouring peaks, peak tails and spikes. |
-| `rms` | Standard deviation | The RMS noise of most vendor software; inflated by any peak in the region. |
-| `p2p` | (maximum − minimum) / 2 | Gives the pharmacopoeia ratio 2*H*/*h* (USP ⟨621⟩, Ph. Eur. 2.2.46); the most sensitive to spikes and neighbouring peaks. |
+| `flank` (default) | (maximum − minimum) / 2 of the baseline next to the integration window, within 3 × FWHM on each side; the quieter side is used | The pharmacopoeia peak-to-peak noise (2*H*/*h*, USP ⟨621⟩, Ph. Eur. 2.2.46), measured in the sample beside the peak. Using the quieter side avoids a neighbouring peak (e.g. an isomer) on the other side, while a trace that wobbles everywhere keeps a low S/N. If neither side has at least 5 free data points, `robust` is used and reported in `noise_method`. |
+| `robust` | 1.4826 × median absolute deviation in a region of 10 × FWHM on each side of the apex, after removing other peaks | Other peaks in the region (e.g. isomers or isotopic interferences that are not features of the transition) are removed first: points more than 3 × the noise above the median are discarded repeatedly, as in OpenMS, but at most half of the region. |
+| `rms` | Standard deviation in the same region | The RMS noise of most vendor software; inflated by any peak in the region. |
+| `p2p` | (maximum − minimum) / 2 in the same region | The pharmacopoeia formula over the whole region; the most sensitive to spikes and neighbouring peaks. |
 
 The noise is at least 1. `sn_ratio` is rounded to one decimal and is 0 for a peak that does not rise
 above its baseline. It is left empty when fewer than 10 data points remain in the region (e.g. in a
-short scheduled MRM window), and, with `crop_window`, the region is limited to the stored part of the
-trace. Values from different methods, or from vendor software (which often smooths the trace first),
+short scheduled MRM window), and, with `crop_window`, only the stored part of the trace is used. Values from different methods, or from vendor software (which often smooths the trace first),
 are not interchangeable. `sn_ratio` is measured within each sample and describes peak quality; it is
 not a detection or quantification limit, which pharmacopoeias and ICH Q2(R2) base on blank samples.
 

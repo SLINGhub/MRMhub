@@ -45,5 +45,5 @@ RT_shift_bound = 0.1
 #crop_window = [1.5, 2.0]
 
 
-### Noise estimate for the signal-to-noise ratio (sn_ratio) in long.csv: "robust" (default), "rms" or "p2p"
-#sn_noise = "robust"
+### Noise estimate for the signal-to-noise ratio (sn_ratio) in long.csv: "flank" (default), "robust", "rms" or "p2p"
+#sn_noise = "flank"

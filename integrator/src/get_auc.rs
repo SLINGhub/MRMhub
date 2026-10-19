@@ -13,7 +13,7 @@ pub fn calc_auc(param_t: &crate::Param) -> Result<(), Box<dyn Error>> {
     println!("S/N noise: {}", noise.name());
     let area_all = areas(&s_trans, &rt_vec_d, &t_to_istd, cropped, noise);
     let mzml_fs = crate::common::get_mzml()?;
-    write_long(&s_trans, &area_all, &t_to_istd, &mzml_fs, noise)?;
+    write_long(&s_trans, &area_all, &t_to_istd, &mzml_fs)?;
     write_area(&s_trans, &area_all, &t_to_istd, &mzml_fs)?;
     crate::common::write_by_sample(&t_to_istd, &mzml_fs)
 }
@@ -133,7 +133,6 @@ fn write_long(
     area_all: &[Vec<RowDat>],
     t_to_istd: &[crate::common::ValidT],
     mzml_fs: &[crate::common::FileA],
-    noise: crate::common::Noise,
 ) -> Result<(), Box<dyn Error>> {
     let file_path = Path::new(crate::MISCDIR).join("long.bin");
     let mut bufw = BufWriter::new(File::create(file_path)?);
@@ -161,7 +160,6 @@ fn write_long(
         "noise_method",
     ])?;
     let blkstr = String::new();
-    let noise_name = noise.name().to_owned();
     let (pos_string, neg_string) = ("+".to_owned(), "-".to_owned());
     for ((t, t_name), area_t) in s_trans.iter().zip(area_all) {
         let k: &crate::common::ValidT = t_to_istd
@@ -190,13 +188,12 @@ fn write_long(
                     &format!("{:.3}", rowd.beg),
                     &format!("{:.3}", rowd.end),
                     &rowd.trace_cut.map_or(String::new(), |x| format!("{x:.1}")),
-                    &rowd.sn.map_or(String::new(), |x| format!("{x:.1}")),
+                    &rowd.sn.map_or(String::new(), |x| format!("{:.1}", x.0)),
                 ]
             };
-            let r_noise = if r_sn.is_empty() {
-                &blkstr
-            } else {
-                &noise_name
+            let r_noise = match rowd.sn {
+                Some((_, n)) if !no_result => n.name().to_owned(),
+                _ => String::new(),
             };
             wtr.write_record([
                 if t_name.is_empty() { &k.cpd } else { t_name },
@@ -221,7 +218,7 @@ fn write_long(
                 r_end,
                 r_cut,
                 r_sn,
-                r_noise,
+                &r_noise,
             ])?;
             bufw.write_all(&rowd.rt.to_le_bytes())?;
             bufw.write_all(&rowd.auc.to_le_bytes())?;
@@ -291,7 +288,7 @@ struct RowDat {
     polarity: bool,
     absent: bool,
     trace_cut: Option<f32>,
-    sn: Option<f32>,
+    sn: Option<(f32, crate::common::Noise)>,
 }
 /// Signal left where the integration window reaches an end of the acquired trace, in % of the apex height, both
 /// above the 5th-percentile baseline of the whole trace (`p_bl`), rounded to 1 decimal. Negative for the first trace
@@ -446,7 +443,7 @@ fn sn_ratio(
         return None;
     }
     let n = match noise {
-        Noise::Robust => {
+        Noise::Robust | Noise::Flank => {
             let mad_sd = |y: &mut [f32]| {
                 let m = median(y);
                 let mut dev: Vec<f32> = y.iter().map(|x| (x - m).abs()).collect();
@@ -482,6 +479,61 @@ fn sn_ratio(
     };
     Some((10. * height / n.max(1.)).round() / 10.)
 }
+/// S/N with the noise of `sn_noise` and the method actually used: `flank` falls back to `robust` (region) when
+/// neither side of the window `win` has 5 free baseline points.
+fn sn_with(
+    rt_i_l: &[(f32, f32)],
+    rt_pos: &[(usize, usize)],
+    win: (usize, usize),
+    apex_i: usize,
+    height: f32,
+    half_width: f32,
+    noise: crate::common::Noise,
+) -> Option<(f32, crate::common::Noise)> {
+    use crate::common::Noise;
+    if let Noise::Flank = noise
+        && let Some(n) = flank_noise(rt_i_l, rt_pos, win, half_width)
+    {
+        return Some(((10. * height / n.max(1.)).round() / 10., Noise::Flank));
+    }
+    let noise = if let Noise::Flank = noise {
+        Noise::Robust
+    } else {
+        noise
+    };
+    sn_ratio(rt_i_l, rt_pos, apex_i, height, half_width, noise).map(|x| (x, noise))
+}
+/// Half the peak-to-peak range of the baseline next to the integration window `win`, within 3 × `half_width` on each
+/// side and outside the windows of all features of the transition; the quieter side (pharmacopoeia 2H/h measured
+/// beside the peak, avoiding a neighbouring peak on the other side). `None` if neither side has 5 points.
+fn flank_noise(
+    rt_i_l: &[(f32, f32)],
+    rt_pos: &[(usize, usize)],
+    (pos0, pos1): (usize, usize),
+    half_width: f32,
+) -> Option<f32> {
+    let side = |lo: f32, hi: f32| {
+        let v: Vec<f32> = rt_i_l
+            .iter()
+            .enumerate()
+            .filter(|&(j, &(t, _))| {
+                lo <= t && t <= hi && !rt_pos.iter().any(|&(p0, p1)| (p0..p1).contains(&j))
+            })
+            .map(|(_, &(_, i))| i)
+            .collect();
+        (v.len() >= 5).then(|| {
+            let (lo, hi) = v
+                .iter()
+                .fold((f32::MAX, f32::MIN), |(lo, hi), &x| (lo.min(x), hi.max(x)));
+            (hi - lo) / 2.
+        })
+    };
+    let (t0, t1, w) = (rt_i_l[pos0].0, rt_i_l[pos1 - 1].0, 3. * half_width);
+    match (side(t0 - w, t0), side(t1, t1 + w)) {
+        (Some(l), Some(r)) => Some(l.min(r)),
+        (l, r) => l.or(r),
+    }
+}
 fn feat_data(
     i: usize,
     rt_i_all: &[EicPos],
@@ -515,7 +567,15 @@ fn feat_data(
                 let height = 0f32.max(apex - bl);
                 // without a measured FWHM: the integration window is about 3.5 half-widths in DYNAMO and Dataset4
                 let half_width = fwhm.unwrap_or((rt_i_l[pos1 - 1].0 - rt_i_l[pos0].0) / 3.5);
-                let sn = sn_ratio(rt_i_l, rt_pos, max_i, height, half_width, noise);
+                let sn = sn_with(
+                    rt_i_l,
+                    rt_pos,
+                    (pos0, pos1),
+                    max_i,
+                    height,
+                    half_width,
+                    noise,
+                );
                 (fwhm, rt, height, sn)
             } else {
                 (None, beg, 0., None)
@@ -601,7 +661,7 @@ fn read_rtmat() -> Result<RtMat, Box<dyn Error>> {
 
 #[cfg(test)]
 mod tests {
-    use super::{bl_at_apex, fwhm, sn_ratio, trace_cut_pct};
+    use super::{bl_at_apex, fwhm, sn_ratio, sn_with, trace_cut_pct};
     use crate::common::Noise;
 
     // 40 points at baseline 0 with a peak `peak` placed at `at`; the 5th-percentile baseline is 0.
@@ -753,5 +813,26 @@ mod tests {
         let robust = sn_ratio(&t, &w, 30, 100., 1., Noise::Robust).unwrap();
         assert!((30. ..=100.).contains(&robust), "{robust}"); // clean trace: 67.4
         assert!(sn_ratio(&t, &w, 30, 100., 1., Noise::Rms).unwrap() < 1.);
+    }
+
+    #[test]
+    fn sn_flank_uses_the_quieter_side() {
+        // left of the window peak-to-peak 2 (noise 1), right 20 (noise 10); 3 half-widths = 6 points per side
+        let mut t = noisy();
+        for (j, p) in t.iter_mut().enumerate().skip(33).take(8) {
+            p.1 = if j % 2 == 0 { 0. } else { 20. };
+        }
+        let flank = sn_with(&t, &[(28, 33)], (28, 33), 30, 100., 2., Noise::Flank)
+            .map(|x| (x.0, x.1.name()));
+        assert_eq!(flank, Some((100., "flank")));
+    }
+
+    #[test]
+    fn sn_flank_falls_back_to_robust_without_free_baseline() {
+        // neighbouring features on both sides: the region estimate is used and reported as robust
+        let w = [(28, 33), (20, 28), (33, 45)];
+        let sn =
+            sn_with(&noisy(), &w, (28, 33), 30, 100., 2., Noise::Flank).map(|x| (x.0, x.1.name()));
+        assert_eq!(sn, Some((67.4, "robust")));
     }
 }
