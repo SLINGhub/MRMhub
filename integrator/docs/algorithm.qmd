@@ -6,7 +6,7 @@ description: "A technical description of how INTEGRATOR is implemented"
 ## Implementation
 
 INTEGRATOR and its viewer are implemented as self-contained, lightweight applications for
-macOS (Apple silicon) and Windows 11 (x86-64) that require no installation. INTEGRATOR provides a
+macOS (Apple silicon and Intel), Windows 11 (x86-64) and Linux (x86-64) that require no installation. INTEGRATOR provides a
 terminal user interface, while its viewer (**MRMhub-viz**) comes with a graphical interface. The core is
 written in **Rust** and compiled to a single native executable per platform, which reads and decodes
 mzML data directly and parallelises the integration across the available CPU cores for speed.

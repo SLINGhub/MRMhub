@@ -31,7 +31,7 @@ each update. Antivirus or endpoint-protection software may also quarantine the u
 allow-list it if the file will not launch. See
 [clearing the security prompt](setup.qmd#clearing-the-first-launch-security-prompt).
 
-The macOS build is Apple silicon only and will not run on an Intel Mac.
+macOS builds are provided for both Apple silicon (`aarch64-apple-darwin`) and Intel (`x86_64-apple-darwin`) Macs; an Apple silicon build will not run on an Intel Mac.
 
 ### Q: MRMhub closes on start — the console opens, then returns to the shell prompt {#crash-start}
 

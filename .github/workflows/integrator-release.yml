@@ -1,13 +1,13 @@
 name: integrator-release
 
-# Build the Rust INTEGRATOR executable and the mrmhub-viz viewer for macOS /
-# Windows / Linux, package them (binaries + MRMhub_plot.r + example inputs), and
-# attach the archives to a GitHub Release: a plain package and, when
-# vars.DEMO_DATA_URL is set, a demo package (plus demo raw data, the QUANT demo
-# and Get-started.html). A release also gets the mrmhub R source package. macOS
-# builds are code-signed + notarized when the signing secrets are present, and
-# fall back to an ad-hoc signature otherwise. Only the `publish` job, which runs
-# no build code, gets write access.
+# Build the Rust INTEGRATOR executable and the mrmhub-viz viewer for macOS
+# (Apple silicon + Intel) / Windows / Linux, package them (binaries +
+# MRMhub_plot.r + example inputs), and attach the archives to a GitHub Release:
+# a plain package and, when vars.DEMO_DATA_URL is set, a demo package (plus demo
+# raw data, the QUANT demo and Get-started.html). A release also gets the mrmhub
+# R source package. macOS builds are code-signed + notarized when the signing
+# secrets are present, and fall back to an ad-hoc signature otherwise. Only the
+# `publish` job, which runs no build code, gets write access.
 
 on:
   release:
@@ -62,6 +62,7 @@ jobs:
       matrix:
         include:
           - { os: macos-latest,   target: aarch64-apple-darwin }
+          - { os: macos-latest,   target: x86_64-apple-darwin }   # Intel, cross-compiled
           - { os: windows-latest, target: x86_64-pc-windows-msvc }
           - { os: ubuntu-latest,  target: x86_64-unknown-linux-gnu }
     runs-on: ${{ matrix.os }}
