@@ -8,6 +8,9 @@ Binary releases are published on the
 
 ## Latest changes
 
+- **New `long.csv` column `trace_cut_pct`**: flags peaks cut off by the start
+  or end of the acquired MRM trace and gives the signal remaining there as a
+  percentage of the apex height above baseline.
 - **Complete Rust source code**, including the **MRMhub-viz** viewer app, with
   build instructions.
 - **Per-feature baseline determination**: the baseline mode (`default`

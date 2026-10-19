@@ -45,9 +45,26 @@ file order:
 | `FWHM` | Full width at half maximum (min). |
 | `rt_int_start` | Left integration border (min). |
 | `rt_int_end` | Right integration border (min). |
+| `trace_cut_pct` | Peak truncated by the end of the acquired MRM trace (see below); empty otherwise. |
 
 Where no peak was found for a *sample × feature*, the measurement fields
-(`rt_apex`…`rt_int_end`) are left empty.
+(`rt_apex`…`trace_cut_pct`) are left empty.
+
+`trace_cut_pct` flags peaks that are cut off by the end of the acquired trace, e.g. when a
+scheduled MRM window closes before the peak has returned to baseline. It is filled when the
+integration window reaches the first or last data point of the trace, and gives the signal at
+that point as a percentage of the apex height, both above the baseline (the 5th percentile of the
+whole trace, for every baseline mode):
+
+- **negative** values: cut at the start of the trace; **positive** values: cut at the end;
+- **±100**: the apex itself lies on the trace end;
+- **empty**: the integration window does not reach a trace end, the signal there is at or below
+  baseline, or no peak was found.
+
+If the window reaches both trace ends, the larger value is reported, with its sign. The column is
+left empty when `crop_window` is set, because the stored trace then ends at the crop limits rather
+than at the end of the acquired trace. It is recomputed in step 3, so it follows manual changes to
+the integration borders in `RT_matrix.csv`.
 
 ## quant_raw.csv
 
