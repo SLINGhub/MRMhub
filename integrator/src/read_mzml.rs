@@ -26,6 +26,8 @@ pub fn read(param_t: &crate::Param) -> Result<(), Box<dyn Error>> {
     }
     let file_ord = read_file_ord(&param_t.batch_i)?;
     let mzml_fs = filter_mzml(param_t, &file_ord)?;
+    // before misc/ is deleted, so that a wrongly converted file leaves the previous results in place
+    check_mzml_format(&mzml_fs)?;
     let _ = std::fs::remove_dir_all(crate::MISCDIR);
     std::fs::create_dir(crate::MISCDIR)?;
     let trans_f = create_t_files(&t_list)?;
@@ -408,6 +410,37 @@ fn create_t_files(t_list: &[QQ]) -> std::io::Result<Vec<String>> {
         })
         .collect()
 }
+/// Stops step 1 if any mzML file is not in the format the reader expects (`parse::check_format`); all such files
+/// are listed in `mzml_format_errors.txt`.
+fn check_mzml_format(mzml_fs: &[FileD]) -> Result<(), Box<dyn Error>> {
+    const ERR_F: &str = "mzml_format_errors.txt";
+    let mut bad: Vec<(String, String)> = mzml_fs
+        .par_iter()
+        .filter_map(|x| {
+            parse::check_format(x.mzml_f)
+                .err()
+                .map(|e| (x.mzml_f.display().to_string(), e))
+        })
+        .collect();
+    if bad.is_empty() {
+        let _ = std::fs::remove_file(ERR_F);
+        return Ok(());
+    }
+    bad.sort_unstable();
+    let mut bufw = BufWriter::new(File::create(ERR_F)?);
+    for (f, e) in &bad {
+        writeln!(bufw, "{f}\t{e}")?;
+    }
+    bufw.flush()?;
+    let (f, e) = &bad[0];
+    Err(format!(
+        "{} of {} mzML files are not in the expected format (all listed in {ERR_F}); e.g. {f} {e}",
+        bad.len(),
+        mzml_fs.len()
+    )
+    .into())
+}
+
 fn filter_mzml<'a, 'b>(
     param_t: &'a crate::Param,
     file_ord: &'b [FileO],

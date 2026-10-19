@@ -23,9 +23,11 @@ mzML. Conversion runs on Windows only.
     keep the `.wiff` and `.wiff.scan` files together in the same folder.
 
 4.  Set the options: *Output format* → **mzML**, *Binary encoding
-    precision* → **32-bit**, and enable **Write index**. To speed up
-    large batches, raise *Files to convert in parallel* to the number of
-    available CPU cores.
+    precision* → **32-bit**, and enable **Write index** and **Use zlib
+    compression**. No filters are needed. To speed up large batches, raise
+    *Files to convert in parallel* to the number of available CPU cores.
+    INTEGRATOR stops with an error if a file is not an indexed mzML (see the
+    [FAQ](faq.qmd#msconvert-settings)).
 
 5.  Click **Start**, then copy the resulting mzML files into the `mzML`
     subfolder of your MRMhub project.

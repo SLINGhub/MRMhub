@@ -8,6 +8,11 @@ Binary releases are published on the
 
 ## Latest changes
 
+- **mzML format check in step 1**: every mzML file is checked before step 1
+  starts. Files that are not indexed mzML, have no chromatograms, or use an
+  unsupported compression (e.g. MS-Numpress) stop the run with an error and are
+  listed in `mzml_format_errors.txt`; the previous results are left in place.
+  Before, such files caused a crash after `misc/` had been deleted.
 - **Complete Rust source code**, including the **MRMhub-viz** viewer app, with
   build instructions.
 - **Per-feature baseline determination**: the baseline mode (`default`

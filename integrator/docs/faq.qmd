@@ -73,6 +73,11 @@ For memory, allow **16 GB RAM** for large sequences (8 GB minimum) and ample dis
 **32-bit** encoding, and **Write index** enabled. For SCIEX data, keep the `.wiff` and `.wiff.scan`
 files in the same folder. See [mzML Conversion](msconvert.qmd).
 
+Step 1 checks every mzML file before it starts and stops with an error if a file is not an indexed
+mzML (*Write index* off, or `--noindex`), has no chromatograms, or uses a compression other than
+zlib or none (e.g. MS-Numpress). All such files are listed in `mzml_format_errors.txt`, and the
+results of the previous run are left in place. Convert those files again with the settings above.
+
 ### Q: After editing a CSV, integration results are incorrect or implausible {#csv-misread}
 
 **A:** Columns are matched by **header name**, so a renamed or misspelled required column stops the run
