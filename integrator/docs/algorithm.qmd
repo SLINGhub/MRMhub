@@ -37,10 +37,12 @@ reported in a text file (`missing_compounds.txt`). Chromatograms in mzML files w
 assignment are also excluded from the analysis. The user may proceed with the analysis even if some
 files or compounds are missing.
 
-A transition is therefore integrated only if it is present in **every** mzML file *and* listed in the
-transition input file: the processed set is the intersection of the transitions common to all files
-with those defined in the feature list. A transition absent from any single file is currently dropped
-for the whole dataset, not only for the files that lack it.
+A transition listed in the transition input file but absent from some mzML files (e.g. in a dataset
+acquired with different MRM methods) is retained, provided it is present in all reference samples,
+which are required for RT-shift estimation, and in at least one learning sample, which is required
+for peak detection. No result is reported for the files that lack the transition. A transition that
+does not meet these conditions is excluded from the whole dataset. Both cases are listed in
+`missing_compounds.txt`.
 
 Where the same transition (same Q1/Q3 values) with identical or nearly identical MRM start and end
 windows appears two or more times in an mzML file, the user is alerted and can choose which

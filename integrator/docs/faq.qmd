@@ -128,7 +128,8 @@ matched, and the run can proceed. See [Processing Workflow](running.qmd#step-1-d
 ### Q: What do the missing_*.txt reports mean? {#missing-files}
 
 **A:** They are written only on problems: **missing_files.txt** (mzML listed but absent, or present
-but unlisted), **missing_compounds.txt** (transitions not matched in the mzML), and
+but unlisted), **missing_compounds.txt** (transitions absent from one or more mzML files, marked as
+*kept* or *removed*), and
 **missing_details.txt** (which samples lack a given transition). The analysis may still proceed. See
 [Processing Workflow](running.qmd#step-1-data-validation).
 
@@ -136,8 +137,8 @@ but unlisted), **missing_compounds.txt** (transitions not matched in the mzML), 
 
 **A:** Locate the cause by step:
 
-- **Not matched (Step 1)** — if it is listed in `missing_compounds.txt`, it was not found in the mzML
-  data. Matching is by precursor and product *m/z* and RT, within `mz_tol` and `RT_tol`; check the
+- **Not matched (Step 1)** — if it is listed as *removed* in `missing_compounds.txt`, it was not found
+  in a reference sample or in any learning sample. Matching is by precursor and product *m/z* and RT, within `mz_tol` and `RT_tol`; check the
   transition-list values against the mzML and widen `mz_tol` if the *m/z* calibration is slightly off.
 - **Matched but not integrated (Step 3)** — the transition is present but no peak was found, so its
   area is zero and its `long.csv` fields are empty (see [area reported as zero](#area-zero)).

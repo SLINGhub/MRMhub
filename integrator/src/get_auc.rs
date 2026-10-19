@@ -82,6 +82,10 @@ fn write_trans(
             let rt_pos: Vec<(usize, usize)> = rt_vec_d[i * tlen..][pos0..pos1]
                 .iter()
                 .map(|&(rt0, rt1)| {
+                    if rt_i_l.is_empty() {
+                        bufw.write_all(&[0u8; 4])?;
+                        return Ok((0, 0));
+                    }
                     let pos1 = rt_i_l.partition_point(|x| x.0 < rt1);
                     let pos0 = rt_i_l[..pos1].partition_point(|x| x.0 < rt0);
                     let pos0 = crate::common::find_closest(&rt_i_l, rt0, pos0);
@@ -93,6 +97,7 @@ fn write_trans(
                 .collect::<Result<_, Box<dyn Error>>>()?;
             for &(pos0, pos1) in &rt_pos {
                 let bl = match k.baseline {
+                    _ if rt_i_l.is_empty() => None,
                     Bl::P => {
                         let bl = p_bl(&rt_i_l);
                         Some((bl, bl))
@@ -152,7 +157,9 @@ fn write_long(
             .binary_search_by_key(&&k.iqq, |x| &x.cqq)
             .map_or_else(|_| panic!("{t} istd not found"), |k| &t_to_istd[k]);
         for (filedat, rowd) in mzml_fs.iter().zip(area_t.iter()) {
-            let [r_rt, r_auc, r_height, r_fwhm, r_beg, r_end] = if rowd.beg == rowd.end {
+            // empty also where the transition is absent, even if RT_matrix.csv was edited to give it bounds
+            let no_result = rowd.beg == rowd.end || rowd.absent;
+            let [r_rt, r_auc, r_height, r_fwhm, r_beg, r_end] = if no_result {
                 [&blkstr; 6]
             } else {
                 [
@@ -231,7 +238,14 @@ fn write_area(
     }))?;
     for (j, crate::common::FileA { mzml_f, .. }) in mzml_fs.iter().enumerate() {
         wtr.write_field(mzml_f)?;
-        wtr.write_record(area_all.iter().map(|x| x[j].auc.to_string()))?;
+        // Empty cell where the transition is absent from the sample
+        wtr.write_record(area_all.iter().map(|x| {
+            if x[j].absent {
+                String::new()
+            } else {
+                x[j].auc.to_string()
+            }
+        }))?;
     }
     Ok(())
 }
@@ -245,6 +259,7 @@ struct RowDat {
     end: f32,
     ce: f32,
     polarity: bool,
+    absent: bool,
 }
 fn auc_flat(rt_i_l: &[(f32, f32)], bl: f32) -> f32 {
     rt_i_l
@@ -304,6 +319,7 @@ fn feat_data(
                 use crate::common::Bl;
                 let rt_i = &rt_i_l[pos0..pos1];
                 match k.baseline {
+                    _ if rt_i_l.is_empty() => 0.,
                     Bl::P => auc_flat(rt_i, p_bl(rt_i_l)),
                     Bl::VDrop => v_drop_bl(rt_i_l, rt_pos).map_or(0., |bl| auc_flat(rt_i, bl)),
                     Bl::V2v => v2v_auc(rt_i),
@@ -344,6 +360,7 @@ fn feat_data(
                 end,
                 ce,
                 polarity,
+                absent: rt_i_l.is_empty(),
             })
         })
         .collect()

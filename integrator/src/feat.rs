@@ -148,6 +148,9 @@ fn write_trans(
     let dec_l: Vec<f32> = rt_i_all
         .iter()
         .map(|rt_i_l| {
+            if rt_i_l.is_empty() {
+                return 0.;
+            }
             let mut i_l: Vec<_> = rt_i_l.iter().map(|x| x.1).collect();
             let i = i_l.len() / 20;
             i_l.select_nth_unstable_by(i, |a, b| a.partial_cmp(b).unwrap());
@@ -161,7 +164,7 @@ fn write_trans(
         .zip(&dec_l)
         .zip(&rt_sh)
         .zip(mzml_fs)
-        .filter(|y| y.1.is_learn)
+        .filter(|y| y.1.is_learn && !y.0.0.0.is_empty())
         .map(|(((x, y), sh), _)| findridge(x, *y, wave_scs, wave_sqrt, *sh))
         .collect();
     let median_rt = calc_med_rt(&trans_feats);
@@ -176,6 +179,14 @@ fn write_trans(
     for (rt_i_l, sh) in rt_i_all.iter().zip(&rt_sh) {
         new_rt.clear();
         new_rt.extend(median_rt.iter().map(|x| x + sh));
+        if rt_i_l.is_empty() {
+            // Transition absent from this sample: zero-width bounds, so step 3 reports no result.
+            for (&f_cc, range) in new_rt.iter().zip(&iso_range) {
+                start_end_rt.extend(std::iter::repeat_n((f_cc, f_cc), range.len()));
+                trunc.extend(std::iter::repeat_n((false, false), range.len()));
+            }
+            continue;
+        }
         let mut pos01: usize = 0;
         for (jj, (&f_cc, range)) in new_rt.iter().zip(&iso_range).enumerate() {
             let pos0 = {
@@ -268,17 +279,23 @@ fn write_trans(
         })
         .collect();
     if t_i.u_rt {
-        for (se, sh) in start_end_rt.chunks_exact_mut(isolen).zip(&rt_sh) {
+        for ((se, sh), _) in start_end_rt
+            .chunks_exact_mut(isolen)
+            .zip(&rt_sh)
+            .zip(&rt_i_all)
+            .filter(|x| !x.1.is_empty())
+        {
             for (se_i, rt) in se.iter_mut().zip(&median_se) {
                 *se_i = (rt.0 + sh, rt.1 + sh);
             }
         }
     } else {
-        for ((se, sh), _) in start_end_rt
+        for (((se, sh), _), _) in start_end_rt
             .chunks_exact_mut(isolen)
             .zip(&rt_sh)
             .zip(mzml_fs)
-            .filter(|x| x.1.ftype.contains("BLK"))
+            .zip(&rt_i_all)
+            .filter(|x| x.0.1.ftype.contains("BLK") && !x.1.is_empty())
         {
             for (se_i, rt) in se.iter_mut().zip(&median_se) {
                 *se_i = (rt.0 + sh, rt.1 + sh);
@@ -302,6 +319,10 @@ fn write_tp(
     {
         bufw.write_all(&sh.to_le_bytes())?;
         for &(rt0, rt1) in se {
+            if rt_i_l.is_empty() {
+                bufw.write_all(&[0u8; 4])?;
+                continue;
+            }
             let mut pos = rt_i_l.partition_point(|x| x.0 < rt0);
             pos = crate::common::find_closest(rt_i_l, rt0, pos);
             bufw.write_all(&u16::try_from(pos + 1).unwrap().to_le_bytes())?;

@@ -8,6 +8,12 @@ Binary releases are published on the
 
 ## Latest changes
 
+- **Transitions missing from some mzML files are retained**: such a transition
+  is integrated in the files that contain it, provided it is present in all
+  reference samples and in at least one learning sample; the other files receive
+  empty values. Previously, the transition was removed from the whole dataset.
+- **macOS build for Intel processors** (`x86_64-apple-darwin`), in addition to
+  Apple silicon.
 - **mzML format check in step 1**: every mzML file is checked before step 1
   starts. Files that are not indexed mzML, have no chromatograms, or use an
   unsupported compression (e.g. MS-Numpress) stop the run with an error and are

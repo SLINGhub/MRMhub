@@ -217,6 +217,7 @@ fn write_miss_cpd(
     let mut bufw = BufWriter::new(File::create("missing_compounds.txt")?);
     let mut bufw_d = BufWriter::new(File::create("missing_details.txt")?);
     let mut missing_f = Vec::new();
+    let n_learn = mzml_fs.iter().filter(|x| x.is_learn).count();
     for (trans_f_i, trans) in trans_f.iter().zip(t_list) {
         let file_path = Path::new(crate::MISCDIR).join(trans_f_i);
         let bufre = &mut BufReader::new(File::open(file_path)?);
@@ -224,18 +225,30 @@ fn write_miss_cpd(
         missing_f.extend(
             mzml_fs
                 .iter()
-                .filter(|_| crate::common::get_eic(bufre).is_ok_and(|x| x.is_empty()))
-                .map(|x| x.mzml_f),
+                .filter(|_| crate::common::get_eic(bufre).is_ok_and(|x| x.is_empty())),
         );
-        for mzml_f in &missing_f {
+        for x in &missing_f {
             writeln!(
                 bufw_d,
                 "\"{}\" not in \"{}\"",
                 trans.name,
-                mzml_f.file_name().unwrap().display()
+                x.mzml_f.file_name().unwrap().display()
             )?;
         }
+        // A transition absent from some samples is kept (those samples get no result), unless it
+        // is absent from a reference sample (needed for the RT shift) or from all learning samples.
+        let keep = missing_f.iter().all(|x| !x.is_ref)
+            && missing_f.iter().filter(|x| x.is_learn).count() < n_learn;
         if missing_f.is_empty() {
+            valid_trans.push((trans, trans_f_i));
+        } else if keep {
+            writeln!(
+                bufw,
+                "kept \"{}\". Present in {}/{} samples; the others get no result",
+                trans.name,
+                mzml_fs.len() - missing_f.len(),
+                mzml_fs.len()
+            )?;
             valid_trans.push((trans, trans_f_i));
         } else {
             writeln!(

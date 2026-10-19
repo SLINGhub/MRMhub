@@ -76,10 +76,10 @@ A project with executables, `mzML` files, and the input files is assembled as de
 - Precursor/product *m/z* fall within `mz_tol`; RT in **minutes**.
 - `reference` samples are defined in the `run_order.csv`.
 
-::: {.callout-important}
-## Transitions must be present in ALL mzML files
+::: {.callout-note}
+## Transitions missing from some mzML files
 
-INTEGRATOR integrates only transitions present in **all mzML files** and listed in `feature_list.csv`. Transitions missing from even one file are dropped for the whole dataset (reported in `missing_compounds.txt` / `missing_details.txt`).
+A transition listed in `feature_list.csv` but absent from some mzML files is retained if it is present in all `reference` samples and in at least one learning sample. Files that lack the transition receive no result: empty cells in `quant_raw.csv` and `long.csv`, and an empty panel labelled "not acquired" in the PDF plots. A transition that does not meet these conditions is excluded from the whole dataset. Both cases are listed in `missing_compounds.txt`.
 :::
 
 ## Launching INTEGRATOR
@@ -93,7 +93,7 @@ INTEGRATOR is started from the project folder by double-clicking `MRMhub` (macOS
 The input files are validated against the mzML files. Report files are written in case mismatches are found:
 
 - **`missing_files.txt`** — mzML files present in the data folder but not listed in the `run_order.csv`, or listed but absent from the mzML folder.
-- **`missing_compounds.txt`** — transitions listed in `feature_list.csv` not found in all of the mzML files.
+- **`missing_compounds.txt`** — transitions listed in `feature_list.csv` that are absent from one or more mzML files, each marked as *kept* or *removed* (see [above](#setting-up-an-integrator-project)).
 - **`missing_details.txt`** — for each such transition, the specific samples in which it is absent.
 - **`mzml_format_errors.txt`** — mzML files in a format INTEGRATOR cannot read (not an indexed mzML, no chromatograms, or an unsupported compression such as MS-Numpress). Step 1 stops before any data are read and leaves the previous results in place; convert these files again ([mzML conversion](msconvert.qmd)).
 
