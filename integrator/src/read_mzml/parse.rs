@@ -11,13 +11,12 @@ pub struct Q1Q3RtI {
     pub ce: f32,
 }
 
-/// Checks that an mzML file has the layout `mzml()` relies on, so that a wrongly converted file stops step 1 with a
-/// clear message instead of a panic or silently empty chromatograms:
-/// - root element `indexedmzML` (MSConvert "Write index"; `mzml()` finds the chromatograms at that depth),
+/// Checks that an mzML file can be decoded by `mzml()`, so that a wrongly converted file stops step 1 with a clear
+/// message instead of a panic:
 /// - at least one chromatogram,
 /// - chromatogram arrays of 32- or 64-bit floats, zlib-compressed or uncompressed (no MS-Numpress).
 ///
-/// Only the start of the file is read: the root element and the binary arrays of the first chromatogram.
+/// Only the start of the file is read, up to the binary arrays of the first chromatogram.
 pub fn check_format(mzml_f: &std::path::Path) -> Result<(), String> {
     let file = std::fs::File::open(mzml_f).map_err(|e| format!("cannot be opened ({e})"))?;
     check_format_reader(std::io::BufReader::new(file))
@@ -39,18 +38,8 @@ fn check_format_reader<R: std::io::BufRead>(rdr: R) -> Result<(), String> {
             .map_err(|e| format!("is not valid XML ({e})"))?;
         match event {
             Event::Start(e) => {
-                let name = e.local_name();
-                if !root_seen {
-                    if name.as_ref() != b"indexedmzML" {
-                        return Err(format!(
-                            "is not an indexed mzML (root element <{}> instead of <indexedmzML>); convert it again \
-                             with MSConvert with \"Write index\" enabled (no --noindex)",
-                            String::from_utf8_lossy(name.as_ref())
-                        ));
-                    }
-                    root_seen = true;
-                }
-                match name.as_ref() {
+                root_seen = true;
+                match e.local_name().as_ref() {
                     b"chromatogramList" => in_chrom_list = true,
                     b"binaryDataArray" if in_chrom_list => in_array = true,
                     _ => {}
@@ -210,7 +199,9 @@ pub fn mzml(mzml_f: &std::path::Path) -> (String, Vec<Q1Q3RtI>) {
                 }
             }
             Ok(Event::Text(e))
-                if stack[stack.len() - 1] == b"binary" && stack[3] == b"chromatogramList" =>
+                // chromatogramList is at a different depth with and without the <indexedmzML> wrapper
+                if stack[stack.len() - 1] == b"binary"
+                    && stack.iter().any(|x| x == b"chromatogramList") =>
             {
                 let Some(pre64) = pre64 else {
                     continue;
@@ -278,20 +269,25 @@ fn decode_bin(
 
 #[cfg(test)]
 mod tests {
-    use super::check_format_reader;
+    use super::{check_format_reader, mzml as parse_mzml};
 
-    // A minimal mzML with one chromatogram, wrapped in <indexedmzML> if `indexed`; `compression` and `precision`
-    // are the cvParams of both arrays.
+    // A minimal mzML with one SRM chromatogram (Q1 500, Q3 184, one point at RT 1 with intensity 1), wrapped in
+    // <indexedmzML> if `indexed`; `compression` and `precision` are the cvParams of both arrays. The binary data
+    // ("AACAPw==", little-endian 32-bit float 1.0) is only decodable with NONE and F32.
     fn mzml(indexed: bool, compression: &str, precision: &str) -> String {
         let arrays = format!(
             r#"<binaryDataArrayList count="2">
-<binaryDataArray encodedLength="0">{precision}{compression}<cvParam cvRef="MS" accession="MS:1000595" name="time array"/><binary/></binaryDataArray>
-<binaryDataArray encodedLength="0">{precision}{compression}<cvParam cvRef="MS" accession="MS:1000515" name="intensity array"/><binary/></binaryDataArray>
+<binaryDataArray encodedLength="8">{precision}{compression}<cvParam cvRef="MS" accession="MS:1000595" name="time array"/><binary>AACAPw==</binary></binaryDataArray>
+<binaryDataArray encodedLength="8">{precision}{compression}<cvParam cvRef="MS" accession="MS:1000515" name="intensity array"/><binary>AACAPw==</binary></binaryDataArray>
 </binaryDataArrayList>"#
         );
         let body = format!(
             r#"<mzML xmlns="http://psi.hupo.org/ms/mzml" version="1.1.0"><run id="r" startTimeStamp="2021-10-22T18:07:18Z">
-<chromatogramList count="1"><chromatogram index="0" id="x" defaultArrayLength="0">{arrays}</chromatogram></chromatogramList>
+<chromatogramList count="1"><chromatogram index="0" id="x" defaultArrayLength="1">
+<cvParam cvRef="MS" accession="MS:1000130" name="positive scan"/>
+<precursor><isolationWindow><cvParam cvRef="MS" accession="MS:1000827" name="isolation window target m/z" value="500"/></isolationWindow></precursor>
+<product><isolationWindow><cvParam cvRef="MS" accession="MS:1000827" name="isolation window target m/z" value="184"/></isolationWindow></product>
+{arrays}</chromatogram></chromatogramList>
 </run></mzML>"#
         );
         let xml = if indexed {
@@ -314,15 +310,27 @@ mod tests {
     }
 
     #[test]
-    fn accepts_indexed_zlib_and_uncompressed() {
-        assert_eq!(check(&mzml(true, ZLIB, F32)), Ok(()));
-        assert_eq!(check(&mzml(true, NONE, F32)), Ok(()));
+    fn accepts_zlib_and_uncompressed_with_and_without_index() {
+        for indexed in [true, false] {
+            assert_eq!(check(&mzml(indexed, ZLIB, F32)), Ok(()));
+            assert_eq!(check(&mzml(indexed, NONE, F32)), Ok(()));
+        }
     }
 
+    // Regression: files written without "Write index" (root <mzML>) were read without any chromatogram data.
     #[test]
-    fn rejects_mzml_without_index() {
-        let err = check(&mzml(false, ZLIB, F32)).unwrap_err();
-        assert!(err.contains("not an indexed mzML"), "{err}");
+    fn reads_chromatograms_with_and_without_index() {
+        for indexed in [true, false] {
+            let path = std::env::temp_dir()
+                .join(format!("mrmhub-test-{}-{indexed}.mzML", std::process::id()));
+            std::fs::write(&path, mzml(indexed, NONE, F32)).unwrap();
+            let (ts, eics) = parse_mzml(&path);
+            std::fs::remove_file(&path).unwrap();
+            assert_eq!(ts, "2021-10-22T18:07:18Z");
+            assert_eq!(eics.len(), 1, "indexed = {indexed}");
+            assert_eq!((eics[0].q1, eics[0].q3), (500., 184.));
+            assert_eq!(eics[0].rt_i_l, [(1., 1.)], "indexed = {indexed}");
+        }
     }
 
     #[test]

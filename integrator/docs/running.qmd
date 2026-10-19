@@ -95,7 +95,7 @@ The input files are validated against the mzML files. Report files are written i
 - **`missing_files.txt`** — mzML files present in the data folder but not listed in the `run_order.csv`, or listed but absent from the mzML folder.
 - **`missing_compounds.txt`** — transitions listed in `feature_list.csv` that are absent from one or more mzML files, each marked as *kept* or *removed* (see [above](#setting-up-an-integrator-project)).
 - **`missing_details.txt`** — for each such transition, the specific samples in which it is absent.
-- **`mzml_format_errors.txt`** — mzML files in a format INTEGRATOR cannot read (not an indexed mzML, no chromatograms, or an unsupported compression such as MS-Numpress). Step 1 stops before any data are read and leaves the previous results in place; convert these files again ([mzML conversion](msconvert.qmd)).
+- **`mzml_format_errors.txt`** — mzML files that INTEGRATOR cannot read (no chromatograms, or an unsupported compression such as MS-Numpress). Step 1 stops before any data are read and leaves the previous results in place; convert these files again ([mzML conversion](msconvert.qmd)).
 
 
 ## Step 2 — Peak detection and RT-shift estimation {#step-2-peak-detection-and-rt-shift-estimation}
