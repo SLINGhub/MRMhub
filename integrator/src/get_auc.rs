@@ -4,10 +4,12 @@ use std::io;
 use std::io::{BufReader, BufWriter, Write};
 use std::path::Path;
 
-pub fn calc_auc() -> Result<(), Box<dyn Error>> {
+pub fn calc_auc(param_t: &crate::Param) -> Result<(), Box<dyn Error>> {
     let (s_trans, rt_vec_d) = read_rtmat()?;
     let t_to_istd = crate::common::get_trans_istd()?;
-    let area_all = areas(&s_trans, &rt_vec_d, &t_to_istd);
+    // with crop_window, step 1 stored only the cropped trace, so its ends are not the acquired trace ends
+    let cropped = param_t.crop_window.is_some();
+    let area_all = areas(&s_trans, &rt_vec_d, &t_to_istd, cropped);
     let mzml_fs = crate::common::get_mzml()?;
     write_long(&s_trans, &area_all, &t_to_istd, &mzml_fs)?;
     write_area(&s_trans, &area_all, &t_to_istd, &mzml_fs)?;
@@ -17,6 +19,7 @@ fn areas(
     s_trans: &[(String, String)],
     rt_vec_d: &[(f32, f32)],
     t_to_istd: &[crate::common::ValidT],
+    cropped: bool,
 ) -> Vec<Vec<RowDat>> {
     let mut trans_name_l: Vec<&str> = s_trans.iter().map(|x| x.0.as_str()).collect();
     trans_name_l.dedup();
@@ -37,7 +40,15 @@ fn areas(
             };
             let rt_i_all = write_trans(trans, rt_vec_d, (s_trans.len(), pos0, pos1), k).unwrap();
             (pos0..pos1).map(move |i| {
-                feat_data(i - pos0, &rt_i_all, &rt_vec_d[i..], s_trans.len(), k).unwrap()
+                feat_data(
+                    i - pos0,
+                    &rt_i_all,
+                    &rt_vec_d[i..],
+                    s_trans.len(),
+                    k,
+                    cropped,
+                )
+                .unwrap()
             })
         })
         .collect::<Vec<_>>()
@@ -140,6 +151,7 @@ fn write_long(
         "FWHM",
         "rt_int_start",
         "rt_int_end",
+        "trace_cut_pct",
     ])?;
     let blkstr = String::new();
     let (pos_string, neg_string) = ("+".to_owned(), "-".to_owned());
@@ -159,8 +171,8 @@ fn write_long(
         for (filedat, rowd) in mzml_fs.iter().zip(area_t.iter()) {
             // empty also where the transition is absent, even if RT_matrix.csv was edited to give it bounds
             let no_result = rowd.beg == rowd.end || rowd.absent;
-            let [r_rt, r_auc, r_height, r_fwhm, r_beg, r_end] = if no_result {
-                [&blkstr; 6]
+            let [r_rt, r_auc, r_height, r_fwhm, r_beg, r_end, r_cut] = if no_result {
+                [&blkstr; 7]
             } else {
                 [
                     &format!("{:.3}", rowd.rt),
@@ -169,6 +181,7 @@ fn write_long(
                     &rowd.fwhm.map_or(String::new(), |x| format!("{x:.3}")),
                     &format!("{:.3}", rowd.beg),
                     &format!("{:.3}", rowd.end),
+                    &rowd.trace_cut.map_or(String::new(), |x| format!("{x:.1}")),
                 ]
             };
             wtr.write_record([
@@ -192,6 +205,7 @@ fn write_long(
                 r_fwhm,
                 r_beg,
                 r_end,
+                r_cut,
             ])?;
             bufw.write_all(&rowd.rt.to_le_bytes())?;
             bufw.write_all(&rowd.auc.to_le_bytes())?;
@@ -260,6 +274,34 @@ struct RowDat {
     ce: f32,
     polarity: bool,
     absent: bool,
+    trace_cut: Option<f32>,
+}
+/// Signal left where the integration window reaches an end of the acquired trace, in % of the apex height, both
+/// above the 5th-percentile baseline of the whole trace (`p_bl`), rounded to 1 decimal. Negative for the first trace
+/// point, positive for the last; +/-100 means the apex is on that end. `None` if the window reaches no trace end or
+/// the signal there is not above baseline. If the window reaches both ends, the larger value is returned.
+fn trace_cut_pct(rt_i_l: &[(f32, f32)], (pos0, pos1): (usize, usize)) -> Option<f32> {
+    if pos0 >= pos1 {
+        return None;
+    }
+    let bl = p_bl(rt_i_l);
+    let apex = rt_i_l[pos0..pos1]
+        .iter()
+        .map(|x| x.1)
+        .fold(f32::MIN, f32::max);
+    if apex <= bl {
+        return None;
+    }
+    let pct = |i: f32| (1000. * (i - bl) / (apex - bl)).round() / 10.;
+    let left = (pos0 == 0).then(|| pct(rt_i_l[0].1)).filter(|&x| x > 0.);
+    let right = (pos1 == rt_i_l.len())
+        .then(|| pct(rt_i_l[pos1 - 1].1))
+        .filter(|&x| x > 0.);
+    match (left, right) {
+        (Some(l), Some(r)) if l > r => Some(-l),
+        (Some(l), None) => Some(-l),
+        (_, r) => r,
+    }
 }
 fn auc_flat(rt_i_l: &[(f32, f32)], bl: f32) -> f32 {
     rt_i_l
@@ -306,6 +348,7 @@ fn feat_data(
     rt_vec_d: &[(f32, f32)],
     tlen: usize,
     k: &crate::common::ValidT,
+    cropped: bool,
 ) -> io::Result<Vec<RowDat>> {
     fn pred_rt(rti: &[(f32, f32)], hm: f32) -> f32 {
         rti[0].0 + (hm - rti[0].1) * (rti[1].0 - rti[0].0) / (rti[1].1 - rti[0].1)
@@ -361,6 +404,11 @@ fn feat_data(
                 ce,
                 polarity,
                 absent: rt_i_l.is_empty(),
+                trace_cut: if cropped {
+                    None
+                } else {
+                    trace_cut_pct(rt_i_l, (pos0, pos1))
+                },
             })
         })
         .collect()
@@ -422,4 +470,60 @@ fn read_rtmat() -> Result<RtMat, Box<dyn Error>> {
         trans_col.into_iter().map(|x| (x.0, x.1)).collect(),
         rt_vec_d,
     ))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::trace_cut_pct;
+
+    // 40 points at baseline 0 with a peak `peak` placed at `at`; the 5th-percentile baseline is 0.
+    fn trace(at: usize, peak: &[f32]) -> Vec<(f32, f32)> {
+        let mut i = vec![0f32; 40];
+        i[at..at + peak.len()].copy_from_slice(peak);
+        (0u8..40).map(f32::from).zip(i).collect()
+    }
+
+    #[test]
+    fn left_cut_is_negative() {
+        let t = trace(0, &[50., 100., 50.]);
+        assert_eq!(trace_cut_pct(&t, (0, 5)), Some(-50.));
+    }
+
+    #[test]
+    fn right_cut_is_positive() {
+        let t = trace(37, &[50., 100., 25.]);
+        assert_eq!(trace_cut_pct(&t, (35, 40)), Some(25.));
+    }
+
+    #[test]
+    fn apex_on_trace_end_is_100() {
+        let t = trace(0, &[100., 50.]);
+        assert_eq!(trace_cut_pct(&t, (0, 4)), Some(-100.));
+        let t = trace(38, &[50., 100.]);
+        assert_eq!(trace_cut_pct(&t, (36, 40)), Some(100.));
+    }
+
+    #[test]
+    fn empty_if_window_reaches_no_trace_end() {
+        let t = trace(10, &[50., 100., 50.]);
+        assert_eq!(trace_cut_pct(&t, (8, 15)), None);
+    }
+
+    #[test]
+    fn empty_if_trace_end_at_baseline_or_no_peak() {
+        let t = trace(2, &[50., 100., 50.]);
+        assert_eq!(trace_cut_pct(&t, (0, 7)), None);
+        assert_eq!(trace_cut_pct(&t, (3, 3)), None);
+        assert_eq!(trace_cut_pct(&trace(0, &[]), (0, 40)), None);
+    }
+
+    #[test]
+    fn both_ends_cut_reports_larger_side() {
+        let mut t = trace(0, &[30.]);
+        t[39].1 = 60.;
+        t[20].1 = 100.;
+        assert_eq!(trace_cut_pct(&t, (0, 40)), Some(60.));
+        t[0].1 = 80.;
+        assert_eq!(trace_cut_pct(&t, (0, 40)), Some(-80.));
+    }
 }

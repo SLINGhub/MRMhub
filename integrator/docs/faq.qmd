@@ -190,6 +190,14 @@ the integration bounds, or set fixed per-feature borders as a last resort. Fully
 they are identical across samples. In **absolute** RT — as plotted in the PDFs — they move with each
 sample's RT shift, so they appear to wobble. See [Tuning Peak Integration](tuning.qmd).
 
+### Q: How can I find peaks that are cut off by the end of the MRM window? {#trace-cut}
+
+**A:** Use the `trace_cut_pct` column of `long.csv`. A value is given when the integration window
+reaches the start (negative) or end (positive) of the acquired trace, and states how much signal is
+left there, as a percentage of the apex height above baseline; ±100 means the apex lies on the trace
+end. Such areas are underestimated. Widen the scheduled MRM window in the acquisition method, or
+exclude affected values above a chosen threshold. See [Output Files](output-files.qmd#long.csv).
+
 ## Re-running after edits {#rerun}
 
 ### Q: A changed parameter has no effect on the integration {#no-effect}

@@ -107,7 +107,7 @@ The peak-detection and picking algorithm is run, producing a matrix of the detec
 
 In this step, detected peaks (as defined in `RT_matrix.csv`) are integrated. The integration results are written to the project folder:
 
-- **`long.csv`** — long format, one row per *sample × feature*: area, height, apex RT, and FWHM, with precursor and product *m/z* values, and acquisition timestamps.
+- **`long.csv`** — long format, one row per *sample × feature*: area, height, apex RT, FWHM, and truncation at the trace end (`trace_cut_pct`), with precursor and product *m/z* values, and acquisition timestamps.
 - **`quant_raw.csv`** — wide-format table with peak areas. Precursor and product *m/z* values and the expected RT (from `feature_list.csv`) are included in the first three rows.
 - **`misc/`** — binary result files, used in step 4 and by MRMhub-viz.
 
