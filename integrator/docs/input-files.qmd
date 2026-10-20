@@ -44,7 +44,7 @@ expected) stops the run with a message naming the setting.
 | `RT_shift` | `[x, y]` bound the RT drift relative to the reference samples: at most *x* min earlier and *y* min later than expected. The lower bound is **negative** (earlier), the upper positive (later). **`[0.0, 0.0]` disables RT-shift correction** — but a small non-zero window is recommended even for stable methods, as it improves consistent border finding. Default: `[-0.2, 0.2]`. |
 | `RT_shift_bound` | Maximum RT drift allowed between adjacent samples, in minutes. Default: `0.1`. |
 | `crop_window` | `[y, z]` crops the chromatogram to a window from *y* min before to *z* min after the listed RT, e.g. `[1.5, 2.0]`. Default: not set (no cropping). |
-| `sn_noise` | Noise estimate for the signal-to-noise ratio (`sn_ratio`) in `long.csv`: `"flank"`, `"robust"`, `"rms"` or `"p2p"` (see [Output Files](output-files.qmd#long.csv)). Default: `"flank"`. |
+| `sn_noise` | *Experimental.* Noise estimate for the signal-to-noise ratio (`sn_ratio`) in `long.csv`: `"flank"`, `"robust"`, `"rms"` or `"p2p"` (see [Output Files](output-files.qmd#long.csv)). Default: `"flank"`. |
 
 ::: {.callout-tip}
 ## How to choose and adjust these settings

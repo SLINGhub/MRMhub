@@ -10,7 +10,7 @@ pub fn calc_auc(param_t: &crate::Param) -> Result<(), Box<dyn Error>> {
     // with crop_window, step 1 stored only the cropped trace, so its ends are not the acquired trace ends
     let cropped = param_t.crop_window.is_some();
     let noise = param_t.sn_noise;
-    println!("S/N noise: {}", noise.name());
+    println!("S/N noise (experimental): {}", noise.name());
     let area_all = areas(&s_trans, &rt_vec_d, &t_to_istd, cropped, noise);
     let mzml_fs = crate::common::get_mzml()?;
     write_long(&s_trans, &area_all, &t_to_istd, &mzml_fs)?;

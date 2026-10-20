@@ -46,7 +46,7 @@ file order:
 | `rt_int_start` | Left integration border (min). |
 | `rt_int_end` | Right integration border (min). |
 | `trace_cut_pct` | Peak truncated by the end of the acquired MRM trace (see below); empty otherwise. |
-| `sn_ratio` | Signal-to-noise ratio: `height` divided by the noise of the baseline around the peak (see below). |
+| `sn_ratio` | *Experimental.* Signal-to-noise ratio: `height` divided by the noise of the baseline around the peak (see below). |
 | `noise_method` | Noise estimate used for `sn_ratio`: `flank`, `robust`, `rms` or `p2p` (set by `sn_noise` in `param.txt`; `robust` where `flank` had no free baseline). |
 
 Where no peak was found for a *sample × feature*, the measurement fields
@@ -77,6 +77,12 @@ left empty when `crop_window` is set, because the stored trace then ends at the 
 than at the end of the acquired trace. It is recomputed in step 3, so it follows manual changes to
 the integration borders in `RT_matrix.csv`.
 
+::: {.callout-caution}
+## Experimental
+The signal-to-noise ratio is experimental: the noise estimate and its defaults may change in future
+versions, so `sn_ratio` values from different versions may not be comparable.
+:::
+
 `sn_ratio` is the peak `height` divided by the noise of the baseline, estimated according to
 `sn_noise` in `param.txt`. Baseline points inside the integration window of any feature of the same
 transition are never used. In the following, FWHM is the peak's `FWHM`, or the integration-window
@@ -94,6 +100,11 @@ above its baseline. It is left empty when fewer than 10 data points remain in th
 short scheduled MRM window), and, with `crop_window`, only the stored part of the trace is used. Values from different methods, or from vendor software (which often smooths the trace first),
 are not interchangeable. `sn_ratio` is measured within each sample and describes peak quality; it is
 not a detection or quantification limit, which pharmacopoeias and ICH Q2(R2) base on blank samples.
+
+With `flank`, a small peak next to a much larger one, or on a baseline that undulates with an
+amplitude similar to the peak height, can receive an S/N of about 2 although it is genuine; its
+identity is better judged from the retention time and qualifier ratios. If the undulation is a
+reproducible peak, adding it as a feature removes it from the noise.
 
 An empty `sn_ratio` is read as `NA` in R, and `dplyr::filter(sn_ratio >= 10)` drops those rows as
 well; use `filter(is.na(sn_ratio) | sn_ratio >= 10)` to keep them.
