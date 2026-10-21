@@ -158,10 +158,17 @@ fn spawn_session(
     let read_tree = tree.clone();
     std::thread::spawn(move || {
         let mut buffer = [0u8; 8192];
-        while !read_stop.load(Ordering::Acquire) {
+        loop {
             match reader.read(&mut buffer) {
                 Ok(0) | Err(_) => break,
                 Ok(n) => {
+                    // Keep draining the PTY after Stop while bypassing the UI.
+                    // On macOS a killed writer can remain in exit until queued
+                    // terminal output is drained; stopping this reader first
+                    // would deadlock Session::drop while it reaps the shell.
+                    if read_stop.load(Ordering::Acquire) {
+                        continue;
+                    }
                     if !read_send(TerminalEvent::Data {
                         id,
                         data: buffer[..n].to_vec(),
@@ -173,7 +180,7 @@ fn spawn_session(
                                 let _ = child.kill();
                             }
                         }
-                        break;
+                        continue;
                     }
                     // Backpressure: only one chunk may await xterm's parser.
                     // This bounds memory even for endless output or hidden tabs.
@@ -403,7 +410,17 @@ mod tests {
         // No ACK: reader is deliberately blocked waiting for the UI.
         assert!(rx.recv_timeout(Duration::from_millis(150)).is_err());
         let child = session.child.clone();
-        drop(session);
+        // Exercise Stop on another thread so a shutdown deadlock fails with a
+        // bounded diagnostic instead of hanging the complete native test suite.
+        let (stopped_tx, stopped_rx) = mpsc::channel();
+        std::thread::spawn(move || {
+            drop(session);
+            let _ = stopped_tx.send(());
+        });
+        assert!(
+            stopped_rx.recv_timeout(Duration::from_secs(3)).is_ok(),
+            "Stopping the terminal blocked while draining backpressured output"
+        );
         let until = std::time::Instant::now() + Duration::from_secs(3);
         while std::time::Instant::now() < until {
             if child.lock().unwrap().try_wait().unwrap().is_some() {

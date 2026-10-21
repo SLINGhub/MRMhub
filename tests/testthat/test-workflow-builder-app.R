@@ -116,20 +116,18 @@ test_that("the app launches and drives the happy path (shinytest2, local only)",
   skip_if_not_installed("shinytest2")
   skip_if(app_dir() == "")
 
-  # Needs an installed mrmhub (the app subprocess does library(mrmhub)) plus a
-  # working chromote/Chrome. Skip cleanly rather than fail if either is absent.
-  app <- tryCatch(
-    shinytest2::AppDriver$new(
-      app_dir(),
-      name = "workflow-builder",
-      height = 820,
-      width = 1200
-    ),
-    error = function(e) NULL
-  )
-  skip_if(
-    is.null(app),
-    "could not launch the app (needs installed mrmhub + chromote)"
+  # Check browser availability before launching. Once those prerequisites are
+  # present, app startup errors must fail instead of silently skipping coverage.
+  # The app subprocess also needs the current mrmhub package installed.
+  skip_if_not_installed("chromote")
+  chrome <- chromote::find_chrome()
+  skip_if(is.null(chrome), "Chrome/Chromium is not installed")
+  skip_if(!file.exists(chrome), "Configured Chrome/Chromium path does not exist")
+  app <- shinytest2::AppDriver$new(
+    app_dir(),
+    name = "workflow-builder",
+    height = 820,
+    width = 1200
   )
   withr::defer(app$stop())
 

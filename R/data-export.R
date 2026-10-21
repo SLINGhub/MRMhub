@@ -678,6 +678,16 @@ save_metadata_msorganiser_template <- function(
 }
 
 
+dataset_fingerprint <- function(data) {
+  bytes <- serialize(data, NULL, version = 2, xdr = TRUE)
+  # Version-2 XDR serialization begins with X\n and three 32-bit integers:
+  # format version, writer's R version, minimum reader version (R Internals 1.8).
+  # R runtime versions are metadata, not experiment content; readRDS() already
+  # checks format compatibility before verification reaches this helper.
+  bytes[7L:14L] <- as.raw(0L)
+  rlang::hash(bytes)
+}
+
 #' Save a complete `MRMhubExperiment` as an RDS file
 #'
 #' @description
@@ -688,7 +698,7 @@ save_metadata_msorganiser_template <- function(
 #' with `readRDS()` to inspect, or load \pkg{mrmhub} to re-plot and re-process,
 #' without reconstructing the original file paths, input files or metadata versions.
 #'
-#' By default a content fingerprint of the object ([rlang::hash()]) is embedded in
+#' By default a content fingerprint of the serialized object is embedded in
 #' the saved file and printed. Record it (or compare printed fingerprints) to
 #' confirm that a reloaded file — or a copy shared with a colleague — holds the
 #' identical object. [read_dataset_rds()] reads the file back and verifies the
@@ -710,8 +720,8 @@ save_metadata_msorganiser_template <- function(
 #' @param path A character string with the file path. If it does not end in
 #'   `.rds`, the extension is appended automatically.
 #' @param hash A logical value. If `TRUE` (default), a content fingerprint of the
-#'   object is computed with [rlang::hash()], embedded in the saved file and
-#'   printed. The fingerprint is stored as an object attribute and is stripped
+#'   serialized content is computed with [rlang::hash()], embedded in the saved
+#'   file and printed. The fingerprint is stored as an object attribute and is stripped
 #'   again by [read_dataset_rds()], so it does not affect the reloaded object.
 #' @param compress A logical value passed to [saveRDS()]. If `TRUE` (the default),
 #'   the file is gzip-compressed (typically about ten times smaller); `FALSE`
@@ -756,13 +766,20 @@ save_dataset_rds <- function(
     )
   }
 
-  # Fingerprint the pristine object, then embed it so a later read can confirm
-  # the file holds the same object. Stored as a plain attribute (not a slot), so
+  # Remove fingerprints left by a bare readRDS() before saving again.
+  attr(data, "mrmhub_hash") <- NULL
+  attr(data, "mrmhub_hash_method") <- NULL
+  # Fingerprint the pristine serialized content, then embed it so a later read
+  # can confirm the file holds the same object. Stored as a plain attribute (not a slot), so
   # a bare `readRDS()` still yields a usable object and `read_dataset_rds()`
   # strips it back off.
-  h <- rlang::hash(data)
   if (hash) {
+    # Metadata can carry assertr closures. Hashing the live object includes
+    # process-specific environment identities, whereas R's serialization records
+    # their content. Version 2 also materializes ALTREP vectors consistently.
+    h <- dataset_fingerprint(data)
     attr(data, "mrmhub_hash") <- h
+    attr(data, "mrmhub_hash_method") <- "serialize-v2"
   }
 
   ensure_output_dir(path, create_dir)
@@ -839,17 +856,27 @@ read_dataset_rds <- function(path, verify = TRUE, show_status = FALSE) {
   # Strip the embedded fingerprint so the returned object matches what was saved,
   # then verify it against a fresh hash of that pristine object.
   stored <- attr(obj, "mrmhub_hash")
+  method <- attr(obj, "mrmhub_hash_method")
   attr(obj, "mrmhub_hash") <- NULL
+  attr(obj, "mrmhub_hash_method") <- NULL
 
   if (verify) {
     if (is.null(stored)) {
       mh_info("No embedded fingerprint found; skipping verification.")
-    } else if (identical(rlang::hash(obj), stored)) {
-      mh_success("Content fingerprint verified: {.val {stored}}.")
     } else {
-      mh_warn(
-        "Fingerprint mismatch \u2014 the file differs from the object it was saved from (stored {.val {stored}}, recomputed {.val {rlang::hash(obj)}})."
-      )
+      # Keep verifying older archives with the algorithm they were written with.
+      h <- if (identical(method, "serialize-v2")) {
+        dataset_fingerprint(obj)
+      } else {
+        rlang::hash(obj)
+      }
+      if (identical(h, stored)) {
+        mh_success("Content fingerprint verified: {.val {stored}}.")
+      } else {
+        mh_warn(
+          "Fingerprint mismatch \u2014 the file differs from the object it was saved from (stored {.val {stored}}, recomputed {.val {h}})."
+        )
+      }
     }
   }
 

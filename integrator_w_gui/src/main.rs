@@ -106,9 +106,52 @@ Enter number.
 // generates the chromatogram pdf files with the r plotting script
 fn gen_plots() -> Result<(), Box<dyn Error>> {
     use std::process::{Command, Stdio};
-    Command::new("Rscript")
-        .arg("MRMhub_plot.r")
-        .stdout(Stdio::inherit())
-        .output()?;
+    run_plot_command(
+        Command::new("Rscript")
+            .arg("MRMhub_plot.r")
+            .stdout(Stdio::inherit())
+            .stderr(Stdio::inherit()),
+    )
+}
+
+fn run_plot_command(command: &mut std::process::Command) -> Result<(), Box<dyn Error>> {
+    let status = command.status()?;
+    if !status.success() {
+        return Err(
+            format!("Report generation failed ({status}). See the R output for details.").into(),
+        );
+    }
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn exit_command(code: u8) -> std::process::Command {
+        #[cfg(unix)]
+        let mut command = {
+            let mut command = std::process::Command::new("/bin/sh");
+            command.arg("-c");
+            command
+        };
+        #[cfg(windows)]
+        let mut command = {
+            let mut command = std::process::Command::new("cmd.exe");
+            command.arg("/C");
+            command
+        };
+        command.arg(format!("exit {code}"));
+        command
+    }
+
+    #[test]
+    fn report_generation_propagates_the_child_exit_status() {
+        assert!(run_plot_command(&mut exit_command(0)).is_ok());
+        let error = run_plot_command(&mut exit_command(7))
+            .unwrap_err()
+            .to_string();
+        assert!(error.contains("Report generation failed"), "{error}");
+        assert!(error.contains('7'), "{error}");
+    }
 }

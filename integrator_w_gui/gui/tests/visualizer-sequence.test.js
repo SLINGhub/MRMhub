@@ -4,14 +4,11 @@ import {
   sequenceDisplay,
   sequencePlan,
 } from "../ui/visualizer/sequence.js";
+import { deepStrictEqual as equal, ok } from "node:assert/strict";
 
-function equal(a, b) {
-  if (JSON.stringify(a) !== JSON.stringify(b)) {
-    throw Error(`${JSON.stringify(a)} != ${JSON.stringify(b)}`);
-  }
-}
 function close(a, b) {
-  if (Math.abs(a - b) > 1e-8) throw Error(`${a} != ${b}`);
+  ok(Number.isFinite(a) && Number.isFinite(b), `Expected finite RT bounds: ${a}, ${b}`);
+  ok(Math.abs(a - b) <= 1e-8, `${a} != ${b}`);
 }
 
 Deno.test("All overview orders every batch chronologically while keeping curves and source positions separate", () => {

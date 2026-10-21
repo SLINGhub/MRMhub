@@ -84,7 +84,10 @@ archive <- run(list(action="run",operation="save_dataset_rds",checkpoint=checkpo
 stopifnot(identical(read_dataset_rds(file.path(archive$work,"archive.rds")),direct))
 restored <- run(list(action="run",operation="read_dataset_rds",title="ignored",analysisType="metabolomics",parameters=list(path=file.path(archive$work,"archive.rds"))))
 stopifnot(identical(readRDS(restored$checkpoint),direct))
-cat(paste(readLines(file.path(restored$work,"run.log")),collapse="\n"),"\n")
+archive_log <- readLines(file.path(restored$work,"run.log"), warn=FALSE)
+stopifnot(any(grepl("Content fingerprint verified",archive_log,fixed=TRUE)),
+          !any(grepl("Fingerprint mismatch",archive_log,fixed=TRUE)))
+cat(paste(archive_log,collapse="\n"),"\n")
 qc <- run(list(action="run",operation="save_feature_qc_metrics",checkpoint=checkpoint,parameters=list()))
 stopifnot(file.exists(file.path(qc$work,"feature-qc.csv")))
 cat("PASS Dataset4 calibration, plots, byte-identical CSV, fingerprinted archive/reopen and QC export\n")

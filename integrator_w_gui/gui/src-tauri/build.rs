@@ -20,6 +20,9 @@ fn main() {
     let root = Path::new("../../..").canonicalize().unwrap();
     let mut files = vec!["DESCRIPTION".into(), "NAMESPACE".into()];
     for folder in ["R", "data", "inst/extdata"] {
+        // File-only watches miss newly added package source/data files. Watch
+        // each collected directory as well so Cargo rebuilds the embedded copy.
+        println!("cargo:rerun-if-changed={}", root.join(folder).display());
         collect(&root, &root.join(folder), &mut files);
     }
     files.sort();
