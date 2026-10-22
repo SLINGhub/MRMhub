@@ -10,11 +10,10 @@ analysis project — a collaborator can open it with
 mrmhub to re-plot and re-process, without reconstructing the original
 file paths, input files or metadata versions.
 
-By default a content fingerprint of the object
-([`rlang::hash()`](https://rlang.r-lib.org/reference/hash.html)) is
-embedded in the saved file and printed. Record it (or compare printed
-fingerprints) to confirm that a reloaded file — or a copy shared with a
-colleague — holds the identical object.
+By default a content fingerprint of the serialized object is embedded in
+the saved file and printed. Record it (or compare printed fingerprints)
+to confirm that a reloaded file — or a copy shared with a colleague —
+holds the identical object.
 [`read_dataset_rds()`](https://slinghub.github.io/MRMhub/quant/reference/read_dataset_rds.md)
 reads the file back and verifies the fingerprint.
 
@@ -47,7 +46,7 @@ save_dataset_rds(
 - hash:
 
   A logical value. If `TRUE` (default), a content fingerprint of the
-  object is computed with
+  serialized content is computed with
   [`rlang::hash()`](https://rlang.r-lib.org/reference/hash.html),
   embedded in the saved file and printed. The fingerprint is stored as
   an object attribute and is stripped again by
@@ -107,6 +106,6 @@ mexp <- data_load_example()
 #> ✔ Loaded example dataset 1: 499 analyses and 29 features.
 path <- file.path(tempdir(), "example_mexp.rds")
 save_dataset_rds(mexp, path)
-#> ✔ MRMhubExperiment saved to /tmp/RtmpXQQzz1/example_mexp.rds.
-#> Content fingerprint: "4e33c5947876bf882b8e35857ad5bc97"
+#> ✔ MRMhubExperiment saved to /tmp/Rtmpu4lb5c/example_mexp.rds.
+#> Content fingerprint: "470c2db1e19f1dd96dcf665e46077c2f"
 ```
