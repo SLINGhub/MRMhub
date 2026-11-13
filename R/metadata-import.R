@@ -350,8 +350,12 @@ get_assert_summary_table <- function(
     mutate(
       message = str_replace_all(unlist(.data$message)[1], fixed('"'), "'")
     ) |>
+    # Only assert() messages name a column; verify() falls back to TargetField
     mutate(
-      Field = paste0(str_extract(unlist(.data$message), "(?<=\\').+?(?=\\')"))
+      Field = paste0(str_extract(
+        unlist(.data$message),
+        "(?<=^Column ').+?(?=')"
+      ))
     ) |>
     tidyr::separate(
       col = "description",
@@ -510,6 +514,29 @@ print_assertion_summary <- function(
 
 #TODO: align with metadata assertions and when it is check_integrity called
 assert_metadata <- function(
+  data = NULL,
+  metadata,
+  ignore_warnings,
+  excl_unmatched_analyses
+) {
+  # assertr >= 3.1 warns when a selection matches no columns, which is expected
+  # here: optional columns are selected via any_of()/where()
+  withCallingHandlers(
+    assert_metadata_tables(
+      data,
+      metadata,
+      ignore_warnings,
+      excl_unmatched_analyses
+    ),
+    warning = function(w) {
+      if (grepl("matched no columns", conditionMessage(w), fixed = TRUE)) {
+        invokeRestart("muffleWarning")
+      }
+    }
+  )
+}
+
+assert_metadata_tables <- function(
   data = NULL,
   metadata,
   ignore_warnings,
