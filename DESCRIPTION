@@ -71,6 +71,7 @@ Suggests:
     shiny,
     bslib,
     shinytest2,
+    chromote,
     rmzTabM,
     DT,
     SummarizedExperiment,
