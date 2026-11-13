@@ -1,5 +1,9 @@
 # mrmhub (development version)
 
+## Bug fixes
+
+- LoD and LoQ of weighted calibration curves (`1/x`, `1/x^2`, `1/sqrt(x)`) were wrong: they were based on the weighted residual standard error, which is not in response units, so they did not scale with the concentration unit and were overestimated for typical `1/x^2` fits. Weighted fits now use the standard error of the intercept by default (new `lod_sigma = "auto"` in `calc_calibration_results()` and `quantify_by_calibration()`). LoD/LoQ of unweighted fits and all fitted coefficients and concentrations are unchanged.
+
 # mrmhub 1.0.1
 
 - Drift correction and `correct_batch_serrf()` no longer require the optional packages mirai and carrier. They run sequentially unless parallel workers are set up with `mirai::daemons()`.

@@ -13,7 +13,7 @@ calc_calibration_results(
   fit_weighting,
   ignore_missing_annotation = FALSE,
   include_fit_object = FALSE,
-  lod_sigma = c("residual", "intercept"),
+  lod_sigma = c("auto", "residual", "intercept"),
   ignore_failed_calibration = FALSE
 )
 }
@@ -53,10 +53,10 @@ calibration curve data is missing for any feature.}
 regression fit objects for each feature in the \code{metrics_calibration} table.}
 
 \item{lod_sigma}{A character string selecting the response standard deviation
-(sigma) used in the ICH Q2 LoD/LoQ formulas. Must be one of \code{"residual"}
-(the residual standard error of the regression, Sy/x; the default) or
-\code{"intercept"} (the standard error of the intercept). No averaging of the two
-is performed.}
+(sigma) used in the ICH Q2 LoD/LoQ formulas. Must be one of \code{"auto"} (the
+default: residual standard error, Sy/x, for unweighted fits and intercept
+standard error for weighted fits), \code{"residual"} (Sy/x; LoD/LoQ are \code{NA} for
+weighted fits) or \code{"intercept"} (intercept standard error for all fits).}
 
 \item{ignore_failed_calibration}{If \code{FALSE}, an error is raised if all
 quantifier calibration curve fits fail. If \code{TRUE}, a warning is shown
@@ -100,12 +100,28 @@ linear responses only; using the low-concentration tangent slope for a
 quadratic fit is an approximation beyond the guideline (adequate when the
 curvature near zero is small).
 
-The response standard deviation \code{sigma} is selected via \code{lod_sigma}, following
-the ICH-acceptable choices: \code{"residual"} uses the residual standard error of
-the regression (Sy/x; the default and prior behaviour), while \code{"intercept"}
-uses the standard error of the intercept. The \code{sigma} column reported in
-\code{metrics_calibration} is always the residual standard error, independent of
-this choice.
+The response standard deviation \code{sigma} is selected via \code{lod_sigma}, from the
+two ICH Q2 choices: the residual standard error of the regression (Sy/x) or
+the standard error of the intercept. Both must be in response units for
+\code{sigma / S} to be a concentration. For a \strong{weighted} fit (\code{1/x}, \code{1/x^2},
+\code{1/sqrt(x)}) the residual standard error is computed from weighted residuals,
+so its units depend on the weights (e.g. response / concentration for
+\code{1/x^2}), and LoD/LoQ derived from it do not scale with the concentration
+unit. The intercept standard error is in response units for any weighting.
+Hence:
+\itemize{
+\item \code{"auto"} (default): residual standard error for unweighted fits, intercept
+standard error for weighted fits (reported once per call).
+\item \code{"residual"}: residual standard error; LoD/LoQ are \code{NA} for weighted fits,
+with a warning.
+\item \code{"intercept"}: intercept standard error for all fits.
+}
+
+A line through the origin (single linear calibrator) has no intercept and
+no residual degrees of freedom, so its LoD/LoQ are \code{NA}. The \code{sigma} column
+in \code{metrics_calibration} is always the residual standard error, independent
+of \code{lod_sigma}; for weighted fits it is the weighted residual standard error,
+which has no simple units.
 
 The results of the regression and the calculated LoD and LoQ values are
 stored in the \code{metrics_calibration} table of the returned \code{MRMhubExperiment}
