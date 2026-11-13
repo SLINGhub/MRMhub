@@ -7,36 +7,41 @@
       name="description"
       content="graphical interface for mrmhub integrator peak detection and integration"
     />
-    <title>MRMhub Integrator GUI [v1.2.2]</title>
+    <title>MRMhub GUI</title>
     <script>
-      try {
-        document.documentElement.dataset.theme =
-          localStorage.getItem("mrmhub-theme") || "light";
-      } catch {
-        document.documentElement.dataset.theme = "light";
-      }
+    try {
+      document.documentElement.dataset.theme =
+        localStorage.getItem("mrmhub-theme") || "light";
+    } catch {
+      document.documentElement.dataset.theme = "light";
+    }
     </script>
-    <link rel="stylesheet" href="styles.css?v=1.2.2" />
-    <script src="app.js?v=1.2.2" defer></script>
+    <link rel="stylesheet" href="styles.css?v=1.2.5" />
+    <link rel="stylesheet" href="workspace.css?v=1.2.5-sequence-all" />
+    <link rel="stylesheet" href="quant/quant.css?v=1.2.4-storage" />
+    <link rel="stylesheet" href="quant/terminal.bundle.css" />
+    <script src="app.js?v=1.2.5" defer></script>
   </head>
   <body>
     <div class="app-shell">
       <header class="app-header">
         <div class="brand-cluster">
-          <span class="status-dot" aria-label="application ready"></span>
-          <a class="brand" href="#" aria-label="mrmhub integrator home">
+          <button class="brand" id="brand-home" type="button"
+            aria-label="MRMhub workflow home">
             <span class="brand-mark" aria-hidden="true">
               <img src="assets/mrmhub-logo.png" alt="" />
             </span>
             <span>
               <strong>MRMhub</strong>
-              <small>Integrator <span class="brand-gui">GUI</span></small>
+              <small><span class="brand-gui">GUI</span> <span class="brand-version">[v1.2.5]</span></small>
             </span>
-          </a>
+          </button>
           <label class="gui-scale-control" title="scale the entire application">
-            <span>GUI scale</span>
+            <span>Scale</span>
             <select id="gui-scale" aria-label="application scale">
+              <option value="90">90%</option>
               <option value="100">100%</option>
+              <option value="110">110%</option>
               <option value="125">125%</option>
               <option value="150">150%</option>
               <option value="175">175%</option>
@@ -52,7 +57,7 @@
             type="button"
             aria-current="page"
           >
-            Integrator
+            Workflow
           </button>
           <button
             class="nav-item"
@@ -70,6 +75,8 @@
           >
             Scratchpad
           </button>
+          <button class="nav-item" id="quant-tab" type="button"
+            title="quantitation, quality control, and reporting">QUANT</button>
         </nav>
 
         <div class="header-actions">
@@ -100,27 +107,25 @@
             aria-label="enable night mode"
             title="enable night mode"
           >
-            <svg class="theme-icon moon-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <svg class="theme-icon moon-icon" viewBox="0 0 24 24"
+              aria-hidden="true">
               <path d="M20 15.2A8.5 8.5 0 0 1 8.8 4a8.5 8.5 0 1 0 11.2 11.2Z" />
             </svg>
-            <svg class="theme-icon sun-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <svg class="theme-icon sun-icon" viewBox="0 0 24 24"
+              aria-hidden="true">
               <circle cx="12" cy="12" r="3.5" />
-              <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+              <path
+                d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
             </svg>
           </button>
         </div>
       </header>
 
-  <main id="integrator-view">
+      <main id="quant-view" class="hidden" aria-label="MRMhub QUANT"></main>
+      <main id="integrator-view">
         <section class="project-panel" aria-labelledby="project-title">
-          <div class="project-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24">
-              <path d="M3 6.5h6l2 2h10v9.5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z" />
-              <path d="M3 9h18" />
-            </svg>
-          </div>
           <div class="project-copy">
-            <span class="eyebrow">dataset</span>
+            <span class="eyebrow">active dataset</span>
             <h1 id="project-title">Choose a dataset folder</h1>
             <p id="project-path">
               Select the folder containing param.txt and your mzML data.
@@ -137,24 +142,14 @@
 
         <section class="project-facts" aria-label="project summary">
           <article class="fact">
-            <span class="fact-icon blue" aria-hidden="true">
-              <svg viewBox="0 0 24 24">
-                <path d="M6 3h12v18H6zM9 7h6M9 11h6M9 15h4" />
-              </svg>
-            </span>
             <div>
               <span>mzML files</span>
               <strong id="sample-count">-</strong>
             </div>
           </article>
           <article class="fact">
-            <span class="fact-icon orange" aria-hidden="true">
-              <svg viewBox="0 0 24 24">
-                <path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5" />
-              </svg>
-            </span>
             <div>
-              <span>detected transition list</span>
+              <span>transition list</span>
               <strong id="transition-file">-</strong>
             </div>
           </article>
@@ -175,8 +170,12 @@
           </div>
         </section>
 
-        <section class="workflow-section" aria-label="integration steps">
-          <div class="workflow-grid">
+        <section class="workflow-section" aria-labelledby="pipeline-title">
+          <div class="section-heading">
+            <h2 id="pipeline-title">Processing workflow</h2>
+            <p>Run steps in order. Existing outputs are detected automatically.</p>
+          </div>
+          <div class="workflow-grid primary-grid">
             <article
               class="step-card"
               data-step="1"
@@ -188,14 +187,8 @@
                 <span class="step-number">Step 1</span>
                 <span class="step-status waiting">waiting</span>
               </div>
-              <span class="step-icon validation" aria-hidden="true">
-                <svg viewBox="0 0 24 24">
-                  <path d="M7 3h10v4H7zM5 5H3v16h18V5h-2" />
-                  <path d="m8 14 2.5 2.5L16 11" />
-                </svg>
-              </span>
               <h3>Validate data</h3>
-              <p>-</p>
+              <p>Check input files and transitions, then extract chromatograms for peak detection.</p>
               <div
                 class="step-progress hidden indeterminate"
                 data-step-progress
@@ -229,13 +222,8 @@
                 <span class="step-number">Step 2</span>
                 <span class="step-status waiting">waiting</span>
               </div>
-              <span class="step-icon detection" aria-hidden="true">
-                <svg viewBox="0 0 24 24">
-                  <path d="M3 18h18M4 15l4-7 4 5 3-9 5 11" />
-                </svg>
-              </span>
               <h3>Detect peaks</h3>
-              <p>-</p>
+              <p>Detect peaks and estimate retention-time shifts to create the RT matrix.</p>
               <div
                 class="step-progress hidden indeterminate"
                 data-step-progress
@@ -269,14 +257,8 @@
                 <span class="step-number">Step 3</span>
                 <span class="step-status waiting">waiting</span>
               </div>
-              <span class="step-icon integration" aria-hidden="true">
-                <svg viewBox="0 0 24 24">
-                  <path d="M4 19V5M4 19h16" />
-                  <path d="m6 16 3-4 3 2 4-7 3 4" />
-                </svg>
-              </span>
               <h3>Integrate peaks</h3>
-              <p>-</p>
+              <p>Calculate peak areas using the RT matrix’s integration bounds and export the results.</p>
               <div
                 class="step-progress hidden indeterminate"
                 data-step-progress
@@ -298,9 +280,17 @@
                 </span>
               </div>
             </article>
+          </div>
+        </section>
 
+        <section class="workflow-section" aria-labelledby="reports-title">
+          <div class="section-heading">
+            <h2 id="reports-title">Reports</h2>
+            <p>Optional · chromatogram PDFs for review</p>
+          </div>
+          <div class="workflow-grid reports-grid">
             <article
-              class="step-card optional"
+              class="step-card optional compact"
               data-step="4"
               role="button"
               tabindex="0"
@@ -310,13 +300,10 @@
                 <span class="step-number">Step 4</span>
                 <span class="step-status optional-label">optional</span>
               </div>
-              <span class="step-icon plotting" aria-hidden="true">
-                <svg viewBox="0 0 24 24">
-                  <path d="M5 3h14v18H5zM8 16l3-4 2 2 3-5" />
-                </svg>
-              </span>
-              <h3>Generate reports</h3>
-              <p>-</p>
+              <div class="compact-copy">
+                <h3>Generate reports</h3>
+                <p>Create PDF chromatogram reports for each transition to review peak integration.</p>
+              </div>
               <div
                 class="step-progress hidden indeterminate"
                 data-step-progress
@@ -344,8 +331,7 @@
         <section class="activity-panel" aria-labelledby="activity-title">
           <div class="activity-header">
             <div>
-              <span class="activity-pulse" aria-hidden="true"></span>
-              <h2 id="activity-title">Activity</h2>
+              <h2 id="activity-title">MRMhub console</h2>
             </div>
             <button id="clear-activity" type="button">Clear</button>
           </div>
@@ -358,281 +344,168 @@
             <p class="empty-log">Select a project to begin.</p>
           </div>
         </section>
-
-        <section class="visualizer-panel" aria-labelledby="visualizer-title">
-          <div>
-            <span class="visualizer-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24">
-                <path d="M4 19V5M4 19h16" />
-                <path d="m7 15 3-5 3 3 4-7" />
-              </svg>
-            </span>
-            <div>
-              <span class="eyebrow">available now</span>
-              <h2 id="visualizer-title">Interactive visualizer</h2>
-              <p>-</p>
-            </div>
-          </div>
-          <button
-            class="visualizer-button"
-            id="open-visualizer"
-            type="button"
-            title="open the interactive visualizer"
-          >
-            Open visualizer
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="m9 6 6 6-6 6" />
-            </svg>
-          </button>
-        </section>
-
-        <section class="visualizer-panel scratchpad-panel-link" aria-labelledby="scratchpad-link-title">
-          <div>
-            <span class="visualizer-icon orange" aria-hidden="true">
-              <svg viewBox="0 0 24 24">
-                <path d="M5 4h14v16H5z" />
-                <path d="M8 8h8M8 12h8M8 16h5" />
-              </svg>
-            </span>
-            <div>
-              <span class="eyebrow">session notes</span>
-              <h2 id="scratchpad-link-title">Scratchpad</h2>
-              <p>-</p>
-            </div>
-          </div>
-          <button
-            class="visualizer-button"
-            id="open-scratchpad"
-            type="button"
-            title="open the scratchpad"
-          >
-            Open scratchpad
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="m9 6 6 6-6 6" />
-            </svg>
-          </button>
-        </section>
       </main>
 
       <main class="visualizer-workspace hidden" id="visualizer-view">
-        <section class="visualizer-toolbar" aria-labelledby="visualizer-heading">
-          <div class="visualizer-heading-row">
+        <section class="visualizer-toolbar" aria-label="Chromatogram workspace">
+          <aside class="visualizer-sidebar" id="visualizer-sidebar"
+            aria-labelledby="visualizer-heading">
             <div class="visualizer-heading">
-              <span class="eyebrow">selected dataset</span>
-              <h1 id="visualizer-heading">Interactive visualizer</h1>
-              <p id="visualizer-dataset">Select a dataset in the Integrator first.</p>
+              <h1 id="visualizer-heading">Browse results</h1>
+              <p
+                id="visualizer-dataset">Select a processed dataset in Workflow first.</p>
             </div>
-            <button
-              class="icon-button visualizer-selector-expand"
-              id="visualizer-selector-expand"
-              type="button"
-              aria-expanded="true"
-              aria-label="collapse graph selector"
-              title="collapse graph selector"
-            >
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="m6 15 6-6 6 6" />
-              </svg>
-            </button>
-          </div>
-
-          <div class="visualizer-controls">
-            <label class="visualizer-field transition-field">
-              <span>Transition or reference</span>
-              <input
-                id="visualizer-transition-search"
-                class="transition-search"
-                type="text"
-                placeholder="Search transitions or references..."
-                aria-label="search transitions or references"
-                autocomplete="off"
-                autocapitalize="off"
-                spellcheck="false"
-              />
-              <select id="visualizer-transition" size="5">
-                <option value="">Select a transition</option>
-              </select>
-            </label>
-
-            <div class="visualizer-sizing">
-              <label class="visualizer-field">
-                <span>Graph width</span>
-                <input
-                  id="visualizer-width"
-                  type="number"
-                  min="240"
-                  max="1600"
-                  step="20"
-                  value="400"
-                />
-              </label>
-              <label class="visualizer-field">
-                <span>Graph height</span>
-                <input
-                  id="visualizer-height"
-                  type="number"
-                  min="100"
-                  max="1000"
-                  step="20"
-                  value="160"
-                />
-              </label>
+            <div class="visualizer-controls">
+              <div class="visualizer-field transition-field">
+                <span>References &amp; transitions</span>
+                <input id="visualizer-transition-search"
+                  class="transition-search" type="text"
+                  placeholder="Search transitions or references..."
+                  aria-label="search transitions or references"
+                  autocomplete="off" autocapitalize="off" spellcheck="false" />
+                <select id="visualizer-transition" size="10"
+                  aria-label="reference sample or transition"><option value="">Select a transition</option></select>
+              </div>
+              <section class="visualizer-control-stack"
+                aria-labelledby="plot-settings-title">
+                <h2 class="control-heading"
+                  id="plot-settings-title">Plot settings</h2>
+                <div class="visualizer-sizing"
+                  aria-label="chromatogram dimensions">
+                  <label
+                    class="visualizer-field"><span>Width (px)</span><input id="visualizer-width" type="number" min="240" max="1600" step="20" value="400" /></label>
+                  <span aria-hidden="true">×</span>
+                  <label
+                    class="visualizer-field"><span>Height (px)</span><input id="visualizer-height" type="number" min="100" max="1000" step="20" value="160" /></label>
+                </div>
+                <section class="visualizer-matrices"
+                  aria-label="Saved integrations">
+                  <label
+                    class="visualizer-field backups-field"><span id="matrix-settings-title">Saved integration</span>
+                    <select id="visualizer-backups" aria-label="RT matrix version" title="restore a saved RT_matrix.csv version and re-integrate"><option value="">No saved versions yet</option></select>
+                  </label>
+                  <div class="visualizer-backup-actions">
+                    <button
+                      class="icon-button visualizer-delete"
+                      id="visualizer-delete-backup"
+                      type="button"
+                      disabled
+                      aria-label="delete selected RT_matrix backup"
+                      title="delete selected RT_matrix backup"
+                    >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 7h16M10 11v6M14 11v6M6 7l1 14h10l1-14M9 7V4h6v3" />
+                </svg></button>
+                    <button
+                      class="icon-button visualizer-rename"
+                      id="visualizer-rename-backup"
+                      type="button"
+                      disabled
+                      aria-label="rename selected RT_matrix backup label"
+                      title="rename selected RT_matrix backup label"
+                    >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 20h5l10-10a2.8 2.8 0 0 0-4-4L5 16zM13 7l4 4" />
+                </svg></button>
+                    <button
+                      class="icon-button visualizer-import"
+                      id="visualizer-import-backup"
+                      type="button"
+                      aria-label="import RT_matrix CSV backup"
+                      title="import RT_matrix CSV backup"
+                    >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 3v11m-4-4 4 4 4-4M5 17v3h14v-3" />
+                </svg></button>
+                    <button
+                      class="icon-button visualizer-delete-all visualizer-labelled-action"
+                      id="visualizer-delete-all-backups"
+                      type="button"
+                      disabled
+                      aria-label="delete all user-created RT_matrix backups for this dataset"
+                      title="delete all user-created RT_matrix backups for this dataset"
+                    >
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path
+                          d="M4 7h16M10 11v6M14 11v6M6 7l1 14h10l1-14M9 7V4h6v3" />
+                      </svg>
+                      <span>Delete all</span>
+                    </button>
+                  </div>
+                </section>
+              </section>
+              <div class="visualizer-range hidden" id="visualizer-range">
+                <label
+                  class="visualizer-field"><span>RT start</span><input id="visualizer-rt-start" type="number" min="0" max="999" step="0.1" value="0" disabled /></label>
+                <label
+                  class="visualizer-field"><span>RT end</span><input id="visualizer-rt-end" type="number" min="0" max="999" step="0.1" value="0" disabled /></label>
+                <label
+                  class="visualizer-field"><span>Max intensity</span><input id="visualizer-intensity" type="number" min="0" max="999999999" step="1" value="0" disabled /></label>
+              </div>
+            </div>
+            <div class="visualizer-preferences">
+              <label
+                class="visualizer-shortcut-toggle sample-type-color-toggle"><input id="visualizer-color-sample-types" type="checkbox" /><span>Color sample types</span></label>
+              <label
+                title="Up/Down selects, Enter renders, Left refreshes, and Right saves edited bounds"
+                class="visualizer-shortcut-toggle"><input id="visualizer-shortcuts-global" type="checkbox" checked /><span>Arrow shortcuts when minimized</span></label>
+            </div>
+          </aside>
+          <div class="visualizer-main">
+            <header class="visualizer-actionbar">
               <button
-                class="icon-button visualizer-save"
-                id="visualizer-save"
+                class="icon-button visualizer-selector-expand"
+                id="visualizer-selector-expand"
                 type="button"
-                disabled
-                aria-label="save dragged integration bounds to RT_matrix.csv"
-                title="save dragged integration bounds to RT_matrix.csv"
+                aria-expanded="true" aria-controls="visualizer-sidebar"
+                aria-label="collapse graph selector"
+                title="collapse graph selector"
               >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="3" y="4" width="18" height="16" rx="2" /><path d="M9 4v16" />
+              </svg>
+            <span>Browse</span></button>
+              <div class="visualizer-actions">
+                <button
+                  class="icon-button visualizer-refresh"
+                  id="visualizer-refresh"
+                  type="button"
+                  aria-label="reload selected graphs and discard unsaved drags"
+                  title="reload selected graphs and discard unsaved drags"
+                >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M20 11a8 8 0 1 0-2.34 5.66M20 5v6h-6" />
+                </svg></button>
+                <button
+                  class="icon-button visualizer-save"
+                  id="visualizer-save"
+                  type="button"
+                  disabled
+                  aria-label="save dragged integration bounds to RT_matrix.csv"
+                  title="save dragged integration bounds to RT_matrix.csv"
+                >
                 <svg viewBox="0 0 24 24" aria-hidden="true">
                   <path
                     d="M5 4h11l3 3v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1Z"
                   />
                   <path d="M8 4v5h6V4M8 20v-6h8v6" />
                 </svg>
-              </button>
-              <button
-                class="icon-button visualizer-override visualizer-labelled-action"
-                id="visualizer-override-backup"
-                type="button"
-                disabled
-                aria-label="save dragged integration bounds over the selected RT_matrix backup"
-                title="override the selected RT_matrix backup with these dragged bounds"
-              >
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M5 4h11l3 3v13H5zM8 4v5h6V4M8 20v-6h8v6" />
-                </svg>
-                <span>Override</span>
-              </button>
-              <button
-                class="icon-button visualizer-refresh"
-                id="visualizer-refresh"
-                type="button"
-                aria-label="reload selected graphs and discard unsaved drags"
-                title="reload selected graphs and discard unsaved drags"
-              >
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M20 11a8 8 0 1 0-2.34 5.66M20 5v6h-6" />
-                </svg>
-              </button>
-              <button
-                class="icon-button visualizer-delete"
-                id="visualizer-delete-backup"
-                type="button"
-                disabled
-                aria-label="delete selected RT_matrix backup"
-                title="delete selected RT_matrix backup"
-              >
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M4 7h16M10 11v6M14 11v6M6 7l1 14h10l1-14M9 7V4h6v3" />
-                </svg>
-              </button>
-              <button
-                class="icon-button visualizer-delete-all visualizer-labelled-action"
-                id="visualizer-delete-all-backups"
-                type="button"
-                disabled
-                aria-label="delete all user-created RT_matrix backups for this dataset"
-                title="delete all user-created RT_matrix backups for this dataset"
-              >
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M4 7h16M10 11v6M14 11v6M6 7l1 14h10l1-14M9 7V4h6v3" />
-                </svg>
-                <span>Delete all</span>
-              </button>
-              <button
-                class="icon-button visualizer-rename"
-                id="visualizer-rename-backup"
-                type="button"
-                disabled
-                aria-label="rename selected RT_matrix backup label"
-                title="rename selected RT_matrix backup label"
-              >
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M4 20h5l10-10a2.8 2.8 0 0 0-4-4L5 16zM13 7l4 4" />
-                </svg>
-              </button>
-              <button
-                class="icon-button visualizer-import"
-                id="visualizer-import-backup"
-                type="button"
-                aria-label="import RT_matrix CSV backup"
-                title="import RT_matrix CSV backup"
-              >
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M12 3v11m-4-4 4 4 4-4M5 17v3h14v-3" />
-                </svg>
-              </button>
-            </div>
-
-            <label class="visualizer-field backups-field">
-              <span>RT_matrix version</span>
-              <select
-                id="visualizer-backups"
-                title="restore a saved RT_matrix.csv version and re-integrate"
-              >
-                <option value="">No saved versions yet</option>
-              </select>
-            </label>
-          </div>
-
-          <div class="visualizer-range hidden" id="visualizer-range">
-            <label class="visualizer-field">
-              <span>RT start</span>
-              <input id="visualizer-rt-start" type="number" min="0" max="999" step="0.1" value="0" disabled />
-            </label>
-            <label class="visualizer-field">
-              <span>RT end</span>
-              <input id="visualizer-rt-end" type="number" min="0" max="999" step="0.1" value="0" disabled />
-            </label>
-            <label class="visualizer-field">
-              <span>Maximum intensity</span>
-              <input
-                id="visualizer-intensity"
-                type="number"
-                min="0"
-                max="999999999"
-                step="1"
-                value="0"
-                disabled
-              />
-            </label>
-          </div>
-
-          <div class="visualizer-selection">
-            <strong id="visualizer-analyte">Choose a transition to render its graphs.</strong>
-            <span id="visualizer-status" role="status" aria-live="polite">Ready</span>
-            <button
-              class="visualizer-cancel-render hidden"
-              id="visualizer-cancel-render"
-              type="button"
-              aria-label="cancel remaining graph rendering"
-              title="cancel remaining graph rendering"
-            >
-              ×
-            </button>
-            <label class="visualizer-shortcut-toggle">
-              <input id="visualizer-shortcuts-global" type="checkbox" checked />
-              <span>Arrow shortcuts when minimized</span>
-            </label>
-            <label class="visualizer-shortcut-toggle sample-type-color-toggle">
-              <input id="visualizer-color-sample-types" type="checkbox" />
-              <span>Color sample types</span>
-            </label>
-            <label
-              class="visualizer-shortcut-toggle"
-              title="after applying the averaged reference limits, cosine-match each sample and shift qualifying windows"
-            >
-              <input id="visualizer-align-shared" type="checkbox" checked />
-              <span>Auto-align shared RTs</span>
-            </label>
-            <span
-              class="visualizer-export-wrap"
-              id="visualizer-export-wrap"
-              title="save current reference to export .pngs"
-            >
-              <button
+              <span>Save &amp; integrate</span></button>
+                <button
+                  class="icon-button visualizer-override visualizer-labelled-action"
+                  id="visualizer-override-backup"
+                  type="button"
+                  disabled
+                  aria-label="save dragged integration bounds over the selected RT_matrix backup"
+                  title="override the selected RT_matrix backup with these dragged bounds"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M5 4h11l3 3v13H5zM8 4v5h6V4M8 20v-6h8v6" />
+                  </svg>
+                  <span>Override</span>
+                </button>
+                <span class="visualizer-export-wrap" id="visualizer-export-wrap"
+                  title="save current reference to export .pngs"><button
                 class="secondary-button visualizer-export-pngs"
                 id="visualizer-export-pngs"
                 type="button"
@@ -640,54 +513,100 @@
                 title="save current reference to export .pngs"
               >
                 Export PNGs
-              </button>
-            </span>
-            <button
-              class="secondary-button visualizer-apply-shared"
-              id="visualizer-apply-shared"
-              type="button"
-              disabled
-              title="select at least one reference plot with usable integration bounds"
-            >
+              </button></span>
+              </div>
+            </header>
+            <section class="visualizer-selection"
+              aria-label="Selected transition">
+              <strong
+                id="visualizer-analyte">Choose a reference or transition to render its graphs.</strong>
+              <div class="visualizer-load-state">
+                <span id="visualizer-status" role="status"
+                  aria-live="polite">Ready</span>
+                <button
+                  class="visualizer-cancel-render hidden"
+                  id="visualizer-cancel-render"
+                  type="button"
+                  aria-label="cancel remaining graph rendering"
+                  title="cancel remaining graph rendering"
+                >
+              ×
+            </button>
+                <button
+                  class="secondary-button visualizer-apply-shared"
+                  id="visualizer-apply-shared"
+                  type="button"
+                  disabled
+                  title="select at least one reference plot with usable integration bounds"
+                >
               Apply selected RTs to all samples
             </button>
+                <label class="visualizer-apply-mode" for="visualizer-align-shared">Apply using
+                  <select id="visualizer-align-shared" aria-label="Apply using">
+                    <option value="sequence">Acquisition sequence</option>
+                    <option value="shape">Peak-shape alignment</option>
+                    <option value="exact">Same bounds for all</option>
+                  </select>
+                </label>
+              </div>
+            </section>
+            <details class="integration-sequence hidden" id="integration-sequence" open>
+              <summary>Peak integration · acquisition sequence</summary>
+              <div class="integration-sequence-body">
+                <p>Select reference samples on the chart or chromatograms, then drag their start/end borders. Preview interpolates the bounds between references within each batch; Apply saves them and runs Step 3.</p>
+                <div class="integration-sequence-tools">
+                  <label>Batch <select id="sequence-batch" aria-label="Sequence batch"></select></label>
+                  <label>Peak <select id="sequence-isomer" aria-label="Sequence peak"></select></label>
+                  <button type="button" class="secondary-button" id="sequence-preview" disabled>Preview windows</button>
+                  <button type="button" class="secondary-button" id="sequence-reset" disabled>Clear preview</button>
+                  <div class="sequence-zoom-tools" aria-label="Sequence chart zoom">
+                    <button type="button" class="secondary-button" id="sequence-zoom-out" aria-label="Zoom out of acquisition sequence" title="Zoom out (−)">−</button>
+                    <button type="button" class="secondary-button" id="sequence-zoom-in" aria-label="Zoom into acquisition sequence" title="Zoom in (+)">+</button>
+                    <button type="button" class="secondary-button" id="sequence-zoom-reset">Reset zoom</button>
+                  </div>
+                </div>
+                <div id="sequence-chart" tabindex="0" aria-label="Integration boundaries across the acquisition sequence. Scroll to zoom, drag to pan, or use plus and minus keys."></div>
+                <div id="sequence-batch-legend" class="sequence-legend hidden" aria-label="Batches shown in the sequence chart"></div>
+                <p id="sequence-status" role="status" aria-live="polite"></p>
+                <div class="sequence-legend"><span>Solid: current bounds</span><span class="sequence-proposed">Dashed: proposed bounds</span><span>● Selected reference · click a sample to toggle</span><span>Scroll to zoom · drag to pan · +/− keys</span></div>
+              </div>
+            </details>
+            <section class="visualizer-empty" id="visualizer-empty">
+              <div class="empty-plot-icon" aria-hidden="true">
+                <svg viewBox="0 0 64 48">
+                  <path d="M6 4v36h52M10 33h8l5-8 5 8h7l7-25 6 25h9" />
+                </svg>
+              </div>
+              <h2>Inspect your results</h2>
+              <p>Choose a reference sample or transition in the browser to review its chromatograms and integration bounds.</p>
+            </section>
+            <section class="sample-type-legend hidden"
+              id="visualizer-sample-type-legend"
+              aria-label="sample type colors"></section>
+            <section class="visualizer-plot-grid qc-grid" id="visualizer-qc"
+              aria-label="quality control graphs"></section>
+            <section class="visualizer-plot-grid" id="visualizer-plots"
+              aria-label="chromatogram graphs"></section>
           </div>
         </section>
-
-        <section
-          class="sample-type-legend hidden"
-          id="visualizer-sample-type-legend"
-          aria-label="sample type colors"
-        ></section>
-
-        <section
-          class="visualizer-plot-grid qc-grid"
-          id="visualizer-qc"
-          aria-label="quality control graphs"
-        ></section>
-        <section
-          class="visualizer-plot-grid"
-          id="visualizer-plots"
-          aria-label="chromatogram graphs"
-        ></section>
       </main>
 
       <main class="scratchpad-workspace hidden" id="scratchpad-view">
         <section class="scratchpad-card" aria-labelledby="scratchpad-heading">
-          <div class="scratchpad-toolbar">
+          <header class="scratchpad-heading-row">
+            <div class="scratchpad-heading">
+              <span class="eyebrow">scratchpad</span>
+              <h1 id="scratchpad-heading">Session notes</h1>
+              <p>
+                Auto-wipe keeps temporary notes only while the program is open.
+                Turn it off to create saved notes.
+              </p>
+            </div>
             <label class="scratchpad-toggle">
               <input id="scratchpad-auto-wipe" type="checkbox" />
-              <span>auto-wipe</span>
+              <span>Auto-wipe</span>
             </label>
-          </div>
-          <div class="scratchpad-heading">
-            <span class="eyebrow">scratchpad</span>
-            <h1 id="scratchpad-heading">Session notes</h1>
-            <p>
-              Auto-wipe keeps temporary notes only while the program is open.
-              Turn it off to create saved notes.
-            </p>
-          </div>
+          </header>
           <div class="scratchpad-auto" id="scratchpad-auto-panel">
             <textarea
               id="scratchpad-notes"
@@ -699,7 +618,8 @@
           </div>
           <div class="scratchpad-saved hidden" id="scratchpad-saved-panel">
             <aside class="scratchpad-sidebar" aria-label="saved notes">
-              <button class="new-note-button" id="scratchpad-new-note" type="button">
+              <button class="new-note-button" id="scratchpad-new-note"
+                type="button">
                 + Create new note
               </button>
               <div class="scratchpad-note-list" id="scratchpad-note-list">
@@ -717,12 +637,15 @@
                 />
                 <div class="scratchpad-editor-actions">
                   <label class="scratchpad-check">
-                    <input id="scratchpad-include-date" type="checkbox" checked />
-                    <span>date in name</span>
+                    <input id="scratchpad-include-date" type="checkbox"
+                      checked />
+                    <span>Date in name</span>
                   </label>
                   <button id="scratchpad-pin" type="button">Pin</button>
-                  <button id="scratchpad-refresh-note" type="button">Refresh</button>
-                  <button id="scratchpad-delete-note" type="button">Delete</button>
+                  <button id="scratchpad-refresh-note"
+                    type="button">Refresh</button>
+                  <button id="scratchpad-delete-note"
+                    type="button">Delete</button>
                   <button id="scratchpad-save-note" type="button">Save</button>
                 </div>
               </div>
@@ -739,7 +662,7 @@
       </main>
 
       <footer>
-        <span>MRMhub Integrator GUI [v1.2.2]</span>
+        <span>MRMhub GUI [v1.2.5]</span>
         <a
           class="external-sling-link"
           href="https://sling.sg/"
@@ -777,7 +700,8 @@
       </section>
     </div>
 
-    <div class="modal-backdrop hidden" id="missing-files-modal" role="presentation">
+    <div class="modal-backdrop hidden" id="missing-files-modal"
+      role="presentation">
       <section
         class="project-modal missing-files-modal"
         role="dialog"
@@ -800,10 +724,12 @@
         <ul class="missing-files-list" id="missing-files-list"></ul>
         <p class="missing-param-note hidden" id="missing-param-note"></p>
         <div class="modal-actions">
-          <button class="secondary-button" id="missing-files-cancel" type="button">
+          <button class="secondary-button" id="missing-files-cancel"
+            type="button">
             Not now
           </button>
-          <button class="primary-button" id="missing-files-create" type="button">
+          <button class="primary-button" id="missing-files-create"
+            type="button">
             Create files
           </button>
         </div>
@@ -811,7 +737,8 @@
       </section>
     </div>
 
-    <div class="modal-backdrop hidden" id="data-editor-modal" role="presentation">
+    <div class="modal-backdrop hidden" id="data-editor-modal"
+      role="presentation">
       <section
         class="data-editor-modal"
         role="dialog"
@@ -832,7 +759,8 @@
               <span id="data-editor-status">Ready</span>
             </div>
             <div class="data-editor-actions">
-              <select id="data-editor-backups" title="restore a saved file backup">
+              <select id="data-editor-backups"
+                title="restore a saved file backup">
                 <option value="">No backups yet</option>
               </select>
               <button id="data-editor-restore" type="button">Restore</button>
@@ -843,12 +771,15 @@
               <button id="data-editor-close" type="button">Close</button>
             </div>
           </div>
-          <div class="data-editor-table-actions hidden" id="data-editor-table-actions">
+          <div class="data-editor-table-actions hidden"
+            id="data-editor-table-actions">
             <button id="data-editor-add-row" type="button">Add row</button>
-            <button id="data-editor-add-column" type="button">Add column</button>
+            <button id="data-editor-add-column"
+              type="button">Add column</button>
           </div>
           <div class="data-editor-body" id="data-editor-body">
-            <p class="empty-notes">Select a file on the left to begin editing.</p>
+            <p
+              class="empty-notes">Select a file on the left to begin editing.</p>
           </div>
         </section>
       </section>
@@ -870,7 +801,8 @@
           spellcheck="false"
         />
         <div class="prompt-modal-actions">
-          <button class="secondary-button" id="prompt-modal-cancel" type="button">
+          <button class="secondary-button" id="prompt-modal-cancel"
+            type="button">
             Cancel
           </button>
           <button class="primary-button" id="prompt-modal-ok" type="button">

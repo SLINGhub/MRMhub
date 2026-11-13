@@ -860,6 +860,7 @@ test_that("plot_runscatter multicore", {
     nzchar(Sys.getenv("R_COVR")),
     "mirai daemons corrupt covr trace files"
   )
+  withr::defer(mirai::daemons(0))
   mirai::daemons(4)
   p <- plot_runscatter(
     data = mexp,
@@ -876,7 +877,6 @@ test_that("plot_runscatter multicore", {
   expect_equal(length(p), 1)
   plot_data <- ggplot2::ggplot_build(p[[1]])$data
   expect_equal(nrow(plot_data[[2]]), 3456)
-  mirai::daemons(0)
 })
 
 test_that("plot_runscatter multicore error ref no qc", {
@@ -993,6 +993,7 @@ test_that("plot_runscatter pdf multi4", {
     nzchar(Sys.getenv("R_COVR")),
     "mirai daemons corrupt covr trace files"
   )
+  withr::defer(mirai::daemons(0))
   temp_pdf_path <- file.path(tempdir(), "mrmhub_test_runscay2.pdf")
   mirai::daemons(4)
   p <- plot_runscatter(
@@ -1010,7 +1011,6 @@ test_that("plot_runscatter pdf multi4", {
   size_kb <- as.numeric(fs::file_size(temp_pdf_path)) / 1024
   expect_equal(size_kb, 119, tolerance = 0.2)
   fs::file_delete(temp_pdf_path)
-  mirai::daemons(0)
 })
 
 test_that("plot_runscatter pdf multi", {
