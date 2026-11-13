@@ -67,18 +67,6 @@ mexp <- import_data_mrmhub(
   import_metadata = TRUE)
 #> ✔ Imported 499 analyses with 28 features.
 #> ℹ feature_area selected as default feature intensity. Modify with `set_intensity_var()`.
-#> Warning: assert: the selection 'where(function(x) {
-#>     !all(is.na(x))
-#> }) & dplyr::any_of(c("sample_id"))' matched no columns, so nothing was checked
-#> Warning: assert: the selection 'where(function(x) {
-#>     !all(is.na(x))
-#> }) & dplyr::any_of(c("sample_amount", "sample_amount_unit"))' matched no columns, so nothing was checked
-#> Warning: assert: the selection 'where(function(x) {
-#>     !all(is.na(x))
-#> }) & dplyr::any_of(c("istd_volume"))' matched no columns, so nothing was checked
-#> Warning: assert: the selection 'where(function(x) {
-#>     !all(is.na(x))
-#> }) & dplyr::any_of(c("analyte_id"))' matched no columns, so nothing was checked
 #> ✔ Analysis metadata associated with 499 analyses.
 #> ✔ Feature metadata associated with 28 features.
 
@@ -87,9 +75,6 @@ mexp <- import_metadata_msorganiser(
  path = system.file("extdata", "Example_Metadata_1.xlsx", package = "mrmhub"),
  excl_unmatched_analyses = FALSE,
  ignore_warnings = TRUE)
-#> Warning: assert: the selection 'where(function(x) {
-#>     !all(is.na(x))
-#> }) & dplyr::any_of(c("analyte_id"))' matched no columns, so nothing was checked
 #> Found no errors, 4 warnings, and no notes in the metadata.
 #> ----------------------------------------------------------------------------
 #>   Type  Table    Column                Issue                           Count

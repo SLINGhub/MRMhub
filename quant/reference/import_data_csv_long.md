@@ -159,18 +159,6 @@ mexp <- import_data_csv_long(
 #> ! The following unrecognized columns were present in the data and were ignored: "internal_standard", "time_stamp", "batch", "sample_type", "precursor_mz", "product_mz", "collision_energy", "polarity", "rt_apex", "area_normalized", "concentration", "height", "fwhm", "rt_int_start", and "rt_int_end". Use `column_mapping` to map them.
 #> ✔ Imported 3 analyses with 4 features.
 #> ℹ feature_area selected as default feature intensity. Modify with `set_intensity_var()`.
-#> Warning: assert: the selection 'where(function(x) {
-#>     !all(is.na(x))
-#> }) & dplyr::any_of(c("sample_id"))' matched no columns, so nothing was checked
-#> Warning: assert: the selection 'where(function(x) {
-#>     !all(is.na(x))
-#> }) & dplyr::any_of(c("sample_amount", "sample_amount_unit"))' matched no columns, so nothing was checked
-#> Warning: assert: the selection 'where(function(x) {
-#>     !all(is.na(x))
-#> }) & dplyr::any_of(c("istd_volume"))' matched no columns, so nothing was checked
-#> Warning: assert: the selection 'where(function(x) {
-#>     !all(is.na(x))
-#> }) & dplyr::any_of(c("analyte_id"))' matched no columns, so nothing was checked
 #> ✔ Analysis metadata associated with 3 analyses.
 #> ✔ Feature metadata associated with 4 features.
 #> ℹ Analysis order was based on `analysis_order` column of imported data. Use `set_analysis_order` to change the order.

@@ -88,9 +88,6 @@ mexp <- import_metadata_analyses(
   data = mexp,
   path = meta_path,
   excl_unmatched_analyses = TRUE)
-#> Warning: assert: the selection 'where(function(x) {
-#>     !all(is.na(x))
-#> }) & dplyr::any_of(c("sample_id"))' matched no columns, so nothing was checked
 #> ✔ Analysis metadata associated with 38 analyses.
 
 print(mexp)
