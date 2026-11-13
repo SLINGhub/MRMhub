@@ -137,6 +137,18 @@ mexp <- import_data_csv_wide(
 )
 #> ✔ Metadata column(s) 'qc_type, batch_id' imported. To ignore, set `import_metadata = FALSE`
 #> ✔ Imported 87 analyses with 5 features.
+#> Warning: assert: the selection 'where(function(x) {
+#>     !all(is.na(x))
+#> }) & dplyr::any_of(c("sample_id"))' matched no columns, so nothing was checked
+#> Warning: assert: the selection 'where(function(x) {
+#>     !all(is.na(x))
+#> }) & dplyr::any_of(c("sample_amount", "sample_amount_unit"))' matched no columns, so nothing was checked
+#> Warning: assert: the selection 'where(function(x) {
+#>     !all(is.na(x))
+#> }) & dplyr::any_of(c("istd_volume"))' matched no columns, so nothing was checked
+#> Warning: assert: the selection 'where(function(x) {
+#>     !all(is.na(x))
+#> }) & dplyr::any_of(c("analyte_id"))' matched no columns, so nothing was checked
 #> ✔ Analysis metadata associated with 87 analyses.
 #> ✔ Feature metadata associated with 5 features.
 #> ℹ Analysis order was based on `analysis_order` column of imported data. Use `set_analysis_order` to change the order.

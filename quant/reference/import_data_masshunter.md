@@ -93,6 +93,18 @@ mexp <- import_data_masshunter(
   expand_qualifier_names = TRUE)
 #> ✔ Imported 38 analyses with 31 features.
 #> ℹ feature_area selected as default feature intensity. Modify with `set_intensity_var()`.
+#> Warning: assert: the selection 'where(function(x) {
+#>     !all(is.na(x))
+#> }) & dplyr::any_of(c("sample_id"))' matched no columns, so nothing was checked
+#> Warning: assert: the selection 'where(function(x) {
+#>     !all(is.na(x))
+#> }) & dplyr::any_of(c("sample_amount", "sample_amount_unit"))' matched no columns, so nothing was checked
+#> Warning: assert: the selection 'where(function(x) {
+#>     !all(is.na(x))
+#> }) & dplyr::any_of(c("istd_volume"))' matched no columns, so nothing was checked
+#> Warning: assert: the selection 'where(function(x) {
+#>     !all(is.na(x))
+#> }) & dplyr::any_of(c("analyte_id"))' matched no columns, so nothing was checked
 #> ✔ Analysis metadata associated with 38 analyses.
 #> ✔ Feature metadata associated with 31 features.
 

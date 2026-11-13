@@ -25,7 +25,7 @@ A list (invisibly) with elements `r_version`, `required`, and
 
 ``` r
 check_setup()
-#> ✔ R version 4.6.1 (>= 4.1.0 required)
+#> ✔ R version 4.6.2 (>= 4.1.0 required)
 #> 
 #> ── Required packages ──
 #> 
@@ -42,10 +42,10 @@ check_setup()
 #> ✔ forcats (1.0.1)
 #> ✔ lubridate (1.9.5)
 #> ✔ fs (2.1.0)
-#> ✔ openxlsx2 (1.30)
+#> ✔ openxlsx2 (1.31)
 #> ✔ scales (1.4.0)
 #> ✔ ggh4x (0.3.1)
-#> ✔ assertr (3.0.1)
+#> ✔ assertr (3.1.0)
 #> 
 #> ── Optional packages ──
 #> 

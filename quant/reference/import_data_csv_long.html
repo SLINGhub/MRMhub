@@ -225,6 +225,18 @@ as duplicates.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> <span style="color: #BBBB00;">The following unrecognized columns were present in the data and were ignored: "internal_standard", "time_stamp", "batch", "sample_type", "precursor_mz", "product_mz", "collision_energy", "polarity", "rt_apex", "area_normalized", "concentration", "height", "fwhm", "rt_int_start", and "rt_int_end". Use `column_mapping` to map them.</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Imported 3 analyses with 4 features.</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> <span style="color: #00BB00;">feature_area selected as default feature intensity. Modify with `set_intensity_var()`.</span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>assert: the selection 'where(function(x) {</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span>     !all(is.na(x))</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> }) &amp; dplyr::any_of(c("sample_id"))' matched no columns, so nothing was checked</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>assert: the selection 'where(function(x) {</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span>     !all(is.na(x))</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> }) &amp; dplyr::any_of(c("sample_amount", "sample_amount_unit"))' matched no columns, so nothing was checked</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>assert: the selection 'where(function(x) {</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span>     !all(is.na(x))</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> }) &amp; dplyr::any_of(c("istd_volume"))' matched no columns, so nothing was checked</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>assert: the selection 'where(function(x) {</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span>     !all(is.na(x))</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> }) &amp; dplyr::any_of(c("analyte_id"))' matched no columns, so nothing was checked</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Analysis metadata associated with 3 analyses.</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> <span style="color: #00BB00;">Feature metadata associated with 4 features.</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> <span style="color: #555555;">Analysis order was based on `analysis_order` column of imported data. Use `set_analysis_order` to change the order.</span></span>
