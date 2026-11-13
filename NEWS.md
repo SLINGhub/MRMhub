@@ -2,6 +2,7 @@
 
 ## Bug fixes
 
+- LoD and LoQ of weighted calibration curves (`1/x`, `1/x^2`, `1/sqrt(x)`) were wrong: they were based on the weighted residual standard error, which is not in response units, so they did not scale with the concentration unit and were overestimated for typical `1/x^2` fits. Weighted fits now use the standard error of the intercept by default (new `lod_sigma = "auto"` in `calc_calibration_results()` and `quantify_by_calibration()`). LoD/LoQ of unweighted fits and all fitted coefficients and concentrations are unchanged.
 - Compatibility with assertr 3.1.0: the metadata check report again names the correct column for unit-consistency checks, and no longer warns when optional metadata columns are absent or empty.
 
 # mrmhub 1.0.1

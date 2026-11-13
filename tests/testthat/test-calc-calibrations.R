@@ -49,7 +49,7 @@ test_that("calc_calibration_results works", {
   expect_true(is.na(res$r2_cal_1[res$feature_id == "Corticosterone"]))
   expect_equal(mean(res$r2_cal_1, na.rm = TRUE), 0.97663709)
   expect_equal(mean(res$lowest_cal_cal_1), 3.34825)
-  expect_equal(mean(res$loq_cal_1, na.rm = T), 7.911120433)
+  expect_equal(mean(res$loq_cal_1, na.rm = T), 13.35029084)
 
   # Missing fit parameter replaced with defauls provided with fit_ args.
   mexp_temp <- mexp_norm
@@ -181,7 +181,7 @@ test_that("calc_calibration_results maps coef_a/b/c to intercept/linear/quadrati
 })
 
 test_that("calc_calibration_results lod_sigma = 'intercept' uses the intercept SE", {
-  # Default (residual SE, Sy/x): current behaviour.
+  # Default (`auto`): residual SE (Sy/x) for an unweighted fit.
   res_resid <- calc_calibration_results(
     mexp_norm,
     fit_overwrite = TRUE,
@@ -231,6 +231,127 @@ test_that("calc_calibration_results rejects an invalid lod_sigma", {
       lod_sigma = "bogus"
     )
   )
+})
+
+# Cortisol quantifier CAL responses replaced by a known line with a fixed
+# relative error pattern; concentrations optionally rescaled (unit change).
+synthetic_cal <- function(conc_factor = 1) {
+  m <- mexp_norm
+  qc <- m@annot_qcconcentrations
+  ds <- m@dataset
+  idx <- which(ds$feature_id == "Cortisol" & ds$qc_type == "CAL")
+  key <- qc[qc$analyte_id == "Cortisol", ]
+  conc <- key$concentration[match(ds$sample_id[idx], key$sample_id)]
+  eps <- c(0.06, -0.04, 0.03, -0.05, 0.02, -0.01)
+  ds$feature_norm_intensity[idx] <- 0.02 + 0.004 * conc * (1 + eps)
+  m@dataset <- ds
+  qc$concentration <- qc$concentration * conc_factor
+  m@annot_qcconcentrations <- qc
+  list(
+    mexp = m,
+    conc = conc * conc_factor,
+    resp = ds$feature_norm_intensity[idx]
+  )
+}
+
+lod_metrics <- function(m, model, weighting, ...) {
+  suppressMessages(calc_calibration_results(
+    m,
+    fit_overwrite = TRUE,
+    fit_model = model,
+    fit_weighting = weighting,
+    ignore_missing_annotation = TRUE,
+    ...
+  ))@metrics_calibration
+}
+
+test_that("LoD/LoQ scale with the concentration unit for all weightings", {
+  # A detection limit is a concentration: entering calibrators in a 1000x
+  # smaller unit must give a 1000x larger LoD/LoQ. The weighted residual SE
+  # failed this (1/x^2 LoQ was unit-free), so weighted fits use the intercept SE.
+  base <- synthetic_cal()$mexp
+  scaled <- synthetic_cal(1000)$mexp
+  for (model in c("linear", "quadratic")) {
+    for (w in c("none", "1/x", "1/x^2", "1/sqrt(x)")) {
+      r1 <- lod_metrics(base, model, w)
+      r2 <- lod_metrics(scaled, model, w)
+      expect_gt(sum(!is.na(r1$loq_cal_1)), 0)
+      expect_equal(r2$lod_cal_1, 1000 * r1$lod_cal_1, tolerance = 1e-8)
+      expect_equal(r2$loq_cal_1, 1000 * r1$loq_cal_1, tolerance = 1e-8)
+    }
+  }
+})
+
+test_that("unweighted LoD/LoQ are unchanged (residual SE)", {
+  # Reference values from mrmhub 1.0.1 (before the weighted-fit fix)
+  res <- lod_metrics(mexp_norm, "linear", "none")
+  expect_equal(
+    res$loq_cal_1,
+    c(
+      4.64623331040,
+      14.91598291386,
+      15.66053319944,
+      9.93977029913,
+      167.08751442872,
+      110.16357867604,
+      32.20928546437,
+      10.65870055681
+    )
+  )
+  expect_equal(res$lod_cal_1, 3.3 * res$sigma_cal_1 / res$coef_b_cal_1)
+  expect_equal(
+    lod_metrics(mexp_norm, "linear", "none", lod_sigma = "residual")$loq_cal_1,
+    res$loq_cal_1
+  )
+})
+
+test_that("weighted fits use the intercept SE for LoD/LoQ by default", {
+  s <- synthetic_cal()
+  for (w in c("1/x", "1/x^2", "1/sqrt(x)")) {
+    wt <- switch(
+      w,
+      "1/x" = 1 / s$conc,
+      "1/x^2" = 1 / s$conc^2,
+      "1/sqrt(x)" = 1 / sqrt(s$conc)
+    )
+    fit <- lm(s$resp ~ s$conc, weights = wt)
+    se_a <- summary(fit)$coefficients[1, "Std. Error"]
+    slope <- coef(fit)[[2]]
+
+    msgs <- testthat::capture_messages(
+      m <- calc_calibration_results(
+        s$mexp,
+        fit_overwrite = TRUE,
+        fit_model = "linear",
+        fit_weighting = w
+      )
+    )
+    # reported once per call, not per feature
+    expect_equal(sum(grepl("intercept standard error", msgs)), 1)
+    res <- get_calibration_metrics(m) |> filter(feature_id == "Cortisol")
+    expect_equal(res$lod, 3.3 * se_a / slope)
+    expect_equal(res$loq, 10 * se_a / slope)
+    # the reported sigma stays the (weighted) residual SE
+    expect_equal(res$sigma, summary(fit)$sigma)
+  }
+})
+
+test_that("explicit lod_sigma = 'residual' gives NA LoD/LoQ for weighted fits", {
+  msgs <- testthat::capture_messages(
+    m <- calc_calibration_results(
+      mexp_norm,
+      fit_overwrite = TRUE,
+      fit_model = "linear",
+      fit_weighting = "1/x^2",
+      lod_sigma = "residual"
+    )
+  )
+  expect_equal(sum(grepl("LoD/LoQ set to `NA` for 8 weighted fits", msgs)), 1)
+  res <- m@metrics_calibration
+  expect_true(all(is.na(res$lod_cal_1)))
+  expect_true(all(is.na(res$loq_cal_1)))
+  expect_false(anyNA(res$sigma_cal_1))
+  expect_false(anyNA(res$coef_b_cal_1))
 })
 
 test_that("calc_calibration_results error handling works", {
@@ -893,12 +1014,12 @@ few_cal <- function(n) {
     clear_existing = TRUE
   )))
 }
-fit_cal <- function(m, model = "linear") {
+fit_cal <- function(m, model = "linear", weighting = "none") {
   suppressMessages(calc_calibration_results(
     m,
     fit_overwrite = TRUE,
     fit_model = model,
-    fit_weighting = "none"
+    fit_weighting = weighting
   ))@metrics_calibration
 }
 
@@ -918,6 +1039,9 @@ test_that("a 1-point calibration is a line through the origin", {
   expect_false(any(res$reg_failed_cal_1))
   expect_true(all(res$coef_a_cal_1 == 0))
   expect_true(all(is.na(res$r2_cal_1)))
+  # no intercept, no residual df: no LoD/LoQ, weighted or not
+  expect_true(all(is.na(res$loq_cal_1)))
+  expect_true(all(is.na(fit_cal(m, weighting = "1/x^2")$loq_cal_1)))
 
   d <- m@dataset[
     m@dataset$qc_type == "CAL" & m@dataset$feature_id == "Aldosterone",

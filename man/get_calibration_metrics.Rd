@@ -60,10 +60,11 @@ Agilent MassHunter for the same weighted curve.
 \item \code{coef_a}: \strong{Intercept} (0th-order term, \code{x^0}) of the fitted curve.
 \item \code{coef_b}: \strong{1st-order} (linear, \code{x^1}) coefficient — the slope in a \strong{linear} fit, or the linear term in a \strong{quadratic} fit.
 \item \code{coef_c}: \strong{2nd-order} (quadratic, \code{x^2}) coefficient in \strong{quadratic} fits. Returns \code{NA} for \strong{linear} fits.
-\item \code{sigma}: Standard deviation of residuals.
+\item \code{sigma}: Residual standard error of the fit. For a \strong{weighted} fit this is
+the weighted residual standard error, which has no simple units.
 \item \code{reg_failed}: \code{TRUE} if regression fitting failed.
-\item \code{LoD} = 3.3× the sample standard error of residuals / slope of the regression (see Notes).
-\item \code{LoQ} = 10× the sample standard error of residuals / slope of the regression (see Notes).
+\item \code{lod} = 3.3 × sigma / slope at zero concentration (see Note).
+\item \code{loq} = 10 × sigma / slope at zero concentration (see Note).
 }
 
 The coefficients describe the curve in \strong{ascending} power order (R's
@@ -75,16 +76,13 @@ when comparing against such an export, match by power, not by letter.
 \strong{Note:} LoD/LoQ follow the ICH Q2(R1/R2) approach (3.3 sigma / S and
 10 sigma / S). The slope \code{S} is the slope of the calibration curve at zero
 concentration (the linear coefficient \code{coef_b}); for a \strong{quadratic} fit the
-quadratic term does not contribute to this slope. The response \code{sigma} is
-selectable in \code{\link[=calc_calibration_results]{calc_calibration_results()}} via \code{lod_sigma} (residual
-standard error, the default, or the standard error of the intercept); the
-\code{sigma} column reported here is always the residual standard error.
-
-For a \strong{weighted} fit (\code{1/x}, \code{1/x^2}, \code{1/sqrt(x)}) \code{sigma} is R's weighted
-residual standard error, which is not on the raw response scale that the ICH
-\verb{3.3 sigma / S} formula assumes, so the reported LoD/LoQ are approximate
-(typically slightly optimistic for \code{1/x}). Use \code{fit_weighting = "none"} if you
-require the strict ICH response-scale \code{Sy/x}; the back-calculated
-concentrations themselves are unaffected.
+quadratic term does not contribute to this slope. The response sigma must be
+in response units, so by default (\code{lod_sigma = "auto"} in
+\code{\link[=calc_calibration_results]{calc_calibration_results()}}) unweighted fits use the residual standard
+error (Sy/x) and \strong{weighted} fits (\code{1/x}, \code{1/x^2}, \code{1/sqrt(x)}) the standard
+error of the intercept. The weighted residual standard error is not in
+response units, so LoD/LoQ derived from it would not scale with the
+concentration unit. The \code{sigma} column reported here is always the residual
+standard error, independent of \code{lod_sigma}.
 }
 }
