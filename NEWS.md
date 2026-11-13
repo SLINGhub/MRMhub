@@ -1,3 +1,8 @@
+# mrmhub 1.0.2
+
+- Fixed the LoD and LoQ of calibration curves fitted with a weighting (`1/x`, `1/x^2`, `1/sqrt(x)`).
+- Metadata checks work with assertr 3.1.0, and `read_dataset_rds()` no longer reports a false fingerprint mismatch for files saved in another R session.
+
 # mrmhub 1.0.1
 
 - Drift correction and `correct_batch_serrf()` no longer require the optional packages mirai and carrier. They run sequentially unless parallel workers are set up with `mirai::daemons()`.

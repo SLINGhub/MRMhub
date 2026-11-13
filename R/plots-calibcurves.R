@@ -436,7 +436,8 @@ plot_calibrationcurves <- function(
     fit_overwrite = fit_overwrite,
     fit_model = fit_model,
     fit_weighting = fit_weighting,
-    include_fit_object = TRUE
+    include_fit_object = TRUE,
+    lod_sigma = "intercept" # LoD/LoQ unused here; avoids the "auto" note
   )
 
   if (nrow(fits_used) > 0) {

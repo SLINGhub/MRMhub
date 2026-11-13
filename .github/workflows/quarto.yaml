@@ -26,10 +26,12 @@ jobs:
       contents: write
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
 
       - name: Install Quarto
-        uses: quarto-dev/quarto-actions/setup@v2
+        uses: quarto-dev/quarto-actions/setup@8a96df13519ee81fd526f2dfca5962811136661b # v2.2.0
 
       - name: Render landing page
         run: quarto render docs-site
@@ -49,7 +51,7 @@ jobs:
       # (Quarto) subsites that live in their own subfolders.
       - name: Deploy landing page (root) 🚀
         if: github.event_name != 'pull_request' && github.ref != 'refs/heads/develop'
-        uses: JamesIves/github-pages-deploy-action@v4.5.0
+        uses: JamesIves/github-pages-deploy-action@65b5dfd4f5bcd3a7403bbc2959c144256167464e # v4.5.0
         with:
           clean: true
           clean-exclude: |
@@ -62,7 +64,7 @@ jobs:
       # clean to that subfolder, so this never touches the root or /quant/.
       - name: Deploy INTEGRATOR site (/integrator/) 🚀
         if: github.event_name != 'pull_request' && github.ref != 'refs/heads/develop'
-        uses: JamesIves/github-pages-deploy-action@v4.5.0
+        uses: JamesIves/github-pages-deploy-action@65b5dfd4f5bcd3a7403bbc2959c144256167464e # v4.5.0
         with:
           clean: true
           branch: gh-pages
