@@ -5,7 +5,7 @@ const isWindows = /^Win/i.test(navigator.platform) || /Windows/i.test(navigator.
 const scratchpadAutoWipePreference = "mrmhub-scratchpad-auto-wipe";
 const guiScalePreference = "mrmhub-gui-scale";
 const legacyVisualizerScalePreference = "mrmhub-visualizer-font-scale";
-const guiScaleOptions = [100, 125, 150, 175, 200];
+const guiScaleOptions = [90, 100, 110, 125, 150, 175, 200];
 document.documentElement.classList.toggle("platform-windows", isWindows);
 
 const elements = {
@@ -53,8 +53,6 @@ const elements = {
   themeToggle: document.querySelector("#theme-toggle"),
   guiScale: document.querySelector("#gui-scale"),
   clearActivity: document.querySelector("#clear-activity"),
-  visualizerButton: document.querySelector("#open-visualizer"),
-  scratchpadButton: document.querySelector("#open-scratchpad"),
   integratorTab: document.querySelector("#integrator-tab"),
   visualizerTab: document.querySelector("#visualizer-tab"),
   scratchpadTab: document.querySelector("#scratchpad-tab"),
@@ -1132,6 +1130,7 @@ function loadD3() {
 
 // switches to the integration workflow while preserving rendered graphs
 function showIntegrator() {
+  hideQuant();
   elements.visualizerView.classList.add("hidden");
   elements.scratchpadView.classList.add("hidden");
   elements.integratorView.classList.remove("hidden");
@@ -1154,6 +1153,7 @@ async function showVisualizer() {
     return;
   }
 
+  hideQuant();
   elements.integratorView.classList.add("hidden");
   elements.scratchpadView.classList.add("hidden");
   elements.visualizerView.classList.remove("hidden");
@@ -1174,7 +1174,7 @@ async function showVisualizer() {
   elements.visualizerStatus.textContent = "Loading visualizer...";
   try {
     await loadD3();
-    visualizerModule ??= await import("./visualizer/visualizer.js");
+    visualizerModule ??= await import("./visualizer/visualizer.js?v=1.2.5-sequence-all");
     await visualizerModule.initializeVisualizer(project.path);
   } catch (error) {
     elements.visualizerStatus.textContent = "Visualizer could not be loaded.";
@@ -1184,6 +1184,7 @@ async function showVisualizer() {
 
 // opens the placeholder scratchpad tab
 function showScratchpad() {
+  hideQuant();
   elements.integratorView.classList.add("hidden");
   elements.visualizerView.classList.add("hidden");
   elements.scratchpadView.classList.remove("hidden");
@@ -1439,11 +1440,8 @@ async function bootstrap() {
     elements.activityLog.innerHTML =
       '<p class="empty-log">Activity cleared.</p>';
   });
-  elements.visualizerButton.addEventListener("click", () => {
-    showVisualizer();
-  });
-  elements.scratchpadButton.addEventListener("click", showScratchpad);
   elements.integratorTab.addEventListener("click", showIntegrator);
+  document.querySelector("#brand-home").addEventListener("click", showIntegrator);
   elements.visualizerTab.addEventListener("click", showVisualizer);
   elements.scratchpadTab.addEventListener("click", showScratchpad);
   elements.scratchpadAutoWipe.addEventListener("change", updateScratchpadMode);
@@ -1513,6 +1511,12 @@ async function bootstrap() {
   }
 
   try {
+    try {
+      const { showRenameNotice } = await import("./rename-notice.js");
+      await showRenameNotice(invoke);
+    } catch (error) {
+      addActivity(`Could not check for an older app installation: ${error}`, "error");
+    }
     const state = await invoke("load_startup_state");
     if (state.theme === "light" || state.theme === "dark") {
       document.documentElement.dataset.theme = state.theme;
@@ -1537,6 +1541,27 @@ async function bootstrap() {
 }
 
 // bridge the visualizer module needs to raise toasts and drive Step 3 reruns
+let quantModule;
+function hideQuant() {
+  document.querySelector("#quant-view").classList.add("hidden");
+  document.querySelector("#quant-tab").classList.remove("active");
+  document.querySelector("#quant-tab").removeAttribute("aria-current");
+}
+document.querySelector("#quant-tab").addEventListener("click", async () => {
+  for (const name of ["integrator", "visualizer", "scratchpad"]) {
+    document.querySelector(`#${name}-view`).classList.add("hidden");
+    document.querySelector(`#${name}-tab`).classList.remove("active");
+    document.querySelector(`#${name}-tab`).removeAttribute("aria-current");
+  }
+  document.querySelector("#quant-view").classList.remove("hidden");
+  document.querySelector("#quant-tab").classList.add("active");
+  document.querySelector("#quant-tab").setAttribute("aria-current", "page");
+  try {
+    quantModule ??= await import("./quant/quant.js?v=1.2.4-storage");
+    await quantModule.initializeQuant(project?.path);
+  } catch (error) { showToast(String(error), "error"); }
+});
+
 window.__mrmhubShell = {
   showToast,
   runStep,

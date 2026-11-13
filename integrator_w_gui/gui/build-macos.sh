@@ -16,7 +16,7 @@ ad_hoc=false
 
 usage() {
   cat <<'EOF'
-Build a signed, notarized macOS DMG for MRMhub Integrator GUI.
+Build a signed, notarized macOS DMG for MRMhub GUI.
 
 Usage: ./build-macos.sh [options]
 
@@ -229,8 +229,15 @@ echo "Building and signing the $tauri_target app and DMG..."
 )
 
 bundle_root="$tauri_dir/target/$tauri_target/release/bundle"
-app_path="$bundle_root/macos/MRMhub Integrator GUI.app"
-dmg_candidates=("$bundle_root/dmg/"*.dmg)
+app_path="$bundle_root/macos/MRMhub GUI.app"
+# Old-name DMGs may remain from previous builds; never submit one by accident.
+version="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$app_path/Contents/Info.plist")"
+case "$tauri_target" in
+  universal-apple-darwin) dmg_arch=universal ;;
+  aarch64-apple-darwin) dmg_arch=aarch64 ;;
+  x86_64-apple-darwin) dmg_arch=x64 ;;
+esac
+dmg_candidates=("$bundle_root/dmg/MRMhub GUI_${version}_${dmg_arch}.dmg")
 
 if [[ ! -d "$app_path" ]]; then
   echo "Error: expected app bundle was not created at '$app_path'." >&2
