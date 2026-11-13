@@ -1,5 +1,9 @@
 # mrmhub (development version)
 
+## Bug fixes
+
+- Compatibility with assertr 3.1.0: the metadata check report again names the correct column for unit-consistency checks, and no longer warns when optional metadata columns are absent or empty.
+
 # mrmhub 1.0.1
 
 - Drift correction and `correct_batch_serrf()` no longer require the optional packages mirai and carrier. They run sequentially unless parallel workers are set up with `mirai::daemons()`.
