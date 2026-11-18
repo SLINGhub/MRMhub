@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -82,9 +82,24 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/SLINGhub/MRMhub/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/SLINGhub/MRMhub/blob/v1.0.2/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.0.2" id="mrmhub-102">mrmhub 1.0.2<a class="anchor" aria-label="anchor" href="#mrmhub-102"></a></h2>
+<ul><li>INTEGRATOR - New: detection of peaks cut off at the start or end of the MRM window: the signal remaining at the edge is reported in % of the peak height (<code>trace_cut_pct</code>). Imported in QUANT as column <code>feature_trace_cut_pct</code>.</li>
+<li>INTEGRATOR - New: signal-to-noise ratio is calculated for integrated peaks (<code>sn_ratio</code>, experimental), with a choice of noise estimation methods (<code>sn_noise</code> in <code>param.txt</code>). The S/N values are also imported by the QUANT module (<code>feature_sn_ratio</code>, <code>method_noise_algorithm</code>).</li>
+<li>INTEGRATOR - New: step 1 now first checks the format of all mzML files. Files in an unsupported format are listed in <code>mzml_format_errors.txt</code>. No significant impact on the processing time of step 1.</li>
+<li>INTEGRATOR - Changed: peak <code>height</code> and <code>FWHM</code> are now measured above the integration baseline.</li>
+<li>INTEGRATOR - Changed: mzML files converted without “Write index” can now be read.</li>
+<li>INTEGRATOR - Fixed: transitions present only in a subset of the mzML files are no longer excluded.</li>
+<li>INTEGRATOR - Fixed: with the valley-to-valley (<code>v2v</code>) baseline, areas of cut-off peaks are no longer reduced further, and <code>height</code> and <code>FWHM</code> are now correct on sloping baselines.</li>
+<li>INTEGRATOR - Fixed: <code>param.txt</code> is now backward compatible; missing settings take their defaults, and settings no longer used (e.g. <code>fill_RT</code>) are ignored.</li>
+<li>INTEGRATOR - New: macOS build for Intel processors.</li>
+<li>QUANT - Fixed: LoD and LoQ were calculated incorrectly for calibration curves fitted with a weighting (<code>1/x</code>, <code>1/x^2</code>, <code>1/sqrt(x)</code>).</li>
+<li>QUANT - Fixed: metadata validation now works with assertr 3.1.0.</li>
+<li>QUANT - Fixed: <code><a href="../reference/read_dataset_rds.html">read_dataset_rds()</a></code> no longer reports a false fingerprint mismatch for files saved in another R session.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.0.1" id="mrmhub-101">mrmhub 1.0.1<a class="anchor" aria-label="anchor" href="#mrmhub-101"></a></h2>
 <ul><li>Drift correction and <code><a href="../reference/correct_batch_serrf.html">correct_batch_serrf()</a></code> no longer require the optional packages mirai and carrier. They run sequentially unless parallel workers are set up with <code><a href="https://mirai.r-lib.org/reference/daemons.html" class="external-link">mirai::daemons()</a></code>.</li>

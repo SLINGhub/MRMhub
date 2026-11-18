@@ -93,15 +93,15 @@ See its documentation for details.
 - `coef_c`: **2nd-order** (quadratic, `x^2`) coefficient in
   **quadratic** fits. Returns `NA` for **linear** fits.
 
-- `sigma`: Standard deviation of residuals.
+- `sigma`: Residual standard error of the fit. For a **weighted** fit
+  this is the weighted residual standard error, which has no simple
+  units.
 
 - `reg_failed`: `TRUE` if regression fitting failed.
 
-- `LoD` = 3.3× the sample standard error of residuals / slope of the
-  regression (see Notes).
+- `lod` = 3.3 × sigma / slope at zero concentration (see Note).
 
-- `LoQ` = 10× the sample standard error of residuals / slope of the
-  regression (see Notes).
+- `loq` = 10 × sigma / slope at zero concentration (see Note).
 
 The coefficients describe the curve in **ascending** power order (R's
 [`lm()`](https://rdrr.io/r/stats/lm.html) /
@@ -115,15 +115,12 @@ against such an export, match by power, not by letter.
 10 sigma / S). The slope `S` is the slope of the calibration curve at
 zero concentration (the linear coefficient `coef_b`); for a
 **quadratic** fit the quadratic term does not contribute to this slope.
-The response `sigma` is selectable in
-[`calc_calibration_results()`](https://slinghub.github.io/MRMhub/quant/reference/calc_calibration_results.md)
-via `lod_sigma` (residual standard error, the default, or the standard
-error of the intercept); the `sigma` column reported here is always the
-residual standard error.
-
-For a **weighted** fit (`1/x`, `1/x^2`, `1/sqrt(x)`) `sigma` is R's
-weighted residual standard error, which is not on the raw response scale
-that the ICH `3.3 sigma / S` formula assumes, so the reported LoD/LoQ
-are approximate (typically slightly optimistic for `1/x`). Use
-`fit_weighting = "none"` if you require the strict ICH response-scale
-`Sy/x`; the back-calculated concentrations themselves are unaffected.
+The response sigma must be in response units, so by default
+(`lod_sigma = "auto"` in
+[`calc_calibration_results()`](https://slinghub.github.io/MRMhub/quant/reference/calc_calibration_results.md))
+unweighted fits use the residual standard error (Sy/x) and **weighted**
+fits (`1/x`, `1/x^2`, `1/sqrt(x)`) the standard error of the intercept.
+The weighted residual standard error is not in response units, so
+LoD/LoQ derived from it would not scale with the concentration unit. The
+`sigma` column reported here is always the residual standard error,
+independent of `lod_sigma`.

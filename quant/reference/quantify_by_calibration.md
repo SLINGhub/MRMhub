@@ -24,7 +24,7 @@ quantify_by_calibration(
   fit_weighting = c("none", "1/x", "1/x^2", "1/sqrt(x)"),
   ignore_failed_calibration = FALSE,
   ignore_missing_annotation = FALSE,
-  lod_sigma = c("residual", "intercept")
+  lod_sigma = c("auto", "residual", "intercept")
 )
 ```
 
@@ -78,9 +78,9 @@ quantify_by_calibration(
 - lod_sigma:
 
   A character string selecting the standard deviation of the response
-  (sigma) used in the ICH Q2 LoD/LoQ formulas. Must be one of
-  `"residual"` (the residual standard error of the regression, Sy/x; the
-  default) or `"intercept"` (the standard error of the intercept). See
+  (sigma) used in the ICH Q2 LoD/LoQ formulas. Must be one of `"auto"`
+  (the default: residual standard error for unweighted fits, intercept
+  standard error for weighted fits), `"residual"` or `"intercept"`. See
   [`calc_calibration_results()`](https://slinghub.github.io/MRMhub/quant/reference/calc_calibration_results.md)
   for details.
 

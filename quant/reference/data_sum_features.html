@@ -13,7 +13,7 @@ value, such as LPC sn1 and sn2 species."><meta property="og:image" content="http
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -88,7 +88,7 @@ value, such as LPC sn1 and sn2 species."><meta property="og:image" content="http
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Sum up feature intensities per analyte</h1>
-      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/main/R/data-summarize.R" class="external-link"><code>R/data-summarize.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/v1.0.2/R/data-summarize.R" class="external-link"><code>R/data-summarize.R</code></a></small>
       <div class="d-none name"><code>data_sum_features.Rd</code></div>
     </div>
 
@@ -136,10 +136,11 @@ excluded features and features listed only in the metadata keep their
 <code>feature_rt</code> is averaged. A sum is <code>NA</code> in an analysis where a constituent is
 missing, since a partial sum would look like a valid value; a warning reports
 these analyses. A transition without a value in any analysis is left out of
-its sum. <code>feature_fwhm</code>, <code>feature_width</code>, <code>feature_int_start</code> and
-<code>feature_int_end</code> are set to <code>NA</code> for merged analytes: the constituents are
-separate chromatographic peaks, so no aggregate of their peak widths or
-borders describes the merged quantity.</p>
+its sum. <code>feature_fwhm</code>, <code>feature_width</code>, <code>feature_int_start</code>,
+<code>feature_int_end</code>, <code>feature_sn_ratio</code> and <code>feature_trace_cut_pct</code> are set to
+<code>NA</code> for merged analytes: the constituents are separate chromatographic
+peaks, so no aggregate of their peak widths, borders or peak quality
+describes the merged quantity.</p>
 <p>Summing transitions redefines <code>feature_intensity</code>, so all values <em>derived</em>
 from the pre-merge intensities are invalidated and removed: normalized
 intensities, concentrations, drift/batch correction results and QC metrics.

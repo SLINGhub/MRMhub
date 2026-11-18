@@ -47,9 +47,11 @@ summed, and `feature_rt` is averaged. A sum is `NA` in an analysis where
 a constituent is missing, since a partial sum would look like a valid
 value; a warning reports these analyses. A transition without a value in
 any analysis is left out of its sum. `feature_fwhm`, `feature_width`,
-`feature_int_start` and `feature_int_end` are set to `NA` for merged
-analytes: the constituents are separate chromatographic peaks, so no
-aggregate of their peak widths or borders describes the merged quantity.
+`feature_int_start`, `feature_int_end`, `feature_sn_ratio` and
+`feature_trace_cut_pct` are set to `NA` for merged analytes: the
+constituents are separate chromatographic peaks, so no aggregate of
+their peak widths, borders or peak quality describes the merged
+quantity.
 
 Summing transitions redefines `feature_intensity`, so all values
 *derived* from the pre-merge intensities are invalidated and removed:

@@ -24,7 +24,7 @@ calc_calibration_results(
   fit_weighting,
   ignore_missing_annotation = FALSE,
   include_fit_object = FALSE,
-  lod_sigma = c("residual", "intercept"),
+  lod_sigma = c("auto", "residual", "intercept"),
   ignore_failed_calibration = FALSE
 )
 ```
@@ -83,10 +83,11 @@ calc_calibration_results(
 - lod_sigma:
 
   A character string selecting the response standard deviation (sigma)
-  used in the ICH Q2 LoD/LoQ formulas. Must be one of `"residual"` (the
-  residual standard error of the regression, Sy/x; the default) or
-  `"intercept"` (the standard error of the intercept). No averaging of
-  the two is performed.
+  used in the ICH Q2 LoD/LoQ formulas. Must be one of `"auto"` (the
+  default: residual standard error, Sy/x, for unweighted fits and
+  intercept standard error for weighted fits), `"residual"` (Sy/x;
+  LoD/LoQ are `NA` for weighted fits) or `"intercept"` (intercept
+  standard error for all fits).
 
 - ignore_failed_calibration:
 
@@ -125,11 +126,28 @@ approximation beyond the guideline (adequate when the curvature near
 zero is small).
 
 The response standard deviation `sigma` is selected via `lod_sigma`,
-following the ICH-acceptable choices: `"residual"` uses the residual
-standard error of the regression (Sy/x; the default and prior
-behaviour), while `"intercept"` uses the standard error of the
-intercept. The `sigma` column reported in `metrics_calibration` is
-always the residual standard error, independent of this choice.
+from the two ICH Q2 choices: the residual standard error of the
+regression (Sy/x) or the standard error of the intercept. Both must be
+in response units for `sigma / S` to be a concentration. For a
+**weighted** fit (`1/x`, `1/x^2`, `1/sqrt(x)`) the residual standard
+error is computed from weighted residuals, so its units depend on the
+weights (e.g. response / concentration for `1/x^2`), and LoD/LoQ derived
+from it do not scale with the concentration unit. The intercept standard
+error is in response units for any weighting. Hence:
+
+- `"auto"` (default): residual standard error for unweighted fits,
+  intercept standard error for weighted fits (reported once per call).
+
+- `"residual"`: residual standard error; LoD/LoQ are `NA` for weighted
+  fits, with a warning.
+
+- `"intercept"`: intercept standard error for all fits.
+
+A line through the origin (single linear calibrator) has no intercept
+and no residual degrees of freedom, so its LoD/LoQ are `NA`. The `sigma`
+column in `metrics_calibration` is always the residual standard error,
+independent of `lod_sigma`; for weighted fits it is the weighted
+residual standard error, which has no simple units.
 
 The results of the regression and the calculated LoD and LoQ values are
 stored in the `metrics_calibration` table of the returned

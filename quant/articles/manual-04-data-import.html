@@ -30,7 +30,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -122,7 +122,7 @@
       <img src="../logo.svg" class="logo" alt=""><h1>Importing analytical data</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/main/vignettes/articles/manual-04-data-import.Rmd" class="external-link"><code>vignettes/articles/manual-04-data-import.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/v1.0.2/vignettes/articles/manual-04-data-import.Rmd" class="external-link"><code>vignettes/articles/manual-04-data-import.Rmd</code></a></small>
       <div class="d-none name"><code>manual-04-data-import.Rmd</code></div>
     </div>
 
@@ -291,8 +291,13 @@ comma-separated. Besides the columns shown it also carries
 columns (<code>precursor_mz</code>, <code>product_mz</code>,
 <code>collision_energy</code>, <code>polarity</code>), and integration
 columns (<code>height</code>, <code>FWHM</code>,
-<code>rt_int_start</code>, <code>rt_int_end</code>). The file is
-produced by INTEGRATOR and is not prepared by hand.</p>
+<code>rt_int_start</code>, <code>rt_int_end</code>). Recent INTEGRATOR
+versions add peak-quality columns (<code>trace_cut_pct</code>,
+<code>sn_ratio</code>, <code>noise_method</code>), which
+<code><a href="../reference/import_data_mrmhub.html">import_data_mrmhub()</a></code> imports as
+<code>feature_trace_cut_pct</code>, <code>feature_sn_ratio</code> and
+<code>method_noise_algorithm</code>. The file is produced by INTEGRATOR
+and is not prepared by hand.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">show_head</span><span class="op">(</span></span>
 <span>  <span class="st">"MRMhub_demo.tsv"</span>,</span>

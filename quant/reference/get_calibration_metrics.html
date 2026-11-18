@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -82,7 +82,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Get calibration metrics</h1>
-      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/main/R/calc-calibrations.R" class="external-link"><code>R/calc-calibrations.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/v1.0.2/R/calc-calibrations.R" class="external-link"><code>R/calc-calibrations.R</code></a></small>
       <div class="d-none name"><code>get_calibration_metrics.Rd</code></div>
     </div>
 
@@ -165,10 +165,11 @@ Agilent MassHunter for the same weighted curve.</p></li>
 <li><p><code>coef_a</code>: <strong>Intercept</strong> (0th-order term, <code>x^0</code>) of the fitted curve.</p></li>
 <li><p><code>coef_b</code>: <strong>1st-order</strong> (linear, <code>x^1</code>) coefficient — the slope in a <strong>linear</strong> fit, or the linear term in a <strong>quadratic</strong> fit.</p></li>
 <li><p><code>coef_c</code>: <strong>2nd-order</strong> (quadratic, <code>x^2</code>) coefficient in <strong>quadratic</strong> fits. Returns <code>NA</code> for <strong>linear</strong> fits.</p></li>
-<li><p><code>sigma</code>: Standard deviation of residuals.</p></li>
+<li><p><code>sigma</code>: Residual standard error of the fit. For a <strong>weighted</strong> fit this is
+the weighted residual standard error, which has no simple units.</p></li>
 <li><p><code>reg_failed</code>: <code>TRUE</code> if regression fitting failed.</p></li>
-<li><p><code>LoD</code> = 3.3× the sample standard error of residuals / slope of the regression (see Notes).</p></li>
-<li><p><code>LoQ</code> = 10× the sample standard error of residuals / slope of the regression (see Notes).</p></li>
+<li><p><code>lod</code> = 3.3 × sigma / slope at zero concentration (see Note).</p></li>
+<li><p><code>loq</code> = 10 × sigma / slope at zero concentration (see Note).</p></li>
 </ul><p>The coefficients describe the curve in <strong>ascending</strong> power order (R's
 <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code> / <code><a href="https://rdrr.io/r/stats/poly.html" class="external-link">poly()</a></code> convention): <code>response = coef_a + coef_b * x + coef_c * x^2</code>.
 This is the reverse of the descending <code>a*x^2 + b*x + c</code> form used by some
@@ -177,16 +178,14 @@ when comparing against such an export, match by power, not by letter.</p>
 <p><strong>Note:</strong> LoD/LoQ follow the ICH Q2(R1/R2) approach (3.3 sigma / S and
 10 sigma / S). The slope <code>S</code> is the slope of the calibration curve at zero
 concentration (the linear coefficient <code>coef_b</code>); for a <strong>quadratic</strong> fit the
-quadratic term does not contribute to this slope. The response <code>sigma</code> is
-selectable in <code><a href="calc_calibration_results.html">calc_calibration_results()</a></code> via <code>lod_sigma</code> (residual
-standard error, the default, or the standard error of the intercept); the
-<code>sigma</code> column reported here is always the residual standard error.</p>
-<p>For a <strong>weighted</strong> fit (<code>1/x</code>, <code>1/x^2</code>, <code>1/sqrt(x)</code>) <code>sigma</code> is R's weighted
-residual standard error, which is not on the raw response scale that the ICH
-<code>3.3 sigma / S</code> formula assumes, so the reported LoD/LoQ are approximate
-(typically slightly optimistic for <code>1/x</code>). Use <code>fit_weighting = "none"</code> if you
-require the strict ICH response-scale <code>Sy/x</code>; the back-calculated
-concentrations themselves are unaffected.</p>
+quadratic term does not contribute to this slope. The response sigma must be
+in response units, so by default (<code>lod_sigma = "auto"</code> in
+<code><a href="calc_calibration_results.html">calc_calibration_results()</a></code>) unweighted fits use the residual standard
+error (Sy/x) and <strong>weighted</strong> fits (<code>1/x</code>, <code>1/x^2</code>, <code>1/sqrt(x)</code>) the standard
+error of the intercept. The weighted residual standard error is not in
+response units, so LoD/LoQ derived from it would not scale with the
+concentration unit. The <code>sigma</code> column reported here is always the residual
+standard error, independent of <code>lod_sigma</code>.</p>
 </div>
 
     </div>

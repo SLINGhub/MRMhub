@@ -4,7 +4,10 @@ integration results. The input files must be in a long format with columns
 for the raw data file name, feature ID, peak intensity, and other columns.
 Additional information, such as retention time, FWHM, precursor/product m/z,
 and CE will also be imported and made available in the MRMhubExperiment
-object for downstream analyses.
+object for downstream analyses. Peak-quality columns of recent INTEGRATOR
+versions are imported as feature_sn_ratio (sn_ratio, experimental),
+method_noise_algorithm (noise_method) and feature_trace_cut_pct
+(trace_cut_pct, truncation of the peak at the end of the MRM trace).
 When a directory path is provided, all matching files in that directory will
 be imported and merged into a single dataset. This is useful when importing
 datasets that were pre-processed in blocks, resulting in multiple files. Each
@@ -14,7 +17,10 @@ integration results. The input files must be in a long format with columns
 for the raw data file name, feature ID, peak intensity, and other columns.
 Additional information, such as retention time, FWHM, precursor/product m/z,
 and CE will also be imported and made available in the MRMhubExperiment
-object for downstream analyses.
+object for downstream analyses. Peak-quality columns of recent INTEGRATOR
+versions are imported as feature_sn_ratio (sn_ratio, experimental),
+method_noise_algorithm (noise_method) and feature_trace_cut_pct
+(trace_cut_pct, truncation of the peak at the end of the MRM trace).
 When a directory path is provided, all matching files in that directory will
 be imported and merged into a single dataset. This is useful when importing
 datasets that were pre-processed in blocks, resulting in multiple files. Each
@@ -27,7 +33,7 @@ all source data files. Duplicate combinations will result in an error."><meta pr
 
     <a class="navbar-brand me-2" href="../index.html">mrmhub</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -102,7 +108,7 @@ all source data files. Duplicate combinations will result in an error."><meta pr
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>Import MRMhub peak integration results</h1>
-      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/main/R/data-import.R" class="external-link"><code>R/data-import.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/SLINGhub/MRMhub/blob/v1.0.2/R/data-import.R" class="external-link"><code>R/data-import.R</code></a></small>
       <div class="d-none name"><code>import_data_mrmhub.Rd</code></div>
     </div>
 
@@ -112,7 +118,10 @@ integration results. The input files must be in a long format with columns
 for the raw data file name, feature ID, peak intensity, and other columns.
 Additional information, such as retention time, FWHM, precursor/product m/z,
 and CE will also be imported and made available in the <code>MRMhubExperiment</code>
-object for downstream analyses.</p>
+object for downstream analyses. Peak-quality columns of recent INTEGRATOR
+versions are imported as <code>feature_sn_ratio</code> (<code>sn_ratio</code>, experimental),
+<code>method_noise_algorithm</code> (<code>noise_method</code>) and <code>feature_trace_cut_pct</code>
+(<code>trace_cut_pct</code>, truncation of the peak at the end of the MRM trace).</p>
 <p>When a directory path is provided, all matching files in that directory will
 be imported and merged into a single dataset. This is useful when importing
 datasets that were pre-processed in blocks, resulting in multiple files. Each

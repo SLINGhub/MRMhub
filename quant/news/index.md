@@ -1,5 +1,40 @@
 # Changelog
 
+## mrmhub 1.0.2
+
+- INTEGRATOR - New: detection of peaks cut off at the start or end of
+  the MRM window: the signal remaining at the edge is reported in % of
+  the peak height (`trace_cut_pct`). Imported in QUANT as column
+  `feature_trace_cut_pct`.
+- INTEGRATOR - New: signal-to-noise ratio is calculated for integrated
+  peaks (`sn_ratio`, experimental), with a choice of noise estimation
+  methods (`sn_noise` in `param.txt`). The S/N values are also imported
+  by the QUANT module (`feature_sn_ratio`, `method_noise_algorithm`).
+- INTEGRATOR - New: step 1 now first checks the format of all mzML
+  files. Files in an unsupported format are listed in
+  `mzml_format_errors.txt`. No significant impact on the processing time
+  of step 1.
+- INTEGRATOR - Changed: peak `height` and `FWHM` are now measured above
+  the integration baseline.
+- INTEGRATOR - Changed: mzML files converted without “Write index” can
+  now be read.
+- INTEGRATOR - Fixed: transitions present only in a subset of the mzML
+  files are no longer excluded.
+- INTEGRATOR - Fixed: with the valley-to-valley (`v2v`) baseline, areas
+  of cut-off peaks are no longer reduced further, and `height` and
+  `FWHM` are now correct on sloping baselines.
+- INTEGRATOR - Fixed: `param.txt` is now backward compatible; missing
+  settings take their defaults, and settings no longer used
+  (e.g. `fill_RT`) are ignored.
+- INTEGRATOR - New: macOS build for Intel processors.
+- QUANT - Fixed: LoD and LoQ were calculated incorrectly for calibration
+  curves fitted with a weighting (`1/x`, `1/x^2`, `1/sqrt(x)`).
+- QUANT - Fixed: metadata validation now works with assertr 3.1.0.
+- QUANT - Fixed:
+  [`read_dataset_rds()`](https://slinghub.github.io/MRMhub/quant/reference/read_dataset_rds.md)
+  no longer reports a false fingerprint mismatch for files saved in
+  another R session.
+
 ## mrmhub 1.0.1
 
 - Drift correction and

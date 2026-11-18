@@ -100,6 +100,8 @@ mexp <- calc_calibration_results(
   fit_weighting = "1/x")
 ```
 
+    ℹ LoD/LoQ of 15 weighted fits use the intercept standard error, as the weighted residual standard error is not in response units.
+
     ✔ Calibration curve fits calculated for all 15 quantifier features. Average r²: 0.9978.
 
 Inspect the fitted curves before quantifying: each analyte’s response
@@ -136,23 +138,23 @@ get_calibration_metrics(
   mexp,
   include_qualifier = FALSE, summary_table = TRUE)
 # A tibble: 15 × 6
-   analyte                fit_model fit_weighting    r2   lod    loq
-   <chr>                  <chr>     <chr>         <dbl> <dbl>  <dbl>
- 1 11-deoxycorticosterone quadratic 1/x           0.998 0.457  1.38 
- 2 11-deoxycortisol       quadratic 1/x           1.000 0.279  0.844
- 3 17-hydroxyprogesterone quadratic 1/x           1.000 0.197  0.596
- 4 21-deoxycortisol       quadratic 1/x           0.999 0.427  1.29 
- 5 Aldosterone            quadratic 1/x           0.996 0.639  1.94 
- 6 Androstenedione        quadratic 1/x           0.999 0.445  1.35 
- 7 Corticosterone         quadratic 1/x           0.997 1.25   3.79 
- 8 Cortisol               quadratic 1/x           1.000 1.22   3.71 
- 9 Cortisone              quadratic 1/x           1.000 0.463  1.4  
-10 DHEA                   quadratic 1/x           0.985 3.03   9.18 
-11 DHEAS                  quadratic 1/x           0.999 8.29  25.1  
-12 Dexamethasone          quadratic 1/x           0.998 1.19   3.6  
-13 Dihydrotestosterone    quadratic 1/x           0.998 0.178  0.54 
-14 Progesterone           quadratic 1/x           1.000 0.251  0.76 
-15 Testosterone           quadratic 1/x           0.999 0.458  1.39 
+   analyte                fit_model fit_weighting    r2    lod     loq
+   <chr>                  <chr>     <chr>         <dbl>  <dbl>   <dbl>
+ 1 11-deoxycorticosterone quadratic 1/x           0.998  0.149   0.453
+ 2 11-deoxycortisol       quadratic 1/x           1.000  0.14    0.423
+ 3 17-hydroxyprogesterone quadratic 1/x           1.000  0.101   0.306
+ 4 21-deoxycortisol       quadratic 1/x           0.999  0.214   0.649
+ 5 Aldosterone            quadratic 1/x           0.996  0.349   1.06 
+ 6 Androstenedione        quadratic 1/x           0.999  0.246   0.745
+ 7 Corticosterone         quadratic 1/x           0.997  1.09    3.29 
+ 8 Cortisol               quadratic 1/x           1.000  2.69    8.15 
+ 9 Cortisone              quadratic 1/x           1.000  0.51    1.54 
+10 DHEA                   quadratic 1/x           0.985  5.83   17.7  
+11 DHEAS                  quadratic 1/x           0.999 90.4   274    
+12 Dexamethasone          quadratic 1/x           0.998  1.26    3.81 
+13 Dihydrotestosterone    quadratic 1/x           0.998  0.201   0.61 
+14 Progesterone           quadratic 1/x           1.000  0.132   0.4  
+15 Testosterone           quadratic 1/x           0.999  0.155   0.469
 ```
 
 ## 3. Quantify the samples
@@ -174,6 +176,8 @@ mexp <- quantify_by_calibration(
   fit_model = "quadratic",
   fit_weighting = "1/x")
 ```
+
+    ℹ LoD/LoQ of 15 weighted fits use the intercept standard error, as the weighted residual standard error is not in response units.
 
     ✔ Calibration curve fits calculated for all 15 quantifier features. Average r²: 0.9978.
 

@@ -145,8 +145,13 @@ The long output has one row per analysis × feature, tab- or
 comma-separated. Besides the columns shown it also carries
 `internal_standard`, `time_stamp`, transition columns (`precursor_mz`,
 `product_mz`, `collision_energy`, `polarity`), and integration columns
-(`height`, `FWHM`, `rt_int_start`, `rt_int_end`). The file is produced
-by INTEGRATOR and is not prepared by hand.
+(`height`, `FWHM`, `rt_int_start`, `rt_int_end`). Recent INTEGRATOR
+versions add peak-quality columns (`trace_cut_pct`, `sn_ratio`,
+`noise_method`), which
+[`import_data_mrmhub()`](https://slinghub.github.io/MRMhub/quant/reference/import_data_mrmhub.md)
+imports as `feature_trace_cut_pct`, `feature_sn_ratio` and
+`method_noise_algorithm`. The file is produced by INTEGRATOR and is not
+prepared by hand.
 
 ``` r
 
