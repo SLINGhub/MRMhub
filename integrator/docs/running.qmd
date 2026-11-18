@@ -79,7 +79,7 @@ A project with executables, `mzML` files, and the input files is assembled as de
 ::: {.callout-note}
 ## Transitions missing from some mzML files
 
-A transition listed in `feature_list.csv` but absent from some mzML files is retained if it is present in all `reference` samples and in at least one learning sample. Files that lack the transition receive no result: empty cells in `quant_raw.csv` and `long.csv`, and an empty panel labelled "not acquired" in the PDF plots. A transition that does not meet these conditions is excluded from the whole dataset. Both cases are listed in `missing_compounds.txt`.
+A transition listed in `feature_list.csv` but absent from some mzML files is retained if it is present in all `reference` samples and in at least one learning sample. Files that lack the transition receive no result: empty cells in `quant_raw.csv` and `long.csv`, and an empty panel labelled "not acquired" in the PDF plots. A transition that does not meet these conditions is excluded from the whole dataset. Both cases are listed in `missing_compounds.txt`, and step 1 points to that file in the console. In `long.csv`, `collision_energy` and `polarity` are also left empty for files that lack the transition.
 :::
 
 ## Launching INTEGRATOR

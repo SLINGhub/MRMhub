@@ -217,6 +217,7 @@ fn write_miss_cpd(
     let mut bufw = BufWriter::new(File::create("missing_compounds.txt")?);
     let mut bufw_d = BufWriter::new(File::create("missing_details.txt")?);
     let mut missing_f = Vec::new();
+    let mut n_kept = 0;
     let n_learn = mzml_fs.iter().filter(|x| x.is_learn).count();
     for (trans_f_i, trans) in trans_f.iter().zip(t_list) {
         let file_path = Path::new(crate::MISCDIR).join(trans_f_i);
@@ -249,6 +250,7 @@ fn write_miss_cpd(
                 mzml_fs.len() - missing_f.len(),
                 mzml_fs.len()
             )?;
+            n_kept += 1;
             valid_trans.push((trans, trans_f_i));
         } else {
             writeln!(
@@ -271,7 +273,12 @@ fn write_miss_cpd(
             writeln!(bufw, "ISTD not found for {}", trans.name)?;
         }
     }
-    if !remove_l.is_empty() {
+    if n_kept > 0 {
+        println!(
+            "{n_kept} transition(s) missing from some mzML files kept; those files get no result."
+        );
+    }
+    if n_kept > 0 || !remove_l.is_empty() {
         use yansi::Paint;
         println!("Check {}.", "missing_compounds.txt".bold().underline());
     }

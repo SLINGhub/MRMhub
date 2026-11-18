@@ -39,13 +39,13 @@ file order:
 | `product_mz` | Product-ion *m/z*. |
 | `collision_energy` | Collision energy. |
 | `polarity` | Ionisation polarity (`+` / `−`). |
-| `rt_apex` | Retention time at the peak apex (min). |
+| `rt_apex` | Retention time at the peak apex, the data point highest above the integration baseline (min). |
 | `area` | Integrated peak area. |
 | `height` | Peak height above the integration baseline at the apex (see below). |
 | `FWHM` | Full width at half maximum (min), above the integration baseline (see below); empty if it cannot be measured. |
 | `rt_int_start` | Left integration border (min). |
 | `rt_int_end` | Right integration border (min). |
-| `trace_cut_pct` | Peak truncated by the end of the acquired MRM trace (see below); empty otherwise. |
+| `trace_cut_pct` | Peak truncated by the end of the MRM trace (see below); empty otherwise. |
 | `sn_ratio` | *Experimental.* Signal-to-noise ratio: `height` divided by the noise of the baseline around the peak (see below). |
 | `noise_method` | Noise estimate used for `sn_ratio`: `flank`, `robust`, `rms` or `p2p` (set by `sn_noise` in `param.txt`; `robust` where `flank` had no free baseline). |
 
@@ -54,28 +54,29 @@ Where no peak was found for a *sample × feature*, the measurement fields
 
 `height` and `FWHM` are measured from the integration baseline at the apex, i.e. the baseline that
 the selected baseline mode uses for the area (the 5th-percentile level, the `v_drop` level, or the
-valley-to-valley line). `height` is the apex intensity minus that baseline. `FWHM` is the time
-between the first point on the left and the last point on the right at which the trace crosses
+valley-to-valley line). The apex is the data point highest above that baseline, and `height` is its
+intensity minus the baseline. `FWHM` is the time between the first point on the left and the last point on the right at which the trace crosses
 half of that height, inside the integration window and interpolated linearly between data points;
 if the window contains several peaks above half height, the width spans all of them. `FWHM` is left
 empty when the trace does not fall below half height before a window edge, i.e. when the peak is
 cut by the integration window.
 
-`trace_cut_pct` flags peaks that are cut off by the end of the acquired trace, e.g. when a
-scheduled MRM window closes before the peak has returned to baseline. It is filled when the
-integration window reaches the first or last data point of the trace, and gives the signal at
-that point as a percentage of the apex height, both above the baseline (the 5th percentile of the
-whole trace, for every baseline mode):
+`trace_cut_pct` flags peaks that are cut off by the end of the trace, e.g. when a scheduled MRM
+window closes before the peak has returned to baseline, or at the limits of `crop_window`. It is
+filled when the integration window reaches the first or last data point of the trace (or ends
+within 2 data points of it), and gives the signal at the window edge as a percentage of the apex
+height, both above the baseline (the 5th percentile of the whole trace, for every baseline mode):
 
 - **negative** values: cut at the start of the trace; **positive** values: cut at the end;
 - **±100**: the apex itself lies on the trace end;
 - **empty**: the integration window does not reach a trace end, the signal there is at or below
   baseline, or no peak was found.
 
-If the window reaches both trace ends, the larger value is reported, with its sign. The column is
-left empty when `crop_window` is set, because the stored trace then ends at the crop limits rather
-than at the end of the acquired trace. It is recomputed in step 3, so it follows manual changes to
-the integration borders in `RT_matrix.csv`.
+If the window reaches both trace ends, the larger value is reported, with its sign. With the `v2v`
+baseline, a cut edge is not used as a valley: the baseline is held at the level of the other
+integration border, so that the cut peak does not lift it. The area of a cut peak is still
+underestimated, because the signal beyond the trace end was not acquired. `trace_cut_pct` is
+recomputed in step 3, so it follows manual changes to the integration borders in `RT_matrix.csv`.
 
 ::: {.callout-caution}
 ## Experimental

@@ -7,11 +7,9 @@ use std::path::Path;
 pub fn calc_auc(param_t: &crate::Param) -> Result<(), Box<dyn Error>> {
     let (s_trans, rt_vec_d) = read_rtmat()?;
     let t_to_istd = crate::common::get_trans_istd()?;
-    // with crop_window, step 1 stored only the cropped trace, so its ends are not the acquired trace ends
-    let cropped = param_t.crop_window.is_some();
     let noise = param_t.sn_noise;
     println!("S/N noise (experimental): {}", noise.name());
-    let area_all = areas(&s_trans, &rt_vec_d, &t_to_istd, cropped, noise);
+    let area_all = areas(&s_trans, &rt_vec_d, &t_to_istd, noise);
     let mzml_fs = crate::common::get_mzml()?;
     write_long(&s_trans, &area_all, &t_to_istd, &mzml_fs)?;
     write_area(&s_trans, &area_all, &t_to_istd, &mzml_fs)?;
@@ -21,7 +19,6 @@ fn areas(
     s_trans: &[(String, String)],
     rt_vec_d: &[(f32, f32)],
     t_to_istd: &[crate::common::ValidT],
-    cropped: bool,
     noise: crate::common::Noise,
 ) -> Vec<Vec<RowDat>> {
     let mut trans_name_l: Vec<&str> = s_trans.iter().map(|x| x.0.as_str()).collect();
@@ -43,16 +40,7 @@ fn areas(
             };
             let rt_i_all = write_trans(trans, rt_vec_d, (s_trans.len(), pos0, pos1), k).unwrap();
             (pos0..pos1).map(move |i| {
-                feat_data(
-                    i - pos0,
-                    &rt_i_all,
-                    &rt_vec_d[i..],
-                    s_trans.len(),
-                    k,
-                    cropped,
-                    noise,
-                )
-                .unwrap()
+                feat_data(i - pos0, &rt_i_all, &rt_vec_d[i..], s_trans.len(), k, noise).unwrap()
             })
         })
         .collect::<Vec<_>>()
@@ -86,7 +74,6 @@ fn write_trans(
     sh_l.iter()
         .enumerate()
         .map(|(i, sh)| {
-            use crate::common::Bl;
             use crate::common::{unpack_f32, unpack_f32_2, unpack_u8, unpack_u16};
             let ce = unpack_f32(bufre)?;
             let polarity = unpack_u8(bufre)? == 1;
@@ -111,16 +98,10 @@ fn write_trans(
                 })
                 .collect::<Result<_, Box<dyn Error>>>()?;
             for &(pos0, pos1) in &rt_pos {
-                let bl = match k.baseline {
-                    _ if rt_i_l.is_empty() => None,
-                    Bl::P => {
-                        let bl = p_bl(&rt_i_l);
-                        Some((bl, bl))
-                    }
-                    Bl::VDrop => v_drop_bl(&rt_i_l, &rt_pos).map(|x| (x, x)),
-                    Bl::V2v => v2v_bl(&rt_i_l[pos0..pos1]).map(|(x, y)| (x.1, y.1)),
-                }
-                .unwrap_or((0., 0.));
+                let bl = baseline(&rt_i_l, &rt_pos, (pos0, pos1), &k.baseline)
+                    .map_or((0., 0.), |bl| {
+                        (bl.at(rt_i_l[pos0].0), bl.at(rt_i_l[pos1 - 1].0))
+                    });
                 bufw.write_all(&bl.0.to_le_bytes())?;
                 bufw.write_all(&bl.1.to_le_bytes())?;
             }
@@ -160,7 +141,6 @@ fn write_long(
         "noise_method",
     ])?;
     let blkstr = String::new();
-    let (pos_string, neg_string) = ("+".to_owned(), "-".to_owned());
     for ((t, t_name), area_t) in s_trans.iter().zip(area_all) {
         let k: &crate::common::ValidT = t_to_istd
             .binary_search_by_key(&t, |x| &x.cqq)
@@ -191,6 +171,7 @@ fn write_long(
                     &rowd.sn.map_or(String::new(), |x| format!("{:.1}", x.0)),
                 ]
             };
+            let (r_ce, r_polarity) = method_cells(rowd);
             let r_noise = match rowd.sn {
                 Some((_, n)) if !no_result => n.name().to_owned(),
                 _ => String::new(),
@@ -204,12 +185,8 @@ fn write_long(
                 &filedat.ftype,
                 &format!("{:.3}", k.q1),
                 &format!("{:.3}", k.q3),
-                &format!("{:.1}", rowd.ce),
-                if rowd.polarity {
-                    &pos_string
-                } else {
-                    &neg_string
-                },
+                &r_ce,
+                r_polarity,
                 r_rt,
                 r_auc,
                 r_height,
@@ -227,6 +204,18 @@ fn write_long(
         }
     }
     Ok(())
+}
+/// Collision energy and polarity cells of `long.csv`; empty where the transition is absent from the sample, which
+/// has only placeholder values then.
+fn method_cells(rowd: &RowDat) -> (String, &'static str) {
+    if rowd.absent {
+        (String::new(), "")
+    } else {
+        (
+            format!("{:.1}", rowd.ce),
+            if rowd.polarity { "+" } else { "-" },
+        )
+    }
 }
 fn write_area(
     s_trans: &[(String, String)],
@@ -290,10 +279,18 @@ struct RowDat {
     trace_cut: Option<f32>,
     sn: Option<(f32, crate::common::Noise)>,
 }
-/// Signal left where the integration window reaches an end of the acquired trace, in % of the apex height, both
-/// above the 5th-percentile baseline of the whole trace (`p_bl`), rounded to 1 decimal. Negative for the first trace
-/// point, positive for the last; +/-100 means the apex is on that end. `None` if the window reaches no trace end or
-/// the signal there is not above baseline. If the window reaches both ends, the larger value is returned.
+/// A window edge at most this many points from a trace end counts as reaching it: the valley search for the
+/// integration border can stop just short of the end on a noisy tail.
+const END_PTS: usize = 2;
+/// Whether the window `pos0..pos1` reaches the start / end of a trace of `len` points.
+fn at_trace_end(len: usize, (pos0, pos1): (usize, usize)) -> (bool, bool) {
+    (pos0 <= END_PTS, pos1 + END_PTS >= len)
+}
+/// Signal left at the window edge where the integration window reaches an end of the stored trace (the acquired
+/// trace, or the `crop_window` limits), in % of the apex height, both above the 5th-percentile baseline of the whole
+/// trace (`p_bl`), rounded to 1 decimal. Negative at the trace start, positive at the end; +/-100 means the apex is on
+/// that edge. `None` if the window reaches no trace end or the signal there is not above baseline. If the window
+/// reaches both ends, the larger value is returned.
 fn trace_cut_pct(rt_i_l: &[(f32, f32)], (pos0, pos1): (usize, usize)) -> Option<f32> {
     if pos0 >= pos1 {
         return None;
@@ -307,20 +304,55 @@ fn trace_cut_pct(rt_i_l: &[(f32, f32)], (pos0, pos1): (usize, usize)) -> Option<
         return None;
     }
     let pct = |i: f32| (1000. * (i - bl) / (apex - bl)).round() / 10.;
-    let left = (pos0 == 0).then(|| pct(rt_i_l[0].1)).filter(|&x| x > 0.);
-    let right = (pos1 == rt_i_l.len())
-        .then(|| pct(rt_i_l[pos1 - 1].1))
-        .filter(|&x| x > 0.);
+    let (at0, at1) = at_trace_end(rt_i_l.len(), (pos0, pos1));
+    let left = at0.then(|| pct(rt_i_l[pos0].1)).filter(|&x| x > 0.);
+    let right = at1.then(|| pct(rt_i_l[pos1 - 1].1)).filter(|&x| x > 0.);
     match (left, right) {
         (Some(l), Some(r)) if l > r => Some(-l),
         (Some(l), None) => Some(-l),
         (_, r) => r,
     }
 }
-fn auc_flat(rt_i_l: &[(f32, f32)], bl: f32) -> f32 {
-    rt_i_l
-        .windows(2)
-        .map(|rti| (0f32.max(rti[0].1 - bl) + 0f32.max(rti[1].1 - bl)) * (rti[1].0 - rti[0].0))
+/// Integration baseline: the straight line through two points (horizontal for the `P` and `v_drop` modes).
+#[derive(Clone, Copy, Debug)]
+struct Line((f32, f32), (f32, f32));
+impl Line {
+    fn flat(y: f32) -> Self {
+        Line((0., y), (1., y))
+    }
+    fn at(self, t: f32) -> f32 {
+        let Line(p0, p1) = self;
+        if p1.0 == p0.0 {
+            p0.1
+        } else {
+            p0.1 + (t - p0.0) * (p1.1 - p0.1) / (p1.0 - p0.0)
+        }
+    }
+}
+/// Integration baseline of the window `win` for the baseline mode; `None` for an empty window.
+fn baseline(
+    rt_i_l: &[(f32, f32)],
+    rt_pos: &[(usize, usize)],
+    win: (usize, usize),
+    mode: &crate::common::Bl,
+) -> Option<Line> {
+    use crate::common::Bl;
+    if win.0 >= win.1 {
+        return None;
+    }
+    match mode {
+        Bl::P => Some(Line::flat(p_bl(rt_i_l))),
+        Bl::VDrop => v_drop_bl(rt_i_l, rt_pos).map(Line::flat),
+        Bl::V2v => Some(v2v_bl(rt_i_l, win)),
+    }
+}
+/// Area above the baseline `bl`, trapezoidal over the acquired points.
+fn auc(rt_i: &[(f32, f32)], bl: Line) -> f32 {
+    rt_i.windows(2)
+        .map(|p| {
+            (0f32.max(p[0].1 - bl.at(p[0].0)) + 0f32.max(p[1].1 - bl.at(p[1].0)))
+                * (p[1].0 - p[0].0)
+        })
         .sum::<f32>()
         * 30.
 }
@@ -337,45 +369,28 @@ fn v_drop_bl(rt_i_l: &[(f32, f32)], rt_pos: &[(usize, usize)]) -> Option<f32> {
         .map(|x| x.1)
         .reduce(f32::min)
 }
-fn v2v_bl(rt_i_l: &[(f32, f32)]) -> Option<((f32, f32), (f32, f32))> {
-    rt_i_l.first().map(|ep0| (*ep0, rt_i_l[rt_i_l.len() - 1]))
-}
-fn v2v_auc(rt_i_l: &[(f32, f32)]) -> f32 {
-    v2v_bl(rt_i_l).map_or(0., |(ep0, ep1)| {
-        let bl: Vec<f32> = rt_i_l
-            .iter()
-            .map(|x| ep0.1 + (x.0 - ep0.0) * (ep1.1 - ep0.1) / (ep1.0 - ep0.0))
-            .collect();
-        rt_i_l
-            .windows(2)
-            .zip(bl.windows(2))
-            .map(|(rti, b)| {
-                (0f32.max(rti[0].1 - b[0]) + 0f32.max(rti[1].1 - b[1])) * (rti[1].0 - rti[0].0)
-            })
-            .sum::<f32>()
-            * 30.
-    })
-}
-/// Integration baseline at the apex, as used for the area of the feature's baseline mode.
-fn bl_at_apex(
-    rt_i_l: &[(f32, f32)],
-    rt_pos: &[(usize, usize)],
-    (pos0, pos1): (usize, usize),
-    apex_i: usize,
-    mode: &crate::common::Bl,
-) -> f32 {
-    use crate::common::Bl;
-    match mode {
-        Bl::P => p_bl(rt_i_l),
-        Bl::VDrop => v_drop_bl(rt_i_l, rt_pos).unwrap_or(0.),
-        Bl::V2v => v2v_bl(&rt_i_l[pos0..pos1]).map_or(0., |(ep0, ep1)| {
-            if ep1.0 == ep0.0 {
-                ep0.1
-            } else {
-                ep0.1 + (rt_i_l[apex_i].0 - ep0.0) * (ep1.1 - ep0.1) / (ep1.0 - ep0.0)
-            }
-        }),
+/// Valley-to-valley line through the first and last point of the window `pos0..pos1`. An edge cut by a trace end
+/// (at a trace end, see `at_trace_end`, and above `p_bl`, as flagged by `trace_cut_pct`) is not placed above the other
+/// edge, so the cut peak does not lift the line; if both edges are at trace ends, the line is kept.
+fn v2v_bl(rt_i_l: &[(f32, f32)], (pos0, pos1): (usize, usize)) -> Line {
+    let (mut p0, mut p1) = (rt_i_l[pos0], rt_i_l[pos1 - 1]);
+    match at_trace_end(rt_i_l.len(), (pos0, pos1)) {
+        (true, false) if p0.1 > p_bl(rt_i_l) => p0.1 = p0.1.min(p1.1),
+        (false, true) if p1.1 > p_bl(rt_i_l) => p1.1 = p1.1.min(p0.1),
+        _ => {}
     }
+    Line(p0, p1)
+}
+/// Apex: the point of the window highest above the baseline `bl`, and its height above `bl` (at least 0).
+fn apex_above(
+    rt_i_l: &[(f32, f32)],
+    (pos0, pos1): (usize, usize),
+    bl: Line,
+) -> Option<(usize, f32)> {
+    let above = |j: usize| rt_i_l[j].1 - bl.at(rt_i_l[j].0);
+    (pos0..pos1)
+        .max_by(|&a, &b| above(a).total_cmp(&above(b)))
+        .map(|j| (j, 0f32.max(above(j))))
 }
 /// Peak width at half height above the integration baseline `bl`, from the first half-height crossing on the left to
 /// the last on the right inside the window `pos0..pos1`, so a group of peaks above half height is spanned as a whole;
@@ -385,22 +400,25 @@ fn fwhm(
     rt_i_l: &[(f32, f32)],
     (pos0, pos1): (usize, usize),
     apex_i: usize,
-    bl: f32,
+    bl: Line,
 ) -> Option<f32> {
-    let apex = rt_i_l[apex_i].1;
-    let hm = bl + (apex - bl) / 2.;
-    if apex <= bl || rt_i_l[pos0].1 >= hm || rt_i_l[pos1 - 1].1 >= hm {
+    let above = |p: (f32, f32)| p.1 - bl.at(p.0);
+    let hm = above(rt_i_l[apex_i]) / 2.;
+    if hm <= 0. || above(rt_i_l[pos0]) >= hm || above(rt_i_l[pos1 - 1]) >= hm {
         return None;
     }
     // both edges are below hm, so the outermost crossing pairs have one point below hm: no 0/0
-    let at = |p: &[(f32, f32)]| p[0].0 + (hm - p[0].1) * (p[1].0 - p[0].0) / (p[1].1 - p[0].1);
+    let at = |p: &[(f32, f32)]| {
+        let (a0, a1) = (above(p[0]), above(p[1]));
+        p[0].0 + (hm - a0) * (p[1].0 - p[0].0) / (a1 - a0)
+    };
     let left = rt_i_l[pos0..=apex_i]
         .windows(2)
-        .find(|p| p[0].1 <= hm && hm <= p[1].1)
+        .find(|p| above(p[0]) <= hm && hm <= above(p[1]))
         .map(at)?;
     let right = rt_i_l[apex_i..pos1]
         .windows(2)
-        .rfind(|p| p[0].1 >= hm && hm >= p[1].1)
+        .rfind(|p| above(p[0]) >= hm && hm >= above(p[1]))
         .map(at)?;
     Some(right - left)
 }
@@ -540,7 +558,6 @@ fn feat_data(
     rt_vec_d: &[(f32, f32)],
     tlen: usize,
     k: &crate::common::ValidT,
-    cropped: bool,
     noise: crate::common::Noise,
 ) -> io::Result<Vec<RowDat>> {
     rt_i_all
@@ -548,23 +565,13 @@ fn feat_data(
         .zip(rt_vec_d.iter().step_by(tlen))
         .map(|(&(ref rt_i_l, ref rt_pos, ce, polarity), &(beg, end))| {
             let (pos0, pos1) = rt_pos[i];
-            let auc = {
-                use crate::common::Bl;
-                let rt_i = &rt_i_l[pos0..pos1];
-                match k.baseline {
-                    _ if rt_i_l.is_empty() => 0.,
-                    Bl::P => auc_flat(rt_i, p_bl(rt_i_l)),
-                    Bl::VDrop => v_drop_bl(rt_i_l, rt_pos).map_or(0., |bl| auc_flat(rt_i, bl)),
-                    Bl::V2v => v2v_auc(rt_i),
-                }
-            };
-            let (fwhm, rt, height, sn) = if let Some((max_i, &(rt, apex))) = (pos0..)
-                .zip(&rt_i_l[pos0..pos1])
-                .max_by(|x, y| x.1.1.partial_cmp(&y.1.1).unwrap())
+            let bl = baseline(rt_i_l, rt_pos, (pos0, pos1), &k.baseline);
+            let auc = bl.map_or(0., |bl| auc(&rt_i_l[pos0..pos1], bl));
+            let (fwhm, rt, height, sn) = if let Some(bl) = bl
+                && let Some((max_i, height)) = apex_above(rt_i_l, (pos0, pos1), bl)
             {
-                let bl = bl_at_apex(rt_i_l, rt_pos, (pos0, pos1), max_i, &k.baseline);
+                let rt = rt_i_l[max_i].0;
                 let fwhm = fwhm(rt_i_l, (pos0, pos1), max_i, bl);
-                let height = 0f32.max(apex - bl);
                 // without a measured FWHM: the integration window is about 3.5 half-widths in DYNAMO and Dataset4
                 let half_width = fwhm.unwrap_or((rt_i_l[pos1 - 1].0 - rt_i_l[pos0].0) / 3.5);
                 let sn = sn_with(
@@ -590,11 +597,7 @@ fn feat_data(
                 ce,
                 polarity,
                 absent: rt_i_l.is_empty(),
-                trace_cut: if cropped {
-                    None
-                } else {
-                    trace_cut_pct(rt_i_l, (pos0, pos1))
-                },
+                trace_cut: trace_cut_pct(rt_i_l, (pos0, pos1)),
                 sn,
             })
         })
@@ -661,14 +664,35 @@ fn read_rtmat() -> Result<RtMat, Box<dyn Error>> {
 
 #[cfg(test)]
 mod tests {
-    use super::{bl_at_apex, fwhm, sn_ratio, sn_with, trace_cut_pct};
-    use crate::common::Noise;
+    use super::{
+        Line, RowDat, apex_above, baseline, fwhm, method_cells, sn_ratio, sn_with, trace_cut_pct,
+    };
+    use crate::common::{Bl, Noise};
 
     // 40 points at baseline 0 with a peak `peak` placed at `at`; the 5th-percentile baseline is 0.
     fn trace(at: usize, peak: &[f32]) -> Vec<(f32, f32)> {
         let mut i = vec![0f32; 40];
         i[at..at + peak.len()].copy_from_slice(peak);
         (0u8..40).map(f32::from).zip(i).collect()
+    }
+
+    #[test]
+    fn method_cells_empty_where_the_transition_is_absent() {
+        let row = |absent| RowDat {
+            auc: 0.,
+            height: 0.,
+            rt: 0.,
+            fwhm: None,
+            beg: 0.,
+            end: 0.,
+            ce: if absent { f32::NAN } else { 25. },
+            polarity: !absent,
+            absent,
+            trace_cut: None,
+            sn: None,
+        };
+        assert_eq!(method_cells(&row(false)), ("25.0".to_owned(), "+"));
+        assert_eq!(method_cells(&row(true)), (String::new(), ""));
     }
 
     #[test]
@@ -716,19 +740,30 @@ mod tests {
     }
 
     #[test]
+    fn window_ending_near_the_trace_end_counts_as_cut() {
+        // the valley search stopped 1 or 2 points before the trace end; the signal at the window edge is reported
+        let t = trace(36, &[50., 100., 40., 30.]);
+        assert_eq!(trace_cut_pct(&t, (34, 39)), Some(40.));
+        assert_eq!(trace_cut_pct(&t, (34, 38)), Some(100.));
+        assert_eq!(trace_cut_pct(&t, (30, 37)), None); // 3 points short
+        let t = trace(0, &[30., 40., 100., 50.]);
+        assert_eq!(trace_cut_pct(&t, (2, 8)), Some(-100.));
+    }
+
+    #[test]
     fn fwhm_at_half_height_above_baseline() {
         // half height 50 is reached at t = 11 and t = 13
         let t = trace(10, &[25., 50., 100., 50., 25.]);
-        assert_eq!(fwhm(&t, (5, 20), 12, 0.), Some(2.));
+        assert_eq!(fwhm(&t, (5, 20), 12, Line::flat(0.)), Some(2.));
         // same peak on a baseline of 100: half height 150, same width (raw half height 100 would span the window)
         let raised: Vec<(f32, f32)> = t.iter().map(|&(x, y)| (x, y + 100.)).collect();
-        assert_eq!(fwhm(&raised, (5, 20), 12, 100.), Some(2.));
+        assert_eq!(fwhm(&raised, (5, 20), 12, Line::flat(100.)), Some(2.));
     }
 
     #[test]
     fn fwhm_interpolates_between_points() {
         let t = trace(10, &[0., 100., 0.]);
-        assert_eq!(fwhm(&t, (5, 20), 11, 0.), Some(1.));
+        assert_eq!(fwhm(&t, (5, 20), 11, Line::flat(0.)), Some(1.));
     }
 
     #[test]
@@ -736,24 +771,65 @@ mod tests {
         let mut t = trace(10, &[50., 100., 50.]);
         t[15].1 = 30.;
         t[16..19].copy_from_slice(&[(16., 50.), (17., 80.), (18., 50.)]);
-        assert_eq!(fwhm(&t, (5, 25), 11, 0.), Some(8.));
+        assert_eq!(fwhm(&t, (5, 25), 11, Line::flat(0.)), Some(8.));
     }
 
     #[test]
     fn fwhm_empty_if_cut_by_the_window_or_not_above_baseline() {
         let t = trace(10, &[25., 50., 100., 50., 25.]);
-        assert_eq!(fwhm(&t, (11, 20), 12, 0.), None); // left edge at half height
-        assert_eq!(fwhm(&t, (5, 13), 12, 0.), None); // apex on the right edge
-        assert_eq!(fwhm(&t, (5, 20), 12, 100.), None); // apex not above baseline
+        let bl = Line::flat(0.);
+        assert_eq!(fwhm(&t, (11, 20), 12, bl), None); // left edge at half height
+        assert_eq!(fwhm(&t, (5, 13), 12, bl), None); // apex on the right edge
+        assert_eq!(fwhm(&t, (5, 20), 12, Line::flat(100.)), None); // apex not above baseline
+    }
+
+    // 31 points on a ramp rising 10 per point, with a peak of height 20 at t = 15
+    fn ramp_with_peak() -> Vec<(f32, f32)> {
+        let mut t: Vec<(f32, f32)> = (0u8..31)
+            .map(|x| (f32::from(x), 10. * f32::from(x)))
+            .collect();
+        for (j, h) in [(14, 10.), (15, 20.), (16, 10.)] {
+            t[j].1 += h;
+        }
+        t
     }
 
     #[test]
-    fn v2v_baseline_at_apex_is_on_the_line() {
-        use crate::common::Bl;
-        let t: Vec<(f32, f32)> = (0u8..11)
-            .map(|x| (f32::from(x), f32::from(x) * 10.))
-            .collect();
-        assert_eq!(bl_at_apex(&t, &[(0, 11)], (0, 11), 5, &Bl::V2v), 50.);
+    fn v2v_line_through_the_window_edges() {
+        let t = ramp_with_peak();
+        let bl = baseline(&t, &[(10, 21)], (10, 21), &Bl::V2v).unwrap();
+        assert_eq!(bl.at(15.), 150.);
+        // both edges at trace ends: kept as is
+        let bl = baseline(&t, &[(0, 31)], (0, 31), &Bl::V2v).unwrap();
+        assert_eq!(bl.at(30.), 300.);
+    }
+
+    #[test]
+    fn v2v_apex_height_and_fwhm_above_a_sloped_line() {
+        // the raw maximum is the right window edge (200), which is on the line
+        let t = ramp_with_peak();
+        let bl = baseline(&t, &[(10, 21)], (10, 21), &Bl::V2v).unwrap();
+        assert_eq!(apex_above(&t, (10, 21), bl), Some((15, 20.)));
+        assert_eq!(fwhm(&t, (10, 21), 15, bl), Some(2.));
+    }
+
+    #[test]
+    fn v2v_line_not_lifted_by_a_peak_cut_at_a_trace_end() {
+        // valley of 10 at t = 32, peak cut by the trace end (80 at t = 39): line held at the valley level
+        let mut t = trace(35, &[30., 70., 100., 90., 80.]);
+        t[32].1 = 10.;
+        let bl = baseline(&t, &[(32, 40)], (32, 40), &Bl::V2v).unwrap();
+        assert_eq!(bl.at(39.), 10.);
+        assert_eq!(apex_above(&t, (32, 40), bl), Some((37, 90.)));
+        // mirrored: cut at the trace start
+        let t: Vec<(f32, f32)> = t.iter().rev().map(|&(x, y)| (39. - x, y)).collect();
+        let bl = baseline(&t, &[(0, 8)], (0, 8), &Bl::V2v).unwrap();
+        assert_eq!(bl.at(0.), 10.);
+        // trace end at baseline (not cut): the line is kept, even though the other edge is lower
+        let mut t = trace(35, &[30., 70., 100.]);
+        t[32].1 = -10.;
+        let bl = baseline(&t, &[(32, 40)], (32, 40), &Bl::V2v).unwrap();
+        assert_eq!(bl.at(39.), 0.);
     }
 
     // 60 points, baseline alternating 9 / 11 (MAD 1, peak-to-peak 2), peak window 28..33 with the apex at 30

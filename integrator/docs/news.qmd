@@ -27,7 +27,8 @@ Binary releases are published on the
 - **Transitions missing from some mzML files are retained**: such a transition
   is integrated in the files that contain it, provided it is present in all
   reference samples and in at least one learning sample; the other files receive
-  empty values. Previously, the transition was removed from the whole dataset.
+  empty values, and step 1 points to `missing_compounds.txt` in the console.
+  Previously, the transition was removed from the whole dataset.
 - **macOS build for Intel processors** (`x86_64-apple-darwin`), in addition to
   Apple silicon.
 - **mzML files converted without "Write index" are read**: previously, their
@@ -37,8 +38,14 @@ Binary releases are published on the
   any data are read, and are listed in `mzml_format_errors.txt`; the results of
   the previous run are left in place.
 - **New `long.csv` column `trace_cut_pct`**: flags peaks cut off by the start
-  or end of the acquired MRM trace and gives the signal remaining there as a
-  percentage of the apex height above baseline.
+  or end of the MRM trace, including the limits of `crop_window`, and gives the
+  signal remaining there as a percentage of the apex height above baseline.
+- **Valley-to-valley (`v2v`) baseline at cut and sloped peaks**: for a peak cut
+  by the trace end, the baseline is held at the level of the other integration
+  border instead of rising to the cut edge, which removed about 60 % of such
+  areas in the DYNAMO data. `height`, `rt_apex` and `FWHM` are measured at the
+  point highest above the sloped baseline, so a small peak on a steep baseline
+  no longer gets a height of 0.
 - **Complete Rust source code**, including the **MRMhub-viz** viewer app, with
   build instructions.
 - **Per-feature baseline determination**: the baseline mode (`default`

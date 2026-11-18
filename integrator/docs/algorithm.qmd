@@ -173,7 +173,9 @@ chromatographic background that is insensitive to the height of the peak itself.
 instead places a horizontal baseline at the lowest intensity
 of the integrated region, dropping the baseline to the trace minimum. The valley-to-valley mode fits
 a sloped baseline between the points where the left and right integration borders intersect the ion
-trace, which is appropriate where the background rises or falls across the peak.
+trace, which is appropriate where the background rises or falls across the peak. Where a peak is
+cut off by the end of the trace, the border at the trace end is not a valley; the baseline is then
+held at the level of the other border.
 
 ::: {.callout-note}
 **Where to set these parameters.** `RT_shift`, `RT_shift_bound`, `RT_tol`, `peak_width`,
