@@ -1,5 +1,7 @@
 # mrmhub (development version)
 
+- `import_data_mrmhub()` imports the peak-quality columns of recent INTEGRATOR versions: `sn_ratio` (experimental) as `feature_sn_ratio`, `noise_method` as `method_noise_algorithm`, and `trace_cut_pct` as `feature_trace_cut_pct`. Previously they were dropped. `data_sum_features()` sets `feature_sn_ratio` and `feature_trace_cut_pct` to `NA` for summed analytes, as it already does for peak widths.
+
 # mrmhub 1.0.1
 
 - Drift correction and `correct_batch_serrf()` no longer require the optional packages mirai and carrier. They run sequentially unless parallel workers are set up with `mirai::daemons()`.

@@ -24,7 +24,10 @@ integration results. The input files must be in a long format with columns
 for the raw data file name, feature ID, peak intensity, and other columns.
 Additional information, such as retention time, FWHM, precursor/product m/z,
 and CE will also be imported and made available in the \code{MRMhubExperiment}
-object for downstream analyses.
+object for downstream analyses. Peak-quality columns of recent INTEGRATOR
+versions are imported as \code{feature_sn_ratio} (\code{sn_ratio}, experimental),
+\code{method_noise_algorithm} (\code{noise_method}) and \code{feature_trace_cut_pct}
+(\code{trace_cut_pct}, truncation of the peak at the end of the MRM trace).
 
 When a directory path is provided, all matching files in that directory will
 be imported and merged into a single dataset. This is useful when importing
