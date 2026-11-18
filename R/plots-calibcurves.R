@@ -429,16 +429,15 @@ plot_calibrationcurves <- function(
   }
 
   # add calibration metrics to data
-  data <- calc_calibration_results(
+  data <- mh_quiet_info(calc_calibration_results(
     data = data,
     variable = variable,
     include_qualifier = include_qualifier,
     fit_overwrite = fit_overwrite,
     fit_model = fit_model,
     fit_weighting = fit_weighting,
-    include_fit_object = TRUE,
-    lod_sigma = "intercept" # LoD/LoQ unused here; avoids the "auto" note
-  )
+    include_fit_object = TRUE
+  ))
 
   if (nrow(fits_used) > 0) {
     d_mismatch <- data@metrics_calibration |>
@@ -811,8 +810,8 @@ plot_calibcurves_page <- function(
       facet_limits$feature_id
     )
   } else {
-    y_scales = NULL
-    x_scales = NULL
+    y_scales <- NULL
+    x_scales <- NULL
   }
 
   dat_subset$feature_id <- forcats::as_factor(dat_subset$feature_id)
@@ -966,9 +965,9 @@ plot_calibcurves_page <- function(
     )
 
   if (zoom_n_points < Inf) {
-    txt = glue::glue("Zoom on first {zoom_n_points} points")
+    txt <- glue::glue("Zoom on first {zoom_n_points} points")
   } else {
-    txt = " "
+    txt <- " "
   }
 
   if (nrow(d_pred |> filter(!is.na(.data$concentration))) > 0) {
