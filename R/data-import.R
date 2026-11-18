@@ -695,7 +695,7 @@ import_data_main <- function(
     }
   }
 
-  data@feature_intensity_var = ""
+  data@feature_intensity_var <- ""
   data@status_processing <- "Raw data imported"
 
   data
@@ -791,9 +791,9 @@ parse_masshunter_csv <- function(
     )
   }
 
-  if (!any(c("Data File") %in% unlist(datWide[3, ]))) {
+  if (!any(c("Data File", "Name") %in% unlist(datWide[3, ]))) {
     cli::cli_abort(
-      "'Data File' column is required and used as a unique identifier, but is missing or the file is in an unsupported/corrupt format. Please re-export from MassHunter with 'Data File' included, samples in rows, and features in columns."
+      "'Data File' or 'Name' column is required and used as a unique identifier, but is missing or the file is in an unsupported/corrupt format. Please re-export from MassHunter with 'Data File' included, samples in rows, and features in columns."
     )
   }
 
@@ -922,6 +922,26 @@ parse_masshunter_csv <- function(
     "compound_name" = "Name\tCompound"
   )
   datWide <- datWide |> dplyr::rename(dplyr::any_of(new_colnames))
+
+  # Without 'Data File', the sample name serves as identifier, if unique
+  if (!"raw_data_filename" %in% names(datWide)) {
+    sample_names <- stringr::str_squish(datWide$sample_name)
+    dup_names <- unique(sample_names[duplicated(sample_names)])
+    if (length(dup_names) > 0) {
+      cli::cli_abort(c(
+        "'Data File' column is missing and the sample names ('Name') are not unique, so they cannot be used as identifier.",
+        "x" = "Duplicated sample name{?s}: {.val {mh_vec(dup_names)}}",
+        "i" = "Please re-export from MassHunter with 'Data File' included."
+      ))
+    }
+    if (!silent) {
+      mh_info(
+        "No 'Data File' column found: using sample names ('Name') as analysis identifier."
+      )
+    }
+    datWide <- datWide |>
+      dplyr::mutate(raw_data_filename = .data$sample_name, .before = 1)
+  }
 
   # TODO: check if all these are caught
   if ("message_quantitation" %in% names(datWide)) {
@@ -1669,7 +1689,7 @@ parse_plain_wide_csv <- function(
     )
   )
   variable_name <- stringr::str_c("feature_", variable_name)
-  variable_name_sym = rlang::sym(variable_name)
+  variable_name_sym <- rlang::sym(variable_name)
 
   d <- readr::read_csv(
     path,
@@ -1782,10 +1802,10 @@ parse_plain_wide_csv <- function(
       ))
     }
   } else {
-    analysis_metadata_cols = NULL
+    analysis_metadata_cols <- NULL
   }
 
-  analysis_id_col_sym = rlang::sym(analysis_id_col)
+  analysis_id_col_sym <- rlang::sym(analysis_id_col)
 
   d[[analysis_id_col]] <- factor(d[[analysis_id_col]])
 
