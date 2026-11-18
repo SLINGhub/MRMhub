@@ -31,7 +31,7 @@ each update. Antivirus or endpoint-protection software may also quarantine the u
 allow-list it if the file will not launch. See
 [clearing the security prompt](setup.qmd#clearing-the-first-launch-security-prompt).
 
-The macOS build is Apple silicon only and will not run on an Intel Mac.
+macOS builds are provided for both Apple silicon (`aarch64-apple-darwin`) and Intel (`x86_64-apple-darwin`) Macs; an Apple silicon build will not run on an Intel Mac.
 
 ### Q: MRMhub closes on start — the console opens, then returns to the shell prompt {#crash-start}
 
@@ -72,6 +72,11 @@ For memory, allow **16 GB RAM** for large sequences (8 GB minimum) and ample dis
 **A:** Convert with a **recent** ProteoWizard MSConvert (Windows only), using **mzML** output,
 **32-bit** encoding, and **Write index** enabled. For SCIEX data, keep the `.wiff` and `.wiff.scan`
 files in the same folder. See [mzML Conversion](msconvert.qmd).
+
+Step 1 checks every mzML file before it starts and stops with an error if a file contains no
+chromatograms or uses a compression other than zlib or none (e.g. MS-Numpress). All such files are
+listed in `mzml_format_errors.txt`, and the results of the previous run are left in place. Convert
+those files again with the settings above. Files converted without *Write index* are read as well.
 
 ### Q: After editing a CSV, integration results are incorrect or implausible {#csv-misread}
 
@@ -123,7 +128,8 @@ matched, and the run can proceed. See [Processing Workflow](running.qmd#step-1-d
 ### Q: What do the missing_*.txt reports mean? {#missing-files}
 
 **A:** They are written only on problems: **missing_files.txt** (mzML listed but absent, or present
-but unlisted), **missing_compounds.txt** (transitions not matched in the mzML), and
+but unlisted), **missing_compounds.txt** (transitions absent from one or more mzML files, marked as
+*kept* or *removed*), and
 **missing_details.txt** (which samples lack a given transition). The analysis may still proceed. See
 [Processing Workflow](running.qmd#step-1-data-validation).
 
@@ -131,8 +137,8 @@ but unlisted), **missing_compounds.txt** (transitions not matched in the mzML), 
 
 **A:** Locate the cause by step:
 
-- **Not matched (Step 1)** — if it is listed in `missing_compounds.txt`, it was not found in the mzML
-  data. Matching is by precursor and product *m/z* and RT, within `mz_tol` and `RT_tol`; check the
+- **Not matched (Step 1)** — if it is listed as *removed* in `missing_compounds.txt`, it was not found
+  in a reference sample or in any learning sample. Matching is by precursor and product *m/z* and RT, within `mz_tol` and `RT_tol`; check the
   transition-list values against the mzML and widen `mz_tol` if the *m/z* calibration is slightly off.
 - **Matched but not integrated (Step 3)** — the transition is present but no peak was found, so its
   area is zero and its `long.csv` fields are empty (see [area reported as zero](#area-zero)).
@@ -183,6 +189,28 @@ the integration bounds, or set fixed per-feature borders as a last resort. Fully
 **A:** This is expected. `uniform_width` fixes the borders on the **RT-drift-corrected** scale, where
 they are identical across samples. In **absolute** RT — as plotted in the PDFs — they move with each
 sample's RT shift, so they appear to wobble. See [Tuning Peak Integration](tuning.qmd).
+
+### Q: How can I find peaks that are cut off by the end of the MRM window? {#trace-cut}
+
+**A:** Use the `trace_cut_pct` column of `long.csv`. A value is given when the integration window
+reaches the start (negative) or end (positive) of the trace, including the limits of `crop_window`,
+and states how much signal is left there, as a percentage of the apex height above baseline; ±100 means the apex lies on the trace
+end. Such areas are underestimated. Widen the scheduled MRM window in the acquisition method, or
+exclude affected values above a chosen threshold. See [Output Files](output-files.qmd#long.csv).
+
+### Q: How is the signal-to-noise ratio calculated, and why does it differ from vendor software? {#sn-ratio}
+
+**A:** `sn_ratio` in `long.csv` (experimental) is the peak height above the integration baseline divided by the
+noise of the baseline. By default (`flank`) the noise is half the peak-to-peak range of the baseline
+next to the peak, within 3 × FWHM, on the quieter side, so that a neighbouring peak such as an isomer
+or isotopic interference on one side does not count as noise; a trace that wobbles everywhere keeps a
+low S/N. Integration windows of all features of the transition are excluded, so a known interference
+can also be excluded by adding it as a feature. A small peak on a baseline that undulates by about its
+own height can still receive an S/N of about 2 although it is genuine. `sn_noise` in `param.txt` selects instead a robust
+standard deviation (`robust`), the RMS noise (`rms`) or the peak-to-peak noise (`p2p`) of a wider
+region (10 × FWHM on each side). Vendor software uses other noise regions, often smooths the data, and
+some multiply the noise by a factor, so its values differ, sometimes several-fold. Compare S/N
+values only within one method. See [Output Files](output-files.qmd#long.csv).
 
 ## Re-running after edits {#rerun}
 

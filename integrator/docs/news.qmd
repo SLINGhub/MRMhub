@@ -8,6 +8,44 @@ Binary releases are published on the
 
 ## Latest changes
 
+- **`param.txt` from older versions keeps working**: missing settings take their
+  documented defaults and unknown ones are ignored; both are listed when a step
+  starts. Whole numbers are accepted where a decimal is expected, and a wrong
+  value stops the run with a message naming the setting instead of a crash.
+- **New `long.csv` columns `sn_ratio` and `noise_method` (experimental)**:
+  signal-to-noise ratio of each peak. By default the noise is the pharmacopoeia
+  peak-to-peak noise of the baseline beside the peak, on the side without a
+  neighbouring peak; other estimates can be selected with `sn_noise` in
+  `param.txt`. The noise estimate may change in future versions.
+- **`height` and `FWHM` measured above the integration baseline**: `height` is
+  now the apex intensity minus the integration baseline (previously the raw
+  apex intensity), and `FWHM` is measured at half of that height. `FWHM` is left
+  empty when the peak is cut by the integration window, instead of reporting the
+  window width. Compared with MassHunter on Dataset 4, 93 % of `FWHM` values agree
+  within 10 % (previously 74 %). Workflows that quantify on `height` give different
+  values with this version.
+- **Transitions missing from some mzML files are retained**: such a transition
+  is integrated in the files that contain it, provided it is present in all
+  reference samples and in at least one learning sample; the other files receive
+  empty values, and step 1 points to `missing_compounds.txt` in the console.
+  Previously, the transition was removed from the whole dataset.
+- **macOS build for Intel processors** (`x86_64-apple-darwin`), in addition to
+  Apple silicon.
+- **mzML files converted without "Write index" are read**: previously, their
+  chromatograms were not read and step 1 terminated with an error.
+- **mzML format check in step 1**: files without chromatograms or with an
+  unsupported compression (e.g. MS-Numpress) stop step 1 with an error before
+  any data are read, and are listed in `mzml_format_errors.txt`; the results of
+  the previous run are left in place.
+- **New `long.csv` column `trace_cut_pct`**: flags peaks cut off by the start
+  or end of the MRM trace, including the limits of `crop_window`, and gives the
+  signal remaining there as a percentage of the apex height above baseline.
+- **Valley-to-valley (`v2v`) baseline at cut and sloped peaks**: for a peak cut
+  by the trace end, the baseline is held at the level of the other integration
+  border instead of rising to the cut edge, which removed about 60 % of such
+  areas in the DYNAMO data. `height`, `rt_apex` and `FWHM` are measured at the
+  point highest above the sloped baseline, so a small peak on a steep baseline
+  no longer gets a height of 0.
 - **Complete Rust source code**, including the **MRMhub-viz** viewer app, with
   build instructions.
 - **Per-feature baseline determination**: the baseline mode (`default`

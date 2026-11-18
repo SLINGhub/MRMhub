@@ -2,6 +2,9 @@
 
 - Fixed the LoD and LoQ of calibration curves fitted with a weighting (`1/x`, `1/x^2`, `1/sqrt(x)`).
 - Metadata checks work with assertr 3.1.0, and `read_dataset_rds()` no longer reports a false fingerprint mismatch for files saved in another R session.
+- INTEGRATOR: new `long.csv` columns `trace_cut_pct`, which flags peaks cut off by the end of the MRM trace, and `sn_ratio` with `noise_method`, an experimental signal-to-noise ratio. `import_data_mrmhub()` imports them as `feature_trace_cut_pct`, `feature_sn_ratio` and `method_noise_algorithm`.
+- INTEGRATOR: `height` and `FWHM` are now measured above the integration baseline, so `height` values differ from earlier versions; peak areas are unchanged. The valley-to-valley (`v2v`) baseline also handles peaks on a sloping baseline and peaks cut off by the trace end better.
+- INTEGRATOR: transitions missing from some mzML files are kept, with empty values for those files, instead of being removed from the whole dataset. mzML files are checked before step 1, files converted without an index are read, `param.txt` files from older versions keep working, and a macOS build for Intel processors is available.
 
 # mrmhub 1.0.1
 

@@ -115,6 +115,21 @@ test_that("data_sum_features sums feature_area and NAs the peak widths of merged
   expect_false(all(is.na(kept$feature_width)))
 })
 
+test_that("data_sum_features NAs the peak quality of merged analytes", {
+  m <- mexp
+  m@dataset$feature_sn_ratio <- 10
+  m@dataset$feature_trace_cut_pct <- 5
+  ded <- suppressMessages(data_sum_features(m, qualifier_action = "include"))
+
+  merged <- ded@dataset[ded@dataset$feature_id == "LPC 18:1", ]
+  expect_true(all(is.na(merged$feature_sn_ratio)))
+  expect_true(all(is.na(merged$feature_trace_cut_pct)))
+
+  kept <- ded@dataset[ded@dataset$feature_id == "CE 18:1", ]
+  expect_true(all(kept$feature_sn_ratio == 10))
+  expect_true(all(kept$feature_trace_cut_pct == 5))
+})
+
 test_that("data_sum_features keeps feature_id unique when merged transitions disagree", {
   # `mexp2` merges several PC transitions into one analyte and marks the "PC 4*"
   # ones as qualifiers, so the constituents disagree on `is_quantifier` -- the

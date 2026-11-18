@@ -288,6 +288,11 @@ PlotTransitionChromatogram <- function(cpd_index) {
         signed = FALSE,
         endian = "little"
       )
+      # Transition absent from this sample: no data points
+      if (data_point_count == 0) {
+        intensity_ranges[i] <- NA
+        next
+      }
       intensity <- matrix(
         readBin(
           data_connection,
@@ -302,7 +307,7 @@ PlotTransitionChromatogram <- function(cpd_index) {
       intensity_ranges[i] <- max(intensity) - min(intensity)
     }
 
-    return(median(intensity_ranges))
+    return(median(intensity_ranges, na.rm = TRUE))
   })
 
   # Second pass: plot chromatograms.
@@ -371,7 +376,7 @@ PlotTransitionChromatogram <- function(cpd_index) {
         n = data_point_count * 2,
         endian = "little"
       ),
-      ncol = data_point_count
+      nrow = 2 # same as ncol = data_point_count, but also valid with no data points
     )
     rt <- intensity[1, ]
     intensity <- intensity[2, ]
@@ -391,6 +396,17 @@ PlotTransitionChromatogram <- function(cpd_index) {
       n = n_peaks * 2,
       endian = "little"
     )
+
+    # Transition absent from this sample: empty panel with a label
+    if (data_point_count == 0) {
+      plot.new()
+      mtext(
+        substr(mzml_files[i], 1, nchar(mzml_files[i]) - 5),
+        side = 3, line = -1, adj = 0, cex = 0.7
+      )
+      text(0.5, 0.5, "not acquired", cex = 2, col = gray(0, 0.4))
+      next
+    }
 
     max_selected_intensity <- max(
       intensity[peak_bounds[1]:peak_bounds[n_peaks * 2]]
