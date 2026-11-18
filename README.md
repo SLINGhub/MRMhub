@@ -77,6 +77,8 @@ save_report_xlsx(mexp, path = "results.xlsx")
 
 Bug reports and feature requests are welcome via [GitHub issues](https://github.com/SLINGhub/MRMhub/issues). The project follows the [Contributor Code of Conduct](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html).
 
+The core of MRMhub, including its data model, processing pipeline, algorithms, QC plots and unit-test suite, was written without AI assistance, up to and including the version submitted with the manuscript (March 2026). Since then, development has used an AI coding assistant (Claude, Anthropic), mainly for bug fixes, additional tests, documentation, refactoring and build/CI infrastructure; releases from v0.9.9 onward contain such changes. The maintainers review and test every change and remain responsible for the code. Assisted commits are marked in their commit messages.
+
 ## Citation
 
 Burla B., Teo G. *et al.* (2026). MRMhub: a scalable data-processing framework for large-scale targeted metabolomics. *Nature Metabolism*. [doi:10.1038/s42255-026-01629-2](https://doi.org/10.1038/s42255-026-01629-2)
