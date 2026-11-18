@@ -26,6 +26,8 @@ cargo build --release        # → target/release/MRMhub  (MRMhub.exe on Windows
 `MRMhub --version` prints the version. At startup the executable runs from its own folder, so
 `param.txt`, the input files, and `MRMhub_plot.r` must sit next to it; step 4 (PDF plots) requires R.
 
+CI builds, release packaging, and how to trigger them manually are described in [CI.md](CI.md).
+
 ## Documentation
 
 Full manual: <https://slinghub.github.io/MRMhub/integrator/>
