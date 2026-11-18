@@ -356,12 +356,50 @@ test_that("Returns a defined error when reading MH Quant .csv with analytes/feat
   )
 })
 
-test_that("Returns a defined error when reading MH Quant .csv with analytes/features as rows (Compound Table) is imported", {
-  expect_error(
-    parse_masshunter_csv(test_path(
+test_that("MH Quant .csv without 'Data File' uses the sample names as analysis_id", {
+  expect_message(
+    d <- parse_masshunter_csv(test_path(
       "testdata/masshunter/24_MHQuant_noRawdatafilename.csv"
     )),
-    regexp = "'Data File' column is required and used as a unique identifier, but is missing or the file",
+    "using sample names"
+  )
+  expect_identical(d$analysis_id, d$sample_name)
+  expect_identical(d$raw_data_filename, d$sample_name)
+  expect_true("007_SOLV_Blank01" %in% d$analysis_id)
+  expect_equal(length(unique(d$analysis_id)), 65)
+})
+
+test_that("MH Quant .csv without 'Data File' and with duplicated sample names returns a defined error", {
+  lines <- readLines(
+    test_path("testdata/masshunter/24_MHQuant_noRawdatafilename.csv"),
+    warn = FALSE
+  )
+  lines <- gsub(
+    "007_SOLV_Blank01",
+    "006_EBLK_Extracted Blank+ISTD01",
+    lines,
+    fixed = TRUE
+  )
+  tmp <- withr::local_tempfile(fileext = ".csv")
+  writeLines(lines, tmp)
+  expect_error(
+    parse_masshunter_csv(tmp),
+    regexp = "sample names ('Name') are not unique",
+    fixed = TRUE
+  )
+})
+
+test_that("MH Quant .csv without 'Data File' and 'Name' returns a defined error", {
+  lines <- readLines(
+    test_path("testdata/masshunter/24_MHQuant_noRawdatafilename.csv"),
+    warn = FALSE
+  )
+  lines[2] <- sub(",Name,", ",Sample Name,", lines[2], fixed = TRUE)
+  tmp <- withr::local_tempfile(fileext = ".csv")
+  writeLines(lines, tmp)
+  expect_error(
+    parse_masshunter_csv(tmp),
+    regexp = "'Data File' or 'Name' column is required",
     fixed = TRUE
   )
 })

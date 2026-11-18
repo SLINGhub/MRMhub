@@ -1,5 +1,7 @@
 # mrmhub (development version)
 
+- QUANT - New: `import_data_masshunter()` uses the sample names ('Name') as identifier when the export has no 'Data File' column; the names must be unique.
+
 # mrmhub 1.0.2
 
 - INTEGRATOR - New: detection of peaks cut off at the start or end of the MRM window: the signal remaining at the edge is reported in % of the peak height (`trace_cut_pct`). Imported in QUANT as column `feature_trace_cut_pct`.
