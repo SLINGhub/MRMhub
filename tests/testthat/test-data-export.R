@@ -447,6 +447,73 @@ test_that("read_dataset_rds() verifies the embedded fingerprint", {
   expect_message(read_dataset_rds(f), "fingerprint verified")
 })
 
+test_that("archive fingerprints survive a new R session with metadata closures", {
+  f <- withr::local_tempfile(fileext = ".rds")
+  experiment <- mexp
+  # assertr metadata imports retain callbacks whose live environment identities
+  # differ between R sessions even when the serialized data are identical.
+  attr(experiment@annot_analyses, "assertr_in_chain_success_fun_override") <-
+    local({ captured <- 1; function(data, ...) { captured; data } },
+      envir = new.env(parent = baseenv()))
+  suppressMessages(save_dataset_rds(experiment, f))
+  verified <- callr::r(function(path) {
+    object <- readRDS(path)
+    stored <- attr(object, "mrmhub_hash")
+    method <- attr(object, "mrmhub_hash_method")
+    attr(object, "mrmhub_hash") <- NULL
+    attr(object, "mrmhub_hash_method") <- NULL
+    bytes <- serialize(object, NULL, version = 2, xdr = TRUE)
+    bytes[7L:14L] <- as.raw(0L)
+    identical(method, "serialize-v2") && identical(rlang::hash(bytes), stored)
+  }, args = list(f))
+  expect_true(verified)
+  expect_message(read_dataset_rds(f), "fingerprint verified")
+})
+
+test_that("archive fingerprints do not depend on R runtime version headers", {
+  expected <- dataset_fingerprint(mexp)
+  serialize_content <- serialize
+  local_mocked_bindings(
+    serialize = function(...) {
+      bytes <- serialize_content(...)
+      bytes[7L:14L] <- as.raw(c(0, 4, 1, 0, 0, 2, 0, 0))
+      bytes
+    },
+    .package = "base"
+  )
+  expect_identical(dataset_fingerprint(mexp), expected)
+})
+
+test_that("archive fingerprints detect changed scientific values", {
+  f <- withr::local_tempfile(fileext = ".rds")
+  suppressMessages(save_dataset_rds(mexp, f))
+  changed <- readRDS(f)
+  changed@dataset$feature_intensity[1] <-
+    changed@dataset$feature_intensity[1] + 1
+  saveRDS(changed, f)
+  expect_message(read_dataset_rds(f), "Fingerprint mismatch")
+})
+
+test_that("saving a bare-read archive replaces or removes its old fingerprint", {
+  f <- withr::local_tempfile(fileext = ".rds")
+  suppressMessages(save_dataset_rds(mexp, f))
+  object <- readRDS(f)
+  suppressMessages(save_dataset_rds(object, f))
+  expect_message(restored <- read_dataset_rds(f), "fingerprint verified")
+  expect_equal(restored, mexp)
+  suppressMessages(save_dataset_rds(object, f, hash = FALSE))
+  expect_null(attr(readRDS(f), "mrmhub_hash"))
+  expect_null(attr(readRDS(f), "mrmhub_hash_method"))
+})
+
+test_that("read_dataset_rds() still verifies legacy object fingerprints", {
+  f <- withr::local_tempfile(fileext = ".rds")
+  object <- mexp
+  attr(object, "mrmhub_hash") <- rlang::hash(object)
+  saveRDS(object, f)
+  expect_message(read_dataset_rds(f), "fingerprint verified")
+})
+
 test_that("read_dataset_rds() reports a fingerprint mismatch", {
   f <- withr::local_tempfile(fileext = ".rds")
   tampered <- mexp

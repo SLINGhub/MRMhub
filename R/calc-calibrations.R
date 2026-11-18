@@ -30,9 +30,9 @@
 #'   If `TRUE`, missing annotations will be ignored, and resulting feature concentration will be `NA`
 #' @param lod_sigma A character string selecting the standard deviation of the
 #'   response (sigma) used in the ICH Q2 LoD/LoQ formulas. Must be one of
-#'   `"residual"` (the residual standard error of the regression, Sy/x; the
-#'   default) or `"intercept"` (the standard error of the intercept). See
-#'   [calc_calibration_results()] for details.
+#'   `"auto"` (the default: residual standard error for unweighted fits,
+#'   intercept standard error for weighted fits), `"residual"` or `"intercept"`.
+#'   See [calc_calibration_results()] for details.
 #' @return A modified [`MRMhubExperiment`][MRMhubExperiment-class] object with updated concentration values.
 #'
 #' @seealso [calc_calibration_results()] for calculating the calibration curve results including LoD and LoQ.
@@ -46,7 +46,7 @@ quantify_by_calibration <- function(
   fit_weighting = c("none", "1/x", "1/x^2", "1/sqrt(x)"),
   ignore_failed_calibration = FALSE,
   ignore_missing_annotation = FALSE,
-  lod_sigma = c("residual", "intercept")
+  lod_sigma = c("auto", "residual", "intercept")
 ) {
   check_data(data)
 
@@ -327,12 +327,27 @@ quantify_by_calibration <- function(
 #' quadratic fit is an approximation beyond the guideline (adequate when the
 #' curvature near zero is small).
 #'
-#' The response standard deviation `sigma` is selected via `lod_sigma`, following
-#' the ICH-acceptable choices: `"residual"` uses the residual standard error of
-#' the regression (Sy/x; the default and prior behaviour), while `"intercept"`
-#' uses the standard error of the intercept. The `sigma` column reported in
-#' `metrics_calibration` is always the residual standard error, independent of
-#' this choice.
+#' The response standard deviation `sigma` is selected via `lod_sigma`, from the
+#' two ICH Q2 choices: the residual standard error of the regression (Sy/x) or
+#' the standard error of the intercept. Both must be in response units for
+#' `sigma / S` to be a concentration. For a **weighted** fit (`1/x`, `1/x^2`,
+#' `1/sqrt(x)`) the residual standard error is computed from weighted residuals,
+#' so its units depend on the weights (e.g. response / concentration for
+#' `1/x^2`), and LoD/LoQ derived from it do not scale with the concentration
+#' unit. The intercept standard error is in response units for any weighting.
+#' Hence:
+#'
+#' - `"auto"` (default): residual standard error for unweighted fits, intercept
+#'   standard error for weighted fits (reported once per call).
+#' - `"residual"`: residual standard error; LoD/LoQ are `NA` for weighted fits,
+#'   with a warning.
+#' - `"intercept"`: intercept standard error for all fits.
+#'
+#' A line through the origin (single linear calibrator) has no intercept and
+#' no residual degrees of freedom, so its LoD/LoQ are `NA`. The `sigma` column
+#' in `metrics_calibration` is always the residual standard error, independent
+#' of `lod_sigma`; for weighted fits it is the weighted residual standard error,
+#' which has no simple units.
 #'
 #' The results of the regression and the calculated LoD and LoQ values are
 #' stored in the `metrics_calibration` table of the returned `MRMhubExperiment`
@@ -383,10 +398,10 @@ quantify_by_calibration <- function(
 #' @param include_fit_object If `TRUE`, the function will return the full
 #'   regression fit objects for each feature in the `metrics_calibration` table.
 #' @param lod_sigma A character string selecting the response standard deviation
-#'   (sigma) used in the ICH Q2 LoD/LoQ formulas. Must be one of `"residual"`
-#'   (the residual standard error of the regression, Sy/x; the default) or
-#'   `"intercept"` (the standard error of the intercept). No averaging of the two
-#'   is performed.
+#'   (sigma) used in the ICH Q2 LoD/LoQ formulas. Must be one of `"auto"` (the
+#'   default: residual standard error, Sy/x, for unweighted fits and intercept
+#'   standard error for weighted fits), `"residual"` (Sy/x; LoD/LoQ are `NA` for
+#'   weighted fits) or `"intercept"` (intercept standard error for all fits).
 #' @param ignore_failed_calibration If `FALSE`, an error is raised if all
 #'   quantifier calibration curve fits fail. If `TRUE`, a warning is shown
 #'   instead and the failed fits are returned, so resulting concentrations are
@@ -415,7 +430,7 @@ calc_calibration_results <- function(
   fit_weighting,
   ignore_missing_annotation = FALSE,
   include_fit_object = FALSE,
-  lod_sigma = c("residual", "intercept"),
+  lod_sigma = c("auto", "residual", "intercept"),
   ignore_failed_calibration = FALSE
 ) {
   check_data(data)
@@ -609,22 +624,21 @@ calc_calibration_results <- function(
   # LoD/LoQ use the slope of the calibration curve at zero concentration, i.e.
   # the linear coefficient `coef_b` (ICH Q2). For a quadratic fit the slope is
   # b + 2*c*conc, which reduces to `coef_b` at conc = 0, so the quadratic term
-  # does not contribute to the slope used here. The response sigma is selected by
-  # `lod_sigma`: the residual standard error (Sy/x) or the intercept standard
-  # error (SDa). The transient `sigma_lod` / `slope_at_conc` helper columns are
-  # dropped by the downstream `select()`, so the stored `sigma` column always
-  # remains the residual standard error.
+  # does not contribute to the slope used here. The weighted residual SE of a
+  # weighted fit is not in response units (LoD/LoQ would not scale with the
+  # concentration unit), so weighted fits use the intercept SE (SDa), which is.
   add_quantlimits <- function(data, lod_sigma) {
+    weighted <- data$fit_weighting != "none"
+    sigma_lod <- switch(
+      lod_sigma,
+      auto = if_else(weighted, data$sigma_intercept, data$sigma),
+      residual = if_else(weighted, NA_real_, data$sigma),
+      intercept = data$sigma_intercept
+    )
     data |>
       mutate(
-        slope_at_conc = .data$coef_b,
-        sigma_lod = if (lod_sigma == "intercept") {
-          .data$sigma_intercept
-        } else {
-          .data$sigma
-        },
-        lod = 3.3 * .data$sigma_lod / .data$slope_at_conc,
-        loq = 10 * .data$sigma_lod / .data$slope_at_conc
+        lod = 3.3 * sigma_lod / .data$coef_b,
+        loq = 10 * sigma_lod / .data$coef_b
       )
   }
 
@@ -740,6 +754,18 @@ calc_calibration_results <- function(
     )
   }
   d_stats <- add_quantlimits(d_stats, lod_sigma)
+  weighted_fits <- d_stats$feature_id[
+    d_stats$fit_weighting != "none" & !d_stats$reg_failed
+  ]
+  if (length(weighted_fits) > 0 && lod_sigma == "auto") {
+    mh_info(
+      "LoD/LoQ of {length(weighted_fits)} weighted fit{?s} use the intercept standard error, as the weighted residual standard error is not in response units."
+    )
+  } else if (length(weighted_fits) > 0 && lod_sigma == "residual") {
+    mh_warn(
+      "LoD/LoQ set to `NA` for {length(weighted_fits)} weighted fit{?s}: the weighted residual standard error is not in response units. Use {.code lod_sigma = \"auto\"} or {.code \"intercept\"}."
+    )
+  }
 
   d_stats <- d_stats |>
     dplyr::select(
@@ -1094,10 +1120,11 @@ get_qc_bias_variability <- function(
 #' - `coef_a`: **Intercept** (0th-order term, `x^0`) of the fitted curve.
 #' - `coef_b`: **1st-order** (linear, `x^1`) coefficient — the slope in a **linear** fit, or the linear term in a **quadratic** fit.
 #' - `coef_c`: **2nd-order** (quadratic, `x^2`) coefficient in **quadratic** fits. Returns `NA` for **linear** fits.
-#' - `sigma`: Standard deviation of residuals.
+#' - `sigma`: Residual standard error of the fit. For a **weighted** fit this is
+#'   the weighted residual standard error, which has no simple units.
 #' - `reg_failed`: `TRUE` if regression fitting failed.
-#' - `LoD` = 3.3× the sample standard error of residuals / slope of the regression (see Notes).
-#' - `LoQ` = 10× the sample standard error of residuals / slope of the regression (see Notes).
+#' - `lod` = 3.3 × sigma / slope at zero concentration (see Note).
+#' - `loq` = 10 × sigma / slope at zero concentration (see Note).
 #'
 #' The coefficients describe the curve in **ascending** power order (R's
 #' `lm()` / `poly()` convention): `response = coef_a + coef_b * x + coef_c * x^2`.
@@ -1108,17 +1135,14 @@ get_qc_bias_variability <- function(
 #' **Note:** LoD/LoQ follow the ICH Q2(R1/R2) approach (3.3 sigma / S and
 #' 10 sigma / S). The slope `S` is the slope of the calibration curve at zero
 #' concentration (the linear coefficient `coef_b`); for a **quadratic** fit the
-#' quadratic term does not contribute to this slope. The response `sigma` is
-#' selectable in [`calc_calibration_results()`] via `lod_sigma` (residual
-#' standard error, the default, or the standard error of the intercept); the
-#' `sigma` column reported here is always the residual standard error.
-#'
-#' For a **weighted** fit (`1/x`, `1/x^2`, `1/sqrt(x)`) `sigma` is R's weighted
-#' residual standard error, which is not on the raw response scale that the ICH
-#' `3.3 sigma / S` formula assumes, so the reported LoD/LoQ are approximate
-#' (typically slightly optimistic for `1/x`). Use `fit_weighting = "none"` if you
-#' require the strict ICH response-scale `Sy/x`; the back-calculated
-#' concentrations themselves are unaffected.
+#' quadratic term does not contribute to this slope. The response sigma must be
+#' in response units, so by default (`lod_sigma = "auto"` in
+#' [`calc_calibration_results()`]) unweighted fits use the residual standard
+#' error (Sy/x) and **weighted** fits (`1/x`, `1/x^2`, `1/sqrt(x)`) the standard
+#' error of the intercept. The weighted residual standard error is not in
+#' response units, so LoD/LoQ derived from it would not scale with the
+#' concentration unit. The `sigma` column reported here is always the residual
+#' standard error, independent of `lod_sigma`.
 
 #'
 #' @param data A [`MRMhubExperiment`][MRMhubExperiment-class] object with QC metrics.

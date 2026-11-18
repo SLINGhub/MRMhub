@@ -1,0 +1,109 @@
+<!doctype html><html data-theme="dark"><meta charset="utf-8"><title>QUANT history/progress smoke test</title>
+<link rel="stylesheet" href="../ui/styles.css"><link rel="stylesheet" href="../ui/quant/quant.css"><link rel="stylesheet" href="../ui/quant/terminal.bundle.css">
+<body><main id="quant-view"></main><script type="module">
+// Synthetic bridge only: no R execution, shell, dataset access or file writes.
+const events = new Map(); let finish;
+const currentPreview = new URL(location.href).searchParams.has("current");
+document.documentElement.dataset.theme = new URL(location.href).searchParams.get("theme") === "light" ? "light" : "dark";
+let tableReads = 0;
+const analyses = [{analysis_id:"Sample, A",valid_analysis:true,qc_type:"SPL"},{analysis_id:"Sample B",valid_analysis:true,qc_type:"BQC"}];
+const features = [{feature_id:"PC(16:0,18:1)",valid_feature:true},{feature_id:"PC 34:2",valid_feature:true}];
+const history = [
+  {id:"preview-3",action:"legacy",operation:"legacy-5",created:"2026-09-26T13:03:00Z",artifacts:[],tables:[],objects:["mexp"],workingDirectory:"/__mrmhub_ui_preview__/Dataset4",directory:"Preview step 6"},
+  {id:"preview-2",action:"legacy",operation:"legacy-4",created:"2026-09-26T13:02:00Z",artifacts:[{name:"plot.png",kind:"image"}],tables:[],workingDirectory:"/__mrmhub_ui_preview__/Dataset4",directory:"Preview step 5"},
+  {id:"preview-1",action:"run",operation:"plot_runsequence",created:"2026-09-26T13:01:00Z",artifacts:[{name:"plot.png",kind:"image"}],tables:[],directory:"Preview guided step"},
+];
+if (currentPreview) Object.assign(history[2], {title:"Synthetic assay",samples:2,features:2,
+  tables:[{name:"annot_analyses",rows:2,editable:true},{name:"annot_features",rows:2,editable:true}],
+  metadataCoverage:{analyses:{imported:2,active:2,missing:0,extra:0},features:{imported:2,active:2,missing:0,extra:0}}});
+const field=(name,type,extra={})=>({name,label:name.replaceAll("_"," "),type,required:false,enabled:false,original:"",...extra});
+const operations=[{id:"import_data_mrmhub",kind:"import",label:"Import MRMhub results",stage:"1 · Import",note:"Use the integrator’s long.csv or an MRMhub results export. Original files are never modified.",fields:currentPreview?[field("path","text",{label:"Input file",required:true}),field("import_metadata","boolean",{label:"Extract embedded metadata",value:true,enabled:true}),field("delimiter","text",{value:",",original:'","'})]:[]}];
+if(currentPreview) operations.push(
+  {id:"import_metadata_msorganiser",kind:"metadata",label:"Import metadata workbook",stage:"2 · Annotate",fields:[field("path","text"),field("ignore_warnings","boolean",{value:false}),field("excl_unmatched_analyses","boolean",{value:false})]},
+  ...["analyses","features"].map(name=>({id:`exclude_${name}`,kind:"process",label:`Exclude ${name}`,stage:"3 · Inspect",fields:[field(name,"text",{required:true,vector:true,lineSeparated:true}),field("clear_existing","boolean",{required:true,value:false,enabled:true})]})),
+  {id:"plot_calibrationcurves",kind:"plot",label:"External calibration curves",stage:"5 · Quantitate",fields:[field("fit_model","choice",{choices:["linear","quadratic"],value:"linear"}),field("fit_weighting","choice",{choices:["none","1/x","1/x^2","1/sqrt(x)"],value:"none"})]}
+);
+window.__mrmhubShell = {confirm:(message,title)=>new Promise(resolve=>{
+  const dialog=document.createElement("dialog");dialog.className="q-panel";dialog.style.maxWidth="560px";
+  const heading=document.createElement("h2");heading.textContent=title;
+  const text=document.createElement("p");text.textContent=message;text.style.whiteSpace="pre-line";
+  const done=value=>{dialog.close();dialog.remove();resolve(value);};
+  const cancel=document.createElement("button");cancel.textContent="Cancel";cancel.onclick=()=>done(false);
+  const accept=document.createElement("button");accept.textContent="Confirm test action";accept.onclick=()=>done(true);
+  dialog.addEventListener("cancel",event=>{event.preventDefault();done(false);});
+  dialog.append(heading,text,cancel,accept);document.body.append(dialog);dialog.showModal();
+})};
+window.__TAURI__ = {
+  event:{listen:async(name,callback)=>{events.set(name,callback);return()=>{};}},
+  dialog:{save:async()=>null},
+  core:{invoke:async(command,args)=>{
+    if(command==="quant_history") return [...history];
+    if(command==="quant_storage") return {folder:`${args.project}/QUANT`,totalBytes:2450000000,reclaimableBytes:1200000000,trashBytes:340000000,files:142,skippedEntries:0};
+    if(command==="quant_compact") {
+      const kept=new Set();
+      for(const entry of history) {
+        const mode=entry.action==="legacy"?"legacy":"guided";
+        entry.resumable=entry.resumable!==false&&!kept.has(mode);
+        if(entry.resumable) kept.add(mode);
+      }
+      return {retiredSnapshotBytes:0};
+    }
+    if(command==="quant_delete") {
+      let count=0;
+      for(let i=history.length-1;i>=0;i--) {
+        const entry=history[i];
+        if(!args.all && entry.id!==args.id) continue;
+        if(args.kind==="checkpoints") {
+          if((entry.action==="legacy")!==(args.mode==="legacy")) continue;
+          history.splice(i,1);count++;
+        } else {
+          entry.artifacts=entry.artifacts.filter(a=>{
+            const remove=a.kind==="image"&&(args.all||a.name===args.name);if(remove)count++;return !remove;
+          });
+        }
+      }
+      return {count,trash:"Preview only — no files touched"};
+    }
+    if(command==="quant_status") return {ready:true,catalog:{version:"1.0.1 preview",operations},message:"Synthetic preview — no R or data access"};
+    if(command==="quant_execute" && args.request.action==="table" && currentPreview) {
+      tableReads++; document.querySelector("#table-reads").textContent=`Table loads: ${tableReads}`;
+      const rows=args.request.table==="annot_features"?features:analyses;
+      return {columns:Object.keys(rows[0]),types:Object.fromEntries(Object.keys(rows[0]).map(k=>[k,k.startsWith("valid_")?"logical":"character"])),rows,total:rows.length,editable:true};
+    }
+    if(command==="quant_execute" && args.request.action==="run" && currentPreview) {
+      const {operation,parameters}=args.request;
+      if(operation.startsWith("exclude_")) {
+        const isAnalysis=operation==="exclude_analyses", name=isAnalysis?"analyses":"features", id=isAnalysis?"analysis_id":"feature_id", flag=isAnalysis?"valid_analysis":"valid_feature";
+        for(const row of isAnalysis?analyses:features) row[flag]=parameters.clear_existing ? !parameters[name].includes(row[id]) : row[flag]&&!parameters[name].includes(row[id]);
+      }
+      const previous=history.find(h=>h.action==="run");
+      const result={...previous,id:`preview-${Date.now()}`,operation,resumable:true,created:new Date().toISOString(),artifacts:operation.startsWith("plot_")?[{name:"plot.png",kind:"image"}]:[]};
+      previous.resumable=false;history.unshift(result);return result;
+    }
+    if(command==="quant_image") {
+      const canvas=document.createElement("canvas");canvas.width=1000;canvas.height=450;
+      const ctx=canvas.getContext("2d");ctx.fillStyle="white";ctx.fillRect(0,0,1000,450);
+      ctx.fillStyle=args.id==="preview-1"?"#9756ac":"#008b9f";ctx.font="36px sans-serif";
+      ctx.fillText(`Original saved graph: ${args.id}`,60,100);ctx.fillRect(80,180,600,180);
+      return canvas.toDataURL();
+    }
+    if(command==="quant_execute" && args.request.action==="legacy") {
+      for(let i=1;i<=180;i++) events.get("quant-log")?.({payload:`Output line ${String(i).padStart(3,"0")} · synthetic test output`});
+      events.get("quant-progress")?.({payload:{token:args.request.progressToken,percent:100*3/7,message:"Running R statement 3 of 5: plot_runsequence(mexp)"}});
+      return new Promise(resolve=>{finish=()=>{
+        const result={...history[0],id:"preview-4",resumable:true,created:"2026-09-26T13:04:00Z",operation:args.request.operation};
+        for(const entry of history) if(entry.action==="legacy") entry.resumable=false;
+        history.unshift(result);
+        resolve(result);finish=undefined;
+      };});
+    }
+    throw Error(`Unsupported preview command: ${command}`);
+  }},
+};
+const {initializeQuant}=await import("../ui/quant/quant.js");
+const counter=document.createElement("p");counter.id="table-reads";counter.textContent="Table loads: 0";document.body.prepend(counter);
+await initializeQuant(currentPreview?"/__mrmhub_ui_preview__/Dataset4":"/__mrmhub_ui_preview_only__");
+const end=document.createElement("button");end.type="button";end.textContent="Finish simulated R run";end.onclick=()=>finish?.();
+document.querySelector(".q-terminal-bar .q-actions:last-child").append(end);
+for(let i=1;i<=180;i++) events.get("quant-log")?.({payload:`Existing output line ${String(i).padStart(3,"0")} · scroll preservation test`});
+</script></body></html>

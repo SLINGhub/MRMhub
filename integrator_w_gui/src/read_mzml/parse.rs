@@ -1,6 +1,6 @@
 use quick_xml::events::Event;
 use quick_xml::reader::Reader;
-use std::io::Read;
+use std::io::{self, BufRead, Read};
 use std::str;
 // stores one parsed transition chromatogram
 pub struct Q1Q3RtI {
@@ -11,10 +11,14 @@ pub struct Q1Q3RtI {
     pub polarity: bool,
     pub ce: f32,
 }
-#[must_use]
 // parses the timestamp and transition chromatograms from an mzml file
-pub fn mzml(mzml_f: &std::path::Path) -> (String, Vec<Q1Q3RtI>) {
-    let mut reader = Reader::from_file(mzml_f).unwrap();
+pub fn mzml(mzml_f: &std::path::Path) -> io::Result<(String, Vec<Q1Q3RtI>)> {
+    let file = std::fs::File::open(mzml_f)?;
+    parse_reader(Reader::from_reader(io::BufReader::new(file)))
+        .map_err(|error| io::Error::new(error.kind(), format!("{}: {error}", mzml_f.display())))
+}
+
+fn parse_reader<R: BufRead>(mut reader: Reader<R>) -> io::Result<(String, Vec<Q1Q3RtI>)> {
     reader.config_mut().trim_text(true);
     let mut stack = Vec::<Vec<u8>>::new();
     let mut buf = Vec::new();
@@ -34,6 +38,13 @@ pub fn mzml(mzml_f: &std::path::Path) -> (String, Vec<Q1Q3RtI>) {
     let mut ts = String::new();
     loop {
         match reader.read_event_into(&mut buf) {
+            Err(error) => return Err(io::Error::new(io::ErrorKind::InvalidData, error)),
+            Ok(Event::Eof) => {
+                return Err(io::Error::new(
+                    io::ErrorKind::InvalidData,
+                    "mzML run element not found",
+                ));
+            }
             Ok(Event::Start(e)) => {
                 stack.push(e.local_name().as_ref().to_vec());
                 if e.local_name().as_ref() == b"run" {
@@ -52,8 +63,16 @@ pub fn mzml(mzml_f: &std::path::Path) -> (String, Vec<Q1Q3RtI>) {
     }
     loop {
         match reader.read_event_into(&mut buf) {
-            Err(e) => panic!("Error at position {}: {e:?}", reader.buffer_position()),
-            Ok(Event::Eof) => break,
+            Err(error) => return Err(io::Error::new(io::ErrorKind::InvalidData, error)),
+            Ok(Event::Eof) => {
+                if !stack.is_empty() {
+                    return Err(io::Error::new(
+                        io::ErrorKind::InvalidData,
+                        "mzML ended before all elements were closed",
+                    ));
+                }
+                break;
+            }
             Ok(Event::Start(e)) => {
                 if e.local_name().as_ref() == b"chromatogram"
                     && let Ok(Some(index)) = e.try_get_attribute("index")
@@ -146,7 +165,7 @@ pub fn mzml(mzml_f: &std::path::Path) -> (String, Vec<Q1Q3RtI>) {
         buf.clear();
     }
     q1q3eics.sort_unstable_by(|x, y| x.q1.partial_cmp(&y.q1).unwrap());
-    (ts, q1q3eics)
+    Ok((ts, q1q3eics))
 }
 // decodes a compressed or uncompressed binary mzml array
 fn decode_bin(
@@ -184,4 +203,35 @@ fn decode_bin(
         );
     }
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn missing_run_is_an_error_instead_of_an_endless_eof_loop() {
+        for input in ["", "<mzML></mzML>", "<not-mzml/>"] {
+            let error = parse_reader(Reader::from_reader(input.as_bytes()))
+                .err()
+                .unwrap();
+            assert_eq!(error.kind(), io::ErrorKind::InvalidData);
+            assert!(error.to_string().contains("run element not found"));
+        }
+    }
+
+    #[test]
+    fn invalid_xml_before_or_after_run_returns_an_error() {
+        for input in ["<mzML></wrong>", "<mzML><run></wrong>", "<mzML><run>"] {
+            assert!(parse_reader(Reader::from_reader(input.as_bytes())).is_err());
+        }
+    }
+
+    #[test]
+    fn valid_run_preserves_its_acquisition_timestamp() {
+        let input = b"<mzML><run startTimeStamp=\"2026-10-18T10:00:00Z\"></run></mzML>";
+        let (timestamp, traces) = parse_reader(Reader::from_reader(&input[..])).unwrap();
+        assert_eq!(timestamp, "2026-10-18T10:00:00Z");
+        assert!(traces.is_empty());
+    }
 }

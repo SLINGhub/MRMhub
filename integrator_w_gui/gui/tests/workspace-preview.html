@@ -1,0 +1,15 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>MRMhub workspace smoke test</title>
+<script type="module">
+// Render the actual application, not a copy. The synthetic bridge has no access
+// to R, a shell, real datasets, or the filesystem.
+const source = await (await fetch("../ui/index.html")).text();
+const preview = source.replace(
+  "<head>",
+  '<head><base href="../ui/"><script src="../tests/workspace-preview-bridge.js"><\/script>',
+);
+document.open();
+document.write(preview);
+document.close();
+</script>

@@ -20,8 +20,8 @@ save_dataset_rds(
 \code{.rds}, the extension is appended automatically.}
 
 \item{hash}{A logical value. If \code{TRUE} (default), a content fingerprint of the
-object is computed with \code{\link[rlang:hash]{rlang::hash()}}, embedded in the saved file and
-printed. The fingerprint is stored as an object attribute and is stripped
+serialized content is computed with \code{\link[rlang:hash]{rlang::hash()}}, embedded in the saved
+file and printed. The fingerprint is stored as an object attribute and is stripped
 again by \code{\link[=read_dataset_rds]{read_dataset_rds()}}, so it does not affect the reloaded object.}
 
 \item{compress}{A logical value passed to \code{\link[=saveRDS]{saveRDS()}}. If \code{TRUE} (the default),
@@ -46,7 +46,7 @@ portable snapshot of a complete analysis project — a collaborator can open it
 with \code{readRDS()} to inspect, or load \pkg{mrmhub} to re-plot and re-process,
 without reconstructing the original file paths, input files or metadata versions.
 
-By default a content fingerprint of the object (\code{\link[rlang:hash]{rlang::hash()}}) is embedded in
+By default a content fingerprint of the serialized object is embedded in
 the saved file and printed. Record it (or compare printed fingerprints) to
 confirm that a reloaded file — or a copy shared with a colleague — holds the
 identical object. \code{\link[=read_dataset_rds]{read_dataset_rds()}} reads the file back and verifies the

@@ -12,7 +12,7 @@ quantify_by_calibration(
   fit_weighting = c("none", "1/x", "1/x^2", "1/sqrt(x)"),
   ignore_failed_calibration = FALSE,
   ignore_missing_annotation = FALSE,
-  lod_sigma = c("residual", "intercept")
+  lod_sigma = c("auto", "residual", "intercept")
 )
 }
 \arguments{
@@ -44,9 +44,9 @@ If \code{TRUE}, missing annotations will be ignored, and resulting feature conce
 
 \item{lod_sigma}{A character string selecting the standard deviation of the
 response (sigma) used in the ICH Q2 LoD/LoQ formulas. Must be one of
-\code{"residual"} (the residual standard error of the regression, Sy/x; the
-default) or \code{"intercept"} (the standard error of the intercept). See
-\code{\link[=calc_calibration_results]{calc_calibration_results()}} for details.}
+\code{"auto"} (the default: residual standard error for unweighted fits,
+intercept standard error for weighted fits), \code{"residual"} or \code{"intercept"}.
+See \code{\link[=calc_calibration_results]{calc_calibration_results()}} for details.}
 }
 \value{
 A modified \code{\link[=MRMhubExperiment-class]{MRMhubExperiment}} object with updated concentration values.

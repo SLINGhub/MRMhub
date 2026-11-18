@@ -569,30 +569,6 @@ test_that("quantify_by_istd/normalize_by_istd fail if no istd defined/normalized
 #   )
 # })
 
-test_that("quantify_by_istd/normalize_by_istd fail if 1 istd not defined", {
-  mexp <- mexp_orig
-  mexp@annot_istds <- mexp@annot_istds[-1, ]
-  mexp_res <- normalize_by_istd(mexp)
-  expect_error(
-    mexp_res <- quantify_by_istd(mexp_res),
-    "Concentrations of 1 ISTD"
-  )
-})
-
-test_that("quantify_by_istd/normalize_by_istd fail if no istd defined/normalized", {
-  mexp <- mexp_orig
-  mexp@annot_istds <- mexp@annot_istds[0, ]
-  expect_error(
-    mexp_res <- quantify_by_istd(mexp),
-    "ISTD concentrations are missing...please import ISTD metadata first."
-  )
-
-  expect_error(
-    mexp_res <- quantify_by_istd(mexp_orig),
-    "Data needs to be ISTD normalized"
-  )
-})
-
 test_that("istd-based norm and quantification are correct, another test", {
   mexp_orig <- lipidomics_dataset
   mexp <- mexp_orig

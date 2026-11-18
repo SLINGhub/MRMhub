@@ -613,25 +613,42 @@ pub fn visualizer_save_bounds(project_path: &str, edits: Vec<BoundEdit>) -> Resu
         return Err("RT_matrix.csv does not contain any samples".to_string());
     }
     let row_count = records.len();
+    // A sequence operation may update thousands of rows. Index the headers and
+    // sample identities once, and reject ambiguity before changing any file.
+    let mut transition_columns: BTreeMap<String, Vec<usize>> = BTreeMap::new();
+    for (index, cell) in records[0].iter().enumerate() {
+        if let Some((_, cqq)) = cell.trim().rsplit_once(" / ") {
+            transition_columns.entry(cqq.to_string()).or_default().push(index);
+        }
+    }
+    let mut sample_rows = BTreeMap::new();
+    for (index, row) in records.iter().enumerate().skip(3) {
+        let name = row.first().filter(|name| !name.trim().is_empty())
+            .ok_or("RT_matrix.csv contains an empty sample name")?;
+        let key = strip_mzml(name.trim()).to_ascii_lowercase();
+        if sample_rows.insert(key, index).is_some() {
+            return Err("RT_matrix.csv contains duplicate sample names; bounds were not saved".to_string());
+        }
+    }
 
     let mut written = 0;
     for edit in &edits {
+        if !edit.rt_start.is_finite() || !edit.rt_end.is_finite()
+            || edit.rt_start < 0.0 || edit.rt_end < 0.0
+            || (edit.rt_end - edit.rt_start).abs() < 0.001
+        {
+            return Err("integration bounds must be finite, non-negative and at least 0.001 min apart".to_string());
+        }
         // the header repeats "compound / cqq" twice per isomer; collect this
         // edit's transition columns in order so pairs map to isomers
-        let columns: Vec<usize> = records[0]
-            .iter()
-            .enumerate()
-            .filter(|(_, cell)| {
-                cell.trim()
-                    .rsplit_once(" / ")
-                    .is_some_and(|(_, id)| id == edit.cqq)
-            })
-            .map(|(index, _)| index)
-            .collect();
-        let start_col = *columns
-            .get(edit.isomer_index * 2)
+        let columns = transition_columns.get(&edit.cqq)
             .ok_or_else(|| format!("transition {} was not found in RT_matrix.csv", edit.cqq))?;
-        let end_col = *columns.get(edit.isomer_index * 2 + 1).ok_or_else(|| {
+        let isomer_column = edit.isomer_index.checked_mul(2)
+            .ok_or("invalid peak index")?;
+        let start_col = *columns
+            .get(isomer_column)
+            .ok_or_else(|| format!("transition {} was not found in RT_matrix.csv", edit.cqq))?;
+        let end_col = *columns.get(isomer_column + 1).ok_or_else(|| {
             format!(
                 "transition {} is missing an integration column in RT_matrix.csv",
                 edit.cqq
@@ -639,16 +656,13 @@ pub fn visualizer_save_bounds(project_path: &str, edits: Vec<BoundEdit>) -> Resu
         })?;
 
         // trust the streamed order but verify by filename before writing
-        let target = 3 + edit.sample_index;
+        let target = edit.sample_index.saturating_add(3);
         let row_index = if target < row_count
-            && strip_mzml(records[target][0].trim()) == strip_mzml(edit.file_name.trim())
+            && sample_name_matches(&records[target][0], &edit.file_name)
         {
             target
         } else {
-            (3..row_count)
-                .find(|&index| {
-                    strip_mzml(records[index][0].trim()) == strip_mzml(edit.file_name.trim())
-                })
+            sample_rows.get(&strip_mzml(edit.file_name.trim()).to_ascii_lowercase()).copied()
                 .ok_or_else(|| {
                     format!("sample {} was not found in RT_matrix.csv", edit.file_name)
                 })?
@@ -668,17 +682,30 @@ pub fn visualizer_save_bounds(project_path: &str, edits: Vec<BoundEdit>) -> Resu
         written += 1;
     }
 
-    let mut writer = csv::WriterBuilder::new()
-        .flexible(true)
-        .from_path(&rtm_path)
-        .map_err(|error| error.to_string())?;
-    for record in &records {
-        writer
-            .write_record(record)
-            .map_err(|error| error.to_string())?;
-    }
-    writer.flush().map_err(|error| error.to_string())?;
+    write_bounds_atomically(&rtm_path, &records)?;
     Ok(written)
+}
+
+// A disk-full/write failure must not truncate the active matrix. Keep the
+// temporary file beside it so replacement stays on the same filesystem.
+fn write_bounds_atomically(path: &Path, records: &[Vec<String>]) -> Result<(), String> {
+    let nonce = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH)
+        .map_err(|error| error.to_string())?.as_nanos();
+    let temporary = path.with_file_name(format!(".RT_matrix-{}-{nonce}.tmp", std::process::id()));
+    let file = std::fs::OpenOptions::new().write(true).create_new(true).open(&temporary)
+        .map_err(|error| error.to_string())?;
+    let result = (|| -> Result<(), String> {
+        let mut writer = csv::WriterBuilder::new().flexible(true).from_writer(file);
+        for record in records {
+            writer.write_record(record).map_err(|error| error.to_string())?;
+        }
+        let file = writer.into_inner().map_err(|error| error.to_string())?;
+        file.sync_all().map_err(|error| error.to_string())?;
+        drop(file);
+        std::fs::rename(&temporary, path).map_err(|error| error.to_string())
+    })();
+    if result.is_err() { let _ = std::fs::remove_file(&temporary); }
+    result
 }
 
 // Applies each averaged reference window directly to every sample row. Shared
@@ -1266,6 +1293,37 @@ mod tests {
             ])
             .unwrap();
         writer.flush().unwrap();
+    }
+
+    #[test]
+    fn invalid_bulk_bounds_leave_matrix_unchanged() {
+        let dir = temp_project("invalid-bulk");
+        write_fixture(&dir);
+        let path = dir.join("RT_matrix.csv");
+        let before = std::fs::read(&path).unwrap();
+        let edits = vec![
+            BoundEdit { cqq: "0000".into(), sample_index: 0, file_name: "sample one".into(), isomer_index: 0, rt_start: 1.2, rt_end: 1.8 },
+            BoundEdit { cqq: "0000".into(), sample_index: 1, file_name: "sample two".into(), isomer_index: 0, rt_start: f32::NAN, rt_end: 1.8 },
+        ];
+        assert!(visualizer_save_bounds(dir.to_str().unwrap(), edits).is_err());
+        assert_eq!(std::fs::read(path).unwrap(), before);
+        std::fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[test]
+    fn sequence_bounds_keep_distinct_samples_and_other_peaks() {
+        let dir = temp_project("sequence-write");
+        write_fixture(&dir);
+        let edits = vec![
+            BoundEdit { cqq: "0001".into(), sample_index: 99, file_name: "SAMPLE ONE.mzml".into(), isomer_index: 1, rt_start: 5.2, rt_end: 6.2 },
+            BoundEdit { cqq: "0001".into(), sample_index: 0, file_name: "sample two".into(), isomer_index: 1, rt_start: 5.4, rt_end: 6.5 },
+        ];
+        assert_eq!(visualizer_save_bounds(dir.to_str().unwrap(), edits).unwrap(), 2);
+        let rows = read_rows(&dir);
+        assert_eq!(&rows[3][5..9], ["3.000", "4.000", "5.200", "6.200"]);
+        assert_eq!(&rows[4][5..9], ["3.100", "4.100", "5.400", "6.500"]);
+        assert_eq!(std::fs::read_dir(&dir).unwrap().count(), 1);
+        std::fs::remove_dir_all(dir).unwrap();
     }
 
     fn write_alignment_traces(dir: &Path) {

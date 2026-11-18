@@ -1,0 +1,25 @@
+<!doctype html>
+<html data-theme="dark"><meta charset="utf-8"><title>QUANT UI smoke test</title>
+<link rel="stylesheet" href="../ui/styles.css"><link rel="stylesheet" href="../ui/quant/quant.css">
+<link rel="stylesheet" href="../ui/quant/terminal.bundle.css">
+<body><main id="quant-view"><h1>QUANT UI smoke test</h1><button id="preview">Open plot</button><button id="append">Append diagnostics</button>
+<section class="q-activity q-terminal"><div class="q-terminal-bar"><div class="q-console-tabs"><button id="q-r-console-tab" role="tab">R Console</button><button id="q-shell-console-tab" role="tab">Terminal</button></div><div class="q-actions"><label id="q-output-colors-label" class="q-output-colors"><input id="q-output-colors" type="checkbox"> Smart colors</label><span id="q-terminal-state">Idle</span><span id="q-shell-state" class="hidden"></span><button id="q-shell-start" class="hidden">Start session</button><button id="q-clear-log">Clear</button><button id="q-console-expand">Expand</button></div></div><div id="q-r-console-panel" role="tabpanel"><pre id="q-log"></pre><div class="q-terminal-foot">R workflow output</div></div><div id="q-shell-console-panel" role="tabpanel" class="hidden"><div id="q-shell-screen"></div><div id="q-shell-note" class="q-terminal-foot"></div></div></section></main>
+<script type="module">
+import { initializeOutput } from "../ui/quant/log.js";
+import { initializeConsole } from "../ui/quant/console.js";
+import { createPlotViewer } from "../ui/quant/plot-viewer.js";
+const root = document.querySelector("main");
+const output = initializeOutput(document.querySelector("#q-log"), document.querySelector("#q-output-colors"));
+initializeConsole(root, async () => true, () => output.clear());
+const append = () => output.append('ℹ Importing 250,997 rows\n✔ Import complete\nWarning message:\n  Missing QC annotations\nError in run(): E123 invalid input\n  Check feature_id\nExecution halted\n\n# A tibble: 2 × 2\n  sample intensity\n1 A      123.456\n2 B      234.567\nLiteral <script> text, never HTML');
+append(); document.querySelector("#append").onclick = append;
+const canvas = document.createElement("canvas"); canvas.width = 3508; canvas.height = 2480;
+const ctx = canvas.getContext("2d"); ctx.fillStyle = "white"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+ctx.strokeStyle = "#ddd"; ctx.lineWidth = 2;
+for (let x = 100; x < 3450; x += 100) { ctx.beginPath(); ctx.moveTo(x, 100); ctx.lineTo(x, 2350); ctx.stroke(); }
+for (let y = 100; y < 2400; y += 100) { ctx.beginPath(); ctx.moveTo(100, y); ctx.lineTo(3400, y); ctx.stroke(); }
+ctx.fillStyle = "#183c56"; ctx.font = "64px sans-serif"; ctx.fillText("Full-resolution test plot — 3508 × 2480", 170, 200);
+for (let n = 0; n < 35; n++) { ctx.fillStyle = n % 2 ? "#14a7ba" : "#aa4477"; ctx.beginPath(); ctx.arc(200 + n * 85, 1300 + Math.sin(n / 3) * 600, 18, 0, 2 * Math.PI); ctx.fill(); }
+const viewer = createPlotViewer(root);
+document.querySelector("#preview").onclick = () => viewer.open(canvas.toDataURL("image/png"), "Smoke-test scatter plot");
+</script></body></html>

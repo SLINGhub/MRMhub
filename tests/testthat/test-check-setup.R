@@ -26,10 +26,14 @@ test_that("check_setup(verbose = TRUE) runs the full report path", {
 })
 
 test_that("check_setup() flags a missing required package", {
-  # Make only ggh4x look absent; every other requireNamespace() succeeds so the
-  # verbose danger / summary-warning / install-hint branches are exercised.
+  # Make only ggh4x look absent; preserve actual availability of optional packages
+  # so the report never tries packageVersion() on an uninstalled suggestion.
+  namespace_available <- requireNamespace
+  # The verbose danger / summary-warning / install-hint branches are exercised.
   local_mocked_bindings(
-    requireNamespace = function(package, ...) !identical(package, "ggh4x"),
+    requireNamespace = function(package, ...) {
+      !identical(package, "ggh4x") && namespace_available(package, ...)
+    },
     .package = "base"
   )
   suppressMessages(invisible(capture.output(

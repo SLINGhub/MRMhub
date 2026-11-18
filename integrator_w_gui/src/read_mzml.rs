@@ -40,7 +40,7 @@ pub fn read(param_t: &crate::Param) -> Result<(), Box<dyn Error>> {
     {
         let mut wtr = csv::WriterBuilder::new().from_path("ambiguous_assignment.csv")?;
         wtr.write_record(["Transition Name", "chromatogram index"])?;
-        let (_, qq) = parse::mzml(mzml_fs[0].0);
+        let (_, qq) = parse::mzml(mzml_fs[0].0)?;
         let &crate::Param { mz_tol, .. } = param_t;
         for trans in &t_list {
             let pos0 = trans.q1 - mz_tol;
@@ -71,8 +71,12 @@ pub fn read(param_t: &crate::Param) -> Result<(), Box<dyn Error>> {
     while batch_start < mzml_fs.len() {
         let batch_end = mzml_batch_end(&mzml_fs, batch_start)?;
         let mzml_fs_ = &mzml_fs[batch_start..batch_end];
+        let parsed = mzml_fs_
+            .par_iter()
+            .map(|(bn, ..)| parse::mzml(bn))
+            .collect::<Result<Vec<_>, _>>()?;
         let (mut ts, q1q3eics): (Vec<String>, Vec<Vec<parse::Q1Q3RtI>>) =
-            mzml_fs_.par_iter().map(|(bn, ..)| parse::mzml(bn)).unzip();
+            parsed.into_iter().unzip();
         time_stamp.append(&mut ts);
         trans_f.iter().zip(&t_list).for_each(|(trans_f_i, trans)| {
             write_block(&q1q3eics, mzml_fs_, trans, trans_f_i, param_t).unwrap();
