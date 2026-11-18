@@ -61,6 +61,26 @@ mh_warn <- function(text, .envir = parent.frame()) {
   cli::cli_alert_warning(mh_paint(text, cli::col_yellow, .envir))
 }
 
+#' Evaluate an expression with cli info/success alerts muted
+#'
+#' For helpers called internally (e.g. a plot refitting calibrations): progress
+#' and info lines are dropped, while warnings and errors still surface.
+#'
+#' @param expr Expression to evaluate.
+#' @return The value of `expr`.
+#' @keywords internal
+#' @noRd
+mh_quiet_info <- function(expr) {
+  withCallingHandlers(
+    expr,
+    cli_message = function(m) {
+      if (m$type %in% c("alert_info", "alert_success")) {
+        invokeRestart("cli_message_handled")
+      }
+    }
+  )
+}
+
 #' Truncate a reported vector at a settable maximum
 #'
 #' Wraps a vector in [cli::cli_vec()] with a `vec-trunc` style so cli collapses
