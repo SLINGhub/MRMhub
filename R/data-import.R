@@ -177,7 +177,10 @@ import_data_skyline <- function(
 #' for the raw data file name, feature ID, peak intensity, and other columns.
 #' Additional information, such as retention time, FWHM, precursor/product m/z,
 #' and CE will also be imported and made available in the `MRMhubExperiment`
-#' object for downstream analyses.
+#' object for downstream analyses. Peak-quality columns of recent INTEGRATOR
+#' versions are imported as `feature_sn_ratio` (`sn_ratio`, experimental),
+#' `method_noise_algorithm` (`noise_method`) and `feature_trace_cut_pct`
+#' (`trace_cut_pct`, truncation of the peak at the end of the MRM trace).
 #'
 #' When a directory path is provided, all matching files in that directory will
 #' be imported and merged into a single dataset. This is useful when importing
@@ -1200,6 +1203,9 @@ parse_mrmhub_result <- function(path, silent = FALSE) {
     #"feature_width" = "width",
     "feature_int_start" = "rt_int_start",
     "feature_int_end" = "rt_int_end",
+    "feature_trace_cut_pct" = "trace_cut_pct",
+    "feature_sn_ratio" = "sn_ratio",
+    "method_noise_algorithm" = "noise_method",
     "method_polarity" = "polarity",
     "method_precursor_mz" = "precursor_mz",
     "method_product_mz" = "product_mz",

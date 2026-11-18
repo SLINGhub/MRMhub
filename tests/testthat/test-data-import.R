@@ -721,6 +721,23 @@ test_that("Imports MRMhub result file (long format) into a MRMhubExperiment", {
   expect_equal(nrow(mexp@annot_istds), 0)
 })
 
+test_that("import_data_mrmhub imports INTEGRATOR peak-quality columns", {
+  path <- withr::local_tempfile(fileext = ".csv")
+  writeLines(
+    c(
+      "feature_name,internal_standard,raw_data_filename,time_stamp,batch,sample_type,precursor_mz,product_mz,collision_energy,polarity,rt_apex,area,height,FWHM,rt_int_start,rt_int_end,trace_cut_pct,sn_ratio,noise_method",
+      "F1,F1,S1.mzML,2026-02-12T18:10:25Z,1,SPL,331.3,97.1,24,+,4.38,696.4,68.3,0.09,4.37,4.74,,2.7,flank",
+      "F1,F1,S2.mzML,2026-02-12T18:20:25Z,1,SPL,331.3,97.1,24,+,4.39,700.1,70.2,,4.37,4.74,-35.2,12.5,robust"
+    ),
+    path
+  )
+  mexp <- import_data_mrmhub(MRMhubExperiment(), path, silent = TRUE)
+  d <- mexp@dataset_orig[order(mexp@dataset_orig$analysis_id), ]
+  expect_equal(d$feature_sn_ratio, c(2.7, 12.5))
+  expect_equal(d$feature_trace_cut_pct, c(NA, -35.2))
+  expect_equal(d$method_noise_algorithm, c("flank", "robust"))
+})
+
 test_that("Handles import_data_mrmhub errors", {
   mexp <- MRMhubExperiment()
   expect_error(

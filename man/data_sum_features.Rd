@@ -37,10 +37,11 @@ Only raw signal variables are aggregated across the transitions of an analyte:
 \code{feature_rt} is averaged. A sum is \code{NA} in an analysis where a constituent is
 missing, since a partial sum would look like a valid value; a warning reports
 these analyses. A transition without a value in any analysis is left out of
-its sum. \code{feature_fwhm}, \code{feature_width}, \code{feature_int_start} and
-\code{feature_int_end} are set to \code{NA} for merged analytes: the constituents are
-separate chromatographic peaks, so no aggregate of their peak widths or
-borders describes the merged quantity.
+its sum. \code{feature_fwhm}, \code{feature_width}, \code{feature_int_start},
+\code{feature_int_end}, \code{feature_sn_ratio} and \code{feature_trace_cut_pct} are set to
+\code{NA} for merged analytes: the constituents are separate chromatographic
+peaks, so no aggregate of their peak widths, borders or peak quality
+describes the merged quantity.
 
 Summing transitions redefines \code{feature_intensity}, so all values \emph{derived}
 from the pre-merge intensities are invalidated and removed: normalized

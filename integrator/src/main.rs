@@ -14,6 +14,7 @@ struct Param {
     mzml_fs: Vec<PathBuf>,
     peak_w: (f32, f32, f32, f32),
     crop_window: Option<(f32, f32)>,
+    sn_noise: common::Noise,
     batch_i: PathBuf,
     t_list: PathBuf,
     num_t: usize,
@@ -39,7 +40,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     match arg_1.as_deref() {
         Some("1") => read_mzml::read(&param_t),
         Some("2") => feat::detect(&param_t),
-        Some("3") => get_auc::calc_auc(),
+        Some("3") => get_auc::calc_auc(&param_t),
         Some("4") => gen_plots(),
         _ => {
             println!("\ntargeted MRM peak integration  v{VERSION}");
@@ -69,7 +70,7 @@ Enter number.
     match guess.trim() {
         "1" => read_mzml::read(&param_t)?,
         "2" => feat::detect(&param_t)?,
-        "3" => get_auc::calc_auc()?,
+        "3" => get_auc::calc_auc(&param_t)?,
         "4" => gen_plots()?,
         _ => return Ok(()),
     }

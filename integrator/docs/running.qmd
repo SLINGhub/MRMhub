@@ -76,10 +76,10 @@ A project with executables, `mzML` files, and the input files is assembled as de
 - Precursor/product *m/z* fall within `mz_tol`; RT in **minutes**.
 - `reference` samples are defined in the `run_order.csv`.
 
-::: {.callout-important}
-## Transitions must be present in ALL mzML files
+::: {.callout-note}
+## Transitions missing from some mzML files
 
-INTEGRATOR integrates only transitions present in **all mzML files** and listed in `feature_list.csv`. Transitions missing from even one file are dropped for the whole dataset (reported in `missing_compounds.txt` / `missing_details.txt`).
+A transition listed in `feature_list.csv` but absent from some mzML files is retained if it is present in all `reference` samples and in at least one learning sample. Files that lack the transition receive no result: empty cells in `quant_raw.csv` and `long.csv`, and an empty panel labelled "not acquired" in the PDF plots. A transition that does not meet these conditions is excluded from the whole dataset. Both cases are listed in `missing_compounds.txt`, and step 1 points to that file in the console. In `long.csv`, `collision_energy` and `polarity` are also left empty for files that lack the transition.
 :::
 
 ## Launching INTEGRATOR
@@ -93,8 +93,9 @@ INTEGRATOR is started from the project folder by double-clicking `MRMhub` (macOS
 The input files are validated against the mzML files. Report files are written in case mismatches are found:
 
 - **`missing_files.txt`** — mzML files present in the data folder but not listed in the `run_order.csv`, or listed but absent from the mzML folder.
-- **`missing_compounds.txt`** — transitions listed in `feature_list.csv` not found in all of the mzML files.
+- **`missing_compounds.txt`** — transitions listed in `feature_list.csv` that are absent from one or more mzML files, each marked as *kept* or *removed* (see [above](#setting-up-an-integrator-project)).
 - **`missing_details.txt`** — for each such transition, the specific samples in which it is absent.
+- **`mzml_format_errors.txt`** — mzML files that INTEGRATOR cannot read (no chromatograms, or an unsupported compression such as MS-Numpress). Step 1 stops before any data are read and leaves the previous results in place; convert these files again ([mzML conversion](msconvert.qmd)).
 
 
 ## Step 2 — Peak detection and RT-shift estimation {#step-2-peak-detection-and-rt-shift-estimation}
@@ -106,7 +107,7 @@ The peak-detection and picking algorithm is run, producing a matrix of the detec
 
 In this step, detected peaks (as defined in `RT_matrix.csv`) are integrated. The integration results are written to the project folder:
 
-- **`long.csv`** — long format, one row per *sample × feature*: area, height, apex RT, and FWHM, with precursor and product *m/z* values, and acquisition timestamps.
+- **`long.csv`** — long format, one row per *sample × feature*: area, height, apex RT, FWHM, truncation at the trace end (`trace_cut_pct`) and signal-to-noise ratio (`sn_ratio`), with precursor and product *m/z* values, and acquisition timestamps.
 - **`quant_raw.csv`** — wide-format table with peak areas. Precursor and product *m/z* values and the expected RT (from `feature_list.csv`) are included in the first three rows.
 - **`misc/`** — binary result files, used in step 4 and by MRMhub-viz.
 

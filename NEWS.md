@@ -1,5 +1,9 @@
 # mrmhub (development version)
 
+## New features
+
+- `import_data_mrmhub()` imports the peak-quality columns of recent INTEGRATOR versions: `sn_ratio` (experimental) as `feature_sn_ratio`, `noise_method` as `method_noise_algorithm`, and `trace_cut_pct` as `feature_trace_cut_pct`. Previously they were dropped. `data_sum_features()` sets `feature_sn_ratio` and `feature_trace_cut_pct` to `NA` for summed analytes, as it already does for peak widths.
+
 ## Bug fixes
 
 - LoD and LoQ of weighted calibration curves (`1/x`, `1/x^2`, `1/sqrt(x)`) were wrong: they were based on the weighted residual standard error, which is not in response units, so they did not scale with the concentration unit and were overestimated for typical `1/x^2` fits. Weighted fits now use the standard error of the intercept by default (new `lod_sigma = "auto"` in `calc_calibration_results()` and `quantify_by_calibration()`). LoD/LoQ of unweighted fits and all fitted coefficients and concentrations are unchanged.

@@ -15,8 +15,8 @@ transitions, about 0.9 GB unzipped.
 
 ## Before you start
 
-1. **Download** the demo package `MRMhub-demo-1.0.1-<platform>.zip` for macOS (Apple silicon),
-   Windows or Linux from the [MRMhub 1.0.1 release ↗](https://github.com/SLINGhub/MRMhub/releases/tag/v1.0.1) and unzip it; the plain
+1. **Download** the demo package `MRMhub-demo-1.0.1-<platform>.zip` for macOS (Apple silicon or
+   Intel), Windows or Linux from the [MRMhub 1.0.1 release ↗](https://github.com/SLINGhub/MRMhub/releases/tag/v1.0.1) and unzip it; the plain
    `MRMhub-1.0.1-<platform>.zip` omits the demo data. On Windows, unzip to a short local path
    (e.g. `C:\MRMhub-demo`), not into OneDrive or the zip preview. If you are reading this
    inside the unzipped demo folder, skip this step.

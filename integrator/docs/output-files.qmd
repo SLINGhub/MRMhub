@@ -39,15 +39,76 @@ file order:
 | `product_mz` | Product-ion *m/z*. |
 | `collision_energy` | Collision energy. |
 | `polarity` | Ionisation polarity (`+` / `−`). |
-| `rt_apex` | Retention time at the peak apex (min). |
+| `rt_apex` | Retention time at the peak apex, the data point highest above the integration baseline (min). |
 | `area` | Integrated peak area. |
-| `height` | Peak height. |
-| `FWHM` | Full width at half maximum (min). |
+| `height` | Peak height above the integration baseline at the apex (see below). |
+| `FWHM` | Full width at half maximum (min), above the integration baseline (see below); empty if it cannot be measured. |
 | `rt_int_start` | Left integration border (min). |
 | `rt_int_end` | Right integration border (min). |
+| `trace_cut_pct` | Peak truncated by the end of the MRM trace (see below); empty otherwise. |
+| `sn_ratio` | *Experimental.* Signal-to-noise ratio: `height` divided by the noise of the baseline around the peak (see below). |
+| `noise_method` | Noise estimate used for `sn_ratio`: `flank`, `robust`, `rms` or `p2p` (set by `sn_noise` in `param.txt`; `robust` where `flank` had no free baseline). |
 
 Where no peak was found for a *sample × feature*, the measurement fields
-(`rt_apex`…`rt_int_end`) are left empty.
+(`rt_apex`…`noise_method`) are left empty.
+
+`height` and `FWHM` are measured from the integration baseline at the apex, i.e. the baseline that
+the selected baseline mode uses for the area (the 5th-percentile level, the `v_drop` level, or the
+valley-to-valley line). The apex is the data point highest above that baseline, and `height` is its
+intensity minus the baseline. `FWHM` is the time between the first point on the left and the last point on the right at which the trace crosses
+half of that height, inside the integration window and interpolated linearly between data points;
+if the window contains several peaks above half height, the width spans all of them. `FWHM` is left
+empty when the trace does not fall below half height before a window edge, i.e. when the peak is
+cut by the integration window.
+
+`trace_cut_pct` flags peaks that are cut off by the end of the trace, e.g. when a scheduled MRM
+window closes before the peak has returned to baseline, or at the limits of `crop_window`. It is
+filled when the integration window reaches the first or last data point of the trace (or ends
+within 2 data points of it), and gives the signal at the window edge as a percentage of the apex
+height, both above the baseline (the 5th percentile of the whole trace, for every baseline mode):
+
+- **negative** values: cut at the start of the trace; **positive** values: cut at the end;
+- **±100**: the apex itself lies on the trace end;
+- **empty**: the integration window does not reach a trace end, the signal there is at or below
+  baseline, or no peak was found.
+
+If the window reaches both trace ends, the larger value is reported, with its sign. With the `v2v`
+baseline, a cut edge is not used as a valley: the baseline is held at the level of the other
+integration border, so that the cut peak does not lift it. The area of a cut peak is still
+underestimated, because the signal beyond the trace end was not acquired. `trace_cut_pct` is
+recomputed in step 3, so it follows manual changes to the integration borders in `RT_matrix.csv`.
+
+::: {.callout-caution}
+## Experimental
+The signal-to-noise ratio is experimental: the noise estimate and its defaults may change in future
+versions, so `sn_ratio` values from different versions may not be comparable.
+:::
+
+`sn_ratio` is the peak `height` divided by the noise of the baseline, estimated according to
+`sn_noise` in `param.txt`. Baseline points inside the integration window of any feature of the same
+transition are never used. In the following, FWHM is the peak's `FWHM`, or the integration-window
+width divided by 3.5 where `FWHM` is empty.
+
+| `noise_method` | Noise | Notes |
+|---|---|---|
+| `flank` (default) | (maximum − minimum) / 2 of the baseline next to the integration window, within 3 × FWHM on each side; the quieter side is used | The pharmacopoeia peak-to-peak noise (2*H*/*h*, USP ⟨621⟩, Ph. Eur. 2.2.46), measured in the sample beside the peak. Using the quieter side avoids a neighbouring peak (e.g. an isomer) on the other side, while a trace that wobbles everywhere keeps a low S/N. If neither side has at least 5 free data points, `robust` is used and reported in `noise_method`. |
+| `robust` | 1.4826 × median absolute deviation in a region of 10 × FWHM on each side of the apex, after removing other peaks | Other peaks in the region (e.g. isomers or isotopic interferences that are not features of the transition) are removed first: points more than 3 × the noise above the median are discarded repeatedly, as in OpenMS, but at most half of the region. |
+| `rms` | Standard deviation in the same region | The RMS noise of most vendor software; inflated by any peak in the region. |
+| `p2p` | (maximum − minimum) / 2 in the same region | The pharmacopoeia formula over the whole region; the most sensitive to spikes and neighbouring peaks. |
+
+The noise is at least 1. `sn_ratio` is rounded to one decimal and is 0 for a peak that does not rise
+above its baseline. It is left empty when fewer than 10 data points remain in the region (e.g. in a
+short scheduled MRM window), and, with `crop_window`, only the stored part of the trace is used. Values from different methods, or from vendor software (which often smooths the trace first),
+are not interchangeable. `sn_ratio` is measured within each sample and describes peak quality; it is
+not a detection or quantification limit, which pharmacopoeias and ICH Q2(R2) base on blank samples.
+
+With `flank`, a small peak next to a much larger one, or on a baseline that undulates with an
+amplitude similar to the peak height, can receive an S/N of about 2 although it is genuine; its
+identity is better judged from the retention time and qualifier ratios. If the undulation is a
+reproducible peak, adding it as a feature removes it from the noise.
+
+An empty `sn_ratio` is read as `NA` in R, and `dplyr::filter(sn_ratio >= 10)` drops those rows as
+well; use `filter(is.na(sn_ratio) | sn_ratio >= 10)` to keep them.
 
 ## quant_raw.csv
 

@@ -285,17 +285,19 @@ the source variable can be set manually with `set_intensity_var()`:
 raw_vars <- data.frame(
   `Short Name` = c("area", "height", "response", "intensity", "rt", "fwhm",
                    "width", "int_start", "int_end", "symmetry", "sn_ratio",
-                   "accuracy", "ionratio"),
+                   "trace_cut_pct", "accuracy", "ionratio"),
   `Internal Name` = c("feature_area", "feature_height", "feature_response",
                       "feature_intensity", "feature_rt", "feature_fwhm",
                       "feature_width", "feature_int_start", "feature_int_end",
-                      "feature_symmetry", "feature_sn_ratio", "feature_accuracy",
+                      "feature_symmetry", "feature_sn_ratio",
+                      "feature_trace_cut_pct", "feature_accuracy",
                       "feature_ionratio"),
   Description = c("Peak area", "Peak height", "Feature response (vendor-specific)",
                   "Feature intensity (vendor-specific)", "Retention time",
                   "Full Width at Half Maximum", "Peak width",
                   "Peak integration start time", "Peak integration end time",
                   "Peak symmetry", "Signal-to-noise ratio",
+                  "Peak cut off by the end of the MRM trace (INTEGRATOR; % of height)",
                   "Accuracy (relative to target value)", "Ion ratio"),
   stringsAsFactors = FALSE, check.names = FALSE
 )
