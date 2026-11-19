@@ -12,7 +12,7 @@ num_cores <- 14  # Number of cores for parallel processing.
 
 print(R.version.string)
 
-safe_num_cores <- max(1, parallel::detectCores() - 1)
+safe_num_cores <- max(1L, parallel::detectCores() - 1L, na.rm = TRUE)
 num_cores <- min(num_cores, safe_num_cores)
 
 cat(paste0("Using ", num_cores, " cores.\n"))
@@ -159,7 +159,7 @@ PlotIonChromatogram <- function(eic_file) {
         n = data_point_count * 2,
         endian = "little"
       ),
-      ncol = data_point_count
+      nrow = 2
     )
     rt <- intensity[1, ]
     intensity <- intensity[2, ]
@@ -202,6 +202,12 @@ PlotIonChromatogram <- function(eic_file) {
       )
     }
 
+    if (!data_point_count) {
+      plot.new()
+      mtext(cpd_list[i], side = 3, line = -1, adj = 0)
+      text(0.5, 0.5, "Not acquired")
+      next
+    }
     max_selected_intensity <- max(
       intensity[peak_bounds[1]:peak_bounds[n_peaks * 2]]
     )
@@ -308,6 +314,10 @@ PlotTransitionChromatogram <- function(cpd_index) {
         signed = FALSE,
         endian = "little"
       )
+      if (data_point_count == 0) {
+        intensity_ranges[i] <- NA_real_
+        next
+      }
       intensity <- matrix(
         readBin(
           data_connection,
@@ -316,13 +326,13 @@ PlotTransitionChromatogram <- function(cpd_index) {
           n = data_point_count * 2,
           endian = "little"
         ),
-        ncol = data_point_count
+        nrow = 2
       )[2, peak_bounds[1]:peak_bounds[n_peaks * 2]]
 
       intensity_ranges[i] <- max(intensity) - min(intensity)
     }
 
-    return(median(intensity_ranges))
+    return(median(intensity_ranges, na.rm = TRUE))
   })
 
   # Second pass: plot chromatograms.
@@ -409,7 +419,7 @@ PlotTransitionChromatogram <- function(cpd_index) {
         n = data_point_count * 2,
         endian = "little"
       ),
-      ncol = data_point_count
+      nrow = 2
     )
     rt <- intensity[1, ]
     intensity <- intensity[2, ]
@@ -432,6 +442,13 @@ PlotTransitionChromatogram <- function(cpd_index) {
         n = n_peaks * 2,
         endian = "little"
       )
+    }
+
+    if (!data_point_count) {
+      plot.new()
+      mtext(mzml_files[i], side = 3, line = -1, adj = 0, cex = 0.7)
+      text(0.5, 0.5, "Not acquired")
+      next
     }
 
     max_selected_intensity <- max(
@@ -493,7 +510,10 @@ PlotTransitionChromatogram <- function(cpd_index) {
 }
 
 # Platform-specific parallel execution.
-if (.Platform$OS.type == "windows") {
+num_cores <- max(1L, min(num_cores, length(cpd_list)))
+if (num_cores == 1L) {
+  results <- lapply(seq_along(cpd_list), PlotTransitionChromatogram)
+} else if (.Platform$OS.type == "windows") {
   cl <- parallel::makeCluster(num_cores)
 
   parallel::clusterExport(
@@ -532,11 +552,6 @@ if (.Platform$OS.type == "windows") {
         fun = PlotTransitionChromatogram
       )
     },
-    error = function(e) {
-      message("An error occurred during parallel processing:")
-      message(conditionMessage(e))
-      return(NULL)
-    },
     finally = {
       parallel::stopCluster(cl)
     }
@@ -549,4 +564,5 @@ if (.Platform$OS.type == "windows") {
   )
 }
 
+if (any(vapply(results, inherits, logical(1), "try-error"))) stop("Chromatogram PDF generation failed")
 cat("\r", format("", width = 40), "\n")

@@ -302,3 +302,8 @@ html[data-theme="dark"] #quant-view .q-chrome .q-nav-group > button.active:hover
   .q-runbar { align-items: flex-end; }
   .q-runbar .q-help { max-width: 28ch; }
 }
+
+.q-step-output { margin-top: 12px; }
+.q-step-output[hidden] { display: none; }
+.q-step-output strong { font-size: 12px; }
+.q-step-output pre { max-height: 14rem; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 12px; }

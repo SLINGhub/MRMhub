@@ -16,11 +16,11 @@
       document.documentElement.dataset.theme = "light";
     }
     </script>
-    <link rel="stylesheet" href="styles.css?v=1.2.5" />
-    <link rel="stylesheet" href="workspace.css?v=1.2.5-sequence-all" />
-    <link rel="stylesheet" href="quant/quant.css?v=1.2.4-storage" />
+    <link rel="stylesheet" href="styles.css?v=1.2.6" />
+    <link rel="stylesheet" href="workspace.css?v=1.2.6" />
+    <link rel="stylesheet" href="quant/quant.css?v=1.2.6" />
     <link rel="stylesheet" href="quant/terminal.bundle.css" />
-    <script src="app.js?v=1.2.5" defer></script>
+    <script src="app.js?v=1.2.6" defer></script>
   </head>
   <body>
     <div class="app-shell">
@@ -33,7 +33,7 @@
             </span>
             <span>
               <strong>MRMhub</strong>
-              <small><span class="brand-gui">GUI</span> <span class="brand-version">[v1.2.5]</span></small>
+              <small><span class="brand-gui">GUI</span> <span class="brand-version">[v1.2.6]</span></small>
             </span>
           </button>
           <label class="gui-scale-control" title="scale the entire application">
@@ -370,6 +370,7 @@
                 aria-labelledby="plot-settings-title">
                 <h2 class="control-heading"
                   id="plot-settings-title">Plot settings</h2>
+                <small>Scroll through samples. Use Ctrl/⌘ + scroll to zoom a plot.</small>
                 <div class="visualizer-sizing"
                   aria-label="chromatogram dimensions">
                   <label
@@ -515,6 +516,25 @@
                 Export PNGs
               </button></span>
               </div>
+              <div class="visualizer-bulk-controls">
+                <button
+                  class="secondary-button visualizer-apply-shared"
+                  id="visualizer-apply-shared"
+                  type="button"
+                  disabled
+                  title="select at least one reference plot with usable integration bounds"
+                >
+                  Apply selected RTs to all samples
+                </button>
+                <label class="visualizer-apply-mode" for="visualizer-align-shared">Apply using
+                  <select id="visualizer-align-shared" aria-label="Apply using">
+                    <option value="sequence">Acquisition sequence</option>
+                    <option value="shape">Peak-shape alignment</option>
+                    <option value="exact">Same bounds for all</option>
+                  </select>
+                </label>
+                <span id="visualizer-apply-hint" aria-live="polite">Select a reference plot with usable bounds.</span>
+              </div>
             </header>
             <section class="visualizer-selection"
               aria-label="Selected transition">
@@ -532,22 +552,6 @@
                 >
               ×
             </button>
-                <button
-                  class="secondary-button visualizer-apply-shared"
-                  id="visualizer-apply-shared"
-                  type="button"
-                  disabled
-                  title="select at least one reference plot with usable integration bounds"
-                >
-              Apply selected RTs to all samples
-            </button>
-                <label class="visualizer-apply-mode" for="visualizer-align-shared">Apply using
-                  <select id="visualizer-align-shared" aria-label="Apply using">
-                    <option value="sequence">Acquisition sequence</option>
-                    <option value="shape">Peak-shape alignment</option>
-                    <option value="exact">Same bounds for all</option>
-                  </select>
-                </label>
               </div>
             </section>
             <details class="integration-sequence hidden" id="integration-sequence" open>
@@ -565,10 +569,10 @@
                     <button type="button" class="secondary-button" id="sequence-zoom-reset">Reset zoom</button>
                   </div>
                 </div>
-                <div id="sequence-chart" tabindex="0" aria-label="Integration boundaries across the acquisition sequence. Scroll to zoom, drag to pan, or use plus and minus keys."></div>
+                <div id="sequence-chart" tabindex="0" aria-label="Integration boundaries across the acquisition sequence. Ctrl/⌘ + scroll to zoom, drag to pan, or use plus and minus keys."></div>
                 <div id="sequence-batch-legend" class="sequence-legend hidden" aria-label="Batches shown in the sequence chart"></div>
                 <p id="sequence-status" role="status" aria-live="polite"></p>
-                <div class="sequence-legend"><span>Solid: current bounds</span><span class="sequence-proposed">Dashed: proposed bounds</span><span>● Selected reference · click a sample to toggle</span><span>Scroll to zoom · drag to pan · +/− keys</span></div>
+                <div class="sequence-legend"><span>Solid: current bounds</span><span class="sequence-proposed">Dashed: proposed bounds</span><span>● Selected reference · click a sample to toggle</span><span>Ctrl/⌘ + scroll to zoom · drag to pan · +/− keys</span></div>
               </div>
             </details>
             <section class="visualizer-empty" id="visualizer-empty">
@@ -662,7 +666,7 @@
       </main>
 
       <footer>
-        <span>MRMhub GUI [v1.2.5]</span>
+        <span>MRMhub GUI [v1.2.6]</span>
         <a
           class="external-sling-link"
           href="https://sling.sg/"

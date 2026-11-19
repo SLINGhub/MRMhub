@@ -316,7 +316,9 @@ export function drawSequence(
     );
     renderMarkers(scale);
   };
-  const zoom = d3.zoom().scaleExtent([1, 1000]).extent([[left, top], [
+  const zoom = d3.zoom()
+    .filter(event => event.type === "wheel" ? event.ctrlKey || event.metaKey : !event.ctrlKey && !event.button)
+    .scaleExtent([1, 1000]).extent([[left, top], [
     right,
     bottom,
   ]])

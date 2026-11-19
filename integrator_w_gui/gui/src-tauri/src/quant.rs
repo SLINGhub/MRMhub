@@ -3,7 +3,7 @@ use base64::{Engine, engine::general_purpose::STANDARD};
 use serde_json::{Value, json};
 use std::{
     fs,
-    io::{BufRead, BufReader, Write},
+    io::{BufRead, BufReader, Read, Seek, SeekFrom, Write},
     path::{Component, Path, PathBuf},
     process::{Command, Stdio},
     sync::atomic::{AtomicBool, AtomicU64, Ordering},
@@ -73,7 +73,7 @@ fn command(path: &Path) -> Command {
     }
     command
 }
-fn runtime(app: &AppHandle) -> Result<(PathBuf, String), String> {
+pub(super) fn runtime(app: &AppHandle) -> Result<(PathBuf, String), String> {
     let mut candidates = Vec::new();
     if let Ok(saved) = fs::read_to_string(config_dir(app)?.join("rscript-path.txt")) {
         if !saved.trim().is_empty() {
@@ -158,14 +158,14 @@ fn reusable_libraries(engine: &Path, lib: &Path) -> Vec<PathBuf> {
     paths
 }
 fn read_json(path: &Path) -> Result<Value, String> {
-    serde_json::from_slice(&fs::read(path).map_err(|e| e.to_string())?).map_err(|e| e.to_string())
+    serde_json::from_slice(&fs::read(path).map_err(|e| format!("Cannot read {}: {e}", path.display()))?).map_err(|e| e.to_string())
 }
 fn write_json(path: &Path, value: &Value) -> Result<(), String> {
     fs::write(
         path,
         serde_json::to_vec_pretty(value).map_err(|e| e.to_string())?,
     )
-    .map_err(|e| e.to_string())
+    .map_err(|e| format!("Cannot write {}: {e}", path.display()))
 }
 fn progress_message(text: &str) -> Option<Value> {
     let payload: Value = serde_json::from_str(text.strip_prefix("__MRMHUB_QUANT_PROGRESS__")?).ok()?;
@@ -183,9 +183,9 @@ fn run_r(
     r: &Path,
     lib: &Path,
 ) -> Result<Value, String> {
-    fs::create_dir_all(work).map_err(|e| e.to_string())?;
+    fs::create_dir_all(work).map_err(|e| format!("Cannot create run folder {}: {e}", work.display()))?;
     let log = std::sync::Arc::new(std::sync::Mutex::new(
-        fs::File::create(work.join("run.log")).map_err(|e| e.to_string())?,
+        fs::File::create(work.join("run.log")).map_err(|e| format!("Cannot create {}: {e}", work.join("run.log").display()))?,
     ));
     let mut r_command = command(r);
     r_command
@@ -195,7 +195,7 @@ fn run_r(
         .args([
             std::ffi::OsStr::new(mode),
             engine.as_os_str(),
-            work.as_os_str(),
+            if mode == "run" { std::ffi::OsStr::new(".") } else { work.as_os_str() },
             lib.as_os_str(),
         ])
         .current_dir(work)
@@ -245,7 +245,7 @@ fn run_r(
 pub(super) fn dataset_root(project: &str) -> Result<PathBuf, String> {
     let path = Path::new(project)
         .canonicalize()
-        .map_err(|_| "Choose an existing dataset folder.")?;
+        .map_err(|e| format!("Cannot open dataset folder {project}: {e}"))?;
     if !path.is_dir() {
         return Err("Dataset must be a folder.".into());
     }
@@ -335,6 +335,69 @@ pub async fn quant_setup(app: AppHandle, packages: Option<Vec<String>>) -> Resul
 pub fn quant_history(project: String) -> Result<Value, String> {
     let root = dataset_root(&project)?;
     Ok(json!(history_at(&root)?))
+}
+
+// Read only the bounded tail on selection. Failed attempts remain inspectable
+// without ever becoming a checkpoint that another run could resume.
+#[tauri::command]
+pub async fn quant_step_output(project: String, operation: String) -> Result<Value, String> {
+    tauri::async_runtime::spawn_blocking(move || step_output(&dataset_root(&project)?, &operation))
+        .await
+        .map_err(|e| e.to_string())?
+}
+
+fn step_output(root: &Path, operation: &str) -> Result<Value, String> {
+    if !root.exists() {
+        return Ok(Value::Null);
+    }
+    let mut jobs = Vec::new();
+    for entry in fs::read_dir(root).map_err(|e| format!("Cannot list {}: {e}", root.display()))? {
+        let entry = entry.map_err(|e| e.to_string())?;
+        if entry.file_name().to_string_lossy().starts_with("q-")
+            && entry.file_type().map_err(|e| e.to_string())?.is_dir()
+        {
+            jobs.push(entry.path());
+        }
+    }
+    jobs.sort_unstable();
+    for job in jobs.into_iter().rev() {
+        let plain_file = |name: &str| {
+            fs::symlink_metadata(job.join(name)).is_ok_and(|m| m.file_type().is_file())
+        };
+        let (manifest, status) = if plain_file("failed.json") {
+            ("failed.json", "Failed")
+        } else if plain_file("completed.json") {
+            ("completed.json", "Succeeded")
+        } else if plain_file("error.txt") && plain_file("request.json") {
+            ("request.json", "Failed")
+        } else {
+            continue;
+        };
+        let Ok(info) = read_json(&job.join(manifest)) else {
+            continue;
+        };
+        if info["operation"] != operation {
+            continue;
+        }
+        let mut bytes = Vec::new();
+        if plain_file("run.log") {
+            let mut log = fs::File::open(job.join("run.log")).map_err(|e| e.to_string())?;
+            let size = log.metadata().map_err(|e| e.to_string())?.len();
+            let offset = size.saturating_sub(65536);
+            log.seek(SeekFrom::Start(offset))
+                .map_err(|e| e.to_string())?;
+            if offset > 0 {
+                bytes.extend_from_slice(b"[Earlier output omitted]\n");
+            }
+            log.take(65536)
+                .read_to_end(&mut bytes)
+                .map_err(|e| e.to_string())?;
+        }
+        return Ok(
+            json!({"status":status, "output":String::from_utf8_lossy(&bytes), "error":info["error"]}),
+        );
+    }
+    Ok(Value::Null)
 }
 
 fn history_at(root: &Path) -> Result<Vec<Value>, String> {
@@ -510,7 +573,7 @@ pub async fn quant_execute(
 ) -> Result<Value, String> {
     tauri::async_runtime::spawn_blocking(move || {
         let state = app.state::<QuantState>(); let _busy = lock(&state)?;
-        if !request.is_object() { return Err("Invalid QUANT request.".into()); }
+        request.as_object_mut().ok_or("Invalid QUANT request.")?.remove("inputPath");
         // Step 3 must not overwrite long.csv while R imports it, even when
         // the user switches tabs. Both workflows acquire the same atomic lock.
         let processing = app.state::<super::RunState>();
@@ -544,11 +607,25 @@ pub async fn quant_execute(
                 return Err("This older run keeps its outputs only. Select the latest saved session to continue.".into());
             }
             request["legacyTable"] = json!(action == "table" && completed["action"] == "legacy");
-            request["checkpoint"] = json!(snapshot);
+            // Guided runs start in their own sibling job directory. Relative paths
+            // keep R's individual file operations short even on deeply nested shares.
+            request["checkpoint"] = if action == "run" || action == "edit" {
+                json!(Path::new("..").join(&parent).join(snapshot_name(&completed)))
+            } else { json!(snapshot) };
         }
         let id = unique_id();
         let work = if action == "table" { engine.join(&id) } else { root.join(&id) };
-        fs::create_dir_all(&work).map_err(|e| e.to_string())?;
+        fs::create_dir_all(&work).map_err(|e| format!("Cannot create run folder {}: {e}", work.display()))?;
+        if action == "run" {
+            if let Some(input) = request["parameters"]["path"].as_str() {
+                let path = Path::new(input);
+                if let Ok(resolved) = path.canonicalize()
+                    && let Ok(relative) = resolved.strip_prefix(root.parent().unwrap()) {
+                    // Store the selected path for provenance. Only shorten it for R.
+                    request["inputPath"] = json!(Path::new("..").join("..").join(relative));
+                }
+            }
+        }
         write_json(&work.join("request.json"), &request)?;
         let output = run_r(&app, if action == "legacy" { "legacy" } else { "run" }, &engine, &work, &r, &lib);
         if action == "table" {
@@ -562,6 +639,8 @@ pub async fn quant_execute(
                 if let Err(cleanup) = remove_snapshots(&work, &["workspace.rds", "experiment.rds", "plots.rds"]) {
                     let _ = app.emit("quant-log", format!("Warning: {cleanup}"));
                 }
+                let failure = json!({"operation": request["operation"], "error": error});
+                write_json(&work.join("failed.json"), &failure).map_err(|e| format!("{error} (could not save run status: {e})"))?;
                 return Err(error);
             }
         };
@@ -631,6 +710,37 @@ pub fn quant_save_artifact(
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn failed_step_output_survives_without_replacing_a_checkpoint() {
+        let base = std::env::temp_dir().join(unique_id());
+        let mut project = base.clone();
+        // Exercise a real path beyond the legacy Windows MAX_PATH length.
+        for _ in 0..7 {
+            project.push("nested dataset with spaces and multiple levels");
+        }
+        let root = project.join("QUANT");
+        for (id, manifest, op) in [
+            ("q-1", "completed.json", "fit"),
+            ("q-2", "failed.json", "fit"),
+            ("q-3", "failed.json", "plot"),
+        ] {
+            let job = root.join(id);
+            fs::create_dir_all(&job).unwrap();
+            write_json(
+                &job.join(manifest),
+                &json!({"id":id, "operation":op, "action":"run"}),
+            )
+            .unwrap();
+            fs::write(job.join("run.log"), format!("output from {id}")).unwrap();
+        }
+        let output = step_output(&root, "fit").unwrap();
+        assert_eq!(output["status"], "Failed");
+        assert_eq!(output["output"], "output from q-2");
+        assert_eq!(history_at(&root).unwrap().len(), 1);
+        assert!(step_output(&root, "unused").unwrap().is_null());
+        fs::remove_dir_all(base).unwrap();
+    }
+
     #[test]
     fn dependency_reuse_is_scoped_to_ready_libraries_for_the_same_r_runtime() {
         let f = Fixture::new(); let engine = f.0.join("new-engine");

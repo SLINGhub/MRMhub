@@ -1,0 +1,44 @@
+name: GUI integrator parity
+
+on:
+  pull_request:
+    paths:
+      - 'integrator/**'
+      - 'integrator_w_gui/**'
+      - '.github/workflows/gui-parity.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  integration:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@6bed0761d98439e5a578e2877258200ad565ba87
+        with:
+          toolchain: stable
+      - uses: r-lib/actions/setup-r@f9a764fea8d5c63df6ef9a5c7795bf7deb5d7e05
+      - name: Test the GUI and worker
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked --manifest-path integrator_w_gui/Cargo.toml
+          cargo test --locked --manifest-path integrator_w_gui/gui/src-tauri/Cargo.toml
+      - name: Compare mixed-panel results and generate PDFs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo build --release --locked --manifest-path integrator/Cargo.toml
+          cargo build --release --locked --manifest-path integrator_w_gui/Cargo.toml
+          python=python3
+          ext=""
+          if [[ "$RUNNER_OS" == Windows ]]; then ext=".exe"; python=python; fi
+          "$python" integrator_w_gui/gui/tests/worker-parity.py "integrator/target/release/MRMhub$ext" "integrator_w_gui/target/release/MRMhub-integrator$ext"

@@ -931,6 +931,26 @@ html[data-theme="dark"] .activity-header {
   border-color: var(--line);
   opacity: .6;
 }
+.visualizer-bulk-controls {
+  flex: 1 0 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  align-items: center;
+}
+#visualizer-apply-hint { font-size: .7rem; color: var(--muted); }
+#visualizer-view .visualizer-reference-toggle {
+  display: inline-flex;
+  align-items: center;
+  width: auto;
+  gap: 2px;
+  padding: 1px 4px;
+  color: var(--ink);
+  font-size: 9px;
+}
+#visualizer-view .visualizer-reference-toggle svg { width: 10px; }
+#visualizer-view .visualizer-reference-toggle.is-selected { color: var(--surface); }
+
 .visualizer-preferences {
   display: grid;
   gap: 4px;

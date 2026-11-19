@@ -1,12 +1,20 @@
-# Peak integration in GUI 1.2.5
+# Peak integration in GUI 1.2.6
 
 The Visualizer now includes a collapsible **Peak integration · acquisition sequence** overview for each transition in the dataset's target library. Existing reference view, individual edits, shape alignment, exact shared bounds, saved RT matrices, zoom, and PNG export remain available. This reuses MRMhub's trace and integration framework; no DIA precursor/fragment processing or numerical integration code is imported from Metabokit-DDA.
 
 1. Run Workflow steps 1–2, open **Visualizer**, and choose a transition.
-2. Review the **Batch** and **Peak** selectors. **All** shows every batch on a shared acquisition axis, with batch colors and separate start/end curves; choose a batch to focus it. Scroll/pinch to zoom around the pointer, drag to pan, use +/− keys or buttons, and **Reset zoom** (also Home/0) to return to the overview. Zoom survives reference edits and preview updates. Click samples in the sequence overview, or use their chromatogram reference toggles, to select reference plots. Selection includes each plot's valid peak windows.
+2. Review the **Batch** and **Peak** selectors. **All** shows every batch on a shared acquisition axis, with batch colors and separate start/end curves; choose a batch to focus it. Scroll to move through samples. Hold Command on macOS or Ctrl on Windows while scrolling to zoom around the pointer, drag to pan, use +/− keys or buttons, and **Reset zoom** (also Home/0) to return to the overview. Zoom survives reference edits and preview updates. Click samples in the sequence overview, or use their chromatogram reference toggles, to select reference plots. Selection includes each plot's valid peak windows.
 3. Drag the visible start/end borders independently. A drag elsewhere in the chromatogram still draws a replacement window. Focus a border and use Left/Right to move one acquired point, or Shift+Left/Right for five.
 4. Select at least two references spanning the batch to model drift. Click **Preview windows** to see dashed proposed windows in the overview and chromatograms. Preview uses the acquisition-sequence method and never writes files; changing references/bounds invalidates it.
 5. **Apply selected RTs to all samples** writes the proposed per-sample bounds, runs the existing Step 3 calculation, saves through the existing matrix backup workflow, and clears reference selection on success. **Save & integrate** still saves individual edits only.
+
+For one set of limits, choose **Same bounds for all**, adjust a sample's borders, select **RT reference** on that plot, and click **Apply selected RTs to all samples**. Selecting several references averages their bounds. **Peak-shape alignment** uses the averaged window as the starting point for each trace. The toolbar shows the reference count or the reason Apply is unavailable.
+
+## Integrator 1.0.2
+
+New projects use the release parameter and CSV templates. For an existing project, rerun Steps 1–3 to recover transitions excluded by an earlier extraction. Save a copy of any manually edited RT matrix before rerunning detection. Step 1 checks each listed mzML before replacing extracted data. For a format failure, the console and `mzml_format_errors.txt` identify the files involved. A transition must occur in every reference and at least one learning sample. Eligible transitions remain available in the samples that acquired them. See `missing_details.txt` for individual absences.
+
+Step 3 adds `trace_cut_pct`, `sn_ratio` and `noise_method` to `long.csv`. Set `sn_noise` in `param.txt` to `flank` (default), `rms`, `robust` or `p2p`. The Visualizer also plots height, FWHM, trace cut and S/N across the acquisition sequence when values are available. Absent traces retain their sample position and have empty measurements.
 
 ## Sequence rules
 
@@ -22,3 +30,5 @@ The Visualizer now includes a collapsible **Peak integration · acquisition sequ
 ## Checks
 
 `deno test tests/*.test.js` covers timestamp parsing/order, uneven acquisition gaps, piecewise boundaries, batches, multiple peaks, absent traces, immutable previews, and a 10,000-sample plan. `cargo test --offline --manifest-path src-tauri/Cargo.toml` covers per-sample/per-peak matrix writes and invalid bulk requests leaving the original unchanged. `tests/workspace-preview.html` uses the actual GUI with an in-memory bridge for light/dark, mouse/keyboard bounds, preview, and save/reintegrate checks; it does not access real datasets.
+
+The GUI integrator parity check runs the release CLI and GUI worker on the same mixed-panel acquisition under macOS and Windows. It checks all four noise methods, missing measurements, edited bounds, format diagnostics and PDF generation.

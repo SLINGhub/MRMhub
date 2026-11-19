@@ -28,6 +28,7 @@ struct Param {
     mzml_fs: Vec<PathBuf>,
     peak_w: (f32, f32, f32, f32),
     crop_window: Option<(f32, f32)>,
+    sn_noise: common::Noise,
     batch_i: PathBuf,
     t_list: PathBuf,
     num_t: usize,
@@ -57,7 +58,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     match arg1.as_deref() {
         Some("1") => read_mzml::read(&param_t)?,
         Some("2") => feat::detect(&param_t)?,
-        Some("3") => get_auc::calc_auc()?,
+        Some("3") => get_auc::calc_auc(&param_t)?,
         Some("4") => gen_plots()?,
         _ => {
             println!(
@@ -96,7 +97,7 @@ Enter number.
     match guess.trim() {
         "1" => read_mzml::read(&param_t)?,
         "2" => feat::detect(&param_t)?,
-        "3" => get_auc::calc_auc()?,
+        "3" => get_auc::calc_auc(&param_t)?,
         "4" => gen_plots()?,
         _ => return Ok(()),
     }
@@ -105,13 +106,39 @@ Enter number.
 }
 // generates the chromatogram pdf files with the r plotting script
 fn gen_plots() -> Result<(), Box<dyn Error>> {
+    use std::io::Write;
     use std::process::{Command, Stdio};
-    run_plot_command(
-        Command::new("Rscript")
-            .arg("MRMhub_plot.r")
-            .stdout(Stdio::inherit())
-            .stderr(Stdio::inherit()),
-    )
+    let mut command =
+        Command::new(std::env::var_os("MRMHUB_RSCRIPT").unwrap_or_else(|| "Rscript".into()));
+    let project_script = std::path::Path::new("MRMhub_plot.r");
+    if project_script.is_file() {
+        let source = std::fs::read_to_string(project_script)?;
+        // Unmodified scripts distributed with GUI 1.2.5 / integrator 1.0.1–2
+        // use older plot logic or a different binary layout. Keep custom scripts.
+        if !matches!(
+            crc32fast::hash(source.replace("\r\n", "\n").as_bytes()),
+            0xda418536 | 0xab4049de | 0xd39a8e32
+        ) {
+            return run_plot_command(command.arg(project_script));
+        }
+    }
+    let mut child = command
+        .args(["--vanilla", "-"])
+        .stdin(Stdio::piped())
+        .spawn()?;
+    let written = child
+        .stdin
+        .take()
+        .unwrap()
+        .write_all(include_bytes!("../MRMhub_plot.r"));
+    let status = child.wait()?;
+    written?;
+    if !status.success() {
+        return Err(
+            format!("Report generation failed ({status}). See the R output for details.").into(),
+        );
+    }
+    Ok(())
 }
 
 fn run_plot_command(command: &mut std::process::Command) -> Result<(), Box<dyn Error>> {

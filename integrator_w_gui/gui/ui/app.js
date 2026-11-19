@@ -643,8 +643,8 @@ function fileTimestamp(date = new Date()) {
 // offers to create only the required dataset inputs that are currently absent
 async function offerMissingFiles(summary) {
   if (!isDesktop) return false;
-  const runOrderName = `run_order_${fileTimestamp()}.csv`;
-  const transitionName = "transition_list.csv";
+  const runOrderName = "run_order.csv";
+  const transitionName = "feature_list.csv";
   try {
     const plan = await invoke("missing_project_files", {
       projectPath: summary.path,
@@ -1174,7 +1174,7 @@ async function showVisualizer() {
   elements.visualizerStatus.textContent = "Loading visualizer...";
   try {
     await loadD3();
-    visualizerModule ??= await import("./visualizer/visualizer.js?v=1.2.5-sequence-all");
+    visualizerModule ??= await import("./visualizer/visualizer.js?v=1.2.6");
     await visualizerModule.initializeVisualizer(project.path);
   } catch (error) {
     elements.visualizerStatus.textContent = "Visualizer could not be loaded.";
@@ -1557,7 +1557,7 @@ document.querySelector("#quant-tab").addEventListener("click", async () => {
   document.querySelector("#quant-tab").classList.add("active");
   document.querySelector("#quant-tab").setAttribute("aria-current", "page");
   try {
-    quantModule ??= await import("./quant/quant.js?v=1.2.4-storage");
+    quantModule ??= await import("./quant/quant.js?v=1.2.6");
     await quantModule.initializeQuant(project?.path);
   } catch (error) { showToast(String(error), "error"); }
 });

@@ -72,6 +72,11 @@ invisible(compare("normalize_by_istd"))
 invisible(compare("calc_calibration_results",list(fit_overwrite=TRUE,include_qualifier=FALSE,fit_model="quadratic",fit_weighting="1/x")))
 invisible(compare("quantify_by_calibration",list(fit_overwrite=FALSE,include_qualifier=FALSE,ignore_failed_calibration=TRUE,fit_model="quadratic",fit_weighting="1/x")))
 invisible(compare("calc_qc_metrics"))
+default_plot <- run(list(action="run", operation="plot_calibrationcurves", checkpoint=checkpoint,
+                         parameters=list(include_qualifier=FALSE)))
+stopifnot(file.exists(file.path(default_plot$work, "plots.pdf")),
+          !field("plot_calibrationcurves", "fit_overwrite")$required,
+          !field("plot_calibrationcurves", "fit_overwrite")$enabled)
 plot <- run(list(action="run",operation="plot_calibrationcurves",checkpoint=checkpoint,parameters=list(fit_overwrite=FALSE,include_qualifier=FALSE,fit_model="quadratic",fit_weighting="1/x",page_width=120,page_height=80)))
 stopifnot(file.exists(file.path(plot$work,"plots.pdf")),file.exists(file.path(plot$work,"plot-001.png")),!file.exists(file.path(plot$work,"plots.rds")),identical(readRDS(plot$checkpoint),direct))
 png_header <- readBin(file.path(plot$work,"plot-001.png"),"raw",n=24)

@@ -2,7 +2,7 @@
 
 The QUANT tab follows the [lipidomics tutorial](https://slinghub.github.io/MRMhub/quant/articles/tutorial-03-lipidomics-workflow.html). It calls the R functions from **this repository's source**, not a JavaScript/Rust translation and not an arbitrary installed version of `mrmhub`. No scientific source files under `R/` are changed by the GUI adapter.
 
-GUI **1.2.4** includes the checked-out QUANT **1.0.1** engine. Guided mode exposes 60 operations, including external calibration, analysis/feature exclusions, generic CSV/MassHunter/Skyline imports, RDS archives, lipid-class assignment, isotope-interference tools, additional drift/batch methods, and their QC plots. Advanced controls are generated from the bundled functions' current arguments; Legacy can call the complete package API.
+GUI **1.2.6** includes the checked-out QUANT **1.0.2** engine. Guided mode exposes 60 operations, including external calibration, analysis/feature exclusions, generic CSV/MassHunter/Skyline imports, RDS archives, lipid-class assignment, isotope-interference tools, additional drift/batch methods, and their QC plots. Advanced controls are generated from the bundled functions' current arguments; Legacy can call the complete package API.
 
 ## First use
 
@@ -15,6 +15,10 @@ GUI **1.2.4** includes the checked-out QUANT **1.0.1** engine. Guided mode expos
 Upgrades reuse compatible dependencies already installed in the app's libraries for the same R version, instead of copying the entire library. The bundled `mrmhub` itself is always installed and loaded from the new engine's library. Do not manually remove an older library while it is being reused. ComBat (`sva`), SERRF (`ranger`), and LICAR (`enviPat`) show an explicit install action when their optional dependencies are missing; they are not downloaded just by selecting an operation. ComBat and SERRF retain the upstream experimental designation.
 
 Checked settings are explicitly passed to the original function. Unchecked settings use its original default. Required settings cannot be disabled. Ordinary lists accept comma-separated values; IDs and feature patterns use **one per line**, preserving commas inside names such as `PC(16:0,18:1)`. JSON lists are also supported. `NA` represents a missing value/no restriction where supported by the R function. Generic long-format import accepts a JSON column-name mapping, not executable R. Advanced settings expose the original named arguments without accepting R code.
+
+The selected Guided operation or Legacy step shows its latest console output and run status below the controls. Reopening the step restores the most recent saved output, including failed attempts. A failed run keeps the preceding successful checkpoint available.
+
+**External calibration curves** displays the fits already stored in the experiment. To request a new fit, select the model or weighting. Guided imports use relative paths for files inside the dataset. An unreadable results or metadata file is identified in the step output.
 
 ### Metadata linking and exclusions
 

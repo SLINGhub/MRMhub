@@ -24,40 +24,19 @@ const BACKUP_DIR: &str = "RT_matrix_backups";
 const ORIGINAL_BACKUP: &str = "RT_matrix_original.csv";
 
 // default param.txt template used when a selected dataset does not have one
-const DEFAULT_PARAM_TEMPLATE: &str = r#"### location of .mzML files
-mzML_files =  'mzML/*.mzML'
+const DEFAULT_PARAM_TEMPLATE: &str = include_str!("../../../../integrator/example/param.txt");
+const RUN_ORDER_EXAMPLE: &str = include_str!("../../../../integrator/example/run_order.csv");
+const FEATURE_EXAMPLE: &str = include_str!("../../../../integrator/example/feature_list.csv");
 
-
-### table indicating file name, batch, sample type and reference sample
-batch_info = 'run_order_20251009.csv'
-
-
-### If "peak_width = [w, x, y, z]", the left integration bound will be between w and x minutes left of the estimated apex, while the right integration bound will be between y and z minutes right of the estimated apex. To fix integration bounds between samples, set w=x and y=z.
-peak_width =  [0.17, 0.05, 0.1, 0.35]
-
-
-### Table with transition information: the file '..._Final.csv' contains the final curated dataset, '..._withRTerrors.csv' (commented with #) includes features with incorrect RTs for demonstration purposes.
-#transition_list =  'transition_list_20251009_Final.csv'
-transition_list =  'transition_list_20251009_withRTerrors.csv'
-
-num_threads = 14
-
-
-### m/z tolerence, maximum difference between m/z in transition list and m/z values in mzML file
-mz_tol = 0.06
-
-
-### RT tolerence, maximum difference indicated RT and detected RT
-RT_tol = 0.1
-
-
-### if "RT_shift = [x, y]", the estimation will assume that RT shift is no more than x minutes to the left and no more than y minutes to the right with respect to the reference samples. Let x = 0.0 and y = 0.0 if no significant RT shift occurs in the samples.
-RT_shift = [-0.2, 0.2]
-
-
-### this parameter restricts RT shift between adjacent samples
-RT_shift_bound = 0.1
-"#;
+fn example_headers(example: &str) -> csv::StringRecord {
+    let mut reader = csv::Reader::from_reader(example.as_bytes());
+    reader
+        .headers()
+        .expect("valid bundled example header")
+        .iter()
+        .filter(|s| !s.trim().is_empty())
+        .collect()
+}
 
 // tracks whether a processing step is already running
 struct RunState(AtomicBool);
@@ -565,8 +544,12 @@ fn requested_input_paths(
     run_order_name: &str,
     transition_name: &str,
 ) -> Result<(PathBuf, PathBuf), String> {
-    let run_order_name = safe_suggested_csv_name(run_order_name, "run_order_")?;
-    let transition_name = safe_suggested_csv_name(transition_name, "transition_list")?;
+    let run_order_name = safe_suggested_csv_name(run_order_name, "run_order")?;
+    let transition_name = if transition_name == "feature_list.csv" {
+        transition_name
+    } else {
+        safe_suggested_csv_name(transition_name, "transition_list")?
+    };
     let parameters = project_parameters(project);
     let configured_run_order = parameters
         .as_ref()
@@ -576,16 +559,21 @@ fn requested_input_paths(
         .as_ref()
         .and_then(|table| table.get("transition_list").and_then(toml::Value::as_str))
         .map(str::to_string);
-    let run_order = if let Some(value) = configured_run_order {
+    let run_order = if parameters.is_some() && configured_run_order.is_none() {
+        project.join("run_order.csv")
+    } else if let Some(value) = configured_run_order {
         safe_project_output(project, &value)?
     } else {
         existing_input_csv(project, "run_order")
             .unwrap_or(safe_project_output(project, run_order_name)?)
     };
-    let transition = if let Some(value) = configured_transition {
+    let transition = if parameters.is_some() && configured_transition.is_none() {
+        project.join("feature_list.csv")
+    } else if let Some(value) = configured_transition {
         safe_project_output(project, &value)?
     } else {
-        existing_input_csv(project, "transition_list")
+        existing_input_csv(project, "feature_list")
+            .or_else(|| existing_input_csv(project, "transition_list"))
             .unwrap_or(safe_project_output(project, transition_name)?)
     };
     Ok((run_order, transition))
@@ -595,8 +583,8 @@ fn requested_input_paths(
 fn data_editor_paths(project: &Path) -> Result<Vec<(String, String, PathBuf, String)>, String> {
     let (run_order, transition) = requested_input_paths(
         project,
-        "run_order_editor_placeholder.csv",
-        "transition_list.csv",
+        "run_order.csv",
+        "feature_list.csv",
     )?;
     Ok(vec![
         (
@@ -948,118 +936,108 @@ fn create_new_file(path: &Path) -> Result<fs::File, String> {
 // creates a blank run-order table with the same sample-name rows as a sibling
 // template, or with one row for every mzML file when no template exists
 fn create_run_order(project: &Path, target: &Path) -> Result<(), String> {
-    let output = create_new_file(target)?;
-    let mut writer = csv::Writer::from_writer(output);
+    let mut headers = example_headers(RUN_ORDER_EXAMPLE);
+    let mut names = Vec::new();
     if let Some(template) = csv_template(project, "run_order", target) {
         let mut reader = csv::ReaderBuilder::new()
             .flexible(true)
             .from_path(template)
-            .map_err(|error| error.to_string())?;
-        let headers = reader.headers().map_err(|error| error.to_string())?.clone();
-        let name_column = headers
+            .map_err(|e| e.to_string())?;
+        let columns = reader.headers().map_err(|e| e.to_string())?;
+        let name_column = columns
             .iter()
-            .position(|header| header.trim().eq_ignore_ascii_case("file name"))
+            .position(|h| {
+                matches!(
+                    h.trim().to_ascii_lowercase().as_str(),
+                    "file name" | "file_name"
+                )
+            })
             .unwrap_or(0);
-        writer
-            .write_record(&headers)
-            .map_err(|error| error.to_string())?;
+        if columns.iter().any(|h| {
+            h.split_whitespace()
+                .next()
+                .is_some_and(|v| v.eq_ignore_ascii_case("learn"))
+        }) {
+            headers.push_field("learn");
+        }
         for record in reader.records() {
-            let record = record.map_err(|error| error.to_string())?;
-            let mut blank = vec![String::new(); headers.len()];
-            if name_column < blank.len() {
-                blank[name_column] = record.get(name_column).unwrap_or_default().to_string();
-            }
-            writer
-                .write_record(blank)
-                .map_err(|error| error.to_string())?;
+            names.push(
+                record
+                    .map_err(|e| e.to_string())?
+                    .get(name_column)
+                    .unwrap_or_default()
+                    .to_owned(),
+            );
         }
     } else {
-        writer
-            .write_record([
-                "file name",
-                "batch",
-                "sample_type",
-                "reference (indicate at least one sample to be used for RT shift estimation)",
-            ])
-            .map_err(|error| error.to_string())?;
         let parameters = project_parameters(project);
-        let mzml_pattern = parameters
+        let pattern = parameters
             .as_ref()
-            .and_then(|table| table.get("mzML_files").and_then(toml::Value::as_str))
+            .and_then(|t| t.get("mzML_files")?.as_str())
             .unwrap_or("mzML/*.mzML");
-        let mut files: Vec<String> =
-            glob::glob(&project_file(project, mzml_pattern).to_string_lossy())
-                .into_iter()
-                .flatten()
-                .filter_map(Result::ok)
-                .filter_map(|path| {
-                    path.file_name()
-                        .and_then(|name| name.to_str())
-                        .map(str::to_string)
-                })
-                .collect();
-        files.sort_unstable();
-        for file in files {
-            writer
-                .write_record([file.as_str(), "", "", ""])
-                .map_err(|error| error.to_string())?;
+        for entry in glob::glob(&project_file(project, pattern).to_string_lossy())
+            .map_err(|e| e.to_string())?
+        {
+            let path = entry.map_err(|e| e.to_string())?;
+            if let Some(name) = path.file_name() {
+                names.push(name.to_string_lossy().into_owned());
+            }
         }
+        names.sort_unstable();
     }
-    writer.flush().map_err(|error| error.to_string())
+    let mut writer = csv::Writer::from_writer(create_new_file(target)?);
+    writer.write_record(&headers).map_err(|e| e.to_string())?;
+    for name in names {
+        writer
+            .write_record(
+                std::iter::once(name.as_str()).chain(std::iter::repeat_n("", headers.len() - 1)),
+            )
+            .map_err(|e| e.to_string())?;
+    }
+    writer.flush().map_err(|e| e.to_string())
 }
 
-// creates a blank transition table while preserving its headers and the
-// compound, transition, and internal-standard labels from a sibling template
 fn create_transition_list(project: &Path, target: &Path) -> Result<(), String> {
-    let output = create_new_file(target)?;
-    let mut writer = csv::Writer::from_writer(output);
-    if let Some(template) = csv_template(project, "transition_list", target) {
+    let headers = example_headers(FEATURE_EXAMPLE);
+    let mut identifiers = Vec::new();
+    if let Some(template) = csv_template(project, "feature_list", target)
+        .or_else(|| csv_template(project, "transition_list", target))
+    {
         let mut reader = csv::ReaderBuilder::new()
             .flexible(true)
             .from_path(template)
-            .map_err(|error| error.to_string())?;
-        let headers = reader.headers().map_err(|error| error.to_string())?.clone();
-        let label_columns: Vec<usize> = headers
-            .iter()
-            .enumerate()
-            .filter_map(|(index, header)| {
-                let header = header.trim().to_ascii_lowercase();
-                matches!(
-                    header.as_str(),
-                    "compound name" | "transition name" | "istd"
-                )
-                .then_some(index)
+            .map_err(|e| e.to_string())?;
+        let columns = reader.headers().map_err(|e| e.to_string())?;
+        let positions = [
+            ("Feature_ID", "Compound Name"),
+            ("Transition_Name", "Transition Name"),
+            ("ISTD_Feature_ID", "ISTD"),
+        ]
+        .map(|(current, legacy)| {
+            columns.iter().position(|h| {
+                h.trim().eq_ignore_ascii_case(current) || h.trim().eq_ignore_ascii_case(legacy)
             })
-            .collect();
-        writer
-            .write_record(&headers)
-            .map_err(|error| error.to_string())?;
+        });
         for record in reader.records() {
-            let record = record.map_err(|error| error.to_string())?;
-            let mut blank = vec![String::new(); headers.len()];
-            for &column in &label_columns {
-                blank[column] = record.get(column).unwrap_or_default().to_string();
-            }
-            writer
-                .write_record(blank)
-                .map_err(|error| error.to_string())?;
+            let record = record.map_err(|e| e.to_string())?;
+            identifiers.push(positions.map(|pos| {
+                pos.and_then(|i| record.get(i))
+                    .unwrap_or_default()
+                    .to_owned()
+            }));
         }
-    } else {
+    }
+    let mut writer = csv::Writer::from_writer(create_new_file(target)?);
+    writer.write_record(&headers).map_err(|e| e.to_string())?;
+    for labels in identifiers {
         writer
-            .write_record([
-                "Compound Name",
-                "Transition Name",
-                "ISTD",
-                "Precursor Ion",
-                "Product Ion",
-                "RT",
-                "uniform_width (y/n)",
-                "left integration bound (integration will not start earlier than the set RT)",
-                "right integration bound (integration must end before the set RT)",
-                "fixed(y/n)",
-                "Remarks",
-            ])
-            .map_err(|error| error.to_string())?;
+            .write_record(
+                labels
+                    .iter()
+                    .map(String::as_str)
+                    .chain(std::iter::repeat_n("", headers.len() - 3)),
+            )
+            .map_err(|e| e.to_string())?;
     }
     writer.flush().map_err(|error| error.to_string())
 }
@@ -1145,7 +1123,10 @@ fn inspect_project(project: &Path) -> ProjectSummary {
                     .map_err(|error| error.to_string())
             }) {
             Ok(parameters) => {
-                if let Some(pattern) = parameters.get("mzML_files").and_then(toml::Value::as_str) {
+                if let Some(pattern) = parameters
+                    .get("mzML_files")
+                    .map_or(Some("mzML/*.mzML"), toml::Value::as_str)
+                {
                     let pattern = project_file(project, pattern);
                     match glob::glob(&pattern.to_string_lossy()) {
                         Ok(files) => sample_count = files.filter_map(Result::ok).count(),
@@ -1155,12 +1136,12 @@ fn inspect_project(project: &Path) -> ProjectSummary {
                         issues.push("no mzml files match param.txt".to_string());
                     }
                 } else {
-                    issues.push("mzML_files is missing from param.txt".to_string());
+                    issues.push("mzML_files in param.txt must be a quoted string".to_string());
                 }
 
                 if let Some(value) = parameters
                     .get("transition_list")
-                    .and_then(toml::Value::as_str)
+                    .map_or(Some("feature_list.csv"), toml::Value::as_str)
                 {
                     let path = project_file(project, value);
                     transition_file = path
@@ -1170,15 +1151,18 @@ fn inspect_project(project: &Path) -> ProjectSummary {
                         issues.push("the transition list was not found".to_string());
                     }
                 } else {
-                    issues.push("transition_list is missing from param.txt".to_string());
+                    issues.push("transition_list in param.txt must be a quoted string".to_string());
                 }
 
-                if let Some(value) = parameters.get("batch_info").and_then(toml::Value::as_str) {
+                if let Some(value) = parameters
+                    .get("batch_info")
+                    .map_or(Some("run_order.csv"), toml::Value::as_str)
+                {
                     if !project_file(project, value).is_file() {
                         issues.push("the sample list was not found".to_string());
                     }
                 } else {
-                    issues.push("batch_info is missing from param.txt".to_string());
+                    issues.push("batch_info in param.txt must be a quoted string".to_string());
                 }
             }
             Err(error) => issues.push(format!("param.txt could not be read: {error}")),
@@ -1965,8 +1949,12 @@ fn forward_output<R: Read>(
     app: &AppHandle,
     step: u8,
     stream: &str,
-) -> Result<(), String> {
+) -> Result<String, String> {
+    let mut last_error = String::new();
     read_output_records(reader, |line| {
+        if stream == "error" {
+            last_error.clone_from(&line);
+        }
         let _ = app.emit(
             "worker-output",
             WorkerOutput {
@@ -1975,7 +1963,8 @@ fn forward_output<R: Read>(
                 line,
             },
         );
-    })
+    })?;
+    Ok(last_error)
 }
 
 // runs one processing step inside the selected project
@@ -1983,6 +1972,7 @@ fn run_worker(app: AppHandle, project: PathBuf, step: u8) -> Result<ProjectSumma
     let worker = find_worker(&project)
         .ok_or_else(|| "the integrator processing engine was not found".to_string())?;
     let mut command = Command::new(worker);
+    if step == 4 { command.env("MRMHUB_RSCRIPT", quant::runtime(&app)?.0); }
     command
         .arg(step.to_string())
         .current_dir(&project)
@@ -2013,11 +2003,20 @@ fn run_worker(app: AppHandle, project: PathBuf, step: u8) -> Result<ProjectSumma
     forward_output(stdout, &app, step, "output")?;
     let status = child.wait().map_err(|error| error.to_string())?;
     managed.finish();
-    stderr_thread
+    let last_error = stderr_thread
         .join()
         .map_err(|_| "the processing error reader stopped unexpectedly".to_string())??;
 
     if !status.success() {
+        if step == 1 && last_error.contains("mzml_format_errors.txt") {
+            let report = project.join("mzml_format_errors.txt");
+            if let Ok(file) = fs::File::open(&report) {
+                let mut preview = String::new();
+                let _ = file.take(8192).read_to_string(&mut preview);
+                return Err(format!("mzML format check failed. {}\n{}", report.display(), preview.trim()));
+            }
+        }
+        if !last_error.is_empty() { return Err(last_error); }
         return Err(format!(
             "processing step {step} exited with code {}",
             status.code().unwrap_or(-1)
@@ -2221,6 +2220,7 @@ fn main() {
             quant::quant_status,
             quant::quant_setup,
             quant::quant_history,
+            quant::quant_step_output,
             quant::quant_execute,
             quant::quant_image,
             quant::quant_save_artifact,
@@ -2342,7 +2342,7 @@ mod tests {
         assert_eq!(created.created.len(), 2);
 
         let run_order = fs::read_to_string(dir.join("run_order_2026-07-09_21-30-45.csv")).unwrap();
-        assert!(run_order.contains("file name,batch,sample_type"));
+        assert!(run_order.contains("file_name,batch,sample_type"));
         assert!(run_order.contains("a.mzML,,,"));
         assert!(run_order.contains("b.mzML,,,"));
 
@@ -2389,6 +2389,12 @@ mod tests {
         )
         .unwrap();
         let param = fs::read_to_string(dir.join("param.txt")).unwrap();
+        let feature_headers = example_headers(FEATURE_EXAMPLE);
+        let mut generated = csv::Reader::from_path(dir.join(&transition)).unwrap();
+        assert_eq!(generated.headers().unwrap(), &feature_headers);
+        assert!(generated.records().next().is_none());
+        drop(generated);
+        assert!(param.contains("sn_noise"));
         assert!(param.contains("mzML_files"));
         assert!(param.contains(&format!("batch_info = \"{run_order}\"")));
         assert!(param.contains(&format!("transition_list = \"{transition}\"")));

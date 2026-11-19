@@ -37,6 +37,7 @@ window.__TAURI__ = {
   event:{listen:async(name,callback)=>{events.set(name,callback);return()=>{};}},
   dialog:{save:async()=>null},
   core:{invoke:async(command,args)=>{
+    if(command==="quant_step_output") return null;
     if(command==="quant_history") return [...history];
     if(command==="quant_storage") return {folder:`${args.project}/QUANT`,totalBytes:2450000000,reclaimableBytes:1200000000,trashBytes:340000000,files:142,skippedEntries:0};
     if(command==="quant_compact") {
@@ -72,6 +73,7 @@ window.__TAURI__ = {
     }
     if(command==="quant_execute" && args.request.action==="run" && currentPreview) {
       const {operation,parameters}=args.request;
+      events.get("quant-log")?.({payload:`Running ${operation}`});
       if(operation.startsWith("exclude_")) {
         const isAnalysis=operation==="exclude_analyses", name=isAnalysis?"analyses":"features", id=isAnalysis?"analysis_id":"feature_id", flag=isAnalysis?"valid_analysis":"valid_feature";
         for(const row of isAnalysis?analyses:features) row[flag]=parameters.clear_existing ? !parameters[name].includes(row[id]) : row[flag]&&!parameters[name].includes(row[id]);

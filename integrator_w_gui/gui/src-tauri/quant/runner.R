@@ -118,6 +118,7 @@ tryCatch({
     if (length(missing_packages)) stop("Install optional dependencies for this operation first: ", paste(missing_packages, collapse = ", "))
     fun <- getExportedValue("mrmhub", entry$id)
     parameters <- request$parameters
+    if (!is.null(request$inputPath)) parameters$path <- request$inputPath
     if (is.null(parameters)) parameters <- list()
     allowed <- vapply(quant_schema(entry)$fields, `[[`, character(1), "name")
     if (any(!names(parameters) %in% allowed)) stop("Unsupported parameter(s): ", paste(setdiff(names(parameters), allowed), collapse = ", "))
@@ -129,8 +130,27 @@ tryCatch({
       }
       x
     })
+    if (entry$id %in% c("plot_calibrationcurves", "quantify_by_calibration", "calc_calibration_results")) {
+      for (name in c("fit_model", "fit_weighting")) {
+        if (length(parameters[[name]]) == 1L && is.na(parameters[[name]])) parameters[[name]] <- NULL
+      }
+      if (entry$id == "plot_calibrationcurves" && !is.null(data)) {
+        custom_fit <- any(c("fit_model", "fit_weighting") %in% names(parameters))
+        if (is.null(parameters$fit_overwrite) && (custom_fit || !nrow(data@metrics_calibration))) {
+          parameters$fit_overwrite <- custom_fit
+        }
+        if (!is.null(parameters$fit_overwrite) && is.null(parameters$fit_weighting)) parameters$fit_weighting <- "none"
+      }
+    }
+    if (entry$kind %in% c("import", "metadata") && is.character(parameters$path) && length(parameters$path) == 1L) {
+      probe <- tryCatch(file(parameters$path, open = "rb"), warning = identity, error = identity)
+      if (inherits(probe, "condition")) {
+        stop("Cannot open input file ", request$parameters$path, ": ", conditionMessage(probe))
+      }
+      close(probe)
+    }
     if (entry$kind == "import") {
-      if (entry$id != "data_load_example" && (is.null(parameters$path) || !file.exists(parameters$path))) stop("Choose an existing results file.")
+      if (entry$id != "data_load_example" && is.null(parameters$path)) stop("Choose a results file.")
       data <- MRMhubExperiment(title = request$title, analysis_type = request$analysisType)
     } else if (is.null(data)) stop("Import a dataset first.")
     if ("show_progress" %in% names(formals(fun))) parameters$show_progress <- FALSE

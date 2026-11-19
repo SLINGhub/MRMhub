@@ -28,8 +28,60 @@ const make = (tag, text, className) => {
 const checkpointKey = () => mode === "legacy" ? `mrmhub-quant-legacy-checkpoint:${path}` : `mrmhub-quant-checkpoint:${path}`;
 const opName = id => id?.startsWith("legacy-") ? `Step ${Number(id.slice(7)) + 1} · ${legacySteps[Number(id.slice(7))]}` : catalog.find(o => o.id === id)?.label ?? id ?? "Edit metadata";
 const trashButton = (id, label, all = false) => `<button id="q-${id}" type="button" class="q-trash" aria-label="${label}" title="${label}" disabled><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7"/></svg>${all ? '<span>All</span>' : ''}</button>`;
+let activeStepOutput;
+let stepOutputRevision = 0;
+const stepOutputPanel = which => `<section class="q-step-output" id="q-${which}-output" hidden><strong role="status"></strong><pre tabindex="0" aria-label="Step console output"></pre></section>`;
+function stepPanel() { return $(mode === "legacy" ? "legacy-output" : "guided-output"); }
+function operationId() { return mode === "legacy" ? `legacy-${legacyStep}` : selected?.id; }
+function showStepOutput(result) {
+  const panel = stepPanel();
+  panel.hidden = !result;
+  if (!result) return;
+  panel.querySelector("strong").textContent = result.status;
+  const output = panel.querySelector("pre");
+  const atBottom = output.scrollHeight - output.scrollTop - output.clientHeight < 24;
+  output.textContent = [result.output, result.error].filter(Boolean).join("\n").trimEnd();
+  if (atBottom) output.scrollTop = output.scrollHeight;
+}
+async function loadStepOutput() {
+  const revision = ++stepOutputRevision, operation = operationId();
+  showStepOutput(null);
+  if (!operation || !native || !path) return;
+  try {
+    const result = await invoke("quant_step_output", { project: path, operation });
+    if (revision === stepOutputRevision) showStepOutput(result);
+  } catch (error) {
+    if (revision === stepOutputRevision) showStepOutput({status:"Could not load step output", error:String(error)});
+  }
+}
+async function executeStep(request) {
+  ++stepOutputRevision;
+  const pending = { status:"Running", output:"" };
+  activeStepOutput = pending;
+  showStepOutput(pending);
+  try {
+    const result = await invoke("quant_execute", {project:path, request});
+    pending.status = "Succeeded";
+    return result;
+  } catch (error) {
+    pending.status = "Failed";
+    pending.error = String(error);
+    throw error;
+  } finally {
+    activeStepOutput = undefined;
+    showStepOutput(pending);
+  }
+}
 function log(text) {
   output.append(text);
+  const pending = activeStepOutput;
+  if (pending) {
+    pending.output = (pending.output + text + "\n").slice(-65536);
+    if (!pending.frame) pending.frame = requestAnimationFrame(() => {
+      pending.frame = 0;
+      if (activeStepOutput === pending) showStepOutput(pending);
+    });
+  }
 }
 function setBusy(value, message = "") {
   busy = value;
@@ -104,6 +156,7 @@ export async function initializeQuant(projectPath) {
               <details id="q-advanced" class="q-disclosure q-advanced"><summary>More settings <span id="q-advanced-count"></span></summary><div id="q-extra-fields" class="q-form"></div></details>
               <details class="q-disclosure q-settings-help"><summary>How settings work</summary><p class="q-help">Checked settings are passed to R; unchecked settings use the original function default. IDs and patterns use one per line, other lists use commas. NA means missing / no restriction. Blank optional checked values mean NA.</p></details>
               <footer class="q-runbar"><span class="q-help">Saved automatically after a successful run.</span><button id="q-run" type="button" class="q-primary">Run operation</button></footer>
+              ${stepOutputPanel("guided")}
             </section>
             <section id="q-legacy-editor" role="tabpanel" aria-labelledby="q-legacy-tab" class="q-panel q-editor hidden">
               <div class="q-editor-heading"><div><p id="q-legacy-phase" class="q-section-label"></p><h2 id="q-legacy-title"></h2></div><div class="q-step-navigation"><button id="q-legacy-prev" type="button" aria-label="Previous Legacy step">←</button><span id="q-legacy-position" aria-live="polite"></span><button id="q-legacy-next" type="button" aria-label="Next Legacy step">→</button></div></div>
@@ -111,6 +164,7 @@ export async function initializeQuant(projectPath) {
               <div class="q-legacy-tools"><details class="q-disclosure"><summary>Tutorial & code help</summary><div class="q-help"><p>Follow the <a href="https://slinghub.github.io/MRMhub/quant/articles/tutorial-03-lipidomics-workflow.html" target="_blank" rel="noopener noreferrer">original lipidomics tutorial</a>. Edit paths, sample IDs and settings for your dataset. Recognized pasted output is cleaned when you Run; nothing runs automatically.</p><p>Keep your experiment in <code>mexp</code> to inspect its tables. Relative paths start in <code>dataset_dir</code>; use <code>output_dir</code> for this run’s exports. Plots appear in Results and View() prints in Activity. Live connections and background workers are not restored between blocks.</p></div></details><button id="q-legacy-import" type="button" class="hidden">Insert import for this dataset</button></div>
               <div id="q-legacy-code"></div><p id="q-legacy-paste-note" class="q-help" role="status"></p>
               <footer class="q-runbar"><span class="q-help">Only run trusted code. R has access to your files and network.</span><button id="q-legacy-run" type="button" class="q-primary">Run code</button></footer>
+              ${stepOutputPanel("legacy")}
             </section>
             <section class="q-results" aria-label="Analysis results">
               <header class="q-results-heading"><h2>Results</h2><div class="q-subtabs q-result-tabs" role="tablist" aria-label="QUANT results"><button id="q-plots-tab" type="button" role="tab" aria-selected="true" aria-controls="q-plots-panel">Graphs & outputs</button><button id="q-data-tab" type="button" role="tab" aria-selected="false" aria-controls="q-data-panel" tabindex="-1">Data & metadata</button></div></header>
@@ -250,6 +304,7 @@ export async function initializeQuant(projectPath) {
     $("storage-path").textContent = "";
     loadLegacyDrafts();
     drafts.clear(); selected = undefined;
+    void loadStepOutput();
     $("dataset").textContent = path?.split(/[\\/]/).pop() || "Select a dataset folder in Integrator to begin.";
     $("dataset").title = path || "";
     $("title").value = path?.split(/[\\/]/).pop() || "Experiment";
@@ -381,6 +436,7 @@ function loadLegacyDrafts() {
 }
 function chooseLegacyStep(index) {
   legacyStep = index;
+  if (mode === "legacy") void loadStepOutput();
   $("legacy-title").textContent = legacySteps[index];
   $("legacy-phase").textContent = legacyGroups.find(group => index >= group.start && index <= group.end)?.label ?? "Legacy workflow";
   $("legacy-position").textContent = `${index + 1} / ${legacySteps.length}`;
@@ -398,7 +454,7 @@ async function switchMode(next) {
   if (mode === next) return;
   await task("Loading workflow…", async () => {
     if (!await discardWarning()) return;
-    mode = next; offset = 0; generation++; current = undefined; history = [];
+    mode = next; void loadStepOutput(); offset = 0; generation++; current = undefined; history = [];
     legacyEditor.close();
     const legacy = mode === "legacy";
     $("guided-tab").setAttribute("aria-selected", String(!legacy));
@@ -446,7 +502,7 @@ async function runLegacy() {
     const request = { action: "legacy", operation: `legacy-${legacyStep}`, code: legacyEditor.getValue(), checkpoint: current?.id ?? "", progressToken: crypto.randomUUID() };
     log(`Running Legacy step ${legacyStep + 1}: ${legacySteps[legacyStep]}…`);
     runProgress.start(request.progressToken);
-    try { const result = await invoke("quant_execute", { project: path, request }); resultView = "plots"; await accept(result); }
+    try { const result = await executeStep(request); resultView = "plots"; await accept(result); }
     finally { runProgress.finish(); }
     log("R block completed. Session saved.");
   });
@@ -498,6 +554,7 @@ function chooseOperation(id, preset) {
   if (!preset) stashForm();
   selected = catalog.find(o => o.id === id) ?? catalog[0];
   if (!selected) return;
+  if (mode === "guided") void loadStepOutput();
   root.querySelectorAll("[data-operation]").forEach(button => {
     const active = button.dataset.operation === selected.id; button.classList.toggle("active", active);
     button.setAttribute("aria-current", active ? "step" : "false");
@@ -547,7 +604,7 @@ function chooseOperation(id, preset) {
     label.title = `${field.name} — R default: ${field.original || "required"}`; heading.append(toggle, label);
     const input = make(["boolean", "choice"].includes(field.type) ? "select" : field.type === "mapping" || field.lineSeparated ? "textarea" : "input"); input.id = `q-input-${field.name}`;
     if (field.type === "boolean") for (const value of [...(field.value == null && !field.required ? [""] : []), "true", "false"]) { const option = make("option", value === "" ? "Automatic / NA" : value === "true" ? "Yes" : "No"); option.value = value; input.append(option); }
-    else if (field.type === "choice") for (const value of [...(!field.required ? [""] : []), ...field.choices]) { const option = make("option", value || "Automatic / NA"); option.value = value; input.append(option); }
+    else if (field.type === "choice") for (const value of [...(!field.required ? [""] : []), ...field.choices]) { const option = make("option", value || (["fit_weighting", "fit_model", "lod_sigma"].includes(field.name) ? "Use default" : "Automatic / NA")); option.value = value; input.append(option); }
     else { if (field.type !== "mapping") input.type = "text"; input.placeholder = field.required ? "Required" : `Default: ${field.original}`; }
     input.value = draft?.text ?? (field.lineSeparated && Array.isArray(field.value) ? field.value.join("\n") : displayValue(field.value));
     input.disabled = !toggle.checked; toggle.onchange = () => { input.disabled = !toggle.checked; };
@@ -588,11 +645,11 @@ async function run() {
     const parameters = {};
     for (const field of selected.fields) {
       const toggle = document.getElementById(`q-enable-${field.name}`), input = document.getElementById(`q-input-${field.name}`);
-      if (toggle?.checked) parameters[field.name] = parameterValue(field, input.value);
+      if (toggle?.checked && !(["fit_weighting", "fit_model", "lod_sigma"].includes(field.name) && !input.value)) parameters[field.name] = parameterValue(field, input.value);
     }
     const request = { action: "run", operation: selected.id, parameters, checkpoint: selected.kind === "import" ? "" : current?.id ?? "", title: $("title").value.trim() || "Experiment", analysisType: $("analysis-type").value };
     log(`Running ${selected.label}…`);
-    const result = await invoke("quant_execute", { project: path, request });
+    const result = await executeStep(request);
     resultView = resultViewForOperation(selected.kind);
     await accept(result); log(`${selected.label} completed. Checkpoint saved.`);
   });

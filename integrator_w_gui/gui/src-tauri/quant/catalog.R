@@ -10,7 +10,7 @@ quant_catalog <- function() {
     op("import_data_skyline", "Import Skyline results", "1 · Import", "import"),
     op("import_data_csv_long", "Import generic long-format CSV", "1 · Import", "import", note = "Map nonstandard columns with a JSON object: {\"analysis_id\":\"your_sample_column\",\"feature_id\":\"your_feature_column\",\"feature_area\":\"your_area_column\"}. No R expressions are evaluated."),
     op("import_data_csv_wide", "Import generic wide-format CSV", "1 · Import", "import", list(variable_name = "area")),
-    op("read_dataset_rds", "Open saved MRMhub experiment", "1 · Import", "import", note = "Open an RDS archive made with save_dataset_rds(). Its embedded fingerprint is checked by the original R function. QUANT 1.0.1 can report a fingerprint mismatch across R processes even for unchanged data; the warning is preserved, and loading still proceeds. Verify the source of any archive before trusting it."),
+    op("read_dataset_rds", "Open saved MRMhub experiment", "1 · Import", "import", note = "Open an RDS archive made with save_dataset_rds(). Its embedded fingerprint is checked by the original R function."),
     op("data_load_example", "Load bundled demo data", "1 · Import", "import"),
     op("import_metadata_msorganiser", "Import metadata workbook", "2 · Annotate", "metadata", note = "Use an MSorganiser workbook. For separate metadata tables, choose the corresponding import below. Metadata changes reset downstream processing in QUANT; rerun it afterwards."),
     op("import_metadata_analyses", "Import sample / run metadata", "2 · Annotate", "metadata"),
@@ -45,7 +45,7 @@ quant_catalog <- function() {
     op("quantify_by_istd", "Calculate concentrations", "5 · Quantitate", note = "Normalize first. Requires ISTD concentrations, sample amounts, and ISTD volumes. Missing values are reported by QUANT, never guessed."),
     op("calc_calibration_results", "Fit external calibration curves", "5 · Quantitate", defaults = list(fit_overwrite = FALSE, fit_model = "linear", fit_weighting = "none"), note = "Use QC concentration metadata and ISTD-normalized intensities. Model and weighting can be set per feature, including 1/sqrt(x); one- and two-level fits follow the original engine."),
     op("quantify_by_calibration", "Quantify by external calibration", "5 · Quantitate", defaults = list(fit_overwrite = FALSE), note = "For assays such as Dataset4. Requires calibration/QC concentration annotations and normalized intensities; review model and weighting for your assay."),
-    op("plot_calibrationcurves", "External calibration curves", "5 · Quantitate", "plot", list(fit_overwrite = FALSE)),
+    op("plot_calibrationcurves", "External calibration curves", "5 · Quantitate", "plot", note = "Uses stored calibration fits when available. Choose a model or weighting to request a new fit."),
     op("calibrate_by_reference", "Calibrate against reference samples", "5 · Quantitate", defaults = list(variable = "conc", absolute_calibration = TRUE)),
     op("plot_normalization_qc", "Review normalization", "5 · Quantitate", "plot", list(before_norm_var = "intensity", after_norm_var = "norm_intensity", plot_type = "diff", qc_types = c("TQC", "BQC", "SPL"), facet_by_class = TRUE, point_size = 2, y_lim = c(-5, 15))),
     op("correct_drift_gaussiankernel", "Correct within-batch drift", "6 · Correct & review", defaults = list(variable = "conc", ref_qc_types = "SPL", ignore_istd = TRUE, batch_wise = TRUE, replace_previous = TRUE, recalc_trend_after = TRUE, kernel_size = 10, outlier_filter = FALSE, outlier_ksd = 5, location_smooth = TRUE, scale_smooth = FALSE), note = "Tutorial uses study samples as reference. Choose reference QC types appropriate to your design."),
@@ -89,9 +89,10 @@ quant_schema <- function(entry) {
   if (entry$kind == "plot") hidden <- c(hidden, "path")
   if (entry$kind == "export") hidden <- c(hidden, "path")
   fields <- lapply(setdiff(names(args), hidden), function(name) {
-    required <- identical(args[[name]], quote(expr = ))
+    required <- identical(args[[name]], quote(expr = )) && !(entry$id == "plot_calibrationcurves" && name == "fit_overwrite")
     raw <- paste(deparse(args[[name]]), collapse = "")
-    value <- if (name %in% names(entry$defaults)) entry$defaults[[name]] else if (!required) tryCatch(eval(args[[name]], baseenv()), error = function(e) NULL) else NULL
+    value <- if (name %in% names(entry$defaults)) entry$defaults[[name]] else if (!identical(args[[name]], quote(expr = ))) tryCatch(eval(args[[name]], baseenv()), error = function(e) NULL) else NULL
+    if (entry$id == "plot_calibrationcurves" && name == "fit_overwrite") value <- FALSE
     # Choice defaults in QUANT are vectors consumed by arg_match(). Preserve
     # omission unless the user opts in; do not turn a vector into a wrong default.
     type <- if (is.logical(value) && length(value) == 1 && !is.na(value)) "boolean" else if (is.numeric(value)) "number" else "text"
@@ -100,7 +101,7 @@ quant_schema <- function(entry) {
     if (name %in% c("span", "spar", "lambda", "sp", "cor_min", "min_median_value", "specific_page", "zoom_n_points", "first_feature_column", "binwidth", "min_correction_pct")) type <- "number"
     vector <- length(value) > 1 || name %in% c("qc_types", "ref_qc_types", "analyses", "features", "features.to.keep", "response.curves.selection", "feature_list", "pca_dims", "y_lim", "x_lim", "include_feature_filter", "exclude_feature_filter", "reference_sample_id", "covariates", "na_strings", "threshold_values")
     choices <- switch(name, fit_model = c("linear", "quadratic"), fit_weighting = c("none", "1/x", "1/x^2", "1/sqrt(x)"),
-      lod_sigma = c("residual", "intercept"), transition_id_columns = c("name", "mz", "none"),
+      lod_sigma = c("auto", "residual", "intercept"), transition_id_columns = c("name", "mz", "none"),
       qualifier_action = c("include", "exclude", "separate"), NULL)
     if (name == "level" && entry$id == "calc_isotopic_interferences") choices <- c("MRM", "MS1")
     if (!is.null(choices)) { type <- "choice"; vector <- FALSE; value <- if (length(value)) value[[1]] else choices[[1]] }

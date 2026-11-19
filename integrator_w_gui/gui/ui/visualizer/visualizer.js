@@ -382,7 +382,7 @@ function createTraceRecord(job) {
   shell.replaceChildren(
     tracePlaceholder(
       record,
-      record.unrenderable ? "No trace data" : "Plot ready when scrolled into view",
+      record.unrenderable ? `${record.editContext?.fileName || "Chromatogram"} · ${points.length ? "Insufficient trace data" : "Not acquired"}` : "Plot ready when scrolled into view",
     ),
   );
   job.container.append(shell);
@@ -537,7 +537,7 @@ function releaseGraphPointer(graph) {
 function wheelZoom(width, height, onZoom) {
   return d3
     .zoom()
-    .filter((event) => event.type === "wheel")
+    .filter((event) => event.type === "wheel" && (event.ctrlKey || event.metaKey))
     .scaleExtent([1, 1000])
     .extent([
       [margins.left, margins.top],
@@ -837,7 +837,11 @@ function hideQcMarkers() {
 function showQcSample(sampleIndex) {
   const sampleName = state.samples[sampleIndex]?.[0] ?? `Sample ${sampleIndex + 1}`;
   for (const graph of state.qcGraphs) {
-    if (sampleIndex >= graph.values.length) continue;
+    if (!Number.isFinite(graph.values[sampleIndex])) {
+      graph.marker.attr("display", "none");
+      graph.tooltip.attr("display", "none");
+      continue;
+    }
     graph.marker
       .attr("display", null)
       .attr("cx", graph.currentX(sampleIndex))
@@ -850,7 +854,8 @@ function showQcSample(sampleIndex) {
 // renders one qc series using one path instead of hundreds of point nodes
 function renderQcGraph(title, values, width) {
   if (!values.length) return;
-  const typedValues = Float32Array.from(values);
+  const typedValues = Float32Array.from(values, value => value ?? NaN);
+  if (!typedValues.some(Number.isFinite)) return;
   const height = Math.round(200 * state.fontScale);
   const x = d3
     .scaleLinear()
@@ -893,6 +898,7 @@ function renderQcGraph(title, values, width) {
 
   const line = d3
     .line()
+    .defined(Number.isFinite)
     .x((_, index) => x(index))
     .y((value) => y(value));
   const plotClip = addPlotClip(svg, width, height, margins.top + 6);
@@ -980,7 +986,7 @@ async function renderQc(transition, token, width) {
     if (!rows.length) continue;
     for (const key of Object.keys(rows[0])) {
       renderQcGraph(
-        `${key.replaceAll("_", " ")}, ${featureName}`,
+        `${({ sn_ratio: "S/N (experimental)", trace_cut_pct: "Trace cut (%)" })[key] ?? key.replaceAll("_", " ")}, ${featureName}`,
         rows.map((row) => row[key]),
         width,
       );
@@ -1045,6 +1051,7 @@ function createReferenceToggle(graph) {
       <path d="M5 12.5 10 17l9-10" />
     </svg>
   `;
+  button.append("RT reference");
   button.addEventListener("click", () => toggleGraphReference(graph));
   graph.referenceToggle = button;
   syncGraphReferenceState(graph);
@@ -1557,6 +1564,7 @@ function renderTrace(
   ySlider.addEventListener(
     "wheel",
     (event) => {
+      if (!(event.ctrlKey || event.metaKey)) return;
       event.preventDefault();
       const delta = event.deltaY < 0 ? 36 : -36;
       ySlider.value = String(
@@ -2196,6 +2204,11 @@ function updateSaveButton() {
   if (sequence && !elements.transition.value.startsWith("t:")) {
     elements.applyShared.title = "Choose a transition for acquisition-sequence integration, or use peak-shape alignment / same bounds in reference view.";
   }
+  const hint = document.querySelector("#visualizer-apply-hint");
+  hint.textContent = busy ? "Processing…" : sequence && !selection.startsWith("t:")
+    ? "Choose a transition or change the apply method."
+    : selectedReferences.length ? `${selectedReferences.length} reference plot(s) selected`
+    : "Select RT reference on a plot with usable bounds.";
   elements.alignShared.disabled = busy;
   elements.toolbar.classList.toggle("has-unsaved", hasEdits);
   elements.toolbar.classList.toggle(

@@ -2,7 +2,7 @@ use base64::{Engine as _, engine::general_purpose::STANDARD as BASE64_STANDARD};
 use std::collections::{BTreeMap, BTreeSet};
 use std::error::Error;
 use std::fs::File;
-use std::io::{self, BufRead, BufReader, Read};
+use std::io::{self, BufRead, BufReader, Read, Seek, SeekFrom};
 use std::path::{Path, PathBuf};
 use tauri::ipc::{Channel, Response};
 
@@ -13,6 +13,17 @@ pub struct QcStat {
     area: f32,
     rt_int_start: f32,
     rt_int_end: f32,
+    #[serde(flatten)]
+    metrics: Option<PeakMetrics>,
+}
+
+#[derive(Clone, serde::Serialize)]
+struct PeakMetrics {
+    height: f32,
+    #[serde(rename = "FWHM")]
+    fwhm: f32,
+    trace_cut_pct: f32,
+    sn_ratio: f32,
 }
 
 // describes one chromatogram sent to the visualizer
@@ -708,6 +719,30 @@ fn write_bounds_atomically(path: &Path, records: &[Vec<String>]) -> Result<(), S
     result
 }
 
+// The first five bytes hold collision energy and polarity, followed by the
+// point count. Exact bounds need only this header, never the chromatogram.
+fn absent_trace_samples(
+    misc: &Path,
+    cqq: &str,
+    names: &[String],
+) -> Result<BTreeSet<String>, String> {
+    let path = misc.join(format!("te_{}", safe_component(cqq)?));
+    let file = File::open(&path).map_err(|e| format!("Cannot read {}: {e}", path.display()))?;
+    let mut reader = BufReader::new(file);
+    let mut absent = BTreeSet::new();
+    for name in names {
+        reader.seek_relative(5).map_err(|e| e.to_string())?;
+        let count = unpack_u16(&mut reader).map_err(|e| e.to_string())?;
+        if count == 0 {
+            absent.insert(strip_mzml(name.trim()).to_ascii_lowercase());
+        }
+        reader
+            .seek_relative(i64::from(count) * 8)
+            .map_err(|e| e.to_string())?;
+    }
+    Ok(absent)
+}
+
 // Applies each averaged reference window directly to every sample row. Shared
 // reintegration used to expand one edit per sample in JavaScript, then look up
 // every row again by index/name. That made the operation fail when the sample
@@ -745,6 +780,19 @@ pub fn visualizer_save_shared_bounds(
         return Err("RT_matrix.csv does not contain any samples".to_string());
     }
 
+    // The worker writes an empty report for complete panels. Older workers
+    // kept only complete transitions, so they do not need a trace scan either.
+    let misc = project.join("misc");
+    let sample_names = if project
+        .join("missing_details.txt")
+        .metadata()
+        .is_ok_and(|m| m.len() > 0)
+    {
+        Some(visualizer_sample_names(&misc)?)
+    } else {
+        None
+    };
+    let mut missing_by_transition = BTreeMap::new();
     let mut written = 0;
     for edit in &edits {
         let columns: Vec<usize> = records[0]
@@ -778,23 +826,35 @@ pub fn visualizer_save_shared_bounds(
         } else {
             (edit.rt_end, edit.rt_start)
         };
+        if !low.is_finite() || !high.is_finite() || low < 0.0 || high - low < 0.001 {
+            return Err("Invalid shared integration bounds.".to_string());
+        }
+        let missing = if let Some(names) = &sample_names {
+            Some(match missing_by_transition.entry(&edit.cqq) {
+                std::collections::btree_map::Entry::Vacant(entry) => {
+                    entry.insert(absent_trace_samples(&misc, &edit.cqq, names)?)
+                }
+                std::collections::btree_map::Entry::Occupied(entry) => entry.into_mut(),
+            })
+        } else {
+            None
+        };
+        let low = format!("{low:.3}");
+        let high = format!("{high:.3}");
         for row in &mut records[3..] {
-            row[start_col] = format!("{low:.3}");
-            row[end_col] = format!("{high:.3}");
+            if missing.as_ref().is_some_and(|absent| {
+                !absent.is_empty()
+                    && absent.contains(&strip_mzml(row[0].trim()).to_ascii_lowercase())
+            }) {
+                continue;
+            }
+            row[start_col].clone_from(&low);
+            row[end_col].clone_from(&high);
             written += 1;
         }
     }
 
-    let mut writer = csv::WriterBuilder::new()
-        .flexible(true)
-        .from_path(&rtm_path)
-        .map_err(|error| error.to_string())?;
-    for record in &records {
-        writer
-            .write_record(record)
-            .map_err(|error| error.to_string())?;
-    }
-    writer.flush().map_err(|error| error.to_string())?;
+    write_bounds_atomically(&rtm_path, &records)?;
     Ok(written)
 }
 
@@ -931,6 +991,9 @@ pub fn visualizer_align_shared_bounds(
         reference_profiles += usize::from(profile.is_some());
 
         for (row_offset, row) in records[3..].iter_mut().enumerate() {
+            if row_sample_indices[row_offset].and_then(|index| traces.get(index)).is_some_and(Vec::is_empty) {
+                continue;
+            }
             let candidate = row_sample_indices[row_offset].and_then(|sample_index| {
                 if selected_samples.contains(&sample_index) {
                     return None;
@@ -953,16 +1016,7 @@ pub fn visualizer_align_shared_bounds(
         }
     }
 
-    let mut writer = csv::WriterBuilder::new()
-        .flexible(true)
-        .from_path(&rtm_path)
-        .map_err(|error| error.to_string())?;
-    for record in &records {
-        writer
-            .write_record(record)
-            .map_err(|error| error.to_string())?;
-    }
-    writer.flush().map_err(|error| error.to_string())?;
+    write_bounds_atomically(&rtm_path, &records)?;
 
     Ok(AlignedBoundsResult {
         written,
@@ -1027,7 +1081,7 @@ pub fn visualizer_read_long(
     let transition_time = std::fs::metadata(transition_path).and_then(|meta| meta.modified());
     let long_is_current = std::fs::metadata(&long_path)
         .and_then(|meta| meta.modified())
-        .and_then(|long_time| transition_time.map(|transition_time| transition_time < long_time))
+        .and_then(|long_time| transition_time.map(|transition_time| transition_time <= long_time))
         .is_ok_and(|is_current| is_current);
     if !long_is_current {
         return Ok(Vec::new());
@@ -1040,6 +1094,13 @@ pub fn visualizer_read_long(
         .and_then(|index| transitions.get(index))
         .ok_or_else(|| format!("transition {cqq} was not found"))?;
     let mut reader = BufReader::new(File::open(long_path).map_err(|error| error.to_string())?);
+    let metrics_path = misc.join("peak_metrics.bin");
+    let mut metrics = File::open(metrics_path).ok().and_then(|file| {
+        let modified = file.metadata().ok()?.modified().ok()?;
+        (modified >= reader.get_ref().metadata().ok()?.modified().ok()?)
+            .then(|| BufReader::new(file))
+    });
+    let mut feature_index = 0_u64;
     let sample_count = unpack_u16(&mut reader).map_err(|error| error.to_string())?;
     let mut output = Vec::with_capacity(transition.iso_name.len());
 
@@ -1051,15 +1112,39 @@ pub fn visualizer_read_long(
         };
         let mut values = Vec::new();
         while let Ok(name) = unpack_string(&mut reader) {
+            let offset = feature_index * u64::from(sample_count) * 16;
+            feature_index += 1;
             if feature_name == &name {
+                if let Some(extra) = &mut metrics {
+                    extra
+                        .seek(SeekFrom::Start(offset))
+                        .map_err(|error| error.to_string())?;
+                }
                 values = (0..sample_count)
                     .map(|_| {
-                        Ok(QcStat {
+                        let mut stat = QcStat {
                             rt_apex: unpack_f32(&mut reader)?,
                             area: unpack_f32(&mut reader)?,
                             rt_int_start: unpack_f32(&mut reader)?,
                             rt_int_end: unpack_f32(&mut reader)?,
-                        })
+                            metrics: None,
+                        };
+                        if let Some(extra) = &mut metrics {
+                            let height = unpack_f32(extra)?;
+                            if height.is_nan() {
+                                stat.rt_apex = f32::NAN;
+                                stat.area = f32::NAN;
+                                stat.rt_int_start = f32::NAN;
+                                stat.rt_int_end = f32::NAN;
+                            }
+                            stat.metrics = Some(PeakMetrics {
+                                height,
+                                fwhm: unpack_f32(extra)?,
+                                trace_cut_pct: unpack_f32(extra)?,
+                                sn_ratio: unpack_f32(extra)?,
+                            });
+                        }
+                        Ok(stat)
                     })
                     .collect::<io::Result<Vec<_>>>()
                     .map_err(|error| error.to_string())?;
@@ -1373,6 +1458,53 @@ mod tests {
     }
 
     #[test]
+    fn qc_reader_restores_missing_values_and_supports_older_projects() {
+        let dir = temp_project("qc_metrics");
+        let misc = dir.join("misc");
+        std::fs::create_dir(&misc).unwrap();
+        let mut trans = b"\x01\x000000\x00Analyte\x000000\x00".to_vec();
+        trans.extend([0; 9]); // Q1, Q3, uniform-width flag.
+        trans.push(1); // One peak without a separate isomer name.
+        trans.extend([0; 14]); // RT, empty name, bounds and peak-width count.
+        std::fs::write(misc.join("trans_list.bin"), trans).unwrap();
+        std::fs::write(misc.join("tp_0000"), []).unwrap();
+        let mut long = b"\x02\x00Other\x00".to_vec();
+        long.extend([0; 32]);
+        long.extend(b"Analyte\x00");
+        for value in [1.5_f32, 90., 1.2, 1.8, 0., 0., 1.5, 1.5] {
+            long.extend(value.to_le_bytes());
+        }
+        std::fs::write(misc.join("long.bin"), long).unwrap();
+        let read = || {
+            serde_json::to_value(visualizer_read_long(dir.to_str().unwrap(), "0000").unwrap())
+                .unwrap()
+        };
+        let old = read();
+        assert_eq!(old[0][1][0]["area"], 90.);
+        assert!(old[0][1][0].get("sn_ratio").is_none());
+
+        let mut metrics = vec![0; 32];
+        for value in [
+            10_f32,
+            0.2,
+            f32::NAN,
+            40.,
+            f32::NAN,
+            f32::NAN,
+            f32::NAN,
+            f32::NAN,
+        ] {
+            metrics.extend(value.to_le_bytes());
+        }
+        std::fs::write(misc.join("peak_metrics.bin"), metrics).unwrap();
+        let new = read();
+        assert_eq!(new[0][1][0]["sn_ratio"], 40.);
+        assert!(new[0][1][0]["trace_cut_pct"].is_null());
+        assert!(new[0][1][1]["area"].is_null());
+        std::fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[test]
     fn saves_single_isomer_blue_only_graph() {
         let dir = temp_project("blue");
         write_fixture(&dir);
@@ -1519,6 +1651,49 @@ mod tests {
         assert_eq!(rows[3][5], "3.000");
         assert_eq!(rows[4][8], "6.100");
         std::fs::remove_dir_all(&dir).unwrap();
+    }
+
+    #[test]
+    fn shared_bounds_skip_unacquired_samples_in_both_modes() {
+        let dir = temp_project("partial");
+        write_fixture(&dir);
+        write_alignment_traces(&dir);
+        let trace = dir.join("misc/te_0000");
+        // Replace the second trace with the worker's seven-byte absent record.
+        let mut bytes = std::fs::read(&trace).unwrap();
+        bytes.truncate(7 + 301 * 8);
+        bytes.extend_from_slice(&[0; 7]);
+        std::fs::write(trace, bytes).unwrap();
+        std::fs::write(dir.join("missing_details.txt"), "partial panel").unwrap();
+        let before = read_rows(&dir)[4].clone();
+        let project = dir.to_str().unwrap();
+        let edit = SharedBoundEdit {
+            cqq: "0000".into(),
+            isomer_index: 0,
+            rt_start: 1.2,
+            rt_end: 1.8,
+        };
+        assert_eq!(
+            visualizer_save_shared_bounds(project, vec![edit]).unwrap(),
+            1
+        );
+        assert_eq!(read_rows(&dir)[4], before);
+        let reference = AlignmentReferenceEdit {
+            cqq: "0000".into(),
+            file_name: "sample one".into(),
+            sample_index: 0,
+            isomer_index: 0,
+            rt_start: 1.3,
+            rt_end: 1.7,
+        };
+        assert_eq!(
+            visualizer_align_shared_bounds(project, vec![reference])
+                .unwrap()
+                .written,
+            1
+        );
+        assert_eq!(read_rows(&dir)[4], before);
+        std::fs::remove_dir_all(dir).unwrap();
     }
 
     #[test]

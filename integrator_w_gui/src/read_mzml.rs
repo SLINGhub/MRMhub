@@ -1,7 +1,7 @@
 use rayon::prelude::*;
 use std::error::Error;
 use std::fs::File;
-use std::io::{BufReader, BufWriter, Write};
+use std::io::{BufWriter, Write};
 use std::path::Path;
 // declares the low level mzml parser
 mod parse;
@@ -32,40 +32,15 @@ pub fn read(param_t: &crate::Param) -> Result<(), Box<dyn Error>> {
     }
     let file_ord = read_file_ord(&param_t.batch_i)?;
     let mzml_fs = filter_mzml(param_t, &file_ord)?;
-    File::create("missing_details.txt")?;
-    let _ = std::fs::remove_dir_all(crate::MISCDIR);
-    std::fs::create_dir(crate::MISCDIR)?;
-    let trans_f = create_t_files(&t_list)?;
+    check_mzml_format(&mzml_fs)?;
+    let staging = tempfile::Builder::new()
+        .prefix(".mrmhub-extract-")
+        .tempdir_in(".")?;
+    let misc = staging.path().join("new");
+    std::fs::create_dir(&misc)?;
+    let trans_f = create_t_files(&misc, &t_list)?;
     let mut time_stamp = Vec::with_capacity(mzml_fs.len());
-    {
-        let mut wtr = csv::WriterBuilder::new().from_path("ambiguous_assignment.csv")?;
-        wtr.write_record(["Transition Name", "chromatogram index"])?;
-        let (_, qq) = parse::mzml(mzml_fs[0].0)?;
-        let &crate::Param { mz_tol, .. } = param_t;
-        for trans in &t_list {
-            let pos0 = trans.q1 - mz_tol;
-            let pos0 = qq.partition_point(|x| x.q1 < pos0);
-            let ma: Vec<u16> = qq[pos0..]
-                .iter()
-                .take_while(|x| x.q1 < trans.q1 + mz_tol)
-                .filter(|x| {
-                    let sta = x.rt_i_l[0].0;
-                    let end = x.rt_i_l[x.rt_i_l.len() - 1].0;
-                    (x.q3 - trans.q3).abs() < mz_tol && sta < trans.rt && trans.rt < end
-                })
-                .map(|x| x.ord)
-                .collect();
-            if ma.len() > 1 {
-                wtr.write_record([
-                    &trans.name,
-                    &ma.iter()
-                        .map(std::string::ToString::to_string)
-                        .collect::<Vec<_>>()
-                        .join(", "),
-                ])?;
-            }
-        }
-    }
+    let mut missing = vec![Vec::new(); t_list.len()];
     let mut batch_start = 0;
     let progress = crate::progress::Reporter::new(mzml_fs.len());
     while batch_start < mzml_fs.len() {
@@ -77,15 +52,69 @@ pub fn read(param_t: &crate::Param) -> Result<(), Box<dyn Error>> {
             .collect::<Result<Vec<_>, _>>()?;
         let (mut ts, q1q3eics): (Vec<String>, Vec<Vec<parse::Q1Q3RtI>>) =
             parsed.into_iter().unzip();
+        if batch_start == 0 {
+            let mut wtr = csv::WriterBuilder::new().from_path("ambiguous_assignment.csv")?;
+            wtr.write_record(["Transition Name", "chromatogram index"])?;
+            let qq = &q1q3eics[0];
+            let &crate::Param { mz_tol, .. } = param_t;
+            for trans in &t_list {
+                let pos0 = trans.q1 - mz_tol;
+                let pos0 = qq.partition_point(|x| x.q1 < pos0);
+                let ma: Vec<u16> = qq[pos0..]
+                    .iter()
+                    .take_while(|x| x.q1 < trans.q1 + mz_tol)
+                    .filter(|x| {
+                        let sta = x.rt_i_l[0].0;
+                        let end = x.rt_i_l[x.rt_i_l.len() - 1].0;
+                        (x.q3 - trans.q3).abs() < mz_tol && sta < trans.rt && trans.rt < end
+                    })
+                    .map(|x| x.ord)
+                    .collect();
+                if ma.len() > 1 {
+                    wtr.write_record([
+                        &trans.name,
+                        &ma.iter()
+                            .map(std::string::ToString::to_string)
+                            .collect::<Vec<_>>()
+                            .join(", "),
+                    ])?;
+                }
+            }
+        }
         time_stamp.append(&mut ts);
-        trans_f.iter().zip(&t_list).for_each(|(trans_f_i, trans)| {
-            write_block(&q1q3eics, mzml_fs_, trans, trans_f_i, param_t).unwrap();
-        });
+        for ((trans_f_i, trans), absent) in trans_f.iter().zip(&t_list).zip(&mut missing) {
+            write_block(
+                &misc,
+                &q1q3eics,
+                batch_start,
+                absent,
+                trans,
+                trans_f_i,
+                param_t,
+            )?;
+        }
         batch_start = batch_end;
         progress.set(batch_start, "extracting chromatograms");
     }
-    write_mzml_list(&mzml_fs, &time_stamp)?;
-    write_miss_cpd(&t_list, &mzml_fs, &trans_f)
+    write_mzml_list(&misc, &mzml_fs, &time_stamp)?;
+    write_miss_cpd(&misc, &t_list, &mzml_fs, &trans_f, &missing)?;
+
+    // Publish only a complete extraction. Renaming directories on the same
+    // volume avoids copying traces and works on Windows with closed readers.
+    let active = Path::new(crate::MISCDIR);
+    let previous = staging.path().join("previous");
+    let replace = active.try_exists()?;
+    if replace {
+        std::fs::rename(active, &previous)?;
+    }
+    if let Err(error) = std::fs::rename(&misc, active) {
+        if replace && let Err(restore) = std::fs::rename(&previous, active) {
+            let recovery = staging.keep().join("previous");
+            return Err(format!("Cannot install extraction ({error}) or restore the previous one ({restore}). Previous data: {}", recovery.display()).into());
+        }
+        return Err(error.into());
+    }
+    Ok(())
 }
 // stores one transition from the assay definition
 struct QQ {
@@ -203,10 +232,10 @@ fn read_assay(assay_f: &Path) -> Result<Vec<QQ>, Box<dyn Error>> {
     let precursor_col = require_col(&headers, &["Precursor_mz", "Precursor Ion"])?;
     let product_col = require_col(&headers, &["Product_mz", "Product Ion"])?;
     let rt_col = require_col(&headers, &["RT"])?;
-    let uniform_col = require_col(
+    let uniform_col = find_col(
         &headers,
         &["uniform_width", "uniform_width (y/n)", "uniform width"],
-    )?;
+    );
     let left_bound_col = require_col(
         &headers,
         &[
@@ -312,11 +341,15 @@ fn read_assay(assay_f: &Path) -> Result<Vec<QQ>, Box<dyn Error>> {
                 q3,
                 rt: rt_iso.iter().map(|x| x.0).sum::<f32>() / (rt_iso.len() as f32),
                 rt_iso,
-                u_rt: is_yes(cell(rec_p, uniform_col)),
+                u_rt: uniform_col.is_some_and(|i| is_yes(cell(rec_p, i))),
                 peak_w: peak_width_col
                     .and_then(|column| rec_p.get(column))
                     .and_then(|value| {
-                        let mut iter = value.split(',');
+                        let mut iter = value
+                            .trim()
+                            .trim_start_matches('[')
+                            .trim_end_matches(']')
+                            .split(',');
                         let parse = |x: &str| x.trim().parse().ok();
                         Some((
                             parse(iter.next()?)?,
@@ -354,32 +387,55 @@ fn mzml_batch_end(mzml_fs: &[FileD], start: usize) -> std::io::Result<usize> {
 }
 // removes incomplete transitions and writes the validated transition files
 fn write_miss_cpd(
+    misc: &Path,
     t_list: &[QQ],
     mzml_fs: &[FileD],
     trans_f: &[String],
+    missing: &[Vec<usize>],
 ) -> Result<(), Box<dyn Error>> {
     let mut valid_trans = Vec::with_capacity(t_list.len());
     let mut remove_l = Vec::new();
     let mut bufw = BufWriter::new(File::create("missing_compounds.txt")?);
-    for (trans_f_i, trans) in trans_f.iter().zip(t_list) {
-        let file_path = Path::new(crate::MISCDIR).join(trans_f_i);
-        let bufre = &mut BufReader::new(File::open(file_path)?);
-        let cs: usize = (0..mzml_fs.len())
-            .take_while(|_| crate::common::get_eic(bufre).is_ok())
-            .count();
-        if cs < mzml_fs.len() {
+    let mut bufw_d = BufWriter::new(File::create("missing_details.txt")?);
+    let mut n_kept = 0;
+    let n_learn = mzml_fs.iter().filter(|x| x.4).count();
+    for ((trans_f_i, trans), missing_f) in trans_f.iter().zip(t_list).zip(missing) {
+        for &i in missing_f {
+            writeln!(
+                bufw_d,
+                "\"{}\" not in \"{}\"",
+                trans.name,
+                mzml_fs[i].0.file_name().unwrap().display()
+            )?;
+        }
+        // A transition absent from some samples is kept (those samples get no result), unless it
+        // is absent from a reference sample (needed for the RT shift) or from all learning samples.
+        let keep = missing_f.iter().all(|&i| !mzml_fs[i].3)
+            && missing_f.iter().filter(|&&i| mzml_fs[i].4).count() < n_learn;
+        if missing_f.is_empty() {
+            valid_trans.push((trans, trans_f_i));
+        } else if keep {
+            writeln!(
+                bufw,
+                "kept \"{}\". Present in {}/{} samples; the others get no result",
+                trans.name,
+                mzml_fs.len() - missing_f.len(),
+                mzml_fs.len()
+            )?;
+            n_kept += 1;
+            valid_trans.push((trans, trans_f_i));
+        } else {
             writeln!(
                 bufw,
                 "removed \"{}\". Present in {}/{} samples",
                 trans.name,
-                cs,
+                mzml_fs.len() - missing_f.len(),
                 mzml_fs.len()
             )?;
             remove_l.push(trans_f_i);
-        } else {
-            valid_trans.push((trans, trans_f_i));
         }
     }
+
     let mut v_trans_w_is = Vec::<(&QQ, &str, usize)>::new();
     for (trans, trans_f_i) in &valid_trans {
         if let Ok(pos0) = valid_trans.binary_search_by_key(&&trans.istd, |x| &x.0.name) {
@@ -389,13 +445,18 @@ fn write_miss_cpd(
             writeln!(bufw, "ISTD not found for {}", trans.name)?;
         }
     }
-    if !remove_l.is_empty() {
+    if n_kept > 0 {
+        println!(
+            "{n_kept} transition(s) missing from some mzML files kept; those files get no result."
+        );
+    }
+    if n_kept > 0 || !remove_l.is_empty() {
         use yansi::Paint;
         println!("Check {}.", "missing_compounds.txt".bold().underline());
     }
-    let file_path = Path::new(crate::MISCDIR).join(crate::TRANS_L);
+    let file_path = misc.join(crate::TRANS_L);
     let mut bufw = BufWriter::new(File::create(file_path)?);
-    let baseline_path = Path::new(crate::MISCDIR).join(crate::TRANS_BL);
+    let baseline_path = misc.join(crate::TRANS_BL);
     let mut baseline_bufw = BufWriter::new(File::create(baseline_path)?);
     v_trans_w_is.sort_unstable_by_key(|x| x.1);
     bufw.write_all(&u16::try_from(v_trans_w_is.len())?.to_le_bytes())?;
@@ -430,8 +491,9 @@ fn write_miss_cpd(
         baseline_bufw.write_all(trans.baseline.as_bytes())?;
         baseline_bufw.write_all(b"\0")?;
     }
-    let mut legacy_wtr =
-        csv::WriterBuilder::new().from_path(Path::new(crate::MISCDIR).join("trans_R.csv"))?;
+    bufw.flush()?;
+    baseline_bufw.flush()?;
+    let mut legacy_wtr = csv::WriterBuilder::new().from_path(misc.join("trans_R.csv"))?;
     legacy_wtr.write_record([
         "numeric ID",
         "transition name",
@@ -441,8 +503,7 @@ fn write_miss_cpd(
         "left view bound",
         "right view bound",
     ])?;
-    let mut extended_wtr =
-        csv::WriterBuilder::new().from_path(Path::new(crate::MISCDIR).join("trans_R_v2.csv"))?;
+    let mut extended_wtr = csv::WriterBuilder::new().from_path(misc.join("trans_R_v2.csv"))?;
     extended_wtr.write_record([
         "numeric ID",
         "transition name",
@@ -474,11 +535,13 @@ fn write_miss_cpd(
             "",
         ])?;
     }
+    legacy_wtr.flush()?;
+    extended_wtr.flush()?;
     Ok(())
 }
 // writes the ordered mzml sample metadata list
-fn write_mzml_list(mzml_fs: &[FileD], time_stamp: &[String]) -> std::io::Result<()> {
-    let file_path = Path::new(crate::MISCDIR).join(crate::MZML_L);
+fn write_mzml_list(misc: &Path, mzml_fs: &[FileD], time_stamp: &[String]) -> std::io::Result<()> {
+    let file_path = misc.join(crate::MZML_L);
     let mut wtr = csv::WriterBuilder::new()
         .delimiter(b'\t')
         .from_path(file_path)?;
@@ -492,12 +555,14 @@ fn write_mzml_list(mzml_fs: &[FileD], time_stamp: &[String]) -> std::io::Result<
             if *is_learn { "1" } else { "0" },
         ])?;
     }
-    Ok(())
+    wtr.flush()
 }
 // extracts and writes one transition block for a group of samples
 fn write_block(
+    misc: &Path,
     q1q3eics: &[Vec<parse::Q1Q3RtI>],
-    mzml_fs: &[FileD],
+    batch_start: usize,
+    absent: &mut Vec<usize>,
     trans: &QQ,
     trans_f_i: &str,
     param_t: &crate::Param,
@@ -507,10 +572,9 @@ fn write_block(
         crop_window,
         ..
     } = param_t;
-    let file_path = Path::new(crate::MISCDIR).join(trans_f_i);
+    let file_path = misc.join(trans_f_i);
     let mut bufw = BufWriter::new(File::options().append(true).open(file_path)?);
-    let mut missing_f = Vec::new();
-    for (qq, (mzml_f, ..)) in q1q3eics.iter().zip(mzml_fs) {
+    for (offset, qq) in q1q3eics.iter().enumerate() {
         let pos0 = trans.q1 - mz_tol;
         let pos0 = qq.partition_point(|x| x.q1 < pos0);
         let iter = qq[pos0..].iter().take_while(|x| x.q1 < trans.q1 + mz_tol);
@@ -544,38 +608,66 @@ fn write_block(
             } else {
                 &i.rt_i_l
             };
+            if rt_in.is_empty() {
+                absent.push(batch_start + offset);
+            }
             bufw.write_all(&u16::try_from(rt_in.len())?.to_le_bytes())?;
             for (x, y) in rt_in {
                 bufw.write_all(&x.to_le_bytes())?;
                 bufw.write_all(&y.to_le_bytes())?;
             }
         } else {
-            missing_f.push(mzml_f);
+            absent.push(batch_start + offset);
+            bufw.write_all(&f32::NAN.to_le_bytes())?;
+            bufw.write_all(&[0; 3])?;
         }
     }
-    let mut bufw = BufWriter::new(File::options().append(true).open("missing_details.txt")?);
-    for mzml_f in missing_f {
-        writeln!(
-            bufw,
-            "\"{}\" not in \"{}\"",
-            trans.name,
-            mzml_f.file_name().unwrap().display()
-        )?;
-    }
+    bufw.flush()?;
     Ok(())
 }
 
 // creates an empty binary file for every assay transition
-fn create_t_files(t_list: &[QQ]) -> std::io::Result<Vec<String>> {
+fn create_t_files(misc: &Path, t_list: &[QQ]) -> std::io::Result<Vec<String>> {
     (0..t_list.len())
         .map(|i| {
             let trans_f_i = format!("te_{i:0>4}");
-            let file_path = Path::new(crate::MISCDIR).join(&trans_f_i);
+            let file_path = misc.join(&trans_f_i);
             File::create(file_path)?;
             Ok(trans_f_i)
         })
         .collect()
 }
+/// Stops step 1 if any mzML file is not in the format the reader expects (`parse::check_format`); all such files
+/// are listed in `mzml_format_errors.txt`.
+fn check_mzml_format(mzml_fs: &[FileD]) -> Result<(), Box<dyn Error>> {
+    const ERR_F: &str = "mzml_format_errors.txt";
+    let mut bad: Vec<(String, String)> = mzml_fs
+        .par_iter()
+        .filter_map(|x| {
+            parse::check_format(x.0)
+                .err()
+                .map(|e| (x.0.display().to_string(), e))
+        })
+        .collect();
+    if bad.is_empty() {
+        let _ = std::fs::remove_file(ERR_F);
+        return Ok(());
+    }
+    bad.sort_unstable();
+    let mut bufw = BufWriter::new(File::create(ERR_F)?);
+    for (f, e) in &bad {
+        writeln!(bufw, "{f}\t{e}")?;
+    }
+    bufw.flush()?;
+    let (f, e) = &bad[0];
+    Err(format!(
+        "{} of {} mzML files are not in the expected format (all listed in {ERR_F}); e.g. {f} {e}",
+        bad.len(),
+        mzml_fs.len()
+    )
+    .into())
+}
+
 // matches available mzml files to the batch information
 fn filter_mzml<'a, 'b>(
     param_t: &'a crate::Param,
@@ -637,7 +729,7 @@ fn read_file_ord(batch_i_file: &Path) -> Result<Vec<FileO>, Box<dyn Error>> {
         .from_path(batch_i_file)?;
     let headers = rdr.headers()?.clone();
     let filename_col = require_col(&headers, &["file_name", "file name"])?;
-    let batch_col = require_col(&headers, &["batch"])?;
+    let batch_col = find_col(&headers, &["batch"]);
     let sample_type_col = require_col(&headers, &["sample_type", "sample type"])?;
     let reference_col = require_col(
         &headers,
@@ -654,7 +746,7 @@ fn read_file_ord(batch_i_file: &Path) -> Result<Vec<FileO>, Box<dyn Error>> {
             rec.map(|x| {
                 (
                     x[filename_col].to_string(),
-                    x[batch_col].to_string(),
+                    batch_col.map_or("", |i| &x[i]).to_string(),
                     x[sample_type_col].to_string(),
                     !x[reference_col].trim().is_empty(),
                     learn_col.map_or(true, |column| !x[column].trim().is_empty()),

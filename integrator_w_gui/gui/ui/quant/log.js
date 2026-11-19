@@ -22,7 +22,7 @@ export function classifyLines(lines) {
 }
 
 export function initializeOutput(element, toggle) {
-  let lines = [], colored = false;
+  let lines = [], colored = false, frame = 0;
   try { colored = localStorage.getItem(colorPreference) === "true"; } catch { /* Optional preference. */ }
   toggle.checked = colored;
   function render() {
@@ -55,7 +55,9 @@ export function initializeOutput(element, toggle) {
         if (line.trim()) lines.push(line); // Preserve table indentation and spacing.
         else if (lines.length && lines.at(-1) !== "") lines.push("");
       }
-      lines = lines.slice(-800); render();
+      if (lines.length > 800) lines.splice(0, lines.length - 800);
+      if (typeof requestAnimationFrame !== "function") render();
+      else if (!frame) frame = requestAnimationFrame(() => { frame = 0; render(); });
     },
     clear() { lines = []; render(); },
   };
